@@ -61,6 +61,7 @@ struct GMT_DCW_SELECT {	/* -F<DWC-options> */
 	struct GMT_OPTION *options;	/* Pointer to the GMT options */
 };
 
+EXTERN_MSC int gmt_DCW_version (struct GMTAPI_CTRL *API, char *version);
 EXTERN_MSC unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F);
 EXTERN_MSC unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F);
 EXTERN_MSC void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot);

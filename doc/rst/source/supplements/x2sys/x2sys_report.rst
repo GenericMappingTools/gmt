@@ -15,7 +15,7 @@ Synopsis
 **gmt x2sys_report** |-C|\ *column* |-T|\ *TAG* [ *coedbase.txt* ]
 [ |-A| ]
 [ |-I|\ [*list*] ]
-[ |-L|\ [*corrtable*] ]
+[ |-L|\ [*corrections*] ]
 [ |-N|\ *nx_min* ]
 [ |-Q|\ **e**\|\ **i** ]
 [ [ |SYN_OPT-R| ]
@@ -29,7 +29,7 @@ Description
 -----------
 
 **x2sys_report** will read the input crossover ASCII data base
-*coedbase.txt* (or *stdin*) and report on the statistics of crossovers
+*coedbase.txt* (or standard input) and report on the statistics of crossovers
 (*n*, *mean*, *stdev*, *rms*, *weight*) for each track. Options are
 available to let you exclude tracks and limit the output.
 
@@ -70,7 +70,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [*corrtable*]
+**-L**\ [*corrections*]
     Apply optimal corrections to the chosen observable. Append the
     correction table to use [Default uses the correction table
     *TAG*\ \_corrections.txt which is expected to reside in the

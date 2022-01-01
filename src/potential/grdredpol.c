@@ -46,6 +46,7 @@ struct GRDREDPOL_CTRL {
 		char *file;
 	} In;
 	struct GRDREDPOL_C {	/* -C */
+		bool active;
 		bool use_igrf;
 		bool const_f;
 		double	dec;
@@ -70,6 +71,7 @@ struct GRDREDPOL_CTRL {
 		char	*file;
 	} G;
 	struct GRDREDPOL_M {	/* -M */
+		bool active;
 		bool pad_zero;
 		bool mirror;
 	} M;
@@ -77,14 +79,17 @@ struct GRDREDPOL_CTRL {
 		bool active;
 	} N;
 	struct GRDREDPOL_S {	/* -S, size of working grid */
+		bool active;
 		unsigned int	n_columns;
 		unsigned int	n_rows;
 	} S;
 	struct GRDREDPOL_T {	/* -T */
+		bool active;
 		double	year;
 	} T;
 	struct GRDREDPOL_W {	/* -W */
 		double	wid;
+		bool active;
 	} W;
 	struct GRDREDPOL_Z {	/* -Z */
 		bool active;
@@ -1026,26 +1031,39 @@ GMT_LOCAL int grdgravmag3d_igrf10syn (struct GMT_CTRL *C, int isv, double date, 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>] [-Ei<dip_grd>] [-Ee<dec_grd>] [-F<m>/<n>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M<m|r>] [-N] [-W<win_width>] [%s] [-T<year>] [-Z<filterfile>]\n\t[%s] [%s]\n\n",
-				GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s -G<rtp_grdfile> [-C<dec>/<dip>] [-Ei|d<grid>] [-F<m>/<n>] "
+		"[-Mm|r] [-N] [-T<year>] [%s] [%s] [-W<win_width>] [-Z<filterfile>] [%s] [%s]\n",
+				name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<anomgrid> is the input grdfile with the magnetic anomaly.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets filename for output grid with the RTP solution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Sets<dec>/<dip> and uses this constant values in the RTP procedure.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Ei grid with the magnetization inclination [default: use IGRF].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Ed grid with the magnetization declination [default: use IGRF].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets <m>/<n> filter widths [25x25].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Sets boundary conditions. m|r stands for mirror or replicate edges (Default is zero padding).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT use Taylor expansion.\n");
-	GMT_Option  (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Sets year used by the IGRF routine to compute the various DECs & DIPs [default: 2000].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Sets window width in degrees [5].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Write filter file <filterfile> to disk.\n");
-	GMT_Option  (API, "V,n,.");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of grid with the magnetic anomaly");
+	GMT_Usage (API, 1, "\n-G<rtp_grdfile>");
+	GMT_Usage (API, -2, "Set filename for output grid with the RTP solution.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C<dec>/<dip>");
+	GMT_Usage (API, -2, "Set <dec>/<dip> and uses this constant values in the RTP procedure.");
+	GMT_Usage (API, 1, "\n-Ei|d<grid>");
+	GMT_Usage (API, -2, "Specify input grids for inclination and/or declination:");
+	GMT_Usage (API, 3, "i: Append file name for magnetization inclination [default uses IGRF].");
+	GMT_Usage (API, 3, "d: Append file name for the magnetization declination [default uses IGRF].");
+	GMT_Usage (API, 1, "\n-F<m>/<n>");
+	GMT_Usage (API, -2, "Set <m>/<n> filter widths [25/25].");
+	GMT_Usage (API, 1, "\n-Mm|r");
+	GMT_Usage (API, -2, "Specify optional boundary conditions [Default is zero padding]:");
+	GMT_Usage (API, 3, "m: mirror boundary condition.");
+	GMT_Usage (API, 3, "r: Replicate edges.");
+	GMT_Usage (API, 1, "\n-N Do NOT use Taylor expansion.");
+	GMT_Option (API, "R");
+	GMT_Usage (API, 1, "\n-T<year>");
+	GMT_Usage (API, -2, "Set year used by the IGRF routine to compute the various DECs & DIPs [default is 2000].");
+	GMT_Option  (API, "V");
+	GMT_Usage (API, 1, "\n-W<win_width>");
+	GMT_Usage (API, -2, "Set window width in degrees [5].");
+	GMT_Usage (API, 1, "\n-Z<filterfile>");
+	GMT_Usage (API, -2, "Write filter file <filterfile> to disk.");
+	GMT_Option  (API, "n,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -1075,6 +1093,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 			/* Processes program-specific parameters */
 
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				Ctrl->C.active = true;
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->C.dec, &Ctrl->C.dip);
 				Ctrl->C.dec *= D2R;
 				Ctrl->C.dip *= D2R;
@@ -1082,6 +1102,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				Ctrl->C.use_igrf = false;
 				break;
 			case 'E':		/* -Ei<dip_grid> -Ee<dec_grid> */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				Ctrl->C.use_igrf = false;
 				Ctrl->E.dip_grd_only = true;
@@ -1115,6 +1136,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
+				Ctrl->F.active = true;
 				j = sscanf (opt->arg, "%d/%d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
 				if (j == 1) Ctrl->F.compute_n = true;	/* Case of only one filter dimension was given */
 				if (Ctrl->F.ncoef_row %2 != 1 || Ctrl->F.ncoef_col %2 != 1) {
@@ -1127,11 +1150,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.pad_zero = false;
 				for (j = 0; opt->arg[j]; j++) {
 					if (opt->arg[j] == 'm')
@@ -1145,15 +1170,21 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = false;
 				break;
 			case 'T':
-				sscanf (opt->arg, "%lf", &Ctrl->T.year);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				Ctrl->T.active = false;
+			sscanf (opt->arg, "%lf", &Ctrl->T.year);
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				Ctrl->W.active = false;
 				sscanf (opt->arg, "%lf", &Ctrl->W.wid);
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				Ctrl->Z.file = strdup (opt->arg);
 				break;
@@ -1518,7 +1549,7 @@ EXTERN_MSC int GMT_grdredpol (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, fxnr);
 	}
 
-	strcpy (Gout->header->title, "Anomaly reducted to the pole");
+	strcpy (Gout->header->title, "Anomaly reduced to the pole");
 	strcpy (Gout->header->z_units, "nT");
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);

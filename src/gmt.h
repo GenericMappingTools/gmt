@@ -119,7 +119,7 @@ EXTERN_MSC uint64_t GMT_Get_Pixel      (void *API, struct GMT_GRID_HEADER *heade
 /* This function for cubes is new in 6.2 and is being considered beta */
 EXTERN_MSC uint64_t GMT_Get_Index3     (void *API, struct GMT_GRID_HEADER *header, int row, int col, int layer);
 
-/* 11 functions to show and inquire about GMT common options, GMT default settings, object metadata, convert strings to doubles, and message and report printing */
+/* 12 functions to show and inquire about GMT common options, GMT default settings, object metadata, convert strings to doubles, and message and report printing */
 
 EXTERN_MSC int GMT_Option              (void *API, const char *options);
 EXTERN_MSC int GMT_Get_Common          (void *API, unsigned int option, double *par);
@@ -130,6 +130,7 @@ EXTERN_MSC int GMT_Get_Info            (void *API, unsigned int family, void *da
 EXTERN_MSC int GMT_Get_Values          (void *API, const char *arg, double *par, int maxpar);
 EXTERN_MSC int GMT_Report              (void *API, unsigned int level, const char *message, ...);
 EXTERN_MSC int GMT_Message             (void *API, unsigned int mode, const char *format, ...);
+EXTERN_MSC int GMT_Usage               (void *API, int level, const char *format, ...);
 EXTERN_MSC char * GMT_Error_Message    (void *API);
 EXTERN_MSC int GMT_Handle_Messages     (void *API, unsigned int mode, unsigned int method, void *dest);
 

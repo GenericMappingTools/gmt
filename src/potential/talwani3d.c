@@ -50,7 +50,7 @@
 #define THIS_MODULE_PURPOSE	"Compute geopotential anomalies over 3-D bodies by the method of Talwani"
 #define THIS_MODULE_KEYS	"<D{,ND(,ZG(,G?},GDN"
 #define THIS_MODULE_NEEDS	"r"
-#define THIS_MODULE_OPTIONS "-VRdefhior" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-VRbdefhior" GMT_ADD_x_OPT
 
 #define DX_FROM_DLON(x1, x2, y1, y2) (((x1) - (x2)) * DEG_TO_KM * cos (0.5 * ((y1) + (y2)) * D2R))
 #define DY_FROM_DLAT(y1, y2) (((y1) - (y2)) * DEG_TO_KM)
@@ -143,22 +143,26 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *C) {	/* Deal
 static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_OPTION *options) {
 	unsigned int k, n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {		/* Process all the options given */
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			case 'A':	/* Specify z-axis is positive up [Default is down] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.rho = atof (opt->arg);
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'v': Ctrl->F.mode = TALWANI3D_VGG; 	break;
@@ -167,37 +171,48 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 						break;
 					case 'g':  Ctrl->F.mode = TALWANI3D_FAA; 	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -F: Unrecognized field %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_WARNING, "Option -F: Unrecognized field %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'M':	/* Length units */
 				k = 0;
 				while (opt->arg[k]) {
 					switch (opt->arg[k]) {
-						case 'h': Ctrl->M.active[TALWANI3D_HOR] = true; break;
-						case 'z': Ctrl->M.active[TALWANI3D_VER] = true; break;
+						case 'h':
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI3D_HOR]);
+							Ctrl->M.active[TALWANI3D_HOR] = true;
+							break;
+						case 'z':
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI3D_VER]);
+							Ctrl->M.active[TALWANI3D_VER] = true;
+							break;
 						default:
 							n_errors++;
-							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
+							GMT_Report (API, GMT_MSG_WARNING, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
 							break;
 					}
 					k++;
 				}
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.file = strdup (opt->arg);
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				if (!gmt_access (GMT, opt->arg, F_OK)) {	/* file exists */
 					Ctrl->Z.file = strdup (opt->arg);
@@ -232,35 +247,45 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <modelfile> [-A] [-D<rho>] [-Ff|n[<lat>]|v] [-G<outfile>] [%s]\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [%s] [-Z<level>]  [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]%s [%s]\n\n", GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <modelfile> [-A] [-D<density>] [-Ff|n[<lat>]|v] [-G<outfile>] [%s] "
+		"[-M[hz]] [-N<trktable>] [%s] [%s] [-Z<level>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
+		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
+		GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<modelfile> is a multiple-segment ASCII file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A The z-axis is positive upwards [Default is down].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set a fixed density contrast that overrides settings in model file (in kg/m^3).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify desired geopotential field component:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f = Free-air anomalies (mGal) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n = Geoid anomalies (meter).  Optionally append <lat> for evaluation of normal gravity\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       [Default lat is mid-grid for grid output or mid-latitue if -N is used].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   v = Vertical Gravity Gradient anomalies (VGG; 1 Eovtos = 0.1 mGal/km).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Output data. Give name of output file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<modelfile>");
+	GMT_Usage (API, -2, "One or more multiple-segment ASCII data files. If no files are given, standard "
+		"input is read. Contains (x,y) coordinates of slices with <zlevel> <density> in the segment headers.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A The z-axis is positive upwards [Default is positive down].");
+	GMT_Usage (API, 1, "\n-D<density>");
+	GMT_Usage (API, -2, "Set fixed density contrast that overrides settings in model file (in kg/m^3).");
+	GMT_Usage (API, 1, "\n-Ff|n[<lat>]|v]");
+	GMT_Usage (API, -2, "Specify desired geopotential field component:");
+	GMT_Usage (API, 3, "f: Free-air anomalies (mGal) [Default].");
+	GMT_Usage (API, 3, "n: Geoid anomalies (meter).  Optionally append latitude for evaluation of normal gravity "
+		"[Default latitude is mid-grid for grid output or mid-latitude if -N is used].");
+	GMT_Usage (API, 3, "v: Vertical Gravity Gradient anomalies (Eotvos = 0.1 mGal/km).");
+	GMT_Usage (API, 1, "\n-G<outfile>");
+	GMT_Usage (API, -2, "Set name of output file. Grid file name is requires unless -N is used.");
 	GMT_Option (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Set units used, as follows:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Mh indicates all x/y-distances are in km [meters]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Mz indicates all z-distances are in km [meters]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set output locations where a calculation is requested.  No grid\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   is produced and output (x,y,z,g|n|v) is written to stdout.\n");
+	GMT_Usage (API, 1, "\n-M[hz]");
+	GMT_Usage (API, -2, "Change units used, via one or two directives:");
+	GMT_Usage (API, 3, "h: All x- and y-distances are given in km [meters].");
+	GMT_Usage (API, 3, "z: All z-distances are given in km [meters].");
+	GMT_Usage (API, 1, "\n-N<trktable>");
+	GMT_Usage (API, -2, "File with output locations where a calculation is requested.  No grid "
+		"is produced and output (x,y,z,g|n|v) is written to standard output (see -bo for binary output).");
 	GMT_Option (API, "R,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set observation level for output locations [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append either a constant or the name of gridfile with levels.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If given a grid then it also defines the output grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot use both -Z<grid> and -R -I [-r].\n");
-	GMT_Option (API, "d,e");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, else in m [but see -Mh]).\n");
+	GMT_Usage (API, 1, "\n-Z<level>");
+	GMT_Usage (API, -2, "Set observation level for output locations [0]. "
+		"Append either a constant or the name of grid file with variable levels. "
+		"If given a grid then it also defines the output grid.");
+	GMT_Usage (API, -2, "Note: Cannot use both -Z<grid> and -R -I [-r].");
+	GMT_Option (API, "bo,d,e");
+	GMT_Usage (API, 1, "\n-fg Map units (lon, lat in degree, else in m [but see -Mh]).");
 	GMT_Option (API, "h,i,o,r,x,.");
 	return (GMT_MODULE_USAGE);
 }
@@ -757,14 +782,14 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);
 	}
 	else {	/* Got a dataset with output locations via -N */
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from the -N file */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from the -N file */
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL)
 			Return (API->error);
 		if (D->n_columns < 2) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)D->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (D->min[GMT_Y] + D->max[GMT_Y]);
 	}
 

@@ -371,98 +371,118 @@ GMT_LOCAL int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, uns
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F] [-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>] or -G<fieldabbrev>,<grid>] [-H]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<fieldabbrev>,<rec1>,<recN>] [-L<custom_limits_file>] [-M] [-N]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [-Z<level>] [%s] [%s] [%s] [%s]\n\n",
-	 	GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_n_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-C<maxspd>] [-Dd|e|E|f|l|m|s|v[r]] "
+		"[-E] [-F] [-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>] | -G<fieldabbrev>,<grid>] [-H] "
+		"[-I<fieldabbrev>,<rec1>,<recN>] [-L<custom_limits_file>] [-M] [-N] "
+		"[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [%s] [-Z<level>] [%s] [%s] [%s] [%s]\n",
+	 	name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tScan MGD77 files for errors using point-by-point sanity checking,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\talong-track detection of excessive slopes and comparison of cruise\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\tdata with global bathymetry and gravity grids.");
-	GMT_Message (API, GMT_TIME_NONE, "\twhere <cruises> is one or more MGD77 legnames, e.g., 08010001 etc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Apply scale factor and DC adjustment to specified data field. Allows adjustment of\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   cruise data prior to along-track analysis. CAUTION: data must be thoroughly examined\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   before applying these global data adjustments. May not be used for multiple cruises.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set maximum ship speed (10 m/s by default, use -N to indicate knots).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Dump cruise data such as sniffer limits, values, gradients and mgd77 records.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Dd print out cruise-grid differences (requires -G option).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -De output formatted error summary for each record. See E77 ERROR FORMAT below.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -DE same as -De but no regression checks will be done.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Df for each field, output value change and distance (or time with -St) since last observation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Dl print out mgd77sniffer default limits (requires no additional arguments).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Dm print out MGD77 format\n\t  -Ds print out gradients\n\t  -Dv print out values.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Dn print out distance to coast for each record (requires -Gnav).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append r to include all records (default omits records where navigation errors were detected).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Reverse navigation quality flags (good to bad and vice versa). May be necessary when a\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   majority of navigation fixes are erroneously flagged bad, which can happen when a cruise's\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   first navigation fix is extremely erroneous. Caution! This will affect sniffer output and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   should only be attempted after careful manual navigation review.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<cruises>");
+	GMT_Usage (API, -2, "Scan MGD77 files for errors using point-by-point sanity checking, "
+		"along-track detection of excessive slopes and comparison of cruise "
+		"data with global bathymetry and gravity grids. "
+		"where <cruises> is one or more MGD77 legnames, e.g., 08010001 etc.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<fieldabbrev>,<scale>,<offset>");
+	GMT_Usage (API, -2, "Apply scale factor and DC adjustment to specified data field. Allows adjustment of "
+		"cruise data prior to along-track analysis. CAUTION: data must be thoroughly examined "
+		"before applying these global data adjustments. May not be used for multiple cruises.");
+	GMT_Usage (API, 1, "\n-C<maxspd>");
+	GMT_Usage (API, -2, "Set maximum ship speed (10 m/s by default, use -N to indicate knots).");
+	GMT_Usage (API, 1, "\n-Dd|e|E|f|l|m|s|v[r]");
+	GMT_Usage (API, -2, "Dump cruise data such as sniffer limits, values, gradients and mgd77 records. Select item:");
+	GMT_Usage (API, 3, "d: Print out cruise-grid differences (requires -G option).");
+	GMT_Usage (API, 3, "e: Output formatted error summary for each record. See E77 ERROR FORMAT below.");
+	GMT_Usage (API, 3, "E: Same as -De but no regression checks will be done.");
+	GMT_Usage (API, 3, "f: For each field, output value change and distance (or time with -St) since last observation.");
+	GMT_Usage (API, 3, "l: Print out mgd77sniffer default limits (requires no additional arguments).");
+	GMT_Usage (API, 3, "m: Print out MGD77 format.");
+	GMT_Usage (API, 3, "s: Print out gradients.");
+	GMT_Usage (API, 3, "v: Print out values.");
+	GMT_Usage (API, 3, "n: Print out distance to coast for each record (requires -Gnav).");
+	GMT_Usage (API, -2, "Append r to include all records (default omits records where navigation errors were detected).");
+	GMT_Usage (API, 1, "\n-E Reverse navigation quality flags (good to bad and vice versa). May be necessary when a "
+		"majority of navigation fixes are erroneously flagged bad, which can happen when a cruise's "
+		"first navigation fix is extremely erroneous. Caution! This will affect sniffer output and "
+		"should only be attempted after careful manual navigation review.");
 #ifdef DEBUG
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Test regression analysis. A simulated grid is created from the ship data using slope\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and intercept passed through the -G option (i.e., -Gfield,m/b no grid name is passed).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   These factors are then reflected in regression output. Multiple -G calls allowed.\n");
+	GMT_Usage (API, 1, "\n-F Test regression analysis. A simulated grid is created from the ship data using slope "
+		"and intercept passed through the -G option (i.e., -Gfield,m/b no grid name is passed). "
+		"These factors are then reflected in regression output. Multiple -G calls allowed.");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Compare cruise data to the specified GMT geographic grid or Sandwell/Smith Mercator img grid\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a) Compare cruise data to the specified Sandwell/Smith Mercator grid. Requires valid MGD77\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   field abbreviation followed by a comma, the path (if not in current directory)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and grid filename, scale (0.1 or 1), and mode (see mgd77manage for details).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append max latitude in the IMG file [72.0059773539]. Nav on land\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   test can be activated using the -G option and requires a distance to nearest\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   coast grid (i.e., -Gnav,/data/GRIDS/dist_to_land.grd) with distance reported in cm.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   b) Compare cruise data to the specified GMT geographic grid. Requires valid MGD77 field abbreviation\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   followed by a comma, then the path (if not in current directory) and grid filename.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Excessive offsets are flagged according to maxArea threshold (use -L option to\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   adjust maxArea). Useful for comparing faa or depth to global grids though any MGD77\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   field can be compared to any GMT or IMG compatible grid. Multiple grid comparison is\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   supported by  using separate -G calls for each grid.  See GRID FILE INFO below.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Nav on land test can be activated using the -G option and requires a distance to\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   nearest coast grid (i.e., -Gnav,/data/GRIDS/dist_to_land.grd) with distance reported\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   in cm.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H (with -G only) disable (or force) decimation during RLS analysis of ship and gridded data.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   By default mgd77sniffer analyses both the full and decimated data sets then reports\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   RLS statistics for the higher correlation regression.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Hb analyze both (default), report better of two.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Hd to disable data decimation (equivalent to -H with no argument).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Hf to force data decimation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Give one or more record numbers to specify ranges of data record that should be flagged as bad\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   prior to along-track analysis.  The flag information will be echoed out to E77 files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   May not be used for multiple cruises.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Override mgd77sniffer default error detection limits. Supply path and filename of\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the custom limits file. Rows not beginning with a valid MGD77 field abbreviation are\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   ignored. Field abbreviations are listed below in exact form under MGD77 FIELD INFO.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Multiple field limits may be modified using one default file, one field per line.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Field min, max, maxGradient and maxArea may be changed for each field. maxGradient\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   pertains to the gradient type selected using the -S option. maxArea is used by the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -G option as the threshold for flagging excessive offsets. Dump defaults (-Dd) to\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   view syntax or to quickly create an editable custom limits file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Example custom default file contents (see below for field units):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\tdepth	0	11000	1000	4500\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\tmag	-800	800	-	-\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\tfaa	-250	250	100	2500\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use a dash '-' to retain a default limit.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Hint: to test your custom limits, try: mgd77sniffer -Dl -L<yourlimitsfile>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Adjust navigation on land threshold (meters inland) [100].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Use nautical units.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify gradient type for along-track excessive slope checking.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Sd Calculate change in z values along track (dz).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Ss Calculate spatial gradients (dz/ds) [default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -St Calculate time gradients (dz/dt).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set maximum acceptable distance gap between records (km) [5].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Set to zero to deactivate gap checking.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Print out only certain warning types. Comma delimit any combination of c|g|o|s|t|v|x:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   where (c) type code warnings, (g)radient out of range, (o)ffsets from grid (requires -G),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (s)peed out of range, (t)ime warnings, (v)alue out of range, (x) warning summaries.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   By default ALL warning messages are printed. Not allowed with -D option.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-V Run in verbose mode.\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Flag regression statistics that are outside the specified confidence level.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (i.e., -Z5 flags coefficients m, b, rms, and r that fall outside 95%%.)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-b Output binary data for -D option.  Append d for double and s for single precision [double].\n\n");
+	GMT_Usage (API, 1, "\n-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>] | -G<fieldabbrev>,<grid>");
+	GMT_Usage (API, -2, "Compare cruise data to the specified  Sandwell/Smith Mercator img grid or GMT geographic grid:");
+	GMT_Usage (API, 3, "%s Compare cruise data to the specified Sandwell/Smith Mercator grid. Requires valid MGD77 "
+		"field abbreviation followed by a comma, the path (if not in current directory) "
+		"and grid filename, scale (0.1 or 1), and mode (see mgd77manage for details). "
+		"Optionally, append max latitude in the IMG file [72.0059773539]. Nav on land "
+		"test can be activated using the -G option and requires a distance to nearest "
+		"coast grid (i.e., -Gnav,/data/GRIDS/dist_to_land.grd) with distance reported in cm.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Compare cruise data to the specified GMT geographic grid. Requires valid MGD77 field abbreviation "
+		"followed by a comma, then the path (if not in current directory) and grid filename. "
+		"Excessive offsets are flagged according to maxArea threshold (use -L option to "
+		"adjust maxArea). Useful for comparing faa or depth to global grids though any MGD77 "
+		"field can be compared to any GMT or IMG compatible grid. Multiple grid comparison is "
+		"supported by  using separate -G calls for each grid.  See GRID FILE INFO below. "
+		"Nav on land test can be activated using the -G option and requires a distance to "
+		"nearest coast grid (i.e., -Gnav,/data/GRIDS/dist_to_land.grd) with distance reported "
+		"in cm.", GMT_LINE_BULLET);
+	GMT_Usage (API, 1, "\n-H (with -G only) disable (or force) decimation during RLS analysis of ship and gridded data. "
+		"By default mgd77sniffer analyses both the full and decimated data sets then reports "
+		"RLS statistics for the higher correlation regression. Optional directives:");
+	GMT_Usage (API, 3, "b: Analyze both (default), report the better of two.");
+	GMT_Usage (API, 3, "d: Disable data decimation (equivalent to -H with no argument).");
+	GMT_Usage (API, 3, "f: Force data decimation.");
+	GMT_Usage (API, 1, "\n-I<fieldabbrev>,<rec1>,<recN>");
+	GMT_Usage (API, -2, "Give one or more record numbers to specify ranges of data record that should be flagged as bad "
+		"prior to along-track analysis.  The flag information will be echoed out to E77 files. "
+		"May not be used for multiple cruises.");
+	GMT_Usage (API, 1, "\n-L<custom_limits_file>");
+	GMT_Usage (API, -2, "Override mgd77sniffer default error detection limits. Supply path and filename of "
+		"the custom limits file. Rows not beginning with a valid MGD77 field abbreviation are "
+		"ignored. Field abbreviations are listed below in exact form under MGD77 FIELD INFO. "
+		"Multiple field limits may be modified using one default file, one field per line. "
+		"Field min, max, maxGradient and maxArea may be changed for each field. maxGradient "
+		"pertains to the gradient type selected using the -S option. maxArea is used by the "
+		"-G option as the threshold for flagging excessive offsets. Dump defaults (-Dd) to "
+		"view syntax or to quickly create an editable custom limits file. "
+		"Example custom default file contents (see below for field units):");
+	GMT_Usage (API, 3, "depth	0	11000	1000	4500");
+	GMT_Usage (API, 3, "mag	-800	800	-	-");
+	GMT_Usage (API, 3, "faa	-250	250	100	2500");
+	GMT_Usage (API, -2, "Use a dash '-' to retain a default limit. "
+		"Hint: to test your custom limits, try: mgd77sniffer -Dl -L<yourlimitsfile>.");
+	GMT_Usage (API, 1, "\n-M Adjust navigation on land threshold (meters inland) [100].");
+	GMT_Usage (API, 1, "\n-N Use nautical units.");
+	GMT_Option (API, "Rg");
+	GMT_Usage (API, 1, "\n-Sd|s|t");
+	GMT_Usage (API, -2, "Specify gradient type for along-track excessive slope checking:");
+	GMT_Usage (API, 3, "d: Calculate change in z values along track (dz).");
+	GMT_Usage (API, 3, "s: Calculate spatial gradients (dz/ds) [Default].");
+	GMT_Usage (API, 3, "t: Calculate time gradients (dz/dt).");
+	GMT_Usage (API, 1, "\n-T<gap>");
+	GMT_Usage (API, -2, "Set maximum acceptable distance gap between records (km) [5]. "
+		"Set to zero to deactivate gap checking.");
+	GMT_Usage (API, 1, "\n-Wc|g|o|s|t|v|x");
+	GMT_Usage (API, -2, "Print out only certain warning types. Comma-delimit any combination of c|g|o|s|t|v|x, where:");
+	GMT_Usage (API, 3, "c: Type code warnings.");
+	GMT_Usage (API, 3, "g: Gradient out of range.");
+	GMT_Usage (API, 3, "o: Offsets from grid (requires -G).");
+	GMT_Usage (API, 3, "s: Speed out of range.");
+	GMT_Usage (API, 3, "t: Time warnings.");
+	GMT_Usage (API, 3, "v: Value out of range.");
+	GMT_Usage (API, 3, "x: Warning summaries.");
+	GMT_Usage (API, -2, "By default ALL warning messages are printed. Not allowed with -D option.");
+	GMT_Option (API, "V");
+	GMT_Usage (API, 1, "\n-Z<level>");
+	GMT_Usage (API, -2, "Flag regression statistics that are outside the specified confidence level. "
+		"(i.e., -Z5 flags coefficients m, b, rms, and r that fall outside 95%%.)");
+	GMT_Usage (API, 1, "\n-bo Output binary data for -D option.  Append d for double and s for single precision [double].");
 	GMT_Option (API, "do,n,.");
-	GMT_Message (API, GMT_TIME_NONE, "\tMGD77 FIELD INFO:\n");
+	GMT_Usage (API, -2, "\nMGD77 FIELD INFO:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tField\t\t\tAbbreviation\t\tUnits\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tTwo-way Travel Time\ttwt\t\t\tsec\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tCorrected Depth \tdepth\t\t\tm\n");

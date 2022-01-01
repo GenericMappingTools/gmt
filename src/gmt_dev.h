@@ -68,13 +68,17 @@ extern "C" {
  * see http://stackoverflow.com/questions/26527077/compiling-with-accelerate-framework-on-osx-yosemite */
 
 #ifdef __APPLE__
-#ifndef __clang__
-#ifndef __has_extension
-#define __has_extension(x) 0
-#endif
-#define vImage_Utilities_h
-#define vImage_CVUtilities_h
-#endif
+    /* Apple Xcode expects _Nullable to be defined but it is not if gcc */
+#   ifndef _Nullable
+#       define _Nullable
+#   endif
+#   ifndef __clang__
+#       ifndef __has_extension
+#           define __has_extension(x) 0
+#       endif
+#       define vImage_Utilities_h
+#       define vImage_CVUtilities_h
+#   endif
 #endif
 
 /* Avoid some annoying warnings from MS Visual Studio */
@@ -119,6 +123,8 @@ extern "C" {
 /* Used to restrict the scope of a function to the file it was declared in */
 #	define GMT_LOCAL static
 #endif
+
+#include "gmt_common_byteswap.h"    /* Byte-swap inline functions */
 
 #include "gmt_common_math.h" /* Shared math functions */
 #include "gmt.h"             /* All GMT high-level API */
@@ -169,6 +175,11 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 #include "gmt_prototypes.h"     /* All GMT low-level API */
 #include "gmt_common_string.h"  /* All code shared between GMT and PSL */
+
+#ifndef NO_SIGHANDLER
+/* Include signal declarations */
+#include "gmt_common_sighandler.h"
+#endif
 
 #include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 

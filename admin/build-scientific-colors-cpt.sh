@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
 # This script takes the downloaded zip content from
-# Crameri, Fabio. (2021, February 2). Scientific colour maps
-# (Version 7.0.0). Zenodo. http://doi.org/10.5281/zenodo.4491293
+# Crameri, Fabio. (2021, September 12). Scientific colour maps
+# (Version 7.0.1). Zenodo. https://doi.org/10.5281/zenodo.5501399
 # and converts the *.cpt files into proper GMT master
 # CPT files with correct attribution and hinge info
 # Run from the ScientificColourMapsV directory (V is version) after the
@@ -11,8 +11,8 @@
 # downloaded directory.  It will create a gmt subdirectory with all the CPTs.
 # You also need to edit gmt_cpt_masters.h after adding the CPTs to share/cpt
 #
-# Last setup and run for ScientificColourMaps7 on 21/02/2021 for GMT 6.2 (master)
-# Gave 51 CPTS: The original 30 plus 5 cyclical versions and 16 categorical versions
+# Last setup and run for ScientificColourMaps7 on 20/09/2021 for GMT 6.3 (master)
+# Gave 51 CPTS: The same as prior release with minor changes for categorical cpts.
 #
 
 if [ $# -eq 0 ]; then
@@ -35,7 +35,7 @@ if [ $# -eq 0 ]; then
 fi
 
 DIR=$1
-VERSION=7.0.0
+VERSION=7.0.1
 cat << EOF > /tmp/cpt.info
 acton|Perceptually uniform sequential colormap, by Fabio Crameri [C=RGB]
 actonS|Perceptually uniform sequential categorical colormap, by Fabio Crameri [C=RGB]
@@ -123,7 +123,7 @@ while read line; do
 	#
 	# License: MIT License
 	# Copyright (c) 2021, Fabio Crameri.
-	# Crameri, F., (2021). Scientific colour maps. Zenodo. https://zenodo.org/record/4491293
+	# Crameri, F., (2021). Scientific colour maps. Zenodo. https://zenodo.org/record/5501399
 	# This is Scientific Colour Maps version $VERSION
 	# Note: Original file converted to GMT version >= 5 CPT format.
 	EOF

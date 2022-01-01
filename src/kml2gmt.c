@@ -74,20 +74,20 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<kmlfiles>] [-E] [-Fs|l|p] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Usage (API, 0, "usage: %s [<kmlfiles>] [-E] [-Fs|l|p] [%s] [-Z] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_ho_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<kmlfiles> is one or more Google Earth KML files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  If no file(s) is given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<kmlfiles> is one or more KML files from Google Earth or similar.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Get Z from the ExtendData property (only single <SimpleData name=\"string\"> implemented so far).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Restrict feature type; choose from (s)symbol, (l)ine, or (p)olygon.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use to only output data for the selected feature type [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Output the z-column from the KML file [Only lon,lat is output].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<kmlfiles> is one or more Google Earth KML files. "
+		"If no file(s) is given, standard input is read.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-E Get z-values from the ExtendData property (only single <SimpleData name=\"string\"> implemented so far).");
+	GMT_Usage (API, 1, "\n-Fs|l|p");
+	GMT_Usage (API, -2, "Restrict feature type; choose from (s)symbol, (l)ine, or (p)olygon. "
+		"Use to only output data for the selected feature type [all].");
+	GMT_Usage (API, 1, "\n-Z Output the z-column from the KML file [Only lon,lat is output].");
 	GMT_Option (API, "V,bo,do,h,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -103,6 +103,7 @@ static int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OP
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -112,16 +113,18 @@ static int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OP
 				if (n_files++ > 0) break;
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'E':	/* Feature type */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 		 		Ctrl->E.active = true;
  				Ctrl->Z.active = true;	/* Needs this too */
 				break;
 			case 'F':	/* Feature type */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 		 		Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 's':
@@ -136,12 +139,13 @@ static int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OP
 						Ctrl->F.geometry = GMT_IS_POLY;
 						break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad feature type. Use s, l or p.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Bad feature type. Use s, l or p.\n");
 						n_errors++;
 						break;
 				}
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
  				Ctrl->Z.active = true;
 				break;
 			default:	/* Report bad options */

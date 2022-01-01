@@ -83,7 +83,7 @@ Optional Arguments
 **-L**\ [**w**][**e**][**+l**]
     Set the level of verification reporting [none] and where to send
     such reports [stderr]. Append a combination of **w** for warnings and
-    **e** for errors, and append **+l** to send such log information to stdout.
+    **e** for errors, and append **+l** to send such log information to standard output.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
@@ -171,6 +171,6 @@ References
 ----------
 
 ncBrowse, see `<https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_
-ncView, see `<http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_
+ncView, see `<https://cirrus.ucsd.edu/~pierce/software/ncview/index.html>`_
 The Marine Geophysical Data Exchange Format - "MGD77", see
 `<https://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_

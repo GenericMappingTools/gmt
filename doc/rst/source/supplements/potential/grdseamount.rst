@@ -13,6 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt grdseamount** [ *table* ]
+|-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [*out*/*in*] ]
@@ -20,7 +21,6 @@ Synopsis
 [ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
-[ |-G|\ *grdfile* ]
 [ |-L|\ [*cut*] ]
 [ |-M|\ [*list*] ]
 [ |-N|\ *norm* ]
@@ -42,7 +42,7 @@ Description
 -----------
 
 **grdseamount** will compute the combined shape of multiple synthetic seamounts given their individual shape
-parameters.  We read from *table* (or stdin) a list of seamount locations and sizes and can evaluate either
+parameters.  We read from *table* (or standard input) a list of seamount locations and sizes and can evaluate either
 Gaussian, parabolic, conical, polynomial or disc shapes, which may be circular or elliptical, and optionally
 truncated. Various scaling options are available to modify the result, including an option to add in
 a background depth (more complicated backgrounds may be added via :doc:`grdmath </grdmath>`).
@@ -56,11 +56,21 @@ In this case you may choose to write out a cumulative shape or just the incremen
 by each time step (see **-Q**).  Finally, for mixing shapes you can use the trailing text to set
 the shape by using **-C** without an argument.
 
-Required Arguments
-------------------
+Required Arguments (if **-L** not given)
+----------------------------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
+
+.. _-G:
+
+.. |Add_outgrid| replace:: Give the name of the output grid file. If |-T| is set then *outgrid* must be a filename
+    template that contains a floating point format (C syntax).  If the filename template also contains
+    either %s (for unit name) or %c (for unit letter) then we use the corresponding time (in units specified in |-T|)
+    to generate the individual file names, otherwise we use time in years with no unit.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -128,16 +138,6 @@ Optional Arguments
 **-F**\ [*flattening*]
     Seamounts are to be truncated to guyots.  Append *flattening* from 0 (no flattening) to 1 (no feature!), otherwise we expect
     to find it in last input column [no truncation].  Ignored if used with **-Cd**.
-
-.. _-G:
-
-**-G**\ *grdfile*
-    Specify the name of the output grid file (see :ref:`Grid File Formats <grd_inout_full>`).
-    If **-T** is set then *grdfile* must be a filename template that contains
-    a floating point format (C syntax).  If the filename template also contains
-    either %s (for unit name) or %c (for unit letter) then we use the corresponding time
-    (in units specified in **-T**) to generate the individual file names, otherwise
-    we use time in years with no unit.
 
 .. _-L:
 

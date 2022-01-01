@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2cpt** *grid*
+**gmt grd2cpt** *ingrid*
 [ |-A|\ *transparency*\ [**+a**] ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
@@ -27,7 +27,7 @@ Synopsis
 [ |-Q|\ [**i**\|\ **o**] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ **h**\|\ **l**\|\ **m**\|\ **u** ]
-[ |-T|\ *start/stop/inc* ]
+[ |-T|\ *start/stop/inc*\|\ **n**]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
@@ -78,10 +78,11 @@ line will be used.
 Required Arguments
 ------------------
 
-*grid*
-    Names of one or more grid files used to derive the color palette
-    table. All grids need to have the same size and dimensions. (See
-    :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: Names of one or more grid files used to derive the
+    color palette table. All grids need to have the same size and dimensions.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------

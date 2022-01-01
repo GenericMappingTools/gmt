@@ -3,13 +3,14 @@ The **-bi** option
 
 **Syntax**
 
-**-bi**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
-    Select native binary format for primary input (secondary inputs are always ASCII).
+**-bi**\ *record*\ [**+b**\|\ **l**]
+    Select native binary format for primary table input (secondary inputs are always ASCII).
 
 **Description**
 
-Select native binary format for primary input, where *ncols* is the number of data columns of given *type* and *type*
-must be one of:
+Select native binary record format for primary table input. The *record* is one or more groups with
+format [*ncols*][*type*][**w**], where *ncols* is the number of consecutive data columns of given
+*type* and *type* must be one of:
 
 .. _bi_types:
 
@@ -22,14 +23,14 @@ must be one of:
     - **l** - int64_t (8-byte signed int)
     - **L** - uint64_t (8-byte unsigned int)
     - **f** - 4-byte single-precision float
-    - **d** - 8-byte double-precision float
+    - **d** - 8-byte double-precision float [Default]
     - **x** - use to skip *ncols* anywhere in the record
 
-For records with mixed types, simply append additional comma-separated combinations of *ncols* *type* (no space). The
-following modifiers are supported:
+Force byte-swapping of a group by appending **w** at the end of the group.
+For records with mixed types, append additional comma-separated groups (no space between groups).
+The following modifiers are supported:
 
-    - **w** after any item to force byte-swapping
-    - **+l**\|\ **b** to indicate that the entire data file should be read as little- or big-endian, respectively.
+    - **+b**\|\ **l** to indicate that the entire data file should be read as big- or little-endian, respectively.
 
 The cumulative number of *ncols* may exceed the columns actually needed by the program. If *ncols* is not specified we
 assume that *type* applies to all columns and that *ncols* is implied by the expectation of the program. When using
@@ -47,5 +48,5 @@ variables to be read (see :doc:`/cookbook/file-formats` and :ref:`Modifiers for 
 
     ::
 
-        echo 1.5 2 2.5 | gmt convert -bo1f,1l,1d > lixo.bin
-        gmt convert lixo.bin -bi1f,1l,1d
+        echo 1.5 2 2.5 | gmt convert -bo1f,1l,1d > test.bin
+        gmt convert test.bin -bi1f,1l,1d

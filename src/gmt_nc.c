@@ -426,6 +426,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 	int j, err, has_vector, has_range, registration, var_spacing = 0;
 	int old_fill_mode, status;
 	unsigned int d_off = (cube) ? 1 : 0;
+	size_t len;
 	double dummy[2], min, max;
 	char dimname[GMT_GRID_UNIT_LEN80], coord[GMT_LEN8];
 	nc_type z_type;
@@ -433,7 +434,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	/* Dimension ids, variable ids, etc.. */
-	int i, ncid, z_id = -1, ids[5] = {-1,-1,-1,-1,-1}, gm_id = -1, dims[5], nvars, ndims = 0;
+	int i, ncid, z_id = GMT_NOTSET, ids[5] = {-1,-1,-1,-1,-1}, gm_id = GMT_NOTSET, dims[5], nvars, ndims = 0;
 	size_t lens[5], item[2];
 
 	/* If not yet determined, attempt to get the layer IDs from the variable name */
@@ -493,21 +494,21 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		/* Find first 2-dimensional (z) variable or specified variable */
 		if (!HH->varname[0]) {	/* No specific named variable was requested; search for suitable matrix */
-			int ID = -1, dim = 0;
+			int ID = GMT_NOTSET, dim = 0;
 			gmt_M_err_trap (nc_inq_nvars (ncid, &nvars));
 			i = 0;
 			while (i < nvars && z_id < 0) {	/* Look for first 2D grid, with fallback to first higher-dimension (3-4D) grid if 2D not found */
 				gmt_M_err_trap (nc_inq_varndims (ncid, i, &ndims));
 				if (ndims == 2)	/* Found the first 2-D grid */
 					z_id = i;
-				else if (ID == -1 && ndims > 2 && ndims < 5) {	/* Also look for higher-dim grid in case no 2-D */
+				else if (ID == GMT_NOTSET && ndims > 2 && ndims < 5) {	/* Also look for higher-dim grid in case no 2-D */
 					ID = i;
 					dim = ndims;
 				}
 				i++;
 			}
 			if (z_id < 0) {	/* No 2-D grid found, check if we found a higher dimension cube */
-				if (ID == -1) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
+				if (ID == GMT_NOTSET) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
 				z_id = ID;		/* Pick the higher dimensioned cube instead, get its name, and warn */
 				nc_inq_varname (ncid, z_id, HH->varname);
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, HH->varname);
@@ -553,8 +554,17 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		header->n_columns = (uint32_t) lens[HH->xy_dim[0]];
 		header->n_rows = (uint32_t) lens[HH->xy_dim[1]];
 
-		/* Check if the grid_mapping variable exists */
-		if (nc_inq_varid (ncid, "grid_mapping", &i) == NC_NOERR) gm_id = i;
+		/* Check if the spatial_ref attribute exists, first via the z_id variable, and if not then via a global attribute */
+		if (nc_inq_attlen (ncid, z_id, "grid_mapping", &len) == NC_NOERR) {	/* The data layer has an attribute with the name of the variable that has the spatial_ref */
+			char *v_name = gmt_M_memory (GMT, NULL, len+1, char);           /* Allocate the needed space for the variable name */
+			if (nc_get_att_text (ncid, z_id, "grid_mapping", v_name) == NC_NOERR) {	/* Get the name of the variable */
+				if (nc_inq_varid (ncid, v_name, &i) == NC_NOERR)	/* Got the id of this variable */
+					gm_id = i;
+			}
+			gmt_M_free (GMT, v_name);
+		}
+		else if (nc_inq_varid (ncid, "grid_mapping", &i) == NC_NOERR)	/* A global variable has it */
+			gm_id = i;
 	} /* if (job == 'r' || job == 'u') */
 	else {
 		/* Define dimensions of z variable */
@@ -620,26 +630,24 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		/* Create enough memory to store the x- and y-coordinate values */
 		double *xy = gmt_M_memory (GMT, NULL, MAX (header->n_columns,header->n_rows), double);
 		/* Get global information */
-		if (gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "title", header->title, GMT_GRID_TITLE_LEN80))
-			gmtlib_nc_get_att_text (GMT, ncid, z_id, "long_name", header->title, GMT_GRID_TITLE_LEN80);
-		if (gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "history", header->command, GMT_GRID_COMMAND_LEN320))
-			gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "source", header->command, GMT_GRID_COMMAND_LEN320);
-		gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "description", header->remark, GMT_GRID_REMARK_LEN160);
+		if (gmtlib_nc_get_att_vtext (GMT, ncid, NC_GLOBAL, "title", header, header->title, GMT_GRID_TITLE_LEN80))
+			gmtlib_nc_get_att_vtext (GMT, ncid, z_id, "long_name", header, header->title, GMT_GRID_TITLE_LEN80);
+		if (gmtlib_nc_get_att_vtext (GMT, ncid, NC_GLOBAL, "history", header, header->command, GMT_GRID_COMMAND_LEN320))
+			gmtlib_nc_get_att_vtext (GMT, ncid, NC_GLOBAL, "source", header, header->command, GMT_GRID_COMMAND_LEN320);
+		gmtlib_nc_get_att_vtext (GMT, ncid, NC_GLOBAL, "description", header, header->remark, GMT_GRID_REMARK_LEN160);
 		header->registration = GMT_GRID_NODE_REG;
 		if (!nc_get_att_int (ncid, NC_GLOBAL, "node_offset", &i)) {	/* GMT wrote the registration in the grid */
 			header->registration = i;
 			set_reg = false;	/* Do not update it below since we know the registration */
 		}
 
-		if (gm_id > 0) {
-			size_t len;
-			char *pch = NULL;
-			gmt_M_err_trap (nc_inq_attlen (ncid, gm_id, "spatial_ref", &len));	/* Get attrib length */
-			gmt_M_str_free (header->ProjRefWKT);   /* Make sure we didn't have a previously allocated one */
-			pch = gmt_M_memory (GMT, NULL, len+1, char);           /* and allocate the needed space */
-			gmt_M_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", pch));
-			header->ProjRefWKT = strdup (pch);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
-			gmt_M_free (GMT, pch);
+		if (gm_id != GMT_NOTSET && nc_inq_attlen (ncid, gm_id, "spatial_ref", &len) == NC_NOERR) {	/* Good to go */
+			char *attrib = NULL;
+			gmt_M_str_free (header->ProjRefWKT);	/* Make sure we didn't have a previously allocated one */
+			attrib = gmt_M_memory (GMT, NULL, len+1, char);		/* and allocate the needed space */
+			gmt_M_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", attrib));
+			header->ProjRefWKT = strdup (attrib);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
+			gmt_M_free (GMT, attrib);
 		}
 
 		/* Explanation for the logic below: Not all netCDF grids are proper COARDS grids and hence we sometime must guess
@@ -661,7 +669,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		registration = GMT_GRID_NODE_REG;
 
 		/* Look for the x-coordinate vector */
-		if ((has_vector = !nc_get_var_double (ncid, ids[HH->xy_dim[0]], xy))) {
+		if ((has_vector = !nc_get_var_double (ncid, ids[HH->xy_dim[0]], xy)) && header->n_columns > 1) {
 			var_spacing = gmtnc_check_step (GMT, header->n_columns, xy, header->x_units, HH->name, save_xy_array);
 			if (save_xy_array && var_spacing) {
 				if (GMT->current.io.nc_xarray) gmt_M_free (GMT, GMT->current.io.nc_xarray);
@@ -671,6 +679,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			}
 			dx = fabs (xy[1] - xy[0]);	/* Grid spacing in x */
 		}
+		if (has_vector && header->n_columns == 1) has_vector = false;	/* One coordinate does not a vector make */
 
 		/* Look for the x-coordinate range attributes */
 		has_range = (!nc_get_att_double (ncid, ids[HH->xy_dim[0]], "actual_range", dummy) ||
@@ -731,7 +740,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		/* Determine grid step */
 		header->inc[GMT_X] = gmt_M_get_inc (GMT, dummy[0], dummy[1], header->n_columns, registration);
-		if (gmt_M_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
+		if (gmt_M_is_dnan(header->inc[GMT_X]) || gmt_M_is_zero (header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
+		if (header->n_columns == 1) registration = GMT_GRID_PIXEL_REG;	/* The only way to have a grid like that */
 
 #ifdef NC4_DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "x registration: %u\n", header->registration);
@@ -754,7 +764,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		registration = GMT_GRID_NODE_REG;
 
 		/* Read the y-coordinate vector (if available), otherwise just look for range attributes */
-		if ((has_vector = !nc_get_var_double (ncid, ids[HH->xy_dim[1]], xy))) {
+		if ((has_vector = !nc_get_var_double (ncid, ids[HH->xy_dim[1]], xy)) && header->n_rows > 1) {
 			var_spacing = gmtnc_check_step (GMT, header->n_rows, xy, header->y_units, HH->name, save_xy_array);
 			if (save_xy_array && var_spacing) {
 				if (GMT->current.io.nc_yarray) gmt_M_free (GMT, GMT->current.io.nc_yarray);
@@ -767,6 +777,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
 			dy = fabs (xy[1] - xy[0]);	/* Grid spacing in y */
 		}
+		if (has_vector && header->n_rows == 1) has_vector = false;	/* One coordinate does not a vector make */
 		has_range = (!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", dummy) ||
 			!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_range", dummy) ||
 			!(nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_min", &dummy[0]) +
@@ -844,7 +855,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		/* Determine grid step */
 		header->inc[GMT_Y] = gmt_M_get_inc (GMT, dummy[0], dummy[1], header->n_rows, registration);
-		if (gmt_M_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
+		if (gmt_M_is_dnan(header->inc[GMT_Y]) || gmt_M_is_zero (header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
+		if (header->n_rows == 1) registration = GMT_GRID_PIXEL_REG;	/* The only way to have a grid like that */
 
 #ifdef NC4_DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "y registration: %u\n", header->registration);
@@ -943,9 +955,9 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		const int *nc_vers = gmtnc_netcdf_libvers();
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "netCDF Library version: %d\n", *nc_vers);
 		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_NC_CONVENTION), GMT_NC_CONVENTION));
-		if (header->title[0]) gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
-		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(header->command), header->command));
-		if (header->remark[0]) gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(header->remark), header->remark));
+		gmt_M_err_trap (gmtlib_nc_put_att_vtext (GMT, ncid, "title", header));
+		gmt_M_err_trap (gmtlib_nc_put_att_vtext (GMT, ncid, "history", header));
+		gmt_M_err_trap (gmtlib_nc_put_att_vtext (GMT, ncid, "description", header));
 		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "GMT_version", strlen(GMT_VERSION), (const char *) GMT_VERSION));
 		if (header->registration == GMT_GRID_PIXEL_REG) {
 			int reg = header->registration;
@@ -1003,11 +1015,13 @@ L100:
 		gmtnc_put_units (ncid, ids[HH->xy_dim[0]], header->x_units);
 		dummy[0] = header->wesn[XLO], dummy[1] = header->wesn[XHI];
 		gmt_M_err_trap (nc_put_att_double (ncid, ids[HH->xy_dim[0]], "actual_range", NC_DOUBLE, 2U, dummy));
+		gmt_M_err_trap (nc_put_att_text (ncid, ids[HH->xy_dim[0]], "axis", 1U, "X"));
 
 		/* Define y variable */
 		gmtnc_put_units (ncid, ids[HH->xy_dim[1]], header->y_units);
 		dummy[0] = header->wesn[YLO], dummy[1] = header->wesn[YHI];
 		gmt_M_err_trap (nc_put_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", NC_DOUBLE, 2U, dummy));
+		gmt_M_err_trap (nc_put_att_text (ncid, ids[HH->xy_dim[1]], "axis", 1U, "Y"));
 
 		/* When varname is given, and z_units is default, overrule z_units with varname */
 		if (HH->varname[0] && !strcmp (header->z_units, cube ? "cube" : "z"))
@@ -1485,7 +1499,7 @@ int gmt_nc_close (struct GMT_CTRL *GMT, int id) {
 
 int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Returns GMT_NOERROR if NetCDF grid */
-	int ncid, z_id = -1, j = 0, nvars, ndims, err, old = false;
+	int ncid, z_id = GMT_NOTSET, j = 0, nvars, ndims, err, old = false;
 	nc_type z_type;
 	char varname[GMT_GRID_VARNAME_LEN80];
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
@@ -1518,19 +1532,19 @@ int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			return (GMT_GRDIO_NO_VAR);
 	}
 	else {	/* Look for first 2D grid, with fallback to first higher-dimension (3-4D) grid if 2D not found */
-		int ID = -1, dim = 0;
+		int ID = GMT_NOTSET, dim = 0;
 		nc_inq_nvars (ncid, &nvars);
 		for (j = 0; j < nvars && z_id < 0; j++) {
 			gmt_M_err_trap (nc_inq_varndims (ncid, j, &ndims));
 			if (ndims == 2)	/* Found the first 2-D grid */
 				z_id = j;
-			else if (ID == -1 && ndims > 2 && ndims < 5) {	/* Also look for higher-dim grid in case no 2-D */
+			else if (ID == GMT_NOTSET && ndims > 2 && ndims < 5) {	/* Also look for higher-dim grid in case no 2-D */
 				ID = j;
 				dim = ndims;
 			}
 		}
 		if (z_id < 0) {	/* No 2-D grid found, check if we found a higher dimension cube */
-			if (ID == -1) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
+			if (ID == GMT_NOTSET) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
 			z_id = ID;	/* Pick the higher dimensioned cube instead, get its name, and warn */
 			nc_inq_varname (ncid, z_id, varname);
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, varname);
@@ -1930,7 +1944,7 @@ nc_cube_return:
 /* Examine the netCDF data cube and determine if it is a 3-D cube and return the knots */
 
 int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, uint64_t *nz, double **zarray, char *z_unit) {
-	int i, err, ID = -1, dim = 0, ncid, z_id = -1, ids[5] = {-1,-1,-1,-1,-1}, dims[5], nvars;
+	int i, err, ID = GMT_NOTSET, dim = 0, ncid, z_id = GMT_NOTSET, ids[5] = {-1,-1,-1,-1,-1}, dims[5], nvars;
 	int has_vector, ndims = 0, z_dim, status;
 	uint64_t n_layers = 0;
 	size_t lens[5];
@@ -1945,14 +1959,14 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 		gmt_M_err_trap (nc_inq_varndims (ncid, i, &ndims));
 		if (ndims == 3)	/* Found the first 3-D grid */
 			z_id = i;
-		else if (ID == -1 && ndims > 3 && ndims < 5) {	/* Also look for higher-dim grid in case no 3-D */
+		else if (ID == GMT_NOTSET && ndims > 3 && ndims < 5) {	/* Also look for higher-dim grid in case no 3-D */
 			ID = i;
 			dim = ndims;
 		}
 		i++;
 	}
 	if (z_id < 0) {	/* No 3-D grid found, check if we found a higher dimension cube */
-		if (ID == -1) {	/* No we didn't */
+		if (ID == GMT_NOTSET) {	/* No we didn't */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No 3-D data cube found in file %s.\n", file);
 			return GMT_GRDIO_NO_2DVAR;
 		}

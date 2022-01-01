@@ -108,38 +108,47 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 #endif
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <TAG> [-D<deffile>] [-E<suffix>] [-F] [-G[d|g]] [-I[<binsize>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>]\n\t[%s]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_j_OPT, GMT_PAR_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t<TAG> is the unique system identifier.  Files created will be placed in the directory %s/<TAG>.\n", par);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: The environmental parameter %s must be defined.\n\n", par);
+	GMT_Usage (API, 0, "usage: %s <TAG> [-D<deffile>] [-E<suffix>] [-F] [-G[d|g]] [-I[<xinc>[m|s][/<yinc>[m|s]]]] "
+		"[-N[d|s][c|e|f|k|M|n]] [%s] [%s] [-Wt|d|n<gap>] [%s]] [%s]\n",
+		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_j_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Definition file for the track data set [<TAG>.%s].\n", X2SYS_FMT_EXT);
-	GMT_Message (API, GMT_TIME_NONE, "\t   (Note: deprecated extension .%s will work but consider renaming the file)\n", X2SYS_FMT_EXT_OLD);
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Extension (suffix) for these data files\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default equals the prefix for the definition file].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Force creating new files if old ones are present [Default will abort if old files are found].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Geographical coordinates; append g for discontinuity at Greenwich (output 0/360 [Default])\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or append d for discontinuity at Dateline (output -180/+180).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Set bin size for track bin index output [1/1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Append (d)istances or (s)peed, and your choice for unit. Choose among:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c Cartesian distance (user-dist-units, user-dist-units/user-time-units).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   e Metric units I (meters, m/s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f British/US I (feet, feet/s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   k Metric units II (km, km/hr).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   M British/US units II (miles, miles/hr).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n Nautical units (nautical miles, knots).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   u Old US units (survey feet, survey feet/s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   See -j for distance calculation modes.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -Ndk -Nse].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<TAG>");
+	GMT_Usage (API, -2, "Set a unique system identifier for this compilation.  Files created will be placed in the directory %s/<TAG>. "
+		"Note: The environmental parameter %s must be defined.", par, par);
+
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D<deffile>");
+	GMT_Usage (API, -2, "Definition file for the track data set [<TAG>.%s]. ", X2SYS_FMT_EXT);
+	GMT_Usage (API, 1, "\n-E<suffix>");
+	GMT_Usage (API, -2, "Extension (suffix) for these data files "
+		"[Default equals the prefix for the definition file].");
+	GMT_Usage (API, 1, "\n-F Force creating new files if old ones are present [Default will abort if old files are found].");
+	GMT_Usage (API, 1, "\n-G[d|g]");
+	GMT_Usage (API, -2, "Geographical coordinates; append g for discontinuity at Greenwich (output 0/360 [Default]) "
+		"or append d for discontinuity at Dateline (output -180/+180).");
+	GMT_Usage (API, 1, "\n-I[<xinc>[m|s][/<yinc>[m|s]]]");
+	GMT_Usage (API, -2, "Set bin size for track bin index output [1].");
+	GMT_Usage (API, 1, "\n-N[d|s][c|e|f|k|M|n]]");
+	GMT_Usage (API, -2, "Append (d)istances or (s)peed, and your choice for unit. Choose among:");
+	GMT_Usage (API, 3, "c: Cartesian distance (user-dist-units, user-dist-units/user-time-units).");
+	GMT_Usage (API, 3, "e: Metric units I (meters, m/s).");
+	GMT_Usage (API, 3, "f: British/US I (feet, feet/s).");
+	GMT_Usage (API, 3, "k: Metric units II (km, km/hr).");
+	GMT_Usage (API, 3, "M: British/US units II (miles, miles/hr).");
+	GMT_Usage (API, 3, "n: Nautical units (nautical miles, knots).");
+	GMT_Usage (API, 3, "u: Old US units (survey feet, survey feet/s).");
+	GMT_Usage (API, -2, "See -j for distance calculation modes. "
+		"[Default is -Ndk -Nse].");
 	GMT_Option (API, "R");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is 0/360/-90/90].\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "[Default region is 0/360/-90/90].");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Set maximum gaps allowed at crossover.  Option may be repeated.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Wt sets maximum time gap (in user units) [Default is infinite].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Wd sets maximum distance gap (in user units) [Default is infinite].\n");
+	GMT_Usage (API, 1, "\n-Wt|d|n<gap>");
+	GMT_Usage (API, -2, "Set maximum gaps allowed at crossover.  Option may be repeated:");
+	GMT_Usage (API, 3, "t: Set maximum time gap (in user units) [Default is infinite].");
+	GMT_Usage (API, 3, "d: Set maximum distance gap (in user units) [Default is infinite].");
 	GMT_Option (API, "j,m,.");
 
 	return (GMT_MODULE_USAGE);
@@ -172,6 +181,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Distance calculation flag */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				if (gmt_M_compat_check (API->GMT, 6)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "The -C option is deprecated; use the GMT common option -j<mode> instead\n");
 					Ctrl->C.active = true;
@@ -187,6 +197,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				if ((c = strstr (opt->arg, "." X2SYS_FMT_EXT)) == NULL && (c = strstr (opt->arg, "." X2SYS_FMT_EXT_OLD)) == NULL)
 					Ctrl->D.file = strdup (opt->arg);	/* Gave no extension so store everything */
@@ -197,17 +208,21 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				Ctrl->E.string = strdup (opt->arg);
 				break;
 			case 'G':	/* Geographical coordinates, set discontinuity */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				Ctrl->G.string = strdup (opt->arg);
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (opt->arg[0] && gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
@@ -216,6 +231,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 				Ctrl->I.string = strdup (opt->arg);
 				break;
 			case 'N':	/* Distance and speed unit selection */
+				k = 0;
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance unit selection */
 						k = 1;
@@ -232,11 +248,13 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 						break;
 				}
 				if (!n_errors) {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[k]);
 					Ctrl->N.active[k] = true;
 					Ctrl->N.string[k] = strdup (opt->arg);
 				}
 				break;
 			case 'W':
+				k = 0;
 				switch (opt->arg[0]) {
 					case 'd':	/* Get new distgap */
 						k = 1;
@@ -248,6 +266,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 						break;
 				}
 				if (!n_errors) {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active[k]);
 					Ctrl->W.active[k] = true;
 					Ctrl->W.string[k] = strdup (opt->arg);
 				}

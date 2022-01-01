@@ -27,7 +27,7 @@ gmt begin ex17
 	echo @_@%%5%%Example 17.@%%%%@_  We first plot the color geoid image >> tmp.txt
 	echo for the entire region, followed by a gray-shaded @REMetopo5@REM >> tmp.txt
 	echo image that is clipped so it is only visible inside the coastlines. >> tmp.txt
-	gmt text tmp.txt -M -Gwhite -Wthinner -C+tO -D-8p/8p -F+f12,Times-Roman+jRB
+	gmt text tmp.txt -M -Gwhite -Wthinner -C+tO -D8p -F+f12,Times-Roman+jRB
 
 	REM Clean up
 	del geoid.cpt tmp.txt

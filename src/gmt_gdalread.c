@@ -76,7 +76,7 @@ GMT_LOCAL int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBa
  * Returns -1 in case no world file is found.
  */
 GMT_LOCAL int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, double *adfGeoTransform) {
-	int status = -1;
+	int status = GMT_NOTSET;
 	char generic_buffer[5000];
 
 	if (GDALGetGeoTransform(hDataset, adfGeoTransform) == CE_None)
@@ -93,7 +93,7 @@ GMT_LOCAL int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, d
 	if (status == 1)
 		return (0);
 
-	return (-1);
+	return (GMT_NOTSET);
 }
 
 /************************************************************************/
@@ -321,7 +321,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	int     status, bSuccess;	/* success or failure */
 	int     nBand, raster_count;
 	int     bGotMin, bGotMax;	/* To know if driver transmitted Min/Max */
-	bool    got_noDataValue = false, pixel_reg = false;
+	bool    got_noDataValue = false, pixel_reg = false, compute_minmax = false;
 	double  adfGeoTransform[6];	/* bounds on the dataset */
 	double  tmpdble;		/* temporary value */
 	double  xy_c[2], xy_geo[4][2];	/* Corner coordinates in the local coords system and geogs (if it exists) */
@@ -334,8 +334,8 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	hDataset = gdal_open (GMT, gdal_filename);
 	if (hDataset == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open %s.\n", gdal_filename);
-		GDALDestroyDriverManager();
-		return (-1);
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
+		return (GMT_NOTSET);
 	}
 
 	gmt_M_tic (GMT);
@@ -416,15 +416,15 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "The -projwin option was used, but the geotransform is rotated."
 			                                         " This configuration is not supported.\n");
 			GDALClose(hDataset);
-			GDALDestroyDriverManager();
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Quitting with error\n");
-			return(-1);
+			return(GMT_NOTSET);
 		}
 
-		anSrcWin[0] = (int) ((dfULX - adfGeoTransform[0]) / adfGeoTransform[1] + 0.001);
-		anSrcWin[1] = (int) ((dfULY - adfGeoTransform[3]) / adfGeoTransform[5] + 0.001);
-		anSrcWin[2] = (int) ((dfLRX - dfULX) / adfGeoTransform[1] + 0.5);
-		anSrcWin[3] = (int) ((dfLRY - dfULY) / adfGeoTransform[5] + 0.5);
+		anSrcWin[0] = irint ((dfULX - adfGeoTransform[0]) / adfGeoTransform[1]);
+		anSrcWin[1] = irint ((dfULY - adfGeoTransform[3]) / adfGeoTransform[5]);
+		anSrcWin[2] = irint ((dfLRX - dfULX) / adfGeoTransform[1]);
+		anSrcWin[3] = irint ((dfLRY - dfULY) / adfGeoTransform[5]);
 
 		if (anSrcWin[0] < 0 || anSrcWin[1] < 0
 		    || anSrcWin[0] + anSrcWin[2] > GDALGetRasterXSize(hDataset)
@@ -432,7 +432,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Computed -srcwin falls outside raster size of %dx%d.\n",
 			            GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Quitting with error\n");
-			return(-1);
+			return(GMT_NOTSET);
 		}
 		Ctrl->RasterXsize = nXSize = anSrcWin[2];
 		Ctrl->RasterYsize = nYSize = anSrcWin[3];
@@ -537,25 +537,36 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 
 		Ctrl->nIndexedColors = GDALGetColorEntryCount(hTable);
 		Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int);
-		for (i = 0, j = 0; i < Ctrl->nIndexedColors; i++) {
+		for (i = 0; i < Ctrl->nIndexedColors; i++) {
 			GDALGetColorEntryAsRGB(hTable, i, &sEntry);
-			Ctrl->ColorMap[j++] = sEntry.c1;
-			Ctrl->ColorMap[j++] = sEntry.c2;
-			Ctrl->ColorMap[j++] = sEntry.c3;
-			Ctrl->ColorMap[j++] = sEntry.c4;
+			gmt_M_set_rgba (Ctrl->ColorMap, i, 0, Ctrl->nIndexedColors, sEntry.c1);
+			gmt_M_set_rgba (Ctrl->ColorMap, i, 1, Ctrl->nIndexedColors, sEntry.c2);
+			gmt_M_set_rgba (Ctrl->ColorMap, i, 2, Ctrl->nIndexedColors, sEntry.c3);
+			gmt_M_set_rgba (Ctrl->ColorMap, i, 3, Ctrl->nIndexedColors, sEntry.c4);
 		}
-		Ctrl->ColorMap[j++] = -1;
+		/* Mark the end of the ColorMap */
+		Ctrl->ColorMap[Ctrl->nIndexedColors*4] = -1;
+		compute_minmax = true;
 	}
 	else {
 		/* Before giving up, check if band is a 1-bit type */
 		const char *pszNBits = GDALGetMetadataItem(hBand, "NBITS", "IMAGE_STRUCTURE");
 		if (pszNBits && !strcmp(pszNBits, "1")) {
+			/* Create a two-color index table for black and white only */
 			Ctrl->nIndexedColors = 2;
 			Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int);
-			Ctrl->ColorMap[0] = Ctrl->ColorMap[1] = Ctrl->ColorMap[2] = 0;		Ctrl->ColorMap[3] = 1;
-			Ctrl->ColorMap[4] = Ctrl->ColorMap[5] = Ctrl->ColorMap[6] = 255;	Ctrl->ColorMap[7] = 1;
+			for (j = 0; j < 3; j++) {	/* For R, G, B */
+				gmt_M_set_rgba (Ctrl->ColorMap, 0, j, Ctrl->nIndexedColors, 0);
+				gmt_M_set_rgba (Ctrl->ColorMap, 1, j, Ctrl->nIndexedColors, 255);
+			}
+			/* Then set A */
+			gmt_M_set_rgba (Ctrl->ColorMap, 0, 3, Ctrl->nIndexedColors, 255);	/* JL, THIS SHOULD BE 255, NO??? IT WAS 1*/
+			gmt_M_set_rgba (Ctrl->ColorMap, 1, 3, Ctrl->nIndexedColors, 255);
+			/* Mark the end of the colormap */
+			Ctrl->ColorMap[Ctrl->nIndexedColors*4] = -1;
+			compute_minmax = true;
 		}
-		else {
+		else {	/* Apparently no ColorMap, set it */
 			Ctrl->ColorMap = NULL;
 			Ctrl->nIndexedColors  = 0;
 		}
@@ -621,7 +632,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	if (hTransform != NULL)
 		OCTDestroyCoordinateTransformation(hTransform);
 
-	/* Must check that geog grids have not y_max > 90.0 We'll be eps tollerant ... but how do I know that it's geog?*/
+	/* Must check that geog grids have not y_max > 90.0 We'll be eps tolerant ... but how do I know that it's geog?*/
 
 	/* --------------------------------------------------------------------------------------
 	 * Record Geographical corners (if they exist)
@@ -642,8 +653,11 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* ------------------------------------------------------------------------- */
 	/* Fill in the rest of the GMT header values (If ...) */
 	if (raster_count > 0) {
-		if (z_min == 1e50) {		/* We don't know yet the dataset Min/Max */
-			GDALComputeRasterMinMax(hBand, true, adfMinMax);		/* Trust on metadata min/max */
+		int type = GDALGetRasterDataType (hBand);
+		if (type == GDT_Float32 || type == GDT_Float64) compute_minmax = true;
+		hBand = GDALGetRasterBand(hDataset, 1);	/* Ensure hBand points to the first layer */
+		if (z_min == DBL_MAX && (compute_minmax || type != GDT_Byte)) {	/* We don't know yet the dataset Min/Max and it seems to be a grid */
+			GDALComputeRasterMinMax(hBand, compute_minmax, adfMinMax);	/* Unfortunately, cannot always trust metadata min/max */
 			Ctrl->hdr[4] = adfMinMax[0];
 			Ctrl->hdr[5] = adfMinMax[1];
 		}
@@ -710,24 +724,33 @@ int gmtlib_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s reads with GDAL driver %s\n",
 	            HH->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
 	GDALClose (hDataset);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	header->type = GMT_GRID_IS_GD;
 
 	return GMT_NOERROR;
 }
 
 int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD_IN_CTRL *prhs, struct GMT_GDALREAD_OUT_CTRL *Ctrl) {
+	/* PW 9/24/2021: I have updated the algorithm to be able to handle periodic geographic images (e.g., @earth_day) where
+	 * it is possible the users -Rw/e/s/n will straddle the periodic boundary (180).  In that case we must read the east
+	 * and west image chunks separately and place then in the same output buffer with careful attention to offsets.
+	 * For this reason, variables like xOrigin, nXSize, nX, nBufXSize, pad_w, and pad_e are now arrays of length 2 so that
+	 * for the straddling cases each chunk will have its own correct dimensions and pad settings.  Most of the time n_pieces
+	 * will be 1 and we only use the first entry in those arrays, but for straddling cases we will need both */
 	const char	*format = NULL;
 	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated below) */
 	int	complex_mode = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
 	int	nPixelSize, nBands, i, nReqBands = 0;
-	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
-	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY;
-	int nBufXSize, nBufYSize, buffy, startRow = 0, endRow;
+	int	anSrcWin[4], xOrigin[2] = {0,0}, yOrigin = 0;
+	int	jump = 0, nXSize[2] = {0,0}, nYSize = 0, nX[2] = {0,0}, nY;
+	int nBufXSize[2] = {0,0}, nBufYSize, buffy, startRow = 0, endRow;
 	int nRowsPerBlock, nBlocks, nYOff, row_i, row_e;
-	int k, pad = 0, pad_w = 0, pad_e = 0, pad_s = 0, pad_n = 0;    /* Different pads for when sub-regioning near the edges */
+	int k, pad_w[2] = {0,0}, pad_e[2] = {0,0}, pad_s = 0, pad_n = 0;    /* Different pads for when sub-regioning near the edges */
 	int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	int error = 0, gdal_code = 0, first_layer;
+	int piece, n_pieces = 1;	/* Normally 1, but will be 2 if the desired image subset is split across a periodic boundary */
+	int XDim, YDim;	/* Dimension of image */
+	int status;
 	bool   do_BIP;		/* For images if BIP == true data is stored Pixel interleaved, otherwise Band interleaved */
 	bool   metadata_only;
 	bool   pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
@@ -736,12 +759,13 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	bool   just_copy = false, copy_flipud = false;
 	int	   *whichBands = NULL;
 	int64_t *rowVec = NULL, *colVec = NULL;
-	int64_t  off, i_x_nXYSize, startColPos = 0, nXSize_withPad = 0, nYSize_withPad;
-	int64_t  n_alloc, n, m, nn, mm, ij;
+	int64_t  off, i_x_nXYSize, startColPos = 0, indent = 0, col_indent = 0, nXSize_withPad = 0, nYSize_withPad;
+	int64_t  n_alloc, n, m, nn, mm, ij, layer_size, layer_offset = 0;
 	unsigned char *tmp = NULL;
 	double  adfMinMax[2];
+	double	adfGeoTransform[6];
 	double  dfULX = 0.0, dfULY = 0.0, dfLRX = 0.0, dfLRY = 0.0;
-	double  z_min = 1e50, z_max = -1e50;
+	double  z_min = DBL_MAX, z_max = -DBL_MAX;
 	GDALDatasetH	hDataset;
 	GDALRasterBandH	hBand;
 	GDALDriverH	hDriver;
@@ -766,7 +790,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	first_layer = (nReqBands) ? whichBands[0] : 1;		/* The one used to get data type and header info */
 
 	if (nReqBands && GMT->current.setting.verbose >= GMT_MSG_INFORMATION) {
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Read band(s):");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_gdalread: Read band(s):");
 		for (k = 0; k < nReqBands; k++)
 			GMT_Message (GMT->parent, GMT_TIME_NONE, "\t%d", whichBands[k]);
 		GMT_Message (GMT->parent, GMT_TIME_NONE, "\n");
@@ -796,10 +820,14 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		prhs->O.mem_layout[3] = 'a';		/* If later we find image has 4 layers, this will become 'A' */
 	}
 
-	if (prhs->p.active) pad = prhs->p.pad;
-	pad_w = pad_e = pad_s = pad_n = pad;
+	if (prhs->p.active) {	/* Initialize the pad for piece 0 only (other set as needed later) */
+		pad_w[0] = prhs->p.pad[XLO];
+		pad_e[0] = prhs->p.pad[XHI];
+		pad_s    = prhs->p.pad[YLO];
+		pad_n    = prhs->p.pad[YHI];
+	}
 
-	if (prhs->R.active) {
+	if (prhs->R.active) {	/* Decode -Rw/e/s/n string */
 		double wesn[4];
 		got_R = true;
 		error += (GMT_Get_Values (GMT->parent, prhs->R.region, wesn, 4) < 4);
@@ -814,16 +842,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			dfLRX = wesn[XHI] + dx;
 			dfLRY = wesn[YLO] - dy;
 			dfULY = wesn[YHI] + dy;
-			if (pad) {
-				pad_w = (int)((GMT->common.R.wesn[XLO] - wesn[XLO]) / prhs->registration.x_inc + 0.5);
-				pad_e = (int)((wesn[XHI] - GMT->common.R.wesn[XHI]) / prhs->registration.x_inc + 0.5);
-				pad_s = (int)((GMT->common.R.wesn[YLO] - wesn[YLO]) / prhs->registration.y_inc + 0.5);
-				pad_n = (int)((wesn[YHI] - GMT->common.R.wesn[YHI]) / prhs->registration.y_inc + 0.5);
-			}
 		}
 	}
-
-	if (prhs->r.active) { 		/* Region is given in pixels */
+	else if (prhs->r.active) { 		/* Region is given in pixels instead */
 		double wesn[4];
 		got_r = true;
 		error += (GMT_Get_Values (GMT->parent, prhs->R.region, wesn, 4) < 4);
@@ -834,15 +855,15 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	}
 
 	if (error) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread failed to extract a Sub-region\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Failed to decode the specified Sub-region\n");
 		gmt_M_free (GMT, whichBands);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	if (prhs->P.active)
 		jump = atoi(prhs->P.jump);
 
-	if (prhs->Z.active) {
+	if (prhs->Z.active) {	/* Get either the real or imaginary pixels only */
 		complex_mode = prhs->Z.complex_mode;
 		if (complex_mode) incStep = 2;
 	}
@@ -863,7 +884,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		}
 		else {
 			Ctrl->ProjRefWKT = NULL;
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_gdalread failed to convert the proj4 string\n%s\nto WKT\nThis happens for example when no conversion between PROJ4 and the WKT is done by GDAL.",
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_gdalread: Failed to convert the proj4 string\n%s\nto WKT\nThis happens for example when no conversion between PROJ4 and the WKT is done by GDAL.",
 					Ctrl->ProjRefPROJ4);
 		}
 
@@ -881,9 +902,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		if ((hDriver = GDALGetDriverByName("JP2OpenJPEG")) != NULL && (hDriver = GDALGetDriverByName("JP2ECW")) != NULL)
 			GDALDeregisterDriver(hDriver);		/* Deregister the JP2ECW driver. That is, prefer the OpenJPEG one */
 
-	if (metadata_only) {
-		if (populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer))
-			return(-1);
+	if (metadata_only) {	/* Just get the header info and return with it */
+		if (populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize[0], nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer))
+			return(GMT_NOTSET);
 
 		/* Return registration based on data type of first band. Byte is pixel reg otherwise set grid registration */
 		if (!Ctrl->hdr[6]) {		/* Grid registration */
@@ -894,12 +915,14 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		return (GMT_NOERROR);
 	}
 
+	/* Read the image */
+
 	hDataset = gdal_open (GMT, gdal_filename);
 
 	if (hDataset == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: gdal_open failed %s\n", CPLGetLastErrorMsg());
 		gmt_M_free (GMT, whichBands);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	/* Some formats (typically DEMs) have their origin at Bottom Left corner.
@@ -911,6 +934,17 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	if (!strcmp(format,"ESAT"))	/* ENVISAT data are flipped left-right */
 		fliplr = true;
 
+	/* Get the image size */
+	XDim = GDALGetRasterXSize(hDataset);
+	YDim = GDALGetRasterYSize(hDataset);
+
+	/* See if there are geographic coordinates in the metadata */
+	status = GDALGetGeoTransform(hDataset, adfGeoTransform);
+	if (status == CE_Failure && got_R) {
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_gdalread: Image %s does not have geographic coordinates so -R is ignored for subregion\n", gdal_filename);
+		got_R = false;
+	}
+
 	if (got_R || got_r) {
 		/* -------------------------------------------------------------------- */
 		/*      Compute the source window from the projected source window      */
@@ -919,54 +953,74 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		/*      while the anSrcWin is xoff, yoff, xsize, ysize with the         */
 		/*      xoff,yoff being the ulx, uly in pixel/line.                     */
 		/* -------------------------------------------------------------------- */
-		double	adfGeoTransform[6];
 
-		GDALGetGeoTransform(hDataset, adfGeoTransform);
+		//GDALGetGeoTransform(hDataset, adfGeoTransform);
 
 		if (adfGeoTransform[2] != 0.0 || adfGeoTransform[4] != 0.0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR,
-			            "The -projwin option was used, but the geotransform is rotated. This configuration is not supported.\n");
+			            "gmt_gdalread: The -projwin option was used, but the geotransform is rotated. This configuration is not supported.\n");
 			GDALClose(hDataset);
-			GDALDestroyDriverManager();
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			gmt_M_free (GMT, whichBands);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 
 		if (got_R) {	/* Region in map coordinates */
-			anSrcWin[0] = (int)((dfULX - adfGeoTransform[0]) / adfGeoTransform[1] + 0.001);
-			anSrcWin[1] = (int)((dfULY - adfGeoTransform[3]) / adfGeoTransform[5] + 0.001);
-			anSrcWin[2] = (int)((dfLRX - dfULX) / adfGeoTransform[1] + 0.5);
-			anSrcWin[3] = (int)((dfLRY - dfULY) / adfGeoTransform[5] + 0.5);
+			anSrcWin[0] = irint (((dfULX - adfGeoTransform[0]) / adfGeoTransform[1]));
+			anSrcWin[1] = irint (((dfULY - adfGeoTransform[3]) / adfGeoTransform[5]));
+			anSrcWin[2] = irint (((dfLRX - dfULX) / adfGeoTransform[1]));
+			anSrcWin[3] = irint (((dfLRY - dfULY) / adfGeoTransform[5]));
 			if (GDAL_VERSION_NUM < 1700 && !strcmp(format,"netCDF")) {
 				/* PATCH against the old GDAL bugs of reading netCDF files */
 				anSrcWin[1] = GDALGetRasterYSize(hDataset) - (anSrcWin[1] + anSrcWin[3]) - 1;
 			}
 		}
 		else {		/* Region in pixel/line */
-			anSrcWin[0] = (int) (dfULX);
-			anSrcWin[1] = (int) (dfLRY);
-			anSrcWin[2] = (int) (dfLRX - dfULX);
-			anSrcWin[3] = (int) (dfULY - dfLRY);
+			anSrcWin[0] = irint (dfULX);
+			anSrcWin[1] = irint (dfLRY);
+			anSrcWin[2] = irint (dfLRX - dfULX);
+			anSrcWin[3] = irint (dfULY - dfLRY);
 		}
 
-		if (anSrcWin[0] < 0 || anSrcWin[1] < 0
-			|| anSrcWin[0] + anSrcWin[2] > GDALGetRasterXSize(hDataset)
-			|| anSrcWin[1] + anSrcWin[3] > GDALGetRasterYSize(hDataset)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Computed -srcwin falls outside raster size of %dx%d.\n",
-			            GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
-			GDALDestroyDriverManager();
+		/* First check if we are outside valid y-range since that check is always Cartesian */
+		if (anSrcWin[1] < 0 || (anSrcWin[1] + anSrcWin[3]) > YDim) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Computed -srcwin falls outside raster size of %dx%d in the y-direction.\n",
+				XDim, YDim);
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			gmt_M_free (GMT, whichBands);
-			return (-1);
+			return (GMT_NOTSET);
 		}
-		xOrigin = anSrcWin[0];
-		yOrigin = anSrcWin[1];
-		nXSize = anSrcWin[2];
-		nYSize = anSrcWin[3];
+		yOrigin = anSrcWin[1];	/* These can now be set */
+		nYSize  = anSrcWin[3];
+
+		xOrigin[0] = anSrcWin[0];	/* This will be correct for the first (and perhaps only) of the 1-2 areas unless truly outside */
+		nXSize[0]  = anSrcWin[2];	/* If periodic then xOrigin+nXSize may exceed XDim and we will rotate it */
+		if (prhs->R.periodic) {	/* Watch for straddling */
+			if (xOrigin[0] < 0)	/* Ensure we straddle the east boundary for the first of two pieces */
+				xOrigin[0] += XDim;
+			if ((xOrigin[0] + nXSize[0]) > XDim) {	/* Must read the two areas straddling the periodic boundary separately */
+				n_pieces = 2;	/* Number of sub-areas */
+				xOrigin[1] = 0;	/* The second starts all the way to the west */
+				nXSize[1] = xOrigin[0] + nXSize[0] - XDim;	/* What goes beyond XDim is the width of the west piece */
+				nXSize[0] = XDim - xOrigin[0];	/* Truncate the east piece width accordingly */
+				if (nXSize[1] > XDim) nXSize[1] = XDim - nXSize[0];	/* Safety valve since file only has XDim values along a row */
+				pad_w[1] = 0;	pad_e[1] = pad_e[0];	pad_e[0] = 0;	/* Set the "seam" pads to zero since no longer at the edges */
+			}
+		}
+		else {	/* Same (Cartesian) test as for y-extent */
+			if (xOrigin[0] < 0 || (xOrigin[0] + anSrcWin[2]) > XDim) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Computed -srcwin falls outside raster size of %dx%d in the x-direction.\n",
+					XDim, YDim);
+				gmtlib_GDALDestroyDriverManager(GMT->parent);
+				gmt_M_free (GMT, whichBands);
+				return (GMT_NOTSET);
+			}
+		}
 	}
-	else {			/* Use entire dataset */
-		xOrigin = yOrigin = 0;
-		nXSize = GDALGetRasterXSize(hDataset);
-		nYSize = GDALGetRasterYSize(hDataset);
+	else {			/* Use entire dataset so only need a single chunk */
+		xOrigin[0] = yOrigin = 0;
+		nXSize[0] = XDim;
+		nYSize = YDim;
 	}
 
 	/* The following assumes that all bands have the same PixelSize, data type. Otherwise ... */
@@ -974,11 +1028,13 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	nPixelSize = GDALGetDataTypeSize(GDALGetRasterDataType(hBand)) / 8;	/* /8 because return value is in BITS */
 
 	if (jump) {
-		nBufXSize = GDALGetRasterXSize(hDataset) / jump;
-		nBufYSize = GDALGetRasterYSize(hDataset) / jump;
+		nBufXSize[0] = XDim / jump;
+		nBufYSize = YDim / jump;
 	}
 	else {
-		nBufXSize = nXSize;	nBufYSize = nYSize;
+		nBufXSize[0] = nXSize[0];
+		nBufXSize[1] = nXSize[1];
+		nBufYSize = nYSize;
 	}
 
 	nBands = GDALGetRasterCount(hDataset);
@@ -987,7 +1043,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	if (nReqBands) nBands = MIN(nBands,nReqBands);	/* If a band selection was made */
 
-	n_alloc = ((size_t)nBands) * ((size_t)nBufXSize + pad_w + pad_e) * ((size_t)nBufYSize + pad_s + pad_n);
+	/* Determine allocation size for the subset (actual allocation depends on whether a pointer is passed in or not) */
+	layer_size = ((size_t)(nBufXSize[0] + nBufXSize[1] + MAX(pad_w[0],pad_w[1])) + MAX(pad_e[0],pad_e[1])) * ((size_t)nBufYSize + pad_s + pad_n);
+	n_alloc = ((size_t)nBands) * layer_size;
+
 	switch (GDALGetRasterDataType(hBand)) {
 		case GDT_Byte:
 			if (prhs->c_ptr.active)	/* We have a pointer with already allocated memory ready to use */
@@ -1056,298 +1115,307 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			break;
 	}
 
-	/* 16 Mb worth of rows */
-	nRowsPerBlock = MIN(nYSize, (int)(1024 * 1024 * 16 / (nXSize * nPixelSize)));
-	nBlocks = (int)ceil((float)nYSize / nRowsPerBlock);
-
-	if (!(just_copy || copy_flipud)) {
-		if ((tmp = calloc((size_t)nRowsPerBlock * (size_t)nBufXSize, nPixelSize)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdalread: failure to allocate enough memory\n");
-			GDALDestroyDriverManager();
-			gmt_M_free (GMT, whichBands);
-			return(-1);
-		}
-	}
-	else {
-		nRowsPerBlock = nYSize;
-		nBlocks = 1;
-	}
-
 	/* ------ compute two vectors indices that will be used inside loops below --------- */
 	/* In the "Preview" mode those guys below are different and what we need is the BufSize */
 	if (jump)
-		nX = nBufXSize,	nY = nBufYSize;
+		nX[0] = nBufXSize[0],	nX[1] = nBufXSize[1],	nY = nBufYSize;
 	else
-		nX = nXSize,	nY = nYSize;
+		nX[0] = nXSize[0],	nX[1] = nXSize[1],	nY = nYSize;
 
-	/* Can't find why but have to multiply by nRGBA otherwise it crashes in win32 builds */
-	rowVec = gmt_M_memory(GMT, NULL, (nRowsPerBlock * nRGBA) * nBlocks, size_t);
-	for (m = 0; m < nY; m++) rowVec[m] = m * nX;
-	colVec = gmt_M_memory(GMT, NULL, (nX+pad_w+pad_e) * nRGBA, size_t);	/* For now this will be used only to select BIP ordering */
 	/* --------------------------------------------------------------------------------- */
+	nXSize_withPad = nXSize[0] + nXSize[1] + pad_w[0] + pad_e[0] + pad_w[1] + pad_e[1];	/* Only one of w and e will be nonzero if padding is on */
 
 	gmt_M_tic (GMT);
 
-	for (i = 0; i < nBands; i++) {
-		if (!nReqBands)		/* No band selection, read them sequentially */
-			hBand = GDALGetRasterBand(hDataset, i+1);
-		else			/* Band selection. Read only the requested ones */
-			hBand = GDALGetRasterBand(hDataset, (int)whichBands[i]);
+	for (piece = 0; piece < n_pieces; piece++) {	/* Mostly doing this loop once, but for subregion straddling periodic boundary we get here twice */
+		/* 16 Mb worth of rows */
+		nRowsPerBlock = MIN(nYSize, (int)(1024 * 1024 * 16 / (nXSize[piece] * nPixelSize)));
+		nBlocks = (int)ceil((float)nYSize / nRowsPerBlock);
 
-		/* Decide if grid or pixel registration based on the data type of first band actually sent back to the GMT machinery */
-		if (i == 0) {
-			pixel_reg = (GDALGetRasterDataType(hBand) == GDT_Byte);
-
-			/* This test should give us info if a GeoTiff GRID (not image) file is grid registered but I lack one
-			   example file to test it. The example mentioned in issue http://gmtrac.soest.hawaii.edu/issues/254
-			   (where all this (re)started) not only is bugged as it does not carry the AREA_OR_POINT metadata.
-			   So we'll check for the "Area" keyword and if found we will respect it and set grid to pix reg
-			*/
-			if (gmtlib_file_is_jpeg2000_tile (GMT->parent, gdal_filename) != GMT_NOTSET && (Ctrl->RasterXsize % 2) == 0 && (Ctrl->RasterYsize % 2) == 0)
-				/* PW: Reading GMT server special JP2 tiles: even size implies pixel registration */
-				pixel_reg = true;
-			else if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) &&
-				!strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Area"))
-				pixel_reg = true;
-			else if (!pixel_reg && GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL) &&
-				!strcmp(GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL), "Area"))
-				pixel_reg = true;
+		if (!(just_copy || copy_flipud)) {	/* Need temp memory to hold return from GDAL */
+			if ((tmp = calloc((size_t)nRowsPerBlock * (size_t)nBufXSize[piece], nPixelSize)) == NULL) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdalread: failure to allocate enough memory\n");
+				gmtlib_GDALDestroyDriverManager(GMT->parent);
+				gmt_M_free (GMT, whichBands);
+				return(GMT_NOTSET);
+			}
+		}
+		else {
+			nRowsPerBlock = nYSize;
+			nBlocks = 1;
 		}
 
-		i_x_nXYSize = i * ((size_t)nBufXSize + pad_w + pad_e) * ((size_t)nBufYSize + pad_s + pad_n);
+		/* Can't find why but have to multiply by nRGBA otherwise it crashes in win32 builds */
+		rowVec = gmt_M_memory(GMT, NULL, (nRowsPerBlock * nRGBA) * nBlocks, size_t);
+		for (m = 0; m < nY; m++) rowVec[m] = m * nX[piece];	/* Steps in pixels as we go down rows */
+		colVec = gmt_M_memory(GMT, NULL, (nX[piece]+pad_w[piece]+pad_e[piece]) * nRGBA, size_t);	/* For now this will be used only to select BIP ordering */
+		for (i = 0; i < nBands; i++) {
+			if (!nReqBands)		/* No band selection, read them sequentially */
+				hBand = GDALGetRasterBand(hDataset, i+1);
+			else			/* Band selection. Read only the requested ones */
+				hBand = GDALGetRasterBand(hDataset, (int)whichBands[i]);
 
-		for (k = 0; k < nBlocks; k++) {
-			nYOff = yOrigin + k * nRowsPerBlock;	/* Move data Y origin to the beginning of next block to be read */
-			row_i = k * nRowsPerBlock;
-			row_e = (k + 1) * nRowsPerBlock;
-			buffy = nRowsPerBlock;
-			for (m = 0; m < nRowsPerBlock; m++) rowVec[m+k*nRowsPerBlock] = m * nX;
-			if (k == nBlocks-1) {					/* Last block only by chance is not smaller than the others */
-				buffy = nBufYSize - k * nRowsPerBlock;
-				row_e = nYSize;
-				nYOff = yOrigin + k * nRowsPerBlock;
-			}
-			startRow = row_i;
-			endRow   = row_e;
+			/* Decide if grid or pixel registration based on the data type of first band actually sent back to the GMT machinery */
+			if (i == 0 && piece == 0) {	/* Do this check just once */
+				pixel_reg = (GDALGetRasterDataType(hBand) == GDT_Byte);
 
-			if (just_copy || copy_flipud)					/* In this case nBlocks was set to 1 above */
-				tmp = &Ctrl->UInt8.data[i_x_nXYSize];		/* These cases don't need any temporary array */
-
-			if ((gdal_code = GDALRasterIO(hBand, GF_Read, xOrigin, nYOff, nXSize, buffy, tmp,
-		                 nBufXSize, buffy, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "GDALRasterIO failed to open band %d [err = %d]\n", i, gdal_code);
-				continue;
-			}
-
-			/* If we didn't computed it yet, its time to do it now */
-			if (got_R) ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize, nYSize, z_min, z_max);
-
-			/* In the "Preview" mode those guys below are different and what we need is the BufSize */
-			if (jump) {
-				nXSize = nBufXSize;		nYSize = nBufYSize;
+				/* This test should give us info if a GeoTiff GRID (not image) file is grid registered but I lack one
+				   example file to test it. The example mentioned in issue http://gmtrac.soest.hawaii.edu/issues/254
+				   (where all this (re)started) not only is bugged as it does not carry the AREA_OR_POINT metadata.
+				   So we'll check for the "Area" keyword and if found we will respect it and set grid to pix reg
+				*/
+				if (gmtlib_file_is_jpeg2000_tile (GMT->parent, gdal_filename) != GMT_NOTSET && (Ctrl->RasterXsize % 2) == 0 && (Ctrl->RasterYsize % 2) == 0)
+					/* PW: Reading GMT server special JP2 tiles: even size implies pixel registration */
+					pixel_reg = true;
+				else if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) &&
+					!strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Area"))
+					pixel_reg = true;
+				else if (!pixel_reg && GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL) &&
+					!strcmp(GDALGetMetadataItem(hDataset, "GDALMD_AREA_OR_POINT", NULL), "Area"))
+					pixel_reg = true;
 			}
 
-			startColPos = pad_w + i_x_nXYSize + (complex_mode > 1);	/* Take into account nBands, Padding and Complex */
-			nXSize_withPad = nXSize + pad_w + pad_e;
-			nYSize_withPad = nYSize + pad_n + pad_s;
+			i_x_nXYSize = i * ((size_t)nBufXSize[piece] + pad_w[piece] + pad_e[piece]) * ((size_t)nBufYSize + pad_s + pad_n);
 
-			if (prhs->mini_hdr.active) {		/* Read into a padded zone that can be larger then grid dims (grdpaste) */
-				if (prhs->mini_hdr.side[0] == 'l' || prhs->mini_hdr.side[0] == 'r') {
-					nXSize_withPad = prhs->mini_hdr.mx;
-					if (prhs->mini_hdr.side[0] == 'r')
-						startColPos += prhs->mini_hdr.offset;
+			for (k = 0; k < nBlocks; k++) {
+				nYOff = yOrigin + k * nRowsPerBlock;	/* Move data Y origin to the beginning of next block to be read */
+				row_i = k * nRowsPerBlock;
+				row_e = (k + 1) * nRowsPerBlock;
+				buffy = nRowsPerBlock;
+				for (m = 0; m < nRowsPerBlock; m++) rowVec[m+k*nRowsPerBlock] = m * nX[piece];
+				if (k == nBlocks-1) {					/* Last block only by chance is not smaller than the others */
+					buffy = nBufYSize - k * nRowsPerBlock;
+					row_e = nYSize;
+					nYOff = yOrigin + k * nRowsPerBlock;
 				}
-				else if (prhs->mini_hdr.side[0] == 'b') {
-					startRow = prhs->mini_hdr.offset + k * nRowsPerBlock;
-					endRow = startRow + nRowsPerBlock;
-					if (k == nBlocks-1)
-						endRow = prhs->mini_hdr.offset + nYSize;
-				}
-			}
+				startRow = row_i;
+				endRow   = row_e;
 
-			switch (GDALGetRasterDataType(hBand)) {
-				case GDT_Byte:
-					/* This chunk is kind of complicated because we want to take into account several different cases */
-					for (n = 0; n < nXSize; n++) {
-						if (do_BIP)			/* Vector for Pixel Interleaving */
-							colVec[n] = n * nRGBA + i;
-						else {				/* Vector for Band Sequential */
-							if (topdown)
-								colVec[n] = n * nY + i_x_nXYSize;
-							else
-								colVec[n] = n + i_x_nXYSize;
-						}
+				if (just_copy || copy_flipud)					/* In this case nBlocks was set to 1 above */
+					tmp = &Ctrl->UInt8.data[i_x_nXYSize];		/* These cases don't need any temporary array */
+
+				if ((gdal_code = GDALRasterIO(hBand, GF_Read, xOrigin[piece], nYOff, nXSize[piece], buffy, tmp,
+			                 nBufXSize[piece], buffy, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_gdalread: GDALRasterIO failed to open band %d [err = %d]\n", i, gdal_code);
+					continue;
+				}
+
+				/* If we didn't compute it yet, its time to do it now (for this block) */
+				if (got_R) {	/* Update z_min, z_max in case we get here more than once (multiple blocks or two pieces) */
+					ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize[piece], buffy, z_min, z_max);
+					z_min = adfMinMax[0];	z_max = adfMinMax[1];
+				}
+
+				/* In the "Preview" mode those guys below are different and what we need is the BufSize */
+				if (jump) {
+					nXSize[piece] = nBufXSize[piece];		nYSize = nBufYSize;
+				}
+
+				startColPos = indent + pad_w[piece] + i_x_nXYSize + (complex_mode > 1);	/* Take into account indent (for second piece), nBands, Padding and Complex */
+				nYSize_withPad = nYSize + pad_n + pad_s;
+
+				if (prhs->mini_hdr.active) {		/* Read into a padded zone that can be larger then grid dims (grdpaste) */
+					if (prhs->mini_hdr.side[0] == 'l' || prhs->mini_hdr.side[0] == 'r') {
+						nXSize_withPad = prhs->mini_hdr.mx;
+						if (prhs->mini_hdr.side[0] == 'r')
+							startColPos += prhs->mini_hdr.offset;
 					}
+					else if (prhs->mini_hdr.side[0] == 'b') {
+						startRow = prhs->mini_hdr.offset + k * nRowsPerBlock;
+						endRow = startRow + nRowsPerBlock;
+						if (k == nBlocks-1)
+							endRow = prhs->mini_hdr.offset + nYSize;
+					}
+				}
 
-					Ctrl->UInt8.active = true;
-					if (do_BIP || !GMT->current.gdal_read_in.O.mem_layout[0]) {
-						/* Currently all calls to send image to GMT (BIP case) must come through here */
-						if (rowmajor) {
-							for (m = row_i; m < row_e; m++) {
-								off = nRGBA * pad_w + (pad_w+m) * (nRGBA * (nXSize_withPad)); /* Remember, nRGBA is variable */
-								for (n = 0; n < nXSize; n++)
-									Ctrl->UInt8.data[colVec[n] + off] = tmp[rowVec[m]+n];
+				switch (GDALGetRasterDataType(hBand)) {
+					case GDT_Byte:
+						/* This chunk is kind of complicated because we want to take into account several different cases */
+						for (n = 0; n < nXSize[piece]; n++) {
+							if (do_BIP)			/* Vector for Pixel Interleaving */
+								colVec[n] = n * nRGBA + i;
+							else {				/* Vector for Band Sequential */
+								if (topdown)
+									colVec[n] = n * nY + i_x_nXYSize;
+								else
+									colVec[n] = n + i_x_nXYSize;
+							}
+						}
+
+						Ctrl->UInt8.active = true;
+						if (do_BIP || !GMT->current.gdal_read_in.O.mem_layout[0]) {
+							/* Currently all calls to send image to GMT (BIP case) must come through here */
+							if (rowmajor) {
+								for (m = row_i; m < row_e; m++) {
+									off = nRGBA * (indent+pad_w[piece]) + (pad_n+m) * (nRGBA * nXSize_withPad); /* Remember, nRGBA is variable */
+									for (n = 0; n < nXSize[piece]; n++) {
+										Ctrl->UInt8.data[colVec[n] + off] = tmp[rowVec[m]+n];
+										//fprintf (stderr, "row = %d col = %d data(%d,%d,%d) = data(%d) = %d  off = %d\n", (int)m, (int)(xOrigin[piece]+n), (int)m, (int)(col_indent+colVec[n]), (int)i, (int)(colVec[n] + off), Ctrl->UInt8.data[colVec[n] + off], (int)off);
+									}
+								}
+							}
+							else {
+								for (n = 0; n < nXSize[piece]; n++) {
+									off = nRGBA * pad_n + (pad_n+n) * (nRGBA * nYSize_withPad) + i;
+									for (m = row_i; m < row_e; m++)
+										Ctrl->UInt8.data[m * nRGBA + off] = tmp[rowVec[m] + n];
+								}
 							}
 						}
 						else {
-							for (n = 0; n < nXSize; n++) {
-								off = nRGBA * pad_n + (pad_n+n) * (nRGBA * nYSize_withPad) + i;
-								for (m = row_i; m < row_e; m++)
-									Ctrl->UInt8.data[m * nRGBA + off] = tmp[rowVec[m] + n];
+							if (just_copy) {	/* Here we send out the array as is, but the usage of a tmp array was a waste. Needs fix */
+								memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, (size_t)nBufYSize * (size_t)nBufXSize[piece]);
 							}
-						}
-					}
-					else {
-						if (just_copy) {	/* Here we send out the array as is, but the usage of a tmp array was a waste. Needs fix */
-							memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, (size_t)nBufYSize * (size_t)nBufXSize);
-						}
-						else if (copy_flipud) {
-							/* We could copy and flip but the idea here is also to not use a tmp array too */
-							memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, (size_t)nBufYSize * (size_t)nBufXSize);
-							gmt_grd_flip_vertical (&Ctrl->UInt8.data[i_x_nXYSize], (unsigned)nX, (unsigned)nY, 0, 1);
-						}
-						else if (fliplr) {				/* No BIP option yet, and maybe never */
-							for (m = row_i; m < row_e; m++) {
-								nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-								for (n = nXSize-1; n >= 0; n--)
-									Ctrl->UInt8.data[nn++] = tmp[rowVec[m]+n];
+							else if (copy_flipud) {
+								/* We could copy and flip but the idea here is also to not use a tmp array too */
+								memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, (size_t)nBufYSize * (size_t)nBufXSize[piece]);
+								gmt_grd_flip_vertical (&Ctrl->UInt8.data[i_x_nXYSize], (unsigned)nX[piece], (unsigned)nY, 0, 1);
 							}
-						}
-						else if (topdown) {			/* No BIP option yet, and maybe never */
-							for (m = row_i; m < row_e; m++) {
-								for (n = 0; n < nXSize; n++) {
-									ij = colVec[n] + m;
-									Ctrl->UInt8.data[ij] = tmp[rowVec[m]+n];
+							else if (fliplr) {				/* No BIP option yet, and maybe never */
+								for (m = row_i; m < row_e; m++) {
+									nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+									for (n = nXSize[piece]-1; n >= 0; n--)
+										Ctrl->UInt8.data[nn++] = tmp[rowVec[m]+n];
+								}
+							}
+							else if (topdown) {			/* No BIP option yet, and maybe never */
+								for (m = row_i; m < row_e; m++) {
+									for (n = 0; n < nXSize[piece]; n++) {
+										ij = colVec[n] + m;
+										Ctrl->UInt8.data[ij] = tmp[rowVec[m]+n];
+									}
 								}
 							}
 						}
-					}
-					break;
-				case GDT_Int16:
-					if (!prhs->f_ptr.active) Ctrl->Int16.active = true;
-					if (gmtlib_file_is_jpeg2000_tile (GMT->parent, gdal_filename) != GMT_NOTSET) {
-						/* PW: Special case of jp2 tile with possible NaNs that are not recognized without the .aux.xml file */
-						float f_NaN = GMT->session.f_NaN;	/* Shorthand */
+						break;
+					case GDT_Int16:
+						if (!prhs->f_ptr.active) Ctrl->Int16.active = true;
+						if (gmtlib_file_is_jpeg2000_tile (GMT->parent, gdal_filename) != GMT_NOTSET) {
+							/* PW: Special case of jp2 tile with possible NaNs that are not recognized without the .aux.xml file */
+							float f_NaN = GMT->session.f_NaN;	/* Shorthand */
+							for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+								nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
+								for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
+									if (prhs->f_ptr.active) {
+										int16_t tmpI16;
+										memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+										Ctrl->Float.data[nn++] = (tmpI16 == -32768) ? f_NaN : tmpI16;
+									}
+									else
+										memcpy(&Ctrl->Int16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+							}
+						}
+						else {	/* All other short int cases */
+							for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+								nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
+								for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
+									if (prhs->f_ptr.active) {
+										int16_t tmpI16;
+										memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+										Ctrl->Float.data[nn++] = tmpI16;
+									}
+									else
+										memcpy(&Ctrl->Int16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+							}
+						}
+						break;
+					case GDT_UInt16:
+						if (!prhs->f_ptr.active) Ctrl->UInt16.active = true;
 						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-							nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-							for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
 								if (prhs->f_ptr.active) {
-									int16_t tmpI16;
-									memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
-									Ctrl->Float.data[nn++] = (tmpI16 == -32768) ? f_NaN : tmpI16;
+									uint16_t tmpUI16;
+									memcpy (&tmpUI16, &tmp[(rowVec[mm] + n) * sizeof(uint16_t)], sizeof(uint16_t));
+									Ctrl->Float.data[nn++] = tmpUI16;
 								}
 								else
-									memcpy(&Ctrl->Int16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+									memcpy (&Ctrl->UInt16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(uint16_t)], sizeof(uint16_t));
 						}
-					}
-					else {	/* All other short int cases */
+						break;
+					case GDT_Int32:
+						if (!prhs->f_ptr.active) Ctrl->Int32.active = true;
 						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-							nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-							for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
 								if (prhs->f_ptr.active) {
-									int16_t tmpI16;
-									memcpy (&tmpI16, &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
-									Ctrl->Float.data[nn++] = tmpI16;
+									int32_t tmpI32;
+									memcpy (&tmpI32, &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
+									Ctrl->Float.data[nn++] = (float)tmpI32;
 								}
 								else
-									memcpy(&Ctrl->Int16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int16_t)], sizeof(int16_t));
+									memcpy (&Ctrl->Int32.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
 						}
-					}
-					break;
-				case GDT_UInt16:
-					if (!prhs->f_ptr.active) Ctrl->UInt16.active = true;
-					for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-						nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-						for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
-							if (prhs->f_ptr.active) {
-								uint16_t tmpUI16;
-								memcpy (&tmpUI16, &tmp[(rowVec[mm] + n) * sizeof(uint16_t)], sizeof(uint16_t));
-								Ctrl->Float.data[nn++] = tmpUI16;
-							}
-							else
-								memcpy (&Ctrl->UInt16.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(uint16_t)], sizeof(uint16_t));
-					}
-					break;
-				case GDT_Int32:
-					if (!prhs->f_ptr.active) Ctrl->Int32.active = true;
-					for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-						nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-						for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
-							if (prhs->f_ptr.active) {
-								int32_t tmpI32;
-								memcpy (&tmpI32, &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
-								Ctrl->Float.data[nn++] = (float)tmpI32;
-							}
-							else
-								memcpy (&Ctrl->Int32.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
-					}
-					break;
-				case GDT_UInt32:
-					if (!prhs->f_ptr.active) Ctrl->UInt32.active = true;
-					for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-						nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-						for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
-							if (prhs->f_ptr.active) {
-								int32_t tmpUI32;
-								memcpy (&tmpUI32, &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
-								Ctrl->Float.data[nn++] = (float)tmpUI32;
-							}
-							else
-								memcpy (&Ctrl->UInt32.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
-					}
-					break;
-				case GDT_Float32:
-					Ctrl->Float.active = true;
-					for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-						nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-						for (n = 0; n < nXSize; n++) {
-							memcpy (&Ctrl->Float.data[nn], &tmp[(rowVec[mm]+n) * sizeof(float)], sizeof(float));
-							nn += incStep;
+						break;
+					case GDT_UInt32:
+						if (!prhs->f_ptr.active) Ctrl->UInt32.active = true;
+						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
+								if (prhs->f_ptr.active) {
+									int32_t tmpUI32;
+									memcpy (&tmpUI32, &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
+									Ctrl->Float.data[nn++] = (float)tmpUI32;
+								}
+								else
+									memcpy (&Ctrl->UInt32.data[nn++], &tmp[(rowVec[mm] + n) * sizeof(int32_t)], sizeof(int32_t));
 						}
-					}
-					break;
-				case GDT_Float64:	/* For now we don't care about doubles */
-					Ctrl->Float.active = true;
-					for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-						nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-						for (n = 0; n < nXSize; n++) {
-							double tmpF64;
-							memcpy (&tmpF64, &tmp[(rowVec[mm]+n) * sizeof(double)], sizeof(double));
-							Ctrl->Float.data[nn] = (float)tmpF64;
-							nn += incStep;
+						break;
+					case GDT_Float32:
+						Ctrl->Float.active = true;
+						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							for (n = 0; n < nXSize[piece]; n++) {
+								memcpy (&Ctrl->Float.data[nn], &tmp[(rowVec[mm]+n) * sizeof(float)], sizeof(float));
+								nn += incStep;
+							}
 						}
-					}
-					break;
-				default:
-					CPLAssert(false);
+						break;
+					case GDT_Float64:	/* For now we don't care about doubles */
+						Ctrl->Float.active = true;
+						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							for (n = 0; n < nXSize[piece]; n++) {
+								double tmpF64;
+								memcpy (&tmpF64, &tmp[(rowVec[mm]+n) * sizeof(double)], sizeof(double));
+								Ctrl->Float.data[nn] = (float)tmpF64;
+								nn += incStep;
+							}
+						}
+						break;
+					default:
+						CPLAssert(false);
+				}
 			}
 		}
-	}
-
+		gmt_M_free (GMT, colVec);
+		gmt_M_free (GMT, rowVec);
+		if (!(just_copy || copy_flipud))
+			gmt_M_str_free (tmp);
+		col_indent = nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
+		indent = pad_w[piece] + nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
+		layer_offset += layer_size;	/* As of now, this is never used after increment for float images */
 #if 0	/* This code is problematic and commented out for now. PW, 5/15/2016 */
-	if (Ctrl->Float.active && !isnan(prhs->N.nan_value)) {
-		for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
-			nn = (pad_w+m)*(nXSize_withPad) + startColPos;
-			for (n = 0; n < nXSize; n++) {
-				if (Ctrl->Float.data[nn] == prhs->N.nan_value) Ctrl->Float.data[nn] = (float)NAN;
-				nn += incStep;
+		if (Ctrl->Float.active && !isnan(prhs->N.nan_value)) {
+			for (m = startRow, mm = 0; m < endRow ; m++, mm++) {
+				nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
+				for (n = 0; n < nXSize[piece]; n++) {
+					if (Ctrl->Float.data[nn] == prhs->N.nan_value) Ctrl->Float.data[nn] = GMT->session.f_NaN;
+					nn += incStep;
+				}
 			}
 		}
-	}
 #endif
-	gmt_M_free (GMT, rowVec);
-	if (!(just_copy || copy_flipud))
-		gmt_M_str_free (tmp);
+	}
 	gmt_M_free (GMT, whichBands);
-	gmt_M_free (GMT, colVec);
 
 	GDALClose(hDataset);
 
-	gmt_M_toc (GMT, "After gdalread data reading");
+	gmt_M_toc (GMT, "gmt_gdalread: After gdalread data reading");
 
-	populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer);
+	populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize[0]+nXSize[1], nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer);
 
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 
 	/* Return registration based on data type of the actually read first band.
 	   We do this at the end because 'populate_metadata' scans all bands in file

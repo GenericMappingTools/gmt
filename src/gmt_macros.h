@@ -43,7 +43,7 @@
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #endif
 #ifndef MOD	/* Knuth-style modulo function (remainder after floored division) */
-#define MOD(x, y) (x - y * floor((double)(x)/(double)(y)))
+#define MOD(x, y) ((x) - (y) * floor((double)(x)/(double)(y)))
 #endif
 
 #ifdef DOUBLE_PRECISION_GRID
@@ -196,6 +196,12 @@
 
 /*! Determine if a RGB combination is in fact B/W */
 #define gmt_M_is_bw(rgb) (gmt_M_is_gray(rgb) && (gmt_M_eq(rgb[0],0.0) || gmt_M_eq(rgb[0],1.0)))
+
+/*! Get a color component from a n*4 column-oriented colormap */
+#define gmt_M_get_rgba(map,index,color,n) map[index + (color)*(n)]
+
+/*! Set a color component in a n*4 column-oriented colormap */
+#define gmt_M_set_rgba(map,index,color,n,value) map[index + (color)*(n)] = (value)
 
 /*! Macros to do conversion to inches with PROJ_LENGTH_UNIT as default */
 

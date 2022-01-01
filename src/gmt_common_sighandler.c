@@ -23,19 +23,33 @@
  * Version: 5
  */
 
-/* CMake definitions: This must be first! */
+#ifndef NO_SIGHANDLER
+
+#include "gmt_dev.h"
+#include "gmt_internals.h"
+
+#ifdef WIN32
+#include <windows.h>
+/* win32: Install Windows SIGINT handling only */
+BOOL sig_handler_win32 (DWORD dwType) {
+    if (dwType == CTRL_C_EVENT)
+		gmtlib_terminate_session ();	/* Delete session dir, call GMT_Destroy_Session, and for CLI call exit */
+	return TRUE;
+}
+/* install WIN32 signal handler like this: 
+ *  SetConsoleCtrlHandler((PHANDLER_ROUTINE)sig_handler_win32,TRUE));
+ */
+#else
+/* unix: Install broader sighandler via backtrace handling of SIGINT, SIGILL, SIGFPE, SIGBUS and SIGSEGV */
 #include "gmt_config.h"
-
-#if !(defined(WIN32) || defined(NO_SIGHANDLER))
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/ucontext.h>
 #include <sys/resource.h>
 #include <sys/time.h>
+#include <signal.h>
 
 #ifdef HAVE_EXECINFO_H_
 #include <execinfo.h>
@@ -50,7 +64,7 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 	once = true;
 	fprintf (stderr, "(stack backtrace unavailable due to missing execinfo.h)\n");
 }
-#endif
+#endif	/* HAVE_EXECINFO_H_ */
 
 /* Macro for retrieving instruction pointer */
 #if defined(__APPLE__)
@@ -71,6 +85,8 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.mc_rip)
 # elif defined( __arm__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
+# elif defined( __aarch64__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.mc_gpregs.gp_elr)
 # elif defined(__ppc__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.mc_srr0)
 # else
@@ -126,6 +142,7 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #	define sys_siglist __sys_siglist
 #endif
 
+#if 0	/* Currently not used so commented out. PW 14.NOV.2021 */
 static void process_cpu() {
 	/* print current process accumulated cpu time */
 	struct rusage ru;
@@ -171,32 +188,26 @@ static void process_info() {
 	process_cpu();
 	process_mem();
 }
+#endif
 
-void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
-	int size;
-	void *array[50];
-	ucontext_t *uc = (ucontext_t *)ucontext;
-
-	array [0] = UC_IP (uc); /* caller's address */
-	array [1] = info->si_addr; /* address of faulting instruction */
-
+void sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext) {
 	if (sig_num == SIGINT) {
-		/* catch ctrl-c */
-		int c;
+		/* Catch Ctrl-c and remove modern session sub-directory (if it exists) before exit */
 		struct sigaction act, oldact;
 		sigemptyset (&act.sa_mask);
 		act.sa_flags = 0;
-		act.sa_handler = SIG_DFL; /* restore default action (do not catch SIGINT again) */
-		sigaction (SIGINT, &act, &oldact); /* change signal handler */
-		fprintf (stderr, "\rInterrupt at ");
-		backtrace_symbols_fd (array, 1, STDERR_FILENO); /* print interrupted function */
-		process_info();
-		fprintf (stderr, "Press return to continue, ctrl-c to quit.");
-		while (( c = getchar()) != '\n' && c != EOF );
-		sigaction (SIGINT, &oldact, NULL); /* restore old action */
-		return;
+		act.sa_handler = SIG_DFL; /* Restore default action (do not catch SIGINT again) */
+		sigaction (SIGINT, &act, &oldact); /* Change signal handler */
+		gmtlib_terminate_session ();	/* Delete session dir and call GMT_Destroy_Session */
 	}
-	else {
+	else {	/* Report backtrace after a crash */
+		int size;
+		void *array[50];
+		ucontext_t *uc = (ucontext_t *)ucontext;
+
+		array [0] = UC_IP (uc); /* caller's address */
+		array [1] = info->si_addr; /* address of faulting instruction */
+
 #ifdef HAVE_STRSIGNAL
 		fprintf (stderr, "ERROR: Caught signal number %d (%s) at\n", sig_num, strsignal(sig_num));
 #else
@@ -206,7 +217,7 @@ void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
 		size = backtrace (array, 50); /* get void*'s for all entries on the stack */
 		fprintf (stderr, "Stack backtrace:\n");
 		backtrace_symbols_fd (array, size, STDERR_FILENO); /* print out all the frames to stderr */
-		exit (EXIT_FAILURE);
+		exit (EXIT_FAILURE);	/* Now exit process */
 	}
 }
 
@@ -216,12 +227,13 @@ void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
  *   struct sigaction act;
  *   sigemptyset (&act.sa_mask);
  *   act.sa_flags = SA_NODEFER;
- *   act.sa_handler = sig_handler;
+ *   act.sa_handler = sig_handler_unix;
  *   sigaction (SIGINT,  &act, NULL);
  *   act.sa_flags = 0;
  *   sigaction (SIGBUS,  &act, NULL);
  *   sigaction (SIGSEGV, &act, NULL);
  * }
  */
+#endif	/* Unix */
 
-#endif /* !(defined(WIN32) || defined(NO_SIGHANDLER)) */
+#endif	/* !NO_SIGHANDLER */

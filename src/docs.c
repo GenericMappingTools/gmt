@@ -41,19 +41,25 @@
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-Q] [-S] [%s] <module-name> [<-option>]\n\n", name, GMT_V_OPT);
+	GMT_Usage (API, 0, "usage: %s [-Q] [-S] [%s] <module-name> [<-option>]\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
-	GMT_Message (API, GMT_TIME_NONE, "\t<module-name> is one of the core or supplemental modules, or one of\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   api, colors, cookbook, data, gallery, gmt, home, settings, and tutorial.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Also acceptable are forum (GMT Discourse Forum) and [web]site (GMT Main Website).\n");
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q will only display the URLs and not open them in a viewer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If given, -Q must be the first argument to %s.\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t-S will open documentation files from the GMT server.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<-option> is the one-letter option of the module in question (e.g, -R).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Display the documentation positioned at that specific option.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<module-name>");
+	GMT_Usage (API, -2, "One of the core or supplemental modules, or one of "
+		"api, colors, cookbook, data, gallery, gmt, home, settings, and tutorial. "
+		"Also acceptable are forum (GMT Discourse Forum) and web[site] (GMT Main Website).");
+
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-Q");
+	GMT_Usage (API, -2, "Will only display the URLs and not open them in a viewer. "
+		"If given, -Q must be the first argument to %s.", name);
+	GMT_Usage (API, 1, "\n-S");
+	GMT_Usage (API, -2, "Will open documentation files from the GMT server.");
+	GMT_Usage (API, 1, "\n<-option>");
+	GMT_Usage (API, -2, "Is the one-letter option of the module in question (e.g, -R). "
+		"Displays the documentation positioned at that specific option.");
 	GMT_Option (API, "V,;");
 
 	return (GMT_MODULE_USAGE);
@@ -133,7 +139,7 @@ EXTERN_MSC int GMT_docs (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			else if (print_url) {
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting local file %s to stdout\n", name);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting local file %s to standard output\n", name);
 				printf ("%s\n", opt->arg);
 			}
 			else {	/* Open in suitable viewer */
@@ -293,7 +299,7 @@ EXTERN_MSC int GMT_docs (void *V_API, int mode, void *args) {
 			called = true;
 
 			if (print_url) {
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting URL %s to stdout\n", URL);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting URL %s to standard output\n", URL);
 				printf ("%s\n", URL);
 			}
 			else {

@@ -49,6 +49,7 @@ enum Opt_C_modes {
 	GRDINFO_TRAILING	= 2};
 
 struct GRDINFO_CTRL {
+	unsigned int n_files;	/* How many grids given */
 	struct GRDINFO_C {	/* -C[n|t] */
 		bool active;
 		unsigned int mode;
@@ -89,7 +90,7 @@ struct GRDINFO_CTRL {
 		bool active;
 		unsigned int mode;
 		double inc;
-		double alpha;
+		double alpha[2];	/* XLO is lower and XHI is upper tail */
 	} T;
 };
 
@@ -100,7 +101,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->E.val = +1;	/* Default is to look for maxima */
-	C->T.alpha = 2.0;	/* 2 % alpha trim is default if selected */
+	C->T.alpha[XLO] = C->T.alpha[XHI] = 1.0;	/* 1 % alpha trim for both tails is default if not specified */
 	return (C);
 }
 
@@ -112,50 +113,62 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-C[n|t]] [-D[<offx>[/<offy>]][+i]] [-E[x|y][+l|L|u|U]] [-F] [-G] [-I[<dx>[/<dy>]|b|i|r]] [-L[a|0|1|2|p]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-Q] [%s] [-T[<dv>][+a[<alpha>]][+s]] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s [-C[n|t]] [-D[<offx>[/<offy>]][+i]] [-E[x|y][+l|L|u|U]] [-F] [-G] [-I[<dx>[/<dy>]|b|i|r]] [-L[a|0|1|2|p]] "
+		"[-M] [-Q] [%s] [-T[<dv>][+a[<alpha>]][+s]] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<grid> may be one or more grid files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report in fields on a single line using the format\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <file w e s n {b t} v0 v1 dx dy {dz} n_columns n_rows {n_layers} [x0 y0 {z0} x1 y1 {z1}] [med L1scale] [mean std rms] [n_nan] [mode LMSscale] registration type>,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   where -M adds [x0 y0 x1 y1] and [n_nan], -L1 adds [median L1scale], -L2 adds [mean std rms],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and -Lp adds [mode LMSscale]). Ends with registration (0=gridline, 1=pixel) and type (0=Cartesian, 1=geographic).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ct to place <file> at the end of the output record, or -Cn to write only numerical columns.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The items in {} are only output when -Q is used for 3-D data cubes.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Report tiles using tile size set in -I. Optionally, extend each tile region by <offx>/<offy>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i to only report tiles if the subregion has data (limited to one input grid).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no grid is given then -R must be given and we tile based on the given region.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ct to append the region string as trailing text to the numerical columns.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Report extreme values per column (append x) or row (append y) [x].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l|L for minima and +u|U for maxima [Default]. Only one input grid is accepted.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +L to consider only positive values and +U to consider only negative values [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Report domain in world mapping format [Default is generic].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Return textstring -Rw/e/s/n{/b/t} to nearest multiple of dx/dy{/dz}.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then rounding off will occur but no -R string is issued.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no argument is given then the -I<xinc>/<yinc>{/<zinc>} string is issued.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -Ib is given then the grid's bounding box polygon is issued.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -Ii is given then the original img2grd -R string is issued, if available.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If the grid is not an img grid then the regular -R string is issued.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -Ir is given then the grid's -R string is issued.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Set report mode:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -L0 reports range of data by actually reading them (not from header).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -L1 reports median and L1 scale (MAD w.r.t. median) of data set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -L[2] reports mean, standard deviation, and rms of data set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Lp reports mode (lms) and LMS-scale (MAD w.r.t. mode) of data set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -La all of the above.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If grid is geographic then we report area-weighted statistics.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Search for the global min and max locations (x0,y0{,z0}) and (x1,y1{,z1}).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Input file(s) is 3-D data cube(s), not grid(s) [2-D grids].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Not compatible with -D, -E, -F and -Ib.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of one or more grid files");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C[n|t]");
+	GMT_Usage (API, -2, "Report information in fields on a single line using the format "
+		"<file w e s n {b t} v0 v1 dx dy {dz} n_columns n_rows {n_layers} [x0 y0 {z0} x1 y1 {z1}] [med L1scale] [mean std rms] [n_nan] [mode LMSscale] registration type>, "
+		"where -M adds [x0 y0 x1 y1] and [n_nan], -L1 adds [median L1scale], -L2 adds [mean std rms], n"
+		"and -Lp adds [mode LMSscale]). Ends with registration (0=gridline, 1=pixel) and type (0=Cartesian, 1=geographic). Optional directives:");
+	GMT_Usage (API, 3, "t: Place <file> at the end of the output record.");
+	GMT_Usage (API, 3, "n: Write only numerical columns.");
+	GMT_Usage (API, -2, "The items in {} are only output when -Q is used for 3-D data cubes.");
+	GMT_Usage (API, 1, "\n-D[<offx>[/<offy>]][+i]");
+	GMT_Usage (API, -2, "Report tile regions using tile size set in -I. Optionally, extend each tile region by <offx>/<offy> to add overlap. "
+		"Append +i to only report tiles if the subregion contains data (limited to one input grid). "
+		"If no grid is given then -R must be given and we tile based on the given region. "
+		"Use -Ct to append the region string as trailing text to the numerical columns.");
+	GMT_Usage (API, 1, "\n-E[x|y][+l|L|u|U]");
+	GMT_Usage (API, -2, "Report extreme values per column (append x) or row (append y) [x]. Only one input grid is accepted:");
+	GMT_Usage (API, 3, "+l Report minima.");
+	GMT_Usage (API, 3, "+L Same as +l but only consider positive values.");
+	GMT_Usage (API, 3, "+u Report maxima [Default].");
+	GMT_Usage (API, 3, "+U Same as +u but only consider negative values.");
+	GMT_Usage (API, 1, "\n-F Report domain in world mapping format [Default is generic].");
+	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
+	GMT_Usage (API, 1, "\n-I[<dx>[/<dy>]|b|i|r]");
+	GMT_Usage (API, -2, "Return various results depending on directives:");
+	GMT_Usage (API, 3, "b: Return the grid's bounding box polygon.");
+	GMT_Usage (API, 3, "i: The original img2grd -R string is issued, if available. "
+		"If the grid is not an img grid then the regular -R string is issued.");
+	GMT_Usage (API, 3, "r: The grid's -R string is issued.");
+	GMT_Usage (API, -2, "Otherwise, return textstring -Rw/e/s/n{/b/t} to nearest multiple of dx/dy{/dz}. "
+		"If -C is set then rounding will occur but no -R string is issued. "
+		"If no argument is given then the -I<xinc>/<yinc>{/<zinc>} string is issued.");
+	GMT_Usage (API, 1, "\n-L[a|0|1|2|p]");
+	GMT_Usage (API, -2, "Set report mode, append directive:");
+	GMT_Usage (API, 3, "0: Report range of data by actually reading them (not from header).");
+	GMT_Usage (API, 3, "1: Report median and L1 scale (MAD w.r.t. median) of data set.");
+	GMT_Usage (API, 3, "2: Report mean, standard deviation, and rms of data set [Default].");
+	GMT_Usage (API, 3, "p: Report mode (lms) and LMS-scale (MAD w.r.t. mode) of data set.");
+	GMT_Usage (API, 3, "a: All of the above.");
+	GMT_Usage (API, -2, "Note: If grid is geographic then we report area-weighted statistics.");
+	GMT_Usage (API, 1, "\n-M Search for the global min and max locations (x0,y0{,z0}) and (x1,y1{,z1}).");
+	GMT_Usage (API, 1, "\n-Q Input file(s) is 3-D data cube(s), not grid(s) [2-D grids]. "
+		"Not compatible with -D, -E, -F and -Ib.");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Print global -Tvmin/vmax[/dv] (in rounded multiples of dv, if given).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[<alpha>] to trim grid range by excluding the two <alpha>/2 tails [2 %%].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Note: +a is limited to a single grid.  Give <alpha> in percent.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to force a symmetrical range about zero.\n");
+	GMT_Usage (API, 1, "\n-T[<dv>][+a[<alpha>]][+s]");
+	GMT_Usage (API, -2, "Print global -Tvmin/vmax[/dv] (in rounded multiples of <dv>, if given). Optional modifiers:");
+	GMT_Usage (API, 3, "+a Trim grid range by excluding the <alpha>/2 from each tail [2 %%]. "
+		"Note: +a is limited to a single grid.  Give <alpha> in percent. "
+		"Give <alpha> as <alphaL>/<alphaR> to set unequal tail areas.");
+	GMT_Usage (API, 3, "+s Force a symmetrical range about zero.");
 	GMT_Option (API, "V,f,h,o,.");
 
 	return (GMT_MODULE_USAGE);
@@ -170,10 +183,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 	 */
 
 	bool no_file_OK, num_report;
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	char text[GMT_LEN32] = {""}, *c = NULL;
 	static char *M[2] = {"minimum", "maximum"}, *V[3] = {"negative", "all", "positive"}, *T[2] = {"column", "row"};
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -181,15 +195,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg)))
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg)))
 					n_errors++;
 				else
-					n_files++;
+					Ctrl->n_files++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Column format */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if (opt->arg[0] == 'n')
 					Ctrl->C.mode = GRDINFO_NUMERICAL;
@@ -198,6 +213,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 				if (GMT->parent->external && Ctrl->C.mode == GRDINFO_TRADITIONAL) Ctrl->C.mode = GRDINFO_NUMERICAL;
 				break;
 			case 'D':	/* Tiling output w/ optional overlap */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				if (opt->arg[0]) {
 					if ((c = strstr (opt->arg, "+i"))) {
@@ -211,6 +227,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'E':	/* Report Extrema per row/col */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
 					case 'x': case '\0': case '+':	/* Handles -E, -Ex, -E+l */
@@ -219,7 +236,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 						Ctrl->E.mode = GMT_Y;
 						break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Expected -Ex or -Ey\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -E: Expected -Ex or -Ey\n");
 						n_errors++;
 						break;
 				}
@@ -230,20 +247,23 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 						case 'u': Ctrl->E.val = +1; break;
 						case 'U': Ctrl->E.val = +1; Ctrl->E.type = -1; break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Expected modifiers +l|L|u|U, not +%c\n", c[1]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -E: Expected modifiers +l|L|u|U, not +%c\n", c[1]);
 							n_errors++;
 							break;
 					}
 				}
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Will look for the %s value among %s values along each %s\n", M[(Ctrl->E.val+1)/2], V[Ctrl->E.type+1], T[Ctrl->E.mode]);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Will look for the %s value among %s values along each %s\n", M[(Ctrl->E.val+1)/2], V[Ctrl->E.type+1], T[Ctrl->E.mode]);
 				break;
 			case 'F':	/* World mapping format */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				break;
 			case 'G':	/* Force download of tiled grids if information is requested */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				break;
 			case 'I':	/* Increment rounding */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (!opt->arg[0])	/* No args given, we want to output the -I string */
 					Ctrl->I.status = GRDINFO_GIVE_INCREMENTS;
@@ -262,6 +282,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'L':	/* Selects norm */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case '\0': case '2':
@@ -275,21 +296,24 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'M':	/* Global extrema */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 			case 'Q':	/* Expect cubes */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				break;
 			case 'T':	/* CPT range */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if (opt->arg[0] == 's' && gmt_M_compat_check (GMT, 5)) {	/* Old-style format, cast in new syntax */
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-Ts option is deprecated; please use -T[<dv>][+s][+a[<alpha>]] next time.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-Ts option is deprecated; please use -T[<dv>][+s][+a[<alpha>]] next time.\n");
 					sprintf (text, "%s+s", &opt->arg[1]);
 				}
 				else
 					strncpy (text, opt->arg, GMT_LEN32-1);
 				if (gmt_validate_modifiers (GMT, text, opt->option, "as", GMT_MSG_ERROR)) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -T: Syntax is -T[<dv>][+s][+a[<alpha>]] next time.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Syntax is -T[<dv>][+s][+a[<alpha>]] next time.\n");
 					n_errors++;
 				}
 				else {
@@ -300,7 +324,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 						Ctrl->T.mode |= 1;
 					if (gmt_get_modifier (text, 'a', string)) {	/* Want alpha-trimmed range before determining limits */
 						Ctrl->T.mode |= 2;
-						if (string[0]) Ctrl->T.alpha = atof (string);
+						if (string[0]) {	/* Gave a specific tail size or sizes */
+							double *p = Ctrl->T.alpha;
+							int n = GMT_Get_Values (API, string, p, 2);
+							if (n == 1) /* Split the total equally */
+								Ctrl->T.alpha[XLO] /= 2.0, Ctrl->T.alpha[XHI] = Ctrl->T.alpha[XLO];
+							if (Ctrl->T.alpha[XLO] < 0.0 || Ctrl->T.alpha[XHI] < 0.0 || Ctrl->T.alpha[XLO] > 100.0 || Ctrl->T.alpha[XHI] > 100.0) {
+								GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Alpha values must be in the 0-100%% range.\n");
+								n_errors++;
+							}
+						}
 					}
 				}
 				break;
@@ -313,18 +346,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 
 	num_report = (Ctrl->C.active && (Ctrl->D.active || Ctrl->C.mode != GRDINFO_TRADITIONAL));
 	no_file_OK = (Ctrl->D.active && Ctrl->D.mode == 0 && GMT->common.R.active[RSET]);
-	n_errors += gmt_M_check_condition (GMT, n_files == 0 && !no_file_OK,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->n_files == 0 && !no_file_OK,
 	                                   "Must specify one or more input files\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.mode && n_files != 1,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.mode && Ctrl->n_files != 1,
 	                                   "Option -D: The +n modifier requires a single grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && n_files != 1,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->n_files != 1,
 	                                   "Option -E: Requires a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc < 0.0,
 	                                   "Option -T: The optional increment must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode & 2 && n_files != 1,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode & 2 && Ctrl->n_files != 1,
 	                                   "Option -T: The optional alpha-trim value can only work with a single grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->T.alpha < 0.0 || Ctrl->T.alpha > 100.0),
-	                                   "Option -T: The optional alpha-trim value must be in the 0 < alpha < 100 %% range\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && ((Ctrl->T.alpha[XLO] + Ctrl->T.alpha[XHI]) > 100.0),
+	                                   "Option -T: The sum of the optional alpha-trim value(s) cannot exceed 100 %%\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED &&
 	                                   (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0),
 									   "Option -I: Must specify a positive increment(s)\n");
@@ -591,6 +624,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		n_cols = 2;
 		cmode = GMT_COL_FIX_NO_TEXT;
 		geometry = GMT_IS_POLY;
+		if (Ctrl->n_files > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);
 	}
 	else if (Ctrl->E.active) {
 		n_cols = 3;
@@ -847,7 +881,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_BOUNDBOX) {
-			sprintf (record, "> Bounding box for %s", HH->name);
+			sprintf (record, "Bounding box for %s", HH->name);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 			/* LL */
 			out[GMT_X] = header->wesn[XLO];	out[GMT_Y] = header->wesn[YLO];
@@ -966,9 +1000,9 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 		else if (!(Ctrl->T.active || (Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED))) {
 			char *gtype[2] = {"Cartesian grid", "Geographic grid"};
-			sprintf (record, "%s: Title: %s", HH->name, header->title);		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			sprintf (record, "%s: Command: %s", HH->name, header->command);	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			sprintf (record, "%s: Remark: %s", HH->name, header->remark);	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			sprintf (record, "%s: Title: %s", HH->name, gmt_get_grd_title (header));		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			sprintf (record, "%s: Command: %s", HH->name, gmt_get_grd_command (header));	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			sprintf (record, "%s: Remark: %s", HH->name, gmt_get_grd_remark (header));		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			if (header->registration == GMT_GRID_NODE_REG || header->registration == GMT_GRID_PIXEL_REG)
 				sprintf (record, "%s: %s node registration used [%s]", HH->name, type[header->registration], gtype[gmt_M_is_geographic (GMT, GMT_IN)]);
 			else
@@ -1265,8 +1299,8 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 					tmp_grid = G->data;
 			}
 			gmt_sort_array (GMT, tmp_grid, size, GMT_FLOAT);	/* Sort so we can find quantiles */
-			global_vmin = gmt_quantile_f (GMT, tmp_grid, 0.5 * Ctrl->T.alpha, size);		/* "Left" quantile */
-			global_vmax = gmt_quantile_f (GMT, tmp_grid, 100.0-0.5* Ctrl->T.alpha, size);	/* "Right" quantile */
+			global_vmin = gmt_quantile_f (GMT, tmp_grid, Ctrl->T.alpha[XLO], size);		/* "Left" quantile */
+			global_vmax = gmt_quantile_f (GMT, tmp_grid, 100.0-Ctrl->T.alpha[XHI], size);	/* "Right" quantile */
 			if (is_cube && GMT_Destroy_Data (API, &U) != GMT_NOERROR) {
 				if (gmt_M_file_is_memory (file_ptr))	/* Now free temp grid */
 					gmt_M_free (GMT, tmp_grid);

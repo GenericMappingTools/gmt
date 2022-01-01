@@ -17,7 +17,7 @@ Synopsis
 [ |-E| ]
 [ |-F|\ *flags* ]
 [ |-I|\ [*list*] ]
-[ |-L|\ [*corrtable*] ]
+[ |-L|\ [*corrections*] ]
 [ |-N|\ *nx_min*\ [**+p**] ]
 [ |-Q|\ **e**\|\ **i** ]
 [ |SYN_OPT-R| ]
@@ -33,7 +33,7 @@ Description
 -----------
 
 **x2sys_list** will read the crossover ASCII data base *coedbase.txt*
-(or *stdin*) and extract a subset of the crossovers based on the other
+(or standard input) and extract a subset of the crossovers based on the other
 arguments. The output may be ASCII or binary.
 
 Required Arguments
@@ -111,7 +111,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [*corrtable*]
+**-L**\ [*corrections*]
     Apply optimal corrections to the chosen observable. Append the
     correction table to use [Default uses the correction table
     *TAG*\ \_corrections.txt which is expected to reside in the

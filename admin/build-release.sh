@@ -120,7 +120,7 @@ cp -f admin/ConfigReleaseBuild.cmake cmake/ConfigUser.cmake
 rm -rf build
 mkdir build
 # 2b. Build list of external programs and shared libraries
-admin/build-macos-external-list.sh > build/add_macOS_cpack.txt
+admin/build-macos-external-list.sh ${G_ver} > build/add_macOS_cpack.txt
 if [ $? -ne 0 ]; then
 	echo 'build-release.sh: Error: Requires either MacPorts of HomeBrew' >&2
 	exit 1

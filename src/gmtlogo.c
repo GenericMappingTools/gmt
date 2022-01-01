@@ -207,24 +207,25 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D%s[+w<width>]%s]\n", name, GMT_XYANCHOR, GMT_OFFSET);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n\t[%s] %s%s%s[%s]\n", GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[l|n|u]] [%s] [%s]\n\t[%s] [%s] %s[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [-D%s[+w<width>]%s] [-F%s] [%s] "
+		"%s%s%s[%s] [-S[l|n|u]] [%s] [%s] [%s] [%s] %s[%s] [%s]\n",
+		name, GMT_XYANCHOR, GMT_OFFSET, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT,
+		API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	gmt_refpoint_syntax (API->GMT, "D", "Specify position of the GMT logo [0/0].", GMT_ANCHOR_LOGO, 1);
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
+	gmt_refpoint_syntax (API->GMT, "\n-D", "Specify position of the GMT logo [0/0].", GMT_ANCHOR_LOGO, 1);
 	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_LOGO, 2);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +w<width> to set the width of the GMT logo. [144p]\n");
+	GMT_Usage (API, 3, "+w Set the <width> of the GMT logo. [144p]");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo.", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Control text label plotted beneath the logo:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append l to plot \"The Generic Mapping Tools\" [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to plot the URL for GMT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append n to skip label entirely.\n");
-	GMT_Option (API, "U,V");
-	GMT_Option (API, "X,c,f,t,.");
+	GMT_Usage (API, 1, "\n-S[l|n|u]");
+	GMT_Usage (API, -2, "Select the text label plotted beneath the logo via these directives:");
+	GMT_Usage (API, 3, "l: Plot \"The Generic Mapping Tools\" [Default].");
+	GMT_Usage (API, 3, "u: Plot the URL for the GMT homepage.");
+	GMT_Usage (API, 3, "n: Skip label entirely.");
+	GMT_Option (API, "U,V,X,c,t,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -241,6 +242,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OP
 	int n;
 	char string[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -249,6 +251,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OP
 			/* Processes program-specific parameters */
 
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg, 'D')) == NULL)
 					n_errors++;	/* Failed basic parsing */
@@ -266,6 +269,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the logo.", 0);
@@ -273,6 +277,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'l': Ctrl->S.mode = GMTLOGO_LABEL_NAME;	break;	/* Label */
@@ -282,7 +287,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'W':	/* Scale for the logo */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -W is deprecated; -D...+w%s was set instead, use this in the future.\n", opt->arg);
+				GMT_Report (API, GMT_MSG_COMPAT, "Option -W is deprecated; -D...+w%s was set instead, use this in the future.\n", opt->arg);
 				Ctrl->D.width = gmt_M_to_inch (GMT, opt->arg);
 				break;
 

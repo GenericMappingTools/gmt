@@ -52,7 +52,7 @@ Optional Arguments
     contain altitude (in km) and time, respectively, but if one or both
     of these are constant for all records they can be supplied via the
     **-A** option instead and are thus not expected in the input file.
-    If no input file is given we read *stdin*. |br|
+    If no input file is given we read standard input. |br|
     A note about the CM4
     validity domain. The core field of CM4 is valid from 1960-2002.5 but
     the ionospheric and magnetospheric fields are computed after the

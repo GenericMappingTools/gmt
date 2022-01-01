@@ -12,15 +12,20 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt project** [ *table* ] |-C|\ *cx*/*cy* [ |-A|\ *azimuth* ]
-[ |-E|\ *bx*/*by* ] [ |-F|\ *flags* ]
-[ |-G|\ *dist*\ [/*colat*][**+c**\|\ **h**] ]
+**gmt project** [ *table* ]
+|-C|\ *cx*/*cy*
+[ |-A|\ *azimuth* ]
+[ |-E|\ *bx*/*by* ]
+[ |-F|\ *flags* ]
+[ |-G|\ *dist*\ [*unit*][/*colat*][**+c**][**+h**][**+n**] ]
 [ |-L|\ [**w**\|\ *lmin*/*lmax*] ]
-[ |-N| ] [ |-Q| ] [ |-S| ]
+[ |-N| ]
+[ |-Q| ]
+[ |-S| ]
 [ |-T|\ *px*/*py* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *wmin*/*wmax* ]
-[ |-Z|\ *major*\ [*unit*][/*minor*/*azimuth*][**+e**\|\ **n**] ]
+[ |-Z|\ *major*\ [*unit*][/*minor*/*azimuth*][**+e**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -39,7 +44,7 @@ Synopsis
 Description
 -----------
 
-**project** reads arbitrary :math:`x`, :math:`y` [,\ *z*]) data from standard input
+**project** reads arbitrary (:math:`x`, :math:`y` [,\ *z*]) data from standard input
 [or *table*] and writes to standard output any combination of (:math:`x, y`, *z*,
 :math:`p, q, r, s`), where (:math:`p, q`) are the coordinates in
 the projection, (:math:`r, s`) is the position in the (:math:`x, y`) coordinate
@@ -97,6 +102,19 @@ Calculations of specific great-circle and geodesic distances or for
 back-azimuths or azimuths are better done using :doc:`mapproject` as
 :doc:`project` is strictly spherical.
 
+
+.. figure:: /_images/project_setup.*
+   :width: 500 px
+   :align: center
+
+   Explanation of the coordinate system utilized by project.  The input point
+   (red circle) is given in the original *x-y* (or *lon-lat*) coordinate system and is projected to
+   the *p-q* coordinate system, defined by the center (**C**) and either the end-point
+   (**E**) or azimuth (:math:`\alpha`), or for geographic data a rotation pole **T** (not shown).
+   The blue point has projected coordinates (p,0) and is reported as (r,s) in the original
+   coordinate system.  Options **-L** (limit range of *p*) and **-W** (limit range of *q*)
+   can be used to exclude data outside the specified limits (light gray area).
+
 Required Arguments
 ------------------
 
@@ -137,10 +155,10 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *dist*\ [/*colat*][**+c**\|\ **h**]
+**-G**\ *dist*\ [*unit*][/*colat*][**+c**][**+h**][**+n**]
     Create (*r*, *s*, *p*) output points every *dist* units of *p*, assuming all units are the same unless
-    :math:`x, y, r, s` are set to degrees using |-Q|. No input is read when |-G| is used. The following directives
-    and modifiers are supported:
+    :math:`x, y, r, s` are set to degrees using |-Q|. No input is read when |-G| is used. See `Units`_ for
+    selecting geographic distance units [km]. The following directives and modifiers are supported:
 
     - Optionally, append /*colat* for a small circle instead [Default is a colatitude of 90, i.e., a great circle]. Note,
       when using |-C| and |-E| to generate a circle that goes through the center and end point, the center and end point
@@ -149,6 +167,8 @@ Optional Arguments
       going through the center *cx*/*cy*.
     - Optionally, append **+h** to report the position of the pole as part of the segment header when using |-T|
       [Default is no header].
+    - Optionally, append **+n** to indicate a desired number of points rather than an increment. Requires |-C| and |-E| or |-Z|
+      so that a length can be computed.
 
 .. _-L:
 
@@ -193,7 +213,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *major*\ [*unit*][/*minor*/*azimuth*][**+e**\|\ **n**]
+**-Z**\ *major*\ [*unit*][/*minor*/*azimuth*][**+e**]
     Create the coordinates of an ellipse with *major* and *minor* axes given in km (unless |-N| is given for a
     Cartesian ellipse) and the *azimuth* of the major axis in degrees; used in conjunction with |-C| (sets its center)
     and |-G| (sets the distance increment). **Note**: For the Cartesian ellipse (which requires |-N|), we expect
@@ -204,7 +224,6 @@ Optional Arguments
 
     - Append **+e** to adjust the increment set via |-G| so that the ellipse has equal distance increments [Default
       uses the given increment and closes the ellipse].
-    - Append **+n** to set a specific number of unique equidistant points via |-G|.
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_

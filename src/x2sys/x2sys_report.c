@@ -117,25 +117,35 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *C) {	/* D
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C<column> -T<TAG> [<COEdbase>] [-A] [-I<ignorelist>] [-L[<corrtable.txt>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N<nx_min>] [-Qe|i] [-S<track>] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<COEdbase>] -C<column> -T<TAG> [-A] [-I<list>] [-L[<corrections>]] "
+		"[-N<nx_min>] [-Qe|i] [-S<track>] [%s] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-C <column> is the name of the data column whose crossovers we want.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<COEdbase> File with crossover error data base [stdin].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Create adjustment splines per track to redistribute COEs between tracks\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   according to their relative weight.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I List of tracks to ignore [Use all tracks].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Output results for tracks with more than <nx_min> crossovers only [0, i.e., report all tracks].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append e or i for external or internal crossovers [Default is external].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<COEdbase> File with crossover error data base [standard input].");
+	GMT_Usage (API, 1, "\n-C<column> ");
+	GMT_Usage (API, -2, "Name of the data column whose crossovers we want.");
+	GMT_Usage (API, 1, "\n-T<TAG>");
+	GMT_Usage (API, -2, "Set the system tag for this compilation.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Create adjustment splines per track to redistribute COEs between tracks "
+		"according to their relative weight.");
+	GMT_Usage (API, 1, "\n-I<list>");
+	GMT_Usage (API, -2, "List of tracks to ignore [Use all tracks].");
+	GMT_Usage (API, 1, "\n-L[<corrections>]");
+	GMT_Usage (API, -2, "Subtract systematic corrections from the data. If no correction file is given, "
+		"the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.");
+	GMT_Usage (API, 1, "\n-N<nx_min>");
+	GMT_Usage (API, -2, "Output results for tracks with more than <nx_min> crossovers only [0, i.e., report all tracks].");
+	GMT_Usage (API, 1, "\n-Qe|i");
+	GMT_Usage (API, -2, "Specify the sub-group of crossovers to report:");
+	GMT_Usage (API, 3, "e: Report external crossovers.");
+	GMT_Usage (API, 3, "i: Report internal crossovers.");
 	GMT_Option (API, "R");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Return only crossovers involving this track [Use all tracks].\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "[Default region is the entire data domain].");
+	GMT_Usage (API, 1, "\n-S<track>");
+	GMT_Usage (API, -2, "Return only crossovers involving this <track> [Use all tracks].");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
@@ -151,6 +161,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -166,35 +177,43 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struct G
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				Ctrl->C.col = strdup (opt->arg);
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				Ctrl->I.file = strdup (opt->arg);
 				break;
 			case 'L':	/* Crossover correction table */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.min = atoi (opt->arg);
 				break;
 			case 'Q':	/* Specify internal or external only [Default is both] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e') Ctrl->Q.mode = 1;
 				else if (opt->arg[0] == 'i') Ctrl->Q.mode = 2;
 				else Ctrl->Q.mode = 3;
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.file = strdup (opt->arg);
 				Ctrl->S.active = true;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;

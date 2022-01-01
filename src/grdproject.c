@@ -44,6 +44,9 @@ struct GRDPROJECT_CTRL {
 		bool active;
 		double easting, northing;
 	} C;
+	struct GRDPROJECT_D {	/* -D (for checking only) */
+		bool active;
+	} D;
 	struct GRDPROJECT_E {	/* -E<dpi> */
 		bool active;
 		int dpi;
@@ -87,28 +90,32 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> %s [-C[<dx>/<dy>]] [-D%s]\n",
-		name, GMT_J_OPT, GMT_inc_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<dpi>] [-F[%s|%s]] [-I] [-M%s] [%s] [%s]\n", GMT_LEN_UNITS2_DISPLAY,
-		GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_n_OPT, GMT_r_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s -G%s %s [-C[<dx>/<dy>]] [-D%s] "
+		"[-E<dpi>] [-F[%s|%s]] [-I] [-M%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_INGRID, GMT_OUTGRID, GMT_J_OPT, GMT_inc_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY,
+		GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is data set to be projected.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of output grid\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of input grid to be projected");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
 	GMT_Option (API, "J");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Coordinates are relative to projection center [Default is relative to lower left corner].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append dx/dy to add (or subtract if -I) (i.e., false easting & northing) [0/0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C[<dx>/<dy>]");
+	GMT_Usage (API, -2, "Coordinates are relative to projection center [Default is relative to lower left corner]. "
+		"Optionally append <dx>/<dy> to add (or subtract if -I) (i.e., false easting & northing) [0/0].");
 	gmt_inc_syntax (API->GMT, 'D', 0);
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set dpi for output grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Force projected values to be in actual distance units [Default uses the given map scale].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or i (inch), c (cm), or p (points) [e].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Inverse transformation from rectangular to geographical.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used if -F is set.\n");
+	GMT_Usage (API, 1, "\n-E<dpi>");
+	GMT_Usage (API, -2, "Set dpi for output grid.");
+	GMT_Usage (API, 1, "\n-F[%s|%s]", GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, -2, "Force projected values to be in actual distance units [Default uses the given map scale]. "
+		"Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot), "
+		"or give map distance units i (inch), c (cm), or p (points) [e].");
+	GMT_Usage (API, 1, "\n-I Inverse transformation from rectangular to geographical.");
+	GMT_Usage (API, 1, "\n-M%s", GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, -2, "Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point). "
+		"Cannot be used if -F is set.");
 	GMT_Option (API, "R");
 	GMT_Option (API, "V,n,r,.");
 
@@ -135,21 +142,25 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct GMT
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Coordinates relative to origin */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if (opt->arg[0]) 	/* Also gave shifts */
 					n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->C.easting, &Ctrl->C.northing) != 2,
 						 "Expected -C[<false_easting>/<false_northing>]\n");
 				break;
 			case 'D':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				Ctrl->D.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'D', opt->arg);
 				break;
 			case 'E':	/* Set dpi of grid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				sval = atoi (opt->arg);
 				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -E: Must specify positive dpi\n");
@@ -164,18 +175,22 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct GMT
 				}
 				/* Intentionally fall through - to get -F */
 			case 'F':	/* Force specific unit */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.unit = opt->arg[0];
 				break;
 			case 'G':	/* Output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Inverse projection */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				break;
 			case 'M':	/* Directly specify units */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				Ctrl->M.unit = opt->arg[0];
 				n_errors += gmt_M_check_condition (GMT, !Ctrl->M.unit,

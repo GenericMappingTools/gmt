@@ -78,23 +78,37 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *C) {	/* D
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> -Fa|c|m|t -Ta|c|m|t[+f] [-C] [-D] [-L[e][w][+l]] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <cruise(s)> -Fa|c|m|t -Ta|c|m|t[+f] [-C] [-D] [-L[e][w][+l]] [%s] [%s]\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	MGD77_Cruise_Explain (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Files are read from data repositories and written to current directory]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Convert from a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -FC to recover the original MGD77 setting from the MGD77+ file [Default applies E77 corrections].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Convert to a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   By default we will refuse to overwrite existing files.  Append +f to force an override this policy.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Convert from NGDC (*.h77, *.a77) to *.mgd77 format; no other options allowed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give one or more names of h77-files, a77-files, or just cruise prefixes.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Select high-resolution, 4-byte storage for mag, diur, faa, eot, and msd with precision\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of 10 fTesla, 1 nGal, 0.01 mm [Default is 2-byte with 0.1 nTesla, 0.1 mGal, m precision].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Set log level and destination setting for verification reporting.  Append a combination\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of w for warnings and e for errors, and append +l to send log to stdout [Default is stderr].\n");
+	GMT_Usage (API, -2, "Note: Files are read from data repositories and written to current directory.");
+	GMT_Usage (API, 1, "\n-Fa|c|m|t");
+	GMT_Usage (API, -2, "Convert from a file that has this format:");
+	GMT_Usage (API, 3, "a: MGD77 ASCII table.");
+	GMT_Usage (API, 3, "c: MGD77+ netCDF table.");
+	GMT_Usage (API, 3, "m: MGD77T ASCII table.");
+	GMT_Usage (API, 3, "t: Plain table.");
+	GMT_Usage (API, -2, "Note: Use -FC to recover the original MGD77 setting from the MGD77+ file [Default applies E77 corrections].");
+	GMT_Usage (API, 1, "\n-Ta|c|m|t[+f]");
+	GMT_Usage (API, -2, "Convert to a file that has this format:");
+	GMT_Usage (API, 3, "a: MGD77 ASCII table.");
+	GMT_Usage (API, 3, "c: MGD77+ netCDF table.");
+	GMT_Usage (API, 3, "m: MGD77T ASCII table.");
+	GMT_Usage (API, 3, "t: Plain table.");
+	GMT_Usage (API, -2, "By default we will refuse to overwrite existing files.  Append +f to force an override this policy.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C Convert from NGDC (*.h77, *.a77) to *.mgd77 format; no other options allowed. "
+		"Give one or more names of h77-files, a77-files, or just cruise prefixes.");
+	GMT_Usage (API, 1, "\n-D Select high-resolution, 4-byte storage for mag, diur, faa, eot, and msd with precision "
+		"of 10 fTesla, 1 nGal, 0.01 mm [Default is 2-byte with 0.1 nTesla, 0.1 mGal, 1 m precision].");
+	GMT_Usage (API, 1, "\n-L[e][w][+l]");
+	GMT_Usage (API, -2, "Set log level and destination setting for verification reporting.  Append one or both of:");
+	GMT_Usage (API, 3, "w: Warning messages.");
+	GMT_Usage (API, 3, "e: Error messages.");
+	GMT_Usage (API, -2, "Append +l to send the log to standard output [Default is standard error].");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
@@ -122,6 +136,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struct G
 			/* Processes program-specific parameters */
 
 			case 'L':	/* Determine level of error/warning checking and log destination */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				for (i = 0; opt->arg[i]; i++) {
 					if (opt->arg[i] == 'e') Ctrl->L.mode |= 2;
@@ -130,6 +145,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'a':		/* Standard ASCII MGD77 file */
@@ -154,6 +170,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				code_pos = 0;
 				if (opt->arg[code_pos] == '+')
@@ -191,9 +208,11 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struct G
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 			default:	/* Report bad options */

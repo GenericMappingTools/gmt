@@ -75,14 +75,14 @@ If no module is given then several other options are available:
     List and description of GMT modules.
 
 **--new-script**\ [=\ *L*]
-    Write a GMT modern mode script template to stdout. Optionally append the desired
+    Write a GMT modern mode script template to standard output. Optionally append the desired
     scripting language among *bash*, *csh*, or *batch*.  Default is the main shell
     closest to your current shell (e.g., bash for zsh, csh for tcsh).
 
 **--new-glue**\ =\ *name*
     Write the C code glue needed when building third-party supplements as shared
     libraries.  The *name* is the name of the shared library. Run **gmt** in the directory
-    of the supplement and the glue code will be written to *stdout*.  Including this C code
+    of the supplement and the glue code will be written to standard output.  Including this C code
     when building the shared library means **gmt** can list available modules via the
     **--show-modules**, **--help** options.  We recommend saving the code to gmt\_\ *name*\_glue.c.
 
@@ -93,10 +93,10 @@ If no module is given then several other options are available:
     Show the citation for the latest GMT publication.
 
 **--show-classic**
-    List classic module names on stdout and exit.
+    List classic module names on standard output and exit.
 
 **--show-classic-core**
-    List classic module names (core only) on stdout and exit.
+    List classic module names (core only) on standard output and exit.
 
 **--show-cores**
     Show number of available cores.
@@ -107,14 +107,20 @@ If no module is given then several other options are available:
 **--show-dataserver**
     Show URL of the remote GMT data server.
 
+**--show-dcw**
+    Show the DCW data version used.
+
 **--show-doi**
     Show the DOI of the current release.
 
+**--show-gshhg**
+    Show the GSHHG data version used.
+
 **--show-modules**
-    List modern module names on stdout and exit.
+    List modern module names on standard output and exit.
 
 **--show-modules-core**
-    List modern module names (core only) on stdout and exit.
+    List modern module names (core only) on standard output and exit.
 
 **--show-library**
     Show the path of the shared GMT library.
@@ -354,6 +360,7 @@ Module help and configuration
 .. include:: explain_precision.rst_
 
 .. include:: explain_grd_inout.rst_
+    :end-before: .. description-ends
 
 Classic Mode Options
 --------------------
@@ -375,6 +382,12 @@ directories. For an explanation of the various GMT settings in this
 man page (like :term:`FORMAT_FLOAT_OUT`), see the man page of the GMT
 configuration file :doc:`gmt.conf`. Information is also available on the
 GMT documentation site https://docs.generic-mapping-tools.org/
+
+Deprecations
+------------
+
+- 6.3.0: Update -g syntax. `#5617 <https://github.com/GenericMappingTools/gmt/pull/5617>`_
+- 6.3.0: Update -JG syntax to use modifiers. `#5780 <https://github.com/GenericMappingTools/gmt/pull/5780>`_
 
 See Also
 --------

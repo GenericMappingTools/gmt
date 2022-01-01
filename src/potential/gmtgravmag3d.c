@@ -79,6 +79,7 @@ struct GMTGRAVMAG3D_CTRL {
 		double radius;
 	} S;
 	struct GMTGRAVMAG3D_Z {	/* -Z */
+		bool active;
 		double z0;
 	} Z;
 	struct GMTGRAVMAG3D_T {	/* -T */
@@ -176,54 +177,69 @@ GMT_LOCAL int check_triang_cw (struct GMTGRAVMAG3D_CTRL *Ctrl, unsigned int n, u
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s xyz_file -Tv<vert_file> | -Tr|s<raw_file> OR -M+s<par> [-C<density>] [-G<outgrid>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-E<thick>] [-F<xy_file>] [-L<z_observation>]\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<level>] [%s] [-fg] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<xyz_file>] -Tv<vert_file> | -Tr|s<raw_file> | -M+s<body>/<pars> [-C<density>] [-E<thickness>] "
+		"[-F<xy_file>] [-G%s] [-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [%s] [-L<z_observation>] [%s] "
+		"[-S<radius>] [-Z<level>] [%s] [-fg] [%s] [%s]\n",
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Gives names of xyz and vertex (-Tv<fname>) files defining a close surface.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If the xyz file has more then 3 columns it means variable magnetization. See docs for more details.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The file formats correspond to the output of the triangulate program.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively use -Tr<file> for file in raw triangle format (x1 y1 z1 x2 ... z3).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or -Ts<file> for file in STL format.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOR\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Select among one or more of the following bodies, where x0 & y0 are the horizontal coordinates of the\n\t   body center [default to 0,0], npts is the number of points that a circle is discretized and n_slices\n\t   apply when bodies are made by a pile of slices. For example Spheres and Ellipsoids are made of\n\t   2*n_slices and Bells have n_slices [Default 5]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   It is even possible to select more than one body. For example:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t -M+sprism,1/1/1/-5/-10/1+ssphere,1/-5\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   bell,height/sx/sy/z0[/x0/y0/n_sig/npts/n_slices]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t Gaussian of height <height> with characteristic STDs <sx> and <sy>. The base\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t width (at depth <z0>) is controlled by the number of sigmas (<n_sig>) [Default = 2]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   cylinder,rad/height/z0[/x0/y0/npts/n_slices]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t Cylinder of radius <rad> height <height> and base at depth <z0>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   cone,semi_x/semi_y/height/z0[/x0/y0/npts]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t Cone of semi axes <semi_x/semi_y> height <height> and base at depth <z0>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   ellipsoid,semi_x/semi_y/semi_z/z_center[/x0/y0/npts/n_slices]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t Ellipsoid of semi axes <semi_x/semi_y/semi_z> and center depth <z_center>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   prism,side_x/side_y/side_z/z0[/x0/y0]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t Prism of sides <x/y/z> and base at depth <z0>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   pyramid,side_x/side_y/height/z0[/x0/y0]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t Pyramid of sides <x/y> height <height> and base at depth <z0>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   sphere,rad/z_center[/x0/y0/npts/n_slices]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t Sphere of radius <rad> and center at depth <z_center>\n");
-
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Sets parameters for computation of magnetic anomaly.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <f_dec>/<f_dip> -> geomagnetic declination/inclination.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <m_int></m_dec></m_dip> -> body magnetic intensity/declination/inclination.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Sets body <density> in SI units.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Passes locations where anomaly is going to be computed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets name of the output grdfile.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<xyz_file>");
+	GMT_Usage (API, -2, "One or more data files (in ASCII, binary, netCDF) with data; see -T for format. If no files are given, standard input is read");
+	GMT_Usage (API, 1, "\n-Tv<vert_file> | -Tr|s<raw_file>");
+	GMT_Usage (API, -2, "Give names of xyz and vertex (-Tv<fname>) files defining a closed surface. "
+		"If <xyz_file> has more then 3 columns it means variable magnetization; see docs for more details. "
+		"The file formats correspond to the output of the triangulate program. "
+		"Alternatively, use directives to indicate specific formats:");
+	GMT_Usage (API, 3, "r: Append <file> in raw triangle format (x1 y1 z1 x2 ... z3).");
+	GMT_Usage (API, 3, "s: Append <file> in STL format.");
+	GMT_Usage (API, 1, "\nOR");
+	GMT_Usage (API, 1, "\n-M+s<body>/<pars>");
+	GMT_Usage (API, -2, "Select among one or more of the following bodies and append <pars>, where x0 and y0 are the horizontal coordinates "
+		"of the body center [default to 0,0], npts is the number of points that a circle is discretized and n_slices "
+		"apply when bodies are made by a pile of slices. For example Spheres and Ellipsoids are made of 2*n_slices and "
+		"Bells have n_slices [Default 5].");
+	GMT_Usage (API, 3, "%s Gaussian: Append bell,height/sx/sy/z0[/x0/y0/n_sig/npts/n_slices] "
+		"for a Gaussian of height <height> with characteristic STDs <sx> and <sy>. The base "
+		"width (at depth <z0>) is controlled by the number of sigmas (<n_sig>) [Default = 2].", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Cylinder: Append cylinder,rad/height/z0[/x0/y0/npts/n_slices] for a "
+		"cylinder of radius <rad> height <height> and base at depth <z0>.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Cone: Append cone,semi_x/semi_y/height/z0[/x0/y0/npts] for a "
+		"cone of semi axes <semi_x/semi_y> height <height> and base at depth <z0>.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Ellipsoid: Append ellipsoid,semi_x/semi_y/semi_z/z_center[/x0/y0/npts/n_slices] for an "
+		"ellipsoid of semi axes <semi_x/semi_y/semi_z> and center depth <z_center>.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Prism: Append prism,side_x/side_y/side_z/z0[/x0/y0] for a "
+		"prism of sides <x/y/z> and base at depth <z0>.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Pyramid: Append pyramid,side_x/side_y/height/z0[/x0/y0] for a "
+		"pyramid of sides <x/y> height <height> and base at pth <z0>.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Sphere: Append sphere,rad/z_center[/x0/y0/npts/n_slices] for a "
+		"sphere of radius <rad> and center at depth <z_center>.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Note: It is possible to select more than one body. For example, "
+		"-M+sprism,1/1/1/-5/-10/1+ssphere,1/-5.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C<density>");
+	GMT_Usage (API, -2, "Set body <density> in SI units.");
+	GMT_Usage (API, 1, "\n-E<thickness>");
+	GMT_Usage (API, -2, "Give layer thickness in m [Default = 0 m].");
+	GMT_Usage (API, 1, "\n-F<xy_file>");
+	GMT_Usage (API, -2, "Pass locations where anomaly is going to be computed.");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
+	GMT_Usage (API, 1, "\n-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>");
+	GMT_Usage (API, -2, "Append parameters for computation of magnetic anomaly:");
+	GMT_Usage (API, 3, "%s <f_dec>/<f_dip> -> geomagnetic declination/inclination.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <m_int></m_dec>/<m_dip> -> body magnetic intensity/declination/inclination.", GMT_LINE_BULLET);
 	GMT_Option (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Sets level of observation [Default = 0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E give layer thickness in m [Default = 0 m].\n");
+	GMT_Usage (API, 1, "\n-L<z_observation>");
+	GMT_Usage (API, -2, "Set level of observation [Default = 0].");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets search radius in km.\n");
+	GMT_Usage (API, 1, "\n-S<radius>");
+	GMT_Usage (API, -2, "Set search radius in km.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Sets z level of reference plane [Default = 0].\n");
+	GMT_Usage (API, 1, "\n-Z<level>");
+	GMT_Usage (API, -2, "Set z level of reference plane [Default = 0].");
 	GMT_Option (API, "bi");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Converts geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_Usage (API, 1, "\n-fg Converts geographic grids to meters using a \"Flat Earth\" approximation.");
 	GMT_Option (API, "r,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -248,7 +264,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				Ctrl->T.xyz_file = strdup(opt->arg);
 				n_files++;
 				break;
@@ -257,6 +273,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 
 			case 'B':	/* For backward compat (Undocumented) */
 			case 'H':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				if ((sscanf(opt->arg, "%lf/%lf/%lf/%lf/%lf",
 					    &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -H: Can't dechiper values\n");
@@ -266,24 +283,29 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				Ctrl->C.active = false;
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.rho = atof (opt->arg) * 6.674e-6;
 				Ctrl->C.active = true;
 				Ctrl->H.active = false;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.dir = 1;
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.file = strdup (opt->arg);
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
@@ -291,15 +313,17 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'L':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.zobs = atof (opt->arg);
 				break;
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 
 				while (gmt_strtok (opt->arg, ",", &pos, p)) {		/* -M+cone,a/b/c+ellipe,a/b/c/d */
 					if (p[0] != '+' && p[1] != 's') {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Model option must start with a +s<code> and not %s\n", p);
+						GMT_Report (API, GMT_MSG_ERROR, "Model option must start with a +s<code> and not %s\n", p);
 						return GMT_PARSE_ERROR;
 					}
 					gmt_strtok(opt->arg, "+", &pos, p2);	/* Get the string with the model parameters */
@@ -356,11 +380,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 						nSPHERE++;
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unknown model code (%s) in -M option\n", &p[1]);
+						GMT_Report (API, GMT_MSG_ERROR, "Unknown model code (%s) in -M option\n", &p[1]);
 						return GMT_PARSE_ERROR;
 					}
 					if (err_npar) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Model prism option, wrong number of parametrs.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Model prism option, wrong number of parametrs.\n");
 						return GMT_PARSE_ERROR;
 					}
 				}
@@ -370,10 +394,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				Ctrl->E.active = true;
 				break;
 	 		case 'S':
-				Ctrl->S.radius = atof (opt->arg) * 1000;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
+				Ctrl->S.radius = atof (opt->arg) * 1000;
 				break;
 			case 'T': 		/* Selected input mesh format */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if (opt->arg[0] == 'p') {
 					char *pch;
@@ -405,6 +431,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				Ctrl->Z.active = true;
 				Ctrl->Z.z0 = atof(opt->arg);
 				break;
 			default:	/* Report bad options */
@@ -439,7 +467,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 /* -------------------------------------------------------------------------*/
 GMT_LOCAL int read_xyz(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct GMT_OPTION *options, double *lon_0, double *lat_0) {
 	/* read xyz[m] file with point data coordinates */
-	int n_cols = 0, k, error, n = 0;
+	int n_cols = 0, error;
+	unsigned int k, n = 0;
 	size_t n_alloc = 10 * GMT_CHUNK;
 	char line[GMT_LEN256] = {""};
 	double x1, x2, x3, x4, x5, x6, x7, x8;
@@ -626,8 +655,8 @@ GMT_LOCAL int read_vertices(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl
 
 /* -----------------------------------------------------------------*/
 GMT_LOCAL int read_raw(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl) {
-	/* read a file with triagles in the raw format and returns nb of triangles */
-	int row, seg, nt;
+	/* read a file with triangles in the raw format and returns nb of triangles */
+	unsigned int row, seg, nt;
 	struct  GMT_DATASET *In = NULL;
 
 	if ((In = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->T.raw_file, NULL)) == NULL)

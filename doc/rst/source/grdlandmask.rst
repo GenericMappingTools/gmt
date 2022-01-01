@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdlandmask** |-G|\ *mask_grd_file*
+**gmt grdlandmask** |-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |SYN_OPT-Area| ]
@@ -41,8 +41,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *mask_grd_file*
-    Name of resulting output mask grid file. (See :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_outgrid| replace:: Give the name of the output mask grid.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -134,8 +136,8 @@ Before you make your own masks, be aware that the GMT data server offers
 global landmask files in multiple grid resolutions.  These can be accessed
 using the remote file names @earth_mask_\ *rr*\ *u*\ [_\ *reg*\ ], where
 *rr*\ *u* and the optional *reg* indicate the resolution and registration
-that you desire.  See :ref:`Global Earth Mask Grids <earth_mask>` for more
-information on the availability of resolutions.
+that you desire.  See `Global Earth Mask Grids <https://www.generic-mapping-tools.org/remote-datasets/earth-masks.html>`_
+for more information on the availability of resolutions.
 
 Examples
 --------

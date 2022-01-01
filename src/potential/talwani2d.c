@@ -49,7 +49,7 @@
 #define THIS_MODULE_PURPOSE	"Compute geopotential anomalies over 2-D bodies by the method of Talwani"
 #define THIS_MODULE_KEYS	"<D{,ND(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-Vdehio" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-Vbdehio" GMT_ADD_x_OPT
 
 struct TALWANI2D_CTRL {
 	struct TALWANI2D_Out {	/* -> */
@@ -126,28 +126,32 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 	unsigned int k, n_errors = 0, n_files = 0;
 	int n;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {		/* Process all the options given */
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->Out.active = true;
 				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			case 'A':	/* Specify z-axis is positive up [Default is down] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.rho = atof (opt->arg);
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'v': Ctrl->F.mode = TALWANI2D_VGG;		break;
@@ -161,25 +165,34 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 				k = 0;
 				while (opt->arg[k]) {
 					switch (opt->arg[k]) {
-						case 'h': Ctrl->M.active[TALWANI2D_HOR] = true; break;
-						case 'z': Ctrl->M.active[TALWANI2D_VER] = true; break;
+						case 'h':
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI2D_HOR]);
+							Ctrl->M.active[TALWANI2D_HOR] = true;
+							break;
+						case 'z':
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI2D_VER]);
+							Ctrl->M.active[TALWANI2D_VER] = true;
+							break;
 						default:
 							n_errors++;
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
 							break;
 					}
 					k++;
 				}
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.file = strdup (opt->arg);
 				break;
 			case 'T':	/* Either get a file with time coordinate or a min/max/dt setting */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_DIST | GMT_ARRAY_UNIQUE, 0);
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				k = (opt->arg[0] == '/') ? 1 : 0;	/* In case someone gives -Z/ymin/ymax */
 				n = sscanf (&opt->arg[k], "%lf/%lf/%lf", &Ctrl->Z.level, &Ctrl->Z.ymin, &Ctrl->Z.ymax);
@@ -208,34 +221,46 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <modelfile> [-A] [-D<rho>] [-Ff|n[<lat>]|v]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [-T[<xmin>/<xmax>/<xinc>[+i|n]]] [%s] [-Z[<level>][/<ymin/<ymax>]]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]%s [%s]\n\n", GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <modelfile> [-A] [-D<density>] [-Ff|n[<lat>]|v] [-M[hz]] "
+		"[-N<trktable>] [-T<xmin>/<xmax>/<xinc>[+i|n]|<file>|<list>] [%s] [-Z[<level>][/<ymin/<ymax>]] "
+		"[%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
+		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT,
+		GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<modelfile> is a multiple-segment ASCII file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A The z-axis is positive upwards [Default is positive down].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets fixed density contrast that overrides settings in model file (in kg/m^3).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify desired geopotential field component:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f = FAA Free-air anomalies (mGal) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n = Geoid anomalies (meter).  Optionally append <lat> for evaluation of normal gravity [45].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   v = VGG Vertical Gravity Gradient anomalies (Eotvos = 0.1 mGal/km).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M sets units used, as follows:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Mh indicates all x-distances are given in km [meters]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Mz indicates all z-distances are given in km [meters]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Gives file with output locations x[,z].  If there are\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   z-coordinates then these are used as observation levels.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   You can use -Z to override these by setting a constant level.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set domain from <xmin> to <xmax> in steps of <xinc>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to xinc to indicate the number of points instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output positions in the first column, or a comma-separated list.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<modelfile>");
+	GMT_Usage (API, -2, "One or more data files (in ASCII, binary, netCDF). If no files are given, standard "
+		"input is read. Contains (x,z) coordinates with <density> in the segment headers (or see -D).");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A The z-axis is positive upwards [Default is positive down].");
+	GMT_Usage (API, 1, "\n-D<density>");
+	GMT_Usage (API, -2, "Set fixed density contrast that overrides settings in model file (in kg/m^3). "
+		"Required if input files are binary.");
+	GMT_Usage (API, 1, "\n-Ff|n[<lat>]|v]");
+	GMT_Usage (API, -2, "Specify desired geopotential field component:");
+	GMT_Usage (API, 3, "f: Free-air anomalies (mGal) [Default].");
+	GMT_Usage (API, 3, "n: Geoid anomalies (meter).  Optionally append latitude for evaluation of normal gravity [45].");
+	GMT_Usage (API, 3, "v: Vertical Gravity Gradient anomalies (Eotvos = 0.1 mGal/km).");
+	GMT_Usage (API, 1, "\n-M[hz]");
+	GMT_Usage (API, -2, "Change units used, via one or two directives:");
+	GMT_Usage (API, 3, "h: All x-distances are given in km [meters].");
+	GMT_Usage (API, 3, "z: All z-distances are given in km [meters].");
+	GMT_Usage (API, 1, "\n-N<trktable>");
+	GMT_Usage (API, -2, "File with output locations x[,z].  If there are "
+		"z-coordinates then these are used as observation levels. "
+		"You can use -Z to override these by setting a constant level.");
+	GMT_Usage (API, 1, "\n-T<xmin>/<xmax>/<xinc>[+i|n]|<file>|<list>");
+	GMT_Usage (API, -2, "Set domain from <xmin> to <xmax> in steps of <xinc>.");
+	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
+	GMT_Usage (API, 3, "+n Indicate <inc> is the number of t-values to produce instead.");
+	GMT_Usage (API, -2, "Alternatively, give a <file> with output positions in the first column, or a comma-separated <list>.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set observation level for output locations [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For FAA only: Optionally append <ymin/ymax> to get a 2.5-D solution.\n");
-	GMT_Option (API, "d,e,h,i,o,x,.");
+	GMT_Usage (API, 1, "\n-Z[<level>][/<ymin/<ymax>]");
+	GMT_Usage (API, -2, "-Z Set observation level for output locations [0]. "
+		"For FAA only: Optionally append <ymin/ymax> to get a 2.5-D solution.");
+	GMT_Option (API, "bi,bo,d,e,h,i,o,x,.");
 	return (GMT_MODULE_USAGE);
 }
 
@@ -566,7 +591,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 	}
 	else {	/* Got a dataset with output locations */
 		geometry = GMT_IS_PLP;	/* We don't really know */
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -C,-F,-L files */
 		if ((Out = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -574,7 +599,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 			gmt_adjust_dataset (GMT, Out, 2U);
 			geometry = GMT_IS_LINE;	/* Since we are making from scratch */
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 	}
 
 	/* Specify input expected columns to be at least 2 */

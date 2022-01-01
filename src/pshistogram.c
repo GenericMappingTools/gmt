@@ -30,7 +30,7 @@
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
 #define THIS_MODULE_KEYS	"<D{,CC(,>X},>D),>DI"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhilpqstwxy" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhilopqstwxy" GMT_OPT("c")
 
 /* Note: The NEEDS must be JR.  Although pshistogram can create a region from data, it
  * does so indirectly by building the histogram and setting the ymin/ymax that way, NOT by
@@ -164,10 +164,18 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *C) {	/* De
 	gmt_M_free (GMT, C);
 }
 
+/* For some useful discussion regarding the next to functions, see the postings on this issue:
+ * https://github.com/GenericMappingTools/gmt/issues/5343
+ */
+
 GMT_LOCAL int64_t pshistogram_get_constant_bin (struct GMT_ARRAY *T, double x, int64_t dummy) {
 	/* Find the bin for this value of x when all bins have constant width.
 	 * If x falls outside our range then we return -1 or n
-	 * The left boundary array index == bin index. */
+	 * The left boundary array index == bin index.
+	 * One caveat for this approach is that if the data very often fall exactly on a bin
+	 * boundary then the rounding schemes will end up alternating every bin.  Of course,
+	 * in this case probably -F should be used.  To protect from such cases we only use
+	 * this function for large data set where speed may be important. */
 	int64_t bin;
 	gmt_M_unused (dummy);
 	if (x < T->min)
@@ -181,7 +189,10 @@ GMT_LOCAL int64_t pshistogram_get_constant_bin (struct GMT_ARRAY *T, double x, i
 
 GMT_LOCAL int64_t pshistogram_get_variable_bin (struct GMT_ARRAY *T, double x, int64_t last_bin) {
 	/* Find the bin for this value of x.  If x falls outside our range then
-	 * we return -1 or n.  The left boundary array index == bin index. */
+	 * we return -1 or n.  The left boundary array index == bin index.
+	 * We also use this function even if the bins are equidistant as the
+	 * approach will always round values landing on bin boundaries to the
+	 * same side (in contrast to pshistogram_get_constant_bin) */
 	int64_t bin = last_bin;
 	while (bin >= 0 && x < T->array[bin]) bin--;	/* Need a previous bin */
 	if (bin != last_bin) return bin;		/* Means we searched to the left and either found the bin or ran off and got -1 */
@@ -189,6 +200,8 @@ GMT_LOCAL int64_t pshistogram_get_variable_bin (struct GMT_ARRAY *T, double x, i
 	while (bin < (int64_t)T->n && x >= T->array[bin+1]) bin++;	/* Need a later bin */
 	return bin;	/* Either a valid bin or F->T.n (which is 1 larger than n_boxes) */
 }
+
+#define BIN_FASTER_IF_THIS_LARGE	1000000	/* If you bin a million points then bin rounding details won't matter */
 
 GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, double *weights, uint64_t n) {
 
@@ -201,7 +214,8 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 	F->n_boxes = F->T->n - 1;	/* One less than the bin boundaries */
 	F->boxh = gmt_M_memory (GMT, NULL, F->n_boxes, double);
 	F->n_counted = 0;
-	pshistogram_get_bin = (F->T->var_inc) ? &pshistogram_get_variable_bin : &pshistogram_get_constant_bin;
+	/* Pic variable bin search unles not variable bounds and the data set is large */
+	pshistogram_get_bin = (F->T->var_inc || n < BIN_FASTER_IF_THIS_LARGE) ? &pshistogram_get_variable_bin : &pshistogram_get_constant_bin;
 
 	/* First fill boxes with counts  */
 
@@ -528,7 +542,7 @@ GMT_LOCAL bool pshistogram_new_syntax (struct GMT_CTRL *GMT, char *L, char *T, c
 	if (W == NULL) return true;	/* Cannot be old syntax since -W is required */
 	if (L && strchr ("bhl", L[0])) return true;	/* Gave -Lb|h|l so clearly new syntax */
 	if (L) return false;				/* Here, must have given -L<pen> */
-	if (W && (strstr (W, "+b") || strstr (W, "+h") || strstr (W, "+l"))) return false;	/* Gave -W<width>+b|h|l */
+	if (W && gmt_found_modifier (GMT, W, "bhl")) return false;	/* Gave -W<width>+b|h|l */
 	if (W && strchr (GMT_DIM_UNITS, W[strlen(W)-1])) return true;	/* Must have given a -W<pen> */
 	if (W && strchr (W, ',')) return true;	/* Must have given a -W<pen>,<color> */
 	/* Unclear, get -T and -W args and see if we can learn from their values */
@@ -548,64 +562,76 @@ GMT_LOCAL bool pshistogram_new_syntax (struct GMT_CTRL *GMT, char *L, char *T, c
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s -T[<min>/<max>/]<inc>[+i|n] [-A] [%s] [-C<cpt>[+b]] [-D[+b][+f<font>][+o<off>][+r]]\n", name, GMT_Jx_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<width>[+o<offset>]] [-F] [-G<fill>] [-I[o|O]] %s[-Ll|h|b] [-N[<mode>][+p<pen>]] %s%s[-Q[r]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s]\n\t[%s] [-W<pen>] [%s] [%s] [-Z[0-5][+w]]\n", GMT_Rx_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
-		GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] %s -T[<min>/<max>/]<inc>[+i|n] [-A] [%s] [-C<cpt>[+b]] [-D[+b][+f<font>][+o<off>][+r]] "
+		"[-E<width>[+o<offset>]] [-F] [-G<fill>] [-I[o|O]] %s[-Ll|h|b] [-N[<mode>][+p<pen>]] %s%s[-Q[r]] [%s] [-S] [%s] [%s] "
+		"[-W<pen>] [%s] [%s] [-Z[<mode>][+w]] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_Jx_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rx_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT,
+		API->c_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT,
+		GMT_t_OPT, GMT_w_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-Jx|X<x-scl>|<width>[/<y-scl>|<height>] for Cartesian scaling.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced bin boundaries from <min> to <max> by <inc>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <min>/<max> is not given then boundaries in -R is used.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of bin boundaries to produce instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time bins, append a valid time unit (%s) to the increment.\n", GMT_TIME_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with bin boundaries in the first column, or a comma-separate list of values.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, "<,B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Plot horizontal bars, i.e., flip x and y axis [Default is vertical].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign color to bars based on the mid-bar coordinate.  Alternatively, append +b.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to assign color based on the histogram value instead (count or percent only; see -Z).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Place histogram count labels on top of each bar; optionally append modifiers:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +b places the labels beneath the bars [above]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +f<font> sets the label font [FONT_ANNOT_PRIMARY]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +o sets the offset <off> between bar and label [6p]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +r rotates the label to be vertical [horizontal]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Use custom bar <width> and optionally <offset>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   By default, the bar width is implicitly set via -T and the offset is zero.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append desired bar width in data units, or append a valid unit (%s) for a fixed width.\n", GMT_DIM_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Via +o, add an offset in data units, or append a valid unit (%s) for a fixed offset [0].\n", GMT_DIM_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t-F The bin boundaries given should be considered bin centers instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<");
+	GMT_Usage (API, 1, "\n-Jx|X<x-scl>|<width>[/<y-scl>|<height>] for Cartesian scaling.");
+	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[+i|n]");
+	GMT_Usage (API, -2, "Make evenly spaced bin boundaries from <min> to <max> by <inc>. "
+		"If <min>/<max> is not given then boundaries in -R is used. "
+		"For absolute time bins, append a valid time unit (%s) to the increment.", GMT_TIME_UNITS_DISPLAY);
+	GMT_Usage (API, 3, "+n Indicate <inc> is the number of bin boundaries to produce instead.");
+	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
+	GMT_Usage (API, -2, "Alternatively, give a file with bin boundaries in the first column, or a comma-separate list of values.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Plot horizontal bars, i.e., flip x and y axis [Default is vertical].");
+	GMT_Option (API, "B-");
+	GMT_Usage (API, 1, "\n-C<cpt>[+b]");
+	GMT_Usage (API, -2, "Use CPT to assign color to bars based on the mid-bar coordinate.  Alternatively, append +b "
+		"to assign color based on the histogram value instead (count or percent only; see -Z).");
+	GMT_Usage (API, 1, "\n-D[+b][+f<font>][+o<off>][+r]");
+	GMT_Usage (API, -2, "Place histogram count labels on top of each bar; optionally append modifiers:");
+	GMT_Usage (API, 3, "+b Place the labels beneath the bars [above].");
+	GMT_Usage (API, 3, "+f Sets the label <font> [FONT_ANNOT_PRIMARY].");
+	GMT_Usage (API, 3, "+o Sets the offset <off> between bar and label [6p].");
+	GMT_Usage (API, 3, "+r Rotate the label to be vertical [horizontal].");
+	GMT_Usage (API, 1, "\n-E<width>[+o<offset>]");
+	GMT_Usage (API, -2, "Use custom bar <width> and optionally <offset>. "
+		"By default, the bar width is implicitly set via -T and the offset is zero. "
+		"Append desired bar width in data units, or append a valid unit (%s) for a fixed width.", GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, 3, "+o Add an offset in data units, or append a valid unit (%s) for a fixed offset [0].", GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, 1, "\n-F The bin boundaries given should be considered bin centers instead.");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Select color/pattern for columns.");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire about min/max x and y.  No plotting is done.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to output the resulting x, y data.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append O to output all resulting x, y data even with y=0.\n");
+	GMT_Usage (API, 1, "\n-I[o|O]");
+	GMT_Usage (API, -2, "Inquire about min/max x and y.  No plotting is done. Optionally append a directive:");
+	GMT_Usage (API, 3, "o: Output the resulting x, y data.");
+	GMT_Usage (API, 3, "O: Output all resulting x, y data even with y=0.");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Append l|h|b to place extreme values in the first, last, or both bins [skip extremes].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw the equivalent normal distribution; append desired pen [0.25p,black].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <mode> selects which central location and scale to use:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   0 = mean and standard deviation [Default]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1 = median and L1 scale (MAD w.r.t. median)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   2 = LMS mode and LMS scale (MAD w.r.t. mode)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The -N option may be repeated to draw several of these curves.\n");
+	GMT_Usage (API, 1, "\n-Ll|h|b");
+	GMT_Usage (API, -2, "Append l|h|b to place extreme values in the first, last, or both bins [skip extremes].");
+	GMT_Usage (API, 1, "\n-N[<mode>][+p<pen>]");
+	GMT_Usage (API, -2, "Draw the equivalent normal distribution; append desired pen [0.25p,black]. "
+		"The <mode> selects which central location and scale to use:");
+	GMT_Usage (API, 3, "0: Mean and standard deviation [Default].");
+	GMT_Usage (API, 3, "1: Median and L1 scale (MAD w.r.t. median).");
+	GMT_Usage (API, 3, "2: LMS mode and LMS scale (MAD w.r.t. mode).");
+	GMT_Usage (API, -2, "Note: The -N option may be repeated to draw several of these curves.");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot a cumulative histogram; append r for reverse cumulative histogram.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If neither -R nor -I are set, w/e/s/n will be based on input data.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Draw a stairs-step diagram [Default is bar histogram].\n");
+	GMT_Usage (API, 1, "\n-Q[r]");
+	GMT_Usage (API, -2, "Plot a cumulative histogram; append r for reverse cumulative histogram. "
+		"Note: If neither -R nor -I are set, w/e/s/n will be based on input data.");
+	GMT_Usage (API, 1, "\n-S Draw a stairs-step diagram [Default is bar histogram].");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify pen for histogram outline or stair-step curves.", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify pen for histogram outline or stair-step curves.", NULL, 0);
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z To choose type of vertical axis.  Select from\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   0 - Counts [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1 - Frequency percent.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   2 - Log (1+counts).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   3 - Log (1+frequency percent).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   4 - Log10 (1+counts).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   5 - Log10 (1+frequency percent).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to use bin weights in 2nd column rather than counts.\n");
-	GMT_Option (API, "bi2,c,di,e,f,h,i,l,p,qi,s,t,w,.");
+	GMT_Usage (API, 1, "\n-Z[<mode>][+w]");
+	GMT_Usage (API, -2, "Choose type of vertical axis. Select from these modes:");
+	GMT_Usage (API, 3, "0: Counts [Default].");
+	GMT_Usage (API, 3, "1: Frequency percent.");
+	GMT_Usage (API, 3, "2: Log (1+counts).");
+	GMT_Usage (API, 3, "3: Log (1+frequency percent).");
+	GMT_Usage (API, 3, "4: Log10 (1+counts).");
+	GMT_Usage (API, 3, "5: Log10 (1+frequency percent).");
+	GMT_Usage (API, -2, "Append +w to sum bin weights in 2nd column rather than counts.");
+	GMT_Option (API, "bi2,c,di,e,f,h,i,l,o,p,qi,s,t,w,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -630,21 +656,23 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
 				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if (opt->arg[0] && (c = strstr (opt->arg, "+b"))) {
 					Ctrl->C.binval = true;
@@ -655,6 +683,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				while (gmt_getmodopt (GMT, 'D', opt->arg, "bfor", &pos, p, &n_errors) && n_errors == 0) {	/* Looking for +b, +f, +o, +r */
 					switch (p[0]) {
@@ -675,6 +704,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'E':	/* Alternative histogram bar width */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if ((c = strstr (opt->arg, "+o"))) {	/* Asking for offset */
 					Ctrl->E.do_offset = true;
@@ -699,9 +729,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				if (c) c[0] = '+';	/* Restore the modifier */
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
@@ -709,11 +741,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (opt->arg[0] == 'o') Ctrl->I.mode = 1;
 				if (opt->arg[0] == 'O') Ctrl->I.mode = 2;
 				break;
 			case 'L':		/* Set line attributes */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				l_arg = opt->arg;
 				break;
 			case 'N':		/* Draw normal distribution */
@@ -730,25 +764,30 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				Ctrl->N.selected[mode] = true;
 				if ((c = strstr (opt->arg, "+p")) != NULL) {
 					if (gmt_getpen (GMT, &c[2], &Ctrl->N.pen[mode])) {
-						gmt_pen_syntax (GMT, 'N', NULL, " ", 0);
+						gmt_pen_syntax (GMT, 'N', NULL, " ", NULL, 0);
 						n_errors++;
 					}
 				}
 				break;
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				Ctrl->Q.mode = (opt->arg[0] == 'r') ? -1 : +1;
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				t_arg = opt->arg;
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				w_arg = opt->arg;
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				if ((c = strstr (opt->arg, "+w")) != NULL) {	/* Use weights instead of counts */
 					Ctrl->Z.weights = true;
@@ -787,7 +826,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 		if (w_arg) {	/* Gave -W<pen> */
 			Ctrl->W.active = true;
 			if (gmt_getpen (GMT, w_arg, &Ctrl->W.pen)) {
-				gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+				gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 				n_errors++;
 			}
 		}
@@ -823,7 +862,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				Ctrl->W.active = true;
 				//GMT_Report (API, GMT_MSG_COMPAT, "The -L<pen> option is deprecated; use -W<pen> instead.\n");
 				if (gmt_getpen (GMT, l_arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 			}

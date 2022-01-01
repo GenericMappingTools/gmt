@@ -9,13 +9,8 @@ gmt begin ex26
 	latitude=41.5
 	longitude=-74
 	altitude=160
-	tilt=0
-	azimuth=0
-	twist=0
-	Width=0
-	Height=0
 
-	PROJ=-JG${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/10c
+	PROJ=-JG${longitude}/${latitude}/10c+z${altitude}
 	gmt coast -Rg $PROJ -B5g5 -Glightbrown -Slightblue -W -Dl -N1/1p,red -N2/0.5p -Y12c
 
 	# now point from an altitude of 160 km with a specific tilt and azimuth and with a wider restricted
@@ -26,6 +21,6 @@ gmt begin ex26
 	Width=30
 	Height=30
 
-	PROJ=-JG${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/12c
+	PROJ=-JG${longitude}/${latitude}/12c+z${altitude}+a${azimuth}+t${tilt}+w${twist}+v${Width}/${Height}
 	gmt coast $PROJ -B5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -X1i -Y-10c
 gmt end show

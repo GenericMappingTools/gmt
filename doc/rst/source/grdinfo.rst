@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdinfo** *grdfiles* [ |-C|\ [**n**\|\ **t**\] ]
+**gmt grdinfo** *ingrid* [ |-C|\ [**n**\|\ **t**\] ]
 [ |-D|\ [*xoff*\ [/*yoff*]][**+i**] ]
 [ |-E|\ [**x**\|\ **y**][**+l**\|\ **L**\|\ **u**\|\ **U**] ]
 [ |-F| ]
@@ -48,9 +48,10 @@ With option **-Q** we can also report information for 3-D data cubes.
 Required Arguments
 ------------------
 
-*grdfile*
-    The name of one or several 2-D grid files. (See :ref:`Grid File Formats
-    <grd_inout_full>`).
+.. |Add_ingrid| replace:: The name of one or several 2-D grid files. 
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -163,9 +164,10 @@ Optional Arguments
 **-T**\ [*dv*]\ [**+a**\ [*alpha*]]\ [**+s**]
     Determine min and max data value.  If *dv* is provided then we first round these
     values off to multiples of *dv*. To exclude the two tails of the distribution
-    when determining the min and max you can add **+a** to set the *alpha*
+    when determining the min and max you can add **+a** to set the combined *alpha*
     value (in percent [2]): We then sort the values, exclude the data in the
     0.5*\ *alpha* and 100 - 0.5*\ *alpha* tails, and revise the min and max.
+    Give *alpha* in the format *alphaL*/*alphaR* to select unequal tail areas.
     To force a symmetrical range about zero, using minus/plus the max
     absolute value of the two extremes, append **+s**. We report the
     result via the text string **-T**\ *vmin/vmax* or **-T**\ *vmin/vmax/dv*
@@ -204,5 +206,8 @@ To learn about the extreme values and coordinates in the 3-D data cube S362ANI_k
 See Also
 --------
 
-:doc:`gmt`, :doc:`grd2cpt`,
-:doc:`grd2xyz`, :doc:`grdedit`
+:doc:`gmt`,
+:doc:`grd2cpt`,
+:doc:`grd2xyz`,
+:doc:`grdedit`,
+:doc:`grdselect`

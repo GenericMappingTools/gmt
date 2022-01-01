@@ -109,33 +109,39 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	static char *type[2] = {"grid(s) or image(s)", "image(s)"};
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <raster1> [<raster2> [<raster3>]] -G<outraster> [-A<transp>] [-C] [-D]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intens>] [-M] [-N[i|o][<factor>]] [-Q] [%s]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<weight>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <raster1> [<raster2> [<raster3>]] -G<outraster> [-A<transp>] [-C] [-D] "
+		"[-I<intens>] [-M] [-N[i|o][<divisor>]] [-Q] [%s] [%s] [-W<weight>] [%s] [%s]\n",
+		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<raster?> are the main %s to be used (1, 2, or 3).\n", type[API->external]);
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output %s file.\n", type[API->external]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   With -D the name is a template and must contain %%c to hold the layer code.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify a transparency grid or image, or set a constant alpha value [no transparency].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   An image must have 0-255 values, while a grid or constant must be in the 0-1 range).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Construct an image from 1 (gray) or 3 (r, g, b) input component grids.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   You may optionally supply transparency (-A) and/or intensity (-I).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Deconstruct an image into 1 or 3 output component grids, plus any transparency.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   We write the raw layers values (0-255); use -N to normalize the layers (0-1).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify an intensity grid file, or set a constant intensity value [no intensity].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The grid or constant must be in the -1 to +1 range).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Force a monochrome final image [same number of bands as the input].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set normalization factor for (i)nput or (o)utput grids [Default sets both].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   With -Ni (or -N), input grids will be divided by <factor> [255].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   With -No (or -N), output grids will be multiplied by <factor> [255].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append <factor> to use another factor than 255.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Make the final image opaque by removing any alpha layer.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<raster?> are the main %s to be used (1, 2, or 3).", type[API->external]);
+	GMT_Usage (API, 1, "\n-G<outraster>");
+	GMT_Usage (API, -2, "Specify file name for output %s file. "
+		"Note: With -D the name is a template and must contain %%c to be used for the layer code.", type[API->external]);
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<transp>");
+	GMT_Usage (API, -2, "Specify a transparency grid or image, or set a constant transparency value [no transparency]. "
+		"An image must have 0-255 values, while a grid or constant must be in the 0-1 range.");
+	GMT_Usage (API, 1, "\n-C Construct an image from 1 (gray) or 3 (r, g, b) input component grids. "
+		"You may optionally supply transparency (-A) and/or intensity (-I).");
+	GMT_Usage (API, 1, "\n-D Deconstruct an image into 1 or 3 output component grids, plus any transparency. "
+		"We write the raw layer values (0-255); use -N to normalize the layers (0-1).");
+	GMT_Usage (API, 1, "\n-I<intens>");
+	GMT_Usage (API, -2, "Specify an intensity grid file, or set a constant intensity value [no intensity]. "
+		"The grid or constant must be in the -1 to +1 range).");
+	GMT_Usage (API, 1, "\n-M Force a monochrome final image [same number of bands as the input].");
+	GMT_Usage (API, 1, "\n-N[i|o][<divisor>]");
+	GMT_Usage (API, -2, "Set normalization divisor for (i)nput or (o)utput grids [Default sets both]:");
+	GMT_Usage (API, 3, "i: Input grids will be divided by <divisor> [255].");
+	GMT_Usage (API, 3, "o: Output grids will be multiplied by <divisor> [255].");
+	GMT_Usage (API, -2, "Append <factor> to use another factor than 255.");
+	GMT_Usage (API, 1, "\n-Q Make the final image opaque by removing any alpha layer.");
 	GMT_Option (API, "R,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify a blend weight grid or image, or set a constant weight [no blend weight].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   An image must have 0-255 values, while a grid or constant must be in the 0-1 range).\n");
+	GMT_Usage (API, 1, "\n-W<weight>");
+	GMT_Usage (API, -2, "Specify a blend weight grid or image, or set a constant weight [no blend weight]. "
+		"An image must have 0-255 values, while a grid or constant must be in the 0-1 range.");
 	GMT_Option (API, "f,.");
 
 	return (GMT_MODULE_USAGE);
@@ -165,6 +171,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 
 	unsigned int n_errors = 0, k;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -172,11 +179,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 			case '<':	/* Input rasters */
 				if (Ctrl->In.n_in >= 3) {
 					n_errors++;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "A maximum of three rasters may be provided\n");
+					GMT_Report (API, GMT_MSG_ERROR, "A maximum of three rasters may be provided\n");
 				}
 				else {
 					Ctrl->In.file[Ctrl->In.n_in] = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_in]))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_in]))) n_errors++;
 					Ctrl->In.n_in++;
 				}
 				break;
@@ -184,30 +191,36 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->In.file[ALPHA] = grdmix_parseitem (GMT, opt, &(Ctrl->A));
 				if (Ctrl->A.mode == 2) n_errors++;
 				break;
 
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
 
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 
 			case 'G':	/* Does not matter if we pass GMT_IS_GRID or GMT_IS_IMAGE */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->In.file[INTENS] = grdmix_parseitem (GMT, opt, &(Ctrl->I));
 				if (Ctrl->I.mode == 2) n_errors++;
 			break;
 
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 
@@ -218,20 +231,25 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 					default:  k = GMT_IO; break;
 				}
 				if (k == GMT_IO) {	/* Turn on both in and out grid normalization */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[GMT_IN]);
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[GMT_OUT]);
 					Ctrl->N.active[GMT_IN] = Ctrl->N.active[GMT_OUT] = true;
 					if (opt->arg[0]) Ctrl->N.factor[GMT_IN] = Ctrl->N.factor[GMT_OUT] = atof (opt->arg);					
 				}
 				else {	/* Just activate in or out grid normalization */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[k]);
 					Ctrl->N.active[k] = true;
 					if (opt->arg[1]) Ctrl->N.factor[k] = atof (&opt->arg[1]);
 				}
 				break;
 
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				break;
 
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->In.file[BLEND] = grdmix_parseitem (GMT, opt, &(Ctrl->W));
 				if (Ctrl->W.mode == 2) n_errors++;
 				break;
@@ -343,7 +361,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	float *weights = NULL, *intens = NULL, *alpha = NULL;
 
-	double rgb[4], wesn[4] = {0.0, 0.0, 0.0, 0.0};
+	double rgb[4] = {0.0, 0.0, 0.0, 0.0}, wesn[4] = {0.0, 0.0, 0.0, 0.0};
 
 	struct GMT_GRID *G_in[N_ITEMS], *G = NULL;
 	struct GMT_IMAGE *I_in[N_ITEMS], *I = NULL;
@@ -386,7 +404,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	for (k = 0; k < N_ITEMS; k++) {	/* Determine if we got grids or images */
 		if (Ctrl->In.file[k] == NULL) continue;
-		Ctrl->In.type[k] = gmt_raster_type (GMT, Ctrl->In.file[k]);
+		Ctrl->In.type[k] = gmt_raster_type (GMT, Ctrl->In.file[k], true);
 	}
 
 	if (Ctrl->In.n_in == 1 && Ctrl->In.type[0] == GMT_NOTSET && !Ctrl->D.active) {
@@ -447,6 +465,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			if (k < 3 && Ctrl->N.active[GMT_IN]) {	/* Normalize the 1-3 input grid */
 				double factor = 1.0 / Ctrl->N.factor[GMT_IN];	/* To avoid division in the loop */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Normalizing grid %s\n", Ctrl->In.file[k]);
+				G_in[k]->header->z_min *= factor;	G_in[k]->header->z_max *= factor;	/* Also update zmin/max */
 				gmt_M_grd_loop (GMT, G_in[k], row, col, node)
 					G_in[k]->data[node] *= factor;
 			}
@@ -557,6 +576,10 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		H = I->header;
+		for (band = 0; band < H->n_bands; band++) {	/* Check if any of the grids exceed the required 0-1 range */
+			if (G_in[band]->header->z_min < 0.0 || G_in[band]->header->z_max > 1.0)	/* Probably not normalized and forgot -Ni */
+				GMT_Report (API, GMT_MSG_WARNING, "Component grid values in %s exceed 0-1 range, probably need to specify -Ni\n", Ctrl->In.file[band]);
+		}
 		if (Ctrl->I.active && Ctrl->In.n_in == 3) {	/* Make the most work-intensive version under OpenMP */
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,band,rgb,pix) shared(GMT,I,G_in,H,intens)
@@ -751,7 +774,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		}
 	}
 	if (H->ProjRefPROJ4 && strstr (Ctrl->G.file, ".tif") == NULL)
-		GMT_Report (API, GMT_MSG_WARNING, "The geographical metadata for you image will be lost unless you use TIF\n");
+		GMT_Report (API, GMT_MSG_WARNING, "The geographical metadata for your image will be lost unless you use TIF\n");
 	/* Convert from TRB to TRP (TRPa if there is alpha) */
 	GMT_Change_Layout (API, GMT_IS_IMAGE, "TRP", 0, I, NULL, NULL);	
 	/* Write out image */

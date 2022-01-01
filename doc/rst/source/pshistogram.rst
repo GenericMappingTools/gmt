@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt pshistogram** [ *table* ] |-J|\ **x**\|\ **X**\ *parameters*
+**gmt pshistogram** [ *table* ]
+|-J|\ **x**\|\ **X**\ *parameters*
 |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
 [ |-A| ]
 [ |SYN_OPT-B| ]
@@ -40,13 +41,16 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT--| ]
 
-.. include:: histogram_common.rst_
+.. include:: histogram.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 

@@ -20,11 +20,11 @@ simple equation
 
     t' = (t - \tau) \;\mathrm{mod}\; T,
 
-where *t* is the input coordinate, :math:`\tau` is a phase-shift (typically zero), and *T* is the desired period for the
+where *t* is the input coordinate, :math:`\tau` is a phase-shift [Default is zero], and *T* is the desired period for the
 modulus operator, yielding cyclic coordinates :math:`t'`. GMT offers many standard time cycles in prescribed units plus
 a custom cycle for other types of Cartesian coordinates. The table below shows the values for units, phase and period
 that are prescribed and only requires the user to specify the corresponding wrapping code (**y**\|\ **a**\|\ **w**\|\
-**d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\ *period*\):
+**d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\ *period*\ [/*phase*]\):
 
 +------------+---------------------------+------------+--------------+-----------+
 | **Code**   | **Purpose** (**unit**)    | **Period** |  **Phase**   | **Range** |
@@ -46,8 +46,8 @@ that are prescribed and only requires the user to specify the corresponding wrap
 | **c**      | Custom cycle (normalized) |  :math:`T` | :math:`\tau` |   0–1     |
 +------------+---------------------------+------------+--------------+-----------+
 
-Optionally, append **+c**\ *col* to select the input column with the coordinates to be wrapped, [default *col* is 0
-(i.e., the first column)]. If the custom cycle **c** is chosen then you must also supply the *period* and optionally
+Optionally, append **+c**\ *col* to select the input column with the coordinates to be wrapped, [default *col* is 0,
+i.e., the first column]. If the custom cycle **c** is chosen then you must also supply the *period* and optionally
 any *phase* [default is 0] in the same units of your data (i.e., no units should be appended to **-w**).
 
 **Note**: Coordinates for **w** in the range 0-1 correspond to the first day of the week [Monday] but can be changed

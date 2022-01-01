@@ -101,6 +101,8 @@
  * 254		-27	SLG	Sala y Gomez
  * 192		-15	SAM	Samoa
  * 212		-18	SOC	Society
+ *
+ * Note on KEYS: FD(= means -F takes an optional input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -209,33 +211,41 @@ GMT_LOCAL int originater_comp_hs (const void *p1, const void *p2) {
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -E<rottable>[+i] -F<hotspottable>[+d] [-D<d_km>] [-H] [-L[<flag>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] %s -F<hotspottable>[+d] [-D<d_km>] [-H] [-L[l|t|w]] "
+		"[-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, SPOTTER_E_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	spotter_rot_usage (API, 'E');
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify file name for hotspot locations.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d if we should look for hotspot drift tables.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If found then we interpolate to get hotspot location as a function of time [fixed].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   standard input is read.  Expects (x,y,z,r,t) records, with t in Ma.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set sampling interval in km along tracks [5].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Output information for closest approach for nearest hotspot only (ignores -S).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Lt gives (time, dist, z) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Lw gives (omega, dist, z).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ll gives (lon, lat, time, dist, z).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   dist is in km; use upper case T,W,L to get dist in spherical degrees.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set age (in m.y.) for seafloor where age == NaN [180].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Input files has (x,y,z) only. Append constant r/t to use.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Report the <n_hs> closest hotSpots [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Truncate seamount ages exceeding the upper age set with -N [no truncation].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given, "
+		"standard input is read. Expects (x,y,z,r,t) records, with t in Ma.");
+	spotter_rot_usage (API);
+	GMT_Usage (API, 1, "\n-F<hotspottable>[+d]");
+	GMT_Usage (API, -2, "Specify file name for hotspot locations. "
+		"Append +d if we should look for hotspot drift tables. "
+		"If found then we interpolate to get hotspot location as a function of time [fixed].");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D<d_km>");
+	GMT_Usage (API, -2, "Set sampling interval in km along tracks [5].");
+	GMT_Usage (API, 1, "\n-L[l|t|w]");
+	GMT_Usage (API, -2, "Output information for closest approach for nearest hotspot only (ignores -S). Select directive:");
+	GMT_Usage (API, 3, "l: Give (lon, lat, time, dist, z).");
+	GMT_Usage (API, 3, "t: Give (time, dist, z) [Default].");
+	GMT_Usage (API, 3, "w: Give (omega, dist, z).");
+	GMT_Usage (API, -2, "Note: dist is in km; use upper case L,T,W to get dist in spherical degrees.");
+	GMT_Usage (API, 1, "\n-N<upper_age>");
+	GMT_Usage (API, -2, "Set age (in m.y.) for seafloor where age == NaN [180].");
+	GMT_Usage (API, 1, "\n-Qr/t");
+	GMT_Usage (API, -2, "Input files has (x,y,z) only. Append constant r/t to append to input record.");
+	GMT_Usage (API, 1, "\n-S<n_hs>");
+	GMT_Usage (API, -2, "Report the <n_hs> closest hotSpots [1].");
+	GMT_Usage (API, 1, "\n-T Truncate seamount ages exceeding the upper age set with -N [no truncation].");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Report seamounts whose closest encounter to a hotspot is less than <maxdist> km\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default reports for all seamounts].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Write hotspot ID number rather than hotspot TAG.\n");
+	GMT_Usage (API, 1, "\n-W<maxdist>");
+	GMT_Usage (API, -2, "Report seamounts whose closest encounter to a hotspot is less than <maxdist> km "
+		"[Default reports for all seamounts].");
+	GMT_Usage (API, 1, "\n-Z Write hotspot ID number rather than hotspot TAG.");
 	GMT_Option (API, "bi5,d,e,h,i,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -258,7 +268,7 @@ static int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Supplemental parameters */
@@ -269,24 +279,28 @@ static int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct GMT
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.value = atof (opt->arg);
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;	k = 0;
 				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}
 				else if ((c = strstr (opt->arg, "+i"))) {Ctrl->E.mode = true; c[0] = '\0';}
 				if (opt->arg[k]) Ctrl->E.file = strdup (&opt->arg[k]);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->E.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->E.file))) n_errors++;
 				if (c) c[0] = '+';
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;	k = 0;
 				if (opt->arg[0] == '+') { Ctrl->F.mode = true; k = 1;}
 				if (opt->arg[k]) Ctrl->F.file = strdup (&opt->arg[k]);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'L':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case 'L':
@@ -311,27 +325,33 @@ static int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.t_upper = atof (opt->arg);
 				break;
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				sscanf (opt->arg, "%lg/%lg", &Ctrl->Q.r_fix, &Ctrl->Q.t_fix);
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				k = atoi (opt->arg);
 				n_errors += gmt_M_check_condition (GMT, k < 1, "Option -S: Must specify a positive number of hotspots\n");
 				Ctrl->S.n = k;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				Ctrl->W.dist = atof (opt->arg);
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				break;
 			default:	/* Report bad options */

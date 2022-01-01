@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -104,7 +105,7 @@ Optional Arguments
 
 **-N**\ *template*
     Write each segment to a separate output file [Default writes a
-    multiple segment file to stdout]. Append a format template for the
+    multiple segment file to standard output]. Append a format template for the
     individual file names; this template **must** contain a C format
     specifier that can format an integer argument (the running segment
     number across all tables); this is usually %d but could be %08d
@@ -163,6 +164,8 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-q.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
 

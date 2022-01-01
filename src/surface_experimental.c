@@ -40,6 +40,8 @@
  *    go to larger grids (i.e., adding more nodes).
  * 3. It relies more on functions and macros from GMT to handle rows/cols/node calculations.
  * 4. TESTING: It enables multiple threads via OpenMP [if compiled that way].
+ *
+ * Note on KEYS: DD(= means -D takes an optional input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -1935,7 +1937,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-G sets output grid file name.\n");
 	GMT_Option (API, "I,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set aspect-ratio> [Default = 1 gives an isotropic solution],\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., xinc and yinc assumed to give derivatives of equal weight; if not, specify\n");
@@ -1961,7 +1963,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   <limit> can be any number, or the letter d for min (or max) input data value,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or the filename of a grid with bounding values.  [Default solution is unconstrained].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Example: -Ll0 enforces a non-negative solution.\n");
-	gmt_dist_syntax (API->GMT, 'M', "Set maximum radius for masking the grid away from data points [no masking].");
+	gmt_dist_syntax (API->GMT, "-M<radius>", "Set maximum radius for masking the grid away from data points [no masking].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set max <n_iterations> in the final cycle; default = %d.\n", SURFACE_MAX_ITERATIONS);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set <search_radius> to initialize grid; default = 0 will skip this step.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This step is slow and not needed unless grid dimensions are pathological;\n");
@@ -2431,7 +2433,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->M.active) {	/* Want to mask the grid first */
 		char input[GMT_VF_LEN] = {""}, mask[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
-		static char *V_level = "qntcvld";
+		static char *V_level = GMT_VERBOSE_CODES;
 		struct GMT_GRID *Gmask = NULL;
 		struct GMT_VECTOR *V = NULL;
 		double *data[2] = {NULL, NULL};

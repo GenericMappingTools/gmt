@@ -68,19 +68,22 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [files] [-A] [-C] [-D] [-G[a|c|l|u]] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<files>] [-A] [-C] [-D] [-G[a|c|l|u]] [%s] [%s]\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Only consider files you have permission to read [all files].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Print Y if found and N if not found.  No path is returned.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the directory where a file is found [full path to file].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Download file if possible and not found locally.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append a to place under the user directory in the appropriate folder.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to place it in the cache directory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append l to place it in the current local directory [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to place it in the user\'s data directory.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<files> One or more file names of any data type (grids, tables, etc.).");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Only consider files you have permission to read [all files].");
+	GMT_Usage (API, 1, "\n-C Print Y if found and N if not found.  No path is returned.");
+	GMT_Usage (API, 1, "\n-D Print the directory where a file is found [full path to file].");
+	GMT_Usage (API, 1, "\n-G[a|c|l|u]");
+	GMT_Usage (API, -2, "Download file if possible and not found locally. Optionally, append one of the following:");
+	GMT_Usage (API, -3, "a: Place under the user directory in the appropriate folder.");
+	GMT_Usage (API, -3, "c: Place it in the cache directory.");
+	GMT_Usage (API, -3, "l: Place it in the current local directory [Default].");
+	GMT_Usage (API, -3, "u: Place it in the user\'s data directory.");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
@@ -95,6 +98,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -106,15 +110,19 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Only consider readable files */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 			case 'C':	/* Print Y or N instead of names */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
 			case 'D':	/* Want directory instead */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 			case 'G':	/* Download file first, if required */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->G.mode = GMT_AUTO_DIR;		break;
@@ -122,7 +130,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 					case 'u': Ctrl->G.mode = GMT_DATA_DIR;		break;
 					case '\0': case 'l': Ctrl->G.mode = GMT_LOCAL_DIR;	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Download mode %s not recognized\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Download mode %s not recognized\n", opt->arg);
 						n_errors++;
 						break;
 				}

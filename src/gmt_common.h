@@ -107,6 +107,7 @@ struct GMT_COMMON {
 	struct R {	/* -Rw/e/s/n[/z_min/z_max][r] or -Rgridfile */
 		bool active[4];	/* RSET = 0: -R, ISET = 1: inc, GSET = 2: -r, FSET = 3: read grid */
 		bool oblique;	/* true when -R...r was given (oblique map, probably), else false (map borders are meridians/parallels) */
+		bool via_polygon;	/* Got -R<countrycode> so w/e/s/n may not perfectly fit a grid spacing, for instance */
 		uint32_t registration;	/* Registration mode of a grid given via -r or -Rgrid */
 		int row_order;	/* Order of rows in NetCDF output: 0 (not set) or k_nc_start_north or k_nc_start_south */
 		unsigned int mode;	/* For modern mode only: 0 = get exact region from data, 1 = rounded region from data */
@@ -161,6 +162,7 @@ struct GMT_COMMON {
 	struct d {	/* -d[i][o]<nan_proxy> */
 		bool active[2];
 		bool is_zero[2];
+		unsigned int first_col[2];	/* Only apply from this column onward */
 		double nan_proxy[2];
 		char string[GMT_LEN64];
 	} d;

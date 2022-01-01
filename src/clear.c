@@ -37,20 +37,31 @@
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s all|cache|data[=<planet>]|geography[=<name>]|sessions|settings [%s]\n\n", name, GMT_V_OPT);
+	GMT_Usage (API, 0, "usage: %s all|cache|data[=<planet>]|geography[=<name>]|sessions|settings [%s]\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tDeletes the specified item.  Choose one of these targets:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   cache     Deletes the user\'s cache directory [%s].\n", API->GMT->session.CACHEDIR);
-	GMT_Message (API, GMT_TIME_NONE, "\t   data      Deletes the user\'s data download directory [%s/server].\n", API->GMT->session.USERDIR);
-	GMT_Message (API, GMT_TIME_NONE, "\t             Append =<planet> to limit removal to such data for a specific <planet> [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   geography Deletes the user\'s geography directory (gshhg, dcw) [%s/geography].\n", API->GMT->session.USERDIR);
-	GMT_Message (API, GMT_TIME_NONE, "\t             Append =<name> to limit removal to such data for gshhg or dcw only [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   sessions  Deletes the user\'s sessions directory [%s].\n", API->session_dir);
-	GMT_Message (API, GMT_TIME_NONE, "\t   settings  Deletes a modern mode session\'s %s file.\n", GMT_SETTINGS_FILE);
-	GMT_Message (API, GMT_TIME_NONE, "\t   all       All of the above.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\nDeletes the specified item.  Choose one of these targets:");
+	GMT_Usage (API, 2, "cache");
+	GMT_Usage (API, -4, "Deletes the user\'s cache directory:");
+	GMT_Usage (API, -4, "[%s]", API->GMT->session.CACHEDIR);
+	GMT_Usage (API, 2, "data");
+	GMT_Usage (API, -4, "Deletes the user\'s data download directory:");
+	GMT_Usage (API, -4, "[%s/server]", API->GMT->session.USERDIR);
+	GMT_Usage (API, -4, "Append =<planet> to limit removal to such data for a specific <planet> [all].");
+	GMT_Usage (API, 2, "geography");
+	GMT_Usage (API, -4, "Deletes the user\'s geography directory (gshhg, dcw):");
+	GMT_Usage (API, -4, "[%s/geography]", API->GMT->session.USERDIR);
+	GMT_Usage (API, -4, "Append =<name> to limit removal to such data for gshhg or dcw only [all].");
+	GMT_Usage (API, 2, "sessions");
+	GMT_Usage (API, -4, "Deletes the user\'s sessions directory:");
+	GMT_Usage (API, -4, "[%s]", API->session_dir);
+	GMT_Usage (API, 2, "settings");
+	GMT_Usage (API, -4, "Deletes a modern mode session\'s %s file.", GMT_SETTINGS_FILE);
+	GMT_Usage (API, 2, "all");
+	GMT_Usage (API, -4, "All of the above.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "V,;");
 
 	return (GMT_MODULE_USAGE);
@@ -257,7 +268,7 @@ EXTERN_MSC int GMT_clear (void *V_API, int mode, void *args) {
 				error = GMT_RUNTIME_ERROR;
 			if (clear_data (API, NULL))
 				error = GMT_RUNTIME_ERROR;
-			if (clear_geography (API, NULL)) 
+			if (clear_geography (API, NULL))
 				error = GMT_RUNTIME_ERROR;
 			if (clear_sessions (API))
 				error = GMT_RUNTIME_ERROR;

@@ -23,6 +23,8 @@ Synopsis (begin mode)
 [ |-F|\ *box* ]
 [ |-M|\ *margins* ]
 [ |-N| ]
+[ |SYN_OPT-R| ]
+[ |-J|\ *parameters* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 
@@ -36,7 +38,9 @@ records the current region and projection so that we may return to the initial
 plot environment when  the inset is completed.  The user may select any plot region
 and projection once plotting in the inset, but if the first command uses a projection
 that leaves off the scale or width then we supply a scale or width to fill the inset as best
-as possible, given the inset size and margins (if selected).
+as possible, given the inset size and margins (if selected). **Note**: If you wish to let
+the inset dimensions be determined by the region and projection that will be used to draw in
+the inset, then give these arguments on the **gmt inset begin** command.
 
 
 Required Arguments (begin mode)
@@ -74,18 +78,29 @@ Optional Arguments (begin mode)
 
     .. include:: explain_-F_box.rst_
 
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 .. _-M:
 
 **-M**\ *margins*
     This is clearance that is added around the inside of the inset.  Plotting will take place
     within the inner region only. The margins can be a single value, a pair of values separated by slashes
     (for setting separate horizontal and vertical margins), or the full set of four margins (for setting
-    separate left, right, bottom, and top margins) [no margins].
+    separate left, right, bottom, and top margins) [no margins]. Append units as desired [Default is set
+    by :term:`PROJ_LENGTH_UNIT`].
 
 .. _-N:
 
 **-N**
     Do NOT clip features extruding outside map inset boundaries [Default will clip].
+
+.. |Add_-R| replace:: This is useful when you want the inset **-R -J** to also determine the inset size. |Add_-R_links|
+.. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

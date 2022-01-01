@@ -63,6 +63,9 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 		bool active;
 		char *file;
 	} G;
+	struct GRDPMODELER_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDPMODELER_N {	/* -N */
 		bool active;
 		double t_upper;
@@ -100,38 +103,44 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <agegrdfile> %s [-F<polygontable>] [-G<outgrid>]\n", name, SPOTTER_E_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-N<upper_age>] [-SadrswxyXY]\n\t[-T<time>] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_r_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s %s [-F<polygontable>] [-G%s] [%s] [%s] [-N<upper_age>] "
+		"[-SadrswxyXY] [-T<time>] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_INGRID, SPOTTER_E_OPT, GMT_OUTGRID, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<agegrdfile> is a gridded data file in geographic coordinates with crustal ages.\n");
-	spotter_rot_usage (API, 'E');
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon file that describes the area\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of the grid to work on [Default works on the entire grid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set output filename with the model predictions.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Must contain %%s if more than one item is specified in -S.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default writes x,y,<predictions> to standard output\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Extend earliest stage pole back to <upper_age> [no extension].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of input grid in geographic coordinates with crustal ages");
+	spotter_rot_usage (API);
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-F<polygontable>");
+	GMT_Usage (API, -2, "Specify a multi-segment closed polygon file that describes the area "
+		"of the grid to work on [Default works on the entire grid].");
+	gmt_outgrid_syntax (API, 'G', "Set output filename with the model predictions. "
+		"Must contain %%s if more than one item is specified in -S. "
+		"Default writes x,y,<predictions> to standard output.");
+	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
+	GMT_Usage (API, -2, "Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].");
+	GMT_Usage (API, 1, "\n-N<upper_age>");
+	GMT_Usage (API, -2, "Extend earliest stage pole back to <upper_age> [no extension].");
 	GMT_Option (API, "Rg");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Select one or more model predictions as a function of crustal age.  Choose from:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a : Plate spreading azimuth.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d : Distance to origin of crust in km.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   r : Plate motion rate in mm/yr or km/Myr.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s : Plate motion stage ID (1 is youngest).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   w : Rotation rate in degrees/Myr.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   x : Change in longitude since formation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   y : Change in latitude since formation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   X : Longitude at origin of crust.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Y : Latitude at origin of crust.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default writes separate grids for adrswxyXY\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set fixed time of reconstruction to override age grid.\n");
+	GMT_Usage (API, 1, "\n-SadrswxyXY");
+	GMT_Usage (API, -2, "Select one or more model predictions as a function of crustal age. Choose from:");
+	GMT_Usage (API, 3, "a: Plate spreading azimuth.");
+	GMT_Usage (API, 3, "d: Distance to origin of crust in km.");
+	GMT_Usage (API, 3, "r: Plate motion rate in mm/yr or km/Myr.");
+	GMT_Usage (API, 3, "s: Plate motion stage ID (1 is youngest).");
+	GMT_Usage (API, 3, "w: Rotation rate in degrees/Myr.");
+	GMT_Usage (API, 3, "x: Change in longitude since formation.");
+	GMT_Usage (API, 3, "y: Change in latitude since formation.");
+	GMT_Usage (API, 3, "X: Longitude at origin of crust.");
+	GMT_Usage (API, 3, "Y: Latitude at origin of crust.");
+	GMT_Usage (API, -2, "Default writes separate grids for adrswxyXY.");
+	GMT_Usage (API, 1, "\n-T<time>");
+	GMT_Usage (API, -2, "Set fixed time of reconstruction to override age grid.");
 	GMT_Option (API, "V,bi2,d,h,r,.");
 
 	return (GMT_MODULE_USAGE);
-
 }
 
 static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -143,6 +152,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 
 	unsigned int n_errors = 0, n_files = 0, k;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -151,33 +161,40 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Supplemental parameters */
 
 			case 'E':	/* File with stage poles */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* Extend oldest stage back to this time [no extension] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.t_upper = atof (opt->arg);
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				while (opt->arg[Ctrl->S.n_items]) {
 					switch (opt->arg[Ctrl->S.n_items]) {
@@ -206,6 +223,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.value = atof (opt->arg);
 				break;

@@ -16,7 +16,7 @@ Synopsis
 [ |SYN_OPT-Area| ]
 [ |-C|\ *pointfile*\ \|\ *lon*/*lat*\ **+d**\ *dist* ]
 [ |-D|\ *resolution*\ [**+f**] ]
-[ |-E|\ [**fn**] ]
+[ |-E|\ [**f**][**n**] ]
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *gridmask* ]
 [ |-I|\ [**cfglrsz**] ]
@@ -24,8 +24,9 @@ Synopsis
 [ |-L|\ *linefile*\ **+d**\ *dist*\ [**+p**] ]
 [ |-N|\ *maskvalues* ]
 [ |SYN_OPT-R| ]
-[ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**] ]
 [ |SYN_OPT-V| ]
+[ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**] ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -35,6 +36,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -50,7 +52,7 @@ selected based on whether or not they are 1) inside a rectangular region (**-R**
 *dist* km of any point in *pointfile*, 3) within *dist* km of any line in *linefile*, 4) inside one of the
 polygons in the *polygonfile*, 5) inside geographical features (based on coastlines), 6) has z-values
 within a given range, or 7) inside bins of a grid mask whose nodes are non-zero. The sense of the tests can
-be reversed for each of these 6 criteria by using the **-I** option. See option **-:** on how to read
+be reversed for each of these 7 criteria by using the **-I** option. See option **-:** on how to read
 (y,x) or (latitude,longitude) files (this option affects all module input data).  **Note**: If no projection
 information is used then you must supply **-fg** to tell **select** that your data are geographical.
 
@@ -97,7 +99,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**fn**]
+**-E**\ [**f**][**n**]
     Specify how points exactly on a polygon boundary should be
     considered. By default, such points are considered to be inside the
     polygon. Append **f** and/or **n** to change this behavior for the
@@ -124,20 +126,14 @@ Optional Arguments
 **-I**\ [**cflrsz**]
     Reverses the sense of the test for each of the criteria specified:
 
-    **c** select records NOT inside any point's circle of influence.
-
-    **f** select records NOT inside any of the polygons.
-
-    **g** will pass records inside the cells with z equal zero of the grid mask in **-G**.
-
-    **l** select records NOT within the specified distance of any line.
-
-    **r** select records NOT inside the specified rectangular region.
-
-    **s** select records NOT considered inside as specified by **-N**
-    (and **-A**, **-D**).
-
-    **z** select records NOT within the range specified by **-Z**.
+    - **c** - select records NOT inside any point's circle of influence.
+    - **f** - select records NOT inside any of the polygons.
+    - **g** - pass records inside the cells with z equal zero of the grid mask in **-G**.
+    - **l** - select records NOT within the specified distance of any line.
+    - **r** - select records NOT inside the specified rectangular region.
+    - **s** - select records NOT considered inside as specified by **-N**
+      (and **-A**, **-D**).
+    - **z** - select records NOT within the range specified by **-Z**.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -195,12 +191,15 @@ Optional Arguments
     min or max, specify a hyphen (-). If your 3rd column is absolute
     time then remember to supply **-f**\ 2T. To specify another column, append
     **+c**\ *col*, and to specify several tests just repeat the **Z** option as
-    many times has you have columns to test. **Note**: When more than one **Z** option
+    many times as you have columns to test. **Note**: When more than one **Z** option
     is given then the **-Iz** option cannot be used.  In the case of multiple tests
-    you may use these modifiers as well: **a** passes any record that passes at least
-    one of your *z* tests [all tests must pass], and **i** reverses the tests to pass
-    record with *z* value NOT in the given range.  Finally, if **+c** is not used
-    then it is automatically incremented for each new **-Z** option, starting with 2.
+    you may use these modifiers as well: **+a** passes any record that passes at least
+    one of your *z* tests [Default is all tests must pass], and **+i** reverses the
+    tests to pass record with *z* value NOT in the given range.  Finally, if **+c** is
+    not used then it is automatically incremented for each new **-Z** option, starting
+    with 2.
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_

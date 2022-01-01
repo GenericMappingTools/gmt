@@ -22,6 +22,7 @@ Synopsis
 [ |-T|\ [**h**\|\ **r**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+s**] ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -75,8 +76,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Give the name of the output grid file.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -112,7 +115,7 @@ Optional Arguments
 **-T**\ [**h**\|\ **r**]
     Instead of circular, possibly overlapping areas, select non-overlapping tiling.  Choose between
     **r**\ ectangular **h**\ exagonal binning. For **-Tr**, set bin sizes via **-I** and we write
-    the computed statistics to the grid file named in **-G**).  For **-Th**, we write a table with
+    the computed statistics to the grid file named in **-G**.  For **-Th**, we write a table with
     the centers of the hexagons and the computed statistics to standard output (or to the file named
     in **-G**).  Here, the **-I** setting is expected to set the *y* increment only and we compute
     the *x*-increment given the geometry. Because the horizontal spacing between hexagon centers in
@@ -133,6 +136,8 @@ Optional Arguments
    If your weights are actually uncertainties (one sigma) then append **+s**
    and we compute weight = 1/sigma.
 
+.. include:: explain_-aspatial.rst_
+
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns].
 .. include:: explain_-bi.rst_
 
@@ -145,7 +150,7 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| replace:: 0x20 .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
@@ -191,7 +196,7 @@ using the remote file @capitals.gmt, and plot the resulting grid using default p
 To do hexagonal binning of the data in the file mydata.txt and counting the number of points inside
 each hexagon, try::
 
-    gmt count mydata.txt -R0/5/0/3 -I1 -Th -Cn > counts.txt
+    gmt gmtbinstats mydata.txt -R0/5/0/3 -I1 -Th -Cn > counts.txt
 
 See Also
 --------
