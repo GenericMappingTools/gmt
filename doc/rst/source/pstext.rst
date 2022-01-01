@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt pstext** [ *textfiles* ] |-J|\ *parameters*
+**gmt pstext** [ *textfiles* ]
+|-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A| ]
 |SYN_OPT-B|

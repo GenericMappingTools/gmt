@@ -438,7 +438,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 
 	if (Ctrl->M.active) {	/* Just print the converted data and exit */
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to write x,y file to stdout\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to write x,y file to standard output\n");
 			Return (API->error);
 		}
 		Return (GMT_NOERROR);

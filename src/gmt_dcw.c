@@ -270,6 +270,28 @@ GMT_LOCAL bool gmtdcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STA
 #define GMT_DCW_PLOTTING	1
 #define GMT_DCW_CLIPPING	2
 
+int gmt_DCW_version (struct GMTAPI_CTRL *API, char *version) {
+	/* Write DCW version into version which must have at least 8 positions */
+	int cdfid, err;
+	char path[PATH_MAX] = {""};
+	struct GMT_CTRL *GMT = API->GMT;
+	
+	if (version == NULL)
+		return (GMT_PTR_IS_NULL);
+
+	if (!gmtdcw_get_path (GMT, "dcw-gmt", ".nc", path))
+		return (GMT_FILE_NOT_FOUND);
+
+	gmt_M_err_trap (gmt_nc_open (GMT, path, NC_NOWRITE, &cdfid));
+
+	/* Get global attributes */
+	gmt_M_memset (version, strlen (version), char);
+	gmt_M_err_trap (nc_get_att_text (cdfid, NC_GLOBAL, "version", version));
+	gmt_nc_close (GMT, cdfid);
+
+	return (GMT_NOERROR);
+}
+
 struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode) {
 	/* Given comma-separated names, read the corresponding netCDF variables.
  	 * mode = GMT_DCW_REGION	: Return the joint w/e/s/n limits

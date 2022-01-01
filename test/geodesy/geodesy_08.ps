@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 432 432
 %%HiResBoundingBox: 0 0 432.0000 432.0000
-%%Title: GMT v6.2.0_2cec3a0_2021.03.18 [64-bit] Document from basemap
+%%Title: GMT v6.4.0_769b9ef-dirty_2021.12.27 [64-bit] Document from basemap
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Mar 18 17:56:16 2021
+%%CreationDate: Mon Dec 27 14:34:11 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -712,6 +712,7 @@ V
 333 F0
 (2020­02­03 00) tr Z
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+0 A
 945 6491 M 333 F0
 (36) tl Z
 U
@@ -813,11 +814,18 @@ PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reenco
 2769 -109 M (124°00œW) tc Z
 3923 -109 M (123°45œW) tc Z
 5077 -109 M (123°30œW) tc Z
+/PSL_AH1 0
 -109 0 M (40°00œN) mr Z
+(40°00œN) sw mx
 -109 1503 M (40°15œN) mr Z
+(40°15œN) sw mx
 -109 3012 M (40°30œN) mr Z
+(40°30œN) sw mx
 -109 4526 M (40°45œN) mr Z
+(40°45œN) sw mx
 -109 6046 M (41°00œN) mr Z
+(41°00œN) sw mx
+def
 0 A
 %%EndObject
 0 A
@@ -825,7 +833,7 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
-%@GMT: gmt events /Users/meghanj/Code/GenericMappingTools/gmt/dbuild/test/geodesy/geodesy_08/labels.txt -L1 -Et '-T2020-02-03 00:00:00' -F+f12p,Helvetica-Bold,red+jBL -Dj0.1c --TIME_UNIT=d -R-124.6/-123.3/40/41 -JM5i
+%@GMT: gmt events /Users/pwessel/GMTdev/gmt-dev/rbuild/test/geodesy/geodesy_08/labels.txt -L1 -Et '-T2020-02-03 00:00:00' -F+f12p,Helvetica-Bold,red+jBL -Dj0.1c --TIME_UNIT=d -R-124.6/-123.3/40/41 -JM5i
 %@PROJ: merc -124.60000000 -123.30000000 40.00000000 41.00000000 -72357.669 72357.669 4838471.398 4984302.519 +proj=merc +lon_0=-123.95 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -836,7 +844,7 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
-%@GMT: gmt text /var/folders/48/71lnqfxj77j8wrw6k0rtklv00000gq/T/GMT_psevents_labels_67749.txt -R-124.6/-123.3/40/41 -JM5i -O -K -t --GMT_HISTORY=readonly -Dj0.1c -F+f12p,Helvetica-Bold,red+jBL
+%@GMT: gmt text /tmp/GMT_psevents_labels_56845.txt -R-124.6/-123.3/40/41 -JM5i -O -K -t --GMT_HISTORY=readonly -Dj0.1c -F+f12p,Helvetica-Bold,red+jBL
 %@PROJ: merc -124.60000000 -123.30000000 40.00000000 41.00000000 -72357.669 72357.669 4838471.398 4984302.519 +proj=merc +lon_0=-123.95 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -864,7 +872,7 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
-%@GMT: gmt events '-Zvelo -A18p+e+a40+n6k+h0.5 -Se0.50/0' -Ct.cpt -W1.5 -N /Users/meghanj/Code/GenericMappingTools/gmt/dbuild/test/geodesy/geodesy_08/data.txt '-T2020-02-03 00:00:00' -Es+r1+p1+d1+f1 -Mi1+c-0.5 -Ms2+c0.5 -Mt+c0 -L3 --TIME_UNIT=d -R-124.6/-123.3/40/41 -JM5i
+%@GMT: gmt events '-Zvelo -A16p+e+a40+n6k/0+h0.5 -Se0.50/0' -Ct.cpt -W1.5 -N /Users/pwessel/GMTdev/gmt-dev/rbuild/test/geodesy/geodesy_08/data.txt '-T2020-02-03 00:00:00' -Es+r1+p1+d1+f1 -Mi1+c-0.5 -Ms2+c0.5 -Mt+c0 -L3 --TIME_UNIT=d -R-124.6/-123.3/40/41 -JM5i
 %@PROJ: merc -124.60000000 -123.30000000 40.00000000 41.00000000 -72357.669 72357.669 4838471.398 4984302.519 +proj=merc +lon_0=-123.95 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -875,28 +883,29 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
-%@GMT: gmt velo /var/folders/48/71lnqfxj77j8wrw6k0rtklv00000gq/T/GMT_psevents_symbols_67750.txt -A18p+e+a40+n6k+h0.5 -Se0.50/0 -R-124.6/-123.3/40/41 -JM5i -O -K -H -I -t --GMT_HISTORY=readonly --PROJ_LENGTH_UNIT=cm -Ct.cpt -W1.5 -N
+%@GMT: gmt velo /tmp/GMT_psevents_symbols_56861.txt -A16p+e+a40+n6k/0+h0.5 -Se0.50/0 -R-124.6/-123.3/40/41 -JM5i -O -K -H -I -t --GMT_HISTORY=readonly --PROJ_LENGTH_UNIT=cm -Ct.cpt -W1.5 -N
 %@PROJ: merc -124.60000000 -123.30000000 40.00000000 41.00000000 -72357.669 72357.669 4838471.398 4984302.519 +proj=merc +lon_0=-123.95 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
 25 W
-/PSL_vecheadpen {25 W 0 A [] 0 B} def
+/PSL_vecheadpen {25 W 0 A 1 1 /Normal PSL_transp [] 0 B} def
 798 3410 M
 P S
 {0.962 0.771 0.227 C} FS
+O1
 25 W
 V 940 2658 T 100.637038045 R
-N 0 0 M 540 0 D S
+N 0 0 M 565 0 D S
 U
 V 798 3410 T 100.637038045 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 987 2658 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
@@ -907,15 +916,15 @@ P S
 {0.979 0.478 0.12 C} FS
 25 W
 V 1347 1488 T 119.898574341 R
-N 0 0 M 671 0 D S
+N 0 0 M 696 0 D S
 U
 V 901 2264 T 119.898574341 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 1394 1488 M (P157) ml Z
@@ -924,15 +933,15 @@ P S
 {0.738 0.96 0.204 C} FS
 25 W
 V 1464 3040 T 94.9300391984 R
-N 0 0 M 410 0 D S
+N 0 0 M 435 0 D S
 U
 V 1409 3673 T 94.9300391984 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 1511 3040 M (P159) ml Z
@@ -941,15 +950,15 @@ P S
 {0.398 0.992 0.41 C} FS
 25 W
 V 1675 4168 T 82.8980191134 R
-N 0 0 M 285 0 D S
+N 0 0 M 310 0 D S
 U
 V 1738 4674 T 82.8980191134 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 1628 4168 M (P162) mr Z
@@ -958,15 +967,15 @@ P S
 {0.39 0.991 0.416 C} FS
 25 W
 V 1786 3843 T 87.2001548986 R
-N 0 0 M 283 0 D S
+N 0 0 M 308 0 D S
 U
 V 1810 4350 T 87.2001548986 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 1738 3843 M (P161) mr Z
@@ -975,15 +984,15 @@ P S
 {0.39 0.991 0.416 C} FS
 25 W
 V 2154 3321 T 96.1164502441 R
-N 0 0 M 283 0 D S
+N 0 0 M 308 0 D S
 U
 V 2100 3826 T 96.1164502441 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 2201 3321 M (P160) ml Z
@@ -992,15 +1001,15 @@ P S
 {0.556 1 0.289 C} FS
 25 W
 V 2274 2543 T 102.867583408 R
-N 0 0 M 334 0 D S
+N 0 0 M 359 0 D S
 U
 V 2150 3088 T 102.867583408 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 2321 2543 M (P158) ml Z
@@ -1009,15 +1018,15 @@ P S
 {0.123 0.915 0.682 C} FS
 25 W
 V 2421 5293 T 84.0394383427 R
-N 0 0 M 184 0 D S
+N 0 0 M 209 0 D S
 U
 V 2464 5701 T 84.0394383427 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 2374 5293 M (P058) mr Z
@@ -1026,15 +1035,15 @@ P S
 {0.827 0.91 0.208 C} FS
 25 W
 V 2505 1319 T 120.029501619 R
-N 0 0 M 453 0 D S
+N 0 0 M 478 0 D S
 U
 V 2165 1907 T 120.029501619 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 2552 1319 M (P163) ml Z
@@ -1043,15 +1052,15 @@ P S
 {0.0941 0.878 0.742 C} FS
 25 W
 V 2918 4776 T 87.4670717057 R
-N 0 0 M 155 0 D S
+N 0 0 M 180 0 D S
 U
 V 2935 5155 T 87.4670717057 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 2871 4776 M (P169) mr Z
@@ -1060,15 +1069,15 @@ P S
 {0.933 0.812 0.227 C} FS
 25 W
 V 3202 146 T 128.996402111 R
-N 0 0 M 516 0 D S
+N 0 0 M 541 0 D S
 U
 V 2736 722 T 128.996402111 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 3249 146 M (P156) ml Z
@@ -1077,15 +1086,15 @@ P S
 {0.0956 0.84 0.797 C} FS
 25 W
 V 3316 4032 T 96.4202078505 R
-N 0 0 M 130 0 D S
+N 0 0 M 155 0 D S
 U
 V 3276 4385 T 96.4202078505 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 3363 4032 M (P168) ml Z
@@ -1094,15 +1103,15 @@ P S
 {0.0998 0.892 0.72 C} FS
 25 W
 V 3322 3276 T 102.626377059 R
-N 0 0 M 166 0 D S
+N 0 0 M 191 0 D S
 U
 V 3237 3658 T 102.626377059 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 3369 3276 M (P167) ml Z
@@ -1111,15 +1120,15 @@ P S
 {0.183 0.701 0.953 C} FS
 25 W
 V 3400 5317 T 92.4664523267 R
-N 0 0 M 55 0 D S
+N 0 0 M 80 0 D S
 U
 V 3388 5597 T 92.4664523267 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 3447 5317 M (P170) ml Z
@@ -1128,15 +1137,15 @@ P S
 {0.141 0.924 0.659 C} FS
 25 W
 V 3402 2620 T 108.536898501 R
-N 0 0 M 195 0 D S
+N 0 0 M 220 0 D S
 U
 V 3269 3018 T 108.536898501 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 3449 2620 M (P166) ml Z
@@ -1145,15 +1154,15 @@ P S
 {0.396 0.992 0.412 C} FS
 25 W
 V 3446 1476 T 122.120813594 R
-N 0 0 M 285 0 D S
+N 0 0 M 310 0 D S
 U
 V 3175 1908 T 122.120813594 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 3494 1476 M (P165) ml Z
@@ -1162,15 +1171,15 @@ P S
 {0.192 0.686 0.961 C} FS
 25 W
 V 4158 3467 T 120.776904667 R
-N 0 0 M 48 0 D S
+N 0 0 M 73 0 D S
 U
 V 4019 3702 T 120.776904667 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 4206 3467 M (P326) ml Z
@@ -1179,15 +1188,15 @@ P S
 {0.4 0.992 0.409 C} FS
 25 W
 V 4184 716 T 132.694410277 R
-N 0 0 M 286 0 D S
+N 0 0 M 311 0 D S
 U
 V 3838 1091 T 132.694410277 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 4232 716 M (P164) ml Z
@@ -1196,15 +1205,15 @@ P S
 {0.162 0.936 0.634 C} FS
 25 W
 V 4358 1544 T 126.932894629 R
-N 0 0 M 205 0 D S
+N 0 0 M 230 0 D S
 U
 V 4100 1888 T 126.932894629 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 4405 1544 M (P324) ml Z
@@ -1213,15 +1222,15 @@ P S
 {0.17 0.72 0.939 C} FS
 25 W
 V 4740 2884 T 128.989259016 R
-N 0 0 M 64 0 D S
+N 0 0 M 89 0 D S
 U
 V 4558 3108 T 128.989259016 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 4787 2884 M (P327) ml Z
@@ -1230,15 +1239,15 @@ P S
 {0.217 0.956 0.571 C} FS
 25 W
 V 5298 494 T 138.00168238 R
-N 0 0 M 228 0 D S
+N 0 0 M 253 0 D S
 U
 V 4961 797 T 138.00168238 R
 PSL_vecheadpen
 25 W
 0 0 M
--300 109 D
-75 -109 D
--75 -109 D
+-267 97 D
+67 -97 D
+-67 -97 D
 P clip fs P S 
 U
 5345 494 M (P329) ml Z

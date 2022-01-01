@@ -229,7 +229,7 @@ Lambert Azimuthal Equal-Area (**-Ja** **-JA**)
 
 - The longitude (*lon0*) and latitude (*lat0*) of the projection center.
 - Optionally, the *horizon*, i.e., the number of degrees from the center to the edge (<=180) [default is 90].
-- The *scale* as 1:xxxxx or as radius/latitude where radius is the projected distance on the map from projection center
+- The *scale* as 1:xxxxx or as *radius/latitude* where *radius* is the projected distance on the map from projection center
   to an oblique latitude where 0 would be the oblique Equator (with **-Ja**) or map *width*
   :ref:`plot-units <plt-units>` (with **-JA**).
 
@@ -319,16 +319,17 @@ Stereographic Equal-Angle (**-Js** **-JS**)
 
 - The longitude (*lon0*) and latitude (*lat0*) of the projection center.
 - Optionally, the *horizon*, i.e., the number of degrees from the center to the edge (< 180) [default is 90].
-- Scale as 1:xxxxx (true scale at pole), slat/1:xxxxx (true scale at standard parallel slat), or radius/latitude where
-  radius is distance on map in :ref:`plot-units <plt-units>` from projection center to a particular oblique latitude
-  (with **-Js**) or simply map *width* in :ref:`plot-units <plt-units>` (with **-JS**).
+- Scale (via **-Js**) may be provided in one of three flavors: Append 1:xxxxx (true scale at pole), *slat*\ /1:xxxxx
+  (true scale at standard parallel *slat* for the polar aspect only), or *radius/latitude* (where *radius* is
+  distance on map in :ref:`plot-units <plt-units>` from projection center to a particular oblique latitude).
+- Alternatively, simply append map *width* in :ref:`plot-units <plt-units>` (with **-JS**).
 
 **Description**
 
 
 This is a conformal, azimuthal projection that dates back to the Greeks. Its main use is for mapping the polar regions.
 In the polar aspect all meridians are straight lines and parallels are arcs of circles. While this is the most common
-use it is possible to select any point as the center of projection. The requirements are
+use it is possible to select any point as the center of projection.
 
 A map scale factor of 0.9996 will be applied by default (although you may change this with :term:`PROJ_SCALE_FACTOR`).
 However, the setting is ignored when a standard parallel has been specified since the scale is then implicitly given.
@@ -409,7 +410,7 @@ Perspective projection (**-Jg** **-JG**)
 **Required Parameters**
 
 - The longitude (*lon0*) and latitude (*lat0*) of the projection center.
-- The *scale* as 1:xxxxx or as radius/latitude where radius is distance on map in :ref:`plot-units <plt-units>` from
+- The *scale* as 1:xxxxx or as *radius/latitude* where *radius* is distance on map in :ref:`plot-units <plt-units>` from
   projection center to a particular oblique latitude (with **-Jg**), or map width in :ref:`plot-units <plt-units>`
   (with **-JG**).
 
@@ -460,7 +461,7 @@ Orthographic projection (**-Jg** **-JG**)
 
 - The longitude (*lon0*) and latitude (*lat0*) of the projection center.
 - Optionally, the *horizon*, i.e., the number of degrees from the center to the edge (<=90) [default is 90].
-- The *scale* as 1:xxxxx or as radius/latitude where radius is distance on map in :ref:`plot-units <plt-units>` from
+- The *scale* as 1:xxxxx or as *radius/latitude* where *radius* is distance on map in :ref:`plot-units <plt-units>` from
   projection center to a particular oblique latitude (with **-Jg**), or map width in :ref:`plot-units <plt-units>`
   (with **-JG**).
 
@@ -499,7 +500,7 @@ Azimuthal Equidistant projection (**-Je** **-JE**)
 
 - The longitude (*lon0*) and latitude (*lat0*) of the projection center.
 - Optionally, the *horizon*, i.e., the number of degrees from the center to the edge (<=180) [default is 180].
-- The *scale* as 1:xxxxx or as radius/latitude where radius is distance on map in :ref:`plot-units <plt-units>` from
+- The *scale* as 1:xxxxx or as *radius/latitude* where *radius* is distance on map in :ref:`plot-units <plt-units>` from
   projection center to a particular oblique latitude (with **-Je**), or map width in :ref:`plot-units <plt-units>`
   (with **-JE**).
 
@@ -538,7 +539,7 @@ Gnomonic projection (**-Jf** **-JF**)
 
 - The longitude (*lon0*) and latitude (*lat0*) of the projection center.
 - Optionally, the *horizon*, i.e., the number of degrees from the center to the edge (<90) [default is 60].
-- The *scale* as 1:xxxxx or as radius/latitude where radius is distance on map in :ref:`plot-units <plt-units>` from
+- The *scale* as 1:xxxxx or as *radius/latitude* where radius is distance on map in :ref:`plot-units <plt-units>` from
   projection center to a particular oblique latitude (with **-Jf**), or map width in :ref:`plot-units <plt-units>`
   (with **-JF**).
 

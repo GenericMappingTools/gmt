@@ -40,6 +40,8 @@
  *    go to larger grids (i.e., adding more nodes).
  * 3. It relies more on functions and macros from GMT to handle rows/cols/node calculations.
  * 4. TESTING: It enables multiple threads via OpenMP [if compiled that way].
+ *
+ * Note on KEYS: DD(= means -D takes an optional input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -2431,7 +2433,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->M.active) {	/* Want to mask the grid first */
 		char input[GMT_VF_LEN] = {""}, mask[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
-		static char *V_level = "qntcvld";
+		static char *V_level = GMT_VERBOSE_CODES;
 		struct GMT_GRID *Gmask = NULL;
 		struct GMT_VECTOR *V = NULL;
 		double *data[2] = {NULL, NULL};

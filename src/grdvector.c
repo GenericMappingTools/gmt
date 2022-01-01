@@ -325,6 +325,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 		}
 	}
 
+	if (!Ctrl->W.active) {	/* Accept -W default pen for stem */
+		GMT_Report (API, GMT_MSG_DEBUG, "Option -W: Not given so we accept default pen\n");
+		Ctrl->W.active = true;
+	}
+	if (!Ctrl->G.active && (Ctrl->Q.S.v.status & PSL_VEC_FILL2)) {	/* Gave fill via +g instead */
+		GMT_Report (API, GMT_MSG_DEBUG, "Option -G: Not given but -Q+g was set so we use it to fill head\n");
+		gmt_M_rgb_copy (Ctrl->G.fill.rgb, Ctrl->Q.S.v.fill.rgb);
+		Ctrl->G.active = true;
+	}
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
@@ -748,6 +757,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 				dim[PSL_VEC_HEAD_PENWIDTH] = headpen_width;	/* Possibly shrunk head pen width */
 				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
 					f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
+					if (f < Ctrl->Q.S.v.v_norm_limit) f = Ctrl->Q.S.v.v_norm_limit;
 					for (k = 2; k <= 4; k++) dim[k] *= f;
 					dim[PSL_VEC_HEAD_PENWIDTH] *= f;
 				}

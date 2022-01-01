@@ -85,7 +85,6 @@
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
-#include "gmt_common_byteswap.h"
 
 struct GRD_PAD {	/* Local structure */
 	double wesn[4];
@@ -754,13 +753,19 @@ void gmt_copy_gridheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *to, stru
 	if (to->ProjRefWKT) gmt_M_str_free (to->ProjRefWKT);		/* Since we will duplicate via from */
 	if (to->ProjRefPROJ4) gmt_M_str_free (to->ProjRefPROJ4);	/* Since we will duplicate via from */
 	if (Hto->pocket) gmt_M_str_free (Hto->pocket);			/* Since we will duplicate via from */
+	if (Hto->title) gmt_M_str_free (Hto->title);			/* Since we will duplicate via from */
+	if (Hto->command) gmt_M_str_free (Hto->command);			/* Since we will duplicate via from */
+	if (Hto->remark) gmt_M_str_free (Hto->remark);			/* Since we will duplicate via from */
 	gmt_M_memcpy (to, from, 1, struct GMT_GRID_HEADER);		/* Copies full contents but also duplicates the hidden address */
 	to->hidden = Hto;	/* Restore the original hidden address in to */
 	gmt_M_memcpy (to->hidden, from->hidden, 1, struct GMT_GRID_HEADER_HIDDEN);	/* Copies full contents of hidden area */
-	/* Must deal with three pointers individually */
+	/* Must deal with six pointers individually */
 	if (from->ProjRefWKT) to->ProjRefWKT = strdup (from->ProjRefWKT);
 	if (from->ProjRefPROJ4) to->ProjRefPROJ4 = strdup (from->ProjRefPROJ4);
 	if (Hfrom->pocket) Hto->pocket = strdup (Hfrom->pocket);
+	if (Hfrom->title) Hto->title = strdup (Hfrom->title);
+	if (Hfrom->command) Hto->command = strdup (Hfrom->command);
+	if (Hfrom->remark) Hto->remark = strdup (Hfrom->remark);
 }
 
 /*! gmt_grd_is_global returns true for a geographic grid with exactly 360-degree range (with or without repeating column) */
@@ -1904,7 +1909,7 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 	if (old)	/* Old grid syntax: -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
 		gmtgrdio_decode_grd_h_info_old (GMT, input, h);
 	else {	/* New syntax: -D[+x<xname>][+yyname>][+z<zname>][+d<dname>][+s<scale>][+o<offset>][+n<invalid>][+t<title>][+r<remark>] plus [+v<name>] for 3D */
-		char word[GMT_LEN256] = {""};
+		char word[GMT_BUFSIZ] = {""};
 		unsigned int pos = 0;
 		double d;
 		while (gmt_getmodopt (GMT, 'D', input, modifiers, &pos, word, &uerr) && uerr == 0) {
@@ -1955,18 +1960,24 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 					break;
 				case 't':	/* Revise the title */
 					gmt_M_memset (h->title, GMT_GRID_TITLE_LEN80, char);
-					if (strlen(word) > GMT_GRID_TITLE_LEN80)
+					if (strlen(word) > GMT_GRID_TITLE_LEN80) {
 						GMT_Report (GMT->parent, GMT_MSG_WARNING,
-							"WTitle string exceeds upper length of %d characters (truncated)\n",
+							"Title string exceeds upper length of %d characters (will be truncated in non-netCDF grid files)\n",
 							GMT_GRID_TITLE_LEN80);
+						if (HH->title) gmt_M_str_free (HH->title);	/* Free previous string */
+						HH->title = strdup (&word[1]);
+					}
 					if (word[1]) strncpy (h->title, &word[1], GMT_GRID_TITLE_LEN80-1);
 					break;
 				case 'r':	/* Revise the title */
 					gmt_M_memset (h->remark, GMT_GRID_REMARK_LEN160, char);
-					if (strlen(word) > GMT_GRID_REMARK_LEN160)
+					if (strlen(word) > GMT_GRID_REMARK_LEN160) {
 						GMT_Report (GMT->parent, GMT_MSG_WARNING,
-							"Remark string exceeds upper length of %d characters (truncated)\n",
+							"Remark string exceeds upper length of %d characters (will be truncated in non-netCDF grid files)\n",
 							GMT_GRID_REMARK_LEN160);
+						if (HH->remark) gmt_M_str_free (HH->remark);	/* Free previous string */
+						HH->remark = strdup (&word[1]);
+					}
 					if (word[1]) strncpy (h->remark, &word[1], GMT_GRID_REMARK_LEN160-1);
 					break;
 				case 'v':	/* Set the data netCDF variable name */
@@ -1983,6 +1994,24 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 		}
 	}
 	return (int)uerr;
+}
+
+char *gmt_get_grd_title (struct GMT_GRID_HEADER *h) {
+	/* Return pointer to full grid header */
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+	return (HH->title ? HH->title : h->title);
+}
+
+char *gmt_get_grd_remark (struct GMT_GRID_HEADER *h) {
+	/* Return pointer to full grid header */
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+	return (HH->remark  ? HH->remark  : h->remark );
+}
+
+char *gmt_get_grd_command (struct GMT_GRID_HEADER *h) {
+	/* Return pointer to full grid header */
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+	return (HH->command  ? HH->command  : h->command );
 }
 
 int gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_HEADER *h) {
@@ -2073,11 +2102,16 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 	int i;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
-	if (update)	/* Only clean the command history */
+	if (update) {	/* Only clean the command history */
 		gmt_M_memset (header->command, GMT_GRID_COMMAND_LEN320, char);
+		if (HH->command) gmt_M_str_free (HH->command);	/* Free previous string */
+	}
 	else {		/* Wipe the slate clean */
 		void *ptr = HH->index_function;	/* Keep these two */
 		char mem[4];
+		if (HH->command) gmt_M_str_free (HH->command);	/* Free previous string */
+		if (HH->title)   gmt_M_str_free (HH->title);	/* Free previous string */
+		if (HH->remark)  gmt_M_str_free (HH->remark);	/* Free previous string */
 		gmt_M_memcpy (mem, header->mem_layout, 4, char);
 		gmt_M_memset (header, 1, struct GMT_GRID_HEADER);
 		HH->index_function = ptr;
@@ -2112,14 +2146,15 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		int argc = 0, k_data;
 		char **argv = NULL, *c = NULL;
 		char file[GMT_LEN64] = {""}, *txt = NULL;
+		char command[GMT_BUFSIZ] = {""};
 
 		if ((argv = GMT_Create_Args (API, &argc, options)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not create argc, argv from linked structure options!\n");
 			return;
 		}
-		strncpy (header->command, GMT->init.module_name, GMT_GRID_COMMAND_LEN320-1);
-		len = strlen (header->command);
-		for (i = 0; len < GMT_GRID_COMMAND_LEN320 && i < argc; i++) {
+		strncpy (command, GMT->init.module_name, GMT_BUFSIZ-1);
+		len = strlen (command);
+		for (i = 0; len < GMT_BUFSIZ && i < argc; i++) {
 			if (gmt_file_is_tiled_list (API, argv[i], &k_data, NULL, NULL)) {	/* Want to replace the tiled list with the original @earth_relief_xxx name instead */
 				snprintf (file, GMT_LEN64, "@%s", API->remote_info[k_data].file);
 				txt = file;
@@ -2133,14 +2168,17 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 			else
 				txt = argv[i];
 			len += strlen (txt) + 1;
-			if (len >= GMT_GRID_COMMAND_LEN320) continue;
-			strcat (header->command, " ");
-			strcat (header->command, txt);
+			if (len >= GMT_BUFSIZ) continue;
+			strcat (command, " ");
+			strcat (command, txt);
 		}
-		if (len < GMT_GRID_COMMAND_LEN320)
+		strncpy (header->command, command, GMT_GRID_COMMAND_LEN320-1);
+		if (len < GMT_GRID_COMMAND_LEN320)	/* Fits in regular header string */
 			header->command[len] = 0;
-		else /* Must truncate */
+		else { /* Must truncate and store the full version in the hidden structure */
 			header->command[GMT_GRID_COMMAND_LEN320-1] = 0;
+			HH->command = strdup (command);
+		}
 		snprintf (header->title, GMT_GRID_TITLE_LEN80, "Produced by %s", GMT->init.module_name);
 		GMT_Destroy_Args (API, argc, &argv);
 	}
@@ -2201,6 +2239,48 @@ void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 	if (n_warn)
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Inconsistent values at repeated longitude nodes (%g and %g) for %d rows\n",
 			G->header->wesn[XLO], G->header->wesn[XHI], n_warn);
+}
+
+void gmt_change_grid_history (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_GRID_HEADER *h, char *command) {
+	char *cmd = NULL;
+	size_t L;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+
+	switch (mode) {	/* Create the command history per -C directive */
+		case GMT_GRDHISTORY_NONE:	/* No output history at all */
+			if (HH->command)	/* Extra long previous command history */
+				gmt_M_str_free (HH->command);
+			gmt_M_memset (command, GMT_BUFSIZ, char);
+			gmt_M_memset (h->command, GMT_GRID_COMMAND_LEN320, char);
+			break;
+		case GMT_GRDHISTORY_OLD:	/* Only keep old command history */
+			if (HH->command)	/* Extra long previous command history */
+				strncpy (command, HH->command, GMT_BUFSIZ);
+			else
+				strncpy (command, h->command, GMT_BUFSIZ);
+			break;
+		case GMT_GRDHISTORY_NEW:	/* Only keep new command history */
+			cmd = GMT_Create_Cmd (API, API->GMT->current.options);
+			snprintf (command, GMT_BUFSIZ, "%s %s", API->GMT->init.module_name, cmd);
+			break;
+		case GMT_GRDHISTORY_BOTH:	/* Only keep old command history */
+			if (HH->command)	/* Extra long previous command history */
+				strncpy (command, HH->command, GMT_BUFSIZ);
+			else
+				strncpy (command, h->command, GMT_BUFSIZ);
+			L = GMT_BUFSIZ - strlen (command) - 2;
+			cmd = GMT_Create_Cmd (API, API->GMT->current.options);
+			/* Append this module command string to the existing history */
+			strncat (command, "; ", L);
+			strncat (command, API->GMT->init.module_name, L);	L -= strlen (API->GMT->init.module_name) + 1;
+			strncat (command, " ", L);
+			strncat (command, cmd, L);
+			break;
+		default:	/* Just to please Coverity */
+			break;
+	}
+
+	if (cmd) gmt_M_free (API->GMT, cmd);
 }
 
 int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *wesn, unsigned int interpolant) {
@@ -2860,6 +2940,9 @@ void gmt_free_header (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER **header) {
 		gmt_M_str_free (h->ProjRefPROJ4);
 	}
 	gmt_M_str_free (HH->pocket);
+	if (HH->title)   gmt_M_str_free (HH->title);
+	if (HH->command) gmt_M_str_free (HH->command);
+	if (HH->remark)  gmt_M_str_free (HH->remark);
 	gmt_M_free (GMT, h->hidden);
 	gmt_M_free (GMT, *header);
 }

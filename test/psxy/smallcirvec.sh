@@ -6,10 +6,10 @@ ps=smallcirvec.ps
 gmt set PROJ_ELLIPSOID Sphere
 # Vector from point with head at end
 cat << EOF > t.txt
-0 0 8000	red	0	45	b+e+b
--30 0 6000	green	-30	-30	e+e+b
-30 30 6000	blue	10	10	c+e+b
--10 0 6671.7	yellow	80	0	c+e+b
+0 0 8000k	red	0	45	b+e+b
+-30 0 6000k	green	-30	-30	e+e+b
+30 30 6000000e	blue	10	10	c+e+b
+-10 0 6671.7k	yellow	80	0	c+e+b
 EOF
 gmt psbasemap -Rg -JG0/0/4.5i -Bag -P -K -Xc > $ps
 while read lon lat length color plon plat just; do

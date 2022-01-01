@@ -235,7 +235,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+r Set number using Roman numerals; use +R for uppercase [arabic].");
 	GMT_Usage (API, 3, "+s Append [<dx>/<dy>][/<shade>] to plot a shadow behind the tag panel [Default is 2p/-2p/gray50].");
 	GMT_Usage (API, 3, "+v Number subplots down the columns [subplots are numbered across rows].");
-	GMT_Usage (API, -2, "Note: Use subplot set -A<fixedtag> to override the auto-tag system for one subplot.");
+	GMT_Usage (API, -2, "Note: Use subplot set -A<fixedtag> to override the auto-tag system for one subplot and -A- to skip a tag.");
 	GMT_Option (API, "B-");
 	GMT_Usage (API, -2, "Note: Usually it is better to use -S to organize annotations and ticks than to use -B directly.");
 	GMT_Usage (API, 1, "\n-C[<side>]<clearance>");

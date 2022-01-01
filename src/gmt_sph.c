@@ -399,8 +399,11 @@ double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat,
 	unsigned int k, kind;
 	int sgn;
 	uint64_t p;
-	double pol_area = 0.0, tri_area, clat, P0[3], P1[3], N[3], M[3], C[3] = {0.0, 0.0, 0.0}, center[2];
+	double pol_area = 0.0, tri_area, clat, P0[3], P1[3], N[3], M[3], C[3] = {0.0, 0.0, 0.0}, center[2], R2;
 	static char *way[2] = {"CCW", "CW"};
+
+	/* pol_area is given in steradians and must be scaled by radius squared (R2) to yield a dimensioned area */
+	R2 = pow (GMT->current.proj.mean_radius * GMT->current.map.dist[GMT_MAP_DIST].scale, 2.0);	/* R in desired length unit squared (R2) */
 	if (n == 4) {	/* Apply directly on the spherical triangle (4 because of repeated point) */
 		clat = gmt_lat_swap (GMT, lat[0], GMT_LATSWAP_G2O);	/* Get geocentric latitude */
 		gmt_geo_to_cart (GMT, clat, lon[0], N, true);	/* get x/y/z for first point*/
@@ -414,11 +417,13 @@ double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat,
 			kind = (sgn == -1) ? 0 : 1;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Spherical triangle %.4lg/%.4lg via %.4lg/%.4lg to %.4lg/%.4lg : Unit area %7.5lg oriented %3s\n", lon[0], lat[1], lon[1], lat[1], lon[2], lat[2], pol_area, way[kind]);
 		}
-		for (k = 0; k < 3; k++) C[k] = N[k] + P0[k] + P1[k];
-		gmt_normalize3v (GMT, C);
-		gmt_cart_to_geo (GMT, &clat, &centroid[GMT_X], C, true);
-		centroid[GMT_Y] = gmt_lat_swap (GMT, clat, GMT_LATSWAP_G2O+1);	/* Get geodetic latitude */
-		return (sgn * pol_area * GMT->current.proj.mean_radius * GMT->current.proj.mean_radius * 1.0e-6);	/* Signed area in km^2 */
+		if (centroid) {
+			for (k = 0; k < 3; k++) C[k] = N[k] + P0[k] + P1[k];
+			gmt_normalize3v (GMT, C);
+			gmt_cart_to_geo (GMT, &clat, &centroid[GMT_X], C, true);
+			centroid[GMT_Y] = gmt_lat_swap (GMT, clat, GMT_LATSWAP_G2O+1);	/* Get geodetic latitude */
+		}
+		return (sgn * pol_area * R2);	/* Signed area in selected unit squared [km^2] */
 	}
 
 	/* Must split up polygon in a series of triangles */
@@ -444,18 +449,21 @@ double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat,
 			kind = (sgn == -1) ? 0 : 1;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Spherical triangle %.4lg/%.4lg via %.4lg/%.4lg to %.4lg/%.4lg : Unit area %7.5lg oriented %3s\n", center[0], center[1], lon[p-1], lat[p-1], lon[p], lat[p], tri_area, way[kind]);
 		}
-		/* Compute centroid of this spherical triangle */
-		for (k = 0; k < 3; k++) M[k] = N[k] + P0[k] + P1[k];
-		gmt_normalize3v (GMT, M);
 		/* Add up weighted contribution to polygon centroid */
 		tri_area *= sgn;
-		for (k = 0; k < 3; k++) C[k] += M[k] * tri_area;
 		pol_area += tri_area;
+		if (centroid) {	/* Compute centroid of this spherical triangle */
+			for (k = 0; k < 3; k++) M[k] = N[k] + P0[k] + P1[k];
+			gmt_normalize3v (GMT, M);
+			for (k = 0; k < 3; k++) C[k] += M[k] * tri_area;
+		}
 		if (p < n) gmt_M_memcpy (P0, P1, 3, double);	/* Make P1 the next P0 except at end */
 	}
-	for (k = 0; k < 3; k++) C[k] /= pol_area;	/* Get raw centroid */
-	gmt_normalize3v (GMT, C);
-	gmt_cart_to_geo (GMT, &clat, &centroid[GMT_X], C, true);
-	centroid[GMT_Y] = gmt_lat_swap (GMT, clat, GMT_LATSWAP_G2O+1);	/* Get geodetic latitude */
-	return (pol_area * GMT->current.proj.mean_radius * GMT->current.proj.mean_radius * 1.0e-6);	/* Signed area in km^2 */
+	if (centroid) {
+		for (k = 0; k < 3; k++) C[k] /= pol_area;	/* Get raw centroid */
+		gmt_normalize3v (GMT, C);
+		gmt_cart_to_geo (GMT, &clat, &centroid[GMT_X], C, true);
+		centroid[GMT_Y] = gmt_lat_swap (GMT, clat, GMT_LATSWAP_G2O+1);	/* Get geodetic latitude */
+	}
+	return (pol_area * R2);	/* Signed area in selected unit squared [km^2] */
 }

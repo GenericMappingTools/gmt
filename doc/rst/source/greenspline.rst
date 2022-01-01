@@ -101,14 +101,14 @@ Required Arguments
 **-G**\ *grdfile*
     Name of resulting output file. (1) If options **-R**, **-I**, and
     possibly **-r** are set we produce an equidistant output table. This
-    will be written to stdout unless **-G** is specified. **Note**: For 2-D
+    will be written to standard output unless **-G** is specified. **Note**: For 2-D
     grids the **-G** option is required. (2) If option **-T** is
     selected then **-G** is required and the output file is a 2-D binary
     grid file. Applies to 2-D interpolation only. (3) For 3-D cubes
     the **-G** option is optional.  If set, it can be the name of a 3-D
     cube file or a filename template with a floating-point C-format identifier
     in it so that each layer is written to a 2-D grid file; otherwise
-    we write (*x, y, z, w*) records to stdout. (4) If **-N** is
+    we write (*x, y, z, w*) records to standard output. (4) If **-N** is
     selected then the output is an ASCII (or binary; see
     **-bo**) table; if **-G** is not given then
     this table is written to standard output. Ignored if **-C** or
@@ -201,7 +201,7 @@ Optional Arguments
 **-N**\ *nodefile*
     ASCII file with coordinates of desired output locations **x** in the
     first column(s). The resulting *w* values are appended to each
-    record and written to the file given in **-G** [or stdout if not
+    record and written to the file given in **-G** [or standard output if not
     specified]; see **-bo** for binary output
     instead. This option eliminates the need to specify options **-R**,
     **-I**, and **-r**.

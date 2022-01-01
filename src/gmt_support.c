@@ -4896,7 +4896,7 @@ GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS * gmtsupport_load_eps_symbol (struct GMT_
 	return (E);
 }
 
-GMT_LOCAL void gmtsupport_make_template (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
+GMT_LOCAL void gmtsupport_make_template (struct GMTAPI_CTRL *API, char *stem, char path[]) {
 	/* Create a template for making a unique temporary file or directory name on the system.
 	 * The 6 XXXXXX will be replaced by mktemp or mkstemp with a unique 6-char token (62^6 unique tokens).
 	 * If a temp dir is designated then we use that in the path else we assume current directory.
@@ -4915,7 +4915,7 @@ int gmt_get_tempname (struct GMTAPI_CTRL *API, char *stem, char *extension, char
 	 * Note: path is expected to have a length of PATH_MAX.
 	 */
 
-	gmtsupport_make_template (API, stem, extension, path);	/* Readying the name template */
+	gmtsupport_make_template (API, stem, path);	/* Readying the name template */
 
 	if (mktemp (path) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Could not create a temporary name from template %s.\n", path);
@@ -4931,7 +4931,8 @@ FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char *extension,
 #ifndef _WIN32
 	/* Here we can use the race-safe mkstemp function which returns a file descriptor */
 	int fd = 0;
-	gmtsupport_make_template (API, stem, extension, path);	/* Readying the name template */
+	gmt_M_unused (extension);
+	gmtsupport_make_template (API, stem, path);	/* Readying the name template */
 	if ((fd = mkstemp (path)) == -1) {	/* Create filename AND open in one go to avoid race condition */
 		GMT_Report (API, GMT_MSG_ERROR, "gmt_create_tempfile: Could not create temporary file name and open it %s.\n", path);
 		API->error = GMT_RUNTIME_ERROR;
@@ -7596,10 +7597,12 @@ void gmtlib_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 			gmt_M_free (GMT, P->bfn[i].fill);
 	gmt_M_free (GMT, P->data);
 	/* Use free() to free the headers since they were allocated with strdup */
-	for (i = 0; i < P->n_headers; i++) gmt_M_str_free (P->header[i]);
+	if (P->n_headers) {
+		for (i = 0; i < P->n_headers; i++) gmt_M_str_free (P->header[i]);
+		gmt_M_free (GMT, P->header);
+	}
 	P->n_headers = P->n_colors = 0;
 	gmt_M_free (GMT, P->hidden);
-	gmt_M_free (GMT, P->header);
 }
 
 /*! . */
@@ -8486,6 +8489,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 
 	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT to be present; GMT_Read_Data will work or fail accordingly */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|continuous, NULL, file, NULL);
+		gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
 		return (P);
 	}
 
@@ -8541,7 +8545,6 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 		PH = gmt_get_C_hidden (P);
 		PH->auto_scale = 1;	/* Flag for colorbar to supply -Baf if not given */
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
-		gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
 	}
 	else if (file) {	/* Gave a CPT file */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "CPT argument %s understood to be a regular CPT table\n", file);
@@ -8550,6 +8553,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 	else
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No CPT file or master given?\n");
 
+	gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
 	return (P);
 }
 
@@ -9293,23 +9297,23 @@ void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 }
 
 /*! . */
-int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
+int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double *value) {
 	unsigned int index, lo, hi, mid;
 	gmt_M_unused(GMT);
 
-	if (gmt_M_is_dnan (value)) return (GMT_NAN - 3);	/* Set to NaN color */
+	if (gmt_M_is_dnan (*value)) return (GMT_NAN - 3);	/* Set to NaN color */
 	if (P->is_wrapping)	/* Wrap to fit CPT range - we can never return back- or fore-ground colors */
-		value = MOD (value - P->data[0].z_low, P->wrap_length) + P->data[0].z_low;	/* Now within range */
-	else if (value > P->data[P->n_colors-1].z_high) {
+		*value = MOD (*value - P->data[0].z_low, P->wrap_length) + P->data[0].z_low;	/* Now within range */
+	else if (*value > P->data[P->n_colors-1].z_high) {
 		if (P->categorical) {	/* Set to NaN for categorical */
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", *value);
 			return GMT_NAN - 3;
 		}
 		return (GMT_FGD - 3);	/* Set to foreground color */
 	}
-	else if (value < P->data[0].z_low) {
+	else if (*value < P->data[0].z_low) {
 		if (P->categorical) {	/* Set to NaN for categorical */
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", *value);
 			return GMT_NAN - 3;
 		}
 		return (GMT_BGD - 3);	/* Set to background color */
@@ -9329,16 +9333,16 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 	while (lo != hi)
 	{
 		mid = (lo + hi) / 2;
-		if (value >= P->data[mid].z_high)
+		if (*value >= P->data[mid].z_high)
 			lo = mid + 1;
 		else
 			hi = mid;
 	}
 	index = lo;
 	
-	if (value >= P->data[index].z_low && value < P->data[index].z_high) {
-		if (P->categorical && !doubleAlmostEqualZero (P->data[index].z_low, value)) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+	if (*value >= P->data[index].z_low && *value < P->data[index].z_high) {
+		if (P->categorical && !doubleAlmostEqualZero (P->data[index].z_low, *value)) {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", *value);
 			index = GMT_NAN - 3;	/* Since categorical data is not on an interval */
 		}
 		return (index);
@@ -9350,10 +9354,10 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 	 */
 
 	index = 0;
-	while (index < P->n_colors && ! (value >= P->data[index].z_low && value < P->data[index].z_high) ) index++;
+	while (index < P->n_colors && ! (*value >= P->data[index].z_low && *value < P->data[index].z_high) ) index++;
 	if (index == P->n_colors) index--;	/* Because we use <= for last range */
-	if (P->categorical && !doubleAlmostEqualZero (P->data[index].z_low, value)) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+	if (P->categorical && !doubleAlmostEqualZero (P->data[index].z_low, *value)) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", *value);
 		index = GMT_NAN - 3;	/* Since categorical data is not on an interval */
 	}
 	return (index);
@@ -9388,7 +9392,7 @@ void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index,
 
 /*! . */
 int gmt_get_rgb_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value, double *rgb) {
-	int index = gmt_get_index (GMT, P, value);
+	int index = gmt_get_index (GMT, P, &value);
 	gmt_get_rgb_lookup (GMT, P, index, value, rgb);
 	return (index);
 }
@@ -9415,7 +9419,7 @@ int gmt_get_fill_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double val
 	int index;
 	struct GMT_FILL *f = NULL;
 
-	index = gmt_get_index (GMT, P, value);
+	index = gmt_get_index (GMT, P, &value);
 
 	/* Check if pattern */
 
@@ -16881,7 +16885,7 @@ GMT_LOCAL double gmtsupport_cart_centroid_area (struct GMT_CTRL *GMT, const doub
 double gmt_centroid_area (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo, double *pos) {
 	/* Estimate centroid and area of a polygon.  geo is 1 if geographic data. Input data remains unchanged.
 	 * area will be +ve if polygon is CW, negative if CCW */
-	double area;
+	double area;	/* In selected units squared if geographic */
 	if (geo)	/* Spherical centroid and area */
 		area = gmtlib_geo_centroid_area (GMT, x, y, n, pos);
 	else	/* Cartesian centroid and area */
@@ -17242,7 +17246,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	<file>
 	 *
 	 * Parsing:
-	 *      0) If <argument> is a single value and flags & GMT_ARRAY_SCALAR is set
+	 *	0) If <argument> is a single value and flags & GMT_ARRAY_SCALAR is set
 	 *	   then we create an array of one item. Otherwise <argument> may be
 	 *	   interpreted as <inc>.
 	 *	1) If <argument> is a file found in our search path then
@@ -17396,7 +17400,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Must specify valid min/max/inc[<unit>|+n] option\n", option);
 		return GMT_PARSE_ERROR;
 	}
-	if (!(ns == 1 || ns == 3) && (flags & GMT_ARRAY_NOINC) == 0) {	/* Need to give 1 or 3 items unless inc is optional */
+	if ((flags & GMT_ARRAY_RANGE) == 0 && !(ns == 1 || ns == 3) && (flags & GMT_ARRAY_NOINC) == 0) {	/* Need to give 1 or 3 items unless inc is optional */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Must specify valid [min/max/]inc[<unit>|+n] option\n", option);
 		return GMT_PARSE_ERROR;
 	}
@@ -17633,10 +17637,20 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		return GMT_NOERROR;
 	}
 
-	if (min != NULL)	/* Update min now */
+	if (min != NULL) {	/* Update min now */
+		if (gmt_M_is_dnan (*min)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Min value is NaN - cannot create array\n", option);
+			return GMT_PARSE_ERROR;
+		}
 		T->min = *min;
-	if (max != NULL)	/* Update max now */
+	}
+	if (max != NULL) {	/* Update max now */
+		if (gmt_M_is_dnan (*max)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Max value is NaN - cannot create array\n", option);
+			return GMT_PARSE_ERROR;
+		}
 		T->max = *max;
+	}
 	if (T->count)	/* This means we gave a count instead of increment  */
 		inc = (T->max - T->min) / (T->inc - 1.0);
 	else if (T->reciprocal)	/* This means we gave the reciprocal increment  */
@@ -18341,8 +18355,8 @@ int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int 
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a deprecated sub-shell call `...`, please use $(...) instead: %s", start);
 				else if (strchr (line, ')') && (p = strchr (line, '('))) {	/* sub-shell call without leading $ */
 					prev = p - 1;	/* Get previous character */
-					if (prev < start || prev[0] != '$')
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a sub-shell call $(...) without the leading $: %s", start);
+					if (strchr (line, '\"') == NULL && (prev < start || prev[0] != '$'))	/* No double-quotes yet we have ( ...) and no leading $.Give this message: */
+						GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Main script appears to have a sub-shell call $(...) without the leading $: %s", start);
 				}
 			}
 		}
@@ -18362,7 +18376,7 @@ int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int 
 			}
 			else if (mode != GMT_DOS_MODE) {
 				if (strchr (start, '{') && !strchr (start, '}'))
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script missing  in variable name: %s", record), n_errors++;
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script missing } in variable name: %s", record), n_errors++;
 				else if (!strchr (start, '{') && strchr (start, '}'))
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script missing { in variable name: %s", record), n_errors++;
 			}
@@ -18413,6 +18427,7 @@ bool gmt_is_gmt_end_show (char *line) {
 bool gmt_found_modifier (struct GMT_CTRL *GMT, char *string, char *mods) {
 	/* Return true if any of the modifiers listed are found in the string */
 	char this_modifier[3] = {'+', ' ', '\0'};
+	gmt_M_unused (GMT);
 	for (unsigned int k = 0; k < strlen (mods); k++) {
 		this_modifier[1] = mods[k];
 		if (strstr (string, this_modifier)) return (true);	/* Found it */
@@ -18423,6 +18438,7 @@ bool gmt_found_modifier (struct GMT_CTRL *GMT, char *string, char *mods) {
 unsigned int gmt_unpack_rgbcolors (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned char rgbmap[]) {
 	unsigned int n, k = 0;
 	int red;
+	gmt_M_unused (GMT);
 	/* Repack column-stored RGBA integer values into a row-stored RGBA byte array */
 	for (n = 0; n < (unsigned int)I->n_indexed_colors && (red = gmt_M_get_rgba (I->colormap, n, 0, I->n_indexed_colors)) >= 0; n++) {
 		rgbmap[k++] = red;	/* Got this already */
@@ -18434,18 +18450,24 @@ unsigned int gmt_unpack_rgbcolors (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, un
 }
 
 void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn) {
-	/* Fancy ddd:mm:ssF typeset of -Rw/e/s/n if possible */
+	/* Fancy ddd:mm:ssF typeset of -Rw/e/s/n if possible, and being aware of 360-range */
+	bool wrap = false;
 	enum gmt_col_enum type = gmt_get_column_type (GMT, GMT_IN, GMT_X);
 	char text[GMT_LEN64] = {""}, save[GMT_LEN64];
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Try formal reporting */
+		wrap = gmt_M_360_range (wesn[XLO], wesn[XHI]);
 		strcpy (save, GMT->current.setting.format_geo_out);
 		strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
 		gmtlib_geo_C_format (GMT);
 	}
-	gmt_ascii_format_one (GMT, text, wesn[XLO], type);
-	sprintf (record, "-R%s/", text);	/* west or xmin */
-	gmt_ascii_format_one (GMT, text, wesn[XHI], type);
-	strcat (record, text);	strcat (record, "/");/* east or xmax */
+	if (wrap)	/* Do it directly */
+		sprintf (record, "-R180:00:00W/180:00:00E/");
+	else {
+		gmt_ascii_format_one (GMT, text, wesn[XLO], type);
+		sprintf (record, "-R%s/", text);	/* west or xmin */
+		gmt_ascii_format_one (GMT, text, wesn[XHI], type);
+		strcat (record, text);	strcat (record, "/");/* east or xmax */
+	}
 	type = gmt_get_column_type (GMT, GMT_IN, GMT_Y);
 	gmt_ascii_format_one (GMT, text, wesn[YLO], type);
 	strcat (record, text);	strcat (record, "/");/* south or ymin */
@@ -18457,9 +18479,10 @@ void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn) {
 	}
 }
 
-unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, double *min, double *max) {
+unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, unsigned int mode, double *min, double *max) {
 	/* Parse strings like low/high, NaN/high, low/NaN, /high, low/ and return min/max
-	 * with either set to NaN if not given */
+	 * with either set to NaN if not given.  However, if mode - 1 then unset min/max becomes
+	 * -DBL_MAX or +DBL_MAX instead of NaNs */
 	size_t L;
 	int n;
 	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""};
@@ -18501,7 +18524,13 @@ unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, doub
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unable to parse %s\n", option, txt_b);
 		return GMT_PARSE_ERROR;
 	}
-	if (gmt_M_is_dnan (*min) && gmt_M_is_dnan (*max)) {
+	if (mode) {	/* Replace any NaNs with min and max doubles */
+		if (gmt_M_is_dnan (*min))
+			*min = -DBL_MAX;
+		if (gmt_M_is_dnan (*max))
+			*max = +DBL_MAX;
+	}
+	else if (gmt_M_is_dnan (*min) && gmt_M_is_dnan (*max)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Both limits cannot be NaN\n", option);
 		return GMT_PARSE_ERROR;
 	}

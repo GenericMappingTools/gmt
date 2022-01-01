@@ -124,7 +124,8 @@ Optional Arguments
     Write one or more fields directly to grids; no table data are written to
     standard output.  If more than one fields are specified via **-A** then
     *grdfile* must contain the format flag %s so that we can embed the field
-    code in the file names.
+    code in the file names.  **Note**: Options **-C** and **-Q** are irrelevant
+    and not allowed.
 
 .. _-Q:
 

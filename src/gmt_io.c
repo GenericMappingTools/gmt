@@ -61,6 +61,8 @@
  * gmt_z_input
  * gmtlib_process_binary_input
  * gmtlib_nc_get_att_text
+ * gmtlib_nc_get_att_vtext
+ * gmtlib_nc_put_att_vtext
  * gmtlib_io_banner
  * gmt_get_cols
  * gmt_set_cols
@@ -154,7 +156,6 @@
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
-#include "gmt_common_byteswap.h"
 
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>
@@ -184,6 +185,15 @@ typedef enum {
 	Int32len = 4,
 	Int64len = 8
 } SwapWidth;
+
+/* Indicies into the 4 proj strings possible in GMT/OGR files */
+
+enum GMTIO_PROJS {
+	GMTIO_EPGS = 0,
+	GMTIO_GMT,
+	GMTIO_PROJ4,
+	GMTIO_WKT
+};
 
 /* These functions are defined and used below but not in any *.h file so we repeat them here */
 int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
@@ -408,7 +418,8 @@ GMT_LOCAL void gmtio_adjust_projected (struct GMT_CTRL *GMT) {
 /*! . */
 GMT_LOCAL uint64_t gmtio_bin_colselect (struct GMT_CTRL *GMT) {
 	/* When -i<cols> is used we must pull out and reset the current record */
-	uint64_t col, order;
+	unsigned int col;
+	int64_t order;
 	static double tmp[GMT_BUFSIZ];
 	struct GMT_COL_INFO *S = NULL;
 	for (col = 0; col < GMT->common.i.n_cols; col++) {
@@ -719,6 +730,33 @@ GMT_LOCAL void gmtio_align_ogr_values (struct GMT_CTRL *GMT) {
 	}
 }
 
+GMT_LOCAL void gmtio_ogr_check_if_geographic (struct GMT_CTRL *GMT) {
+	/* Determine if this OGR/GMT file contains plain geographic lon/lat or if there are projected data.
+	 * If lon/lat then we use that information to call gmt_set_geographic (i.e., -fg) */
+	struct GMT_OGR *S = GMT->current.io.OGR;
+	if (S == NULL) return;	/* Well, that was a non-starter*/
+
+	if (S->proj[GMTIO_PROJ4]) {	/* Start with checking proj4 codes */
+		if (strstr (S->proj[GMTIO_PROJ4], "+proj=longlat") || strstr (S->proj[GMTIO_PROJ4], "+pronj=latlong")) {	/* Means we have degree coordinates */
+			gmt_set_geographic (GMT, GMT_IN);
+			return;
+		}
+	}
+	if (S->proj[GMTIO_EPGS]) {	/* See if we have EPGS codes */
+		if (strstr (S->proj[GMTIO_EPGS], "4326")) {	/* 4326 means we have lon/lat degree coordinates*/
+			gmt_set_geographic (GMT, GMT_IN);
+			return;
+		}
+	}
+	if (S->proj[GMTIO_GMT]) {	/* See if we have a GMT code for lonlat */
+		if (strstr (S->proj[GMTIO_GMT], "-Jx1d")) {
+			gmt_set_geographic (GMT, GMT_IN);
+			return;
+		}
+	}
+	/* If we get here we most likely have read projected data, so stick with Cartesian i/o */
+}
+
 /*! . */
 GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 	/* Parsing of the GMT/OGR vector specification (v 1.0).
@@ -745,6 +783,7 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 	if (GMT->current.io.ogr == GMT_OGR_TRUE && !strncmp (record, "# FEATURE_DATA", 14)) {	/* It IS an OGR file and we found end of OGR header section and start of feature data */
 		GMT->current.io.ogr_parser = &gmtio_ogr_data_parser;	/* From now on only parse for feature tags */
 		gmtio_align_ogr_values (GMT);	/* Simplify copy from aspatial values to input columns as per -a option */
+		gmtio_ogr_check_if_geographic (GMT);	/* Check if we should set -fg */
 		return (true);
 	}
 	if (!(p = strchr (record, '@'))) return (false);	/* Not an OGR/GMT record since @ was not found */
@@ -823,17 +862,20 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 				break;
 
 			case 'J':	/* Dataset projection strings (one of 4 kinds) */
-				switch (p[1]) {
-					case 'e': k = 0;	break;	/* EPSG code */
-					case 'g': k = 1;	break;	/* GMT proj code */
-					case 'p': k = 2;	break;	/* Proj.4 code */
-					case 'w': k = 3;	break;	/* OGR WKT representation */
-					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad OGR/GMT: @J given unknown format (%c)\n", (int)p[1]);
-						GMT->current.io.ogr = GMT_OGR_FALSE;
-						return (false);
+				if (p[1] == '\0' || p[1] == ' ' || strchr ("egpw", p[1]) == NULL) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad OGR/GMT: @J given unknown format (%c)\n", (int)p[1]);
+					GMT->current.io.ogr = GMT_OGR_FALSE;
+					return (false);					
 				}
-				S->proj[k] = strdup (&p[2]);
+				switch (p[1]) {
+					case 'e': k = GMTIO_EPGS;	break;	/* EPSG code */
+					case 'g': k = GMTIO_GMT;	break;	/* GMT proj code. If given then data are projected */
+					case 'p': k = GMTIO_PROJ4;	break;	/* Proj.4 code */
+					case 'w': k = GMTIO_WKT;	break;	/* OGR WKT representation */
+					default:	/* We already checked for this above so cannot get here */
+						break;
+				}
+				S->proj[k] = strdup (&p[2]);;
 				break;
 
 			case 'R':	/* Dataset region */
@@ -1049,7 +1091,8 @@ int gmt_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double
 	return ((e < 0) ? GMT_NOTSET : 0);
 }
 
-GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, char *txt) {
+GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, bool separator, char *txt) {
+	/* Output the trailing text, if it is not NULL */
 	if (GMT->common.o.word) {	/* Must output a specific word from the trailing text only */
 		char *word = NULL, *orig = strdup (txt), *trail = orig;
 		uint64_t col = 0;
@@ -1058,14 +1101,14 @@ GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, char 
 				col++;
 		}
 		if (word)	/* Only write word if not NULL */
-			fprintf (fp, "%s", word);
+			(separator && GMT->current.setting.io_col_separator[0]) ? fprintf (fp, "%s%s", GMT->current.setting.io_col_separator, word) :  fprintf (fp, "%s", word);
 		else
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Trailing text did not have %" PRIu64 " words - no trailing word written\n", GMT->common.o.w_col);
-		fprintf (fp, "\n");
 		gmt_M_str_free (orig);
 	}
-	else	/* Output the whole enchilada */
-		fprintf (fp, "%s\n", txt);
+	else if	(txt) /* Output the whole enchilada (unless NULL) */
+		(separator && GMT->current.setting.io_col_separator[0]) ? fprintf (fp, "%s%s", GMT->current.setting.io_col_separator, txt) : fprintf (fp, "%s", txt);
+	fprintf (fp, "\n");
 }
 
 /*! . */
@@ -1073,7 +1116,7 @@ int gmtlib_ascii_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t 
 
 	if (gmt_skip_output (GMT, ptr, n)) return (GMT_NOTSET);	/* Record was skipped via -s[a|r] */
 
-	gmtio_output_trailing_text (GMT, fp, txt);
+	gmtio_output_trailing_text (GMT, fp, false, txt);
 
 	return (0);
 }
@@ -1100,12 +1143,12 @@ GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint
 
 		e = gmt_ascii_output_col (GMT, fp, val, col);	/* Write one item without any separator at the end */
 
-		if (GMT->current.setting.io_col_separator[0])		/* Not last field, and a separator is required */
+		if (i < (n_out-1) && GMT->current.setting.io_col_separator[0])		/* Not last field, and a separator is required */
 			fprintf (fp, "%s", GMT->current.setting.io_col_separator);
 
 		wn += e;
 	}
-	gmtio_output_trailing_text (GMT, fp, txt);
+	gmtio_output_trailing_text (GMT, fp, true, txt);
 
 	return ((e < 0) ? GMT_NOTSET : 0);
 }
@@ -2801,7 +2844,7 @@ GMT_LOCAL void gmtio_build_segheader_from_ogr (struct GMT_CTRL *GMT, unsigned in
 	if (gmt_polygon_is_hole (GMT, S))		/* Indicate this is a polygon hole [Default is perimeter] */
 		strcat (buffer, " -Ph");
 	if (S->header && buffer[0] && strcmp (S->header, buffer)) {strcat (buffer, " "); strncat (buffer, S->header, GMT_BUFSIZ-1);}	/* Append rest of previous header */
-	gmt_M_str_free (S->header);
+	if (S->header) gmt_M_str_free (S->header);
 	S->header = strdup (buffer);
 }
 
@@ -2901,9 +2944,11 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		return (GMT->parent->error);
 	}
 	TH->ogr->region = strdup (buffer);
-	TH->ogr->proj[1] = strdup ("\"-Jx1d --PROJ_ELLIPSOID=WGS84\"");
-	TH->ogr->proj[2] = strdup ("\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"");
-	TH->ogr->proj[3] = strdup ("\"GEOGCS[\"GCS_WGS_1984\",DATUM[\"WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]\"");
+	/* Initialize the proj strings to geographic lon/lat no-projection status */
+	TH->ogr->proj[GMTIO_EPGS] = strdup ("\"4326\"");
+	TH->ogr->proj[GMTIO_GMT] = strdup ("\"-Jx1d --PROJ_ELLIPSOID=WGS84\"");
+	TH->ogr->proj[GMTIO_PROJ4] = strdup ("\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"");
+	TH->ogr->proj[GMTIO_WKT] = strdup ("\"GEOGCS[\"GCS_WGS_1984\",DATUM[\"WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]\"");
 	TH->ogr->geometry = GMT->common.a.geometry;
 	TH->ogr->n_aspatial = GMT->common.a.n_aspatial;
 	if (TH->ogr->n_aspatial) {	/* Copy over the command-line settings */
@@ -3364,7 +3409,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		*tpos = pos;
 	}
 	if (found_text && col == 0 && !GMT->common.i.select && phys_col_type != GMT_IS_STRING) {	/* Has to be a non-GMT header with just text starting in the first column - treat as header */
-		if (strncmp (GMT->init.module_name, "batch", 5U) && strncmp (GMT->init.module_name, "movie", 5U)) {	/* Make exception for these modules what often will just read text lines */
+		if (strncmp (GMT->init.module_name, "gmtinfo", 7U) && strncmp (GMT->init.module_name, "batch", 5U) && strncmp (GMT->init.module_name, "movie", 5U)) {	/* Make exception for these modules what often will just read text lines */
 			gmt_M_free (GMT, type);
 			return GMT_NOT_OUTPUT_OBJECT;
 		}
@@ -3674,7 +3719,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				col_no++;		/* Count up number of columns found */
 			}
 			else {					/* Successful decode, assign the value to the input array */
-				if (GMT->current.io.cycle_col == col_pos)	/* Convert periodic times */
+				if (GMT->current.io.cycle_col == (int64_t)col_pos)	/* Convert periodic times */
 					gmtlib_modulo_time_calculator (GMT, &val);
 				GMT->current.io.curr_rec[col_pos] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
 				if (col_pos == GMT_X && gmt_M_type (GMT, GMT_IN, col_pos) & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule */
@@ -4305,7 +4350,7 @@ void gmt_set_geographic (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Eliminate lots of repeated statements to do this: */
 	gmt_set_column_type (GMT, dir, GMT_X, GMT_IS_LON);
 	gmt_set_column_type (GMT, dir, GMT_Y, GMT_IS_LAT);
-	if (dir == GMT_IN) {	/* Default spherical distance calculations are in meters (cannot fail) */
+	if (dir == GMT_IN && GMT->current.io.ogr != GMT_OGR_TRUE) {	/* Default spherical distance calculations are in meters (cannot fail), except if we are still parsing OGR @J strings */
 		int mode = (GMT->common.j.active) ? GMT->common.j.mode : GMT_GREATCIRCLE;
 		(void) gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, mode, GMT_MAP_DIST);
 	}
@@ -4632,10 +4677,10 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 						GMT->current.io.curr_rec[col_no] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 						break;
 					case GMT_IS_ABSTIME: case GMT_IS_RELTIME:	/* Possibly convert to periodic time */
-						if (GMT->current.io.cycle_operator && GMT->current.io.cycle_col == col_no)
+						if (GMT->current.io.cycle_operator && GMT->current.io.cycle_col == (int64_t)col_no)
 							gmtlib_modulo_time_calculator (GMT, &(GMT->current.io.curr_rec[col_no]));
 					default:	/* Nothing to do unless periodic */
-						if (GMT->current.io.cycle_operator && GMT->current.io.cycle_col == col_no)
+						if (GMT->current.io.cycle_operator && GMT->current.io.cycle_col == (int64_t)col_no)
 							gmtlib_modulo_time_calculator (GMT, &(GMT->current.io.curr_rec[col_no]));
 						break;
 				}
@@ -4689,27 +4734,84 @@ int gmtlib_nc_get_att_text (struct GMT_CTRL *GMT, int ncid, int varid, char *nam
 	/* This function is a replacement for nc_get_att_text that avoids overflow of text
 	 * ncid, varid, name, text	: as in nc_get_att_text
 	 * textlen			: maximum number of characters to copy to string text
+	 * PW: 12/2/2021: Deprecated as we use gmtlib_nc_get_att_vtext instead, but keep for backwards compatibility */
+
+	return (gmtlib_nc_get_att_vtext (GMT, ncid, varid, name, NULL, text, textlen));
+}
+
+/*! . */
+int gmtlib_nc_get_att_vtext (struct GMT_CTRL *GMT, int ncid, int varid, char *name, struct GMT_GRID_HEADER *h, char *text, size_t textlen) {
+	/* Similar to gmtlib_nc_get_att_text and used for title, history, and remark which, if longer than what can fit in header
+	 * are stored as allocated strings in the struct GMT_GRID_HEADER_HIDDEN structure.
+	 * ncid, varid, name, text	: as in nc_get_att_text
+	 * h  				: the pointer to the grid header structure
+	 * textlen			: maximum number of characters to copy to string text
 	 */
 	int status;
-	size_t attlen;
+	bool wipe = true;
+	size_t attlen, trunclen;
 	char *att = NULL;
 
 	status = nc_inq_attlen (ncid, varid, name, &attlen);
-	if (status != NC_NOERR) {
+	if (status != NC_NOERR) {	/* No such attribute */
 		*text = '\0';
 		return status;
 	}
-	att = gmt_M_memory (GMT, NULL, attlen, char);
+	att = calloc (attlen+1, sizeof (char));	/* Allocate the memory for the full string plus text terminator */
 	status = nc_get_att_text (ncid, varid, name, att);
-	if (status == NC_NOERR) {
-		attlen = MIN (attlen, textlen-1); /* attlen does not include terminating '\0') */
-		strncpy (text, att, attlen); /* Copy att to text */
-		text[attlen] = '\0'; /* Terminate string */
+	if (status == NC_NOERR) {	/* This was successful */
+		if (h && attlen > textlen) {
+			struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+			if (strcmp (name, "title") == 0 || strcmp (name, "long_name") == 0) {
+				if (HH->title) gmt_M_str_free (HH->title);	/* Free previous string */
+				HH->title = att;
+				wipe = false;
+			}
+			else if (strcmp (name, "history") == 0 || strcmp (name, "source") == 0) {
+				if (HH->command) gmt_M_str_free (HH->command);	/* Free previous string */
+				HH->command = att;
+				wipe = false;
+			}
+			else if (strcmp (name, "description") == 0) {
+				if (HH->remark) gmt_M_str_free (HH->remark);	/* Free previous string */
+				HH->remark = att;
+				wipe = false;
+			}
+		}
+		trunclen = MIN (attlen, textlen-1); /* attlen does not include terminating '\0') */
+		strncpy (text, att, trunclen); /* Copy att to text */
+		text[trunclen] = '\0'; /* Terminate string */
 	}
-	else
+	else	/* Not successful, set ouput string to empty */
 		*text = '\0';
-	gmt_M_free (GMT, att);
+	if (wipe) gmt_M_str_free (att);	/* Free since not placed in hidden structure */
 	return status;
+}
+
+int gmtlib_nc_put_att_vtext (struct GMT_CTRL *GMT, int ncid, char *name, struct GMT_GRID_HEADER *h) {
+	/* Place one of the three global netCDF attributes in a GMT netCDF file */
+	int ret = NC_NOERR;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+
+	if (!strcmp (name, "title")) {
+		if (HH->title)
+			ret = nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(HH->title), HH->title);
+		else
+			ret = nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(h->title), h->title);
+	}
+	else if (!strcmp (name, "history")) {
+		if (HH->command)
+			ret = nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(HH->command), HH->command);
+		else
+			ret = nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(h->command), h->command);
+	}
+	else if (!strcmp (name, "description")) {
+		if (HH->remark)
+			ret = nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(HH->remark), HH->remark);
+		else
+			ret = nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(h->remark), h->remark);
+	}
+	return (ret);
 }
 
 int gmt_get_precision_width (struct GMT_CTRL *GMT, double x) {
@@ -8548,8 +8650,10 @@ void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table) {
 	if (!table) return;		/* Do not try to free NULL pointer */
 	TH = gmt_get_DT_hidden (table);
 	if (TH->alloc_mode == GMT_ALLOC_EXTERNALLY) return;	/* Not ours to free */
-	for (k = 0; k < table->n_headers; k++) gmt_M_str_free (table->header[k]);
-	gmt_M_free (GMT, table->header);
+	if (table->n_headers) {
+		for (k = 0; k < table->n_headers; k++) gmt_M_str_free (table->header[k]);
+		gmt_M_free (GMT, table->header);
+	}
 	gmt_M_free (GMT, table->min);
 	gmt_M_free (GMT, table->max);
 	for (k = 0; k < 2; k++) gmt_M_str_free (TH->file[k]);

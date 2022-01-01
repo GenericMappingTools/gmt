@@ -49,7 +49,7 @@
 #define THIS_MODULE_PURPOSE	"Plot a polar histogram (rose, sector, windrose diagrams)"
 #define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X},>D),>DI,ID)"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipqstwxy" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehiopqstwxy" GMT_OPT("c")
 
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -163,9 +163,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s [<table>] [-A<sector_angle>[+r]] [%s] [-C<cpt>] [-D] [-E[m|[+w]<modefile>]] [-F] [-G<fill>] "
 		"[-I] [-JX<diameter>] %s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N<mode>[+p<pen>]] %s%s[-Q<alpha>] "
 		"[-R<r0>/<r1>/<theta0>/<theta1>] [-S[+a]] [-T] [%s] [%s] [-W[v]<pen>] [%s] [%s] [-Zu|<scale>] [%s] %s[%s] [%s] [%s] "
-		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT,
-		GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -224,7 +224,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-Zu|<scale>");
 	GMT_Usage (API, -2, "Multiply the radii by <scale> before plotting; or use -Zu to set input radii to 1.");
 	GMT_Usage (API, 1, "\n-: Expect (azimuth,radius) input rather than (radius,azimuth) [%s].", choice[API->GMT->current.setting.io_lonlat_toggle[GMT_IN]]);
-	GMT_Option (API, "bi2,c,di,e,h,i,p,qi,s,t,w,.");
+	GMT_Option (API, "bi2,c,di,e,h,i,o,p,qi,s,t,w,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -896,6 +896,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 				dim[PSL_VEC_XTIP] = radius * c;
 				dim[PSL_VEC_YTIP] = radius * s;
 				f = (radius < Ctrl->M.S.v.v_norm) ? radius / Ctrl->M.S.v.v_norm : 1.0;
+				if (f < Ctrl->M.S.v.v_norm_limit) f = Ctrl->M.S.v.v_norm_limit;
 				dim[PSL_VEC_TAIL_WIDTH]  = f * Ctrl->M.S.v.v_width;
 				dim[PSL_VEC_HEAD_LENGTH] = f * Ctrl->M.S.v.h_length;
 				dim[PSL_VEC_HEAD_WIDTH]  = f * Ctrl->M.S.v.h_width;
