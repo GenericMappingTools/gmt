@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -541,6 +541,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     DDT        1 1  ");	GMT_Usage (API, -21, "d(A)/dt Central 1st derivative"); 
 	GMT_Message (API, GMT_TIME_NONE, "     D2DT2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dt^2 2nd derivative"); 
 	GMT_Message (API, GMT_TIME_NONE, "     D2R        1 1  ");	GMT_Usage (API, -21, "Converts Degrees to Radians"); 
+	GMT_Message (API, GMT_TIME_NONE, "     DEG2KM     1 1  ");	GMT_Usage (API, -21, "Converts Spherical Degrees to Kilometers");
 	GMT_Message (API, GMT_TIME_NONE, "     DENAN      2 1  ");	GMT_Usage (API, -21, "Replace NaNs in A with values from B"); 
 	GMT_Message (API, GMT_TIME_NONE, "     DILOG      1 1  ");	GMT_Usage (API, -21, "dilog (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     DIFF       1 1  ");	GMT_Usage (API, -21, "Forward difference between elements of A (A[1]-A[0], A[2]-A[1], ..., NaN)"); 
@@ -582,6 +583,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     JN         2 1  ");	GMT_Usage (API, -21, "Bessel function of A (1st kind, order B)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     K0         1 1  ");	GMT_Usage (API, -21, "Modified Kelvin function of A (2nd kind, order 0)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     K1         1 1  ");	GMT_Usage (API, -21, "Modified Bessel function of A (2nd kind, order 1)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     KM2DEG     1 1  ");	GMT_Usage (API, -21, "Converts Kilometers to Spherical Degrees");
 	GMT_Message (API, GMT_TIME_NONE, "     KN         2 1  ");	GMT_Usage (API, -21, "Modified Bessel function of A (2nd kind, order B)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     KEI        1 1  ");	GMT_Usage (API, -21, "Kelvin function kei (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     KER        1 1  ");	GMT_Usage (API, -21, "Kelvin function ker (A)"); 
@@ -1898,6 +1900,20 @@ GMT_LOCAL int gmtmath_D2R (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	return 0;
 }
 
+GMT_LOCAL int gmtmath_DEG2KM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: DEG2KM 1 1 Converts Spherical Degrees to Kilometers.  */
+{
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	gmt_M_unused(GMT);
+
+	if (gmt_M_sph_mode (GMT) == GMT_GEODESIC) GMT_Report (GMT->parent, GMT_MSG_WARNING, "DEG2KM is only exact when PROJ_ELLIPSOID == sphere\n");
+	if (S[last]->constant) a = S[last]->factor * GMT->current.proj.DIST_KM_PR_DEG;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : T->segment[s]->data[col][row] * GMT->current.proj.DIST_KM_PR_DEG;
+	return 0;
+}
+
 GMT_LOCAL int gmtmath_DENAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: DENAN 2 1 Replace NaNs in A with values from B.  */
 {	/* Just a more straightforward application of AND */
@@ -2721,6 +2737,20 @@ GMT_LOCAL int gmtmath_K1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if (S[last]->constant) a = gmt_k1 (GMT, S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_k1 (GMT, T->segment[s]->data[col][row]);
+	return 0;
+}
+
+GMT_LOCAL int gmtmath_KM2DEG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: KM2DEG 1 1 Converts Kilometers to Spherical Degrees.  */
+{
+	uint64_t s, row;
+	double a = 0.0, f = 1.0 / GMT->current.proj.DIST_KM_PR_DEG;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	gmt_M_unused(GMT);
+
+	if (gmt_M_sph_mode (GMT) == GMT_GEODESIC) GMT_Report (GMT->parent, GMT_MSG_WARNING, "KM2DEG is only exact when PROJ_ELLIPSOID == sphere\n");
+	if (S[last]->constant) a = S[last]->factor * f;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : T->segment[s]->data[col][row] * f;
 	return 0;
 }
 
@@ -5661,7 +5691,7 @@ GMT_LOCAL int gmtmath_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GMTMATH_N_OPERATORS 198
+#define GMTMATH_N_OPERATORS 200
 
 GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int), unsigned int n_args[], unsigned int n_out[]) {
 	/* Operator function	# of operands	# of outputs */
@@ -5864,6 +5894,8 @@ GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO
 	ops[195] = gmtmath_XYZ2LAB;	n_args[195] = 3;	n_out[195] = 3;
 	ops[196] = gmtmath_XYZ2RGB;	n_args[196] = 3;	n_out[196] = 3;
 	ops[197] = gmtmath_VPDF;	n_args[197] = 3;	n_out[197] = 1;
+	ops[198] = gmtmath_DEG2KM;	n_args[198] = 1;	n_out[198] = 1;
+	ops[199] = gmtmath_KM2DEG;	n_args[199] = 1;	n_out[199] = 1;
 }
 
 GMT_LOCAL void gmtmath_free_stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack) {
@@ -6270,6 +6302,8 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		"XYZ2LAB",	/* id = 195 */
 		"XYZ2RGB",	/* id = 196 */
 		"VPDF",	/* id = 197 */
+		"DEG2KM",	/* id = 198 */
+		"KM2DEG",	/* id = 199 */
 		"" /* last element is intentionally left blank */
 	};
 
