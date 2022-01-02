@@ -8337,8 +8337,6 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	return (X);
 }
 
-#define THIS_LEVEL GMT_MSG_NOTICE
-//#define THIS_LEVEL GMT_MSG_DEBUG
 char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file, struct GMT_GRID_HEADER *h) {
 	/* Return which type of default CPT this data set should use.
 	 * If cpt is specified then that is what we will use. If not, then
@@ -8351,19 +8349,19 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file, struct G
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	if (cpt) {
-		GMT_Report (API, THIS_LEVEL, "gmt_cpt_default: Use specific CPT: %s\n", cpt);
+		GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: Use specific CPT: %s\n", cpt);
 		return strdup (cpt);	/* CPT was already specified, so use it */
 	}
 	if (file == NULL) {
-		GMT_Report (API, THIS_LEVEL, "gmt_cpt_default: No file given so cannot determine\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: No file given so cannot determine\n");
 		return NULL;	/* No file given, so nothing to work with */
 	}
 	if (API->GMT->current.setting.run_mode == GMT_MODERN && (curr_cpt = gmt_get_current_item (API->GMT, "cpt", false))) {
-		GMT_Report (API, THIS_LEVEL, "gmt_cpt_default: Use current CPT: %s\n", curr_cpt);
+		GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: Use current CPT: %s\n", curr_cpt);
 		return curr_cpt;	/* Use current CPT */
 	}
 	if (HH->cpt && HH->cpt[0] != '-') {
-		GMT_Report (API, THIS_LEVEL, "gmt_cpt_default: Use grid header default CPT: %s\n", HH->cpt);
+		GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: Use grid header default CPT: %s\n", HH->cpt);
 		return (strdup (HH->cpt));	/* Found default CPT in the grid header */
 	}
 
@@ -8374,16 +8372,16 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file, struct G
 			return NULL;	/* Go with the default, whatever that is */
 		LOX = strlen (file) - 8;	/* Position of the L|O|X flag */
 		if (file[LOX] == 'L') {
-			GMT_Report (API, THIS_LEVEL, "gmt_cpt_default: Use SRTM default CPT: %s\n", srtm_cpt);
+			GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: Use SRTM default CPT: %s\n", srtm_cpt);
 			return strdup (srtm_cpt);
 		}
 	}
 	if (API->remote_info[k_data].CPT[0] == '-') {
-			GMT_Report (API, THIS_LEVEL, "gmt_cpt_default: No CPT default for remote dataset %s\n", file);
+			GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: No CPT default for remote dataset %s\n", file);
 		return (NULL);
 	}
 
-	GMT_Report (API, THIS_LEVEL, "gmt_cpt_default: Use dataset default CPT: %s\n", API->remote_info[k_data].CPT);
+	GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: Use dataset default CPT: %s\n", API->remote_info[k_data].CPT);
 	return (strdup (API->remote_info[k_data].CPT));
 }
 
@@ -8558,14 +8556,14 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 		/* Stretch to fit the data range */
 		/* Prevent slight round-off from causing the min/max float data values to fall outside the cpt range */
 		if (gmt_M_is_zero (dz)) {
-			GMT_Report (GMT->parent, THIS_LEVEL, "Auto-stretching CPT file %s to fit data range %g to %g\n", master, zmin, zmax);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Auto-stretching CPT file %s to fit data range %g to %g\n", master, zmin, zmax);
 			noise = (zmax - zmin) * GMT_CONV8_LIMIT;
 			zmin -= noise;	zmax += noise;
 		}
 		else {	/* Round to multiple of dz */
 			zmin = (floor (zmin / dz) * dz);
 			zmax = (ceil (zmax / dz) * dz);
-			GMT_Report (GMT->parent, THIS_LEVEL, "Auto-stretching CPT file %s to fit rounded data range %g to %g\n", master, zmin, zmax);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Auto-stretching CPT file %s to fit rounded data range %g to %g\n", master, zmin, zmax);
 		}
 		PH = gmt_get_C_hidden (P);
 		PH->auto_scale = 1;	/* Flag for colorbar to supply -Baf if not given */
