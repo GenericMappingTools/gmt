@@ -141,6 +141,7 @@ struct GMT_SYMBOL {
 	unsigned int read_symbol_cmd;	/* 1 when -S indicated we must read symbol type from file, 2 with -SK is used */
 	bool u_set;		/* true if u was set */
 	bool par_set;		/* true if all parameters were set for e,j */
+	bool degenerate;		/* true for E- and J- as degenerate ellipses and rectangles */
 	double factor;		/* Scaling needed to unify symbol area for circle, triangles, etc. [1] */
 	double size_x;		/* Current symbol size in x */
 	double size_y;		/* Current symbol size in y */
