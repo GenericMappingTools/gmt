@@ -878,6 +878,8 @@ static int psl_shorten_path_old (struct PSL_CTRL *PSL, double *x, double *y, int
 /* Addressing issue https://github.com/GenericMappingTools/gmt/issues/439 for long DCW polygons.
    #define N_LENGTH_THRESHOLD 100000000 meant we only did new path but now we try 50000 as cutoff */
 #define N_LENGTH_THRESHOLD 50000
+#define PSL_SHORTEN_PATH 1 /* 0 will shorten the path - set to 1 for testing with no shortening */
+
 static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
 	if (n > N_LENGTH_THRESHOLD)
 		return psl_shorten_path_old (PSL, x, y, n, ix, iy, mode);
@@ -4307,7 +4309,7 @@ int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
 	ix = PSL_memory (PSL, NULL, n, int);
 	iy = PSL_memory (PSL, NULL, n, int);
 
-	n = psl_shorten_path (PSL, x, y, n, ix, iy, 0);
+	n = psl_shorten_path (PSL, x, y, n, ix, iy, PSL_SHORTEN_PATH);
 
 	/* If first and last point are the same, close the polygon and drop the last point
 	 * (but only if this segment runs start to finish)

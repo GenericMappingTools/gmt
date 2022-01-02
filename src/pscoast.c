@@ -146,9 +146,10 @@ struct PSCOAST_CTRL {
 		struct GMT_PEN pen[GSHHS_MAX_LEVEL];
 	} W;
 #ifdef DEBUG
-	struct PSCOAST_DBG {	/* -+<bin> */
+	struct PSCOAST_DBG {	/* -+<bin>[,<bin2>,...] */
 		bool active;
-		int bin;
+		int bin[GMT_LEN16];
+		int n_bin;
 	} debug;
 #endif
 };
@@ -536,7 +537,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 #ifdef DEBUG
 			case '+':
 				Ctrl->debug.active = true;
-				Ctrl->debug.bin = atoi (opt->arg);
+				Ctrl->debug.bin[Ctrl->debug.n_bin++] = atoi (opt->arg);
 				break;
 #endif
 
@@ -1045,7 +1046,13 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 		bin = c.bins[ind];
 #ifdef DEBUG
-		if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
+		if (Ctrl->debug.active) {
+			bool found = false;
+			int ii;
+			for (ii = 0; !found && ii < Ctrl->debug.n_bin; ii++)
+				if (Ctrl->debug.bin[ii] == bin) found = true;
+			if (!found) continue;
+		}
 #endif
 		if ((err = gmt_get_shore_bin (GMT, ind, &c)) != 0) {
 			GMT_Report (API, GMT_MSG_ERROR, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
@@ -1210,7 +1217,13 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 			bin = r.bins[ind];
 
 #ifdef DEBUG
-			if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
+			if (Ctrl->debug.active) {
+				bool found = false;
+				int ii;
+				for (ii = 0; !found && ii < Ctrl->debug.n_bin; ii++)
+					if (Ctrl->debug.bin[ii] == bin) found = true;
+				if (!found) continue;
+			}
 #endif
 			gmt_get_br_bin (GMT, ind, &r, Ctrl->I.list, Ctrl->I.n_rlevels);
 
@@ -1280,7 +1293,13 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			bin = b.bins[ind];
 #ifdef DEBUG
-			if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
+			if (Ctrl->debug.active) {
+				bool found = false;
+				int ii;
+				for (ii = 0; !found && ii < Ctrl->debug.n_bin; ii++)
+					if (Ctrl->debug.bin[ii] == bin) found = true;
+				if (!found) continue;
+			}
 #endif
 			gmt_get_br_bin (GMT, ind, &b, Ctrl->N.list, Ctrl->N.n_blevels);
 
