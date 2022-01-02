@@ -240,6 +240,8 @@
 #add_definitions(-DUSE_MODULE_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for module options
 #add_definitions(-DEXPORT_GMTLIB)				# Turn on to access normally un-exported or static gmtlib functions from external tools
 #add_definitions(-DNO_THEMES) 	                # Turn off implementation of GMT_THEME for debugging
+# Uncomment this statement if you are a developer debugging PSL and want exact line coordinates:
+#add_definitions(-DPSL_EXACT_LINE)
 
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}") # recommended even for release build
 #set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")            # extra warnings
