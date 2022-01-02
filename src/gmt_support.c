@@ -8436,7 +8436,7 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned
 	char file[PATH_MAX] = {""};
 
 	if (gmtlib_set_current_item_file (GMT, "cpt", file) == GMT_FILE_NOT_FOUND) return;
-	
+
 	if (GMT_Write_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, file, P) != GMT_NOERROR)
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to save current CPT file to %s !\n", file);
 	else
