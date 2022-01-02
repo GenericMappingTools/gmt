@@ -2286,8 +2286,9 @@ void gmt_change_grid_history (struct GMTAPI_CTRL *API, unsigned int mode, struct
 int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *wesn, unsigned int interpolant) {
 	/* gmt_grd_setregion determines what w,e,s,n should be passed to gmtlib_read_grd.
 	 * It does so by using GMT->common.R.wesn which have been set correctly by map_setup.
-	 * Use interpolant to indicate if (and how) the grid is interpolated after this call.
-	 * This determines possible extension of the grid to allow interpolation (without padding).
+	 * 
+	 * During reading we always seek to extend the region temporarily by 2 rows/cols if the data exists so that
+	 * we can use data boundary conditions instead of mathematical boundary conditions; see gmtgrdio_padspace.
 	 *
 	 * Here are some considerations about the boundary we need to match, assuming the grid is gridline oriented:
 	 * - When the output is to become pixels, the outermost point has to be beyond 0.5 cells inside the region
@@ -2305,24 +2306,12 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	bool grid_global;
 	double shift_x, x_range, off;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+	gmt_M_unused (interpolant);	/* Deprecated argument */
 
 	/* First make an educated guess whether the grid and region are geographical and global */
 	grid_global = gmt_grd_is_global (GMT, h);
 
-	switch (interpolant) {
-		case BCR_BILINEAR:
-			off = 0.0;
-			break;
-		case BCR_BSPLINE:
-		case BCR_BICUBIC:
-			off = 1.5;
-			break;
-		default:
-			off = -0.5;
-			break;
-	}
-	if (h->registration == GMT_GRID_PIXEL_REG) off += 0.5;
-
+	off = (h->registration == GMT_GRID_PIXEL_REG) ? 0.5 : 0.0;
 	/* Initial assignment of wesn */
 	wesn[YLO] = GMT->common.R.wesn[YLO] - off * h->inc[GMT_Y], wesn[YHI] = GMT->common.R.wesn[YHI] + off * h->inc[GMT_Y];
 	if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_x_is_lon (GMT, GMT_IN)) off = 0.0;
