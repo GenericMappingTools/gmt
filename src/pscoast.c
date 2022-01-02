@@ -148,7 +148,7 @@ struct PSCOAST_CTRL {
 #ifdef DEBUG
 	struct PSCOAST_DBG {	/* -+<bin>[,<bin2>,...] */
 		bool active;
-		int bin[GMT_LEN16];
+		int bin[GMT_LEN16];	/* Mxx 16 bins - no check so be careful */
 		int n_bin;
 	} debug;
 #endif
@@ -268,8 +268,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: When feature-specific pens are used, those not set are deactivated.");
 	GMT_Option (API, "X,bo,c,do,p,t");
 #ifdef DEBUG
-	GMT_Usage (API, 1, "\n-+<bin>");
-	GMT_Usage (API, -2, "Print only a single bin (debug option).");
+	GMT_Usage (API, 1, "\n-+<bin> (repeatable up to 16 times)");
+	GMT_Usage (API, -2, "Plot only the specified bins (debug option).");
 #endif
 	GMT_Option (API, ".");
 
@@ -660,6 +660,17 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 	return (n_errors);
 }
 
+#ifdef DEBUG
+GMT_LOCAL pscoast_skip_if_debug (struct PSCOAST_CTRL *Ctrl, int bin) {
+	bool found = false;
+	int k;
+	if (!Ctrl->debug.active) return false;	/* No skip if not in debug mode */
+	for (k = 0; !found && k < Ctrl->debug.n_bin; k++)
+		if (Ctrl->debug.bin[k] == bin) found = true;
+	return (!found);
+}
+#endif
+
 GMT_LOCAL bool pscoast_add_this_polygon_to_path (struct GMT_CTRL *GMT, int k0, struct GMT_GSHHS_POL *p, int level, int k) {
 	/* Determines if we should add the current polygon pol[k] to the growing path we are constructing */
 
@@ -1046,13 +1057,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 		bin = c.bins[ind];
 #ifdef DEBUG
-		if (Ctrl->debug.active) {
-			bool found = false;
-			int ii;
-			for (ii = 0; !found && ii < Ctrl->debug.n_bin; ii++)
-				if (Ctrl->debug.bin[ii] == bin) found = true;
-			if (!found) continue;
-		}
+		if (pscoast_skip_if_debug (Ctrl, bin)) continue;
 #endif
 		if ((err = gmt_get_shore_bin (GMT, ind, &c)) != 0) {
 			GMT_Report (API, GMT_MSG_ERROR, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
@@ -1217,13 +1222,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 			bin = r.bins[ind];
 
 #ifdef DEBUG
-			if (Ctrl->debug.active) {
-				bool found = false;
-				int ii;
-				for (ii = 0; !found && ii < Ctrl->debug.n_bin; ii++)
-					if (Ctrl->debug.bin[ii] == bin) found = true;
-				if (!found) continue;
-			}
+		if (pscoast_skip_if_debug (Ctrl, bin)) continue;
 #endif
 			gmt_get_br_bin (GMT, ind, &r, Ctrl->I.list, Ctrl->I.n_rlevels);
 
@@ -1293,13 +1292,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			bin = b.bins[ind];
 #ifdef DEBUG
-			if (Ctrl->debug.active) {
-				bool found = false;
-				int ii;
-				for (ii = 0; !found && ii < Ctrl->debug.n_bin; ii++)
-					if (Ctrl->debug.bin[ii] == bin) found = true;
-				if (!found) continue;
-			}
+		if (pscoast_skip_if_debug (Ctrl, bin)) continue;
 #endif
 			gmt_get_br_bin (GMT, ind, &b, Ctrl->N.list, Ctrl->N.n_blevels);
 

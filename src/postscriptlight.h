@@ -53,7 +53,6 @@ extern "C" {
 
 #define PSL_POINTS_PER_INCH	72.0
 #define PSL_DOTS_PER_INCH	1200.0	/* Effective dots per inch resolution */
-#define PSL_DOTS_PER_INCH	2400.0	/* Effective dots per inch resolution */
 #define PSL_DOTS_PER_INCH_PATTERN	300.0	/* Effective dots per inch resolution for a bitmap pattern -Gp */
 #define PSL_ALL_CLIP		INT_MAX	/* Terminates all clipping */
 

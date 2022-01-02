@@ -385,6 +385,10 @@ static struct PSL_FONT PSL_standard_fonts[PSL_N_STANDARD_FONTS] = {
 #define PSL_LC	0
 #define PSL_UC	1
 
+/* Arguments for psl_convert_path */
+#define PSL_SHORTEN_PATH   0  /* Will apply one of two shortening algorithm to the integer PSL coordinates */
+#define PSL_CONVERT_PATH   1  /* Will only convert to PSL integer coordinates but no shortening takes place */
+
 struct PSL_WORD {	/* Used for type-setting text */
 	int font_no;
 	int flag;
@@ -753,7 +757,7 @@ static int psl_ip (struct PSL_CTRL *PSL, double p) {
 	return ((int)lrint (p * PSL->internal.dpp));
 }
 
-static int psl_shorten_path_new (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
+static int psl_convert_path_new (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
 	/* Simplifies the (x,y) array by converting it to pixel coordinates (ix,iy)
 	 * and eliminating repeating points and intermediate points along straight
 	 * line segments.  The result is the fewest points needed to draw the path
@@ -769,7 +773,7 @@ static int psl_shorten_path_new (struct PSL_CTRL *PSL, double *x, double *y, int
 		ix[i] = psl_ix (PSL, x[i]);
 		iy[i] = psl_iy (PSL, y[i]);
 	}
-	if (mode == 1) return (n);
+	if (mode == PSL_CONVERT_PATH) return (n);   /* No shortening */
 
 	/* Skip intermediate points that are "close" to the line between point i and point j, where
 	   "close" is defined as less than 1 "dot" (the PostScript resolution) in either direction.
@@ -825,7 +829,7 @@ static int psl_shorten_path_new (struct PSL_CTRL *PSL, double *x, double *y, int
 	return (k);
 }
 
-static int psl_shorten_path_old (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
+static int psl_convert_path_old (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
 	/* Simplifies the (x,y) array by converting it to pixel coordinates (ix,iy)
 	 * and eliminating repeating points and intermediate points along straight
 	 * line segments.  The result is the fewest points needed to draw the path
@@ -843,7 +847,7 @@ static int psl_shorten_path_old (struct PSL_CTRL *PSL, double *x, double *y, int
 		ix[i] = psl_ix (PSL, x[i]);
 		iy[i] = psl_iy (PSL, y[i]);
 	}
-	if (mode == 1) return (n);
+	if (mode == PSL_CONVERT_PATH) return (n);   /* No shortening */
 
 	/* The only truly unique point is the starting point; all else must show increments
 	 * relative to the previous point */
@@ -880,13 +884,12 @@ static int psl_shorten_path_old (struct PSL_CTRL *PSL, double *x, double *y, int
 /* Addressing issue https://github.com/GenericMappingTools/gmt/issues/439 for long DCW polygons.
    #define N_LENGTH_THRESHOLD 100000000 meant we only did new path but now we try 50000 as cutoff */
 #define N_LENGTH_THRESHOLD 50000
-#define PSL_SHORTEN_PATH 1 /* 0 will shorten the path - set to 1 for testing with no shortening */
 
-static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
+static int psl_convert_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
 	if (n > N_LENGTH_THRESHOLD)
-		return psl_shorten_path_old (PSL, x, y, n, ix, iy, mode);
+		return psl_convert_path_old (PSL, x, y, n, ix, iy, mode);
 	else
-		return psl_shorten_path_new (PSL, x, y, n, ix, iy, mode);
+		return psl_convert_path_new (PSL, x, y, n, ix, iy, mode);
 }
 
 static int psl_forcelinewidth (struct PSL_CTRL *PSL, double linewidth) {
@@ -1717,7 +1720,7 @@ static int psl_pattern_cleanup (struct PSL_CTRL *PSL) {
 
 static int psl_patch (struct PSL_CTRL *PSL, double *x, double *y, int np) {
 	/* Like PSL_plotpolygon but intended for small polygons (< 20 points).  No checking for
-	 * shorter path by calling psl_shorten_path as in PSL_plotpolygon.
+	 * shorter path by calling psl_convert_path as in PSL_plotpolygon.
 	 */
 
 	int ix[20], iy[20], i, n, n1;
@@ -4311,7 +4314,7 @@ int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
 	ix = PSL_memory (PSL, NULL, n, int);
 	iy = PSL_memory (PSL, NULL, n, int);
 
-	n = psl_shorten_path (PSL, x, y, n, ix, iy, PSL_SHORTEN_PATH);
+	n = psl_convert_path (PSL, x, y, n, ix, iy, PSL_SHORTEN_PATH);
 
 	/* If first and last point are the same, close the polygon and drop the last point
 	 * (but only if this segment runs start to finish)
@@ -4370,7 +4373,7 @@ int PSL_plotcurve (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) 
 	ix = PSL_memory (PSL, NULL, n, int);
 	iy = PSL_memory (PSL, NULL, n, int);
 
-	n = psl_shorten_path (PSL, x, y, n, ix, iy, 1);
+	n = psl_convert_path (PSL, x, y, n, ix, iy, PSL_CONVERT_PATH);
 
 	/* If first and last point are the same, close the polygon and drop the last point
 	 * (but only if this segment runs start to finish)
