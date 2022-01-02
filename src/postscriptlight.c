@@ -727,16 +727,6 @@ unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned c
 
 /* Define local (static) support functions called inside the public PSL functions */
 
-static double psl_x (struct PSL_CTRL *PSL, double x) {
-	/* Convert user x to PS floating point coordinate */
-	return (x * PSL->internal.x2ix);
-}
-
-static double psl_y (struct PSL_CTRL *PSL, double y) {
-	/* Convert user y to PS floating point coordinate */
-	return (y * PSL->internal.y2iy);
-}
-
 static int psl_ix (struct PSL_CTRL *PSL, double x) {
 	/* Convert user x to PS dots */
 	return (PSL->internal.x0 + (int)lrint (x * PSL->internal.x2ix));
@@ -4304,7 +4294,19 @@ int PSL_plotlatexeps (struct PSL_CTRL *PSL, double x, double y, double xsize, do
    return (PSL_NO_ERROR);
 }
 
-static int PSL_plotline_exact (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
+#ifdef PSL_EXACT_LINE
+
+static double psl_x (struct PSL_CTRL *PSL, double x) {
+	/* Convert user x to PS floating point coordinate */
+	return (x * PSL->internal.x2ix);
+}
+
+static double psl_y (struct PSL_CTRL *PSL, double y) {
+	/* Convert user y to PS floating point coordinate */
+	return (y * PSL->internal.y2iy);
+}
+
+int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
 	/* Plot a (portion of a) line. This can be a line from start to finish, or a portion of it, depending
 	 * on the type argument. Optionally, the line can be stroked (using the current pen), closed.
 	 * Type is a combination of the following:
@@ -4342,8 +4344,8 @@ static int PSL_plotline_exact (struct PSL_CTRL *PSL, double *x, double *y, int n
 
 	return (PSL_NO_ERROR);
 }
-
-static int PSL_plotline_simplify (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
+#else
+int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
     /* Plot a (portion of a) line. This can be a line from start to finish, or a portion of it, depending
      * on the type argument. Optionally, the line can be stroked (using the current pen), closed.
      * Type is a combination of the following:
@@ -4397,14 +4399,7 @@ static int PSL_plotline_simplify (struct PSL_CTRL *PSL, double *x, double *y, in
 
     return (PSL_NO_ERROR);
 }
-
-int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
-#ifdef PSL_EXACT_LINE
-	return (PSL_plotline_exact (PSL, x, y, n, type));
-#else
-	return (PSL_plotline_simplify (PSL, x, y, n, type));
 #endif
-}
 
 int PSL_plotcurve (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
 	/* Plot a (portion of a) Bezier curve. This can be a line from start to finish, or a portion of it, depending
