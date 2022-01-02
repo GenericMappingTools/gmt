@@ -727,6 +727,16 @@ unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned c
 
 /* Define local (static) support functions called inside the public PSL functions */
 
+static double psl_x (struct PSL_CTRL *PSL, double x) {
+	/* Convert user x to PS floating point coordinate */
+	return (x * PSL->internal.x2ix);
+}
+
+static double psl_y (struct PSL_CTRL *PSL, double y) {
+	/* Convert user y to PS floating point coordinate */
+	return (y * PSL->internal.y2iy);
+}
+
 static int psl_ix (struct PSL_CTRL *PSL, double x) {
 	/* Convert user x to PS dots */
 	return (PSL->internal.x0 + (int)lrint (x * PSL->internal.x2ix));
@@ -4294,7 +4304,7 @@ int PSL_plotlatexeps (struct PSL_CTRL *PSL, double x, double y, double xsize, do
    return (PSL_NO_ERROR);
 }
 
-int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
+static int PSL_plotline_exact (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
 	/* Plot a (portion of a) line. This can be a line from start to finish, or a portion of it, depending
 	 * on the type argument. Optionally, the line can be stroked (using the current pen), closed.
 	 * Type is a combination of the following:
@@ -4304,38 +4314,25 @@ int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
 	 * PSL_CLOSE  (8) : Close the line back to the beginning of this segment, this is done automatically
 	 *                  when the first and last point are the same and PSL_MOVE is on.
 	 */
-	int i, i0 = 0, *ix = NULL, *iy = NULL;
+	int i, i0 = 0;
 
 	if (n < 1) return (PSL_NO_ERROR);	/* Cannot deal with empty lines */
 	if (type < 0) type = -type;		/* Should be obsolete now */
-
-	/* First remove unnecessary points that have zero curvature */
-
-	ix = PSL_memory (PSL, NULL, n, int);
-	iy = PSL_memory (PSL, NULL, n, int);
-
-	n = psl_convert_path (PSL, x, y, n, ix, iy, PSL_SHORTEN_PATH);
 
 	/* If first and last point are the same, close the polygon and drop the last point
 	 * (but only if this segment runs start to finish)
 	 */
 
-	if (n > 1 && (type & PSL_MOVE) && (ix[0] == ix[n-1] && iy[0] == iy[n-1]) && (type & PSL_CLOSE_INTERIOR) == 0) {n--; type |= PSL_CLOSE;}
+	if (n > 1 && (type & PSL_MOVE) && (x[0] == x[n-1] && y[0] == y[n-1]) && (type & PSL_CLOSE_INTERIOR) == 0) {n--; type |= PSL_CLOSE;}
 
 	if (type & PSL_MOVE) {
-		PSL_command (PSL, "%d %d M\n", ix[0], iy[0]);
-		PSL->internal.ix = ix[0];
-		PSL->internal.iy = iy[0];
+		PSL_command (PSL, "%.12lg %.12lg M\n", psl_x (PSL, x[0]), psl_y (PSL, y[0]));
 		i0++;
 		if (n == 1) PSL_command (PSL, "0 0 D\n");	/* Add at least a zero length line */
 	}
 
-	for (i = i0; i < n; i++) {
-		if (ix[i] != PSL->internal.ix || iy[i] != PSL->internal.iy)
-			PSL_command (PSL, "%d %d D\n", ix[i] - PSL->internal.ix, iy[i] - PSL->internal.iy);
-		PSL->internal.ix = ix[i];
-		PSL->internal.iy = iy[i];
-	}
+	for (i = i0; i < n; i++)
+		PSL_command (PSL, "%.12lg %.12lg L\n", psl_x (PSL, x[i]), psl_y (PSL, y[i]));
 	if (type & PSL_STROKE && type & PSL_CLOSE)
 		PSL_command (PSL, "P S\n");	/* Close and stroke the path */
 	else if (type & PSL_CLOSE)
@@ -4343,10 +4340,70 @@ int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
 	else if (type & PSL_STROKE)
 		PSL_command (PSL, "S\n");	/* Stroke the path */
 
-	PSL_free (ix);
-	PSL_free (iy);
-
 	return (PSL_NO_ERROR);
+}
+
+static int PSL_plotline_simplify (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
+    /* Plot a (portion of a) line. This can be a line from start to finish, or a portion of it, depending
+     * on the type argument. Optionally, the line can be stroked (using the current pen), closed.
+     * Type is a combination of the following:
+     * PSL_DRAW   (0) : Draw a line segment
+     * PSL_MOVE   (1) : Move to a new anchor point (x[0], y[0]) first
+     * PSL_STROKE (2) : Stroke the line
+     * PSL_CLOSE  (8) : Close the line back to the beginning of this segment, this is done automatically
+     *                  when the first and last point are the same and PSL_MOVE is on.
+     */
+    int i, i0 = 0, *ix = NULL, *iy = NULL;
+
+    if (n < 1) return (PSL_NO_ERROR);   /* Cannot deal with empty lines */
+    if (type < 0) type = -type;     /* Should be obsolete now */
+
+    /* First remove unnecessary points that have zero curvature */
+
+    ix = PSL_memory (PSL, NULL, n, int);
+    iy = PSL_memory (PSL, NULL, n, int);
+
+    n = psl_convert_path (PSL, x, y, n, ix, iy, PSL_SHORTEN_PATH);
+
+    /* If first and last point are the same, close the polygon and drop the last point
+     * (but only if this segment runs start to finish)
+     */
+
+    if (n > 1 && (type & PSL_MOVE) && (ix[0] == ix[n-1] && iy[0] == iy[n-1]) && (type & PSL_CLOSE_INTERIOR) == 0) {n--; type |= PSL_CLOSE;}
+
+    if (type & PSL_MOVE) {
+        PSL_command (PSL, "%d %d M\n", ix[0], iy[0]);
+        PSL->internal.ix = ix[0];
+        PSL->internal.iy = iy[0];
+        i0++;
+        if (n == 1) PSL_command (PSL, "0 0 D\n");   /* Add at least a zero length line */
+    }
+
+    for (i = i0; i < n; i++) {
+        if (ix[i] != PSL->internal.ix || iy[i] != PSL->internal.iy)
+            PSL_command (PSL, "%d %d D\n", ix[i] - PSL->internal.ix, iy[i] - PSL->internal.iy);
+        PSL->internal.ix = ix[i];
+        PSL->internal.iy = iy[i];
+    }
+    if (type & PSL_STROKE && type & PSL_CLOSE)
+        PSL_command (PSL, "P S\n"); /* Close and stroke the path */
+    else if (type & PSL_CLOSE)
+        PSL_command (PSL, "P\n");   /* Close the path */
+    else if (type & PSL_STROKE)
+        PSL_command (PSL, "S\n");   /* Stroke the path */
+
+    PSL_free (ix);
+    PSL_free (iy);
+
+    return (PSL_NO_ERROR);
+}
+
+int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
+#ifdef PSL_EXACT_LINE
+	return (PSL_plotline_exact (PSL, x, y, n, type));
+#else
+	return (PSL_plotline_simplify (PSL, x, y, n, type));
+#endif
 }
 
 int PSL_plotcurve (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {

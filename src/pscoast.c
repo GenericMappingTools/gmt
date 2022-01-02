@@ -661,7 +661,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 }
 
 #ifdef DEBUG
-GMT_LOCAL pscoast_skip_if_debug (struct PSCOAST_CTRL *Ctrl, int bin) {
+GMT_LOCAL bool pscoast_skip_if_debug (struct PSCOAST_CTRL *Ctrl, int bin) {
 	bool found = false;
 	int k;
 	if (!Ctrl->debug.active) return false;	/* No skip if not in debug mode */
