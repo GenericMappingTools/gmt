@@ -31,9 +31,9 @@ preferred-citation:
   doi: "10.1029/2019GC008515"
   journal: "Geochemistry, Geophysics, Geosystems"
   month: 11
-  start:  5556 # First page number
-  end: 5564 # Last page number
-  title: " The Generic Mapping Tools version 6"
+  start: 5556
+  end: 5564
+  title: "The Generic Mapping Tools version 6"
   issue: 11
   volume: 20
   year: 2019
