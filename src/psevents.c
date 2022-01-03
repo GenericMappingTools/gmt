@@ -1,6 +1,6 @@
-/*
+/*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2019-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Plot event symbols, lines, polygons and labels for one moment in time"
 #define THIS_MODULE_KEYS	"<D{,CC(,>?}"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS	"-:>BJKOPRUVXYabdefhipqw"
+#define THIS_MODULE_OPTIONS	"-:>BJKOPRUVXYabdefhilpqw"
 
 enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_SYMBOL = 0,
@@ -185,8 +185,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s -T<now> [-Ar[<dpu>[c|i][+z[<z>]]]|s] [%s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
 		"[-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]] [-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] "
 		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t|z<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>]] [%s] [%s] [-Z\"<command>\"] "
-		"[%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_b_OPT,
-		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		"[%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_b_OPT,
+		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_qi_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -270,7 +270,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Append core external <command> and required options that must include -S<format><size>. "
 		"The quoted <command> must start with [ps]coupe, [ps]meca, or [ps]velo. "
 		"(Note: The <command> cannot contain options -C, -G, -I, -J, -N, -R, -W, -t).");
-	GMT_Option (API, "a,bi2,c,di,e,f,h,i,p,qi,w,:,.");
+	GMT_Option (API, "a,bi2,c,di,e,f,h,i,l,p,qi,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -700,6 +700,7 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 
 GMT_LOCAL void psevents_set_outarray (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, double t_now, double *t, bool finite_duration, bool coda, unsigned int x_col, unsigned int i_col, unsigned int t_col, unsigned int z_col, double *out) {
 	double x;
+	gmt_M_unused (GMT);
 	if (t_now < t[PSEVENTS_T_RISE]) {	/* Before the rise phase there is nothing */
 		out[x_col] = out[i_col] = 0.0;
 		out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1];
@@ -896,7 +897,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT|GMT_IS_REFERENCE, NULL, destination) == GMT_NOTSET) {
 			Return (API->error);
 		}
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the subsequent operations and module calls even though they may have been set to read the input correctly */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the subsequent operations and module calls even though they may have been set to read the input correctly */
 		/* Build mapproject command and run the module. Note: we want distances in inches since spacing is now in inches */
 		sprintf (cmd, "%s -R%s -J%s -G+uC --PROJ_LENGTH_UNIT=inch ->%s", source, GMT->common.R.string, GMT->common.J.string, destination);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling Step 1: %s.\n", cmd);
@@ -1258,7 +1259,7 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 	if (fp_symbols || fp_labels) {	/* Finalize temporary files */
 		if (fp_symbols) fclose (fp_symbols);	/* Close the file so symbol output is flushed */
 		if (fp_labels)  fclose (fp_labels);		/* Close the file so label output is flushed */
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from temp files in psxy or pstext below */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from temp files in psxy or pstext below */
 	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) {	/* Set up map projection */
@@ -1336,7 +1337,7 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 		}
 	}
 	if (fp_symbols || fp_labels)	/* Recover settings provided by user (if -b -g -h -i were used at all) */
-		gmt_reenable_bghi_opts (GMT);
+		gmt_reenable_bghio_opts (GMT);
 
 	/* Finalize plot and we are done */
 

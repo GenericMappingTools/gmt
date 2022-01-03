@@ -204,8 +204,12 @@ Install other GMT dependencies (some are optional) via:
 
 ### ArchLinux
 
-ArchLinux official repository doesn't provide GMT packages, but AUR (ArchLinux User Repository) does.
-You can follow the [Install latest GMT on ArchLinux](https://github.com/GenericMappingTools/gmt/wiki/Install-latest-GMT-on-ArchLinux) in the wiki.
+Install GMT via:
+
+    sudo pacman -S gmt
+
+ArchLinux official repository doesn't provide GMT extra data yet, but AUR (ArchLinux User Repository) does.
+You can follow the [Install latest GMT on ArchLinux](https://github.com/GenericMappingTools/gmt/wiki/Install-latest-GMT-on-ArchLinux) in the wiki for those.
 
 ### Gentoo
 
@@ -213,7 +217,7 @@ You can follow the [Install latest GMT on ArchLinux](https://github.com/GenericM
 
 Install GMT via:
 
-    sudo emerge --verbose --ask gmt
+    sudo emerge --verbose --ask sci-geosciences/gmt
 
 ## Cross Platform Install Instructions
 

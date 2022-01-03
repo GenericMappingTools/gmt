@@ -12,7 +12,6 @@ and fast as GSHHG but easy enough to give it a try – as long as you have GDAL
 installed, space on your hard drive and some processor cycles to spare.
 
 .. note::
-
     This example makes use of data provided by third parties outside the GMT
     universe. As the internet is constantly changing, the source of this data
     might move or vanish altogether.

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,8 @@
  *    active nodes.  That spacing is now always 1 and we expand the grid as we
  *    go to larger grids (i.e., adding more nodes).
  * 3. It relies more on functions and macros from GMT to handle rows/cols/node calculations.
+ *
+ * Note on KEYS: DD(= means -D takes an optional input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -2111,7 +2113,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 
 	if (Ctrl->M.active) {	/* Want to mask the grid first */
 		char input[GMT_VF_LEN] = {""}, mask[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""};
-		static char *V_level = "qntcvld";
+		static char *V_level = GMT_VERBOSE_CODES;
 		struct GMT_GRID *Gmask = NULL;
 		struct GMT_VECTOR *V = NULL;
 		double *data[2] = {NULL, NULL};
@@ -2137,7 +2139,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, mask) == GMT_NOTSET) {
 			Return (API->error);
 		}
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading input file in grdmask */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading input file in grdmask */
 		/* Hardwire -rg since internally, all grids are gridline registered (until output at least) */
 		sprintf (cmd, "%s -G%s -R%g/%g/%g/%g -I%g/%g -NNaN/1/1 -S%s -V%c -rg --GMT_HISTORY=readonly",
 		         input, mask, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->common.R.inc[GMT_X],
@@ -2163,7 +2165,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &Gmask) != GMT_NOERROR) {	/* Done with the mask */
 			Return (API->error);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 	}
 	else
 		gmt_M_free (GMT, C.data);

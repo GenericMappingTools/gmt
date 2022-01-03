@@ -17,7 +17,7 @@ PACKAGE="${PACKAGE:-false}"
 
 # packages for compiling GMT
 # cmake is pre-installed on GitHub Actions
-packages="ninja curl pcre2 netcdf gdal fftw ghostscript"
+packages="ninja curl pcre2 netcdf gdal geos fftw ghostscript"
 
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
@@ -38,7 +38,7 @@ fi
 brew install ${packages}
 
 if [ "$BUILD_DOCS" = "true" ]; then
-	pip3 install --user docutils==0.16 sphinx==3.5.4
+	pip3 install --user docutils==0.17 sphinx
     # Add sphinx to PATH
     echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
 fi

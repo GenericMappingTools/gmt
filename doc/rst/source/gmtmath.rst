@@ -64,12 +64,12 @@ Required Arguments
     If *operand* can be opened as a file it will be read as an ASCII (or
     binary, see **-bi**) table data file. If not
     a file, it is interpreted as a numerical constant or a special
-    symbol (see below). The special argument STDIN means that *stdin*
+    symbol (see below). The special argument STDIN means that standard input
     will be read and placed on the stack; STDIN can appear more than
     once if necessary.
 *outfile*
     The name of a table data file that will hold the final result. If
-    not given then the output is sent to *stdout*.
+    not given then the output is sent to standard output.
 
 Optional Arguments
 ------------------
@@ -283,6 +283,8 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **D2R**         | 1 1    | Converts Degrees to Radians                                                                |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **DEG2KM**      | 1 1    | Converts Spherical Degrees to Kilometers                                                   |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **DENAN**       | 2 1    | Replace NaNs in A with values from B                                                       |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **DILOG**       | 1 1    | dilog (A)                                                                                  |
@@ -364,6 +366,8 @@ and output arguments.
 | **K0**          | 1 1    | Modified Kelvin function of A (2nd kind, order 0)                                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **K1**          | 1 1    | Modified Bessel function of A (2nd kind, order 1)                                          |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **KM2DEG**      | 1 1    | Converts Kilometers to Spherical Degrees                                                   |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **KN**          | 2 1    | Modified Bessel function of A (2nd kind, order B)                                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+

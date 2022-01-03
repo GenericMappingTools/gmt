@@ -28,7 +28,7 @@ gmt begin ex42
 	echo 6.5 14		>> lines.txt
 	echo 13	11.5	>> lines.txt
 	echo 19	11.5	>> lines.txt
-	gmt plot lines.txt -R0/19/0/25 -Jx1c -B0 -W2p -X-6c -Y-13.5c
+	gmt plot lines.txt -R0/19/0/26 -Jx1c -B0 -W2p -X-6c -Y-13.5c
 	echo 0 13 BEDMAP > tmp.txt
 	echo 0 24 GSHHG >> tmp.txt
 	gmt text tmp.txt -F+f18p+jBL -Dj8p/0

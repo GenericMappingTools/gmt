@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -561,7 +561,7 @@ EXTERN_MSC int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 
-			if (gmt_segment_BB_outside_map_BB (GMT, T->segment[seg])) continue;
+			/* Cannot exclude segments whose x,y are all outside since we do not yet know the coordinates of the amplitude curve */
 
 			PSL_comment (PSL, "%s\n", T->segment[seg]->header);
 

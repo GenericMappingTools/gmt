@@ -220,7 +220,7 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	/* Hook the user input arrays up to this container */
 	GMT_Put_Vector (API, V[GMT_IN], GMT_X, intype, in_data[GMT_X]);
 	GMT_Put_Vector (API, V[GMT_IN], GMT_Y, intype, in_data[GMT_Y]);
-	/* Associate our vectors container with a virtual dataset file to "read" from */
+	/* Associate our vectors container with a virtual dataset file to "read" from. REFERENCE will be switched to DUPLICATE if input is not double  */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, V[GMT_IN], input);
 	if (alloc_in_GMT)	/* Request vectors container for output data to be allocated by GMT */
 		GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, out_via, GMT_OUT|GMT_IS_REFERENCE, NULL, output);
@@ -237,8 +237,8 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 		/* Hook the user output array up to this containers */
 		GMT_Put_Vector (API, V[GMT_OUT], GMT_X, outtype, out_data[GMT_X]);
 		GMT_Put_Vector (API, V[GMT_OUT], GMT_Y, outtype, out_data[GMT_Y]);
-   		/* Associate our data vectors with a virtual dataset file to "write" to */
-    		GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, V[GMT_OUT], output);
+   		/* Associate our data vectors with a virtual dataset file to "write" to. REFERENCE will be switched to DUPLICATE if output is not double */
+    	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT|GMT_IS_REFERENCE, V[GMT_OUT], output);
 	}
 	/* Prepare the module arguments to multiply the input dataset by 10 then add 1 */
 	sprintf (args, "%s 10 MUL 1 ADD = %s", input, output);

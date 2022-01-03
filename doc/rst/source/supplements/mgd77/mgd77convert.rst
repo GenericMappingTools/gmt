@@ -83,7 +83,7 @@ Optional Arguments
 **-L**\ [**w**][**e**][**+l**]
     Set the level of verification reporting [none] and where to send
     such reports [stderr]. Append a combination of **w** for warnings and
-    **e** for errors, and append **+l** to send such log information to stdout.
+    **e** for errors, and append **+l** to send such log information to standard output.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_

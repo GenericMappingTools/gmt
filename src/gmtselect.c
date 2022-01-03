@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,8 @@
  *
  * Any one of these conditions may be negated for the opposite result
  * Both binary and ASCII data files are accommodated
+ *
+ * Note on KEYS: CD(= and LD(= mean -C and -L take input Datasets as arguments which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -662,7 +664,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	if (error == GMT_NOT_A_VALID_TYPE) Return (error);
 
-	gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
+	gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -C,-F,-L files */
 
 	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist] */
 		if (Ctrl->C.point) {
@@ -782,7 +784,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 	}
 
-	gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+	gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 
 	/* Specify input and output expected columns */
 	if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) Return (error);

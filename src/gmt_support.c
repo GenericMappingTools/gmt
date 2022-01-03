@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -308,16 +308,16 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 	}
 	/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>] */
 	len = (int)MIN(strlen (fill->pattern),PATH_MAX) - 1;
-	for (i = 0, pos = -1; i < len && fill->pattern[i] && pos == -1; i++)
+	for (i = 0, pos = GMT_NOTSET; i < len && fill->pattern[i] && pos == GMT_NOTSET; i++)
 		if (i < len && fill->pattern[i] == ':' && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;	/* THe extra i < len is needed to defeat cppcheck confusion */
-	if (pos > -1) fill->pattern[pos] = '\0';
+	if (pos != GMT_NOTSET) fill->pattern[pos] = '\0';
 	fill->pattern_no = atoi (fill->pattern);
-	if (fill->pattern_no == 0) fill->pattern_no = -1;
+	if (fill->pattern_no == 0) fill->pattern_no = GMT_NOTSET;
 
 	/* See if fore- and background colors are given */
 
 	len = (int)strlen (line);
-	for (i = 0, pos = -1; line[i] && pos == -1; i++) if (line[i] == ':' && i < len && (line[i+1] == 'B' || line[i+1] == 'F')) pos = i;
+	for (i = 0, pos = GMT_NOTSET; line[i] && pos == GMT_NOTSET; i++) if (line[i] == ':' && i < len && (line[i+1] == 'B' || line[i+1] == 'F')) pos = i;
 	pos++;
 
 	if (pos > 0 && line[pos]) {	/* Gave colors */
@@ -3001,10 +3001,11 @@ GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATAS
 	if (S->n_rows == SH->n_alloc) {	/* Need more memory for the segment */
 		uint64_t col;
 		SH->n_alloc += GMT_SMALL_CHUNK;
-		for (col = 0; col < S->n_columns; col++)
+		for (col = 0; col < S->n_columns; col++) {
 			S->data[col] = gmt_M_memory (GMT, S->data[col], SH->n_alloc, double);
+			SH->alloc_mode[col] = GMT_ALLOC_INTERNALLY;
+		}
 		S->text = gmt_M_memory (GMT, S->text, SH->n_alloc, char *);
-		SH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 	/* Deal with any justifications or nudging */
 	if (G->nudge_flag) {	/* Must adjust point a bit */
@@ -4895,7 +4896,7 @@ GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS * gmtsupport_load_eps_symbol (struct GMT_
 	return (E);
 }
 
-GMT_LOCAL void gmtsupport_make_template (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
+GMT_LOCAL void gmtsupport_make_template (struct GMTAPI_CTRL *API, char *stem, char path[]) {
 	/* Create a template for making a unique temporary file or directory name on the system.
 	 * The 6 XXXXXX will be replaced by mktemp or mkstemp with a unique 6-char token (62^6 unique tokens).
 	 * If a temp dir is designated then we use that in the path else we assume current directory.
@@ -4914,7 +4915,7 @@ int gmt_get_tempname (struct GMTAPI_CTRL *API, char *stem, char *extension, char
 	 * Note: path is expected to have a length of PATH_MAX.
 	 */
 
-	gmtsupport_make_template (API, stem, extension, path);	/* Readying the name template */
+	gmtsupport_make_template (API, stem, path);	/* Readying the name template */
 
 	if (mktemp (path) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Could not create a temporary name from template %s.\n", path);
@@ -4930,7 +4931,8 @@ FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char *extension,
 #ifndef _WIN32
 	/* Here we can use the race-safe mkstemp function which returns a file descriptor */
 	int fd = 0;
-	gmtsupport_make_template (API, stem, extension, path);	/* Readying the name template */
+	gmt_M_unused (extension);
+	gmtsupport_make_template (API, stem, path);	/* Readying the name template */
 	if ((fd = mkstemp (path)) == -1) {	/* Create filename AND open in one go to avoid race condition */
 		GMT_Report (API, GMT_MSG_ERROR, "gmt_create_tempfile: Could not create temporary file name and open it %s.\n", path);
 		API->error = GMT_RUNTIME_ERROR;
@@ -7595,10 +7597,12 @@ void gmtlib_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 			gmt_M_free (GMT, P->bfn[i].fill);
 	gmt_M_free (GMT, P->data);
 	/* Use free() to free the headers since they were allocated with strdup */
-	for (i = 0; i < P->n_headers; i++) gmt_M_str_free (P->header[i]);
+	if (P->n_headers) {
+		for (i = 0; i < P->n_headers; i++) gmt_M_str_free (P->header[i]);
+		gmt_M_free (GMT, P->header);
+	}
 	P->n_headers = P->n_colors = 0;
 	gmt_M_free (GMT, P->hidden);
-	gmt_M_free (GMT, P->header);
 }
 
 /*! . */
@@ -8333,7 +8337,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	return (X);
 }
 
-char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
+char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file, struct GMT_GRID_HEADER *h) {
 	/* Return which type of default CPT this data set should use.
 	 * If cpt is specified then that is what we will use. If not, then
 	 * we determine if file is a remote data set, and if it is and has a
@@ -8342,20 +8346,42 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file) {
 	int k_data;
 	static char *srtm_cpt = "srtm";
 	char *curr_cpt = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
-	if (cpt) return strdup (cpt);	/* CPT was already specified */
-	if (file == NULL) return NULL;	/* No file given, so there */
-	if (API->GMT->current.setting.run_mode == GMT_MODERN && (curr_cpt = gmt_get_current_item (API->GMT, "cpt", false))) return curr_cpt;	/* Use current CPT */
+	if (cpt) {
+		GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: Use specific CPT: %s\n", cpt);
+		return strdup (cpt);	/* CPT was already specified, so use it */
+	}
+	if (file == NULL) {
+		GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: No file given so cannot determine\n");
+		return NULL;	/* No file given, so nothing to work with */
+	}
+	if (API->GMT->current.setting.run_mode == GMT_MODERN && (curr_cpt = gmt_get_current_item (API->GMT, "cpt", false))) {
+		GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: Use current CPT: %s\n", curr_cpt);
+		return curr_cpt;	/* Use current CPT */
+	}
+	if (HH->cpt && HH->cpt[0] != '-') {
+		GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: Use grid header default CPT: %s\n", HH->cpt);
+		return (strdup (HH->cpt));	/* Found default CPT in the grid header */
+	}
 
+	/* Check if we are reading a remote dataset with a default CPT */
 	if ((k_data = gmt_remote_dataset_id (API, file)) == GMT_NOTSET) {
 		size_t LOX;
 		if ((k_data = gmt_get_tile_id (API, file)) == GMT_NOTSET)
 			return NULL;	/* Go with the default, whatever that is */
 		LOX = strlen (file) - 8;	/* Position of the L|O|X flag */
-		if (file[LOX] == 'L') return strdup (srtm_cpt);
+		if (file[LOX] == 'L') {
+			GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: Use SRTM default CPT: %s\n", srtm_cpt);
+			return strdup (srtm_cpt);
+		}
 	}
-	if (API->remote_info[k_data].CPT[0] == '-') return (NULL);
+	if (API->remote_info[k_data].CPT[0] == '-') {
+			GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: No CPT default for remote dataset %s\n", file);
+		return (NULL);
+	}
 
+	GMT_Report (API, GMT_MSG_INFORMATION, "gmt_cpt_default: Use dataset default CPT: %s\n", API->remote_info[k_data].CPT);
 	return (strdup (API->remote_info[k_data].CPT));
 }
 
@@ -8485,6 +8511,8 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 
 	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT to be present; GMT_Read_Data will work or fail accordingly */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|continuous, NULL, file, NULL);
+		if (GMT->parent->gwf_dir == NULL || file == NULL || strstr (file, GMT->parent->gwf_dir) == NULL)	/* Avoid writing a sessions CPT to a sessions CPT */
+			gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern mode */
 		return (P);
 	}
 
@@ -8540,7 +8568,6 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 		PH = gmt_get_C_hidden (P);
 		PH->auto_scale = 1;	/* Flag for colorbar to supply -Baf if not given */
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
-		gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
 	}
 	else if (file) {	/* Gave a CPT file */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "CPT argument %s understood to be a regular CPT table\n", file);
@@ -8549,6 +8576,8 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 	else
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No CPT file or master given?\n");
 
+	if (GMT->parent->gwf_dir == NULL || file == NULL || strstr (file, GMT->parent->gwf_dir) == NULL)	/* Avoid writing a sessions CPT to a sessions CPT */
+		gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
 	return (P);
 }
 
@@ -9292,23 +9321,23 @@ void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 }
 
 /*! . */
-int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
+int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double *value) {
 	unsigned int index, lo, hi, mid;
 	gmt_M_unused(GMT);
 
-	if (gmt_M_is_dnan (value)) return (GMT_NAN - 3);	/* Set to NaN color */
+	if (gmt_M_is_dnan (*value)) return (GMT_NAN - 3);	/* Set to NaN color */
 	if (P->is_wrapping)	/* Wrap to fit CPT range - we can never return back- or fore-ground colors */
-		value = MOD (value - P->data[0].z_low, P->wrap_length) + P->data[0].z_low;	/* Now within range */
-	else if (value > P->data[P->n_colors-1].z_high) {
+		*value = MOD (*value - P->data[0].z_low, P->wrap_length) + P->data[0].z_low;	/* Now within range */
+	else if (*value > P->data[P->n_colors-1].z_high) {
 		if (P->categorical) {	/* Set to NaN for categorical */
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", *value);
 			return GMT_NAN - 3;
 		}
 		return (GMT_FGD - 3);	/* Set to foreground color */
 	}
-	else if (value < P->data[0].z_low) {
+	else if (*value < P->data[0].z_low) {
 		if (P->categorical) {	/* Set to NaN for categorical */
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", *value);
 			return GMT_NAN - 3;
 		}
 		return (GMT_BGD - 3);	/* Set to background color */
@@ -9328,16 +9357,16 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 	while (lo != hi)
 	{
 		mid = (lo + hi) / 2;
-		if (value >= P->data[mid].z_high)
+		if (*value >= P->data[mid].z_high)
 			lo = mid + 1;
 		else
 			hi = mid;
 	}
 	index = lo;
 	
-	if (value >= P->data[index].z_low && value < P->data[index].z_high) {
-		if (P->categorical && !doubleAlmostEqualZero (P->data[index].z_low, value)) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+	if (*value >= P->data[index].z_low && *value < P->data[index].z_high) {
+		if (P->categorical && !doubleAlmostEqualZero (P->data[index].z_low, *value)) {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", *value);
 			index = GMT_NAN - 3;	/* Since categorical data is not on an interval */
 		}
 		return (index);
@@ -9349,10 +9378,10 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 	 */
 
 	index = 0;
-	while (index < P->n_colors && ! (value >= P->data[index].z_low && value < P->data[index].z_high) ) index++;
+	while (index < P->n_colors && ! (*value >= P->data[index].z_low && *value < P->data[index].z_high) ) index++;
 	if (index == P->n_colors) index--;	/* Because we use <= for last range */
-	if (P->categorical && !doubleAlmostEqualZero (P->data[index].z_low, value)) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
+	if (P->categorical && !doubleAlmostEqualZero (P->data[index].z_low, *value)) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", *value);
 		index = GMT_NAN - 3;	/* Since categorical data is not on an interval */
 	}
 	return (index);
@@ -9387,7 +9416,7 @@ void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index,
 
 /*! . */
 int gmt_get_rgb_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value, double *rgb) {
-	int index = gmt_get_index (GMT, P, value);
+	int index = gmt_get_index (GMT, P, &value);
 	gmt_get_rgb_lookup (GMT, P, index, value, rgb);
 	return (index);
 }
@@ -9414,7 +9443,7 @@ int gmt_get_fill_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double val
 	int index;
 	struct GMT_FILL *f = NULL;
 
-	index = gmt_get_index (GMT, P, value);
+	index = gmt_get_index (GMT, P, &value);
 
 	/* Check if pattern */
 
@@ -10972,7 +11001,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		if (gmt_file_is_cache (GMT->parent, G->file)) {	/* Must be a cache file */
 			first = gmt_download_file_if_not_found (GMT, G->file, 0);
 		}
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading this file */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading this file */
 		if ((G->X = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {	/* Failure to read the file */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
 			error++;
@@ -10993,7 +11022,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 				}
 			}
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 	}
 	else if (G->fixed) {
 		unsigned int first = 0;
@@ -11007,13 +11036,13 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		if (gmt_file_is_cache (GMT->parent, G->file)) {	/* Must be a cache file */
 			first = gmt_download_file_if_not_found (GMT, G->file, 0);
 		}
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -F files */
 		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 			return (error);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		if (T->n_columns < 2) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Data file %s has only %" PRIu64 " data columns!\n", G->file, T->n_columns);
 			return (error);
@@ -12202,20 +12231,20 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 		if (HH->BC[i] == GMT_BC_IS_DATA) {set[i] = false; n_skip++;}	/* No need to set since there is data in the pad area */
 	}
 	if (n_skip == 4) {	/* No need to set anything since there is data in the pad area on all sides */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "All boundaries set via extended data.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: All boundaries set via extended data.\n");
 		return (GMT_NOERROR);
 	}
 
 	/* Check minimum size:  */
 	if (G->header->n_columns < 1 || G->header->n_rows < 1) {
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "requires n_columns,n_rows at least 1.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Requires n_columns,n_rows at least 1.\n");
 		return (GMT_NOERROR);
 	}
 
 	/* Check that pad is at least 2 */
 	for (i = bok = 0; i < 4; i++) if (G->header->pad[i] < 2) bok++;
 	if (bok > 0) {
-		if (direction == GMT_IN) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "called with a pad < 2; skipped.\n");
+		if (direction == GMT_IN) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Called with a pad < 2; skipped.\n");
 		return (GMT_NOERROR);
 	}
 
@@ -12277,7 +12306,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			else {	/* First is not NaN so all should be identical */
 				for (i = iw+1; i <= ie; i++) if (G->data[jn + i] != G->data[jn + iw]) bok++;
 			}
-			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%d (of %d) inconsistent grid values at North pole.\n", bok, G->header->n_columns);
+			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at North pole.\n", bok, G->header->n_columns);
 		}
 
 		if (HH->gs) {	/* South pole case */
@@ -12288,7 +12317,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			else {	/* First is not NaN so all should be identical */
 				for (i = iw+1; i <= ie; i++) if (G->data[js + i] != G->data[js + iw]) bok++;
 			}
-			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%d (of %d) inconsistent grid values at South pole.\n", bok, G->header->n_columns);
+			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at South pole.\n", bok, G->header->n_columns);
 		}
 	}
 
@@ -12310,7 +12339,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 					G->data[jso2 + i] = G->data[jso2k + i];
 				}
 			}
-			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->n_columns);
+			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->n_columns);
 
 			/* periodic Y rows copied.  Now do X naturals.
 				This is easy since y's are done; no corner problems.
@@ -12355,15 +12384,15 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			/* DONE with X not periodic, Y periodic case.  Fully loaded.  */
 			if (set[YLO] && set[YHI]) {
 				HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for bottom and top edges: %s\n", kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for bottom and top edges: %s\n", kind[HH->BC[YLO]]);
 			}
 			else if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 			else if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 
 			return (GMT_NOERROR);
@@ -12414,17 +12443,17 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				if (set[XHI]) G->data[ieo2 + jmx] = G->data[iei1 + jmx] + (gmt_grdfloat)(5.0 * (G->data[ieo1 + jmx] - G->data[ie + jmx]))
 					+ (G->data[ie + jmx - mx] - G->data[ieo1 + jmx - mx]) + (G->data[ie + jmx + mx] - G->data[ieo1 + jmx + mx]);
 			}
-			/* DONE with X not periodic, Y not periodic case.  Loaded all but three cornermost points at each corner.  */
+			/* DONE with X not periodic, Y not periodic case.  Loaded all but three corner-most points at each corner.  */
 
 			for (i = n_set = 0; i < 4; i++) if (set[i]) {
 				n_set++;
 				HH->BC[i] = GMT_BC_IS_NATURAL;
 			}
 			if (n_set == 4) {
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for all edges: %s\n", kind[HH->BC[XLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for all edges: %s\n", kind[HH->BC[XLO]]);
 			}
 			for (i = 0; i < 4; i++) if (set[i]) {
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[i], kind[HH->BC[i]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[i], kind[HH->BC[i]]);
 			}
 			return (GMT_NOERROR);
 		}
@@ -12446,7 +12475,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				G->data[ieo2 + jmx] = G->data[ieo2k + jmx];
 			}
 		}
-		if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%d (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->n_rows);
+		if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->n_rows);
 
 		if (HH->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
 			for (i = iwo2, bok = 0; i <= ieo2; ++i) {
@@ -12461,20 +12490,20 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 					G->data[jso2 + i] = G->data[jso2k + i];
 				}
 			}
-			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->n_columns);
+			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->n_columns);
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
 			if (set[YLO] && set[YHI]) {
 				HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for bottom and top edges: %s\n", kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for bottom and top edges: %s\n", kind[HH->BC[YLO]]);
 			}
 			else if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 			else if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 			return (GMT_NOERROR);
 		}
@@ -12497,7 +12526,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			}
 			if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_GEO;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 		}
 		else {
@@ -12525,7 +12554,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			/* End of X is periodic, north (top) is Natural.  */
 			if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_NATURAL;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 		}
 
@@ -12547,7 +12576,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			}
 			if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_GEO;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 		}
 		else {
@@ -12575,7 +12604,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			/* End of X is periodic, south (bottom) is Natural.  */
 			if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_NATURAL;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 		}
 
@@ -12650,13 +12679,13 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 
 	/* Check minimum size:  */
 	if (I->header->n_columns < 1 || I->header->n_rows < 1) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "requires n_columns,n_rows at least 1.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtlib_image_BC_set: Requires n_columns,n_rows at least 1.\n");
 		return (-1);
 	}
 
 	/* Check if pad is requested */
 	if (I->header->pad[0] < 2 ||  I->header->pad[1] < 2 ||  I->header->pad[2] < 2 ||  I->header->pad[3] < 2) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pad not large enough for BC assignments; no BCs applied\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtlib_image_BC_set: Pad not large enough for BC assignments; no BCs applied\n");
 		return (GMT_NOERROR);
 	}
 
@@ -12714,12 +12743,12 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 		if (HH->gn) {	/* North pole case */
 			bok = 0;
 			for (i = iw+1; i <= ie; i++) for (b = 0; b < nb; b++) if (img[nb*(jn + i)+b] != img[nb*(jn + iw)+b]) bok++;
-			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Inconsistent image values at North pole.\n");
+			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtlib_image_BC_set: Inconsistent image values at North pole.\n");
 		}
 		if (HH->gs) {	/* South pole case */
 			bok = 0;
 			for (i = iw+1; i <= ie; i++) for (b = 0; b < nb; b++) if (img[nb*(js + i)+b] != img[nb*(js + iw)+b]) bok++;
-			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Inconsistent grid values at South pole.\n");
+			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtlib_image_BC_set: Inconsistent grid values at South pole.\n");
 		}
 	}
 
@@ -12805,15 +12834,15 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 			/* DONE with X not periodic, Y periodic case.  Fully loaded.  */
 			if (set[YLO] && set[YHI]) {
 				HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for bottom and top edge: %s\n", kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for bottom and top edge: %s\n", kind[HH->BC[YLO]]);
 			}
 			else if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 			else if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 
 			return (GMT_NOERROR);
@@ -12938,10 +12967,10 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 				n_set++;
 			}
 			if (n_set == 4)
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for all edges: %s\n", kind[HH->BC[XLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for all edges: %s\n", kind[HH->BC[XLO]]);
 			else {
 				for (i = 0; i < 4; i++) if (set[i]) {
-					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[i], kind[HH->BC[i]]);
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[i], kind[HH->BC[i]]);
 				}
 			}
 			return (GMT_NOERROR);
@@ -12982,15 +13011,15 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 
 			if (set[YLO] && set[YHI]) {
 				HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for bottom and top edge: %s\n", kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for bottom and top edge: %s\n", kind[HH->BC[YLO]]);
 			}
 			else if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 			else if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 			return (GMT_NOERROR);
 		}
@@ -13015,7 +13044,7 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 			}
 			if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_GEO;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 		}
 		else {
@@ -13052,7 +13081,7 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 			/* End of X is periodic, north (top) is Natural.  */
 			if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_NATURAL;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 		}
 
@@ -13076,7 +13105,7 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 			}
 			if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_GEO;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 		}
 		else {
@@ -13114,7 +13143,7 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 			/* End of X is periodic, south (bottom) is Natural.  */
 			if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_NATURAL;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 		}
 
@@ -15096,7 +15125,7 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 	if (!GMT->common.R.oblique)	/* Eliminate items outside rectangular w/e/s/n/z0/z1 bounds */
 		limit[0] = GMT->common.R.wesn[2*A->id], limit[1] = GMT->common.R.wesn[2*A->id+1];
 
-	gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
+	gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -F files */
 	GMT->current.io.max_cols_to_read = 1;
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
@@ -15104,7 +15133,7 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 		gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 		return (0);
 	}
-	gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+	gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 	gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 	GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 	GMT->current.io.max_cols_to_read = save_max_cols_to_read;
@@ -16098,7 +16127,7 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 	uint64_t k, col, seg, row, start, length, *pos = gmt_M_memory (GMT, NULL, S->n_rows, uint64_t);
 	char label[GMT_BUFSIZ] = {""}, *txt = NULL, *feature = "Line";
 	double r;
-	struct GMT_DATASEGMENT **L = NULL, *Sx = gmt_get_segment (GMT);
+	struct GMT_DATASEGMENT **L = NULL, *Sx = gmt_get_segment (GMT, S->n_columns);
 	struct GMT_DATASEGMENT_HIDDEN *LH = NULL, *SH = gmt_get_DS_hidden (S);
 
 	for (k = 0; k < S->n_rows; k++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->data[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we don't have to check again */
@@ -16798,7 +16827,8 @@ unsigned int gmt_validate_modifiers (struct GMT_CTRL *GMT, const char *string, c
 	for (k = 0; start == 0 && k < (len-1); k++) {
 		if (string[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exits the quote */
 		if (quoted) continue;		/* Not consider +<mod> inside quoted strings */
-		if (string[k] == '+') {	/*Possibly a modifier */
+		if (string[k] == '+') {	/* Possibly a modifier */
+			if (k && string[k-1] == 'e' && isdigit (string[k+1])) continue;	/* Exponential notation, e.g. 1e+5 */
 			if (strchr (valid_modifiers, string[k+1]))	/* Found a recognized valid modifier */
 				n_good++;
 			else {	/* Found an invalid modifier or some part of a filename that has + in it */
@@ -16879,7 +16909,7 @@ GMT_LOCAL double gmtsupport_cart_centroid_area (struct GMT_CTRL *GMT, const doub
 double gmt_centroid_area (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo, double *pos) {
 	/* Estimate centroid and area of a polygon.  geo is 1 if geographic data. Input data remains unchanged.
 	 * area will be +ve if polygon is CW, negative if CCW */
-	double area;
+	double area;	/* In selected units squared if geographic */
 	if (geo)	/* Spherical centroid and area */
 		area = gmtlib_geo_centroid_area (GMT, x, y, n, pos);
 	else	/* Cartesian centroid and area */
@@ -17240,7 +17270,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	<file>
 	 *
 	 * Parsing:
-	 *      0) If <argument> is a single value and flags & GMT_ARRAY_SCALAR is set
+	 *	0) If <argument> is a single value and flags & GMT_ARRAY_SCALAR is set
 	 *	   then we create an array of one item. Otherwise <argument> may be
 	 *	   interpreted as <inc>.
 	 *	1) If <argument> is a file found in our search path then
@@ -17394,7 +17424,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Must specify valid min/max/inc[<unit>|+n] option\n", option);
 		return GMT_PARSE_ERROR;
 	}
-	if (!(ns == 1 || ns == 3) && (flags & GMT_ARRAY_NOINC) == 0) {	/* Need to give 1 or 3 items unless inc is optional */
+	if ((flags & GMT_ARRAY_RANGE) == 0 && !(ns == 1 || ns == 3) && (flags & GMT_ARRAY_NOINC) == 0) {	/* Need to give 1 or 3 items unless inc is optional */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Must specify valid [min/max/]inc[<unit>|+n] option\n", option);
 		return GMT_PARSE_ERROR;
 	}
@@ -17585,7 +17615,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		save_coltype[GMT_IN]  = gmt_get_column_type (GMT, GMT_IN, GMT_X);
 		save_coltype[GMT_OUT] = gmt_get_column_type (GMT, GMT_OUT, GMT_X);
 		if (T->temporal) gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_ABSTIME);
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading this file */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading this file */
 		GMT->current.io.record_type[GMT_IN] = GMT_READ_NORMAL;
 		GMT->current.io.trailing_text[GMT_IN] = false;
 		if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) return (GMT_PARSE_ERROR);
@@ -17597,7 +17627,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		gmt_set_column_type (GMT, GMT_OUT, GMT_X, save_coltype[GMT_OUT]);
 		GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 		GMT->current.io.max_cols_to_read = save_max_cols_to_read;
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		if (D->n_segments > 1) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: File %s has more than one segment\n", option, T->file);
 			GMT_Destroy_Data (GMT->parent, &D);
@@ -17631,10 +17661,20 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		return GMT_NOERROR;
 	}
 
-	if (min != NULL)	/* Update min now */
+	if (min != NULL) {	/* Update min now */
+		if (gmt_M_is_dnan (*min)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Min value is NaN - cannot create array\n", option);
+			return GMT_PARSE_ERROR;
+		}
 		T->min = *min;
-	if (max != NULL)	/* Update max now */
+	}
+	if (max != NULL) {	/* Update max now */
+		if (gmt_M_is_dnan (*max)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Max value is NaN - cannot create array\n", option);
+			return GMT_PARSE_ERROR;
+		}
 		T->max = *max;
+	}
 	if (T->count)	/* This means we gave a count instead of increment  */
 		inc = (T->max - T->min) / (T->inc - 1.0);
 	else if (T->reciprocal)	/* This means we gave the reciprocal increment  */
@@ -18051,7 +18091,7 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 
 	qsort (M, n, sizeof (struct GMT_MODULEINFO), gmtsupport_sort_moduleinfo);
 
-	printf ("/*\n * Copyright (c) 2012-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)\n");
+	printf ("/*\n * Copyright (c) 2012-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)\n");
 	printf (" * See LICENSE.TXT file for copying and redistribution conditions.\n */\n");
 	printf ("/* gmt_%s_glue.c populates the external array of this shared lib with\n", library);
 	printf (" * module parameters such as name, group, purpose and keys strings.\n");
@@ -18339,8 +18379,8 @@ int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int 
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a deprecated sub-shell call `...`, please use $(...) instead: %s", start);
 				else if (strchr (line, ')') && (p = strchr (line, '('))) {	/* sub-shell call without leading $ */
 					prev = p - 1;	/* Get previous character */
-					if (prev < start || prev[0] != '$')
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a sub-shell call $(...) without the leading $: %s", start);
+					if (strchr (line, '\"') == NULL && (prev < start || prev[0] != '$'))	/* No double-quotes yet we have ( ...) and no leading $.Give this message: */
+						GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Main script appears to have a sub-shell call $(...) without the leading $: %s", start);
 				}
 			}
 		}
@@ -18360,7 +18400,7 @@ int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int 
 			}
 			else if (mode != GMT_DOS_MODE) {
 				if (strchr (start, '{') && !strchr (start, '}'))
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script missing  in variable name: %s", record), n_errors++;
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script missing } in variable name: %s", record), n_errors++;
 				else if (!strchr (start, '{') && strchr (start, '}'))
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script missing { in variable name: %s", record), n_errors++;
 			}
@@ -18411,6 +18451,7 @@ bool gmt_is_gmt_end_show (char *line) {
 bool gmt_found_modifier (struct GMT_CTRL *GMT, char *string, char *mods) {
 	/* Return true if any of the modifiers listed are found in the string */
 	char this_modifier[3] = {'+', ' ', '\0'};
+	gmt_M_unused (GMT);
 	for (unsigned int k = 0; k < strlen (mods); k++) {
 		this_modifier[1] = mods[k];
 		if (strstr (string, this_modifier)) return (true);	/* Found it */
@@ -18421,6 +18462,7 @@ bool gmt_found_modifier (struct GMT_CTRL *GMT, char *string, char *mods) {
 unsigned int gmt_unpack_rgbcolors (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned char rgbmap[]) {
 	unsigned int n, k = 0;
 	int red;
+	gmt_M_unused (GMT);
 	/* Repack column-stored RGBA integer values into a row-stored RGBA byte array */
 	for (n = 0; n < (unsigned int)I->n_indexed_colors && (red = gmt_M_get_rgba (I->colormap, n, 0, I->n_indexed_colors)) >= 0; n++) {
 		rgbmap[k++] = red;	/* Got this already */
@@ -18432,18 +18474,24 @@ unsigned int gmt_unpack_rgbcolors (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, un
 }
 
 void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn) {
-	/* Fancy ddd:mm:ssF typeset of -Rw/e/s/n if possible */
+	/* Fancy ddd:mm:ssF typeset of -Rw/e/s/n if possible, and being aware of 360-range */
+	bool wrap = false;
 	enum gmt_col_enum type = gmt_get_column_type (GMT, GMT_IN, GMT_X);
 	char text[GMT_LEN64] = {""}, save[GMT_LEN64];
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Try formal reporting */
+		wrap = gmt_M_360_range (wesn[XLO], wesn[XHI]);
 		strcpy (save, GMT->current.setting.format_geo_out);
 		strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
 		gmtlib_geo_C_format (GMT);
 	}
-	gmt_ascii_format_one (GMT, text, wesn[XLO], type);
-	sprintf (record, "-R%s/", text);	/* west or xmin */
-	gmt_ascii_format_one (GMT, text, wesn[XHI], type);
-	strcat (record, text);	strcat (record, "/");/* east or xmax */
+	if (wrap)	/* Do it directly */
+		sprintf (record, "-R180:00:00W/180:00:00E/");
+	else {
+		gmt_ascii_format_one (GMT, text, wesn[XLO], type);
+		sprintf (record, "-R%s/", text);	/* west or xmin */
+		gmt_ascii_format_one (GMT, text, wesn[XHI], type);
+		strcat (record, text);	strcat (record, "/");/* east or xmax */
+	}
 	type = gmt_get_column_type (GMT, GMT_IN, GMT_Y);
 	gmt_ascii_format_one (GMT, text, wesn[YLO], type);
 	strcat (record, text);	strcat (record, "/");/* south or ymin */
@@ -18455,9 +18503,10 @@ void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn) {
 	}
 }
 
-unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, double *min, double *max) {
+unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, unsigned int mode, double *min, double *max) {
 	/* Parse strings like low/high, NaN/high, low/NaN, /high, low/ and return min/max
-	 * with either set to NaN if not given */
+	 * with either set to NaN if not given.  However, if mode - 1 then unset min/max becomes
+	 * -DBL_MAX or +DBL_MAX instead of NaNs */
 	size_t L;
 	int n;
 	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""};
@@ -18499,7 +18548,13 @@ unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, doub
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unable to parse %s\n", option, txt_b);
 		return GMT_PARSE_ERROR;
 	}
-	if (gmt_M_is_dnan (*min) && gmt_M_is_dnan (*max)) {
+	if (mode) {	/* Replace any NaNs with min and max doubles */
+		if (gmt_M_is_dnan (*min))
+			*min = -DBL_MAX;
+		if (gmt_M_is_dnan (*max))
+			*max = +DBL_MAX;
+	}
+	else if (gmt_M_is_dnan (*min) && gmt_M_is_dnan (*max)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Both limits cannot be NaN\n", option);
 		return GMT_PARSE_ERROR;
 	}

@@ -2,7 +2,7 @@
 
 [Tim Henstock](https://www.southampton.ac.uk/oes/research/staff/then.page)
 contributed the segy supplement, while
-[Kurt Feigl](http://geoscience.wisc.edu/geoscience/people/faculty/feigl/) and
+[Kurt Feigl](https://geoscience.wisc.edu/people/feigl-kurt-l/) and
 Genevieve Patau wrote the seis supplement.
 [Dennis Milbert](https://geodesyworld.github.io) donated the Fortran code that
 was translated to become earthtide.c.

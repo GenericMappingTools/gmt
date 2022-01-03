@@ -20,7 +20,7 @@ Tutorial
 #. Universidade do Algarve, Faro, Portugal
 #. University of Liverpool, UK
 #. Sea and Sun Technology, Germany
-#. Michigan State University
+#. China University of Geosciences, Wuhan, China
 
 The purpose of this tutorial is to introduce new users to GMT,
 outline the GMT environment, and enable you to make several
@@ -32,7 +32,6 @@ will prompt the users to improve their GMT and UNIX skills
 after completion of this short tutorial.
 
 .. note::
-
    This tutorial is for GMT 6 modern mode only. Looking for the classic mode tutorial?
    Since classic mode commands haven't changed since GMT 5, please visit
    the `GMT 5 tutorial page <https://docs.generic-mapping-tools.org/5.4/GMT_Tutorial.html>`_ instead.

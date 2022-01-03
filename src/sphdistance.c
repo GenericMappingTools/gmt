@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2008-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2008-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -325,7 +325,7 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 	if (Ctrl->Q.active) {	/* Expect a single file with Voronoi polygons */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Read Volonoi polygons from %s ...", Ctrl->Q.file);
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -Q files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -Q files */
 		if ((Qin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->Q.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -333,7 +333,7 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->Q.file, (int)Qin->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		Table = Qin->table[0];	/* Only one table in a file */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Found %" PRIu64 " segments\n", Table->n_segments);
 	 	lon = gmt_M_memory (GMT, NULL, Table->n_segments, double);
@@ -345,7 +345,7 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 				Return (error);
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read Nodes from %s ...", Ctrl->N.file);
-			gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -N files */
+			gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -N files */
 			if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 				Return (API->error);
 			}
@@ -353,7 +353,7 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)Nin->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
-			gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+			gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 			NTable = Nin->table[0];	/* Only one table in a file with a single segment */
 			if (NTable->n_segments != 1) {
 				GMT_Report (API, GMT_MSG_ERROR, "File %s can only have 1 segment!\n", Ctrl->N.file);
@@ -523,7 +523,7 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 		}
 		else {	/* Obtain current polygon from Voronoi listings */
 			if (P == NULL) {	/* Need a single polygon structure that we reuse for each polygon */
-				P = gmt_get_segment (GMT);	/* Needed as pointer below */
+				P = gmt_get_segment (GMT, 2);	/* Needed as pointer below */
 				P->data = gmt_M_memory (GMT, NULL, 2, double *);	/* Needed as pointers below */
 				P->min = gmt_M_memory (GMT, NULL, 2, double);	/* Needed to hold min lon/lat */
 				P->max = gmt_M_memory (GMT, NULL, 2, double);	/* Needed to hold max lon/lat */
@@ -548,13 +548,15 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 				if (P->data[GMT_X][vertex] < 0.0) P->data[GMT_X][vertex] += 360.0;
 				if (P->data[GMT_X][vertex] == 360.0) P->data[GMT_X][vertex] = 0.0;
 				vertex++;
-				if (vertex == p_alloc) gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
+				if (vertex == p_alloc)
+					gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
 
 				/* When we reach the vertex where we started, we are done with this polygon */
 			} while (node_new != node_stop);
 			P->data[GMT_X][vertex] = P->data[GMT_X][0];	/* Close polygon explicitly */
 			P->data[GMT_Y][vertex] = P->data[GMT_Y][0];
-			if ((++vertex) == p_alloc) gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
+			if ((++vertex) == p_alloc)
+				gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
 			P->n_rows = vertex;
 			switch (Ctrl->E.mode) {
 				case SPHD_NODES:	f_val = (gmt_grdfloat)node;	break;
@@ -569,7 +571,7 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, P);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		P->n_rows = n_new;
+		P->n_rows = p_alloc = n_new;	/* Must reset p_alloc since gmt_fix_up_path reallocated to fit n_new */
 		sphdistance_prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
 		south_row = (int)gmt_M_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
