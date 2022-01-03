@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -572,13 +572,13 @@ GMT_LOCAL int grdblend_sync_input_rows (struct GMT_CTRL *GMT, int row, struct GR
 		if (row < B[k].out_j0 || row > B[k].out_j1) {	/* Either done with grid or haven't gotten to this range yet */
 			B[k].outside = true;
 			if (B[k].open) {	/* If an open file then we wipe */
+				gmtlib_close_grd (GMT, B[k].G);	/* Close the grid file */
 				if (GMT_Destroy_Data (GMT->parent, &B[k].G)) return GMT_NOERROR;
 				B[k].open = false;
 				gmt_M_free (GMT, B[k].z);
 				gmt_M_free (GMT, B[k].RbR);
-				if (B[k].delete)	/* Delete the temporary resampled file */
-					if (gmt_remove_file (GMT, B[k].file))	/* Oops, removal failed */
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to delete file %s\n", B[k].file);
+				if (B[k].delete && gmt_remove_file (GMT, B[k].file))	/* Delete the temporary resampled file, but it failed */
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to delete file %s\n", B[k].file);
 			}
 			continue;
 		}
@@ -1122,6 +1122,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, blend[k].RbR);
 		}
 		if (blend[k].open) {
+			gmtlib_close_grd (GMT, blend[k].G);	/* Close the grid file so we don't have lots of them open */
 			if (blend[k].delete && gmt_remove_file (GMT, blend[k].file))	/* Delete the temporary resampled file */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to delete file %s\n", blend[k].file);
 			if ((error = GMT_Destroy_Data (API, &blend[k].G)) != GMT_NOERROR) Return (error);

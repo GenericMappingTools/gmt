@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15556,6 +15556,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					wesn[YHI] = ceil  ((wesn[YHI] / d_inc) - GMT_CONV8_LIMIT) * d_inc;
 					gmt_M_memcpy (API->tile_wesn, wesn, 4, double);	/* Retain this knowledge in case it was obtained via map_setup for an oblique area */
 					API->got_remote_wesn = true;	/* In case we need to use this subset when reading a grid or image */
+					API->remote_id = k_data2;
 				}
 				if (dry_run)
 					goto dry_run;
@@ -17152,6 +17153,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	else if (p->symbol == GMT_SYMBOL_COLUMN)
 		p->base = (GMT->current.proj.xyz_projection[GMT_Z] == GMT_LOG10) ? 1.0 : 0.0;
 	if (add_to_base) p->base_set |= GMT_BASE_ORIGIN;	/* Means to add base value to height offset to get actual z at top */
+	p->degenerate = degenerate;
 	return (decode_error);
 }
 
@@ -19101,7 +19103,7 @@ GMT_LOCAL void gmtinit_set_symbol_size (struct GMTAPI_CTRL *API, struct GMT_SYMB
 
 void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do_fill, struct GMT_FILL *fill, bool do_line, struct GMT_PEN *pen, struct GMT_LEGEND_ITEM *item) {
 	/* Adds a new entry to the auto-legend information file hidden in the session directory */
-	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""}, size_string[GMT_LEN128] = {""};
+	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""}, size_string[GMT_LEN128] = {""}, symbol;
 	bool gap_done = false;
 	double size = 0.0;
 	FILE *fp = NULL;
@@ -19232,14 +19234,19 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		fprintf (fp, "S - - %s - %s - %s\n", size_string, gmt_putpen (API->GMT, pen), label);
 	}
 	else {	/* Regular symbol */
+		symbol = S->symbol;	/* Selected symbol */
+		if (S->degenerate) {	/* Replace ellipses and rotated rectangles with circles and squares */
+			if (strchr ("eE", symbol)) symbol = 'c';
+			if (strchr ("jJ", symbol)) symbol = 's';
+		}
 		if (!(do_fill || do_line)) do_line = true;	/* If neither fill nor pen is selected, plot will draw line, so override do_line here */
 		if (do_line && pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
-		if (S->symbol == 'q') {	/* Quoted line [Experimental] */
+		if (symbol == 'q') {	/* Quoted line [Experimental] */
 			char scode[GMT_LEN64] = {""};
 			sprintf (scode, "qn1:+ltext");
 			fprintf (fp, "S - %s - %s %s - %s\n", scode, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 		}
-		else if (S->symbol == '~') {	/* Decorated line [Experimental] */
+		else if (symbol == '~') {	/* Decorated line [Experimental] */
 			char scode[GMT_LEN64] = {""};
 			sprintf (scode, "~n1:+s%s%s", S->D.symbol_code, S->D.size);
 			if (S->D.pen[0])  strcat (scode, "+p"), strcat (scode, S->D.pen);
@@ -19247,7 +19254,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			fprintf (fp, "S - %s - %s %s - %s\n", scode, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 		}
 		else 
-			fprintf (fp, "S - %c %s %s %s - %s\n", S->symbol, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+			fprintf (fp, "S - %c %s %s %s - %s\n", symbol, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	}
 
 	if (item->draw & GMT_LEGEND_DRAW_V && item->pen[GMT_LEGEND_PEN_V][0]) {	/* Must end with horizontal, then vertical line */

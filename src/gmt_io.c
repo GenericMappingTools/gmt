@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -4742,8 +4742,9 @@ int gmtlib_nc_get_att_text (struct GMT_CTRL *GMT, int ncid, int varid, char *nam
 /*! . */
 int gmtlib_nc_get_att_vtext (struct GMT_CTRL *GMT, int ncid, int varid, char *name, struct GMT_GRID_HEADER *h, char *text, size_t textlen) {
 	/* Similar to gmtlib_nc_get_att_text and used for title, history, and remark which, if longer than what can fit in header
-	 * are stored as allocated strings in the struct GMT_GRID_HEADER_HIDDEN structure.
+	 * are stored as allocated strings in the struct GMT_GRID_HEADER_HIDDEN structure.  We also place cpt in the hidden struct if found.
 	 * ncid, varid, name, text	: as in nc_get_att_text
+	 * If text is NULL then we do not access it
 	 * h  				: the pointer to the grid header structure
 	 * textlen			: maximum number of characters to copy to string text
 	 */
@@ -4752,9 +4753,13 @@ int gmtlib_nc_get_att_vtext (struct GMT_CTRL *GMT, int ncid, int varid, char *na
 	size_t attlen, trunclen;
 	char *att = NULL;
 
+	if (name == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Attribute name passed to gmtlib_nc_get_att_vtext is NULL\n");
+		return GMT_RUNTIME_ERROR;
+	}
 	status = nc_inq_attlen (ncid, varid, name, &attlen);
 	if (status != NC_NOERR) {	/* No such attribute */
-		*text = '\0';
+		if (text) text[0] = '\0';
 		return status;
 	}
 	att = calloc (attlen+1, sizeof (char));	/* Allocate the memory for the full string plus text terminator */
@@ -4777,13 +4782,20 @@ int gmtlib_nc_get_att_vtext (struct GMT_CTRL *GMT, int ncid, int varid, char *na
 				HH->remark = att;
 				wipe = false;
 			}
+			else if (strcmp (name, "cpt") == 0) {
+				if (HH->cpt) gmt_M_str_free (HH->cpt);	/* Free previous string */
+				HH->cpt = att;
+				wipe = false;
+			}
 		}
-		trunclen = MIN (attlen, textlen-1); /* attlen does not include terminating '\0') */
-		strncpy (text, att, trunclen); /* Copy att to text */
-		text[trunclen] = '\0'; /* Terminate string */
+		if (text) {	/* Only copy over if text was passed */
+			trunclen = MIN (attlen, textlen-1); /* attlen does not include terminating '\0') */
+			strncpy (text, att, trunclen); /* Copy att to text */
+			text[trunclen] = '\0'; /* Terminate string */
+		}
 	}
-	else	/* Not successful, set ouput string to empty */
-		*text = '\0';
+	else if (text)	/* Not successful, set output string to empty unless NULL */
+		text[0] = '\0';
 	if (wipe) gmt_M_str_free (att);	/* Free since not placed in hidden structure */
 	return status;
 }
