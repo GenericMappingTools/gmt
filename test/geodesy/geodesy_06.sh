@@ -29,5 +29,5 @@ cat << EOF > test.csv
 EOF
 gmt begin geodesy_06 ps
   gmt velo -JX6.5i/9i -R0/2100/0/2700 -B test.csv -A+ea -Se600c/0+f8p -Gblack -Wthicker,black
-  gmt velo test.csv -A+ea+n1c -Se600c/0+f8p -Gorange -Wthicker,orange
+  gmt velo test.csv -A+ea+n1c/0 -Se600c/0+f8p -Gorange -Wthicker,orange
 gmt end show

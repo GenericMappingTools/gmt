@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2008-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2008-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -89,7 +89,7 @@ GMT_LOCAL int sphinterpolate_get_args (struct GMT_CTRL *GMT, char *arg, double p
 	m = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 	if (m < 1) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s\n", msg);
-		m = -1;
+		m = GMT_NOTSET;
 	}
 	par[0] = atof (txt_a);
 	if (m >= 2) par[1] = atof (txt_b);

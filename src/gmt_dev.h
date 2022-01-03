@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -123,6 +123,8 @@ extern "C" {
 /* Used to restrict the scope of a function to the file it was declared in */
 #	define GMT_LOCAL static
 #endif
+
+#include "gmt_common_byteswap.h"    /* Byte-swap inline functions */
 
 #include "gmt_common_math.h" /* Shared math functions */
 #include "gmt.h"             /* All GMT high-level API */

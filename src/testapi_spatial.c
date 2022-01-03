@@ -10,10 +10,8 @@
 int main (int argc, char *argv[]) {
 	void *API;
 	unsigned int mode = (argc == 2) ? GMT_IS_REFERENCE : GMT_IS_DUPLICATE;
-	int64_t row, col, nx = 0;
 	struct GMT_DATASET *D1 = NULL, *D2 = NULL;
 	struct GMT_DATASET *Dout = NULL;
-	struct GMT_DATASEGMENT *S = NULL;
 	char input1[GMT_VF_LEN] = {""}, input2[GMT_VF_LEN] = {""};
 	char output[GMT_VF_LEN] = {""};
 	char command[3*GMT_VF_LEN + 64];

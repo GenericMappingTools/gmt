@@ -24,7 +24,7 @@ Synopsis (begin mode)
 [ |-M|\ *margins* ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
-[ |SYN_OPT-J| ]
+[ |-J|\ *parameters* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 

@@ -440,7 +440,13 @@ do not need to repeat the region and projection information, as shown here::
      gmt end show
 
 Thus, the chosen options remain in effect until you provide new option
-arguments on the command line.
+arguments on the command line.  **Note**: We keep track of two types of regions,
+One is the domain used for a map and one is the domain used for processing,
+which often are the same.  When a plot is specified without providing
+a region then we look for a previous plot region in the history first, and
+if it is not found then we look for the processing domain to use instead.  However,
+if a data-processing module is not given a region then we only look
+for a previous processing domain; we never substitute a plot domain in that case.
 
 Usage messages, syntax- and general error messages
 --------------------------------------------------
@@ -465,7 +471,7 @@ Standard input or file, header records
 
 Most of the programs which expect table data input can read either
 standard input or input in one or several files. These programs will try
-to read *stdin* unless you type the filename(s) on the command line
+to read standard input unless you type the filename(s) on the command line
 without the above hyphens. (If the program sees a hyphen, it reads the
 next character as an instruction; if an argument begins without a
 hyphen, it tries to open this argument as a filename).  This feature
@@ -2573,7 +2579,7 @@ indicate the second layer of the 3-D variable "slp" use as file name: ``file.nc?
 
 When you supply the numerical value for the third variable using
 "(*level*)", GMT will pick the layer closest to that value. No
-interpolation is performed.
+interpolation is performed (for such interpolations, see :doc:`/grdinterpolate`).
 
 Note that the question mark, brackets and parentheses have special
 meanings on Unix-based platforms. Therefore, you will need to either

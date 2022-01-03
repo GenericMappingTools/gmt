@@ -31,7 +31,7 @@ gmt begin ex43
 	echo N 7 43 7 43 >> legend.txt
 	gawk -F"\t" "{printf \"L - C %%d.\nL - L %%s\n\", NR, $NF}" B.txt >> legend.txt
 	gmt legend -DjBR+w2.5i+o0.4c -F+p1p+gwhite+s+c3p+r legend.txt --FONT_LABEL=8p
-	gmt basemap -R0.5/28.5/-10/4 -J15c/5c -Y-7.5c -B+glightgoldenrod
+	gmt basemap -R0.5/28.5/-10/4 -JX15c/5c -Y-7.5c -B+glightgoldenrod
 	echo ^> > lines.txt
 	echo 0	-2.5	>> lines.txt
 	echo 30	-2.5	>> lines.txt

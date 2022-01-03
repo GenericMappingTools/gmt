@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -816,7 +816,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	bool nothing_inside = false, use_intensity_grid, do_G_reading = true, read_z = false;
 
 	unsigned int c, nk, n4, row, col, d_reg[3], i_reg = 0, id[2], good;
-	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0;
+	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, n_max = 0;
 
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, way, bin_inc[4], ij_inc[4], error = 0;
 	int start[2], stop[2], inc[2];
@@ -873,7 +873,6 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	if ((API->error = gmt_img_sanitycheck (GMT, Topo->header))) {	/* Used map projection on a Mercator (cartesian) grid */
 		Return (API->error);
 	}
-
 	if (use_intensity_grid && !Ctrl->I.derive) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Read intensity grid header from file %s\n", Ctrl->I.file);
 		if ((Intens = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_NEEDS_PAD2, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
@@ -882,7 +881,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->C.active && Ctrl->Q.cpt && Ctrl->G.n != 3)
-		Ctrl->C.active = true;	/* Use default CPT (GMT->current.setting.cpt) and autostretch or under modern reuse current CPT */
+		Ctrl->C.active = true;	/* Use default CPT (GMT->current.setting.cpt) and auto-stretch or under modern reuse current CPT */
 
 	/* Determine what wesn to pass to map_setup */
 
@@ -898,6 +897,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 		read_z = true;	/* So we don't do it again later */
 	}
+	n_max = MAX (Topo->header->n_columns, Topo->header->n_rows);	/* Get max dimension so far */
 	/* Set default z-range for plot to be that of the grid if not specified via -R */
 	if (GMT->common.R.wesn[ZLO] == 0.0 && GMT->common.R.wesn[ZHI] == 0.0) {
 		GMT->common.R.wesn[ZLO] = Topo->header->z_min;
@@ -1068,6 +1068,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 			d_reg[k] = gmt_change_grdreg (GMT, Drape[k]->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 		}
 		Z = Drape[0];
+		n_max = MAX (MAX (Z->header->n_columns, Z->header->n_rows), n_max);	/* Watch for possibly longer dimension */
 	}
 	else
 		Z = Topo;
@@ -1200,7 +1201,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 	}
 
-	max_alloc = 2 * (MAX (1,Ctrl->S.value) * (((Z->header->n_columns > Z->header->n_rows) ? Z->header->n_columns : Z->header->n_rows) + 2)) + 1;
+	max_alloc = 2 * (MAX (1, Ctrl->S.value) * (n_max + 2)) + 1;	/* Allocation length for xx and yy */
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Start creating PostScript plot\n");
 
@@ -1299,7 +1300,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	if (Ctrl->T.active) {	/* Plot image as polygonal pieces. Here, -JZ is not set */
 		double *xx = NULL, *yy = NULL;
 		struct GMT_FILL fill;
-		struct GMT_DATASEGMENT *S = gmt_get_segment (GMT);
+		struct GMT_DATASEGMENT *S = gmt_get_segment (GMT, 2);
 		gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Tiling without interpolation\n");
@@ -1322,6 +1323,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, xx);
 			gmt_M_free (GMT, yy);
 		}
+		S->data[GMT_X] = S->data[GMT_Y] = NULL;	/* Since xx and yy was set to NULL but not data... */
 		gmt_free_segment (GMT, &S);
 	}
 

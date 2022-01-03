@@ -355,7 +355,8 @@ permanent shelf ice. In addition to these time-varying ice-ocean
 boundaries, there are also shelf ice grounding lines where ice goes from
 floating on the sea to sitting on land, and lines delimiting areas of
 rock outcrop. For consistency's sake, we have used the World Vector
-Shoreline throughout the world, as described in :doc:`/datasets/gshhg`.
+Shoreline throughout the world, as described in
+`The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG) <https://github.com/GenericMappingTools/gshhg-gmt#readme>`_.
 Users who need specific boundaries in Antarctica
 should get the Antarctic Digital Database, prepared by the British
 Antarctic Survey, Scott Polar Research Institute, World Conservation

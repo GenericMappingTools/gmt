@@ -1,5 +1,6 @@
-/*
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+/*--------------------------------------------------------------------
+ *
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -133,7 +134,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct DIMFILTER_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->F.filter = C->N.filter = C->D.mode = -1;
+	C->F.filter = C->N.filter = C->D.mode = GMT_NOTSET;
 	C->F.mode = DIMFILTER_MODE_KIND_AVE;
 	C->N.n_sectors = 1;
 	return (C);

@@ -82,6 +82,7 @@ Optional Arguments
 
 **-G**\ *fill*
     Sets color or shade for vector interiors [Default is no fill].
+    Alternatively, the fill may be set via **-Q**.
 
 .. _-I:
 
@@ -100,7 +101,7 @@ Optional Arguments
 
 **-Q**\ *parameters*
     Modify vector parameters. For vector heads, append vector head
-    *size* [Default is 0, i.e., stick-plot]. See VECTOR ATTRIBUTES for
+    *size* [Default is 0, i.e., stick-plot]. See `Vector Attributes`_ for
     specifying additional attributes.
 
 .. |Add_-R| replace:: Specify a subset of the grid. |Add_-R_links|
@@ -148,7 +149,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *pen*
-    Set pen attributes used for vector outlines [Default: width =
+    Change the pen attributes used for vector outlines [Default: width =
     default, color = black, style = solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|

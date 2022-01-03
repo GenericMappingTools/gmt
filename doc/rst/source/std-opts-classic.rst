@@ -34,7 +34,7 @@ Common Options (Classic Mode)
      - :ref:`Select binary input <-bi_full>`
    * - **-bo**\ *record*\ [**+b**\|\ **l**]
      - :ref:`Select binary output <-bo_full>`
-   * - **-d**\ [**i**\|\ **o**]\ *nodata*
+   * - **-d**\ [**i**\|\ **o**]\ *nodata*\ [**+c**\ *col*]
      - :ref:`Replace columns with nodata with NaN <-d_full>`
    * - **-e**\ [**~**]\ *"pattern"* \| **-e**\ [**~**]/\ *regexp*/[**i**]
      - :ref:`Filter data records that match the given pattern <-e_full>`

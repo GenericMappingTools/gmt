@@ -18,7 +18,7 @@ jobs:
       uses: actions/checkout@v2.3.4
 
     - name: Link Checker
-      uses: lycheeverse/lychee-action@v1.0.9
+      uses: lycheeverse/lychee-action@v1.2.0
       with:
         # 429: Too many requests
         args: >
@@ -30,10 +30,13 @@ jobs:
           --exclude "^http://aa.usno.navy.mil/faq/docs/lawyers.php$"
           --exclude "^uhttp://my.server.com/images$"
           --exclude "^-W@weight.png$"
+          --exclude "^http://topex.ucsd.edu/marine_grav/mar_grav.html"
+          --exclude "^https://topex.ucsd.edu/sandwell/"
+          --exclude "^http://topex.ucsd.edu"
           --verbose
-          "**/*.rst"
-          "**/*.rst_"
-          "**/*.md"
+          **/*.rst
+          **/*.rst_
+          **/*.md
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

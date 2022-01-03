@@ -69,7 +69,7 @@ Applications).  Xcode may change as versions change; the images below is for Xco
     gmt pstext my_text.txt -R0/30/-10/20 -JM15c -Baf -F+f16p > text.ps
 
    Copy that command minus the initial "gmt " part.  Now pull down the menu item "Product->Scheme->Edit Scheme",
-   then make sure "Arguments" is highlighted in blue in the top table, then click the "+" symbol beneath the
+   then make sure "Arguments" tab is highlighted in blue in the top table, then click the "+" symbol beneath the
    section that says "Arguments Passed on Launch" and paste in our command; it should result in this display:
 
    .. figure:: /_images/xcode-4.*
@@ -80,6 +80,19 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    calls an external program (e.g., gs, gdal_translate, etc.) then you may need to add the name PATH and
    place the path to that program under "Value".  Likewise, if the module needs to find a particular environmental
    setting like $X2SYS_HOME, then you must set those here as well.
+
+#. For problems involving memory access errors (SEGV, etc.) you may need to visit the "Diagnostics" tab and set
+   as many of the Memory Management checks as you can.  For other types of errors you may need to play with
+   the Runtime Sanitization settings, and so on. This tab looks something like this:
+
+   .. figure:: /_images/xcode-4b.*
+      :width: 100%
+      :align: center
+
+   We must often make sure these are set so that Xcode will actually show the error. Experience has taught us
+   that many crashes reported on Windows or Linux do not necessarily crash on macOS but they will in Xcode *if*
+   we engage these diagnostic settings. Finally, use the "Options" tab to change the current directory where
+   the debug session is run and inputs and outputs are read and written.
 
 #. Any data files your command will read must either be placed in the *xbuild/src/Debug* subdirectory or you must
    change the command you pasted above to use the full path instead.  In other words, when Xcode runs

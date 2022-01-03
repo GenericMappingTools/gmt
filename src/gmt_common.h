@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -162,6 +162,7 @@ struct GMT_COMMON {
 	struct d {	/* -d[i][o]<nan_proxy> */
 		bool active[2];
 		bool is_zero[2];
+		unsigned int first_col[2];	/* Only apply from this column onward */
 		double nan_proxy[2];
 		char string[GMT_LEN64];
 	} d;

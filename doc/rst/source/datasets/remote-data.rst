@@ -49,12 +49,8 @@ image and not create a bloated file that exceeds what the eye (or printers) can 
 :doc:`/grdcut` with the **-D** option to inquire about the automatic resolution. **Note**: Grid
 processing tools require the data resolution to be specified since no plot is being generated.
 
-Currently, GMT provides the following datasets (with their special names in parentheses)
-
-- `Global Earth Relief Grids`_ (``earth_relief``)
-- `Global Earth Seafloor Crustal Age Grids`_ (``earth_age``)
-- `Global Earth Day/Night Images`_ (``earth_day`` and ``earth_night``)
-- `Global Earth Mask Grids`_ (``earth_mask``)
+Details about the remote datasets currently provided by GMT can be found at
+`Remote Datasets <https://www.generic-mapping-tools.org/remote-datasets/>`_.
 
 Many of the remote datasets have a preferred, default color table that will be used unless you
 override that default by giving your desired CPT information.
@@ -148,18 +144,8 @@ or obtain the required subset grid directly via::
 
     gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -Gsubset.grd -V
 
-----
+Currently Available Remote Data Sets
+-------------------------------------
 
-.. include:: earth-relief.rst_
-
-----
-
-.. include:: earth-age.rst_
-
-----
-
-.. include:: earth-daynight.rst_
-
-----
-
-.. include:: earth-masks.rst_
+Documentation for the individual remote datasets available through the GMT server and its
+mirrors can be found at `Remote Datasets <https://www.generic-mapping-tools.org/remote-datasets/>`_.

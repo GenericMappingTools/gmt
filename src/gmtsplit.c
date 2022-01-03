@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -452,7 +452,7 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 		h_col = no_z_column + 3;
 	}
 	z_cols = 2;
-	S_out = gmt_get_segment (GMT);	/* We will use a single segment to hold all output records and keep track of start/stop via rec[] array */
+	S_out = gmt_get_segment (GMT, n_outputs);	/* We will use a single segment to hold all output records and keep track of start/stop via rec[] array */
 
 	nprofiles = 0;
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {

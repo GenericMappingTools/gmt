@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,8 @@
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
  * Version:	6 API
+ *
+ * Note on KEYS: =G} is special and says the = option will write an output grid (repeatable).
  */
 
 /* Notes: To add a new operator:

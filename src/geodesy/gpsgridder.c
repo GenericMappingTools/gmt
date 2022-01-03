@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,8 @@
  * See Sandwell and Wessel, 2016, "Interpolation of 2-D Vector Data Using Constraints
  *   from Elasticity", Geophys. Res. Lett., 43, 10,703-710,709, doi:10.1002/2016GL070340,
  *   for details.
+ *
+ * Note on KEYS: CD)=f means -C takes an optional output Dataset as argument via the +f modifier.
  */
 
 #include "gmt_dev.h"

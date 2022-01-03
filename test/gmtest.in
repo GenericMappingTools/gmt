@@ -33,10 +33,10 @@ if [ "@GMT_ENABLE_KNOWN2FAIL@" = "ON" ]; then
 	# RUNNER_OS is an environmental variables defined by GitHub Actions
 	# RUNNER_OS is Linux, macOS or Windows
 	os=$(echo "$RUNNER_OS" | tr '[:lower:]' '[:upper:]')
-	known2fail=$(grep "GMT_KNOWN_FAILURE_${os}" "$script" -c)
+	known2fail=$(grep "GMT_KNOWN_FAILURE_${os}" "$script" -c -w)
 	# Check if the test is known to fail on all platforms
 	if [ "$known2fail" = 0 ]; then
-		known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c)
+		known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c -w)
 	fi
 else
 	known2fail=0
@@ -120,7 +120,8 @@ for apiprog in \
     testapi_matrix_360 \
     testapi_matrix_360_ref \
     testapi_grid2matrix \
-    testapi_putvector
+    testapi_putvector \
+    testapi_spatial
 do
     eval "${apiprog}() { valgrind_wrapper \"@GMT_BINARY_DIR@/src/${apiprog}\" \"\$@\"; }"
 done

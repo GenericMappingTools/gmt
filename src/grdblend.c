@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -275,12 +275,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			if (n_scanned == 2 && !(r_in[0] == '-' && (r_in[1] == '\0' || r_in[1] == 'R'))) weight = atof (r_in);	/* Got "file weight" record */
 			L[n].weight = (n_scanned == 1 || (n == 2 && r_in[0] == '-')) ? 1.0 : weight;	/* Default weight is 1 if none were given */
 			if ((t_data = gmt_file_is_a_tile (GMT->parent, L[n].file, GMT_LOCAL_DIR)) != GMT_NOTSET) {
-				if (strstr (L[n].file, ".earth_relief_01s_g.")) {	/* A 1s SRTM tile */
-					srtm_res = 1;	srtm_job = true;
-				}
-				else if (strstr (L[n].file, ".earth_relief_03s_g.")) {	/* A 3s SRTM tile */
-					srtm_res = 3;	srtm_job = true;
-				}
+				srtm_job = gmt_use_srtm_coverage (GMT->parent, &(L[n].file), &t_data, &srtm_res);	/* true if this dataset uses SRTM for 1s and 3s resolutions */
 				if (gmt_access (GMT, &L[n].file[1], F_OK)) {	/* Tile must be downloaded */
 					L[n].download = true;
 					n_download++;

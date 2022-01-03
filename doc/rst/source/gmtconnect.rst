@@ -59,7 +59,7 @@ Optional Arguments
 
 **-C**\ [*closed*]
     Write all the already-closed polygons to file *closed* [gmtconnect_closed.txt]
-    and all open segments to *stdout*. No connection will take
+    and all open segments to standard output. No connection will take
     place. Use **-T**\ *cutoff* to set a minimum separation [0], and then
     any existing polygon whose first and last point are separated by less
     that *cutoff* will be considered to be closed.  Note that if

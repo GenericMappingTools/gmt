@@ -87,7 +87,7 @@ jobs:
           cmake --build .
 
       - name: Download cached GMT remote data from GitHub Artifacts
-        uses: dawidd6/action-download-artifact@v2.15.0
+        uses: dawidd6/action-download-artifact@v2.16.0
         with:
           workflow: ci-caches.yml
           name: gmt-cache

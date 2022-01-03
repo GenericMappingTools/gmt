@@ -16,14 +16,14 @@ tell application "Terminal" to set size of front window to {$w, ${dim[1]}}
 EOF
   export PATH="${BUNDLE_RESOURCES}/@GMT_BINDIR@:${PATH}"
   export PROJ_LIB="${BUNDLE_RESOURCES}/share/proj"
-  export GS_LIB="${BUNDLE_RESOURCES}/share/ghostscript/9.53.3/Resource/Init"
+  export GS_LIB="${BUNDLE_RESOURCES}/share/ghostscript/Resource/Init"
   export MAGICK_CONFIGURE_PATH=${BUNDLE_RESOURCES}/lib/GraphicsMagick/config
 
   function gmt () { "${BUNDLE_RESOURCES}/@GMT_BINDIR@/gmt" "$@"; }
   export -f gmt
   unset DYLD_LIBRARY_PATH
   gmt
-  echo -e "Note 1: If you want to use GMT outside of this terminal or in scripts, then follow these steps:\n        a) export GMTHOME=${BUNDLE_RESOURCES}\n        b) add \$GMTHOME/bin to your path\n        c) export PROJ_LIB=\$GMTHOME/share/proj\n        d) export GS_LIB=\$GMTHOME/share/ghostscript/9.53.3/Resource/Init\n        e) export MAGICK_CONFIGURE_PATH=\$GMTHOME/lib/GraphicsMagick/config"
+  echo -e "Note 1: If you want to use GMT outside of this terminal or in scripts, then follow these steps:\n        a) export GMTHOME=${BUNDLE_RESOURCES}\n        b) add \$GMTHOME/bin to your path\n        c) export PROJ_LIB=\$GMTHOME/share/proj\n        d) export GS_LIB=\$GMTHOME/share/ghostscript/Resource/Init\n        e) export MAGICK_CONFIGURE_PATH=\$GMTHOME/lib/GraphicsMagick/config"
   echo -e "Note 2: GMT may use Ghostscript, GraphicsMagick, FFmpeg, and GDAL executables; see\n        ${BUNDLE_RESOURCES}/share/Licenses for details.\n"
 
   _usershell=$(dscl . -read "/Users/$USER" UserShell)
