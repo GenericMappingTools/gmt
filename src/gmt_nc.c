@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -896,6 +896,9 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			/* Valid range is already in packed units, so do not convert */
 			header->z_min = dummy[0], header->z_max = dummy[1];
 		}
+		if (gmtlib_nc_get_att_vtext (GMT, ncid, z_id, "cpt", header, NULL, 0))	/* Found cpt attribute */
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "netCDF grid %s has a default CPT %s.\n", HH->cpt);
+
 		if (gmt_M_is_dnan (header->z_min) && gmt_M_is_dnan (header->z_max)) {
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "netCDF grid %s information has zmin = zmax = NaN. Reset to 0/0.\n", HH->name);
 			header->z_min = header->z_max = 0.0;
@@ -1029,6 +1032,10 @@ L100:
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		gmtnc_put_units (ncid, z_id, header->z_units);
+		if (GMT->parent->remote_info && GMT->parent->remote_id != GMT_NOTSET && GMT->parent->remote_info[GMT->parent->remote_id].CPT[0] != '-') {	/* Subset of remote grid with default CPT, save name as an attribute */
+			HH->cpt = strdup (GMT->parent->remote_info[GMT->parent->remote_id].CPT);
+			gmt_M_err_trap (nc_put_att_text (ncid, z_id, "cpt", strlen (HH->cpt), HH->cpt));
+		}
 
 		if (header->z_scale_factor != 1.0) {
 			gmt_M_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1U, &header->z_scale_factor));
