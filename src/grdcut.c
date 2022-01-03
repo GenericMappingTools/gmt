@@ -1028,11 +1028,6 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 			Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR)
 			Return (API->error);
-		if (GMT->current.setting.run_mode == GMT_MODERN && HH->cpt) {	/* Save the CPT as the current CPT for a modern mode session */
-			struct GMT_PALETTE *P = gmt_get_palette (GMT, HH->cpt, GMT_CPT_OPTIONAL, G->header->z_min, G->header->z_max, 0.0);
-			if (GMT_Destroy_Data (API, &P) != GMT_NOERROR)
-				Return (API->error);
-		}
 	}
 	else {	/* Write an image */
 		if (do_via_gdal) {	/* Special case of multi-band geotiff */
