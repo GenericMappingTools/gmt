@@ -1032,8 +1032,10 @@ L100:
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		gmtnc_put_units (ncid, z_id, header->z_units);
-		if (GMT->parent->remote_info && GMT->parent->remote_id != GMT_NOTSET && GMT->parent->remote_info[GMT->parent->remote_id].CPT[0] != '-')	/* Subset of remote grid with default CPT, save name as an attribute */
-			gmt_M_err_trap (nc_put_att_text (ncid, z_id, "cpt", strlen (GMT->parent->remote_info[GMT->parent->remote_id].CPT), GMT->parent->remote_info[GMT->parent->remote_id].CPT));
+		if (GMT->parent->remote_info && GMT->parent->remote_id != GMT_NOTSET && GMT->parent->remote_info[GMT->parent->remote_id].CPT[0] != '-') {	/* Subset of remote grid with default CPT, save name as an attribute */
+			HH->cpt = strdup (GMT->parent->remote_info[GMT->parent->remote_id].CPT);
+			gmt_M_err_trap (nc_put_att_text (ncid, z_id, "cpt", strlen (HH->cpt), HH->cpt));
+		}
 
 		if (header->z_scale_factor != 1.0) {
 			gmt_M_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1U, &header->z_scale_factor));
