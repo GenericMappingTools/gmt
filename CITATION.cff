@@ -1,9 +1,9 @@
 cff-version: 1.2.0
 message: "If you think it is appropriate, you may consider paying us back by including our latest article in the reference list of your future publications that will benefit from the availability of GMT."
 title: "The Generic Mapping Tools Version 6"
-version: 6.2.0
-doi: 10.5281/zenodo.4900001
-date-released: 2021-06-05
+version: 6.3.0
+doi: 10.5281/zenodo.5708769
+date-released: 2021-11-19
 url: "https://github.com/GenericMappingTools/gmt"
 preferred-citation:
   type: article
