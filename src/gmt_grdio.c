@@ -756,6 +756,7 @@ void gmt_copy_gridheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *to, stru
 	if (Hto->title) gmt_M_str_free (Hto->title);			/* Since we will duplicate via from */
 	if (Hto->command) gmt_M_str_free (Hto->command);			/* Since we will duplicate via from */
 	if (Hto->remark) gmt_M_str_free (Hto->remark);			/* Since we will duplicate via from */
+	if (Hto->cpt) gmt_M_str_free (Hto->cpt);				/* Since we will duplicate via from */
 	gmt_M_memcpy (to, from, 1, struct GMT_GRID_HEADER);		/* Copies full contents but also duplicates the hidden address */
 	to->hidden = Hto;	/* Restore the original hidden address in to */
 	gmt_M_memcpy (to->hidden, from->hidden, 1, struct GMT_GRID_HEADER_HIDDEN);	/* Copies full contents of hidden area */
@@ -766,6 +767,7 @@ void gmt_copy_gridheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *to, stru
 	if (Hfrom->title) Hto->title = strdup (Hfrom->title);
 	if (Hfrom->command) Hto->command = strdup (Hfrom->command);
 	if (Hfrom->remark) Hto->remark = strdup (Hfrom->remark);
+	if (Hfrom->cpt) Hto->cpt = strdup (Hfrom->cpt);
 }
 
 /*! gmt_grd_is_global returns true for a geographic grid with exactly 360-degree range (with or without repeating column) */
@@ -2112,6 +2114,7 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		if (HH->command) gmt_M_str_free (HH->command);	/* Free previous string */
 		if (HH->title)   gmt_M_str_free (HH->title);	/* Free previous string */
 		if (HH->remark)  gmt_M_str_free (HH->remark);	/* Free previous string */
+		if (HH->cpt)     gmt_M_str_free (HH->cpt);		/* Free previous string */
 		gmt_M_memcpy (mem, header->mem_layout, 4, char);
 		gmt_M_memset (header, 1, struct GMT_GRID_HEADER);
 		HH->index_function = ptr;
@@ -2932,6 +2935,7 @@ void gmt_free_header (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER **header) {
 	if (HH->title)   gmt_M_str_free (HH->title);
 	if (HH->command) gmt_M_str_free (HH->command);
 	if (HH->remark)  gmt_M_str_free (HH->remark);
+	if (HH->cpt)  gmt_M_str_free (HH->cpt);
 	gmt_M_free (GMT, h->hidden);
 	gmt_M_free (GMT, *header);
 }

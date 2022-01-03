@@ -477,6 +477,7 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	ext = gmt_chop_ext (infile);
 	/* If the remote file is found then there is nothing to do */
 	if ((k_data = gmt_remote_dataset_id (API, infile)) == GMT_NOTSET) goto clean_up;
+	API->remote_id = k_data;
 	L = strlen (API->remote_info[k_data].dir) - 1;	/* Length of dir minus trailing slash */
 	strncpy (dir, API->remote_info[k_data].dir, L);	dir[L] = '\0';	/* Duplicate dir without slash */
 	p = strrchr (dir, '/') + 1;	/* Start of final subdirectory (skipping over the slash we found) */
@@ -498,6 +499,7 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 			}
 			gmt_M_str_free (*file_ptr);
 			*file_ptr = strdup (newfile);
+			API->remote_id = k_data;
 			goto clean_up;
 		}
 	}

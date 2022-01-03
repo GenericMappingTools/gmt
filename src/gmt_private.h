@@ -209,6 +209,7 @@ struct GMTAPI_CTRL {
 	char *O_OPT, *K_OPT, *P_OPT, *c_OPT;
 	/* structure array of remote file information (sorted alphabetically) */
 	int n_remote_info;	/* How many remote server files we know of */
+	int remote_id;	/* Currently used remote ID or -1 */
 	struct GMT_DATA_INFO *remote_info;
 	bool server_announced;	/* Set to true after we have announced which GMT data server we are using */
 	struct GMT_COMMON *common_snapshot;	/* Holds the latest GMT common option settings after a module completes. */
