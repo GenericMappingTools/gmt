@@ -24,6 +24,7 @@ assignees: ''
 - [ ] run `src/gmt_make_*.sh` to update some .c and .h files
 - [ ] run `admin/gs_check.sh` to test if latest ghostscript version works
 - [ ] update [changelog](https://github.com/GenericMappingTools/gmt/blob/master/doc/rst/source/changes.rst)
+- [ ] update the version information in CITATION.cff
 - [ ] check installation instructions in [INSTALL.md](https://github.com/GenericMappingTools/gmt/blob/master/INSTALL.md)
 - [ ] check if there are any warnings when building the documentation
 - [ ] add one new entry in `doc/rst/_static/version_switch.js` if it's a minor release
