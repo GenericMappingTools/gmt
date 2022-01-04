@@ -129,6 +129,10 @@ Optional Arguments
     of all vectors plotted, use **-V**.  Alternatively, use **-Sl**\ *length* to set a fixed
     plot length for all vectors. If a legend entry is desired via **-l**, please set the
     desired reference vector magnitude in data units [*scale*].
+    **Note**: If you use **-l** to place a vector in the legend, use modifier **+s** to set
+    the desired length of that vector in user units.  E.g., for a reference length of 25 mm/yr
+    for plate motions, use modifier **+s**25 with **-l**\ "Velocity (25 mm/yr)".  If
+    *refsize* is not specified then we default to the *scale*.
 
 .. _-T:
 

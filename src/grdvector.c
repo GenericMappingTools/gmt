@@ -66,6 +66,7 @@ struct GRDVECTOR_CTRL {
 		bool active;
 		bool constant;
 		bool invert;
+		bool reference;
 		char unit;
 		double factor;
 		double scale_value;
@@ -290,6 +291,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 				if ((c = strstr (opt->arg, "+s"))) {	/* Gave reference scale value for legend */
 					Ctrl->S.scale_value = atof (&c[2]);
 					c[0] = '\0';	/* Chop off modifier */
+					if (Ctrl->S.scale_value > 0.0) Ctrl->S.reference = true;
 				}
 				len = strlen (opt->arg) - 1;	/* Location of expected unit */
 				j = (opt->arg[0] == 'i') ? 1 : 0;	/* j = 1 if -Si was selected */
@@ -482,7 +484,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 		Ctrl->S.factor = 1.0 / Ctrl->S.factor;	/* Turn length into a scale */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Vector scale of %g <data-unit>/%c converts to %g %c/<data-unit>.\n", was, Ctrl->S.unit, Ctrl->S.factor, Ctrl->S.unit);
 	}
-	if (Ctrl->S.scale_value == 0.0) Ctrl->S.scale_value = 1.0 / Ctrl->S.factor;	/* Default reference */
+	if (!Ctrl->S.reference) Ctrl->S.scale_value = 1.0 / Ctrl->S.factor;	/* Default reference if not set */
 
 	switch (Ctrl->S.unit) {	/* Adjust for possible unit selection */
 		/* First three choices will give straight vectors scaled from user length to plot lengths */
@@ -612,7 +614,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 			gmt_M_rgb_copy (Ctrl->G.fill.rgb, GMT->session.no_rgb);
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Report min/max/mean scaled vector length */
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION) || (GMT->common.l.active && !Ctrl->S.reference)) {	/* Report or find min/max/mean scaled vector length */
 		double v_scaled_min = DBL_MAX, v_scaled_max = -DBL_MAX, v_scaled_mean = 0.0;
 		double v_data_min = DBL_MAX, v_data_max = -DBL_MAX, v_data_mean = 0.0;
 		uint64_t v_n = 0;
@@ -677,7 +679,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 
 	PSL_command (GMT->PSL, "V\n");
 
-	if (GMT->common.l.active) {	/* Can we do auto-legend? */
+	if (GMT->common.l.active) {	/* Do auto-legend */
 		scaled_vec_length = Ctrl->S.scale_value * Ctrl->S.factor;
 		GMT->common.l.item.size = scaled_vec_length;
 		gmt_add_legend_item (API, &Ctrl->Q.S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
