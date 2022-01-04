@@ -18564,3 +18564,16 @@ unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, unsi
 	}
 	return GMT_NOERROR;
 }
+
+double gmt_get_vector_shrinking (struct GMT_CTRL *GMT, struct GMT_VECT_ATTR *v, double magitude, double length) {
+	/* Magnitude is in data units while length is in plot units */
+	double s;
+	gmt_M_unused (GMT);
+	if (v->v_norm_d)	/* Make decision based on data magnitude */
+		s = (magitude < v->v_norm) ? magitude / v->v_norm : 1.0;
+	else	/* Make decision based on plot length */
+		s = (length < v->v_norm) ? length / v->v_norm : 1.0;
+	/* Apply minimum scaling limit if set */
+	if (s < v->v_norm_limit) s = v->v_norm_limit;
+	return (s);
+}

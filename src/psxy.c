@@ -1421,7 +1421,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
 		bool periodic = false, delayed_unit_scaling = false, E_bar_above = false, E_bar_below = false;
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, col;
-		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS];
+		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS], data_magnitude;
 		struct GMT_RECORD *In = NULL;
 		struct GMT_DATASET *Diag = NULL;
 		struct GMT_DATASEGMENT *S_Diag = NULL;
@@ -2007,13 +2007,14 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					case PSL_VECTOR:
 						gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
 						if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
-							length = factor * hypot (in[ex1+S.read_size], in[ex2+S.read_size]) * S.v.comp_scale;
+							data_magnitude = hypot (in[ex1+S.read_size], in[ex2+S.read_size]) * S.v.comp_scale;
 						else
-							length = factor * in[ex2+S.read_size];
-						if (gmt_M_is_dnan (length)) {
+							data_magnitude = in[ex2+S.read_size];
+						if (gmt_M_is_dnan (data_magnitude)) {
 							GMT_Report (API, GMT_MSG_WARNING, "Vector length = NaN near line %d. Skipped\n", n_total_read);
 							continue;
 						}
+						length = factor * data_magnitude;
 						if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
 							d = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
 						else
@@ -2069,8 +2070,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_INFORMATION, "Vector head length exceeds overall vector length near line %d. Consider using +n<norm>\n", n_total_read);
 							n_warn[1]++;
 						}
-						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
-						if (s < S.v.v_norm_limit) s = S.v.v_norm_limit;
+						s = gmt_get_vector_shrinking (GMT, &(S.v), data_magnitude, length);	/* Vector attribute shrinking factor or 1 */
 						dim[PSL_VEC_XTIP]        = x_2;
 						dim[PSL_VEC_YTIP]        = y_2;
 						dim[PSL_VEC_TAIL_WIDTH]  = s * S.v.v_width;
@@ -2130,8 +2130,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_WARNING, "Math angle arc length = NaN near line %d. Skipped\n", n_total_read);
 							continue;
 						}
-						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
-						if (s < S.v.v_norm_limit) s = S.v.v_norm_limit;
+						s = gmt_get_vector_shrinking (GMT, &(S.v), length, length);	/* Vector attribute shrinking factor or 1 */
 						dim[PSL_MATHARC_HEAD_LENGTH]     = s * S.v.h_length;
 						dim[PSL_MATHARC_HEAD_WIDTH]      = s * S.v.h_width;
 						dim[PSL_MATHARC_ARC_PENWIDTH]    = s * S.v.v_width;

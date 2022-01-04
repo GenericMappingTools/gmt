@@ -16083,7 +16083,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					S->v.status |= PSL_VEC_LINE;
 				else {	/* Parse the cutoff size */
 					len = strlen (p);
-					j = (symbol == 'v' || symbol == 'V') ? gmt_get_dim_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes dimensional unit */
+					j = (symbol == 'v' || symbol == 'V') ? gmt_get_dim_unit (GMT, p[len-1]) : -2;	/* Only -Sv|V takes dimensional unit */
 					S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
 					if (symbol == '=') {	/* Since norm distance is in map units for geovectors we convert to spherical degrees */
 						if (p[len-1]) {	/* Examine if a unit was given */
@@ -16098,7 +16098,9 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					}
 					else if (j >= GMT_CM)	/* Convert length from given unit to inches */
 						S->v.v_norm *= GMT->session.u2u[j][GMT_INCH];
-					else	/* Convert length from default unit to inches */
+					else if (j == GMT_NOTSET)	/* Make shrink decision on data magnitude */
+						S->v.v_norm_d = true;
+					else	/* No unit specified, convert length from default unit to inches */
 						S->v.v_norm *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 					/* Here, v_norm is either in inches (if Cartesian vector) or spherical degrees (if geovector) */
 					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector shrink scale v_norm = %g going down to %g %% of head size\n", S->v.v_norm, 100.0 * S->v.v_norm_limit);
