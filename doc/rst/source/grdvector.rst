@@ -118,21 +118,19 @@ Optional Arguments
     unit (cm, inch, or point); if no unit is given we use the default value that
     is controlled by :term:`PROJ_LENGTH_UNIT`.  Vector lengths converted via plot unit
     scaling will plot as straight Cartesian vectors and their lengths are not
-    affected by map projection and coordinate locations.
+    affected by map projections and coordinate locations.
     For geographic data you may alternatively give *scale* in data units per map distance
     unit (see `Units`_). Then, your vector magnitudes (in data units) are scaled to map
     *distances* in the given distance unit, and finally projected onto the Earth to give
     *plot* dimensions.  These are geo-vectors that follow great circle paths and their
     lengths may be affected by the map projection and their coordinates.  Finally, use
     **-Si** if it is simpler to give the reciprocal scale in plot length or distance units
-    per data unit.  To report the minimum, maximum, and mean data and plot vector lengths
-    of all vectors plotted, use **-V**.  Alternatively, use **-Sl**\ *length* to set a fixed
-    plot length for all vectors. If a legend entry is desired via **-l**, please set the
-    desired reference vector magnitude in data units [*scale*].
-    **Note**: If you use **-l** to place a vector in the legend, use modifier **+s** to set
-    the desired length of that vector in user units.  E.g., for a reference length of 25 mm/yr
-    for plate motions, use modifier **+s**25 with **-l**\ "Velocity (25 mm/yr)".  If
-    *refsize* is not specified then we default to the *scale*.
+    per data unit.  Alternatively, use **-Sl**\ *length* to set a fixed plot length for all
+    vectors. To report the minimum, maximum, and mean data and plot vector lengths
+    of all vectors plotted, use **-V**.  **Note**: If a legend entry is desired via **-l**,
+    please provide the desired reference vector magnitude in data units via modifier **+s**.
+    E.g., for a reference length of 25 mm/yr for plate motions, use modifier **+s**\ 25 with
+    **-l**\ "Velocity (25 mm/yr)".  If *refsize* is not specified we default to *scale*.
 
 .. _-T:
 
