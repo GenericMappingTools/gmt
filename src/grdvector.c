@@ -68,6 +68,7 @@ struct GRDVECTOR_CTRL {
 		bool invert;
 		bool reference;
 		char unit;
+		char symbol;
 		double factor;
 		double scale_value;
 	} S;
@@ -178,11 +179,24 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 	unsigned int n_errors = 0, n_files = 0;
 	int j;
 	size_t len;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol, *c = NULL;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
-	symbol = (gmt_M_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
+	/* First determine what type of vector to plot */
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option != 'S') continue;	/* Skip until we find -S */
+		j = (strchr ("li", opt->arg[0])) ? 1 : 0;	/* Possibly skip leading -Si or -Sl */
+		while (opt->arg[j] && strchr (GMT_LEN_UNITS GMT_DIM_UNITS, opt->arg[j]) == NULL) j++;	/* Skip digits etc until we hit first unit or end of string */
+		if (opt->arg[j] && strchr (GMT_LEN_UNITS, opt->arg[j]) && gmt_M_is_geographic (GMT, GMT_IN))
+			Ctrl->S.symbol = '=';	/* Selected a geo-vector */
+		else if (opt->arg[j] && strchr (GMT_DIM_UNITS, opt->arg[j]))
+			Ctrl->S.symbol = 'v';	/* Selected a Cartesian vector */
+		else {	/* No useful info, select Cartesian with a warning */
+			GMT_Report (API, GMT_MSG_WARNING, "No units specified in -S. Selecting Cartesian vector symbol\n");
+			Ctrl->S.symbol = 'v';	/* Selected a Cartesian vector */
+		}
+	}
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -270,13 +284,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 				else {
 					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
 						Ctrl->Q.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
-						n_errors += gmt_parse_vector (GMT, symbol, opt->arg, &Ctrl->Q.S);
+						n_errors += gmt_parse_vector (GMT, Ctrl->S.symbol, opt->arg, &Ctrl->Q.S);
 					}
 					else {	/* Size, plus possible attributes */
 						j = sscanf (opt->arg, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
 						if (j == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
 						Ctrl->Q.S.size_x = gmt_M_to_inch (GMT, txt_a);	/* Length of vector */
-						n_errors += gmt_parse_vector (GMT, symbol, txt_b, &Ctrl->Q.S);
+						n_errors += gmt_parse_vector (GMT, Ctrl->S.symbol, txt_b, &Ctrl->Q.S);
 					}
 					/* Must possibly change v_norm to inches if given in another Cartesian unit */
 					if (Ctrl->Q.S.u_set && Ctrl->Q.S.u != GMT_INCH) {
@@ -336,7 +350,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 		}
 	}
 
-	if (!Ctrl->W.active) {	/* Accept -W default pen for stem */
+	if (GMT->common.l.active && Ctrl->S.symbol == '=') {
+		GMT_Report (API, GMT_MSG_WARNING, "Option -S: Auto-legend requires Cartesian vectors; -l ignored\n");
+		GMT->common.l.active = false;
+	}
+ 	if (!Ctrl->W.active) {	/* Accept -W default pen for stem */
 		GMT_Report (API, GMT_MSG_DEBUG, "Option -W: Not given so we accept default pen\n");
 		Ctrl->W.active = true;
 	}
@@ -535,10 +553,6 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 	}
 
 	if (Geographic) {	/* Now that we know this we make sure -T is disabled if given */
-		if (GMT->common.l.active) {
-			GMT_Report (API, GMT_MSG_WARNING, "Auto-legend requires Cartesian vectors; -l ignored\n");
-			GMT->common.l.active = false;
-		}
 		if (Ctrl->T.active) {	/* This is a mistake */
 			Ctrl->T.active = false;
 			GMT_Report (API, GMT_MSG_ERROR, "-T does not apply to geographic grids - ignored\n");
