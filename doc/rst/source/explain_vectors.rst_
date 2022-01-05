@@ -53,7 +53,7 @@ end point (**e**) of a line segment:
     with decreasing length, where vector plot lengths shorter than *norm* will have
     their attributes scaled by length/\ *norm* [other arrow attributes remain
     invariant to length]. For Cartesian vectors specify a length in plot units, while
-    for geovectors specify a length in map units (see `Units`_) [k]. Optionally, append
+    for geovectors specify a length in map units (see :ref:`cookbook/features:Distance units`) [k]. Optionally, append
     /*min* for the minimum shrink factor (in the 0-1 range) that we will shrink to [0.25].
     If no argument is given then **+n** ensures vector heads are not shrunk and always
     plotted regardless of vector length [Vector heads are not plotted if exceeding vector length].
