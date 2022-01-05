@@ -2425,7 +2425,7 @@ GMT_LOCAL int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], str
 			return (GMT_GRDIO_BAD_XRANGE);
 			break;
 		default:
-			/* Everything is seemingly OK */
+			/* Everything is seemingly OK, but code 1 means y-range is not a multiple of x_inc */
 			break;
 	}
 	switch (gmt_minmaxinc_verify (GMT, wesn[YLO], wesn[YHI], header->inc[GMT_Y], GMT_CONV4_LIMIT)) {	/* Check if range is compatible with y_inc */
@@ -2436,7 +2436,7 @@ GMT_LOCAL int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], str
 			return (GMT_GRDIO_BAD_YRANGE);
 			break;
 		default:
-			/* Everything is OK */
+			/* Everything is OK, but code 1 means y-range is not a multiple of y_inc */
 			break;
 	}
 	global = gmt_grd_is_global (GMT, header);
@@ -2473,6 +2473,7 @@ GMT_LOCAL int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], str
 			snprintf (format, GMT_LEN256, "w reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			wesn[XLO] = val - header->inc[GMT_X];
+			if ((was - wesn[XLO]) > header->inc[GMT_X]) wesn[XLO] += header->inc[GMT_X];
 			if (wesn[XLO] < header->wesn[XLO]) val += header->inc[GMT_X];
 			GMT_Report (GMT->parent, verbose_level, format, was, wesn[XLO]);
 		}
@@ -2487,6 +2488,7 @@ GMT_LOCAL int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], str
 			snprintf (format, GMT_LEN256, "e reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			wesn[XHI] = val + header->inc[GMT_X];
+			if ((wesn[XHI] - was) > header->inc[GMT_X]) wesn[XHI] -= header->inc[GMT_X];
 			if (wesn[XHI] > header->wesn[XHI]) val -= header->inc[GMT_X];
 			GMT_Report (GMT->parent, verbose_level, format, was, wesn[XHI]);
 		}
@@ -2503,6 +2505,7 @@ GMT_LOCAL int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], str
 		snprintf (format, GMT_LEN256, "s reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		wesn[YLO] = val - header->inc[GMT_Y];
+		if ((was - wesn[YLO]) > header->inc[GMT_Y]) wesn[YLO] += header->inc[GMT_Y];
 		if (wesn[YLO] < header->wesn[YLO]) val += header->inc[GMT_Y];
 		GMT_Report (GMT->parent, verbose_level, format, was, wesn[YLO]);
 	}
@@ -2515,6 +2518,7 @@ GMT_LOCAL int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], str
 		snprintf (format, GMT_LEN256, "n reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		wesn[YHI] = val + header->inc[GMT_Y];
+		if ((wesn[YHI] - was) > header->inc[GMT_Y]) wesn[YHI] -= header->inc[GMT_Y];
 		if (wesn[YHI] > header->wesn[YHI]) val -= header->inc[GMT_Y];
 		GMT_Report (GMT->parent, verbose_level, format, was, wesn[YHI]);
 	}
