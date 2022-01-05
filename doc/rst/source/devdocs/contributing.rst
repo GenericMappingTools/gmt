@@ -275,7 +275,7 @@ The animations are built from the scripts in ``doc/examples/anim*/``. To add a n
 
     .. youtube:: Pvvc4vb8G4Y
       :width: 100%
-  
+
       :doc:`/animations/anim??`
 
 - :ref:`Submit a pull request <devdocs/contributing:Pull Request Workflow>` with your new animation. Please be sure
@@ -318,6 +318,10 @@ Tests that are known to fail are excluded by adding ``# GMT_KNOWN_FAILURE`` anyw
 
 Running tests
 ^^^^^^^^^^^^^
+
+First, pull any baseline images stored in the DAGsHub repository using dvc::
+
+  dvc pull
 
 After configuring CMake and building GMT, you can run all the tests by running this command in the build directory::
 
