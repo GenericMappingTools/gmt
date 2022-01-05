@@ -15958,13 +15958,13 @@ GMT_LOCAL unsigned int gmtinit_get_length (struct GMT_CTRL *GMT, char symbol, ch
 			}
 		}
 	}
-	else if (string[len] != 'u') {	/* Got plot units in c|i|p or no unit */
+	else if (string[len] != 'q') {	/* Got plot units in c|i|p or no unit */
 		int j = gmt_get_dim_unit (GMT, string[len]);
 		if (j == GMT_NOTSET) j = GMT->current.setting.proj_length_unit;	/* No unit specified, convert value from default unit to inches */
 		/* Convert length from given c|i|p unit to inches */
 		*value *= (float)GMT->session.u2u[j][GMT_INCH];
 	}
-	/* Her, *value is either in user units, km, or plot units */
+	/* Her, *value is either in user units (q), km, or plot units */
 	return error;
 }
 
@@ -16119,7 +16119,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					error += gmtinit_get_length (GMT, symbol, &p[1], &(S->v.v_norm));
 					if (symbol == '=')	/* Since norm distance is now in km we convert to spherical degrees */
 						S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Finally, convert km to degrees */
-					else if (p[strlen (p)-1] == 'u')	/* Make shrink decision on data magnitude */
+					else if (p[strlen (p)-1] == 'q')	/* Make shrink decision on data magnitude */
 						S->v.v_norm_d = true;
 					/* Here, v_norm is either in inches (if Cartesian vector), spherical degrees (if geovector) */
 					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector shrink scale v_norm = %g going down to %g %% of head size\n", S->v.v_norm, 100.0 * S->v.v_norm_limit);
