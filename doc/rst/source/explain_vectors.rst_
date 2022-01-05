@@ -54,7 +54,7 @@ end point (**e**) of a line segment:
     their attributes scaled by length/\ *norm* [other arrow attributes remain
     invariant to length]. For Cartesian vectors specify a length in plot units or append
     **u** to indicate we should use the user data units in making the decision, while
-    for geovectors specify a length in map units (see `Units`_) [k]. Optionally, append
+    for geovectors specify a length in map units (see :ref:`cookbook/features:Distance units`) [k]. Optionally, append
     /*min* for the minimum shrink factor (in the 0-1 range) that we will shrink to [0.25].
     If no argument is given then **+n** ensures vector heads are not shrunk and always
     plotted regardless of vector length [Vector heads are not plotted if exceeding vector length].
