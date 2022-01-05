@@ -578,6 +578,7 @@ EXTERN_MSC void gmt_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_GCA
 /* gmt_map.c: */
 
 
+EXTERN_MSC double gmt_get_az_dist_from_components (struct GMT_CTRL *GMT, double lon, double lat, double dx, double dy, double *azim);
 EXTERN_MSC int gmt_map_perimeter_search (struct GMT_CTRL *GMT, double *wesn, bool add_pad);
 EXTERN_MSC int gmt_circle_to_region (struct GMT_CTRL *GMT, double lon, double lat, double radius, double *wesn);
 EXTERN_MSC void gmt_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat, double *back_az);

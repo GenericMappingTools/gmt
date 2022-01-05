@@ -86,7 +86,7 @@ In addition, all but circular vectors may take these modifiers:
     **+s** means the input *angle*, *length* are instead the :math:`x_e, y_e`
     coordinates of the vector end point.
 
-Finally, Cartesian vectors may take these modifiers:
+Finally, Cartesian vectors and geovectors may take these modifiers (except in :doc:`grdvector`):
 
     **+z**\ *scale* expects input :math:`\Delta x, \Delta y` vector components and
     uses the *scale* to convert to polar coordinates with length in given unit.
