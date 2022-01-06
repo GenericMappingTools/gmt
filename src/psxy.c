@@ -586,10 +586,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Symbols A, C, D, G, H, I, N, S, T are adjusted to have same area "
 		"as a circle of the specified diameter.");
 
-	GMT_Usage (API, 2, "\n%s Bar: -Sb|B[<size_x|size_y>[c|i|p|u]][+b|B[<base>]][+v|i<nz>][+s[<gap>]]", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "\n%s Bar: -Sb|B[<size_x|size_y>[c|i|p|q]][+b|B[<base>]][+v|i<nz>][+s[<gap>]]", GMT_LINE_BULLET);
 	GMT_Usage (API, -3, "Place horizontal or vertical bars. Use upper case -SB for horizontal bars "
 		"(<base> then refers to x and width may be in y-units) [Default is vertical]. Append size "
-		"and use unit u if size is given in x-input units [Default is %s]. Available modifiers:",
+		"and use unit q if size is quantity given in x-input units [Default is %s]. Available modifiers:",
 			API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Usage (API, 3, "+B Heights are measured relative to <base> [relative to origin].");
 	GMT_Usage (API, 3, "+b Set <base>. Alternatively, leave <base> off to read it from file.");

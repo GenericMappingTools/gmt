@@ -16393,9 +16393,11 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	else if (strchr (bar_symbols[mode], (int) text[0])) {	/* Bar, column, cube with size */
 
-		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][+b|B[<base>]][+v|i<nz>][+s[<gap>]]				*/
-		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][+b|B[<base>]][+v|i<nz>]	*/
-		/* Cube:	-Su|U[<size_x>[c|i|p|u]]	*/
+		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|q]][+b|B[<base>]][+v|i<nz>][+s[<gap>]]
+		 * Column:	-So|O[<size_x>[c|i|p|q][/<ysize>[c|i|p|u]]][+b|B[<base>]][+v|i<nz>]
+		 * Cube:	-Su|U[<size_x>[c|i|p|q]]
+		 * Note: 1/5/2022 PW: To avoid confusion with unit u for survey foot, we do a backwards compatible change
+		 * and now use 'q' for quantity instead, but we will of course continue to honor 'u' going forward. */
 
 		/* Also worry about backwards handling of +z|Z, now +v|i */
 		if ((c = strstr (text, "+v")) || (c = strstr (text, "+i"))|| (c = strstr (text, "+z")) || (c = strstr (text, "+Z"))) {	/* Got +z|Z<nz> */
@@ -16449,22 +16451,22 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (slash) {	/* Separate x/y sizes */
 			n = sscanf (text_cp, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 			decode_error += (n != 3);
-			if (((len = (int)strlen (txt_a)) > 0) && txt_a[len-1] == 'u') {
+			if (((len = (int)strlen (txt_a)) > 0) && (txt_a[len-1] == 'q' || txt_a[len-1] == 'u')) {	/* 'u' for backwards compatibility */
 				p->user_unit[GMT_X] = true;	/* Specified xwidth in user units */
-				txt_a[len-1] = '\0';	/* Chop off the 'u' */
+				txt_a[len-1] = '\0';	/* Chop off the 'q' */
 			}
-			if (((len = (int)strlen (txt_b)) > 0) && txt_b[len-1] == 'u') {
+			if (((len = (int)strlen (txt_b)) > 0) && (txt_b[len-1] == 'q' || txt_b[len-1] == 'u')) {	/* 'u' for backwards compatibility */
 				p->user_unit[GMT_Y] = true;	/* Specified ywidth in user units */
-				txt_b[len-1] = '\0';	/* Chop off the 'u' */
+				txt_b[len-1] = '\0';	/* Chop off the 'q' */
 			}
 			if (p->user_unit[GMT_X]) {
-				if (gmtinit_get_uservalue (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), &p->given_size_x, "-Sb|B|o|O|u|u x-size value")) return GMT_PARSE_ERROR;
+				if (gmtinit_get_uservalue (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), &p->given_size_x, "-Sb|B|o|O|u|U x-size value")) return GMT_PARSE_ERROR;
 				p->size_x = p->given_size_x;
 			}
 			else
 				p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
 			if (p->user_unit[GMT_Y]) {
-				if (gmtinit_get_uservalue (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), &p->given_size_y, "-Sb|B|o|O|u|u y-size value")) return GMT_PARSE_ERROR;
+				if (gmtinit_get_uservalue (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), &p->given_size_y, "-Sb|B|o|O|u|U y-size value")) return GMT_PARSE_ERROR;
 				p->size_y = p->given_size_y;
 			}
 			else
@@ -16472,13 +16474,13 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		}
 		else {	/* Only a single x = y size */
 			n = sscanf (text_cp, "%c%s", &symbol_type, txt_a);
-			if ((len = (int)strlen (txt_a)) && txt_a[len-1] == 'u') {
+			if ((len = (int)strlen (txt_a)) && (txt_a[len-1] == 'q' || txt_a[len-1] == 'u')) {	/* 'u' for backwards compatibility */
 				p->user_unit[GMT_X] = p->user_unit[GMT_Y] = true;	/* Specified xwidth [=ywidth] in user units */
-				txt_a[len-1] = '\0';	/* Chop off the 'u' */
+				txt_a[len-1] = '\0';	/* Chop off the 'q' */
 			}
 			if (n == 2) {	/* Gave size */
 				if (p->user_unit[GMT_X]) {
-					if (gmtinit_get_uservalue (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), &p->given_size_x, "-Sb|B|o|O|u|u x-size value")) return GMT_PARSE_ERROR;
+					if (gmtinit_get_uservalue (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), &p->given_size_x, "-Sb|B|o|O|u|U x-size value")) return GMT_PARSE_ERROR;
 					p->size_x = p->size_y = p->given_size_y = p->given_size_x;
 				}
 				else
