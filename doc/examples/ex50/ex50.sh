@@ -9,10 +9,10 @@ gmt begin ex50
 	# Left column have all the PDFs
 	# Binomial distribution
 	gmt math -T0/8/1 0.25 8 T BPDF = p.txt
-	gmt plot -R-0.6/8.6/0/0.35 -JX7.5c/1.25c -Glightgreen p.txt -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf
+	gmt plot -R-0.6/8.6/0/0.35 -JX7.5c/1.25c -Glightgreen p.txt -Sb0.8q -W0.5p -BWS -Bxa1 -Byaf
 	# Poisson distribution
 	gmt math -T0/8/1 T 2 PPDF = p.txt
-	gmt plot -R-0.6/8.6/0/0.3 -Glightgreen p.txt -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Y2.25c
+	gmt plot -R-0.6/8.6/0/0.3 -Glightgreen p.txt -Sb0.8q -W0.5p -BWS -Bxa1 -Byaf -Y2.25c
 	# Plot normal distribution
 	gmt math -T-4/4/0.1 T ZPDF = p.txt
 	gmt plot -R-4/4/0/0.4 p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y2.25c
@@ -41,10 +41,10 @@ gmt begin ex50
 	# Right column has all the CDF
 	# Plot binomial cumulative distribution
 	gmt math -T0/8/1 0.25 8 T BCDF = p.txt
-	gmt plot -R-0.6/8.6/0/1.02 -Glightred p.txt -Sb0.8u -W0.5p -BES -Bxa1 -Byaf -X9c -Y-8.1i
+	gmt plot -R-0.6/8.6/0/1.02 -Glightred p.txt -Sb0.8q -W0.5p -BES -Bxa1 -Byaf -X9c -Y-8.1i
 	# Plot Poisson cumulative distribution
 	gmt math -T0/8/1 T 2 PCDF = p.txt
-	gmt plot -R-0.6/8.6/0/1.02 -Glightred p.txt -Sb0.8u -W0.5p -BES -Bxa1 -Byaf -Y2.25c
+	gmt plot -R-0.6/8.6/0/1.02 -Glightred p.txt -Sb0.8q -W0.5p -BES -Bxa1 -Byaf -Y2.25c
 	# Plot normal cumulative distribution
 	gmt math -T-4/4/0.1 T ZCDF = p.txt
 	gmt plot -R-4/4/0/1.02 p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y2.25c

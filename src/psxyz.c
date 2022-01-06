@@ -261,6 +261,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+i Increments dz are given instead or values for multiband bars.");
 	GMT_Usage (API, -3, "Multiband columns requires -C with one color per band (values 0, 1, ...).");
 
+	GMT_Usage (API, 2, "\n%s 3-D Cube: Give <size> as the length of all sides; append q if <size> "
+		"is a quantity in x-units.", GMT_LINE_BULLET);
+
 	GMT_Usage (API, 2, "\n%s Ellipse: If not given, we read direction, major, and minor axis from columns 4-6. "
 		"If -SE rather than -Se is selected, %s will expect azimuth, and "
 		"axes [in km], and convert azimuths based on map projection. "
