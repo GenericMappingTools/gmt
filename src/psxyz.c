@@ -1674,9 +1674,10 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					if (S.shade3D) gmt_illuminate (GMT, lux[j], rgb[j]);
 				}
 			}
-
-			gmt_setfill (GMT, &data[i].f, data[i].outline);
-			gmt_setpen (GMT, &data[i].p);
+			if (!geovector) {
+				gmt_setfill (GMT, &data[i].f, data[i].outline);
+				gmt_setpen (GMT, &data[i].p);
+			}
 			if (QR_symbol) {
 				if (Ctrl->G.active)	/* Change color of QR code */
 					PSL_command (PSL, "/QR_fill {%s} def\n", PSL_makecolor (PSL, data[i].f.rgb));
@@ -1879,6 +1880,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					case GMT_SYMBOL_GEOVECTOR:
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						S.v = data[i].v;	/* Update vector attributes from saved values */
+						if (get_rgb) S.v.fill = data[i].f;
+						PSL_defpen (PSL, "PSL_vecheadpen", data[i].h.width, data[i].h.style, data[i].h.offset, data[i].h.rgb);
 						warn = gmt_geo_vector (GMT, xpos[item], data[i].y, data[i].dim[0], data[i].dim[1], &data[i].p, &S);
 						n_warn[warn]++;
 						break;
