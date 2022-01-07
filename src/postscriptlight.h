@@ -104,7 +104,7 @@ enum PSL_enum_vecattr {
 	PSL_VEC_JUST_E		= BIT(7),	/* Align vector end at (x,y) */
 	PSL_VEC_JUST_S		= BIT(8),	/* Align vector center at (x,y) */
 	PSL_VEC_ANGLES		= BIT(9),	/* Got start/stop angles instead of az, length */
-	PSL_VEC_POLE		= BIT(19),	/* Got pole of small/great circle */
+	PSL_VEC_POLE		= BIT(10),	/* Got pole of small/great circle */
 	PSL_VEC_OUTLINE		= BIT(11),	/* Draw vector head outline using default pen */
 	PSL_VEC_OUTLINE2	= BIT(12),	/* Draw vector head outline using supplied v_pen */
 	PSL_VEC_FILL		= BIT(13),	/* Fill vector head using default fill */

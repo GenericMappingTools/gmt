@@ -1726,6 +1726,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						double scl = (Ctrl->H.mode == PSXY_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 						gmt_scale_pen (GMT, &current_pen, scl);
 					}
+					if (geovector && Ctrl->W.active)
+						S.v.status |= PSL_VEC_OUTLINE;
 					if (can_update_headpen && !gmt_M_same_pen (current_pen, last_headpen)) {	/* Since color may have changed */
 						PSL_defpen (PSL, "PSL_vecheadpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
 						last_headpen = current_pen;
