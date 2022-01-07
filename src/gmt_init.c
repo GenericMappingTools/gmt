@@ -15927,6 +15927,7 @@ int gmt_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 			return 1;
 		}
 	}
+	if (gmt_M_is_zero (S->v.comp_scale)) S->v.comp_scale = 1.0;	/* Safety valve for GMT4 vectors */
 	if (gmt_M_is_zero (S->size_x)) return 0;	/* Not set yet */
 	if (!(S->symbol == GMT_SYMBOL_VECTOR_V4 || S->v.parsed_v4)) {
 		S->v.h_length = (float)S->size_x;
@@ -15935,7 +15936,8 @@ int gmt_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 	return 0;
 }
 
-GMT_LOCAL unsigned int gmtinit_get_length (struct GMT_CTRL *GMT, char symbol, char *string, float *value) {
+GMT_LOCAL unsigned int gmtinit_get_length (struct GMT_CTRL *GMT, char symbol, char *string, float *value, bool *user_unit) {
+	/* Used by gmt_parse_vector to set length scales or limits related to vectors */
 	unsigned int error = GMT_NOERROR;
 	size_t len = strlen (string) - 1;	/* Position of last character in string */
 
@@ -15943,28 +15945,51 @@ GMT_LOCAL unsigned int gmtinit_get_length (struct GMT_CTRL *GMT, char symbol, ch
 		*value = 1.0f / (float)atof (&string[1]);
 	else
 		*value = (float)atof (string);
+	*user_unit = false;
 	/* value is now the normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
-	if (symbol == '=') {	/* Since we have map distance units for geovectors we convert to spherical degrees */
+	if (symbol == '=') {	/* Since we have map distance units for geovectors we convert to km */
 		if (len) {	/* Examine if a unit was given */
-			if (strchr (GMT_DIM_UNITS, string[len])) {	/* Confused user gave geovector length in c|i|p, this is an error */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Vector shrink length limit for geovectors must be given in units of %s [k]!\n", GMT_LEN_UNITS);
+			if (string[len] == 'q') {	/* Got data units so we assume scale is in km/unit */
+				*user_unit = true;	/* This turns off unit conversion during reading */
+				*value = (float)gmtlib_conv_distance (GMT, *value, 'k', 'k');	/* Convert to km/unit */
+			}
+			else if (strchr (GMT_DIM_UNITS, string[len])) {	/* Confused user gave geovector length in c|i|p, this is an error */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Vector scale or length limit for geovectors must be given in units of %s or q (data quantity unit) [k]!\n", GMT_LEN_UNITS);
 				error++;
 			}
 			else if (strchr (GMT_LEN_UNITS, string[len]))	/* Got length with valid unit, otherwise we assume it was given in km */
 				*value = (float)gmtlib_conv_distance (GMT, *value, string[len], 'k');	/* Convert to km first */
-			else if (strchr (".0123456789", string[len])) {	/* Unless this triggers we got km */
+			else if (strchr (".0123456789", string[len]) == NULL) {	/* Unless this triggers we got km */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized map distance unit: %c\n", string[len]);
 				error++;
 			}
 		}
 	}
-	else if (string[len] != 'q') {	/* Got plot units in c|i|p or no unit */
-		int j = gmt_get_dim_unit (GMT, string[len]);
-		if (j == GMT_NOTSET) j = GMT->current.setting.proj_length_unit;	/* No unit specified, convert value from default unit to inches */
-		/* Convert length from given c|i|p unit to inches */
-		*value *= (float)GMT->session.u2u[j][GMT_INCH];
+	else {	/* Cartesian vector */
+		if (len) {	/* Examine if a unit was given */
+			int j = GMT->current.setting.proj_length_unit;	/* Default unit index */
+			if (string[len] == 'q') {	/* Got data units so we assume scale is in c|i|p per user quantity unit */
+				*user_unit = true;	/* This turns off unit conversion during reading */
+				*value *= (float)GMT->session.u2u[j][GMT_INCH];	/* This places unit conversion into the scale instead */
+			}
+			else if (strchr (GMT_LEN_UNITS, string[len])) {	/* Confused user gave Cartesian vector length in d|m|s|e|f|k|M|n|u, this is an error */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Vector scale or length limit for Caretesian vectors must be given in units of %s or q (data quantity unit) [k]!\n",
+					GMT_DIM_UNITS, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0]);
+				error++;
+			}
+			else if (strchr (GMT_DIM_UNITS, string[len])) {	/* Got length with valid unit c|i|p, convert to inch */
+				j = gmt_get_dim_unit (GMT, string[len]);	/* Override j */
+				*value *= (float)GMT->session.u2u[j][GMT_INCH];
+			}
+			else if (strchr (".0123456789", string[len]) == NULL) {	/* Unless this triggers we got default plot units */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized plot length unit: %c\n", string[len]);
+				error++;
+			}
+			else	/* Here we got a plot distance with or without unit; if the latter we use current default unit to convert to inch */
+				*value *= (float)GMT->session.u2u[j][GMT_INCH];
+		}
 	}
-	/* Her, *value is either in user units (q), km, or plot units */
+	/* Her, *value is either in user units (q) [in which case user_unit is returned as true), km, or plot units */
 	return error;
 }
 
@@ -16116,12 +16141,10 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				if (p[1] == '\0')	/* No shrink, and no skipping heads regardless of vector length */
 					S->v.status |= PSL_VEC_LINE;
 				else {	/* Parse the cutoff size */
-					error += gmtinit_get_length (GMT, symbol, &p[1], &(S->v.v_norm));
-					if (symbol == '=')	/* Since norm distance is now in km we convert to spherical degrees */
+					error += gmtinit_get_length (GMT, symbol, &p[1], &(S->v.v_norm), &(S->v.v_norm_d));
+					if (symbol == '=' && !S->v.v_norm_d)	/* Since norm distance is now in km we convert to spherical degrees */
 						S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Finally, convert km to degrees */
-					else if (p[strlen (p)-1] == 'q')	/* Make shrink decision on data magnitude */
-						S->v.v_norm_d = true;
-					/* Here, v_norm is either in inches (if Cartesian vector), spherical degrees (if geovector) */
+					/* Here, v_norm is either in inches (if Cartesian vector), spherical degrees (if geovector), or unitless (if q was used) */
 					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector shrink scale v_norm = %g going down to %g %% of head size\n", S->v.v_norm, 100.0 * S->v.v_norm_limit);
 				}
 				break;
@@ -16190,7 +16213,8 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				break;
 			case 'z':	/* Input (angle,length) are vector components (dx,dy) instead */
 				S->v.status |= PSL_VEC_COMPONENTS;
-				error += gmtinit_get_length (GMT, symbol, &p[1], &(S->v.comp_scale));
+				S->v.status |= PSL_VEC_MAGNIFY;
+				if (p[1]) error += gmtinit_get_length (GMT, symbol, &p[1], &(S->v.comp_scale), &(S->v.v_unit_d));
 				break;
 			case 'v':	/* Scale vector polar length component, or get inverse scale, or a fixed magnitude */
 				S->v.status |= PSL_VEC_MAGNIFY;
@@ -16200,7 +16224,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				}
 				else
 					j = 1;
-				error += gmtinit_get_length (GMT, symbol, &p[j], &(S->v.comp_scale));
+				error += gmtinit_get_length (GMT, symbol, &p[j], &(S->v.comp_scale), &(S->v.v_unit_d));
 				break;
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad modifier +%c\n", p[0]);

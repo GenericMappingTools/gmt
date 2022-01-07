@@ -18575,6 +18575,6 @@ double gmt_get_vector_shrinking (struct GMT_CTRL *GMT, struct GMT_VECT_ATTR *v, 
 	s = (val < v->v_norm) ? val / v->v_norm : 1.0;	/* Compute scaling */
 	/* Apply minimum scaling limit if set */
 	if (s < v->v_norm_limit) s = v->v_norm_limit;
-	GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Given vector value %g and shrink limit %g, returned scale = %g\n", val, v->v_norm, s);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Given vector value %g and shrink limit %g, returned scale = %g\n", val, v->v_norm, s);
 	return (s);
 }

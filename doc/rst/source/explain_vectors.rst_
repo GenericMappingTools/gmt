@@ -87,14 +87,21 @@ In addition, all but circular vectors may take these modifiers:
     **+s** means the input *angle*, *length* are instead the :math:`x_e, y_e`
     coordinates of the vector end point.
 
-Finally, Cartesian vectors and geovectors may take these modifiers (except in :doc:`grdvector`):
+Finally, Cartesian vectors and geovectors may take these modifiers (except in :doc:`grdvector`)
+which can be used to convert vector components to polar form or magnify user quantity magnitudes
+into plot lengths.
 
     **+v**\ [**i**\|\ **l**]\ *scale* expects a *scale* to magnify the polar length in the given
     unit.  If **i** is prepended we use the inverse scale while if **l** is prepended then it is
-    taken as a fixed length to override input lengths.
+    taken as a fixed length to override input lengths. Append unit **q** if input magnitudes are
+    in user quantity units and we will scale to current plot unit (see :term:`PROJ_LENGTH_UNIT`
+    for to change the plot unit).
 
     **+z**\ [*scale*] expects input :math:`\Delta x, \Delta y` vector components and
     uses the *scale* [1] to convert to polar coordinates with length in given unit.
+    Append unit **q** if input components are in user quantity units and we will scale to current plot unit
+    (see :term:`PROJ_LENGTH_UNIT` for how to change the plot unit).  In addition, if **-C** is
+    used the the vector magnitude is used for CPT-lookup and no extra data column is required.
 
 **Note**: Vectors were completely redesigned for GMT5 which separated the vector head (a polygon)
 from the vector stem (a line).  In GMT4, the entire vector was a polygon and it could only

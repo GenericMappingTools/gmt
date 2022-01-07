@@ -113,6 +113,7 @@ struct GMT_VECT_ATTR {
 	unsigned int v_kind[2];	/* Type of vector heads */
 	bool parsed_v4;		/* true if we parsed old-style <vectorwidth/headlength/headwidth> attribute */
 	bool v_norm_d;		/* true if Cartesian vector shrinking limit is in data unit not plot unit */
+	bool v_unit_d;		/* true if vector magnitude is in data unit and not plot/map unit */
 	float v_angle;		/* Head angle */
 	float v_norm;		/* shrink when lengths are smaller than this */
 	float v_norm_limit;	/* Only shrink down to this factor [0.25] */
