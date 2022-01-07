@@ -41,7 +41,7 @@ the corresponding rectangular **-R** setting that will give a subregion that ful
 covers the oblique domain.  **Note**: If the input grid is actually an image (gray-scale,
 RGB, or RGBA), then options **-N** and **-Z** are unavailable, while for multi-layer
 Geotiff files only options **-R**, **-S** and **-G** are supported, i.e., you can cut out
-a sub-region only (which we do via gdal_translate if you have multiple bands).
+a sub-region only (which we do via *gdal_translate* if you have multiple bands).
 Complementary to **grdcut** there is :doc:`grdpaste`, which will join together
 two grid files (not images) along a common edge.
 
@@ -194,7 +194,7 @@ extension). If you select a single band from the input geotiff then GMT will
 normally read that in as a single grid layer and thus write a netCDF grid (unless
 you append another grid format specifier). However, if your output filename has
 a .tif[f] extension then we will instead write it as a one-band geotiff.
-All geotiff output operations are done via GDAL's gdal_translate.
+All geotiff output operations are done via GDAL's *gdal_translate*.
 
 See Also
 --------
