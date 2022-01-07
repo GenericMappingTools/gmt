@@ -14,8 +14,8 @@ lays down a constant background plot, and appends a constant foreground plot.
 The :doc:`movie </movie>` module explains the available options and gives a
 few simple examples you can cut-and-paste to run in your terminal.  Below
 are more advanced movie examples.  You can generate anything from tiny
-animated gif files for your PowerPoint or KeyNote presentations or a 
-ull-featured movie with thousands of frames at HD or 4k resolution.
+animated gif files for your PowerPoint or KeyNote presentations or a
+full-featured movie with thousands of frames at HD or 4k resolution.
 
 .. cssclass:: gmtgallery
 
