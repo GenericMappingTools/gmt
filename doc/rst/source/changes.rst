@@ -66,7 +66,7 @@ Enhancements in GMT 6.3
 * Allow trailing comments in custom symbol files (`#5610 <https://github.com/GenericMappingTools/gmt/pull/5610>`_)
 * Let -d set starting column via modifier (`#5966 <https://github.com/GenericMappingTools/gmt/pull/5966>`_)
 * Let -f\ *col* explicitly set start of input trailing text (`#5370 <https://github.com/GenericMappingTools/gmt/pull/5370>`_)
-* Let multi-layer geotiff files be cut via gdal_translate (`#5819 <https://github.com/GenericMappingTools/gmt/pull/5819>`_)
+* Let multi-layer geotiff files be cut via *gdal_translate* (`#5819 <https://github.com/GenericMappingTools/gmt/pull/5819>`_)
 
 Documentation updates in GMT 6.3
 --------------------------------
@@ -204,7 +204,8 @@ New Modules in GMT 6.1:
 #. :doc:`batch`: Automate batch job processing by replicating a master script with job-specific parameters.
 #. :doc:`grdmix`: Blending and transforming grids and images, including manipulating transparency.
 #. :doc:`grdinterpolate`: Interpolate new 2-D grids or 1-D data series from a 3-D data cube.
-#. :doc:`grdgdal`: Execute GDAL raster programs (such as info, dem, grid, translate, rasterize or warp), from GMT.
+#. :doc:`grdgdal`: Execute `GDAL raster programs <https://gdal.org/programs/index.html#raster-programs>`_
+   (such as *gdalinfo*, *gdaldem*, *gdal_grid*, *gdal_translate*, *gdal_rasterize* or *gdalwarp*), from GMT.
 
 New Core Module Features in GMT 6.1:
 ------------------------------------
@@ -1362,7 +1363,7 @@ implemented by a series of new lower-case GMT common options:
 
 *  Programs that read data tables can now process the aspatial metadata
    in OGR/GMT files with the new **-a** option. These can be produced by
-   **ogr2ogr** (a GDAL tool) when selecting the -f "GMT" output
+   *ogr2ogr* (a `GDAL tool <https://gdal.org/>`_) when selecting the -f "GMT" output
    format. See Chapter :ref:`OGR_compat` for an explanation of the OGR/GMT file format.
    Because all GIS information is encoded via GMT comment lines these
    files can also be used in GMT 4 (the GIS metadata is simply
