@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test various ways of plotting vectors via psxyz
 
 gmt begin vector3d_mods
