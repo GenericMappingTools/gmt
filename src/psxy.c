@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -586,10 +586,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Symbols A, C, D, G, H, I, N, S, T are adjusted to have same area "
 		"as a circle of the specified diameter.");
 
-	GMT_Usage (API, 2, "\n%s Bar: -Sb|B[<size_x|size_y>[c|i|p|u]][+b|B[<base>]][+v|i<nz>][+s[<gap>]]", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "\n%s Bar: -Sb|B[<size_x|size_y>[c|i|p|q]][+b|B[<base>]][+v|i<nz>][+s[<gap>]]", GMT_LINE_BULLET);
 	GMT_Usage (API, -3, "Place horizontal or vertical bars. Use upper case -SB for horizontal bars "
 		"(<base> then refers to x and width may be in y-units) [Default is vertical]. Append size "
-		"and use unit u if size is given in x-input units [Default is %s]. Available modifiers:",
+		"and use unit q if size is quantity given in x-input units [Default is %s]. Available modifiers:",
 			API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Usage (API, 3, "+B Heights are measured relative to <base> [relative to origin].");
 	GMT_Usage (API, 3, "+b Set <base>. Alternatively, leave <base> off to read it from file.");
@@ -1333,8 +1333,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		gmt_set_column_type (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
 		gmt_set_column_type (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	}
-	if (S.symbol == PSL_VECTOR && S.v.status & PSL_VEC_COMPONENTS)
-		gmt_set_column_type (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Just the users dy component, not length */
+	if (S.v.status & PSL_VEC_COMPONENTS) {	/* Giving vector components */
+		gmt_set_column_type (GMT, GMT_IN, pos2x, (S.symbol == GMT_SYMBOL_GEOVECTOR) ? GMT_IS_GEODIMENSION : GMT_IS_DIMENSION);	/* Just the users dx component, not azimuth */
+		gmt_set_column_type (GMT, GMT_IN, pos2y, (S.symbol == GMT_SYMBOL_GEOVECTOR) ? GMT_IS_GEODIMENSION : GMT_IS_DIMENSION);	/* Just the users dy component, not length */
+	}
 	if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC ) {	/* One of the vector symbols */
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 		if ((S.v.status & PSL_VEC_FILL) == 0 && !S.v.parsed_v4) Ctrl->G.active = false;	/* Want no fill so override -G */
@@ -2116,7 +2118,14 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_WARNING, "Geovector length = NaN near line %d. Skipped\n", n_total_read);
 							continue;
 						}
-						warn = gmt_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex1+S.read_size], in[ex2+S.read_size], &current_pen, &S);
+						if (S.v.status & PSL_VEC_COMPONENTS) {	/* Read dx, dy in user units to be scaled to km */
+							double dx = in[ex1+S.read_size] * S.v.comp_scale;
+							double dy = in[ex2+S.read_size] * S.v.comp_scale;
+							length = factor * gmt_get_az_dist_from_components (GMT, in[GMT_X], in[GMT_Y], dx, dy, &d);
+						}
+						else	/* Got azimuth and length */
+							d = in[ex1+S.read_size], length = factor * in[ex2+S.read_size];
+						warn = gmt_geo_vector (GMT, in[GMT_X], in[GMT_Y], d, length, &current_pen, &S);
 						n_warn[warn]++;
 						break;
 					case PSL_MARC:

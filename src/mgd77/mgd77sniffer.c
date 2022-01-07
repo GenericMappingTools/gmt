@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    Copyright (c) 2004-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Chandler
+ *    Copyright (c) 2004-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Hamilton (nee Chandler)
  *	File:	mgd77sniffer.c
  *
  *	mgd77sniffer scans MGD77 files for errors in three ways: one, point-
@@ -12,7 +12,7 @@
  *	by default with optional output of structured "E77" errata tables.
  *
  *	Authors:
- *		Michael Chandler and Paul Wessel
+ *		Michael Hamilton (nee Chandler) and Paul Wessel
  *		School of Ocean and Earth Science and Technology
  *		University of Hawaii
  *

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -278,6 +278,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 					if (Ctrl->Q.S.u_set && Ctrl->Q.S.u != GMT_INCH) {
 						Ctrl->Q.S.v.v_norm *= GMT->session.u2u[Ctrl->Q.S.u][GMT_INCH];	/* Since we are not reading this again we change to inches */
 						Ctrl->Q.S.u = GMT_INCH;
+					}
+					if (Ctrl->Q.S.v.status & PSL_VEC_COMPONENTS) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Cannot use modifier +z; see -A for Cartesian [Default] versus polar component grids\n");
+						n_errors++;
 					}
 				}
 				break;

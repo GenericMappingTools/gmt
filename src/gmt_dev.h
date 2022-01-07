@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -129,13 +129,13 @@ extern "C" {
 #include "gmt_common_math.h" /* Shared math functions */
 #include "gmt.h"             /* All GMT high-level API */
 #include "gmt_private.h"     /* API declaration needed by libraries */
+#include "gmt_constants.h"   /* All basic constant definitions */
 #include "gmt_hidden.h"      /* Hidden bookkeeping structure for API containers */
 
 struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 #include "gmt_notposix.h"       /* Non-POSIX extensions */
 
-#include "gmt_constants.h"      /* All basic constant definitions */
 #include "gmt_modern.h"         /* Modern mode constant definitions */
 #include "gmt_macros.h"         /* All basic macros definitions */
 #include "gmt_dimensions.h"     /* Constant definitions created by configure */

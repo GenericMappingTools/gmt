@@ -1,13 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2005-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- * mgd77manage is used to (1) remove data columns from mgd77+ files
- * or (2) add a new data column to mgd77+ files.  Data can be added
- * from data tables, created from reference field formulas, or by
- * sampling grids along track.  Data from tables may be numbers or
- * text strings.
+ *	Copyright (c) 2005-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    See README file for copying and redistribution conditions.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  *

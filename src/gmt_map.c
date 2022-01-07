@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -10056,4 +10056,22 @@ int gmt_circle_to_region (struct GMT_CTRL *GMT, double lon, double lat, double r
 		if (wesn[XHI] < 0.0)   wesn[XLO] += 360.0, wesn[XHI] += 360.0;
 	}
 	return (code);
+}
+
+double gmt_get_az_dist_from_components (struct GMT_CTRL *GMT, double lon, double lat, double dx, double dy, double *azim) {
+	/* Given a location and dx_km,dy_km of a geovector in map distance, compute equivalent length (in km) and azimuth */
+	double x2, y2, L;
+	if (doubleAlmostEqual (lat, -90.0) || doubleAlmostEqual (lat, 90.0))	/* No x adjustment possible */
+		x2 = lon;
+	else 
+		x2 = lon + dx / (cosd (lat) * GMT->current.proj.DIST_KM_PR_DEG);
+	y2 = lat + dy / GMT->current.proj.DIST_KM_PR_DEG;
+	if (fabs (y2) > 90.0) {	/* Across the pole we go */
+		x2 += 180.0;
+		y2 = copysign (180 - fabs (y2), lat);
+	}
+	L = 0.001 * gmt_great_circle_dist_meter (GMT, lon, lat, x2, y2);
+	*azim = gmt_az_backaz (GMT, lon, lat, x2, y2, false);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Geovector components (%g, %g) converted to azim = %g and length = %g km\n", dx, dy, *azim, L);
+	return (L);
 }
