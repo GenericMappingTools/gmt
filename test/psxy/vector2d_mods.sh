@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test various ways of plotting 2-D vectors
 
 gmt begin vector2d_mods
