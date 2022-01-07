@@ -10058,9 +10058,15 @@ int gmt_circle_to_region (struct GMT_CTRL *GMT, double lon, double lat, double r
 	return (code);
 }
 
-double gmt_get_az_dist_from_components (struct GMT_CTRL *GMT, double lon, double lat, double dx, double dy, double *azim) {
+double gmt_get_az_dist_from_components (struct GMT_CTRL *GMT, double lon, double lat, double dx, double dy, bool user_unit, double *azim) {
 	/* Given a location and dx_km,dy_km of a geovector in map distance, compute equivalent length (in km) and azimuth */
 	double x2, y2, L;
+	if (user_unit) {	/* No geographic lengths given, just Cartesian user vector components */
+		*azim = 90.0 - atan2d (dy, dx);
+		L = hypot (dx, dy);
+		return (L);
+	}
+	/* Here we have geographic components */
 	if (doubleAlmostEqual (lat, -90.0) || doubleAlmostEqual (lat, 90.0))	/* No x adjustment possible */
 		x2 = lon;
 	else 

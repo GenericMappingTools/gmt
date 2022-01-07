@@ -5063,6 +5063,7 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_smallcircle (struct GMT_CTRL *GMT, dou
 	if (!heads) return (warn);	/* All done */
 
 	PSL_command (GMT->PSL, "V\n");
+	PSL_command (GMT->PSL, "PSL_vecheadpen\n");      /* Switch to vector head pen */
 	/* Get half-angle at head and possibly change pen */
 	da = 0.5 * S->v.v_angle;	/* Half-opening angle at arrow head */
 	if ((S->v.status & PSL_VEC_OUTLINE) == 0)
@@ -5291,6 +5292,7 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_greatcircle (struct GMT_CTRL *GMT, dou
 	/* Get half-angle at head and possibly change pen */
 	da = 0.5 * S->v.v_angle;	/* Half-opening angle at arrow head */
 	PSL_command (GMT->PSL, "V\n");
+	PSL_command (GMT->PSL, "PSL_vecheadpen\n");      /* Switch to vector head pen */
 	if ((S->v.status & PSL_VEC_OUTLINE) == 0)
 		PSL_command (GMT->PSL, "O0\n");	/* Turn off outline */
 	else {

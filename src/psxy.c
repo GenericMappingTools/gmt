@@ -1186,6 +1186,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 		else if ((P->categorical & GMT_CPT_CATEGORICAL_KEY))	/* Get rgb from trailing text, so read no extra z columns */
 			rgb_from_z = false;
+		else if (S.v.status & PSL_VEC_MAGCPT)	/* Get rgb via user data magnitude and handle it per symbol */
+			rgb_from_z = false;
 		else {	/* Read extra z column for symbols only */
 			rgb_from_z = not_line;
 			if (rgb_from_z && (P->categorical & GMT_CPT_CATEGORICAL_KEY) == 0) n_cols_start++;
@@ -1334,9 +1336,13 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		gmt_set_column_type (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	}
 	if (S.v.status & PSL_VEC_COMPONENTS) {	/* Giving vector components */
-		gmt_set_column_type (GMT, GMT_IN, pos2x, (S.symbol == GMT_SYMBOL_GEOVECTOR) ? GMT_IS_GEODIMENSION : GMT_IS_DIMENSION);	/* Just the users dx component, not azimuth */
-		gmt_set_column_type (GMT, GMT_IN, pos2y, (S.symbol == GMT_SYMBOL_GEOVECTOR) ? GMT_IS_GEODIMENSION : GMT_IS_DIMENSION);	/* Just the users dy component, not length */
+		unsigned int type = (S.symbol == GMT_SYMBOL_GEOVECTOR) ? GMT_IS_GEODIMENSION : GMT_IS_DIMENSION;
+		if (S.v.v_norm_d || S.v.v_unit_d) type = GMT_IS_FLOAT;	/* Read user units */
+		gmt_set_column_type (GMT, GMT_IN, pos2x, type);	/* Just the users dx component, not azimuth */
+		gmt_set_column_type (GMT, GMT_IN, pos2y, type);	/* Just the users dy component, not length */
 	}
+	else if (S.v.status & PSL_VEC_MAGNIFY)
+		gmt_set_column_type (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Read user units */
 	if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC ) {	/* One of the vector symbols */
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 		if ((S.v.status & PSL_VEC_FILL) == 0 && !S.v.parsed_v4) Ctrl->G.active = false;	/* Want no fill so override -G */
@@ -1368,7 +1374,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	bcol = (S.read_size) ? ex2 : ex1;
 	if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & GMT_BASE_READ)) gmt_set_column_type (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_X));
 	if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & GMT_BASE_READ)) gmt_set_column_type (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
-	if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0) {	/* Input is either azim,length or just length for small circle vectors */
+	if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0 && !(S.v.v_norm_d || S.v.v_unit_d)) {	/* Input is either azim,length or just length for small circle vectors */
 		if (S.v.status & PSL_VEC_POLE) {	/* Small circle distance is either map length or start,stop angles */
 			if ((S.v.status & PSL_VEC_ANGLES) == 0)	/* Just map length */
 				gmt_set_column_type (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
@@ -1423,7 +1429,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
 		bool periodic = false, delayed_unit_scaling = false, E_bar_above = false, E_bar_below = false;
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, col;
-		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS];
+		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS], data_magnitude;
 		struct GMT_RECORD *In = NULL;
 		struct GMT_DATASET *Diag = NULL;
 		struct GMT_DATASEGMENT *S_Diag = NULL;
@@ -1605,10 +1611,19 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 
 			if (get_rgb) {
+				double value;
+				if (S.v.status & PSL_VEC_MAGNIFY) {	/* Base color on vector magnitude in user units */
+					if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units and compute magnitude */
+						value = hypot (in[ex1+S.read_size], in[ex2+S.read_size]);
+					else	/* Just get data magnitude as given */
+						value = in[ex2+S.read_size];
+				}
+				else	/* Base color on z-vector */
+					value = in[GMT_Z];
 				if (P->categorical & GMT_CPT_CATEGORICAL_KEY)
 					gmt_get_fill_from_key (GMT, P, In->text, &current_fill);
 				else
-					gmt_get_fill_from_z (GMT, P, in[GMT_Z], &current_fill);
+					gmt_get_fill_from_z (GMT, P, value, &current_fill);
 				if (PH->skip) continue;	/* Chosen CPT indicates skip for this z */
 				if (Ctrl->I.active) {
 					if (Ctrl->I.mode == 0)
@@ -1711,6 +1726,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						double scl = (Ctrl->H.mode == PSXY_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 						gmt_scale_pen (GMT, &current_pen, scl);
 					}
+					if (geovector && Ctrl->W.active)
+						S.v.status |= PSL_VEC_OUTLINE;
 					if (can_update_headpen && !gmt_M_same_pen (current_pen, last_headpen)) {	/* Since color may have changed */
 						PSL_defpen (PSL, "PSL_vecheadpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
 						last_headpen = current_pen;
@@ -2006,21 +2023,27 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						(void) gmt_setfont (GMT, &S.font);
 						PSL_plottext (PSL, xpos[item], plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, 0.0, S.justify, outline_setting);
 						break;
-					case PSL_VECTOR:
+					case PSL_VECTOR:	/* Cartesian vector symbol */
 						gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
-						if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
-							length = factor * hypot (in[ex1+S.read_size], in[ex2+S.read_size]) * S.v.comp_scale;
-						else
-							length = factor * in[ex2+S.read_size];
-						if (gmt_M_is_dnan (length)) {
-							GMT_Report (API, GMT_MSG_WARNING, "Vector length = NaN near line %d. Skipped\n", n_total_read);
+						if (S.v.status & PSL_VEC_COMPONENTS) {	/* Read dx, dy in user units */
+							d = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);	/* Compute direction */
+							data_magnitude = hypot (in[ex1+S.read_size], in[ex2+S.read_size]);	/* Compute magnitude */
+						}
+						else {	/* Got direction and magnitude as is */
+							d = in[ex1+S.read_size];
+							data_magnitude = in[ex2+S.read_size];
+						}
+						if (S.v.status & PSL_VEC_FIXED) data_magnitude = 1.0;	/* Override with fixed vector length given by comp_scale */
+						if (gmt_M_is_dnan (data_magnitude)) {
+							GMT_Report (API, GMT_MSG_WARNING, "Vector magnitude = NaN near line %d. Skipped\n", n_total_read);
 							continue;
 						}
-						if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
-							d = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
-						else
-							d = in[ex1+S.read_size];
+						if (gmt_M_is_dnan (d)) {
+							GMT_Report (API, GMT_MSG_WARNING, "Vector direction = NaN near line %d. Skipped\n", n_total_read);
+							continue;
+						}
 
+						length = factor * data_magnitude * S.v.comp_scale;	/* Compute vector plot length in inches */
 						if (!S.convert_angles)	/* Use direction as given */
 							direction = d;
 						else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
@@ -2028,10 +2051,6 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						else	/* Convert geo azimuth to map direction */
 							direction = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
 
-						if (gmt_M_is_dnan (direction)) {
-							GMT_Report (API, GMT_MSG_WARNING, "Vector direction = NaN near line %d. Skipped\n", n_total_read);
-							continue;
-						}
 						if (S.v.status & PSL_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
 							gmt_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 							if (gmt_M_is_dnan (x_2) || gmt_M_is_dnan (y_2)) {
@@ -2042,7 +2061,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 								if (x_2 < GMT->current.map.half_width)     /* Might reappear at right edge */
 									x_2 += width;	/* Outside the right edge */
 								else      /* Might reappear at left edge */
-						              		x_2 -= width;         /* Outside the left edge */
+									x_2 -= width;         /* Outside the left edge */
 							}
 							length = hypot (plot_x - x_2, plot_y - y_2);	/* Compute vector length in case of shrinking */
 						}
@@ -2071,8 +2090,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_INFORMATION, "Vector head length exceeds overall vector length near line %d. Consider using +n<norm>\n", n_total_read);
 							n_warn[1]++;
 						}
-						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
-						if (s < S.v.v_norm_limit) s = S.v.v_norm_limit;
+						s = gmt_get_vector_shrinking (GMT, &(S.v), data_magnitude, length);	/* Vector attribute shrinking factor or 1 */
 						dim[PSL_VEC_XTIP]        = x_2;
 						dim[PSL_VEC_YTIP]        = y_2;
 						dim[PSL_VEC_TAIL_WIDTH]  = s * S.v.v_width;
@@ -2093,7 +2111,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							dim[PSL_VEC_HEAD_WIDTH] *= 0.5;	/* Since it was double in the parsing */
 							psl_vector_v4 (PSL, xpos[item], plot_y, dim, v4_rgb, v4_outline);
 						}
-						else {
+						else {	/* Current vector model */
 							dim[PSL_VEC_HEAD_SHAPE]      = S.v.v_shape;
 							dim[PSL_VEC_STATUS]          = (double)S.v.status;
 							dim[PSL_VEC_HEAD_TYPE_BEGIN] = (double)S.v.v_kind[0];
@@ -2106,25 +2124,27 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						break;
 					case GMT_SYMBOL_GEOVECTOR:
 						gmt_init_vector_param (GMT, &S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);	/* Update vector head parameters */
+						if (S.v.status & PSL_VEC_COMPONENTS) {	/* Read dx, dy in user units to be scaled to km then converted to polar form */
+							double dx = in[ex1+S.read_size];
+							double dy = in[ex2+S.read_size];
+							data_magnitude = gmt_get_az_dist_from_components (GMT, in[GMT_X], in[GMT_Y], dx, dy, S.v.v_unit_d, &d);
+						}
+						else	/* Got azimuth and length */
+							d = in[ex1+S.read_size], data_magnitude = in[ex2+S.read_size];
+						if (S.v.status & PSL_VEC_FIXED) data_magnitude = 1.0;	/* Override with fixed vector length given by comp_scale */
+						length = factor * data_magnitude * S.v.comp_scale;	/* Compute vector plot length in inches */
+						if (gmt_M_is_dnan (d)) {
+							GMT_Report (API, GMT_MSG_WARNING, "Geovector azimuth = NaN near line %d. Skipped\n", n_total_read);
+							continue;
+						}
+						if (gmt_M_is_dnan (length)) {
+							GMT_Report (API, GMT_MSG_WARNING, "Geovector length = NaN near line %d. Skipped\n", n_total_read);
+							continue;
+						}
 						if (S.v.status & PSL_VEC_OUTLINE2)
 							S.v.v_width = (float)(S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 						else
 							S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-						if (gmt_M_is_dnan (in[ex1+S.read_size])) {
-							GMT_Report (API, GMT_MSG_WARNING, "Geovector azimuth = NaN near line %d. Skipped\n", n_total_read);
-							continue;
-						}
-						if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-							GMT_Report (API, GMT_MSG_WARNING, "Geovector length = NaN near line %d. Skipped\n", n_total_read);
-							continue;
-						}
-						if (S.v.status & PSL_VEC_COMPONENTS) {	/* Read dx, dy in user units to be scaled to km */
-							double dx = in[ex1+S.read_size] * S.v.comp_scale;
-							double dy = in[ex2+S.read_size] * S.v.comp_scale;
-							length = factor * gmt_get_az_dist_from_components (GMT, in[GMT_X], in[GMT_Y], dx, dy, &d);
-						}
-						else	/* Got azimuth and length */
-							d = in[ex1+S.read_size], length = factor * in[ex2+S.read_size];
 						warn = gmt_geo_vector (GMT, in[GMT_X], in[GMT_Y], d, length, &current_pen, &S);
 						n_warn[warn]++;
 						break;
@@ -2139,8 +2159,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_WARNING, "Math angle arc length = NaN near line %d. Skipped\n", n_total_read);
 							continue;
 						}
-						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
-						if (s < S.v.v_norm_limit) s = S.v.v_norm_limit;
+						s = gmt_get_vector_shrinking (GMT, &(S.v), length, length);	/* Vector attribute shrinking factor or 1 */
 						dim[PSL_MATHARC_HEAD_LENGTH]     = s * S.v.h_length;
 						dim[PSL_MATHARC_HEAD_WIDTH]      = s * S.v.h_width;
 						dim[PSL_MATHARC_ARC_PENWIDTH]    = s * S.v.v_width;
