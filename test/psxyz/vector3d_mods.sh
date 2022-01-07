@@ -39,14 +39,14 @@ gmt begin vector3d_mods
 	echo 0 5 0 ${dx} ${dy} | gmt plot3d -Sv20p+e+z1q -W2p -Gred
 	echo "-0.1 5.9 Input: ${dx} ${dy} Vector: -Sv20p+e+z1q" | gmt text $textopt
 	# dx, dy in specified plot units with scale, and color based on magintude
-	echo 0 6 0 ${dx} ${dy} | gmt plot3d -Sv20p+e+z${scl}q -W2p -C --PROJ_LENGTH_UNIT=inch
-	echo "-0.1 6.9 Input: ${dx} ${dy} Vector: -Sv20p+e+z${scl}q --PROJ_LENGTH_UNIT=inch" | gmt text $textopt
+	echo 0 6 0 ${dx} ${dy} | gmt plot3d -Sv20p+e+z${scl}q+c -W2p -C --PROJ_LENGTH_UNIT=inch
+	echo "-0.1 6.9 Input: ${dx} ${dy} Vector: -Sv20p+e+z${scl}q+c --PROJ_LENGTH_UNIT=inch" | gmt text $textopt
 	# dx, dy in specified data units with scale, and color based on magintude
-	echo 0 7 0 ${dx1} ${dy1} | gmt plot3d -Sv20p+e+z${scl1}q -W2p -C --PROJ_LENGTH_UNIT=inch
-	echo "-0.1 7.9 Input: ${dx1} ${dy1} Vector: -Sv20p+e+z${scl1}q --PROJ_LENGTH_UNIT=inch" | gmt text $textopt
+	echo 0 7 0 ${dx1} ${dy1} | gmt plot3d -Sv20p+e+z${scl1}q+c -W2p -C --PROJ_LENGTH_UNIT=inch
+	echo "-0.1 7.9 Input: ${dx1} ${dy1} Vector: -Sv20p+e+z${scl1}q+c --PROJ_LENGTH_UNIT=inch" | gmt text $textopt
 	# magnitude in specified data units with scale, and color based on magintude
-	echo 0 8 0 30 25.4 | gmt plot3d -Sv20p+e+v${scl1}q -W2p+c -C --PROJ_LENGTH_UNIT=inch
-	echo "-0.1 8.9 Input: 30 25.4 Vector: -Sv20p+e+v${scl1}q --PROJ_LENGTH_UNIT=inch" | gmt text $textopt
+	echo 0 8 0 30 25.4 | gmt plot3d -Sv20p+e+v${scl1}q+c -W2p+c -C --PROJ_LENGTH_UNIT=inch
+	echo "-0.1 8.9 Input: 30 25.4 Vector: -Sv20p+e+v${scl1}q+c --PROJ_LENGTH_UNIT=inch" | gmt text $textopt
 	### GEOVECTOR
 	# Direction, length given as 100, imnplying 100k
 	echo 0 0 0 60 100 | gmt plot3d -JM9.1i+dh -Bafg -S=20p+e -W2p -Gred -X3.5i
@@ -70,9 +70,9 @@ gmt begin vector3d_mods
 	echo 0 6 0 ${dx2} ${dy2} | gmt plot3d -S=20p+e+z10q -W2p -Gred
 	echo "-0.1 6.9 Input: ${dx2} ${dy2} Vector: -S=20p+e+z10q" | gmt text $textopt
 	# dx, dy in specific data units with scale, and color based on magintude
-	echo 0 7 0 ${dx2} ${dy2} | gmt plot3d -S=20p+e+z10q -W2p -C
-	echo "-0.1 7.9 Input: ${dx2} ${dy2} Vector: -S=20p+e+z10q" | gmt text $textopt
+	echo 0 7 0 ${dx2} ${dy2} | gmt plot3d -S=20p+e+z10q+c -W2p -C
+	echo "-0.1 7.9 Input: ${dx2} ${dy2} Vector: -S=20p+e+z10q+c" | gmt text $textopt
 	# magnitude in specific data units with scale, and color based on magintude
-	echo 0 8 0 60 10 | gmt plot3d -S=20p+e+v10q -W2p+c -C
-	echo "-0.1 8.9 Input: 60 10 Vector: -S=20p+e+v10q" | gmt text $textopt
+	echo 0 8 0 60 10 | gmt plot3d -S=20p+e+v10q+c -W2p+c -C
+	echo "-0.1 8.9 Input: 60 10 Vector: -S=20p+e+v10q+c" | gmt text $textopt
 gmt end show

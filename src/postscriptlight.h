@@ -118,7 +118,8 @@ enum PSL_enum_vecattr {
 	PSL_VEC_SCALE		= BIT(21),	/* Not yet needed in postscriptlight: If not set we determine the required inch-to-degree scale */
 	PSL_VEC_LINE		= BIT(22),	/* Flag that we are adding vector heads to a line, not a stand-alone vector */
 	PSL_VEC_MAGNIFY		= BIT(23),	/* Flag that we are adding vector heads to a line, not a stand-alone vector */
-	PSL_VEC_FIXED		= BIT(24)};	/* Flag that we were given a fixed length to override for each vector */
+	PSL_VEC_FIXED		= BIT(24),	/* Flag that we were given a fixed length to override for each vector */
+	PSL_VEC_MAGCPT		= BIT(25)};	/* Flag that says use user data magnitude as internal data for CPT lookup */
 
 enum PSL_enum_vecdim {	/* Indices into the dim[] array passed to psl_vector */
 	PSL_VEC_XTIP 			= 0,	/* x-coordinate of tip of vector in inches */

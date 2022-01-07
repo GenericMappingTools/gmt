@@ -16042,6 +16042,9 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 	  	  			else if (p[2] == 'r') S->v.status |= PSL_VEC_BEGIN_R;	/* Only right half of head requested */
 				}
 				break;
+			case 'c':	/* Use internal vector magnitude with CPT [MAP_VECTOR_SHAPE] */
+				S->v.status |= PSL_VEC_MAGCPT;
+				break;
 			case 'e':	/* Vector head at end point */
 				S->v.status |= PSL_VEC_END;
 				switch (p[1]) {
@@ -16238,6 +16241,10 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 	}
 	if ((S->v.status & PSL_VEC_JUST_S) && (S->v.status & PSL_VEC_MAGNIFY)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot combine second point coordinates (+s) with magnitude scaling (+v)\n");
+		error++;		
+	}
+	if ((S->v.status & PSL_VEC_MAGCPT) && !S->v.v_unit_d) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot select magnitude for CPT (+c) without magnitude scaling (via +v or +z)\n");
 		error++;		
 	}
 	if ((S->v.status & PSL_VEC_MID_FWD || S->v.status & PSL_VEC_MID_BWD) && (S->v.status & PSL_VEC_BEGIN || S->v.status & PSL_VEC_END)) {
