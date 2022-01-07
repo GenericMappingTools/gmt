@@ -26,6 +26,10 @@ end point (**e**) of a line segment:
     Further append **l**\|\ **r** to only draw the left or right
     half-sides of this head [both sides].
 
+    **+c** selects the vector data quantity *magnitude* for use with CPT color look-up [Default
+    requires a separate data column following the 2 or 3 coordinates]. Requires that data
+    quantity scaling (with unit **q** via **+v** or **+z**) and a CPT have been selected.
+
     **+e** places a vector head at the **e**\ nd of the vector path [none].
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
@@ -52,16 +56,19 @@ end point (**e**) of a line segment:
     **+n**\ [*norm*\ [/*min*]] scales down vector attributes (pen thickness, head size)
     with decreasing length, where vector plot lengths shorter than *norm* will have
     their attributes scaled by length/\ *norm* [other arrow attributes remain
-    invariant to length]. For Cartesian vectors specify a length in plot units, while
-    for geovectors specify a length in map units (see :ref:`cookbook/features:Distance units`) [k]. Optionally, append
-    /*min* for the minimum shrink factor (in the 0-1 range) that we will shrink to [0.25].
+    invariant to length]. Optionally, append /*min* for the minimum shrink factor (in the
+    0-1 range) that we will shrink to [0.25]. For Cartesian vectors, please specify a *norm*
+    in plot units, while for geovectors specify a *norm* in map units (see :ref:`cookbook/features:Distance units`) [k].
+    Alternatively, append unit **q** to indicate we should use user quantity units in making the
+    decision; this means the user also must select user quantity input via **+v** or **+z**.
+
     If no argument is given then **+n** ensures vector heads are not shrunk and always
     plotted regardless of vector length [Vector heads are not plotted if exceeding vector length].
 
     **+o**\ [*plon*\ /\ *plat*] specifies the oblique pole for the great or
     small circles.  Only needed for great circles if **+q** is given. If no
     pole is appended then we default to the north pole. Input arguments are then
-    *lon *lat arclength* with the latter in map distance units; see **+q** of angular limits instead.
+    *lon lat arclength* with the latter in map distance units; see **+q** of angular limits instead.
 
     **+p**\ [*pen*] sets the vector pen attributes. If no *pen* is appended
     then the head outline is not drawn. [Default pen is half the width of stem pen, and
@@ -86,10 +93,24 @@ In addition, all but circular vectors may take these modifiers:
     **+s** means the input *angle*, *length* are instead the :math:`x_e, y_e`
     coordinates of the vector end point.
 
-Finally, Cartesian vectors and geovectors may take these modifiers (except in :doc:`grdvector`):
+Finally, Cartesian vectors and geovectors may take these modifiers (except in :doc:`grdvector </grdvector>`)
+which can be used to convert vector components to polar form or magnify user quantity magnitudes
+into plot lengths.
 
-    **+z**\ *scale* expects input :math:`\Delta x, \Delta y` vector components and
-    uses the *scale* to convert to polar coordinates with length in given unit.
+    **+v**\ [**i**\|\ **l**]\ *scale* expects a *scale* to magnify the polar length in the given
+    unit.  If **i** is prepended we use the inverse scale while if **l** is prepended then it is
+    taken as a fixed length to override input lengths. Append unit **q** if input magnitudes are
+    given in user quantity units and we will scale them to current plot unit for Cartesian vectors
+    (see :term:`PROJ_LENGTH_UNIT` for how to change the plot unit) or to km for geovectors.  In addition,
+    if **+c** is selected then the vector magnitudes may be used for CPT color-lookup (and no extra data
+    column is required by **-C**).
+
+    **+z**\ [*scale*] expects input :math:`\Delta x, \Delta y` vector components and
+    uses the *scale* [1] to convert to polar coordinates with length in given unit.
+    Append unit **q** if input components are given in user quantity units and we will scale to current plot unit
+    for Cartesian vectors (see :term:`PROJ_LENGTH_UNIT` for how to change the plot unit) or to
+    km for geovectors.  In addition, if **+c** is selected then the vector magnitudes may be used
+    for CPT color-lookup (and no extra data column is required by **-C**).
 
 **Note**: Vectors were completely redesigned for GMT5 which separated the vector head (a polygon)
 from the vector stem (a line).  In GMT4, the entire vector was a polygon and it could only
