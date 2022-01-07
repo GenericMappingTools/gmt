@@ -2,6 +2,7 @@
 # Test various ways of plotting 2-D vectors
 
 gmt begin vector2d_mods
+	gmt set PROJ_LENGTH_UNIT cm
 	scl=$(gmt math --FORMAT_FLOAT_OUT=%.3g -Q 2.54 INV =)
 	scl1=$(gmt math --FORMAT_FLOAT_OUT=%.3g -Q 2.54 INV 10 DIV =)
 	gmt set MAP_FRAME_TYPE=plain FORMAT_FLOAT_OUT=%5.2f

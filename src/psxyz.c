@@ -1675,10 +1675,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				}
 			}
 
-			if (!geovector) {	/* Vectors do it separately */
-				gmt_setfill (GMT, &data[i].f, data[i].outline);
-				gmt_setpen (GMT, &data[i].p);
-			}
+			gmt_setfill (GMT, &data[i].f, data[i].outline);
+			gmt_setpen (GMT, &data[i].p);
 			if (QR_symbol) {
 				if (Ctrl->G.active)	/* Change color of QR code */
 					PSL_command (PSL, "/QR_fill {%s} def\n", PSL_makecolor (PSL, data[i].f.rgb));
