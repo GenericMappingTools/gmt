@@ -131,6 +131,7 @@ Optional Arguments
     please provide the desired reference vector magnitude in data units via modifier **+s**.
     E.g., for a reference length of 25 mm/yr for plate motions, use modifier **+s**\ 25 with
     **-l**\ "Velocity (25 mm/yr)".  If *refsize* is not specified we default to *scale*.
+    Only Cartesian vectors are supported by **-l**.
 
 .. _-T:
 
