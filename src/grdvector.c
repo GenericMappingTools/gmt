@@ -796,9 +796,8 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 				dim[PSL_VEC_HEAD_LENGTH]   = Ctrl->Q.S.v.h_length;
 				dim[PSL_VEC_HEAD_WIDTH]    = Ctrl->Q.S.v.h_width;
 				dim[PSL_VEC_HEAD_PENWIDTH] = headpen_width;	/* Possibly shrunk head pen width */
-				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
-					f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
-					if (f < Ctrl->Q.S.v.v_norm_limit) f = Ctrl->Q.S.v.v_norm_limit;
+				f = gmt_get_vector_shrinking (GMT, &(Ctrl->Q.S.v), vec_data_length, scaled_vec_length);	/* Vector attribute shrinking factor or 1 */
+				if (f < 1.0) {	/* Scale arrow attributes down with length */
 					for (k = 2; k <= 4; k++) dim[k] *= f;
 					dim[PSL_VEC_HEAD_PENWIDTH] *= f;
 				}
