@@ -16,6 +16,7 @@ script_dir=$(dirname "${script_name}")
 local_script=$(basename "${script_name}")
 script="@GMT_SOURCE_DIR@/${script_name}"
 src="@GMT_SOURCE_DIR@/${script_dir}"
+baseline="@GMT_SOURCE_DIR@/test/baseline/${script_dir#test}"
 
 # Skip tests with label GMT_DISABLE_TEST
 skip_this_test=$(grep GMT_DISABLE_TEST "$script" -c)
@@ -24,6 +25,7 @@ if [ $skip_this_test -gt 0 ]; then	# Do not run this script, probably PS is too 
 		exit 0
 fi
 
+dvc_test=$(grep DVC_TEST "$script" -c)
 # Is it a modern mode or one-liner script
 modern=$(grep "gmt begin\| -ps " "$script" -c)
 
@@ -156,7 +158,11 @@ for ps in *.ps ; do
       echo "$now ${script_dir}/${ps}: RMS Error = N/A Limit = $GRAPHICSMAGICK_RMS Failure = known" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
   else
     # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-    rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/${psref:-$ps}") || pscmpfailed="yes"
+    if [ $dvc_test -gt 0 ]; then
+      rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}_diff.png" "$ps" "$baseline/${psref:-$ps}") || pscmpfailed="yes"
+    else
+      rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}_diff.png" "$ps" "$src/${psref:-$ps}") || pscmpfailed="yes"
+    fi
     rms=$(perl -ne 'print $1 if /Total: ([0-9.]+)/' <<< "$rms")
     if [ -z "$rms" ]; then
       rms="NA"

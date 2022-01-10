@@ -2,6 +2,7 @@
 #
 # Test the C API for reading and writing native vectors.
 # We read @hotspots.txt and write it out again, then plot it.
+# DVC_TEST
 
 ps=apivec_io.ps
 testapi_vector_io

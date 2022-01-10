@@ -26,6 +26,7 @@ fi
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
     packages+=" graphicsmagick"
+    pip3 install --user dvc
 fi
 
 if [ "$PACKAGE" = "true" ]; then

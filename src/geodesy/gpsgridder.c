@@ -1352,7 +1352,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				}
 			}
 			if (Ctrl->E.active) {	/* Compute the history of model misfit as rms */
-				char header[GMT_LEN64] = {""};
+				char header[GMT_LEN128] = {""};
 				sprintf (header, "# eigenno\teigenval\tvar_percent\trms\trms_u\trms_v");
 				if (Ctrl->W.active) strcat (header, "\tchi2\tchi2_u\tchi2_v");
 				if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, E)) {
