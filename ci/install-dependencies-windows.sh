@@ -49,6 +49,7 @@ fi
 
 if [ "$RUN_TESTS" = "true" ]; then
     choco install graphicsmagick
+    pip install --user dvc
     # Add GraphicsMagick to PATH
     echo 'C:\Program Files\GraphicsMagick-1.3.32-Q8' >> $GITHUB_PATH
 fi

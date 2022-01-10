@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Test the C API for reading via a matrix and making a plot
+# DVC_TEST
 ps=apicubeplot.ps
 if [ ! -f cube.nc ]; then
 	cp "${src}"/../grdinterpolate/cube.nc .
