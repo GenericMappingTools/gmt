@@ -77,7 +77,7 @@ Applications).  Xcode may change as versions change; the images below is for Xco
       :align: center
 
    Normally you do not need to set any "Environmental Variables", but if you are debugging a module that
-   calls an external program (e.g., gs, gdal_translate, etc.) then you may need to add the name PATH and
+   calls an external program (e.g., *gs*, *gdal_translate*, etc.) then you may need to add the name PATH and
    place the path to that program under "Value".  Likewise, if the module needs to find a particular environmental
    setting like $X2SYS_HOME, then you must set those here as well.
 

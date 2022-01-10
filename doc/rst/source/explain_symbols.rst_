@@ -198,9 +198,9 @@
         Using modifiers **+v** or **+i** you can also plot multi-band bars with colors set via **-C**,
         and **+s** can represent those as groups of individual bars instead.
 
-    **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *ny*][**+s**\ [*gap*]]
+    **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **q**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *ny*][**+s**\ [*gap*]]
         Vertical **b**\ ar extending from *base* to y. The *size* is bar width.
-        Append **u** if *size* is in x-units [Default is plot-distance units].
+        Append **q** if *size* is a quantity in x-units [Default is plot-distance units].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
         data column.  Use **+B**\ [*base*] if the bar height is measured relative
@@ -215,9 +215,9 @@
         Multiband bars requires **-C** with one color per band (CPT z-values must be 0, 1, ..., *ny* - 1).
         Thus, input records are either (*x y1 y2 ... yn*) or (*x dy1 dy2 ... dyn*).
 
-    **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *nx*][**+s**\ [*gap*]]
+    **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **q**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *nx*][**+s**\ [*gap*]]
         Horizontal **b**\ ar extending from *base* to x. The *size* is bar width.
-        Append **u** if *size* is in y-units [Default is plot-distance units].
+        Append **q** if *size* is a quantity in y-units [Default is plot-distance units].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
         data column.  Use **+B**\ [*base*] if the bar length is measured relative
