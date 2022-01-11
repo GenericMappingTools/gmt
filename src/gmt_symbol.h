@@ -46,8 +46,10 @@
 #define GMT_FRAME_GAP		2.0	/* In points */
 #define GMT_FRAME_RADIUS	6.0	/* In points */
 
-/* Default width of a map rose is 10% of map width */
-#define GMT_ROSE_DEF_WIDTH	10.0
+/* Default width of a map roses are 15 and 8 % of map width */
+#define GMT_MAG_ROSE_DEF_WIDTH	15.0
+#define GMT_DIR_ROSE_DEF_WIDTH	8.0
+
 enum gmt_rose_mode {
 	GMT_ROSE_WIDTH_SET	= 0,	/* If width was given */
 	GMT_ROSE_WIDTH_VAR	= 1		/* Width set in percent */

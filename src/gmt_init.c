@@ -8370,15 +8370,20 @@ void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 */
 void gmt_maprose_syntax (struct GMT_CTRL *GMT, char type, char *string) {
 	/* Used in psbasemap and pscoast -T option.  pass type as m or d */
+	double ps;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T%c parsing failure.  Correct syntax:\n", type);
-	if (type == 'm')
+	if (type == 'm') {
 		GMT_Usage (API, 1, "\n-T%c%s", type, GMT_TROSE_MAG);
-	else
+		ps = GMT_MAG_ROSE_DEF_WIDTH;
+	}
+	else {
 		GMT_Usage (API, 1, "\n-T%c%s", type, GMT_TROSE_DIR);
+		ps = GMT_DIR_ROSE_DEF_WIDTH;
+	}
 	GMT_Usage (API, -2, "%s", string);
 	gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
-	GMT_Usage (API, -2, "Set size of the rose via +w<diameter> in units of %s or append %% for percentage of map width [%g %% if +w not given]. Other optional rose modifiers are:", GMT_DIM_UNITS_DISPLAY, GMT_ROSE_DEF_WIDTH);
+	GMT_Usage (API, -2, "Set size of the rose via +w<diameter> in units of %s or append %% for percentage of map width [%g %% if +w not given]. Other optional rose modifiers are:", GMT_DIM_UNITS_DISPLAY, ps);
 	if (type == 'm') {
 		GMT_Usage (API, 3, "+d Set magnetic <declination>[/<dlabel>], where "
 			"<dlabel> is an optional label for the magnetic compass needle. "
