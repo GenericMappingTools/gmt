@@ -3456,10 +3456,8 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	double lon, lat, s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
 	struct GMT_FILL f;
 
+	/* Set default font size in modern mode based on rose size - or honor setting in classic mode */
 	txt_size   = (GMT->current.setting.run_mode == GMT_MODERN) ? 0.25 * mr->size * 72.0 : GMT->current.setting.font_title.size;
-	txt_offset = (GMT->current.setting.run_mode == GMT_MODERN) ? 0.5 * txt_size / 72.0  : GMT->current.setting.map_title_offset;
-
-	PSL_command (PSL, "V\n");	/* Place the rose under gsave/grestore */
 
 	/* Initialize fill structure */
 	gmt_init_fill (GMT, &f, GMT->current.setting.color_patch[GMT_BGD][0], GMT->current.setting.color_patch[GMT_BGD][1], GMT->current.setting.color_patch[GMT_BGD][2]);
@@ -3469,26 +3467,29 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 
 	gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 
+	PSL_command (PSL, "V\n");	/* Place the rose under gsave/grestore */
+
 	if (mr->type == GMT_ROSE_DIR_FANCY) {	/* Fancy scale */
-		txt_offset = (GMT->current.setting.run_mode == GMT_MODERN) ? 0.5 * txt_size / 72.0  : GMT->current.setting.map_title_offset;
 		PSL_comment (PSL, "Draw fancy directional rose of level %d\n", mr->kind);
-		if (mr->do_label) {	/* Need to determine the shift in (x,y) due to label and offset */
-			int hh = mr->justify % 4 - 2, vv = mr->justify / 4 - 1;
+		/* Set default foffset size in modern mode based on rose size - or honor setting in classic mode */
+		txt_offset = (GMT->current.setting.run_mode == GMT_MODERN) ? 0.5 * txt_size / 72.0  : GMT->current.setting.map_title_offset;
+		if (mr->do_label) {	/* Need to determine the shift in (x,y) due to the dimensions of label and offset */
+			int hh = mr->justify % 4 - 2, vv = mr->justify / 4 - 1;	/* Horizontal and vertical shift indicators */
 			char *label = NULL;
-			if (hh) {	/* We need horizontal adjustments. Do offset here and text size in PSL */
-				mr->refpoint->x -= hh * txt_offset;	/* Any horizontal shifts we know exactly here */
-				label = (hh == -1) ? mr->label[3] : mr->label[1];	/* The W or E text label */
-				if (label) {	/* Get width of string and use it to transform point */
-					PSL_deftextdim (PSL, "-w", txt_size, label);
-					PSL_command (PSL, "%d mul 0 T\n", -hh);
+			if (hh) {	/* We need horizontal adjustments. Do label offset here and adjust for text size in PSL */
+				mr->refpoint->x -= hh * txt_offset;	/* Any horizontal shifts we know exactly */
+				label = (hh == -1) ? mr->label[3] : mr->label[1];	/* Get the W or E text label */
+				if (label) {	/* Get width of label and use it to shift point left or right */
+					PSL_deftextdim (PSL, "-w", txt_size, label);	/* Get label width and place on PSL stack */
+					PSL_command (PSL, "%d mul 0 T\n", -hh);	/* Multiply by +1 or -1 and transform x-origin by that amount */
 				}
 			}
-			if (vv) {	/* We need vertical adjustments. Do offset here and text size in PSL */
-				mr->refpoint->y -= vv * txt_offset;	/* Any horizontal shifts we know exactly here */
-				label = (vv == -1) ? mr->label[0] : mr->label[2];	/* The S or N text label */
-				if (label) {	/* Get height of string and use it to transform point */
-					PSL_deftextdim (PSL, "-h", txt_size, label);
-					PSL_command (PSL, "%d mul 0 exch T\n", -vv);
+			if (vv) {	/* We need vertical adjustments. Do label offset here and adjust for text size in PSL */
+				mr->refpoint->y -= vv * txt_offset;	/* Any horizontal shifts we know exactly */
+				label = (vv == -1) ? mr->label[0] : mr->label[2];	/* Get the S or N text label */
+				if (label) {	/* Get height of string and use it to shift point up or down */
+					PSL_deftextdim (PSL, "-h", txt_size, label);	/* Get label height and place on PSL stack */
+					PSL_command (PSL, "%d mul 0 exch T\n", -vv);	/* Multiply by +1 or -1 and transform y-origin by that amount */
 				}
 			}
 		}
@@ -3522,7 +3523,7 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 			tx[1] = xp[5], ty[1] = yp[5], tx[2] = xp[6], ty[2] = yp[6];
 			PSL_plotpolygon (PSL, tx, ty, 3);	/* South */
 		}
-		if (mr->do_label) {
+		if (mr->do_label) {	/* Place the labels */
 			sincosd (angle, &s, &c);
 			x[0] = x[2] = 0.0, x[1] = L[0] + txt_offset; x[3] = -x[1];
 			y[1] = y[3] = 0.0, y[2] = L[0] + txt_offset; y[0] = -y[2];
@@ -3533,11 +3534,12 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	}
 	else {			/* Plain North arrow w/circle */
 		PSL_comment (PSL, "Draw plain directional rose\n");
+		/* Set default foffset size in modern mode based on rose size - or honor setting in classic mode */
 		txt_offset = (GMT->current.setting.run_mode == GMT_MODERN) ? 0.5 * txt_size / 72.0  : GMT->current.setting.map_annot_offset[GMT_PRIMARY];
 		if (mr->label[2][0] && mr->justify >= PSL_TL) {	/* Must make space for N text */
-			mr->refpoint->y -= txt_offset;
-			PSL_deftextdim (PSL, "-h", txt_size, mr->label[2]);
-			PSL_command (PSL, "neg 0 exch T\n");
+			mr->refpoint->y -= txt_offset;	/* We know the offset exactly */
+			PSL_deftextdim (PSL, "-h", txt_size, mr->label[2]);	/* Get label height and place on PSL stack */
+			PSL_command (PSL, "neg 0 exch T\n");	/* Shift y-origin further down by that amount */
 		}
 		sincosd (angle, &s, &c);
 		gmt_M_memset (x, PSL_MAX_DIMS, double);
