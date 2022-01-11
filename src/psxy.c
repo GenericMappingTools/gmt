@@ -2145,6 +2145,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							S.v.v_width = (float)(S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 						else
 							S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+						S.v.value = data_magnitude;
 						warn = gmt_geo_vector (GMT, in[GMT_X], in[GMT_Y], d, length, &current_pen, &S);
 						n_warn[warn]++;
 						break;

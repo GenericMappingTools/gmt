@@ -20,7 +20,7 @@ Synopsis
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
 [ |-N| ] [ |-Q|\ *parameters* ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [**i**\|\ **l**]\ *scale*\ [**+s**\ *refsize*] ]
+[ |-S|\ [**i**\|\ **l**]\ *scale*\ [**+c**\ [[*slon*/]\ *slat*]][**+s**\ *refsize*] ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -112,7 +112,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**i**\|\ **l**]\ *scale*\ [**+s**\ *refsize*]
+**-S**\ [**i**\|\ **l**]\ *scale*\ [**+c**\ [[*slon*/]\ *slat*]][**+s**\ *refsize*]
     Sets scale for vector plot lengths in data units per plot distance measurement unit.
     Append **c**, **i**, or **p** to indicate the desired plot distance measurement
     unit (cm, inch, or point); if no unit is given we use the default value that
@@ -127,11 +127,18 @@ Optional Arguments
     **-Si** if it is simpler to give the reciprocal scale in plot length or distance units
     per data unit.  Alternatively, use **-Sl**\ *length* to set a fixed plot length for all
     vectors. To report the minimum, maximum, and mean data and plot vector lengths
-    of all vectors plotted, use **-V**.  **Note**: If a legend entry is desired via **-l**,
-    please provide the desired reference vector magnitude in data units via modifier **+s**.
-    E.g., for a reference length of 25 mm/yr for plate motions, use modifier **+s**\ 25 with
-    **-l**\ "Velocity (25 mm/yr)".  If *refsize* is not specified we default to *scale*.
-    Only Cartesian vectors are supported by **-l**.
+    of all vectors plotted, use **-V**. If an automatic legend entry is desired via **-l**,
+    or or two modifiers will be required:
+
+    - **+c**\ [[*slon*/]\ *slat*] controls where on a geographic map a geovector's *refsize*
+      length applies. The modifier is neither needed nor available when plotting Cartesian vectors.
+      The length is calculated for latitude *slat* (optionally supply longitude *slon* for
+      oblique projections [default is central meridian]). If **+c** is given with no arguments
+      then we select the reference length origin to be the middle of the map.
+    - **+s**\ *refsize* sets the desired reference vector magnitude in data units. E.g., for a
+      reference length of 25 mm/yr for plate motions, use modifier **+s**\ 25 with a corresponding
+      option **-l**\ "Velocity (25 mm/yr)".  If *refsize* is not specified we default to the *scale*
+      given above.
 
 .. _-T:
 

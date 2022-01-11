@@ -4566,7 +4566,7 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT
 	return (k);	/* Number of points plotted */
 }
 
-GMT_LOCAL float gmtplot_inch_to_degree_scale (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth) {
+double gmt_inch_to_degree_scale (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth) {
 	/* Used to determine delta radius in degrees for thickness of vector lines to be drawn as small or
 	 * great circles.  We must convert pen thickness to some sense of spherical degrees.
 	 * Determine the map scale at (lon, lat) in a direction normal to the vector and use that
@@ -4574,8 +4574,7 @@ GMT_LOCAL float gmtplot_inch_to_degree_scale (struct GMT_CTRL *GMT, double lon0,
 	 * if the projection is perspective, when we pick the center as the map distortion will be the least here.
 	 * This scaling is approximate only but needed to convert geovector head lengths to degrees. */
 
-	double tlon, tlat, x0, y0, dx, x1, y1, length;
-	float scale;
+	double tlon, tlat, x0, y0, dx, x1, y1, length, scale;
 
 	length = 0.001 * (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]);		/* 0.1 percent of latitude extent is fairly small */
 	gmt_geo_to_xy (GMT, lon0, lat0, &x0, &y0);					/* Get map position in inches for close point */
@@ -4583,7 +4582,7 @@ GMT_LOCAL float gmtplot_inch_to_degree_scale (struct GMT_CTRL *GMT, double lon0,
 	gmt_geo_to_xy (GMT, tlon, tlat, &x1, &y1);					/* Get map position in inches for close point */
 	dx = fabs (x1 - x0);
 	if (dx > (0.25 * GMT->current.map.half_width)) dx = GMT->current.map.width - dx;
-	scale = (float) (length / hypot (dx, y1 - y0));				/* This scales a length in inches to degrees, approximately */
+	scale = length / hypot (dx, y1 - y0);				/* This scales a length in inches to degrees, approximately */
 	return (scale);
 }
 
@@ -4956,21 +4955,20 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_smallcircle (struct GMT_CTRL *GMT, dou
 		max_length = MAX (dr[0], dr[1]);
 		if (max_length > h_length_limit) {
 			s2 = h_length_limit / max_length;
+			if (s2 < S->v.v_norm_limit) s2 = S->v.v_norm_limit;
 			warn = 2;
 		}
 	}
 
 	/* Might have to shrink things */
-	if (C.r0 < S->v.v_norm)
-		s1 = C.r0 / S->v.v_norm;
+	s1 = gmt_get_vector_shrinking (GMT, &(S->v), S->v.value, C.r0); /* Vector attribute shrinking factor or 1 */
+
 	if (s1 < s2) {	/* Pick the smallest scale required for head shrinking */
 		s = s1;
 		warn = 0;	/* When requesting +n there is no warning unless s2 is the smaller scale */
 	}
 	else
 		s = s2;
-	if (s < S->v.v_norm_limit) s = S->v.v_norm_limit;
-	if (s1 < S->v.v_norm_limit) s1 = S->v.v_norm_limit;
 	if (s1 > s) s1 = s;
 	head_length = s * S->size_x;
 	arc_width   = s1 * S->v.v_width;	/* Use scale s1 for pen shrinking */
@@ -5209,21 +5207,21 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_greatcircle (struct GMT_CTRL *GMT, dou
 		max_length = MAX (dr[0], dr[1]);
 		if (max_length > h_length_limit) {
 			s2 = h_length_limit / max_length;
+			if (s2 < S->v.v_norm_limit) s2 = S->v.v_norm_limit;
 			warn = 2;
 		}
 	}
 
 	/* Might have to shrink things */
-	if (C.r0 < S->v.v_norm)
-		s1 = C.r0 / S->v.v_norm;
+
+	s1 = gmt_get_vector_shrinking (GMT, &(S->v), S->v.value, C.r0); /* Vector attribute shrinking factor or 1 */
+
 	if (s1 < s2) {	/* Pick the smallest scale required for head shrinking */
 		s = s1;
 		warn = 0;	/* When requesting +n there is no warning unless s2 is the smaller scale */
 	}
 	else
 		s = s2;
-	if (s < S->v.v_norm_limit) s = S->v.v_norm_limit;
-	if (s1 < S->v.v_norm_limit) s1 = S->v.v_norm_limit;
 	if (s1 > s) s1 = s;
 	head_length = s * S->size_x;
 	arc_width   = s1 * S->v.v_width;	/* Use scale s1 for pen shrinking */
@@ -9797,12 +9795,12 @@ unsigned int gmt_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, dou
 		if (gmt_M_is_perspective (GMT)) {
 			double clon, clat;
 			gmt_xy_to_geo (GMT, &clon, &clat, GMT->current.map.half_width, GMT->current.map.half_height);	/* Geographic coordinates of middle map point */
-			S->v.scale = gmtplot_inch_to_degree_scale (GMT, clon, clat, azimuth);
+			S->v.scale = (float)gmt_inch_to_degree_scale (GMT, clon, clat, azimuth);
 			S->v.status |= PSL_VEC_SCALE;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector stem scale is %g degrees/inch at (%g, %g) for az = %g\n", S->v.scale, clon, clat, azimuth);
 		}
 		else {	/* Set scale each time locally */
-			S->v.scale = gmtplot_inch_to_degree_scale (GMT, lon0, lat0, azimuth);
+			S->v.scale = (float)gmt_inch_to_degree_scale (GMT, lon0, lat0, azimuth);
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector stem scale is %g degrees/inch at (%g, %g) for az = %g\n", S->v.scale, lon0, lat0, azimuth);
 		}
 	}
