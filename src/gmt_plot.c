@@ -3452,9 +3452,12 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr) {
 	unsigned int i, kind, form, just[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR};
 	int k;
-	double angle, L[4], R[4], x[PSL_MAX_DIMS], y[8], xp[8], yp[8], tx[3], ty[3];
+	double angle, txt_size, txt_offset, L[4], R[4], x[PSL_MAX_DIMS], y[8], xp[8], yp[8], tx[3], ty[3];
 	double lon, lat, s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
 	struct GMT_FILL f;
+
+	txt_size   = (GMT->current.setting.run_mode == GMT_MODERN) ? 0.25 * mr->size * 72.0 : GMT->current.setting.font_title.size;
+	txt_offset = (GMT->current.setting.run_mode == GMT_MODERN) ? 0.5 * txt_size / 72.0  : GMT->current.setting.map_title_offset;
 
 	/* Initialize fill structure */
 	gmt_init_fill (GMT, &f, GMT->current.setting.color_patch[GMT_BGD][0], GMT->current.setting.color_patch[GMT_BGD][1], GMT->current.setting.color_patch[GMT_BGD][2]);
@@ -3465,7 +3468,16 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 
 	if (mr->type == GMT_ROSE_DIR_FANCY) {	/* Fancy scale */
+		txt_offset = (GMT->current.setting.run_mode == GMT_MODERN) ? 0.5 * txt_size / 72.0  : GMT->current.setting.map_title_offset;
 		PSL_comment (PSL, "Draw fancy directional rose of level %d\n", mr->kind);
+		if (mr->do_label) {
+			int jj = mr->justify % 4 - 2;
+			int nchar = (jj == -1) ? strlen (mr->label[3]) : ((jj == +1) ? strlen (mr->label[1]) : 0);
+			double ww = (nchar == 1) ? 1.0 : GMT_LET_WIDTH;	/* If one char we guess it is W, E etc else words */
+			mr->refpoint->x -= jj * nchar * (ww * txt_size / 72.0 + txt_offset);	/* Any horizontal shifts */
+			if (jj == 1) mr->refpoint->x += ((1 - GMT_LET_WIDTH) * txt_size / 72.0);	/* Fudge more to east since E is narrower than W */
+			mr->refpoint->y -= (mr->justify / 4 - 1) * (1.1 * GMT_LET_HEIGHT * txt_size / 72.0 + txt_offset);	/* Any vectical shifts */
+		}
 		mr->size *= 0.5;	/* Got diameter, use radius for calculations */
 		L[0] = mr->size;
 		L[1] = ROSE_LENGTH_SCL1 * mr->size;
@@ -3496,15 +3508,20 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 			tx[1] = xp[5], ty[1] = yp[5], tx[2] = xp[6], ty[2] = yp[6];
 			PSL_plotpolygon (PSL, tx, ty, 3);	/* South */
 		}
-		sincosd (angle, &s, &c);
-		x[0] = x[2] = 0.0, x[1] = L[0] + GMT->current.setting.map_title_offset; x[3] = -x[1];
-		y[1] = y[3] = 0.0, y[2] = L[0] + GMT->current.setting.map_title_offset; y[0] = -y[2];
-		gmtlib_rotate2D (GMT, x, y, 4, mr->refpoint->x, mr->refpoint->y, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
-		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-		for (i = 0; i < 4; i++) PSL_plottext (PSL, xp[i], yp[i], GMT->current.setting.font_title.size, mr->label[i], angle, just[i], form);
+		if (mr->do_label) {
+			sincosd (angle, &s, &c);
+			x[0] = x[2] = 0.0, x[1] = L[0] + txt_offset; x[3] = -x[1];
+			y[1] = y[3] = 0.0, y[2] = L[0] + txt_offset; y[0] = -y[2];
+			gmtlib_rotate2D (GMT, x, y, 4, mr->refpoint->x, mr->refpoint->y, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
+			form = gmt_setfont (GMT, &GMT->current.setting.font_title);
+			for (i = 0; i < 4; i++) PSL_plottext (PSL, xp[i], yp[i], txt_size, mr->label[i], angle, just[i], form);
+		}
 	}
 	else {			/* Plain North arrow w/circle */
 		PSL_comment (PSL, "Draw plain directional rose\n");
+		txt_offset = (GMT->current.setting.run_mode == GMT_MODERN) ? 0.5 * txt_size / 72.0  : GMT->current.setting.map_annot_offset[GMT_PRIMARY];
+		if (mr->label[2][0] && mr->justify >= PSL_TL)	/* Must make space for N text */
+			mr->refpoint->y -= (GMT_LET_HEIGHT * txt_size / 72.0 + txt_offset);
 		sincosd (angle, &s, &c);
 		gmt_M_memset (x, PSL_MAX_DIMS, double);
 		x[0] = x[1] = x[4] = 0.0, x[2] = -0.25 * mr->size, x[3] = -x[2];
@@ -3523,7 +3540,7 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		PSL_plotsegment (PSL, xp[2], yp[2], xp[3], yp[3]);
 		if (mr->label[2][0]) {	/* Wanted the north label */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-			PSL_plottext (PSL, xp[4], yp[4], GMT->current.setting.font_title.size, mr->label[2], angle, PSL_BC, form);
+			PSL_plottext (PSL, xp[4], yp[4], txt_size, mr->label[2], angle, PSL_BC, form);
 		}
 	}
 }
