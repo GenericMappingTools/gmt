@@ -1544,6 +1544,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						data_magnitude = in[ex2+S.read_size];
 					}
 					if (S.v.status & PSL_VEC_FIXED) data_magnitude = 1.0;	/* Override with fixed vector length given by comp_scale */
+					S.v.value = data_magnitude;
 					data[n].dim[1] = data_magnitude * S.v.comp_scale;
 					if (gmt_M_is_dnan (data[n].dim[0])) {
 						GMT_Report (API, GMT_MSG_WARNING, "Geovector azimuth = NaN near line %d. Skipped\n", n_total_read);

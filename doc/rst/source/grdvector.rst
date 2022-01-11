@@ -20,7 +20,7 @@ Synopsis
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
 [ |-N| ] [ |-Q|\ *parameters* ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [**i**\|\ **l**]\ *scale* ]
+[ |-S|\ [**i**\|\ **l**]\ *scale*\ [**+c**\ [[*slon*/]\ *slat*]][**+s**\ *refsize*] ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-Y| ]
 [ |-Z| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
@@ -111,22 +112,33 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**i**\|\ **l**]\ *scale*
+**-S**\ [**i**\|\ **l**]\ *scale*\ [**+c**\ [[*slon*/]\ *slat*]][**+s**\ *refsize*]
     Sets scale for vector plot lengths in data units per plot distance measurement unit.
     Append **c**, **i**, or **p** to indicate the desired plot distance measurement
     unit (cm, inch, or point); if no unit is given we use the default value that
     is controlled by :term:`PROJ_LENGTH_UNIT`.  Vector lengths converted via plot unit
     scaling will plot as straight Cartesian vectors and their lengths are not
-    affected by map projection and coordinate locations.
+    affected by map projections and coordinate locations.
     For geographic data you may alternatively give *scale* in data units per map distance
     unit (see `Units`_). Then, your vector magnitudes (in data units) are scaled to map
     *distances* in the given distance unit, and finally projected onto the Earth to give
     *plot* dimensions.  These are geo-vectors that follow great circle paths and their
     lengths may be affected by the map projection and their coordinates.  Finally, use
     **-Si** if it is simpler to give the reciprocal scale in plot length or distance units
-    per data unit.  To report the minimum, maximum, and mean data and plot vector lengths
-    of all vectors plotted, use **-V**.  Alternatively, use **-Sl**\ *length* to set a fixed
-    plot length for all vectors.
+    per data unit.  Alternatively, use **-Sl**\ *length* to set a fixed plot length for all
+    vectors. To report the minimum, maximum, and mean data and plot vector lengths
+    of all vectors plotted, use **-V**. If an automatic legend entry is desired via **-l**,
+    or or two modifiers will be required:
+
+    - **+c**\ [[*slon*/]\ *slat*] controls where on a geographic map a geovector's *refsize*
+      length applies. The modifier is neither needed nor available when plotting Cartesian vectors.
+      The length is calculated for latitude *slat* (optionally supply longitude *slon* for
+      oblique projections [default is central meridian]). If **+c** is given with no arguments
+      then we select the reference length origin to be the middle of the map.
+    - **+s**\ *refsize* sets the desired reference vector magnitude in data units. E.g., for a
+      reference length of 25 mm/yr for plate motions, use modifier **+s**\ 25 with a corresponding
+      option **-l**\ "Velocity (25 mm/yr)".  If *refsize* is not specified we default to the *scale*
+      given above.
 
 .. _-T:
 
@@ -164,6 +176,9 @@ Optional Arguments
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+.. |Add_-l| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-l.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_

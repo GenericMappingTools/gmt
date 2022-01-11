@@ -123,6 +123,7 @@ struct GMT_VECT_ATTR {
 	float h_width;		/* Width of vector head in inches */
 	float pole[2];		/* Longitude and latitude of geovector pole */
 	float scale;		/* Converts inches to spherical degrees */
+	float value;		/* Original data quantity */
 	float comp_scale;	/* Converts hypot (dx, dy) to inches */
 	float v_trim[2];	/* Offsets from begin/end point in inches */
 	struct GMT_PEN pen;	/* Pen for outline of head */
