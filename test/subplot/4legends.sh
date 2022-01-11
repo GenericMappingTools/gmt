@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Test contour map with legends
+# DVC_TEST
 gmt begin 4legends ps
     gmt subplot begin 2x2 -Fs3i -Srl -Scb -R-2/2/-2/2
        	echo 0 0 | gmt plot -Sc0.1i -Gblue -lThird -c0,1
