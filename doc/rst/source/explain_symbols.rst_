@@ -293,7 +293,7 @@
         Custom symbols are designed using the :ref:`Custom Symbol Macro Language <Custom_symbols>`.
         We supply about 40 custom symbols, and users have contributed discipline-specific
         symbols for structural geology and marine biology that you can explore from
-        the :ref:`RESOURCES page (see sidebar) <symbols_gallery>`, so you have lots of
+        the :ref:`RESOURCES page <symbols_gallery>`, so you have lots of
         examples to use as a template.  The language allows you to design symbols that
         takes many parameters and can make decisions based on these parameters.
 
