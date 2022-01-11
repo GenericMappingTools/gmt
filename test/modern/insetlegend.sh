@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Test that the auto-legend works in a map inset
+# DVC_TEST
 gmt begin insetlegend ps
   gmt psbasemap -R0/7/3/7 -Jx1i -B0 -B+t"Inset with plot and legend" -Xc
   gmt inset begin -DjTR+w3.8i/2.5i+o0.1i -M1c -F+p1p,red

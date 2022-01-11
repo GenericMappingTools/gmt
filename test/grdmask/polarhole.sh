@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Test grdmask with search radius around some points
 # Made because of http://gmt.soest.hawaii.edu/boards/1/topics/5379
+# DVC_TEST
 ps=polarhole.ps
 # 31 unit radius Cartesian with periodic BC in x
 gmt grdmask -Gmask_c.grd -I1 -R0/360/-90/90 -N1/1/NaN -S31 -n+bpx << EOF
