@@ -8378,7 +8378,7 @@ void gmt_maprose_syntax (struct GMT_CTRL *GMT, char type, char *string) {
 		GMT_Usage (API, 1, "\n-T%c%s", type, GMT_TROSE_DIR);
 	GMT_Usage (API, -2, "%s", string);
 	gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
-	GMT_Usage (API, -2, "Set required size of the rose via +w<diameter>. Other rose modifiers are optional:");
+	GMT_Usage (API, -2, "Set size of the rose via +w<diameter> in units of %s or append %% for percentage of map width [%g %% if +w not given]. Other optional rose modifiers are:", GMT_DIM_UNITS_DISPLAY, GMT_ROSE_DEF_WIDTH);
 	if (type == 'm') {
 		GMT_Usage (API, 3, "+d Set magnetic <declination>[/<dlabel>], where "
 			"<dlabel> is an optional label for the magnetic compass needle. "

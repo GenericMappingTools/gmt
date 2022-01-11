@@ -46,6 +46,13 @@
 #define GMT_FRAME_GAP		2.0	/* In points */
 #define GMT_FRAME_RADIUS	6.0	/* In points */
 
+/* Default width of a map rose is 10% of map width */
+#define GMT_ROSE_DEF_WIDTH	10.0
+enum gmt_rose_mode {
+	GMT_ROSE_WIDTH_SET	= 0,	/* If width was given */
+	GMT_ROSE_WIDTH_VAR	= 1		/* Width set in percent */
+};
+
 enum gmt_enum_panel {
 	GMT_PANEL_INNER		= 1,
 	GMT_PANEL_ROUNDED	= 2,
@@ -186,6 +193,7 @@ struct GMT_MAP_ROSE {
 	bool do_label;		/* true if we should plot labels for the rose */
 	bool draw_circle[2];	/* True if we should draw the circle(s) */
 	int justify;		/* Gave justification of rose */
+	unsigned int mode;	/* 0 for given width, 1 for percentage of map width [10%] */
 	unsigned int type;	/* 0 for plain directional rose, 1 for a fancy directional map rose, 2 for magnetic rose */
 	unsigned int kind;	/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
 	char label[4][GMT_LEN64];	/* User-changable labels for W, E, S, N point */
