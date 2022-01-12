@@ -1,0 +1,5 @@
+outs:
+- md5: 7ea5cedec40d84b231cc9c88596d2f22.dir
+  size: 29574
+  nfiles: 1
+  path: pshistogram
