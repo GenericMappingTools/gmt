@@ -3488,7 +3488,7 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 				label = (vv == -1) ? mr->label[0] : mr->label[2];	/* Get the S or N text label */
 				if (label) {	/* Get height of string and use it to shift point up or down */
 					mr->refpoint->y -= vv * txt_offset;	/* Any horizontal shifts we know exactly */
-					PSL_deftextdim (PSL, "-h", txt_size, label);	/* Get label height and place on PSL stack */
+					PSL_deftextdim (PSL, "-H", txt_size, label);	/* Get label height and place on PSL stack */
 					PSL_command (PSL, "%d mul 0 exch T\n", -vv);	/* Multiply by +1 or -1 and transform y-origin by that amount */
 				}
 			}
