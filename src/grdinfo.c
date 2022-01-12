@@ -1003,6 +1003,8 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			sprintf (record, "%s: Title: %s", HH->name, gmt_get_grd_title (header));		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			sprintf (record, "%s: Command: %s", HH->name, gmt_get_grd_command (header));	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			sprintf (record, "%s: Remark: %s", HH->name, gmt_get_grd_remark (header));		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			/* Print CPT status */
+			sprintf (record, "%s: Default CPT: ", HH->name);	if (HH->cpt) strcat (record, HH->cpt);	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			if (header->registration == GMT_GRID_NODE_REG || header->registration == GMT_GRID_PIXEL_REG)
 				sprintf (record, "%s: %s node registration used [%s]", HH->name, type[header->registration], gtype[gmt_M_is_geographic (GMT, GMT_IN)]);
 			else
