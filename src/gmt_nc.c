@@ -896,8 +896,10 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			/* Valid range is already in packed units, so do not convert */
 			header->z_min = dummy[0], header->z_max = dummy[1];
 		}
-		if (gmtlib_nc_get_att_vtext (GMT, ncid, z_id, "cpt", header, NULL, 0))	/* Found cpt attribute */
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "netCDF grid %s has a default CPT %s.\n", HH->cpt);
+		if (gmtlib_nc_get_att_vtext (GMT, ncid, z_id, "cpt", header, NULL, 0) == NC_NOERR)	/* Found cpt attribute */
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "netCDF grid %s has a default CPT %s.\n", HH->name, HH->cpt);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "netCDF grid %s has no default CPT.\n", HH->name);
 
 		if (gmt_M_is_dnan (header->z_min) && gmt_M_is_dnan (header->z_max)) {
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "netCDF grid %s information has zmin = zmax = NaN. Reset to 0/0.\n", HH->name);
