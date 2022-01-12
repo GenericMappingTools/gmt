@@ -221,6 +221,7 @@ static struct GMT_parameter GMT_keyword_active[]= {
 	{ 0, "MAP_ANNOT_ORTHO"},
 	{ 0, "MAP_DEFAULT_PEN"},
 	{ 0, "MAP_DEGREE_SYMBOL"},
+	{ 0, "MAP_EMBELLISHMENT_MODE"},
 	{ 0, "MAP_FRAME_AXES"},
 	{ 0, "MAP_FRAME_PEN"},
 	{ 0, "MAP_FRAME_PERCENT"},
@@ -6318,6 +6319,8 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	strcpy (GMT->current.setting.map_annot_ortho, "we");
 	/* MAP_DEGREE_SYMBOL (degree) */
 	GMT->current.setting.map_degree_symbol = gmt_degree;
+	/* MAP_EMBELLISHMENT_MODE */
+	GMT->current.setting.map_embellishment_mode = 0;	/* Manual */
 	/* MAP_FRAME_AXES */
 	strcpy (GMT->current.setting.map_frame_axes, "WESNZ");
 	error += gmtinit_decode5_wesnz (GMT, "WESNZ", false);
@@ -6692,6 +6695,8 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT->current.setting.map_annot_offset[GMT_SECONDARY] = GMT->session.d_NaN; /* 3p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = 'p';
+	/* MAP_EMBELLISHMENT_MODE */
+	GMT->current.setting.map_embellishment_mode = 1;	/* Auto */
 	/* MAP_FRAME_AXES */
 	strcpy (GMT->current.setting.map_frame_axes, "auto");
 	/* MAP_FRAME_TYPE (plain) */
@@ -10703,8 +10708,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			error += gmtlib_plot_C_format (GMT);	/* Update format statement since degree symbol may have changed */
 			break;
-		case GMTCASE_BASEMAP_AXES:
-			gmt_M_compat_translate ("MAP_FRAME_AXES");
+		case GMTCASE_MAP_EMBELLISHMENT_MODE:
+			if (!strncmp (lower_value, "auto", 4))
+				GMT->current.setting.map_embellishment_mode = 1;	/* Auto */
+			else if (!strncmp (lower_value, "manual", 6))
+				GMT->current.setting.map_embellishment_mode = 0;	/* Manual */
+			else
+				error = true;
 			break;
 		case GMTCASE_MAP_FRAME_AXES:
 			strncpy (GMT->current.setting.map_frame_axes, value, 5U);
@@ -12290,6 +12300,12 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				case gmt_none:		strcpy (value, "none");		break;
 				default: strcpy (value, "undefined");
 			}
+			break;
+		case GMTCASE_MAP_EMBELLISHMENT_MODE:
+			if (GMT->current.setting.map_embellishment_mode)
+				strcpy (value, "auto");
+			else
+				strcpy (value, "manual");
 			break;
 		case GMTCASE_BASEMAP_AXES:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */

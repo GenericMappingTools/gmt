@@ -3285,7 +3285,7 @@ GMT_LOCAL void gmtplot_northstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 
 GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr) {
 	/* Magnetic compass rose */
-	bool modern = (GMT->current.setting.run_mode == GMT_MODERN);	/* A bit shorter to use */
+	bool adjust = (GMT->current.setting.map_embellishment_mode);	/* A bit shorter to use */
 	unsigned int i, k, level, just, ljust[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR}, n_tick = 0, form;
 	double ew_angle, angle, R[2], tlen[3], L, s, c, lon, lat, x[5], y[5], xp[5], yp[5];
 	double offset, t_angle, scale[2], base, v_angle, *val = NULL, dim[PSL_MAX_DIMS];
@@ -3306,16 +3306,16 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	R[GMT_ROSE_SECONDARY] = 0.5 * mr->size;
 
 	/* If modern mode we recompute ticklenghts, label sizes, and text offsets relative to compass size */
-	tlen[0]      = (modern) ? 0.0125 * mr->size : GMT->current.setting.map_tick_length[GMT_TICK_UPPER];
-	tlen[1]      = (modern) ? 0.025  * mr->size : GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
-	tlen[2]      = (modern) ? 0.0375 * mr->size : 1.5 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
-	off[0]       = (modern) ? 0.0125 * mr->size : GMT->current.setting.map_annot_offset[0];
-	off[1]       = (modern) ? 0.0125 * mr->size : GMT->current.setting.map_annot_offset[1];
-	font_size[0] = (modern) ? 0.05 * 72.0 * mr->size : GMT->current.setting.font_annot[0].size;
-	font_size[1] = (modern) ? 0.07 * 72.0 * mr->size : GMT->current.setting.font_annot[1].size;
-	title_size   = (modern) ? 0.125  * mr->size * 72.0 : GMT->current.setting.font_title.size;
-	lbl_size     = (modern) ? 0.07 * mr->size * 72.0 : GMT->current.setting.font_label.size;
-	txt_offset   = (modern) ? 0.2 * title_size / 72.0 : GMT->current.setting.map_title_offset;
+	tlen[0]      = (adjust) ? 0.0125 * mr->size : GMT->current.setting.map_tick_length[GMT_TICK_UPPER];
+	tlen[1]      = (adjust) ? 0.025  * mr->size : GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
+	tlen[2]      = (adjust) ? 0.0375 * mr->size : 1.5 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
+	off[0]       = (adjust) ? 0.0125 * mr->size : GMT->current.setting.map_annot_offset[0];
+	off[1]       = (adjust) ? 0.0125 * mr->size : GMT->current.setting.map_annot_offset[1];
+	font_size[0] = (adjust) ? 0.05 * 72.0 * mr->size : GMT->current.setting.font_annot[0].size;
+	font_size[1] = (adjust) ? 0.07 * 72.0 * mr->size : GMT->current.setting.font_annot[1].size;
+	title_size   = (adjust) ? 0.125  * mr->size * 72.0 : GMT->current.setting.font_title.size;
+	lbl_size     = (adjust) ? 0.07 * mr->size * 72.0 : GMT->current.setting.font_label.size;
+	txt_offset   = (adjust) ? 0.2 * title_size / 72.0 : GMT->current.setting.map_title_offset;
 
 	scale[GMT_ROSE_PRIMARY] = 0.85;
 	scale[GMT_ROSE_SECONDARY] = 1.0;
@@ -3471,6 +3471,7 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 #define ROSE_OFFSET_SCL		0.4	/* Set label offset to 40% of font size */
 
 GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr) {
+	bool adjust = (GMT->current.setting.map_embellishment_mode);	/* A bit shorter to use */
 	unsigned int i, kind, form, just[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR};
 	int k;
 	double angle, title_size, txt_offset, L[4], R[4], x[PSL_MAX_DIMS], y[8], xp[8], yp[8], tx[3], ty[3];
@@ -3478,7 +3479,7 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	struct GMT_FILL f;
 
 	/* Set default font size in modern mode based on rose size - or honor setting in classic mode */
-	title_size   = (GMT->current.setting.run_mode == GMT_MODERN) ? ROSE_LABEL_SCL * mr->size * 72.0 : GMT->current.setting.font_title.size;
+	title_size = (adjust) ? ROSE_LABEL_SCL * mr->size * 72.0 : GMT->current.setting.font_title.size;
 
 	/* Initialize fill structure */
 	gmt_init_fill (GMT, &f, GMT->current.setting.color_patch[GMT_BGD][0], GMT->current.setting.color_patch[GMT_BGD][1], GMT->current.setting.color_patch[GMT_BGD][2]);
@@ -3493,7 +3494,7 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	if (mr->type == GMT_ROSE_DIR_FANCY) {	/* Fancy scale */
 		PSL_comment (PSL, "Draw fancy directional rose of level %d\n", mr->kind);
 		/* Set default offset size in modern mode based on rose size - or honor setting in classic mode */
-		txt_offset = (GMT->current.setting.run_mode == GMT_MODERN) ? ROSE_OFFSET_SCL * title_size / 72.0 : GMT->current.setting.map_title_offset;
+		txt_offset = (adjust) ? ROSE_OFFSET_SCL * title_size / 72.0 : GMT->current.setting.map_title_offset;
 		if (mr->do_label) {	/* Need to determine the shift in (x,y) due to the dimensions of label and offset */
 			int hh = mr->justify % 4 - 2, vv = mr->justify / 4 - 1;	/* Horizontal and vertical shift indicators */
 			char *label = NULL;
@@ -3556,7 +3557,7 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	else {			/* Plain North arrow w/circle */
 		PSL_comment (PSL, "Draw plain directional rose\n");
 		/* Set default offset size in modern mode based on rose size - or honor setting in classic mode */
-		txt_offset = (GMT->current.setting.run_mode == GMT_MODERN) ? ROSE_OFFSET_SCL * title_size / 72.0 : GMT->current.setting.map_annot_offset[GMT_PRIMARY];
+		txt_offset = (adjust) ? ROSE_OFFSET_SCL * title_size / 72.0 : GMT->current.setting.map_annot_offset[GMT_PRIMARY];
 		if (mr->label[2][0] && mr->justify >= PSL_TL) {	/* Must make space for N text */
 			mr->refpoint->y -= txt_offset;	/* We know the offset exactly */
 			PSL_deftextdim (PSL, "-h", title_size, mr->label[2]);	/* Get label height and place on PSL stack */

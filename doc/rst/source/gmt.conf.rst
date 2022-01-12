@@ -704,6 +704,11 @@ MAP Parameters
         map annotations. Choose between **ring**, **degree**, **colon**, or
         **none** [default is **degree**].
 
+    **MAP_EMBELLISHMENT_MODE**
+        Determines if map embellishments like directional or magnetic compasses,
+        map scales or vertical data scales should have attributes that scale with
+        the size of the feature (**auto**) or use the settings as is (**manual**).
+   
     **MAP_FRAME_AXES**
         Sets which axes to draw and annotate. Combine any uppercase **W**,
         **E**, **S**, **N**, **Z** to draw and annotate west, east, south,

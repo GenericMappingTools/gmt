@@ -105,6 +105,7 @@ MAP_ANNOT_MIN_ANGLE		# Cut-off angle to eliminate very oblique annotations
 MAP_ANNOT_MIN_SPACING		# Cut-off distance to eliminate crowding of annotations
 MAP_DEFAULT_PEN			# Default for all pens
 MAP_DEGREE_SYMBOL		# Symbol for "degree" to use on maps
+MAP_EMBELLISHMENT_MODE	# Whether map roses and scales shall be manually or automatically scaled
 MAP_FRAME_AXES			# Which axes should be plotted [WESNZ]
 MAP_FRAME_PEN			# Pen used to draw plain map frame
 MAP_FRAME_TYPE			# Type of map frame (plain or fancy)
