@@ -1,0 +1,5 @@
+outs:
+- md5: aa157064b84f24616cf39abe62025038.dir
+  size: 46736
+  nfiles: 1
+  path: grdmask

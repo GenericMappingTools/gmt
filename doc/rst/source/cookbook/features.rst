@@ -2734,7 +2734,7 @@ Reading more complex multi-band IMAGES or GRIDS
 It is also possible to access to sub-datasets in a multi-band grid. The
 next example shows how we can extract the SST from the MODIS file ``A20030012003365.L3m_YR_NSST_9``
 that is stored in the HDF "format". We need to run the GDAL program
-**gdalinfo** on the file because we first
+*gdalinfo* on the file because we first
 must extract the necessary metadata from the file:
 
 .. code-block:: none
@@ -2804,7 +2804,7 @@ Writing grids and images
 Saving images in the common raster formats is possible but, for the time being, only from :doc:`/grdimage` and even
 that is restricted to raster type information. That is, vector data (for instance, coast lines) or text will not
 be saved. To save an image with :doc:`/grdimage` use the **-A**\ *outimg=driver* mechanism, where *driver*
-is the driver code name used by GDAL (e.g. GTiff) (run `gdal_translate --formats` for the full list.)
+is the driver code name used by GDAL (e.g. GTiff) (run *gdal_translate --formats* for the full list.)
 
 For all other programs that create grids, it is also possible to save them using GDAL. To do it one need to use
 the =gd appended with the necessary information regarding the driver and the data type to use. Generically,

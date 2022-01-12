@@ -261,6 +261,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+i Increments dz are given instead or values for multiband bars.");
 	GMT_Usage (API, -3, "Multiband columns requires -C with one color per band (values 0, 1, ...).");
 
+	GMT_Usage (API, 2, "\n%s 3-D Cube: Give <size> as the length of all sides; append q if <size> "
+		"is a quantity in x-units.", GMT_LINE_BULLET);
+
 	GMT_Usage (API, 2, "\n%s Ellipse: If not given, we read direction, major, and minor axis from columns 4-6. "
 		"If -SE rather than -Se is selected, %s will expect azimuth, and "
 		"axes [in km], and convert azimuths based on map projection. "
@@ -829,6 +832,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		}
 		else if ((P->categorical & GMT_CPT_CATEGORICAL_KEY))	/* Get rgb from trailing text, so read no extra z columns */
 			rgb_from_z = false;
+		else if (S.v.status & PSL_VEC_MAGCPT)	/* Get rgb via user data magnitude and handle it per symbol */
+			rgb_from_z = false;
 		else {	/* Read extra z column for symbols only */
 			rgb_from_z = not_line;
 			if (rgb_from_z && (P->categorical & GMT_CPT_CATEGORICAL_KEY) == 0) n_cols_start++;
@@ -967,8 +972,14 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		gmt_set_column_type (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
 		gmt_set_column_type (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	}
-	if (S.symbol == PSL_VECTOR && S.v.status & PSL_VEC_COMPONENTS)
-		gmt_set_column_type (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Just the users dy component, not length */
+	if (S.v.status & PSL_VEC_COMPONENTS) {	/* Giving vector components */
+		unsigned int type = (S.symbol == GMT_SYMBOL_GEOVECTOR) ? GMT_IS_GEODIMENSION : GMT_IS_DIMENSION;
+		if (S.v.v_norm_d || S.v.v_unit_d) type = GMT_IS_FLOAT;	/* Read user units */
+		gmt_set_column_type (GMT, GMT_IN, pos2x, type);	/* Just the users dx component, not azimuth */
+		gmt_set_column_type (GMT, GMT_IN, pos2y, type);	/* Just the users dy component, not length */
+	}
+	else if (S.v.status & PSL_VEC_MAGNIFY)
+		gmt_set_column_type (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Read user units */
 	if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC ) {	/* One of the vector symbols */
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 		if (S.v.status & PSL_VEC_FILL2) {	/* Gave +g<fill> to set head fill; odd, but overrides -G (and sets -G true) */
@@ -1022,7 +1033,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		bool periodic = false, delayed_unit_scaling[2] = {false, false};
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, last_time, col;
 		double in2[7] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
-		double xpos[2], width, d;
+		double xpos[2], width, d, data_magnitude;
 		struct GMT_RECORD *In = NULL;
 
 		if ((error = GMT_Set_Columns (API, GMT_IN, n_needed, GMT_COL_FIX)) != GMT_NOERROR) {
@@ -1044,7 +1055,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		}
 		gmt_set_meminc (GMT, GMT_BIG_CHUNK);	/* Only a sizeable amount of PSXZY_DATA structures when we initially allocate */
 		GMT->current.map.is_world = !(S.symbol == PSL_ELLIPSE && S.convert_angles);
-		if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0) {	/* Input is either azim,length or just length for small circle vectors */
+		if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0 && !(S.v.v_norm_d || S.v.v_unit_d)) {	/* Input is either azim,length or just length for small circle vectors */
 			if (S.v.status & PSL_VEC_POLE) {	/* Small circle distance is either map length or start,stop angles */
 				if ((S.v.status & PSL_VEC_ANGLES) == 0)	/* Just map length */
 					gmt_set_column_type (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
@@ -1227,10 +1238,19 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 
 			if (get_rgb) {	/* Lookup t to get rgb */
+				double value;
+				if (S.v.status & PSL_VEC_MAGNIFY) {	/* Base color on vector magnitude in user units */
+					if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units and compute magnitude */
+						value = hypot (in[ex1+S.read_size], in[ex2+S.read_size]);
+					else	/* Just get data magnitude as given */
+						value = in[ex2+S.read_size];
+				}
+				else	/* Base color on w-vector */
+					value = in[3];
 				if (P->categorical & GMT_CPT_CATEGORICAL_KEY)
 					gmt_get_fill_from_key (GMT, P, In->text, &current_fill);
 				else
-					gmt_get_fill_from_z (GMT, P, in[3], &current_fill);
+					gmt_get_fill_from_z (GMT, P, value, &current_fill);
 				if (PH->skip) continue;	/* Chosen CPT indicates skip for this t */
 				if (Ctrl->I.active) {
 					if (Ctrl->I.mode == 0)
@@ -1440,10 +1460,26 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					else
 						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 
-					if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
-						d = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);
-					else
-						d = in[ex1+S.read_size];	/* Got direction */
+					if (S.v.status & PSL_VEC_COMPONENTS) {	/* Read dx, dy in user units */
+						d = d_atan2d (in[ex2+S.read_size], in[ex1+S.read_size]);	/* Compute direction */
+						data_magnitude = hypot (in[ex1+S.read_size], in[ex2+S.read_size]);	/* Compute magnitude */
+					}
+					else {	/* Got direction and magnitude as is */
+						d = in[ex1+S.read_size];
+						data_magnitude = in[ex2+S.read_size];
+					}
+					if (S.v.status & PSL_VEC_FIXED) data_magnitude = 1.0;	/* Override with fixed vector length */
+
+					if (gmt_M_is_dnan (data_magnitude)) {
+						GMT_Report (API, GMT_MSG_WARNING, "Vector magnitude = NaN near line %d. Skipped\n", n_total_read);
+						continue;
+					}
+					if (gmt_M_is_dnan (d)) {
+						GMT_Report (API, GMT_MSG_WARNING, "Vector azimuth = NaN near line %d. Skipped\n", n_total_read);
+						continue;
+					}
+
+					data[n].dim[1] = data_magnitude * S.v.comp_scale;
 					if (!S.convert_angles)	/* Use direction as given */
 						data[n].dim[0] = d;	/* direction */
 					else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* Cartesian azimuth; change to direction */
@@ -1451,18 +1487,6 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					else	/* Convert geo azimuth to map direction */
 						data[n].dim[0] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
 
-					if (gmt_M_is_dnan (data[n].dim[0])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Vector azimuth = NaN near line %d. Skipped\n", n_total_read);
-						continue;
-					}
-					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-						GMT_Report (API, GMT_MSG_WARNING, "Vector length = NaN near line %d. Skipped\n", n_total_read);
-						continue;
-					}
-					if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
-						data[n].dim[1] = hypot (in[ex1+S.read_size], in[ex2+S.read_size]) * S.v.comp_scale;
-					else
-						data[n].dim[1] = in[ex2+S.read_size];	/* Got length */
 					if (S.v.status & PSL_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
 						gmt_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 						if (gmt_M_is_dnan (x_2) || gmt_M_is_dnan (y_2)) {
@@ -1485,8 +1509,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					}
 					data[n].dim[PSL_VEC_XTIP] = x_2;
 					data[n].dim[PSL_VEC_YTIP] = y_2;
-					s = (data[n].dim[1] < S.v.v_norm) ? data[n].dim[1] / S.v.v_norm : 1.0;
-					if (s < S.v.v_norm_limit) s = S.v.v_norm_limit;
+					s = gmt_get_vector_shrinking (GMT, &(S.v), data_magnitude, data[n].dim[1]);	/* Vector attribute shrinking factor or 1 */
 					data[n].dim[PSL_VEC_TAIL_WIDTH]  = s * S.v.v_width;
 					data[n].dim[PSL_VEC_HEAD_LENGTH] = s * S.v.h_length;
 					data[n].dim[PSL_VEC_HEAD_WIDTH]  = s * S.v.h_width;
@@ -1511,16 +1534,26 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						S.v.v_width = (float)(S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					else
 						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
+					if (S.v.status & PSL_VEC_COMPONENTS) {	/* Read dx, dy in user units to be scaled to km */
+						double dx = in[ex1+S.read_size];
+						double dy = in[ex2+S.read_size];
+						data_magnitude = gmt_get_az_dist_from_components (GMT, in[GMT_X], in[GMT_Y], dx, dy, S.v.v_unit_d, &data[n].dim[0]);
+					}
+					else {	/* Got azimuth and length */
+						data[n].dim[0] = in[ex1+S.read_size];
+						data_magnitude = in[ex2+S.read_size];
+					}
+					if (S.v.status & PSL_VEC_FIXED) data_magnitude = 1.0;	/* Override with fixed vector length given by comp_scale */
+					S.v.value = data_magnitude;
+					data[n].dim[1] = data_magnitude * S.v.comp_scale;
+					if (gmt_M_is_dnan (data[n].dim[0])) {
 						GMT_Report (API, GMT_MSG_WARNING, "Geovector azimuth = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
-					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
+					if (gmt_M_is_dnan (data[n].dim[1])) {
 						GMT_Report (API, GMT_MSG_WARNING, "Geovector length = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
-					data[n].dim[0] = in[ex1+S.read_size];	/* direction */
-					data[n].dim[1] = in[ex2+S.read_size];	/* length */
 					data[n].x = in[GMT_X];			/* Revert to longitude and latitude */
 					data[n].y = in[GMT_Y];
 					data[n].v = S.v;
@@ -1642,8 +1675,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					if (S.shade3D) gmt_illuminate (GMT, lux[j], rgb[j]);
 				}
 			}
-
-			if (!geovector) {	/* Vectors do it separately */
+			if (!geovector) {
 				gmt_setfill (GMT, &data[i].f, data[i].outline);
 				gmt_setpen (GMT, &data[i].p);
 			}
@@ -1849,6 +1881,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					case GMT_SYMBOL_GEOVECTOR:
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						S.v = data[i].v;	/* Update vector attributes from saved values */
+						if (get_rgb) S.v.fill = data[i].f;
+						PSL_defpen (PSL, "PSL_vecheadpen", data[i].h.width, data[i].h.style, data[i].h.offset, data[i].h.rgb);
 						warn = gmt_geo_vector (GMT, xpos[item], data[i].y, data[i].dim[0], data[i].dim[1], &data[i].p, &S);
 						n_warn[warn]++;
 						break;

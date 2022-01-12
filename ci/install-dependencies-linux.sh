@@ -47,4 +47,9 @@ if [ "$BUILD_DOCS" = "true" ]; then
     echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
 fi
 
+# Install dvc for running GMT tests
+if [ "$RUN_TESTS" = "true" ]; then
+    pip3 install --user dvc
+fi
+
 set +x +e

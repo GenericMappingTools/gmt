@@ -1195,6 +1195,8 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 						HH->name, HH->is_netcdf4 ? "netCDF-4" : "classic", text);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
+			/* Print CPT status */
+			sprintf (record, "%s: Default CPT: ", HH->name);	if (HH->cpt) strcat (record, HH->cpt);	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		} /* !(Ctrl->T.active || (Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED))) */
 		else {
 			if (header->z_min < global_vmin) global_vmin = header->z_min;
