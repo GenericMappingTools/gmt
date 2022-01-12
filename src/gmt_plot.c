@@ -3448,9 +3448,8 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 #define ROSE_WIDTH_SCL1		0.2
 #define ROSE_WIDTH_SCL2		0.2
 #define ROSE_WIDTH_SCL3		0.2
-
-#define ROSE_LABEL_SCL	0.25	/* Set label font size to 25% of rose diameter */
-#define ROSE_OFFSET_SCL	0.5		/* Set label offset to 50% of font size */
+#define ROSE_LABEL_SCL		0.2	/* Set label font size to 20% of rose diameter */
+#define ROSE_OFFSET_SCL		0.4	/* Set label offset to 40% of font size */
 
 GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr) {
 	unsigned int i, kind, form, just[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR};
