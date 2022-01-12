@@ -952,7 +952,7 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 	/* Write to stdout the available countries [and optionally states], then make calling program exit */
 	unsigned int list_mode, i, j, k, kk, GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, GMT_DCW_N_COUNTRIES_WITH_STATES = 0, n_bodies[5] = {0, 0, 0, 0, 0};
 	bool search = false;
-	char string[GMT_LEN128] = {""};
+	char string[GMT_LEN512] = {""};
 	struct GMT_DCW_COUNTRY *GMT_DCW_country = NULL;
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
 	struct GMT_DCW_COUNTRY_STATE *GMT_DCW_country_with_state = NULL;
