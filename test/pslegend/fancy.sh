@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Testing gmt pslegend fancy frames
+# DVC_TEST
 
 ps=fancy.ps
 
