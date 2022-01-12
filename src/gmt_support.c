@@ -13791,6 +13791,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Modifier +t<intervals> expects 3 or 6 intervals\n", option);
 			error++;
 		}
+		ms->set_intervals = true;
 	}
 	ms->plot = true;
 	return (error);

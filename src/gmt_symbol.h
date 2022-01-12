@@ -193,6 +193,7 @@ struct GMT_MAP_ROSE {
 	double g_int[2];	/* Tick (small) interval for geographic and magnetic directions */
 	bool plot;		/* true if we want to draw the rose */
 	bool do_label;		/* true if we should plot labels for the rose */
+	bool set_intervals;		/* true if +t was used to give tick/annot intervals for mag compass */
 	bool draw_circle[2];	/* True if we should draw the circle(s) */
 	int justify;		/* Gave justification of rose */
 	unsigned int mode;	/* 0 for given width, 1 for percentage of map width [10%] */

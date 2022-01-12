@@ -3285,11 +3285,16 @@ GMT_LOCAL void gmtplot_northstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 
 GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr) {
 	/* Magnetic compass rose */
+	bool modern = (GMT->current.setting.run_mode == GMT_MODERN);	/* A bit shorter to use */
 	unsigned int i, k, level, just, ljust[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR}, n_tick = 0, form;
 	double ew_angle, angle, R[2], tlen[3], L, s, c, lon, lat, x[5], y[5], xp[5], yp[5];
 	double offset, t_angle, scale[2], base, v_angle, *val = NULL, dim[PSL_MAX_DIMS];
+	double font_size[2], off[2], txt_offset, txt_size, lbl_size;
 	char label[GMT_LEN16], *type[2] = {"inner", "outer"};
 	struct GMT_FILL f;
+
+	/* Under classic mode we honor exactly the default settings that control the various parts of the compass,
+	 * while in modern mode we set these in proportion to the compass size */
 
 	gmt_xy_to_geo (GMT, &lon, &lat, mr->refpoint->x, mr->refpoint->y);
 
@@ -3299,14 +3304,25 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 
 	R[GMT_ROSE_PRIMARY] = 0.75 * 0.5 * mr->size;
 	R[GMT_ROSE_SECONDARY] = 0.5 * mr->size;
-	tlen[0] = GMT->current.setting.map_tick_length[GMT_TICK_UPPER];
-	tlen[1] = GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
-	tlen[2] = 1.5 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
+
+	tlen[0]      = (modern) ? 0.0125 * mr->size : GMT->current.setting.map_tick_length[GMT_TICK_UPPER];
+	tlen[1]      = (modern) ? 0.025 * mr->size  : GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
+	tlen[2]      = (modern) ? 0.0375 * mr->size : 1.5 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
+	off[0]       = (modern) ? 0.0125 * mr->size : GMT->current.setting.map_annot_offset[0];
+	off[1]       = (modern) ? 0.0125 * mr->size : GMT->current.setting.map_annot_offset[1];
+	font_size[0] = (modern) ? 0.05 * 72.0 * mr->size : GMT->current.setting.font_annot[0].size;
+	font_size[1] = (modern) ? 0.07 * 72.0 * mr->size : GMT->current.setting.font_annot[1].size;
+	txt_size     = (modern) ? 0.125  * mr->size * 72.0 : GMT->current.setting.font_title.size;
+	lbl_size     = (modern) ? 0.07 * mr->size * 72.0 : GMT->current.setting.font_label.size;
+	txt_offset   = (modern) ? 0.2 * txt_size / 72.0 : GMT->current.setting.map_title_offset;
+
 	scale[GMT_ROSE_PRIMARY] = 0.85;
 	scale[GMT_ROSE_SECONDARY] = 1.0;
 	GMT->current.plot.r_theta_annot = false;	/* Just in case it was turned on in gmt_map.c */
 
 	PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
+
+	PSL_command (PSL, "V\n");	/* Place the rose under gsave/grestore */
 
 	for (level = 0; level < 2; level++) {	/* Inner (0) and outer (1) angles */
 		if (level == GMT_ROSE_PRIMARY && mr->kind != 2) continue;	/* Sorry, not magnetic directions */
@@ -3337,8 +3353,8 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		for (i = 0; i < n_tick - 1; i++) {	/* Increments of annotations (-1 to avoid repeating 360) */
 			angle = 90.0 - (offset + val[i]);	/* Since val is azimuth */
 			sincosd (ew_angle + angle, &s, &c);
-			x[0] = mr->refpoint->x + (R[level] + GMT->current.setting.map_annot_offset[level]) * c, y[0] =
-					 mr->refpoint->y + (R[level] + GMT->current.setting.map_annot_offset[level]) * s;
+			x[0] = mr->refpoint->x + (R[level] + off[level]) * c;
+			y[0] = mr->refpoint->y + (R[level] + off[level]) * s;
 			if (GMT->current.setting.map_degree_symbol == gmt_none)
 				snprintf (label, GMT_LEN16, "%ld", lrint (val[i]));
 			else
@@ -3352,14 +3368,14 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 				t_angle = -90.0, just = PSL_BC;
 			if (level == GMT_ROSE_SECONDARY && doubleAlmostEqual (v_angle, 270.0))
 				t_angle = 90.0, just = PSL_BC;
-			PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_annot[level].size, label, t_angle, just, form);
+			PSL_plottext (PSL, x[0], y[0], font_size[level], label, t_angle, just, form);
 		}
 		gmt_M_free (GMT, val);
 	}
 
 	/* Draw extra tick for the 4 main compass directions */
 	gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
-	base = R[GMT_ROSE_SECONDARY] + GMT->current.setting.map_annot_offset[GMT_SECONDARY] + GMT->current.setting.font_annot[GMT_ROSE_SECONDARY].size / PSL_POINTS_PER_INCH;
+	base = R[GMT_ROSE_SECONDARY] + off[GMT_SECONDARY] + font_size[GMT_ROSE_SECONDARY] / PSL_POINTS_PER_INCH;
 	PSL_comment (PSL, "Draw 4 tickmarks and annotations for cardinal directions of magnetic rose\n", n_tick);
 	for (i = 0, k = 1; i < 360; i += 90, k++) {	/* 90-degree increments of tickmarks */
 		angle = (double)i;
@@ -3377,9 +3393,10 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 			gmtplot_northstar (GMT, PSL, x[0], y[0], 0.1*mr->size);
 		}
 		else {
-			x[0] = mr->refpoint->x + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset) * c, y[0] = mr->refpoint->y + (base + 2.0*tlen[2] + GMT->current.setting.map_title_offset) * s;
+			x[0] = mr->refpoint->x + (base + 2.0*tlen[2] + txt_offset) * c;
+			y[0] = mr->refpoint->y + (base + 2.0*tlen[2] + txt_offset) * s;
 			form = gmt_setfont (GMT, &GMT->current.setting.font_title);
-			PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_title.size, mr->label[k], ew_angle, ljust[k], form);
+			PSL_plottext (PSL, x[0], y[0], txt_size, mr->label[k], ew_angle, ljust[k], form);
 			gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
 		}
 	}
@@ -3414,7 +3431,7 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 				snprintf (mr->dlabel, GMT_LEN256, "@~d@~ = %s", tmpstring);
 			}
 			form = gmt_setfont (GMT, &GMT->current.setting.font_label);
-			PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_label.size, mr->dlabel, t_angle, PSL_BC, form);
+			PSL_plottext (PSL, x[0], y[0], lbl_size, mr->dlabel, t_angle, PSL_BC, form);
 		}
 	}
 	else {			/* Just geographic directions and a centered arrow */
@@ -3437,6 +3454,7 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		PSL_plotsymbol (PSL, mr->refpoint->x, mr->refpoint->y, &s, PSL_CIRCLE);
 		PSL_plotsegment (PSL, xp[2], yp[2], xp[3], yp[3]);
 	}
+	PSL_command (PSL, "U\n");	/* Place the rose under gsave/grestore */
 
 	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 }
