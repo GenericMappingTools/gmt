@@ -7137,6 +7137,10 @@ void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {
 	double dim[2];
 	if (!mr->plot) return;
 
+    if (mr->mode == GMT_ROSE_WIDTH_VAR) {   /* Now compute width from map width and desired percentage */
+        mr->size = mr->size * 0.01 * GMT->current.map.width;
+        mr->mode = GMT_ROSE_WIDTH_SET;
+    }
 	dim[GMT_X] = dim[GMT_Y] = mr->size;
 	gmt_set_refpoint (GMT, mr->refpoint);	/* Finalize reference point plot coordinates, if needed */
 	gmt_adjust_refpoint (GMT, mr->refpoint, dim, mr->off, mr->justify, PSL_MC);	/* Adjust refpoint to MC */
