@@ -3331,7 +3331,7 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	lbl_size     = (adjust) ? LBL_SCL   * mr->size * 72.0 : GMT->current.setting.font_label.size;
 	txt_offset   = (adjust) ? TITLE_OFF * title_size / 72.0 : GMT->current.setting.map_title_offset;
 
-	if (adjust && !mr->set_intervals && mr->size < SIZE_THRESHOLD) {	/* Smaller than 2.5 cm we change to coarser intervals */
+	if (adjust && ((mr->mode & GMT_ROSE_INT_SET) == 0) && mr->size < SIZE_THRESHOLD) {	/* Smaller than 2.5 cm we change to coarser intervals */
 		mr->a_int[GMT_ROSE_PRIMARY] = 90.0;		mr->f_int[GMT_ROSE_PRIMARY] = 30.0;		mr->g_int[GMT_ROSE_PRIMARY] = 3.0;
 		mr->a_int[GMT_ROSE_SECONDARY] = 45.0;	mr->f_int[GMT_ROSE_SECONDARY] = 15.0;	mr->g_int[GMT_ROSE_SECONDARY] = 3.0;
 	}
@@ -7197,10 +7197,18 @@ void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {
 	double dim[2];
 	if (!mr->plot) return;
 
-    if (mr->mode == GMT_ROSE_WIDTH_VAR) {   /* Now compute width from map width and desired percentage */
-        mr->size = mr->size * 0.01 * GMT->current.map.width;
-        mr->mode = GMT_ROSE_WIDTH_SET;
-    }
+	if (mr->mode & GMT_ROSE_WIDTH_VAR) {   /* Now compute width from map width and desired percentage to nearest integer point */
+		int psize = irint (mr->size * 0.01 * GMT->current.map.width * 72.0);	/* In points */
+		mr->size = psize / 72.0;	/* Back to inches */
+		mr->mode -= GMT_ROSE_WIDTH_SET;
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Map rose size default to %d pt\n", psize);
+	}
+	if (GMT->current.setting.map_embellishment_mode && ((mr->mode & GMT_ROSE_OFF_SET) == 0)) {   /* Now compute reasonable offsets */
+		int psize = irint (mr->size * 0.1 * 72.0);	/* 10% of size in points */
+		mr->off[GMT_X] = mr->off[GMT_Y] = psize / 72.0;	/* Back to inches */
+		mr->mode -= GMT_ROSE_OFF_SET;
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Map rose margin default to %d pt\n", psize);
+	}
 	dim[GMT_X] = dim[GMT_Y] = mr->size;
 	gmt_set_refpoint (GMT, mr->refpoint);	/* Finalize reference point plot coordinates, if needed */
 	gmt_adjust_refpoint (GMT, mr->refpoint, dim, mr->off, mr->justify, PSL_MC);	/* Adjust refpoint to MC */
