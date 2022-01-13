@@ -1899,18 +1899,18 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 	size_t k, n_slash = 0;
 	unsigned int uerr = 0;
 	bool old = false;
-	char *modifiers = "xyzdsontrv", code;
+	char *modifiers = "xyzcdsontrv", code;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	for (k = 0; k < strlen (input); k++) if (input[k] == '/') n_slash++;
-	if (!(input[0] == '+' && gmt_found_modifier (GMT, input, "norstxyz"))) {	/* Cannot be new syntax */
+	if (!(input[0] == '+' && gmt_found_modifier (GMT, input, "cnorstxyz"))) {	/* Cannot be new syntax */
 		old = (n_slash > 4);	/* Pretty sure this is the old syntax of that many slashes */
 	}
 	if (dim == 3 && old) return GMT_PARSE_ERROR;	/* Old syntax does not exist for cubes */
 	if (dim < 2 || dim > 3) return GMT_PARSE_ERROR;	/* Not a valid dimension */
 	if (old)	/* Old grid syntax: -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
 		gmtgrdio_decode_grd_h_info_old (GMT, input, h);
-	else {	/* New syntax: -D[+x<xname>][+yyname>][+z<zname>][+d<dname>][+s<scale>][+o<offset>][+n<invalid>][+t<title>][+r<remark>] plus [+v<name>] for 3D */
+	else {	/* New syntax: -D[+x<xname>][+yyname>][+z<zname>][+c[-|<cpt>]][+d<dname>][+s<scale>][+o<offset>][+n<invalid>][+t<title>][+r<remark>] plus [+v<name>] for 3D */
 		char word[GMT_BUFSIZ] = {""};
 		unsigned int pos = 0;
 		double d;
@@ -1941,6 +1941,12 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 							"z_unit string exceeds upper length of %d characters (truncated)\n",
 							GMT_GRID_UNIT_LEN80);
 					if (word[1]) strncpy (C->units, &word[1], GMT_GRID_UNIT_LEN80-1);
+					break;
+				case 'c':	/* Update/add/remove the default CPT name */
+					if (HH->cpt) gmt_M_str_free (HH->cpt);
+					if (word[1] != '-') {
+						HH->cpt = (word[1]) ? strdup (&word[1]) : strdup (GMT_DEFAULT_CPT_NAME);
+					}
 					break;
 				case 'd':	/* Revise 2-D or 3-D data-unit name */
 					gmt_M_memset (h->z_units, GMT_GRID_UNIT_LEN80, char);
@@ -2054,6 +2060,7 @@ GMT_LOCAL void gmtgrdio_grdcube_info_syntax (struct GMT_CTRL *GMT, char option, 
 	GMT_Usage (API, 3, "+x Append x-dimension unit <name>, or leave blank to reset.");
 	GMT_Usage (API, 3, "+y Append y-dimension unit <name>, or leave blank to reset.");
 	if (dim > 2) GMT_Usage (API, 3, "+z Append z-dimension unit <name>, or leave blank to reset.");
+	GMT_Usage (API, 3, "+c Append a default CPT for this %s [%s] or - to remove it.", type[k], GMT_DEFAULT_CPT_NAME);
 	GMT_Usage (API, 3, "+d Append %s data unit <name>, or leave blank to reset.", type[k]);
 	GMT_Usage (API, 3, "+n Append a value to represent missing data.", type[k]);
 	GMT_Usage (API, 3, "+t Append %s <title>, or leave blank to reset.", type[k]);
