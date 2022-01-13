@@ -1034,10 +1034,8 @@ L100:
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		gmtnc_put_units (ncid, z_id, header->z_units);
-		if (GMT->parent->remote_info && GMT->parent->remote_id != GMT_NOTSET && GMT->parent->remote_info[GMT->parent->remote_id].CPT[0] != '-') {	/* Subset of remote grid with default CPT, save name as an attribute */
+		if (GMT->parent->remote_info && GMT->parent->remote_id != GMT_NOTSET && GMT->parent->remote_info[GMT->parent->remote_id].CPT[0] != '-')	/* Subset of remote grid with default CPT, save name as an attribute */
 			HH->cpt = strdup (GMT->parent->remote_info[GMT->parent->remote_id].CPT);
-			gmt_M_err_trap (nc_put_att_text (ncid, z_id, "cpt", strlen (HH->cpt), HH->cpt));
-		}
 
 		if (header->z_scale_factor != 1.0) {
 			gmt_M_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1U, &header->z_scale_factor));
@@ -1050,6 +1048,12 @@ L100:
 		}
 		else if (job == 'u')
 			nc_del_att (ncid, z_id, "add_offset");
+
+		if (HH->cpt) {
+			gmt_M_err_trap (nc_put_att_text (ncid, z_id, "cpt", strlen (HH->cpt), HH->cpt));
+		}
+		else if (job == 'u')	/* Remove any previous if updating the header */
+			nc_del_att (ncid, z_id, "cpt");
 
 		if (z_type != NC_FLOAT && z_type != NC_DOUBLE)
 			header->nan_value = rintf (header->nan_value); /* round to integer */

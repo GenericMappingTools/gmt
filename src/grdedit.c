@@ -356,6 +356,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 		G->header->ProjRefPROJ4 = projstring;
 
 	if (Ctrl->D.active) {
+		bool was_NaN, is_NaN;
 		double scale_factor, add_offset;
 		gmt_grdfloat nan_value;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Decode and change attributes in file %s\n", out_file);
@@ -365,7 +366,9 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 		if (gmt_decode_grd_h_info (GMT, Ctrl->D.information, G->header))
 			Return (GMT_PARSE_ERROR);
 
-		if (nan_value != G->header->nan_value) {
+		was_NaN = gmt_M_is_dnan (nan_value);
+		is_NaN  = gmt_M_is_dnan (G->header->nan_value);
+		if (was_NaN != is_NaN || (was_NaN == false && is_NaN == false && nan_value != G->header->nan_value)) {
 			/* Must read data */
 			if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL)
 				Return (API->error);
