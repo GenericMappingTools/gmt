@@ -13703,7 +13703,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		}
 	}
 	else {	/* Compute once map width is known */
-		ms->size = (ms->type = GMT_ROSE_MAG) ? GMT_MAG_ROSE_DEF_WIDTH : GMT_DIR_ROSE_DEF_WIDTH;
+		ms->size = (ms->type == GMT_ROSE_MAG) ? GMT_MAG_ROSE_DEF_WIDTH : GMT_DIR_ROSE_DEF_WIDTH;
 		ms->mode = GMT_ROSE_WIDTH_VAR;
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'd', string)) {	/* Want magnetic directions */

@@ -3283,14 +3283,28 @@ GMT_LOCAL void gmtplot_northstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 #define F_HL	0.15
 #define F_HW	0.05
 
+#define TLEN_SCL0	0.0125	/* Tick len 0 is this fraction of rose size */
+#define TLEN_SCL1	0.025	/* Tick len 1 is this fraction of rose size */
+#define TLEN_SCL2	0.0375	/* Tick len 2 is this fraction of rose size */
+#define OFF_SCL0	0.015	/* Offset 0 is this fraction of rose size */
+#define OFF_SCL1	0.02	/* Offset 1 is this fraction of rose size */
+#define FNT_SCL0	0.05	/* Annot Font size 0 is this fraction of rose size */
+#define FNT_SCL1	0.07	/* Annot Font size 1 is this fraction of rose size */
+#define TITLE_SCL	0.01257	/* Title Font size is this fraction of rose size */
+#define LBL_SCL		0.07	/* Label Font size is this fraction of rose size */
+#define TITLE_OFF	0.2		/* Title offset is this fraction of rose size */
+#define SIZE_THRESHOLD	0.984251968504	/* Compass smaller than 2.5cm gets changed annotation intervals */
+
 GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr) {
 	/* Magnetic compass rose */
 	bool adjust = (GMT->current.setting.map_embellishment_mode);	/* A bit shorter to use */
 	unsigned int i, k, level, just, ljust[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR}, n_tick = 0, form;
+	int hh = mr->justify % 4 - 2, vv = mr->justify / 4 - 1;	/* Horizontal and vertical shift indicators */
 	double ew_angle, angle, R[2], tlen[3], L, s, c, lon, lat, x[5], y[5], xp[5], yp[5];
 	double offset, t_angle, scale[2], base, v_angle, *val = NULL, dim[PSL_MAX_DIMS];
 	double font_size[2], off[2], txt_offset, title_size, lbl_size;
-	char label[GMT_LEN16], *type[2] = {"inner", "outer"};
+	char label[GMT_LEN16], *type[2] = {"inner", "outer"}, *T_label = NULL;
+
 	struct GMT_FILL f;
 
 	/* Under classic mode we honor exactly the default settings that control the various parts of the compass,
@@ -3306,24 +3320,48 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	R[GMT_ROSE_SECONDARY] = 0.5 * mr->size;
 
 	/* If modern mode we recompute ticklenghts, label sizes, and text offsets relative to compass size */
-	tlen[0]      = (adjust) ? 0.0125 * mr->size : GMT->current.setting.map_tick_length[GMT_TICK_UPPER];
-	tlen[1]      = (adjust) ? 0.025  * mr->size : GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
-	tlen[2]      = (adjust) ? 0.0375 * mr->size : 1.5 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
-	off[0]       = (adjust) ? 0.0125 * mr->size : GMT->current.setting.map_annot_offset[0];
-	off[1]       = (adjust) ? 0.0125 * mr->size : GMT->current.setting.map_annot_offset[1];
-	font_size[0] = (adjust) ? 0.05 * 72.0 * mr->size : GMT->current.setting.font_annot[0].size;
-	font_size[1] = (adjust) ? 0.07 * 72.0 * mr->size : GMT->current.setting.font_annot[1].size;
-	title_size   = (adjust) ? 0.125  * mr->size * 72.0 : GMT->current.setting.font_title.size;
-	lbl_size     = (adjust) ? 0.07 * mr->size * 72.0 : GMT->current.setting.font_label.size;
-	txt_offset   = (adjust) ? 0.2 * title_size / 72.0 : GMT->current.setting.map_title_offset;
+	tlen[0]      = (adjust) ? TLEN_SCL0 * mr->size : GMT->current.setting.map_tick_length[GMT_TICK_UPPER];
+	tlen[1]      = (adjust) ? TLEN_SCL1 * mr->size : GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
+	tlen[2]      = (adjust) ? TLEN_SCL2 * mr->size : 1.5 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
+	off[0]       = (adjust) ? OFF_SCL0  * mr->size : GMT->current.setting.map_annot_offset[0];
+	off[1]       = (adjust) ? OFF_SCL1  * mr->size : GMT->current.setting.map_annot_offset[1];
+	font_size[0] = (adjust) ? FNT_SCL0  * mr->size * 72.0 : GMT->current.setting.font_annot[0].size;
+	font_size[1] = (adjust) ? FNT_SCL1  * mr->size * 72.0 : GMT->current.setting.font_annot[1].size;
+	title_size   = (adjust) ? TITLE_SCL * mr->size * 72.0 : GMT->current.setting.font_title.size;
+	lbl_size     = (adjust) ? LBL_SCL   * mr->size * 72.0 : GMT->current.setting.font_label.size;
+	txt_offset   = (adjust) ? TITLE_OFF * title_size / 72.0 : GMT->current.setting.map_title_offset;
 
+	if (adjust && !mr->set_intervals && mr->size < SIZE_THRESHOLD) {	/* Smaller than 2.5 cm we change to coarser intervals */
+		mr->a_int[GMT_ROSE_PRIMARY] = 90.0;		mr->f_int[GMT_ROSE_PRIMARY] = 30.0;		mr->g_int[GMT_ROSE_PRIMARY] = 3.0;
+		mr->a_int[GMT_ROSE_SECONDARY] = 45.0;	mr->f_int[GMT_ROSE_SECONDARY] = 15.0;	mr->g_int[GMT_ROSE_SECONDARY] = 3.0;
+	}
 	scale[GMT_ROSE_PRIMARY] = 0.85;
 	scale[GMT_ROSE_SECONDARY] = 1.0;
 	GMT->current.plot.r_theta_annot = false;	/* Just in case it was turned on in gmt_map.c */
 
+	mr->refpoint->x -= hh * (font_size[1] / 72.0 + off[1] + 2.0 * tlen[2]);	/* Any horizontal shifts we know exactly */
+	mr->refpoint->y -= vv * (font_size[1] / 72.0 + off[1] + 2.0 * tlen[2]);	/* Any vectical shifts we know exactly */
+
 	PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
 
 	PSL_command (PSL, "V\n");	/* Place the rose under gsave/grestore */
+
+	if (hh) {	/* We need horizontal adjustments. Do label offset here and adjust for text size in PSL */
+		T_label = (hh == -1) ? mr->label[3] : mr->label[1];	/* Get the W or E text label */
+		if (T_label) {	/* Get width of label and use it to shift origin left or right */
+			mr->refpoint->x -= hh * txt_offset;	/* Any horizontal shifts we know exactly */
+			PSL_deftextdim (PSL, "-w", title_size, T_label);	/* Get label width and place on PSL stack */
+			PSL_command (PSL, "%d mul 0 T\n", -hh);	/* Multiply by +1 or -1 and transform x-origin by that amount */
+		}
+	}
+	if (vv) {	/* We need vertical adjustments. Do label offset here and adjust for text size in PSL */
+		T_label = (vv == -1) ? mr->label[0] : mr->label[2];	/* Get the S or N text label */
+		if (T_label) {	/* Get height of string and use it to shift origin up or down */
+			mr->refpoint->y -= vv * txt_offset;	/* Any horizontal shifts we know exactly */
+			PSL_deftextdim (PSL, "-H", title_size, T_label);	/* Get label height and place on PSL stack */
+			PSL_command (PSL, "%d mul 0 exch T\n", -vv);	/* Multiply by +1 or -1 and transform y-origin by that amount */
+		}
+	}
 
 	for (level = 0; level < 2; level++) {	/* Inner (0) and outer (1) angles */
 		if (level == GMT_ROSE_PRIMARY && mr->kind != 2) continue;	/* Sorry, not magnetic directions */
@@ -3363,7 +3401,10 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 			t_angle = fmod ((double)(ew_angle - val[i] - offset) + 360.0, 360.0);	/* Now in 0-360 range */
 			if (t_angle > 180.0) t_angle -= 180.0;	/* Now in -180/180 range */
 			if (t_angle > 90.0 || t_angle < -90.0) t_angle -= copysign (180.0, t_angle);
-			just = (y[0] <= mr->refpoint->y) ? PSL_TC : PSL_BC;
+			if (doubleAlmostEqual (y[0], mr->refpoint->y))
+				just = (x[0] <= mr->refpoint->x) ? PSL_BC : PSL_TC;
+			else
+				just = (y[0] <= mr->refpoint->y) ? PSL_TC : PSL_BC;
 			v_angle = val[i] - ew_angle;
 			if (level == GMT_ROSE_SECONDARY && doubleAlmostEqual (v_angle, 90.0))
 				t_angle = -90.0, just = PSL_BC;
@@ -3497,20 +3538,20 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		txt_offset = (adjust) ? ROSE_OFFSET_SCL * title_size / 72.0 : GMT->current.setting.map_title_offset;
 		if (mr->do_label) {	/* Need to determine the shift in (x,y) due to the dimensions of label and offset */
 			int hh = mr->justify % 4 - 2, vv = mr->justify / 4 - 1;	/* Horizontal and vertical shift indicators */
-			char *label = NULL;
+			char *T_label = NULL;
 			if (hh) {	/* We need horizontal adjustments. Do label offset here and adjust for text size in PSL */
-				label = (hh == -1) ? mr->label[3] : mr->label[1];	/* Get the W or E text label */
-				if (label) {	/* Get width of label and use it to shift origin left or right */
+				T_label = (hh == -1) ? mr->label[3] : mr->label[1];	/* Get the W or E text label */
+				if (T_label) {	/* Get width of label and use it to shift origin left or right */
 					mr->refpoint->x -= hh * txt_offset;	/* Any horizontal shifts we know exactly */
-					PSL_deftextdim (PSL, "-w", title_size, label);	/* Get label width and place on PSL stack */
+					PSL_deftextdim (PSL, "-w", title_size, T_label);	/* Get label width and place on PSL stack */
 					PSL_command (PSL, "%d mul 0 T\n", -hh);	/* Multiply by +1 or -1 and transform x-origin by that amount */
 				}
 			}
 			if (vv) {	/* We need vertical adjustments. Do label offset here and adjust for text size in PSL */
-				label = (vv == -1) ? mr->label[0] : mr->label[2];	/* Get the S or N text label */
-				if (label) {	/* Get height of string and use it to shift origin up or down */
+				T_label = (vv == -1) ? mr->label[0] : mr->label[2];	/* Get the S or N text label */
+				if (T_label) {	/* Get height of string and use it to shift origin up or down */
 					mr->refpoint->y -= vv * txt_offset;	/* Any horizontal shifts we know exactly */
-					PSL_deftextdim (PSL, "-H", title_size, label);	/* Get label height and place on PSL stack */
+					PSL_deftextdim (PSL, "-H", title_size, T_label);	/* Get label height and place on PSL stack */
 					PSL_command (PSL, "%d mul 0 exch T\n", -vv);	/* Multiply by +1 or -1 and transform y-origin by that amount */
 				}
 			}
