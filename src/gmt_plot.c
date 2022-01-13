@@ -3319,7 +3319,7 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	R[GMT_ROSE_PRIMARY] = 0.75 * 0.5 * mr->size;
 	R[GMT_ROSE_SECONDARY] = 0.5 * mr->size;
 
-	/* If modern mode we recompute ticklenghts, label sizes, and text offsets relative to compass size */
+	/* If modern mode we recompute ticklengths, label sizes, and text offsets relative to compass size */
 	tlen[0]      = (adjust) ? TLEN_SCL0 * mr->size : GMT->current.setting.map_tick_length[GMT_TICK_UPPER];
 	tlen[1]      = (adjust) ? TLEN_SCL1 * mr->size : GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
 	tlen[2]      = (adjust) ? TLEN_SCL2 * mr->size : 1.5 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];

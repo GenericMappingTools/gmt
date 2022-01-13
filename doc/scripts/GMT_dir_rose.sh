@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Showing map directional roses
 gmt begin GMT_dir_rose
-	gmt set GMT_THEME cookbook
+	gmt set GMT_THEME cookbook MAP_EMBELLISHMENT_MODE manual
 	gmt set FONT_LABEL 10p FONT_TITLE 12p MAP_ANNOT_OBLIQUE lon_horizontal,lat_parallel
 	gmt set MAP_TITLE_OFFSET 5p MAP_FRAME_WIDTH 3p FORMAT_GEO_MAP dddF FONT_ANNOT_PRIMARY 10p
 # left: Fancy kind = 1
