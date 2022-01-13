@@ -3290,7 +3290,7 @@ GMT_LOCAL void gmtplot_northstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 #define OFF_SCL1	0.02	/* Offset 1 is this fraction of rose size */
 #define FNT_SCL0	0.05	/* Annot Font size 0 is this fraction of rose size */
 #define FNT_SCL1	0.07	/* Annot Font size 1 is this fraction of rose size */
-#define TITLE_SCL	0.01257	/* Title Font size is this fraction of rose size */
+#define TITLE_SCL	0.125	/* Title Font size is this fraction of rose size */
 #define LBL_SCL		0.07	/* Label Font size is this fraction of rose size */
 #define TITLE_OFF	0.2		/* Title offset is this fraction of rose size */
 #define SIZE_THRESHOLD	0.984251968504	/* Compass smaller than 2.5cm gets changed annotation intervals */
