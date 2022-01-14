@@ -925,7 +925,7 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 	/* Write to stdout the available countries [and optionally states], then make calling program exit */
 	unsigned int list_mode, i, j, k, kk, GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, GMT_DCW_N_COUNTRIES_WITH_STATES = 0, n_bodies[5] = {0, 0, 0, 0, 0};
 	bool search = false;
-	char string[GMT_LEN512] = {""};
+	char string[GMT_LEN512] = {""}, *target = NULL, *region = NULL;
 	struct GMT_DCW_COUNTRY *GMT_DCW_country = NULL;
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
 	struct GMT_DCW_COUNTRY_STATE *GMT_DCW_country_with_state = NULL;
@@ -967,19 +967,21 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 		sprintf (string, "TAG\tName\t\tCodes|Region");
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, string);
 		for (i = 0; i < nc; i++) {
-			if (GMT_DCW_collection[i].type == DCW_NAMED_LIST) {
-				if (search) {	/* Listed collection(s) */
-					bool found = false;
-					for (kk = 0; !found && kk < F->n_items; kk++) {
-						if (strstr (GMT_DCW_collection[i].list, F->item[kk]->codes))
-							found = true;	/* This item is part of this collection */
-					}
-					if (!found) continue;
-				}
-				sprintf (string, "%s\t%s\t%s", GMT_DCW_collection[i].region, GMT_DCW_collection[i].name, GMT_DCW_collection[i].list);
+			if (GMT_DCW_collection[i].type == DCW_NAMED_LIST)
+				target = region = GMT_DCW_collection[i].list;
+			else {
+				target = GMT_DCW_collection[i].name;
+				region = GMT_DCW_collection[i].wesn_string;
 			}
-			else	/* Just a named region */
-				sprintf (string, "%s\t%s\t%s", GMT_DCW_collection[i].region, GMT_DCW_collection[i].name, GMT_DCW_collection[i].wesn_string);
+			if (search) {	/* Listed collection(s) */
+				bool found = false;
+				for (kk = 0; !found && kk < F->n_items; kk++) {
+					if (strstr (target, F->item[kk]->codes))
+						found = true;	/* This item is part of this collection */
+				}
+				if (!found) continue;
+			}
+			sprintf (string, "%s\t%s\t%s", GMT_DCW_collection[i].region, GMT_DCW_collection[i].name, region);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 	}
