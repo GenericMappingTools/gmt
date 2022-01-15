@@ -1535,7 +1535,7 @@ GMT_LOCAL void greenspline_dump_system (double *A, double *b, uint64_t nm, char 
 GMT_LOCAL void greenspline_set_filename (char *name, unsigned int k, unsigned int width, unsigned int mode, char *file) {
 	/* Turn name, eigenvalue number k, precision width and mode into a filename, e.g.,
 	 * ("solution.grd", 33, 3, GMT_SVD_INCREMENTAL, file) will give solution_inc_033.grd */
-	unsigned int s = strlen (name) - 1;
+	unsigned int s = (unsigned int)strlen (name) - 1;
 	static char *type[3] = {"", "inc", "cum"};
 	while (name[s] != '.') s--;	/* Wind backwards to start of extension */
 	name[s] = '\0';	/* Temporarily chop off extension */

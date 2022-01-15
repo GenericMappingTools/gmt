@@ -13869,7 +13869,7 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *f
 			if (gmtapi_space (W[k].space))	/* This word requires a leading space */
 				strcat (message, " ");
 			strcat (message, W[k].word);
-			current_width += strlen (W[k].word) + gmtapi_space (W[k].space);	/* Update line width so far */
+			current_width += (int)(strlen (W[k].word) + gmtapi_space (W[k].space));	/* Update line width so far */
 			free (W[k].word);	/* Free the word we are done with */
 			if (W[k+1].word == NULL)	/* Finalize the last line */
 				strcat (message, "\n");

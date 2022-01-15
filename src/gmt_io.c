@@ -4133,7 +4133,7 @@ GMT_LOCAL FILE *gmtio_nc_fopen (struct GMT_CTRL *GMT, const char *filename, cons
 			by_value = true;
 		}
 		else if (varnm[i][j] == '[') {
-			in = sscanf (&varnm[i][j+1], "%" SCNuS ",%" SCNuS ",%" SCNuS ",%" SCNuS, &GMT->current.io.t_index[i][1],
+			in = sscanf (&varnm[i][j+1], "%" PRIuS ",%" PRIuS ",%" PRIuS ",%" PRIuS, &GMT->current.io.t_index[i][1],
 			             &GMT->current.io.t_index[i][2], &GMT->current.io.t_index[i][3], &GMT->current.io.t_index[i][4]);
 			varnm[i][j] = '\0';
 		}
