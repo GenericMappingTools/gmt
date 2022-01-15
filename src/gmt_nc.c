@@ -449,7 +449,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			/* t_index will be determined later from t_value when the nc-file is opened */
 		}
 		else if (c != NULL && *c == '[') {
-			sscanf (c+1, "%" SCNuS ",%" SCNuS ",%" SCNuS "", &HH->t_index[0], &HH->t_index[1], &HH->t_index[2]);
+			sscanf (c+1, "%" PRIuS ",%" PRIuS ",%" PRIuS "", &HH->t_index[0], &HH->t_index[1], &HH->t_index[2]);
 			*c = '\0';
 		}
 	}

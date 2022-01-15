@@ -950,7 +950,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 		}
 	}
 
-	if (Ctrl->S.symbol == CROSS && !got_shape) Ctrl->A.S.v.v_shape = 0.1;	/* Traditional default cross vector shape if none given */
+	if (Ctrl->S.symbol == CROSS && !got_shape) Ctrl->A.S.v.v_shape = 0.1f;	/* Traditional default cross vector shape if none given */
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
         /* Only one allowed */
