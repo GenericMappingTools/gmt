@@ -15947,7 +15947,8 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 	S->v.pen = GMT->current.setting.map_default_pen;
 	gmt_init_fill (GMT, &S->v.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	S->v.status = 0;	/* Start with no flags turned on */
-	S->v.v_angle = 30.0f;	S->v.v_norm = -1.0f;	S->v.v_stem = 0.1f;
+	S->v.v_angle = 30.0f;	S->v.v_norm = -1.0f;
+	S->v.v_norm_limit = 0.25;
 	S->v.v_kind[0] = S->v.v_kind[1] = PSL_VEC_ARROW;
 	S->v.v_shape = (float)GMT->current.setting.map_vector_shape;	/* Can be overridden with +h<shape> */
 	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
@@ -16069,7 +16070,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				}
 				break;
 			case 'n':	/* Vector shrinking head */
-				if ((c = strchr (p, '/'))) {
+				if ((c = strchr (p, '/'))) {	/* Specified a fraction of the normalization length as terminal shrinking point */
 					S->v.v_norm_limit = atof (&c[1]);
 					c[0] = '\0';	/* Chop off after getting the value */
 					if (S->v.v_norm_limit < 0.0 || S->v.v_norm_limit > 1.0) {
@@ -16077,22 +16078,30 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 						error++;
 					}
 				}
-				len = strlen (p);
-				j = (symbol == 'v' || symbol == 'V') ? gmt_get_dim_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
-				S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
-				if (symbol == '=') {	/* Since norm distance is in km we convert to spherical degrees */
-					if (strchr (GMT_DIM_UNITS GMT_LEN_UNITS2, p[len-1]) && p[len-1] != 'k') {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Vector shrink length limit for geovectors must be given in km!\n");
-						error++;
+				if (p[1] == '\0')	/* No shrink, and no skipping heads regardless of vector length */
+					S->v.status |= PSL_VEC_LINE;
+				else {	/* Parse the cutoff size */
+					len = strlen (p);
+					j = (symbol == 'v' || symbol == 'V') ? gmt_get_dim_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes dimensional unit */
+					S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
+					if (symbol == '=') {	/* Since norm distance is in map units for geovectors we convert to spherical degrees */
+						if (p[len-1]) {	/* Examine if a unit was given */
+							if (strchr (GMT_DIM_UNITS, p[len-1])) {	/* Confused user gave geovector length in c|i|p, this is an error */
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Vector shrink length limit for geovectors must be given in units of %s [k]!\n", GMT_LEN_UNITS);
+								error++;
+							}
+							else if (strchr (GMT_LEN_UNITS, p[len-1]))	/* Got length with valid unit, otherwise we assume it was given in km */
+								S->v.v_norm = gmtlib_conv_distance (GMT, S->v.v_norm, p[len-1], 'k');	/* Convert to km first */
+						}
+						S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Finally, convert km to degrees */
 					}
-					S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;
+					else if (j >= GMT_CM)	/* Convert length from given unit to inches */
+						S->v.v_norm *= GMT->session.u2u[j][GMT_INCH];
+					else	/* Convert length from default unit to inches */
+						S->v.v_norm *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+					/* Here, v_norm is either in inches (if Cartesian vector) or spherical degrees (if geovector) */
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector shrink scale v_norm = %g going down to %g %% of head size\n", S->v.v_norm, 100.0 * S->v.v_norm_limit);
 				}
-				else if (j >= GMT_CM)	/* Convert length from given unit to inches */
-					S->v.v_norm *= GMT->session.u2u[j][GMT_INCH];
-				else	/* Convert length from default unit to inches */
-					S->v.v_norm *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
-				/* Here, v_norm is either in inches (if Cartesian vector) or spherical degrees (if geovector) */
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector shrink scale v_norm = %g going down to %g %% of head size\n", S->v.v_norm, 100.0 * S->v.v_norm_limit);
 				break;
 			case 'o':	/* Sets oblique pole for small or great circles */
 				S->v.status |= PSL_VEC_POLE;
@@ -19055,9 +19064,49 @@ GMT_LOCAL void gmtinit_draw_legend_line (struct GMTAPI_CTRL *API, FILE *fp, stru
 	}
 }
 
+GMT_LOCAL void gmtinit_set_symbol_size (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, double size, char *string) {
+	/* Format the size argument for this symbol in a string form, or set to "-"" if size is 0 */
+	gmt_M_unused (API);
+
+	if (gmt_M_is_zero (size)) {	/* Accept default symbol size and other parameters in legend */
+		strcpy (string, "-");
+		return;
+	}
+
+	switch (S->symbol) {	/* A few symbols have special needs */
+		case 'e':	case 'E':	case 'j':	case 'J':	/* Ellipse or rotated rectangle */
+			if (gmt_M_is_zero (S->size_y))	/* Did only get a single size, accept defaults for ratio and azimuth */
+				sprintf (string, "%gi", size);
+			else
+				sprintf (string, "%g,%gi,%gi", S->factor, S->size_x, S->size_y);
+			break;
+		case 'r':	/* Rectangle */
+			if (gmt_M_is_zero (S->size_y))	/* Did only get a single size, accept defaults for ratio */
+				sprintf (string, "%gi", size);
+			else
+				sprintf (string, "%gi,%gi", S->size_x, S->size_y);
+			break;
+		case 'R':	/* Rounded rectangle */
+			if (gmt_M_is_zero (S->size_y))	/* Did only get a single size, accept defaults for ratio */
+				sprintf (string, "%gi", size);
+			else
+				sprintf (string, "%gi,%gi,%gi", S->size_x, S->size_y, S->factor);
+			break;
+		case 'w':	case 'W':	/* Wedges */
+			if (gmt_M_is_zero (S->size_y))	/* Did only get a single size, accept defaults for ratio */
+				sprintf (string, "%gi", size);
+			else
+				sprintf (string, "%gi,%g,%g", S->w_radius, S->size_x, S->size_y);
+			break;
+		default:	/* Regular isotropic symbol */
+			sprintf (string, "%gi", size);
+			break;
+	}
+}
+
 void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do_fill, struct GMT_FILL *fill, bool do_line, struct GMT_PEN *pen, struct GMT_LEGEND_ITEM *item) {
 	/* Adds a new entry to the auto-legend information file hidden in the session directory */
-	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""};
+	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""}, size_string[GMT_LEN128] = {""};
 	bool gap_done = false;
 	double size = 0.0;
 	FILE *fp = NULL;
@@ -19162,12 +19211,12 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	if (((item->draw & GMT_LEGEND_DRAW_V) && item->pen[GMT_LEGEND_PEN_V][0] == '\0'))	/* Initialize the vertical line setting */
 		gmtinit_draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_V);
 	/* Get the symbol size */
-	if (item->size > 0.0)	/* Hard-wired symbol size given */
+	if (item->size > 0.0)	/* Hard-wired symbol size given via -l */
 		size = item->size;
 	else if (S)
 		size = S->size_x;	/* Use the symbol size given */
 	else
-		GMT_Report (API, GMT_MSG_INFORMATION, "No size or length given and no symbol present - default to line length of 0.5 cm.\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "No size or length given and no symbol present - default to line length of 2.5 annotation character width.\n");
 
 	/* Finalize label */
 	if (item->label_type == GMT_LEGEND_LABEL_FORMAT)	/* Integer format string */
@@ -19181,20 +19230,16 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	}
 	else	/* Got a fixed label */
 		strncpy (label, item->label, GMT_LEN128-1);
+	gmtinit_set_symbol_size (API, S, size, size_string);	/* Format the size-string based on the size */
 	/* Place the symbol command */
 	if (S == NULL || S->symbol == GMT_SYMBOL_LINE) {	/* Line for legend entry */
 		if (pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
-		if (size > 0.0)	/* Got a line length in inches */
-			fprintf (fp, "S - - %gi - %s - %s\n", size, gmt_putpen (API->GMT, pen), label);
-		else	/* Let the legend module supply a default length */
-			fprintf (fp, "S - - - - %s - %s\n", gmt_putpen (API->GMT, pen), label);
+		fprintf (fp, "S - - %s - %s - %s\n", size_string, gmt_putpen (API->GMT, pen), label);
 	}
 	else {	/* Regular symbol */
 		if (!(do_fill || do_line)) do_line = true;	/* If neither fill nor pen is selected, plot will draw line, so override do_line here */
 		if (do_line && pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
-		if (S->size_x > 0.0 && S->size_y > 0.0 && S->symbol == PSL_RECT)
-			fprintf (fp, "S - %c %gi,%gi %s %s - %s\n", S->symbol, size, S->size_y, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
-		else if (S->symbol == 'q') {	/* Quoted line [Experimental] */
+		if (S->symbol == 'q') {	/* Quoted line [Experimental] */
 			char scode[GMT_LEN64] = {""};
 			sprintf (scode, "qn1:+ltext");
 			fprintf (fp, "S - %s - %s %s - %s\n", scode, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
@@ -19206,8 +19251,8 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			if (S->D.fill[0]) strcat (scode, "+g"), strcat (scode, S->D.fill);
 			fprintf (fp, "S - %s - %s %s - %s\n", scode, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 		}
-		else
-			fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, size, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		else 
+			fprintf (fp, "S - %c %s %s %s - %s\n", S->symbol, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	}
 
 	if (item->draw & GMT_LEGEND_DRAW_V && item->pen[GMT_LEGEND_PEN_V][0]) {	/* Must end with horizontal, then vertical line */
