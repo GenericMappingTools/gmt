@@ -15221,7 +15221,6 @@ int GMT_Put_Vector (void *V_API, struct GMT_VECTOR *V, unsigned int col, unsigne
 		V->type[col] = type;	/* Set column type */
 	}
 	else {	/* Convert text to something else */
-		bool no_T = false;
 		unsigned L_type = GMT_IS_UNKNOWN, got;
 		double value;
 		uint64_t row, n_bad = 0, L;
@@ -15244,7 +15243,7 @@ int GMT_Put_Vector (void *V_API, struct GMT_VECTOR *V, unsigned int col, unsigne
 			GMT_Report (API, GMT_MSG_ERROR, "Given blank string in array\n");
 			return_error (API, GMT_MEMORY_ERROR);
 		}
-		if (special_type == GMT_DATETIME || gmtlib_maybe_abstime (API->GMT, text, &no_T))	/* Honor backwards compatibility for GMT_DATETIME */
+		if (special_type == GMT_DATETIME || gmtlib_maybe_abstime (API->GMT, text))	/* Honor backwards compatibility for GMT_DATETIME */
 			L_type = GMT_IS_ABSTIME;
 		else if (strchr ("WE", text[L]))
 			L_type = GMT_IS_LON;

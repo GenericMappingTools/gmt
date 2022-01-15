@@ -8642,7 +8642,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	unsigned int i, icol, pos, error = 0, n_slash = 0, first = 0;
 	int got, col_type[2], expect_to_read;
 	size_t length;
-	bool inv_project = false, scale_coord = false, got_r, got_country, no_T = false, done[3] = {false, false, false};
+	bool inv_project = false, scale_coord = false, got_r, got_country, done[3] = {false, false, false};
 	char text[GMT_BUFSIZ] = {""}, item[GMT_BUFSIZ] = {""}, string[GMT_BUFSIZ] = {""}, r_unit = 0, *c = NULL, *d = NULL, *ptr = NULL;
 	double p[6];
 
@@ -8916,10 +8916,9 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			else
 				icol = i/2;
 			if (icol < 2 && GMT->current.setting.io_lonlat_toggle[GMT_IN]) icol = 1 - icol;	/* col_types were swapped */
-			maybe_time = gmtlib_maybe_abstime (GMT, text, &no_T);	/* Will flag things like 1999-12-03 or 2000/09/4 as abstime with missing T */
+			maybe_time = gmtlib_maybe_abstime (GMT, text);	/* Will flag things like 1999-12-03 or 2000/09/4 as abstime with missing T */
 			if (maybe_time || gmt_M_type (GMT, GMT_IN, icol) == GMT_IS_UNKNOWN || gmt_M_type (GMT, GMT_IN, icol) == GMT_IS_FLOAT) {	/* Because abstime specs must be parsed carefully we must do more checking */
 				/* Here, -J or -f may have ben set, proceed with caution */
-				if (no_T) strcat (text, "T");	/* Add the missing trailing 'T' in an ISO date */
 				got = gmt_scanf_arg (GMT, text, GMT_IS_UNKNOWN, true, &p[i]);
 				if (got == GMT_IS_LON || got == GMT_IS_LAT)	/* If clearly lon or lat we say so */
 					gmt_set_column_type (GMT, GMT_IN, icol, got), done[icol] = true;
