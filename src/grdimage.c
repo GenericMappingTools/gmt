@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1581,7 +1581,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	has_content = (got_z_grid) ? false : true;	/* Images always have content but grids may be all NaN */
 	if (got_z_grid) {	/* Got a single grid so need to convert z to color via a CPT */
 		if (Ctrl->C.active) {	/* Read a palette file */
-			char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file);
+			char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file, Grid_orig->header);
 			if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, Grid_orig->header->z_min, Grid_orig->header->z_max, Ctrl->C.dz)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
 				gmt_free_header (API->GMT, &header_G);

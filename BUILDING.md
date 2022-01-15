@@ -1,7 +1,7 @@
 # Building GMT
 
 This document describes how to build GMT from source codes
-(stable release or development version) on Linux, FreeBSD, OpenBSD, macOS and Windows.
+(stable release or development version) on Linux, FreeBSD, macOS and Windows.
 
 ## Contents
 
@@ -55,6 +55,7 @@ Install for building GMT documentation and running tests (not required for gener
 
 - [Sphinx](http://www.sphinx-doc.org) (>=1.8, for building the documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
+- [dvc](https://dvc.org/) (for running the tests)
 - [Ninja](https://ninja-build.org/) (optional, build system focused on speed)
 - [pngquant](https://pngquant.org/) (optional, for optimizing PNG images in the documentation)
 
@@ -164,7 +165,7 @@ with a focus on speed.
 In the build directory, type
 
 ```
-# Linux/macOS/FreeBSD/OpenBSD
+# Linux/macOS/FreeBSD
 cmake --build .
 
 # Windows
@@ -185,7 +186,7 @@ tool's default number is used.
 ## Installing
 
 ```
-# Linux/macOS/FreeBSD/OpenBSD
+# Linux/macOS/FreeBSD
 cmake --build . --target install
 
 # Windows

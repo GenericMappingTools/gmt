@@ -1,6 +1,22 @@
+/*--------------------------------------------------------------------
+ *
+ *	Copyright (c) 2005-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
+ *--------------------------------------------------------------------*/
 /* MGD-77 Data Record Field Defaults:
- *    Copyright (c) 2005-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Chandler *
- *      See LICENSE.TXT file for copying and redistribution conditions.
+ * Paul Wessel and M. T. Hamilton (nee Chandler) *
+ *
 		   Name,                          Abbrev,     Start,  Length,  FortranCode,   Factor,   readMGD77,   order,   printMGD77,   printVALS,   Not_given    */
 		{ "Data Record Type",                      "drt",         1U,	   1,        "int",        1,       "%1d",       1,        "%1d",        NULL,           "9" },
 		{ "Time Zone Correction",                   "tz",        10U,	   3,        "int",        1,      "%03d",       3,      "%+03d",        NULL,         "+99" },

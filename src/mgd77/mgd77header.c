@@ -1,7 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2004-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and Michael Chandler
- *    See README file for copying and redistribution conditions.
+ *	Copyright (c) 2004-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * mgd77header.c reads an NGDC A77 file, determines temporal and spatial extents,
@@ -13,7 +24,7 @@
  * Note: Program expects first row to be a header as (no header row will trigger error):
  * #rec	TZ	year	month	day	hour	min	lat		lon		ptc	twt	depth	bcc	btc	mtf1	mtf2	mag	msens	diur	msd	gobs	eot	faa	nqc	id	sln	sspn
  *
- * Author:	Michael Chandler, ported to GMT5 by P. Wessel
+ * Author:	Michael Hamilton (nee Chandler), ported to GMT5 by P. Wessel
  * Date:	23-MAY-2012
  * Prted to GMT5 on 13-DEC-2016 by P. Wessel
  *

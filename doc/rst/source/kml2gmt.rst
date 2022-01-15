@@ -34,8 +34,8 @@ This is a bare-bones operation that aims to extract coordinates and
 possibly the name and description tags of each feature. The main use
 intended is to capture coordinates modified in Google Earth and then
 reinsert the modified data into the original GMT data file. For a more
-complete reformatting, consider using **ogr2ogr -f** "GMT" somefile.gmt
-somefile.kml.
+complete reformatting, consider using
+``ogr2ogr -f "GMT" somefile.gmt somefile.kml``.
 
 Required Arguments
 ------------------

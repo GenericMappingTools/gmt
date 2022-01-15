@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1671,8 +1671,11 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 										else	/* Add +jc */
 											strcat (sub, "+jc");
 									}
-									else	/* The necessary arguments not supplied, so we make a reasonable default */
-										sprintf (sub, PSLEGEND_VECTOR_ARG, PSLEGEND_VECTOR_SIZE*x);	/* Head size is 40% of length */
+									else {	/* The necessary arguments not supplied, so we make a reasonable default */
+										double hs = PSLEGEND_VECTOR_SIZE * x;	/* Max head size is 40% of length */
+										if (hs > (H / 0.57735026919)) hs = H / 0.57735026919;	/* Truncate if head width is too large compared to H */
+										sprintf (sub, PSLEGEND_VECTOR_ARG, hs);	/* Remember, the format has %gi to set this in inches */
+									}
 									if (txt_c[0] == '-') strcat (sub, "+g-");
 									else { strcat (sub, "+g"); strcat (sub, txt_c);}
 									if (txt_d[0] == '-') strcat (sub, "+p-");

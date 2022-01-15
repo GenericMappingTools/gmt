@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -979,7 +979,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active) {
 		char *dataset_cpt = (Ctrl->G.active && Ctrl->G.n == 1 && !gmt_M_file_is_image (Ctrl->G.file[0])) ? Ctrl->G.file[0] : Ctrl->In.file;
-		char *cpt = gmt_cpt_default (API, Ctrl->C.file, dataset_cpt);
+		char *cpt = gmt_cpt_default (API, Ctrl->C.file, dataset_cpt, Topo->header);
 		if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, Topo->header->z_min, Topo->header->z_max, Ctrl->C.dz)) == NULL) {
 			Return (API->error);
 		}

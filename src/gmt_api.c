@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -8198,11 +8198,12 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
 	API->verbose = (mode >> 16);	/* Pick up any -V settings from gmt.c */
-	API->pad = pad;		/* Preserve the default pad value for this session */
+	API->remote_id = GMT_NOTSET;     /* Not read a remote grid yet */
+	API->pad = pad;     /* Preserve the default pad value for this session */
 	API->print_func = (print_func == NULL) ? gmtapi_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* Deprecated, we no longer call exit anywhere in the API (gmt_api.c) */
-    API->external = (mode & GMT_SESSION_EXTERNAL) ? 1 : 0;  /* if false|0 then we don't list read and write as modules */
-    if (API->external && mode & GMT_SESSION_NOGDALCLOSE) API->external = 2;  /* Avoid calling GDALDestroyDriverManager */
+	API->external = (mode & GMT_SESSION_EXTERNAL) ? 1 : 0;  /* if false|0 then we don't list read and write as modules */
+	if (API->external && mode & GMT_SESSION_NOGDALCLOSE) API->external = 2;  /* Avoid calling GDALDestroyDriverManager */
 	API->shape = (mode & GMT_SESSION_COLMAJOR) ? GMT_IS_COL_FORMAT : GMT_IS_ROW_FORMAT;		/* if set then we must use column-major format [row-major] */
 	API->runmode = mode & GMT_SESSION_RUNMODE;		/* If nonzero we set up modern GMT run-mode, else classic */
 	API->no_history = mode & GMT_SESSION_NOHISTORY;		/* If nonzero we disable the gmt.history mechanism (shorthands) entirely */

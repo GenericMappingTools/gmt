@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1195,6 +1195,8 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 						HH->name, HH->is_netcdf4 ? "netCDF-4" : "classic", text);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
+			/* Print CPT status */
+			sprintf (record, "%s: Default CPT: ", HH->name);	if (HH->cpt) strcat (record, HH->cpt);	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		} /* !(Ctrl->T.active || (Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED))) */
 		else {
 			if (header->z_min < global_vmin) global_vmin = header->z_min;

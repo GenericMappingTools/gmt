@@ -9,7 +9,7 @@ The **-a** option
 **Description**
 
 GMT relies on external tools to translate geospatial files such as shapefiles into a format we can read. The tool
-**ogr2ogr** in the GDAL package can do such translations and preserve the aspatial metadata via a new OGR/GMT format
+*ogr2ogr* in the GDAL package can do such translations and preserve the aspatial metadata via a new OGR/GMT format
 specification (See the cookbook chapter :doc:`/cookbook/ogrgmt-format`). For this to be useful we need a mechanism to
 associate certain metadata values with required input and output columns expected by GMT programs. The **-a** option
 allows you to supply one or more comma-separated associations *col=name*, where *name* is the name of an aspatial

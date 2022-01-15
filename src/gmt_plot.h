@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -112,6 +112,8 @@ struct GMT_VECT_ATTR {
 	unsigned int status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
 	unsigned int v_kind[2];	/* Type of vector heads */
 	bool parsed_v4;		/* true if we parsed old-style <vectorwidth/headlength/headwidth> attribute */
+	bool v_norm_d;		/* true if Cartesian vector shrinking limit is in data unit not plot unit */
+	bool v_unit_d;		/* true if vector magnitude is in data unit and not plot/map unit */
 	float v_angle;		/* Head angle */
 	float v_norm;		/* shrink when lengths are smaller than this */
 	float v_norm_limit;	/* Only shrink down to this factor [0.25] */
@@ -121,6 +123,7 @@ struct GMT_VECT_ATTR {
 	float h_width;		/* Width of vector head in inches */
 	float pole[2];		/* Longitude and latitude of geovector pole */
 	float scale;		/* Converts inches to spherical degrees */
+	float value;		/* Original data quantity */
 	float comp_scale;	/* Converts hypot (dx, dy) to inches */
 	float v_trim[2];	/* Offsets from begin/end point in inches */
 	struct GMT_PEN pen;	/* Pen for outline of head */
@@ -141,6 +144,7 @@ struct GMT_SYMBOL {
 	unsigned int read_symbol_cmd;	/* 1 when -S indicated we must read symbol type from file, 2 with -SK is used */
 	bool u_set;		/* true if u was set */
 	bool par_set;		/* true if all parameters were set for e,j */
+	bool degenerate;		/* true for E- and J- as degenerate ellipses and rectangles */
 	double factor;		/* Scaling needed to unify symbol area for circle, triangles, etc. [1] */
 	double size_x;		/* Current symbol size in x */
 	double size_y;		/* Current symbol size in y */

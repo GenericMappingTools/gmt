@@ -43,6 +43,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-w| ]
@@ -300,6 +301,9 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. |Add_-l| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-l.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
