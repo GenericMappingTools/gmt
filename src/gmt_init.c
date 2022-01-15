@@ -4820,7 +4820,7 @@ GMT_LOCAL int gmtinit_parse_genper_modern (struct GMT_CTRL *GMT, char *args, boo
 		unsigned int pos = 0, n_errors = 0, nlen;
 		char txt[GMT_LEN256] = {""}, W[GMT_LEN256] = {""}, H[GMT_LEN256] = {""};
 		while (gmt_getmodopt (GMT, 'J', c, GMT_GENPER_MODIFIERS, &pos, txt, &n_errors) && n_errors == 0) {
-			nlen = strlen(txt);
+			nlen = (unsigned int)strlen(txt);
 			switch (txt[0]) {
 				case 'a':	/* View azimuth */
 					if (strchr ("lL", txt[nlen-1])) {	/* Undocumented trailing l|L to set this variable */

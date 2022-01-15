@@ -669,7 +669,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	double plot_x, plot_y, plot_xnew, plot_ynew, delaz, in[GMT_LEN16];
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xynew[2] = {0.0};
-	double scale, fault, depth, size, P_x, P_y, T_x, T_y, nominal_size;
+	double scale, fault, depth, size, P_x, P_y, T_x, T_y;
 
 	char string[GMT_BUFSIZ] = {""}, Xstring[GMT_BUFSIZ] = {""}, Ystring[GMT_BUFSIZ] = {""}, event_title[GMT_BUFSIZ] = {""};
 	char *no_name = "<unnamed>", *event_name = NULL;
@@ -712,7 +712,6 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	gmt_M_memset (&N, 1, struct AXIS);
 	gmt_M_memset (&P, 1, struct AXIS);
 	gmt_M_memset (in, GMT_LEN16, double);
-	nominal_size = Ctrl->S.scale;
 
 	if (Ctrl->C.active) {
 		if ((CPT = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
@@ -998,7 +997,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 					meca.moment.exponent = SEIS_MOMENT_EXP_REFERENCE;
 				}
 
-				if (Ctrl->S.read) nominal_size = scale = in[scol];
+				if (Ctrl->S.read) scale = in[scol];
 				moment.mant = meca.moment.mant;
 				moment.exponent = meca.moment.exponent;
 

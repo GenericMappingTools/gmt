@@ -317,7 +317,7 @@ GMT_LOCAL int gmtremote_compare_key (const void *item_1, const void *item_2) {
 }
 
 int gmtremote_wind_to_file (const char *file) {
-	int k = strlen (file) - 2;	/* This jumps past any trailing / for tiles */
+	int k = (int)(strlen (file) - 2);	/* This jumps past any trailing / for tiles */
 	while (k >= 0 && file[k] != '/') k--;
 	return (k+1);
 }

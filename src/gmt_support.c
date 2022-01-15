@@ -1105,7 +1105,7 @@ int gmtlib_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 			else if (line[i] == ':') { 	/* :<phase> setting given at the end */
 				i++;	/* Advance past the colon */
 				P->offset = atof (line) * GMT->session.u2u[unit][GMT_PT];
-				i = strlen (line) - 1;	/* So that when i++ happens at the end of the for loop we will exit */
+				i = (unsigned int)(strlen (line) - 1);	/* So that when i++ happens at the end of the for loop we will exit */
 			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Pen attributes not using just - and . for dashes and dots. Offending character --> %c\n", line[i]);
@@ -4826,7 +4826,7 @@ int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *n
 		snprintf (file, PATH_MAX, "%s%s", name, ext[k]);	/* Full name of potential def|eps file */
 		if (gmt_getsharepath (GMT, "custom", &name[*pos], ext[k], path, R_OK) || gmtlib_getuserpath (GMT, &file[*pos], path)) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s in %s\n", name, path);
-			return k;	/* Found local *.def or *.eps file */
+			return (int)k;	/* Found local *.def or *.eps file */
 		}
 	}
 	if (!try_remote) {
@@ -4844,12 +4844,11 @@ int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *n
 		/* Here, pos is position of first character in the name after any leading URLs or @ [0] */
 		if (gmt_getsharepath (GMT, "custom", &name[*pos], ext[k], path, R_OK) || gmtlib_getuserpath (GMT, &file[*pos], path)) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s in %s\n", name, path);
-			return k;	/* Found local *.def or *.eps file */
+			return (int)k;	/* Found local *.def or *.eps file */
 		}
 	}
 	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find either custom symbol or EPS macro %s\n", name);
 	return (0);
-
 }
 
 GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS * gmtsupport_load_eps_symbol (struct GMT_CTRL *GMT, char *name, char *path) {
@@ -16192,7 +16191,7 @@ char *gmt_putusername (struct GMT_CTRL *GMT) {
 		DWORD Size = (DWORD)_tcslen (name);
 		if (GetUserName (name, &Size)) /* Got a user name, return it */
 			return (strdup (name));
-		if (U = getenv ("USERNAME"))	/* Got a name from the environment instead */
+		if ((U = getenv ("USERNAME")))	/* Got a name from the environment instead */
 			return (strdup (U));
 	}
 #endif
