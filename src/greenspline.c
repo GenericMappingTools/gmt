@@ -2572,7 +2572,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				S->n_rows = n_use;
 			}
 
-			for (e = 0; e < n_use; e++) {	/* Only loop over the first n_use eigenvalues (if restricted) */
+			for (e = 0; e < (uint64_t)n_use; e++) {	/* Only loop over the first n_use eigenvalues (if restricted) */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline for eigenvalue # %d\n", (int)e);
 				gmt_M_memcpy (s, ssave, nm, double);	/* Restore original values before call */
 				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, (double)e, GMT_SVD_EIGEN_NUMBER_CUTOFF);
