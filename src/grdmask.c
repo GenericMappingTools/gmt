@@ -285,8 +285,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 	unsigned int side = 0, known_side;
 	unsigned int tbl, gmode, n_pol = 0, n_cols = 2, x_wrap, y_wrap;
 	int row, col, row_end, col_end, ii, jj, n_columns, n_rows, error = 0, col_0, row_0;
-	openmp_int rowu, colu, *d_col = NULL, d_row = 0, max_d_col = 0;
-
+	openmp_int *d_col = NULL, d_row = 0, max_d_col = 0, rowu, colu;
 	uint64_t ij, k, seg;
 
 	char text_item[GMT_LEN64] = {""};
@@ -470,7 +469,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 									Grid->data[ij] = mask_val[GMT_INSIDE];
 								continue;
 							}
-							for (rowu = 0; rowu < (openmp_int)Grid->header->n_rows && (distance = gmt_distance (GMT, 0.0, 90.0, grd_x0[0], grd_y0[row])) <= radius; rowu++) {
+							for (rowu = 0; rowu < (openmp_int)Grid->header->n_rows && (distance = gmt_distance (GMT, 0.0, 90.0, grd_x0[0], grd_y0[rowu])) <= radius; rowu++) {
 								value = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
 								gmt_M_col_loop (GMT, Grid, rowu, colu, ij)	/* Set this entire row */
 									Grid->data[ij] = value;
@@ -487,7 +486,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 							for (row = (int)(Grid->header->n_rows - 1); row >= 0 && (distance = gmt_distance (GMT, 0.0, -90.0, grd_x0[0], grd_y0[row])) <= radius; row--) {
 								value = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
 								rowu = (openmp_int)row;
-								gmt_M_col_loop (GMT, Grid, row, colu, ij)	/* Set this entire row */
+								gmt_M_col_loop (GMT, Grid, rowu, colu, ij)	/* Set this entire row */
 									Grid->data[ij] = value;
 							}
 							continue;
