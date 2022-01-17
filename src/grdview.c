@@ -815,7 +815,8 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	bool get_contours, bad, pen_set, begin, saddle, drape_resample = false;
 	bool nothing_inside = false, use_intensity_grid, do_G_reading = true, read_z = false;
 
-	unsigned int c, nk, n4, row, col, d_reg[3], i_reg = 0, id[2], good;
+	openmp_int row, col;
+	unsigned int c, nk, n4, d_reg[3], i_reg = 0, id[2], good;
 	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, n_max = 0;
 
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, way, bin_inc[4], ij_inc[4], error = 0;
@@ -1190,10 +1191,10 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 	inc2[GMT_X] = 0.5 * Z->header->inc[GMT_X];	inc2[GMT_Y] = 0.5 * Z->header->inc[GMT_Y];
 
-	for (row = 0; row < Topo->header->n_rows - 1; row++) {
+	for (row = 0; row < (openmp_int)Topo->header->n_rows - 1; row++) {
 		/* Nodes part of tiles completely outside -R is set to NaN and thus not considered below */
 		ij = gmt_M_ijp (Topo->header, row, 0);
-		for (col = 0; col < Topo->header->n_columns - 1; col++, ij++) {
+		for (col = 0; col < (openmp_int)Topo->header->n_columns - 1; col++, ij++) {
 			for (jj = n_out = 0; jj < 2; jj++) {	/* Loop over the 4 nodes making up one tile */
 				for (ii = 0; ii < 2; ii++) if (gmt_map_outside (GMT, xval[col+ii], yval[row+jj])) n_out++;
 			}
@@ -1235,7 +1236,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 			else {
-				for (col = 0; col < Z->header->n_columns; col++) gmt_geoz_to_xy (GMT, gmt_M_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[col], &yy[col]);
+				for (col = 0; col < (openmp_int)Z->header->n_columns; col++) gmt_geoz_to_xy (GMT, gmt_M_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[col], &yy[col]);
 				PSL_plotline (PSL, xx, yy, Z->header->n_columns, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 		}
@@ -1246,7 +1247,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 			else {
-				for (col = 0; col < Z->header->n_columns; col++) gmt_geoz_to_xy (GMT, gmt_M_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[col], &yy[col]);
+				for (col = 0; col < (openmp_int)Z->header->n_columns; col++) gmt_geoz_to_xy (GMT, gmt_M_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[col], &yy[col]);
 				PSL_plotline (PSL, xx, yy, Z->header->n_columns, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 		}
@@ -1257,7 +1258,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 			else {
-				for (row = 0; row < Z->header->n_rows; row++) gmt_geoz_to_xy (GMT, Z->header->wesn[XLO], gmt_M_grd_row_to_y (GMT, row, Z->header), Ctrl->N.level, &xx[row], &yy[row]);
+				for (row = 0; row < (openmp_int)Z->header->n_rows; row++) gmt_geoz_to_xy (GMT, Z->header->wesn[XLO], gmt_M_grd_row_to_y (GMT, row, Z->header), Ctrl->N.level, &xx[row], &yy[row]);
 				PSL_plotline (PSL, xx, yy, Z->header->n_rows, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 		}
@@ -1268,7 +1269,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 			else {
-				for (row = 0; row < Z->header->n_rows; row++) gmt_geoz_to_xy (GMT, Z->header->wesn[XHI], gmt_M_grd_row_to_y (GMT, row, Z->header), Ctrl->N.level, &xx[row], &yy[row]);
+				for (row = 0; row < (openmp_int)Z->header->n_rows; row++) gmt_geoz_to_xy (GMT, Z->header->wesn[XHI], gmt_M_grd_row_to_y (GMT, row, Z->header), Ctrl->N.level, &xx[row], &yy[row]);
 				PSL_plotline (PSL, xx, yy, Z->header->n_rows, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 		}
@@ -2059,7 +2060,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		gmt_setfill (GMT, &Ctrl->N.fill, 1);
 		Z = Topo;	/* Ensure we use the topo grid, not the draped grid for this */
 		if (!GMT->current.proj.z_project.draw[0])	{	/* Southern side */
-			for (col = 0, n = 0, ij = sw; col < Z->header->n_columns; col++, ij++) {
+			for (col = 0, n = 0, ij = sw; col < (openmp_int)Z->header->n_columns; col++, ij++) {
 				if (gmt_M_is_fnan (Topo->data[ij])) continue;
 				gmt_geoz_to_xy (GMT, gmt_M_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YLO], (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
@@ -2069,32 +2070,32 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 		if (!GMT->current.proj.z_project.draw[1]) {	/*	Eastern side */
-			for (row = 0, n = 0, ij = ne; row < Z->header->n_rows; row++, ij += Topo->header->mx) {
+			for (row = 0, n = 0, ij = ne; row < (openmp_int)Z->header->n_rows; row++, ij += Topo->header->mx) {
 				if (gmt_M_is_fnan (Topo->data[ij])) continue;
 				gmt_geoz_to_xy (GMT, Z->header->wesn[XHI], gmt_M_grd_row_to_y (GMT, row, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (row = Z->header->n_rows; row > 0; row--, n++)
+			for (row = (openmp_int)Z->header->n_rows; row > 0; row--, n++)
 				gmt_geoz_to_xy (GMT, Z->header->wesn[XHI], gmt_M_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 		if (!GMT->current.proj.z_project.draw[2])	{	/* Northern side */
-			for (col = 0, n = 0, ij = nw; col < Z->header->n_columns; col++, ij++) {
+			for (col = 0, n = 0, ij = nw; col < (openmp_int)Z->header->n_columns; col++, ij++) {
 				if (gmt_M_is_fnan (Topo->data[ij])) continue;
 				gmt_geoz_to_xy (GMT, gmt_M_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YHI], (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (col = Z->header->n_columns; col > 0; col--, n++)
+			for (col = (openmp_int)Z->header->n_columns; col > 0; col--, n++)
 				gmt_geoz_to_xy (GMT, gmt_M_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 		if (!GMT->current.proj.z_project.draw[3]) {	/*	Western side */
-			for (row = 0, n = 0, ij = nw; row < Z->header->n_rows; row++, ij += Topo->header->mx) {
+			for (row = 0, n = 0, ij = nw; row < (openmp_int)Z->header->n_rows; row++, ij += Topo->header->mx) {
 				if (gmt_M_is_fnan (Topo->data[ij])) continue;
 				gmt_geoz_to_xy (GMT, Z->header->wesn[XLO], gmt_M_grd_row_to_y (GMT, row, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (row = Z->header->n_rows; row > 0; row--, n++)
+			for (row = (openmp_int)Z->header->n_rows; row > 0; row--, n++)
 				gmt_geoz_to_xy (GMT, Z->header->wesn[XLO], gmt_M_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}

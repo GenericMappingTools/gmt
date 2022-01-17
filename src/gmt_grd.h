@@ -34,6 +34,9 @@
 #ifndef GMT_GRID_H
 #define GMT_GRID_H
 
+typedef int openmp_int;
+//typedef unsigned int openmp_int;
+
 /* netcdf convention */
 #define GMT_NC_CONVENTION "CF-1.7"
 
@@ -160,11 +163,11 @@ enum gmt_enum_wesnids {
 /* Note: All arguments must be actual variables and not expressions.
  * Note: that input col, row _may_ be signed, hence we do the cast to (int) here. */
 
-#define gmt_M_row_loop(C,G,row) for (row = 0; row < (int)G->header->n_rows; row++)
-#define gmt_M_col_loop(C,G,row,col,ij) for (col = 0, ij = gmt_M_ijp (G->header, row, 0); col < (int)G->header->n_columns; col++, ij++)
-#define gmt_M_grd_loop(C,G,row,col,ij) gmt_M_row_loop(C,G,row) gmt_M_col_loop(C,G,row,col,ij)
+#define gmt_M_row_loop(C,G,row) for (row = 0; row < (openmp_int)G->header->n_rows; row++)
+#define gmt_M_col_loop(C,G,row,col,ij) for (col = 0, ij = gmt_M_ijp (G->header, row, 0); col < (openmp_int)G->header->n_columns; col++, ij++)
 /*! Just a loop over columns */
-#define gmt_M_col_loop2(C,G,col) for (col = 0; col < (int)G->header->n_columns; col++)
+#define gmt_M_col_loop2(C,G,col) for (col = 0; col < (openmp_int)G->header->n_columns; col++)
+#define gmt_M_grd_loop(C,G,row,col,ij) gmt_M_row_loop(C,G,row) gmt_M_col_loop(C,G,row,col,ij)
 
 /* The usage could be:
 	gmt_M_grd_loop (GMT, Grid, row, col, node) fprintf (stderr, "Value at row = %d and col = %d is %g\n", row, col, Grid->data[node]);
