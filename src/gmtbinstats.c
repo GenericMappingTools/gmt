@@ -530,7 +530,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	HH = gmt_get_H_hidden (Grid->header);
 
-	gmt_M_grd_loop (GMT, Grid, row, col, ij)	/* Initialize grid to NaN which is our flag for an unused grid node */
+	gmt_M_grd_loop (GMT, Grid, rowu, colu, ij)	/* Initialize grid to NaN which is our flag for an unused grid node */
 		Grid->data[ij] = GMT->session.d_NaN;
 
 	/* Initialize the input since we are doing record-by-record reading */

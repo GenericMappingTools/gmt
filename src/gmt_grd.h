@@ -34,8 +34,22 @@
 #ifndef GMT_GRID_H
 #define GMT_GRID_H
 
-typedef int openmp_int;
-//typedef unsigned int openmp_int;
+/* Because Windows, as of 2022, still do not support OpenMP beyond 2.0 (other than experimental) we hvae
+ * the problem that counters that are logically positive definite must nevertheless be signed integers
+ * in OpenMP 2.  Because we do not want a 2008 implementation to force changes to GMT structure I have
+ * now introduced a typedef for use with such loop variables.  This was particularly needed for our
+ * 4 macros, like gmt_M_grd_loop, which prior to this change reuslted in hundreds of warnings about
+ * sign/unsigned mismatches due to the forced signed int loop variables.  I have updated all places
+ * where these macros are used and where OpenMP is used and where it may be used in the near future,
+ * so that things are properly cast to openmp_int, whatever that may be set to be.  With this, the
+ * false warnings go aaway and we can better notice actual warnings due to new implementation changes.
+ * P. Wessel, Jan-17-2022. */
+
+#if _WIN32
+typedef int openmp_int;             /* Must force signed integers due to OpenMP 2.0 */
+#else
+typedef unsigned int openmp_int;    /* This matches our actual variables in GMT, mostly */
+#endif
 
 /* netcdf convention */
 #define GMT_NC_CONVENTION "CF-1.7"
