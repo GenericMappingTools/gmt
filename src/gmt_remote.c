@@ -214,10 +214,12 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, in
 	}
 	if ((k = gmtremote_parse_version (line))) {
 		fclose (fp);
+		gmt_chop (line);
 		if (k == 2)
 			GMT_Report (API, GMT_MSG_NOTICE, "Your GMT version too old to use the remote data mechanism - please upgrade to %s or later\n", line);
 		else
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to parse \"%s\" to extract GMT version\n", line);
+		*n = 0;	/* No good */
 		return NULL;
 	}	
 	if ((I = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_INFO)) == NULL) {
@@ -983,17 +985,24 @@ void gmt_refresh_server (struct GMTAPI_CTRL *API) {
 	 *   sizes, or gone altogether).  In all these case we delete the file so that when the
 	 *   user requests it, it forces a download of the updated file.
 	 */
+	int err1 = GMT_NOERROR, err2 = GMT_NOERROR;
 
-	if (gmtremote_refresh (API, GMT_INFO_INDEX))	/* Watch out for changes on the server info once a day */
+	if ((err1 = gmtremote_refresh (API, GMT_INFO_INDEX)))	/* Watch out for changes on the server info once a day */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Unable to obtain remote information file %s\n", GMT_INFO_SERVER_FILE);
 	else if (API->remote_info == NULL) {	/* Get server file attribution info if not yet loaded */
 		if ((API->remote_info = gmtremote_data_load (API, &API->n_remote_info)) == NULL) {	/* Failed to load the info file */
+			err1 = GMT_RUNTIME_ERROR;
 			GMT_Report (API, GMT_MSG_INFORMATION, "Unable to read server information file\n");
 		}
 	}
 
-	if (gmtremote_refresh (API, GMT_HASH_INDEX)) {	/* Watch out for changes on the server hash once a day */
+	if ((err2 = gmtremote_refresh (API, GMT_HASH_INDEX))) {	/* Watch out for changes on the server hash once a day */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Unable to obtain remote hash table %s\n", GMT_HASH_SERVER_FILE);
+	}
+
+	if (err1 || err2) {	/* SCrewed, might as well turn off */
+		API->GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;	/* Temporarily turn off auto download in this session only */
+		API->GMT->current.io.internet_error = true;		/* No point trying again */			
 	}
 }
 
