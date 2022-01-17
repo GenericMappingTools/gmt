@@ -186,7 +186,7 @@ EXTERN_MSC int GMT_mgd77header (void *V_API, int mode, void *args) {
 	bool error = false;
 	bool quad[4] = {false, false, false, false};
 
-	double this_dist, this_lon, this_lat, last_lon, last_lat, dx, dy, dlon, ds, lon_w;
+	double this_lon, this_lat, last_lon, last_lat, dx, dy, dlon, ds, lon_w;
 	double xmin, xmax, xmin1, xmin2, xmax1, xmax2, ymin, ymax, this_time, tmin, tmax;
 	double *dvalue[MGD77_MAX_COLS];
 
@@ -281,7 +281,7 @@ EXTERN_MSC int GMT_mgd77header (void *V_API, int mode, void *args) {
 		id_col = MGD77_Get_Column	(GMT, "id", &M);
 
 		tmin = tmax = GMT->session.d_NaN;
-		this_dist = this_lon = this_lat = ds = this_time = 0.0;
+		this_lon = this_lat = ds = this_time = 0.0;
 		xmin1 = xmin2 = 360.0;
 		xmax1 = xmax2 = -360.0;
 		ymin = 180.0;
@@ -333,7 +333,6 @@ EXTERN_MSC int GMT_mgd77header (void *V_API, int mode, void *args) {
 				dx = dlon * cosd (0.5 * (this_lat + last_lat));
 				dy = this_lat - last_lat;
 				ds = GMT->current.proj.DIST_KM_PR_DEG * hypot (dx, dy);
-				this_dist += ds;
 			}
 			ymin = MIN (this_lat, ymin);
 			ymax = MAX (this_lat, ymax);

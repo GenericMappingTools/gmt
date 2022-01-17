@@ -4821,7 +4821,7 @@ GMT_LOCAL int gmtinit_parse_genper_modern (struct GMT_CTRL *GMT, char *args, boo
 		unsigned int pos = 0, n_errors = 0, nlen;
 		char txt[GMT_LEN256] = {""}, W[GMT_LEN256] = {""}, H[GMT_LEN256] = {""};
 		while (gmt_getmodopt (GMT, 'J', c, GMT_GENPER_MODIFIERS, &pos, txt, &n_errors) && n_errors == 0) {
-			nlen = strlen(txt);
+			nlen = (unsigned int)strlen(txt);
 			switch (txt[0]) {
 				case 'a':	/* View azimuth */
 					if (strchr ("lL", txt[nlen-1])) {	/* Undocumented trailing l|L to set this variable */
@@ -8652,7 +8652,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	unsigned int i, icol, pos, error = 0, n_slash = 0, first = 0;
 	int got, col_type[2], expect_to_read;
 	size_t length;
-	bool inv_project = false, scale_coord = false, got_r, got_country, no_T = false, done[3] = {false, false, false};
+	bool inv_project = false, scale_coord = false, got_r, got_country, done[3] = {false, false, false};
 	char text[GMT_BUFSIZ] = {""}, item[GMT_BUFSIZ] = {""}, string[GMT_BUFSIZ] = {""}, r_unit = 0, *c = NULL, *d = NULL, *ptr = NULL;
 	double p[6];
 
@@ -8827,8 +8827,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		strncpy (string, &item[1], GMT_BUFSIZ-1);
 		GMT->current.io.geo.range = (item[0] == 'g') ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 	}
-	else if ((isupper ((int)item[0]) && isupper ((int)item[1])) || item[0] == '=' || strchr (item, ',')) {
-		/* Region specified via country codes with optional round off/extension, e.g., -RNO+r1 or -R=EU */
+	else if (isalpha ((int)item[0]) || item[0] == '=' || strchr (item, ',')) {
+		/* Region specified via country codes or named regions with optional round off/extension, e.g., -RNO+r1 or -R=EU or -R"Middle East" */
 		struct GMT_DCW_SELECT info;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Got country code for region (%s)\n", item);
 		gmt_M_memset (&info, 1, struct GMT_DCW_SELECT);	/* To ensure it is all NULL, 0 */
@@ -8836,11 +8836,6 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		(void) gmt_DCW_operation (GMT, &info, GMT->common.R.wesn, GMT_DCW_REGION);	/* Get region */
 		gmt_DCW_free (GMT, &info);
 		if (fabs (GMT->common.R.wesn[XLO]) > 1000.0) return (GMT_MAP_NO_REGION);
-		if (strstr (item, "=AN")) {	/* Antarctica is the only polar cap polygon so w,e,s must be reset */
-			GMT->common.R.wesn[XLO] = -180.0;
-			GMT->common.R.wesn[XHI] = +180.0;
-			GMT->common.R.wesn[YLO] = -90.0;
-		}
 		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
 			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 		else
@@ -8926,10 +8921,9 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			else
 				icol = i/2;
 			if (icol < 2 && GMT->current.setting.io_lonlat_toggle[GMT_IN]) icol = 1 - icol;	/* col_types were swapped */
-			maybe_time = gmtlib_maybe_abstime (GMT, text, &no_T);	/* Will flag things like 1999-12-03 or 2000/09/4 as abstime with missing T */
+			maybe_time = gmtlib_maybe_abstime (GMT, text);	/* Will flag things like 1999-12-03 or 2000/09/4 as abstime with missing T */
 			if (maybe_time || gmt_M_type (GMT, GMT_IN, icol) == GMT_IS_UNKNOWN || gmt_M_type (GMT, GMT_IN, icol) == GMT_IS_FLOAT) {	/* Because abstime specs must be parsed carefully we must do more checking */
 				/* Here, -J or -f may have ben set, proceed with caution */
-				if (no_T) strcat (text, "T");	/* Add the missing trailing 'T' in an ISO date */
 				got = gmt_scanf_arg (GMT, text, GMT_IS_UNKNOWN, true, &p[i]);
 				if (got == GMT_IS_LON || got == GMT_IS_LAT)	/* If clearly lon or lat we say so */
 					gmt_set_column_type (GMT, GMT_IN, icol, got), done[icol] = true;
@@ -14431,9 +14425,9 @@ GMT_LOCAL unsigned int gmtinit_strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, 
 	/* Separate out any region-specific parts from one or more -E arguments and
 	 * pass those separately to a new -R instead (if -R not given).
 	 * Return code is bitflags:
-	 *	0 : No _r|R or +l|L given, most likely just setting countries and implicitly -R
+	 *	0 : No _r|R or +l|L|n given, most likely just setting countries and implicitly -R
 	 * 	1 : Found a region-modifying modifier +r or +R
-	 * 	2 : Found a list-request +l or +L.  Not plotting or region desired.
+	 * 	2 : Found a list-request +l, +L, or +n.  Not plotting or region desired.
 	 */
 	char p[GMT_LEN256] = {""}, *c = NULL;
 	char e_code[GMT_LEN256] = {""}, r_opt[GMT_LEN128] = {""};
@@ -14450,7 +14444,7 @@ GMT_LOCAL unsigned int gmtinit_strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, 
 		if (c) {	/* Now process the modifiers */
 			c[0] = '+';	/* Unhide the modifiers */
 			pos = 0;	/* Initialize position counter for this string */
-			while (gmt_getmodopt (GMT, 'E', c, "lLcCgprRwz", &pos, p, &n_errors) && n_errors == 0) {
+			while (gmt_getmodopt (GMT, 'E', c, "lLncCgprRwz", &pos, p, &n_errors) && n_errors == 0) {
 				switch (p[0]) {
 					case 'r': case 'R':
 						if (r_opt[0] == 0) {	/* Only set this once */
@@ -14458,7 +14452,7 @@ GMT_LOCAL unsigned int gmtinit_strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, 
 						}
 						break;
 					case 'w': break;	/* Do nothing with defunct +w that was never documented anyway */
-					case 'l': case 'L':
+					case 'l': case 'L': case 'n':
 						answer |= 2;
 						/* Intentionally fall through - set this flag then fall through on purpose to default */
 					default: strcat (e_code, "+"); strcat (e_code, p); break;	/* Append as is */

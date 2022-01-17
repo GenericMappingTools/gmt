@@ -548,8 +548,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 	}
 
 	if ((error = gmt_DCW_list (GMT, &(Ctrl->E.info)))) {	/* This is either success or failure... */
-		if (error != GMT_DCW_LIST) n_errors++;	/* Not good */
-		else return NOT_REALLY_AN_ERROR;	/* If +l|L was given we list countries and return a fake error that will be replaced by 0 */
+		if (error != GMT_DCW_LIST)
+			return (1);	/* Not good */
+		else
+			return NOT_REALLY_AN_ERROR;	/* If +l|L was given we list countries and return a fake error that will be replaced by 0 */
 	}
 
 	if (!GMT->common.J.active) {	/* So without -J we can only do -M or report region only */

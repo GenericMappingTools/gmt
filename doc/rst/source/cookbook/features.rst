@@ -2110,7 +2110,7 @@ supply suitable required and optional modifiers:
 
    Color bar placed beneath a map (here truncated).  We extended the bar to show background and foreground
    colors, and used the frame-annotation machinery to add labels.  The bar was placed with
-   **-D**\ *JBC*\ **+o**\ 0/0.35i\ **+w**\ 4.5i/0.1i\ **+h**.
+   **-D**\ *JBC*\ **+e**.
 
 .. toggle::
 
