@@ -23,7 +23,7 @@ Synopsis
 [ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
 [ |-M| ]
 [ |-N| ]
-[ |-Q|\ [*color*] ]
+[ |-Q|\ [*color*][**+z**\ *value*] ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -168,9 +168,10 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*color*]
+**-Q**\ [*color*][**+z**\ *value*]
     Make grid nodes with NaN values transparent, using the color-masking
     feature in PostScript Level 3 (the PS device must support PS Level 3).
+    Use **+z** to select another grid value than NaN.
     If input is instead an image then black pixels are set to be transparent;
     append an alternate color to select another pixel value to be transparent.
 
