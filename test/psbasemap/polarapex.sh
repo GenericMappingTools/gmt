@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DVC_TEST
 
 gmt begin polarapex ps
   gmt subplot begin 4x3 -Fs2i -Bafg -M3p -X1.25c -R0/360/0/1 -JP2i
