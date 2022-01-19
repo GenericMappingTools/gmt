@@ -45,8 +45,8 @@
  * false warnings go aaway and we can better notice actual warnings due to new implementation changes.
  * P. Wessel, Jan-17-2022. */
 
-#if _WIN32
-typedef int openmp_int;             /* Must force signed integers due to OpenMP 2.0 */
+#if _MSC_VER
+typedef int openmp_int;             /* Must force signed integers due to OpenMP 2.0 in MicroSoft VisualStudio */
 #else
 typedef unsigned int openmp_int;    /* This matches our actual variables in GMT, mostly */
 #endif
