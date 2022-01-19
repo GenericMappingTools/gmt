@@ -95,7 +95,7 @@ GMT_LOCAL bool gmtdcw_need_refresh (struct GMT_CTRL *GMT, char *fpath) {
 	char this_version[GMT_LEN16] = {""}, cloud_version[GMT_LEN16] = {""};
 	char path[PATH_MAX] = {""};
 	int tmajor, tminor, tpatch = 0, cmajor, cminor, cpatch = 0;
-	int cdfid, err;
+	int cdfid;
 
 	if (gmt_nc_open (GMT, fpath, NC_NOWRITE, &cdfid)) return true;	/* fpath is dcw-gmt.nc so if not found we have work to do */
 	/* Get version attribute */
@@ -146,8 +146,7 @@ GMT_LOCAL bool gmtdcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, 
 		char remote_path[PATH_MAX] = {""};
 		/* First check what the DCW version is on the server */
 		sprintf (path, "%s/geography/dcw/VERSION", GMT->session.USERDIR);
-		action = gmtlib_refresh_file (GMT->parent, path);
-		if (action == GMT_NOTSET) return false;
+		if ((action = gmtlib_refresh_file (GMT->parent, path)) == GMT_NOTSET) return false;
 		if (action == GMT_YES_DOWNLOAD) {	/* Update the VERSION file before checking version */
 			sprintf (path, "%s/geography/dcw", GMT->session.USERDIR);	/* Local directory destination */
 			if (access (path, R_OK) && gmt_mkdir (path)) {	/* Must first create the directory */

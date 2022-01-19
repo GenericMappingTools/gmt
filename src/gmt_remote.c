@@ -856,8 +856,6 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 	 * so that they must be downloaded again to get the new versions.
 	 */
 	int action;
-	struct stat buf;
-	time_t mod_time, right_now = time (NULL);	/* Unix time right now */
 	char indexpath[PATH_MAX] = {""}, old_indexpath[PATH_MAX] = {""}, new_indexpath[PATH_MAX] = {""}, url[PATH_MAX] = {""};
 	const char *index_file = (index == GMT_HASH_INDEX) ? GMT_HASH_SERVER_FILE : GMT_INFO_SERVER_FILE;
 	struct LOCFILE_FP *LF = NULL;
@@ -893,8 +891,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 
 	/* Here we have the existing index file and its path is in indexpath. Check how old it is */
 
-	action = gmtlib_refresh_file (API, indexpath);
-	if (action == GMT_NOTSET) return 1;
+	if ((action = gmtlib_refresh_file (API, indexpath)) == GMT_NOTSET) return 1;
 
 	if (action == GMT_YES_DOWNLOAD) {	/* Older than selected number of days; Time to get a new index file */
 		GMT_Report (API, GMT_MSG_DEBUG, "File %s older than 24 hours, get latest from server.\n", indexpath);
