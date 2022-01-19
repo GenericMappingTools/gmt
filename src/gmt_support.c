@@ -13694,16 +13694,16 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		}
 		else if (strchr (string, '%')) {	/* Got size in percentage of map width */
 			ms->size = atof (string);
-			ms->mode = GMT_ROSE_WIDTH_VAR;
+			ms->mode = GMT_ROSE_SIZE_VAR;
 		}
 		else {	/* Fixed width given */
 			ms->size = gmt_M_to_inch (GMT, string);
-			ms->mode = GMT_ROSE_WIDTH_SET;
+			ms->mode = GMT_ROSE_SIZE_SET;
 		}
 	}
 	else {	/* Compute once map width is known */
 		ms->size = (ms->type == GMT_ROSE_MAG) ? GMT_MAG_ROSE_DEF_WIDTH : GMT_DIR_ROSE_DEF_WIDTH;
-		ms->mode = GMT_ROSE_WIDTH_VAR;
+		ms->mode = GMT_ROSE_SIZE_VAR;
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'd', string)) {	/* Want magnetic directions */
 		if (ms->type != GMT_ROSE_MAG) {

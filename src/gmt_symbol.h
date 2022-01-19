@@ -51,8 +51,8 @@
 #define GMT_DIR_ROSE_DEF_WIDTH	8.0
 
 enum gmt_rose_mode {
-	GMT_ROSE_WIDTH_SET	= 0,	/* If width was given via +w */
-	GMT_ROSE_WIDTH_VAR	= 1,	/* Width set in percent */
+	GMT_ROSE_SIZE_SET	= 0,	/* If size was given via +w */
+	GMT_ROSE_SIZE_VAR	= 1,	/* Width set in percent */
 	GMT_ROSE_OFF_SET	= 2,	/* Offset +o was set */
 	GMT_ROSE_INT_SET	= 4		/* Intervals +t was set */
 };

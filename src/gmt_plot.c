@@ -7197,10 +7197,10 @@ void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {
 	double dim[2];
 	if (!mr->plot) return;
 
-	if (mr->mode & GMT_ROSE_WIDTH_VAR) {   /* Now compute width from map width and desired percentage to nearest integer point */
-		int psize = irint (mr->size * 0.01 * GMT->current.map.width * 72.0);	/* In points */
+	if (mr->mode & GMT_ROSE_SIZE_VAR) {   /* Now compute width from sqrt of map area and desired percentage to nearest integer point */
+		int psize = irint (mr->size * 0.01 * sqrt (GMT->current.map.width * GMT->current.map.height) * 72.0);	/* In points */
 		mr->size = psize / 72.0;	/* Back to inches */
-		mr->mode -= GMT_ROSE_WIDTH_SET;
+		mr->mode -= GMT_ROSE_SIZE_SET;
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Map rose size default to %d pt\n", psize);
 	}
 	if (GMT->current.setting.map_embellishment_mode && ((mr->mode & GMT_ROSE_OFF_SET) == 0)) {   /* Now compute reasonable offsets */
