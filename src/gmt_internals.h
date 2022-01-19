@@ -53,6 +53,7 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC int gmtlib_refresh_file (struct GMTAPI_CTRL *API, char *file);
 EXTERN_MSC void gmtlib_terminate_session ();
 EXTERN_MSC unsigned int gmtlib_pick_in_col_number (struct GMT_CTRL *GMT, unsigned int col, unsigned int *col_pos_in);
 EXTERN_MSC bool gmtlib_set_do_seconds (struct GMT_CTRL *GMT, double inc);
