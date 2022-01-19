@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DVC_TEST
 # Test new implementation of -JP modifiers
 gmt begin azim_radial ps
 	gmt set FONT_ANNOT_PRIMARY 5p MAP_TICK_LENGTH_PRIMARY 2p MAP_ANNOT_OFFSET_PRIMARY 2p FONT_TITLE 12p

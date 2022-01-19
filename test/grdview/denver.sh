@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-#
+# DVC_TEST
+# 
 # Purpose: 3-D view of Colorado DEM with shade from large spacecraft over Denver
 
 ps=denver.ps

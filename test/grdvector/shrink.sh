@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DVC_TEST
 # Test shrinking of line and heads with/without +n for grdvector
 ps=shrink.ps
 gmt grdmath -R0/360/-30/60 -I30/30 -r 7 X MUL = x.nc
