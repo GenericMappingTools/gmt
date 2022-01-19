@@ -223,7 +223,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Flags are a|f|s.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Flags are a|t|s.\n");
 						break;
 				}
 				break;

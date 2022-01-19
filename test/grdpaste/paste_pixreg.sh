@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#
+# DVC_TEST
 # Paste pixel registered grids along X & Y
 
 ps=paste_pixreg.ps

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DVC_TEST
 # Testing gmt grdcut -S for 3 different points
 
 ps=origin.ps
