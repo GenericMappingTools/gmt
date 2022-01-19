@@ -52,8 +52,8 @@
 #define GMT_di_OPT	"-di<nodata>[+c<col>]"
 #define GMT_do_OPT	"-do<nodata>[+c<col>]"
 #define GMT_ho_OPT	"-ho[<nrecs>][+c][+d][+m<segheader>][+r<remark>][+t<title>]"
-#define GMT_qi_OPT	"-qi[~]<rows>|<limits>[,...][+c<col>][+a|f|s]"
-#define GMT_qo_OPT	"-qo[~]<rows>|<limits>[,...][+c<col>][+a|f|s]"
+#define GMT_qi_OPT	"-qi[~]<rows>|<limits>[,...][+c<col>][+a|t|s]"
+#define GMT_qo_OPT	"-qo[~]<rows>|<limits>[,...][+c<col>][+a|t|s]"
 #define GMT_PAR_OPT	"--PAR=<value>"
 
 #ifdef GMT_MP_ENABLED
@@ -88,8 +88,8 @@
 
 /* Argument for segmentation option */
 
-#define GMT_SEGMENTIZE3	"[c|n|p][a|f|s|r|<refpoint>]"
-#define GMT_SEGMENTIZE4	"[c|n|p|v][a|f|s|r|<refpoint>]"
+#define GMT_SEGMENTIZE3	"[c|n|p][a|t|s|r|<refpoint>]"
+#define GMT_SEGMENTIZE4	"[c|n|p|v][a|t|s|r|<refpoint>]"
 
 /* Argument to *contour programs */
 
@@ -135,7 +135,7 @@
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>]"
 #endif
 #define GMT_o_OPT	"-o<cols>[,...][,t[<word>]]"
-#define GMT_q_OPT	"-q[i|o][~]<rows>[,...][+c<col>][+a|f|s]"
+#define GMT_q_OPT	"-q[i|o][~]<rows>[,...][+c<col>][+a|t|s]"
 #define GMT_p_OPT	"-p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>]][+v<x0>/<y0>]"
 #define GMT_r_OPT	"-r[g|p]"
 #define GMT_s_OPT	"-s[<cols>][+a][+r]"

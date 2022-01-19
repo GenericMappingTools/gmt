@@ -227,7 +227,7 @@ GMT_LOCAL unsigned int gmtio_is_segment_header (struct GMT_CTRL *GMT, char *line
 
 /*! . */
 static inline bool gmtio_outside_in_row_range (struct GMT_CTRL *GMT, int64_t row) {
-	/* Returns true of this row should be skipped according to -qi[~]<rows>,...[+a|f|s] */
+	/* Returns true of this row should be skipped according to -qi[~]<rows>,...[+a|t|s] */
 	bool pass;
 	if (GMT->common.q.mode != GMT_RANGE_ROW_IN) return false;	/* -qi<rows> not active */
 	pass = GMT->common.q.inverse[GMT_IN];
