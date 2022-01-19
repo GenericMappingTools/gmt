@@ -9485,7 +9485,7 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 
 /*! Routine to decode the [~]<row>|<rowrange>|,... arguments */
 GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int direction, char *arg) {
-	/* Any modifiers +a|f|s have been stripped off by now */
+	/* Any modifiers +a|t|s have been stripped off by now */
 	char p[GMT_LEN64] = {""};
 	unsigned int pos = 0, n = 0, j = 0;
 	struct GMT_ROW_RANGE *R = NULL;
@@ -9539,7 +9539,7 @@ GMT_LOCAL int gmtinit_parse_q_option_z (struct GMT_CTRL *GMT, unsigned int direc
 	return (GMT_NOERROR);
 }
 
-/*! Routine will decode the -q[i|o\[<row>|<rowrange>|,...[+a|f|s] arguments */
+/*! Routine will decode the -q[i|o\[<row>|<rowrange>|,...[+a|t|s] arguments */
 GMT_LOCAL int gmtinit_parse_q_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char *c = NULL;
@@ -9560,10 +9560,10 @@ GMT_LOCAL int gmtinit_parse_q_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.q.mode = GMT_RANGE_DATA_IN + 2 * direction;	/* Mode flag is 2 (input range) or 4 (output range) */
 	}
 	else {	/* Got -q for integer rows */
-		if ((c = strstr (arg, "+a")) || (c = strstr (arg, "+f")) || (c = strstr (arg, "+s"))) {
+		if ((c = strstr (arg, "+a")) || (c = strstr (arg, "+f")) || (c = strstr (arg, "+t")) || (c = strstr (arg, "+s"))) {
 			switch (c[1]) {
 				case 'a': GMT->common.q.rec = &(GMT->current.io.data_record_number_in_set[direction]);	break; /* For the whole data set */
-				case 'f': GMT->common.q.rec = &(GMT->current.io.data_record_number_in_tbl[direction]);	break; /* Reset counter per table */
+				case 't': case 'f': GMT->common.q.rec = &(GMT->current.io.data_record_number_in_tbl[direction]);	break; /* Reset counter per table (backwards compat for +f file) */
 				case 's': GMT->common.q.rec = &(GMT->current.io.data_record_number_in_seg[direction]);	break; /* Reset counter per segment */
 				default: break;	/* Cannot get here but Coverity does not know that... */
 			}
@@ -9593,9 +9593,9 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int mode, struct GMT_SEGMENTIZE *S) {
 	/* Parse segmentizing options in gmt convert (mode == 0) or psxy (mode == 1).
 	 * Syntax is given below (assuming option = -F here):
-	 * -F<scheme><method: i.e., -F[c|n|p[<origin>|v][a|f|s|r] or -Fp<origin>
+	 * -F<scheme><method: i.e., -F[c|n|p[<origin>|v][a|t|s|r] or -Fp<origin>
 	 * where <scheme> is c = continuous [Default], n = network, r = reference point, and v = vectors.
-	 * and impact is a = all files, f = per file, s = per segment [Default], r = per record.
+	 * and impact is a = all tables, t = per table, s = per segment [Default], r = per record.
 	 * Four different segmentizing schemes:
 	 * 1) -Fc: Continuous lines.  By default, lines are drawn on a segment by segment basis.
 	 *    Thus, -F or -Fc or -Fcs or -Fs is the standard default.  However, if we use
@@ -9607,15 +9607,15 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 	 *   The modifiers a,f,s control what the "group" is.  With s, we construct a separate
 	 *   network for each segment, with f we group all segments in a file and construct a
 	 *   network for all those points, while with a with consider all points in the dataset
-	 *   to be one group. So only a|f|s is allowed.
+	 *   to be one group. So only a|t|s is allowed.
 	 * 3) -Fp: Ref point.  Here, we construct line segments from the given reference point to
 	 *   each of the points in the file.  If refpoint is given as two slash-separated coordinates
 	 *   then the refpoint is fixed throughout this construction.  However, refpoint may also be
 	 *   given as a, f, s and if so we pick the first point in the dataset, or first point in each
 	 *   file, or the first point in each segment to update the actual reference point.
 	 * 4) -Fv: Vectorize.  Here, consecutive points are turned into vector segments such as used
-	 *   by psxy -Sv+s or external applications.  Again, appending a|f|s controls if we should
-	 *   honor the segment headers [Default is -Fvs if -Fv is given]. Only a|f|s is allowed.
+	 *   by psxy -Sv+s or external applications.  Again, appending a|t|s controls if we should
+	 *   honor the segment headers [Default is -Fvs if -Fv is given]. Only a|t|s is allowed.
 	 */
 
 	unsigned int k, errors = 0;
@@ -9630,7 +9630,7 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 	switch (in_arg[k]) {	/* Now set level */
 		case 's': case '\0': S->level = SEGM_SEGMENT;	break;	/* Default is segment */
 		case 'a': S->level = SEGM_DATASET;	break;
-		case 'f': S->level = SEGM_TABLE;	break;
+		case 't': case 'f': S->level = SEGM_TABLE;	break;	/* Backwards compatibility for f(ile) */
 		case 'r': S->level = SEGM_RECORD;	break;
 		default:	/* Must be a reference point but only if method is refpoint */
 			if (S->method == SEGM_REFPOINT && strchr (in_arg, '/')) {	/* Gave arguments for an origin */

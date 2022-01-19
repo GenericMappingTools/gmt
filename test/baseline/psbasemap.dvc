@@ -1,0 +1,5 @@
+outs:
+- md5: 2b1e8f8176be5e02dbe5c5b0c61e3588.dir
+  size: 362201
+  nfiles: 4
+  path: psbasemap
