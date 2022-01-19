@@ -572,7 +572,12 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	if (gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file)) Return (GMT_RUNTIME_ERROR);
 
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
-	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && gmt_M_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing since nan_proxy is NaN... */
+	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN]) {
+		if (gmt_M_is_fnan (no_data_f))	/* No point testing since nan_proxy is NaN... */
+			GMT->common.d.active[GMT_IN] = false;
+		else if (GMT->common.d.first_col[GMT_IN] == GMT_Z)	/* Change the default to the only column available */
+			GMT->common.d.first_col[GMT_IN] = GMT_X;
+	}
 
 	if (Ctrl->Z.active) {	/* Need to override input method since reading single input column as z (not x,y) */
 		zcol = GMT_X;
