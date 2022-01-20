@@ -574,8 +574,10 @@ GMT_LOCAL unsigned int pscoupe_parse_old_A (struct GMT_CTRL *GMT, struct PSCOUPE
 		n = sscanf (&arg[1], "%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf",
 			&Ctrl->A.lon1, &Ctrl->A.lat1, &Ctrl->A.PREF.str, &Ctrl->A.p_length, &Ctrl->A.PREF.dip, &Ctrl->A.p_width, &Ctrl->A.dmin, &Ctrl->A.dmax);
 	}
-	if (n != 8)
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Parsing of old format %s only recovered %d items but 8 was expected - formatting/unexpected unit problem?\n", &arg[1], n);
+	if (n != 8) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Parsing of old format %s only recovered %d items but 8 was expected - formatting/unexpected unit problem?\n", &arg[1], n);
+		return GMT_PARSE_ERROR;
+	}
 
 	return GMT_NOERROR;
 }
