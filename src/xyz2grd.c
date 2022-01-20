@@ -318,7 +318,7 @@ GMT_LOCAL void xyz2grd_protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *opt
 EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	bool previous_bin_i = false, previous_bin_o = false;
 	int error = 0, scol, srow;
-	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1;
+	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1, was;
 	uint64_t n_empty = 0, n_confused = 0;
 	uint64_t ij, ij_gmt, n_read, n_filled = 0, n_used = 0, n_req;
 
@@ -572,7 +572,13 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	if (gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file)) Return (GMT_RUNTIME_ERROR);
 
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
-	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && gmt_M_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing since nan_proxy is NaN... */
+	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN]) {
+		was = GMT->common.d.first_col[GMT_IN];
+		if (gmt_M_is_fnan (no_data_f))	/* No point testing since nan_proxy is NaN... */
+			GMT->common.d.active[GMT_IN] = false;
+		else if (GMT->common.d.first_col[GMT_IN] == GMT_Z)	/* Change the default to the only column available */
+			GMT->common.d.first_col[GMT_IN] = GMT_X;
+	}
 
 	if (Ctrl->Z.active) {	/* Need to override input method since reading single input column as z (not x,y) */
 		zcol = GMT_X;
@@ -722,6 +728,8 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	if (Ctrl->Z.active) {
 		GMT->current.io.input = save_i;	/* Reset pointer */
 		GMT->common.b.active[GMT_IN] = previous_bin_i;	/* Reset binary */
+		if (GMT->common.d.active[GMT_IN])	/* Reset column */
+			GMT->common.d.first_col[GMT_IN] = was;
 		if (ij != io.n_expected) {	/* Input amount does not match expectations */
 			GMT_Report (API, GMT_MSG_ERROR, "Found %" PRIu64 " records, but %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
 				GMT_Report (API, GMT_MSG_ERROR, "(You are probably misterpreting xyz2grd with an interpolator; see 'surface' man page)\n");
