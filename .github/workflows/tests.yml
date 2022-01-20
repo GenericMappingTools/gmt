@@ -4,7 +4,7 @@
 name: Tests
 
 on:
-  pull_request:
+  # pull_request:
   push:
     branches:
       - master
@@ -173,6 +173,6 @@ jobs:
           path: build/
         if: failure()
 
-#      - name: Upload test coverage
-#        run: bash <(curl -s https://codecov.io/bash)
-#        if: ${{ always() }}
+      - name: Upload test coverage
+        run: bash <(curl -s https://codecov.io/bash)
+        if: ${{ always() }}
