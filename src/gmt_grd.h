@@ -42,7 +42,7 @@
  * sign/unsigned mismatches due to the forced signed int loop variables.  I have updated all places
  * where these macros are used and where OpenMP is used and where it may be used in the near future,
  * so that things are properly cast to openmp_int, whatever that may be set to be.  With this, the
- * false warnings go aaway and we can better notice actual warnings due to new implementation changes.
+ * false warnings go away and we can better notice actual warnings due to new implementation changes.
  * P. Wessel, Jan-17-2022. */
 
 #if _MSC_VER
