@@ -49,6 +49,8 @@
 /* Default width of a map roses are 15 and 10 % of map width */
 #define GMT_MAG_ROSE_DEF_WIDTH	15.0
 #define GMT_DIR_ROSE_DEF_WIDTH	10.0
+/* Default size-depending embellishment offset (10% of size) */
+#define GMT_EMBELLISHMENT_OFFSET	10.0
 
 enum gmt_rose_mode {
 	GMT_ROSE_SIZE_SET	= 0,	/* If size was given via +w */

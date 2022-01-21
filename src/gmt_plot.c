@@ -7253,7 +7253,7 @@ void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Map rose size default to %d pt\n", psize);
 	}
 	if (GMT->current.setting.map_embellishment_mode && ((mr->mode & GMT_ROSE_OFF_SET) == 0)) {   /* Now compute reasonable offsets */
-		int psize = irint (mr->size * 0.1 * 72.0);	/* 10% of size in points */
+		int psize = irint (mr->size * 0.01 * GMT_EMBELLISHMENT_OFFSET * 72.0);	/* 10% of size in points rounded to nearest point */
 		mr->off[GMT_X] = mr->off[GMT_Y] = psize / 72.0;	/* Back to inches */
 		mr->mode -= GMT_ROSE_OFF_SET;
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Map rose margin default to %d pt\n", psize);
