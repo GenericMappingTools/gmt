@@ -647,19 +647,18 @@ EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	}
 
 #ifdef _OPENMP
-#pragma omp parallel for private(row,col,k,ij) shared(GMT,Grid,Ctrl)
+#pragma omp parallel for private(rowu,colu,k,ij) shared(GMT,Grid,Ctrl)
 #endif
 
 	gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {	/* Turn levels into mask values */
 		k = urint (Grid->data[ij]);
 		Grid->data[ij] = Ctrl->N.mask[k];
 		count[k]++;
-		if (col == 0 && double_dip) count[k]++;	/* Count these guys twice */
+		if (colu == 0 && double_dip) count[k]++;	/* Count these guys twice */
 	}
 
 	if (double_dip) { /* Copy over values to the repeating right column */
-		openmp_int row_l;
-		for (row_l = 0, ij = gmt_M_ijp (Grid->header, row_l, 0); row_l < (openmp_int)Grid->header->n_rows; row_l++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
+		for (rowu = 0, ij = gmt_M_ijp (Grid->header, rowu, 0); rowu < (openmp_int)Grid->header->n_rows; rowu++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
 	}
 
 	if (temp_shift) {
