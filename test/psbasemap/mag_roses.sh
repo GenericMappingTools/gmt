@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Demonstrate alignment/offset of magnetic compasses with label shifts computed in PSL
 # While an automatic size could be set, since we use tiny subplots here we select
-# a larger size for visibility
+# a larger size for visibility (here 2.5cm ~ 1 inch).
 
 gmt begin mag_roses
 	gmt set MAP_FRAME_TYPE plain MAP_FRAME_PEN faint
