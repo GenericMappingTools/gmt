@@ -3515,7 +3515,7 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	bool adjust = (GMT->current.setting.map_embellishment_mode);	/* A bit shorter to use */
 	unsigned int i, kind, form, just[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR};
 	int k;
-	double angle, title_size, txt_offset, L[4], R[4], x[PSL_MAX_DIMS], y[8], xp[8], yp[8], tx[3], ty[3];
+	double angle, title_size, txt_offset, L[4], R[4], x[PSL_MAX_DIMS], y[PSL_MAX_DIMS], xp[PSL_MAX_DIMS], yp[PSL_MAX_DIMS], tx[3], ty[3];
 	double lon, lat, s, c, rot[4] = {0.0, 45.0, 22.5, -22.5};
 	struct GMT_FILL f;
 
@@ -3528,6 +3528,14 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	gmt_xy_to_geo (GMT, &lon, &lat, mr->refpoint->x, mr->refpoint->y);
 	angle = gmt_azim_to_angle (GMT, lon, lat, DIST_TO_2ND_POINT, 90.0);	/* Get angle of E-W direction at this location */
 
+#ifdef DEBUG
+	{
+		char *this_c = NULL;
+		if ((this_c = getenv ("GMT_FAKE_ANGLE")) != NULL)
+			angle = atof (this_c);
+	}
+#endif
+	if (angle < 0.0) angle += 360.0;	if (angle >= 360.0) angle -= 360.0;
 	gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 
 	PSL_command (PSL, "V\n");	/* Place the rose under gsave/grestore */
@@ -3592,20 +3600,54 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 			y[1] = y[3] = 0.0, y[2] = L[0] + txt_offset; y[0] = -y[2];
 			gmtlib_rotate2D (GMT, x, y, 4, mr->refpoint->x, mr->refpoint->y, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_title);
+			if (mr->align) {	/* Make sure text is readable from south */
+				if (angle < -90.0 || (angle > 90.0 && angle < 270.0)) {	/* Flip */
+					angle += 180.0;
+					just[0] = PSL_BC; just[1] = PSL_MR; just[2] = PSL_TC; just[3] = PSL_ML;
+				}
+			}
 			for (i = 0; i < 4; i++) PSL_plottext (PSL, xp[i], yp[i], title_size, mr->label[i], angle, just[i], form);
 		}
 	}
 	else {			/* Plain North arrow w/circle */
+		int np, hh = mr->justify % 4 - 2, vv = mr->justify / 4 - 1;	/* Horizontal and vertical shift indicators */
+		double xc[PSL_MAX_DIMS], yc[PSL_MAX_DIMS];
 		PSL_comment (PSL, "Draw plain directional rose\n");
-		/* Set default offset size in modern mode based on rose size - or honor setting in classic mode */
 		txt_offset = (adjust) ? ROSE_OFFSET_SCL * title_size / 72.0 : GMT->current.setting.map_annot_offset[GMT_PRIMARY];
-		if (mr->label[2][0] && mr->justify >= PSL_TL) {	/* Must make space for N text */
-			mr->refpoint->y -= txt_offset;	/* We know the offset exactly */
-			PSL_deftextdim (PSL, "-h", title_size, mr->label[2]);	/* Get label height and place on PSL stack */
-			PSL_command (PSL, "neg 0 exch T\n");	/* Shift y-origin further down by that amount */
+		/* First compute the symbol bounding polygon in unrotated coordinates */
+		gmt_M_memset (xc, PSL_MAX_DIMS, double);
+		gmt_M_memset (yc, PSL_MAX_DIMS, double);
+		/* Note: (0,0) is the center of the symbol, were the EW and NS lines cross */
+		if (mr->label[2][0]) {	/* Make 9-pointed polygon enclosing cross and letter N */
+			xc[8] = -0.25 * mr->size;	xc[1] = -xc[8];	xc[3] = xc[4] = 0.5 * title_size * GMT_LET_WIDTH / 72.0;	xc[5] = xc[6] = -xc[3];
+			yc[0] = -0.5 * mr->size;	yc[2] = yc[7] = -yc[0];	yc[3] = yc[6] = yc[2] + txt_offset;	yc[4] = yc[5] = yc[3] + title_size * GMT_LET_HEIGHT / 72.0;
+			np = 9;
 		}
-		sincosd (angle, &s, &c);
+		else {	/* No letter and offset, just the diamond shape */
+			xc[3] = -0.25 * mr->size;	xc[1] = -xc[3];
+			yc[0] = -0.5 * mr->size;	yc[2] = -yc[0];
+			np = 4;
+		}
+		gmtlib_rotate2D (GMT, xc, yc, np, mr->refpoint->x, mr->refpoint->y, angle, xp, yp);	/* Coordinate transformation to rotated polygon */
+		PSL_plotline (PSL, xp, yp, np, PSL_MOVE|PSL_CLOSE);	/* Lay down bounding box path but do not draw it */
+		PSL_command (PSL, "pathbbox N /PSL_ury edef /PSL_urx edef /PSL_lly edef /PSL_llx edef\n");	/* Get bounding box coordinates */
+		PSL_defunits (PSL, "PSL_rose_L", mr->off[GMT_X]);	/* PSL coordinate of left margin */
+		PSL_defunits (PSL, "PSL_rose_B", mr->off[GMT_Y]);	/* PSL coordinate of bottom margin */
+		PSL_defunits (PSL, "PSL_rose_R", GMT->current.map.width - mr->off[GMT_X]);	/* PSL coordinate of right margin */
+		PSL_defunits (PSL, "PSL_rose_T", GMT->current.map.height - mr->off[GMT_Y]);	/* PSL coordinate of top margin */
+		PSL_command (PSL, "0 /PSL_dx edef 0 /PSL_dy edef\n");	/* Initialize origin shifts to (0,0) */
+		if (hh == -1) PSL_command (PSL, "PSL_llx PSL_rose_L gt { PSL_rose_L PSL_llx sub /PSL_dx edef} if\n");	/* Compute shifts if polygon exceeds margin in any direction */
+		if (hh == +1) PSL_command (PSL, "PSL_urx PSL_rose_R lt { PSL_rose_R PSL_urx sub /PSL_dx edef} if\n");
+		if (vv == -1) PSL_command (PSL, "PSL_lly PSL_rose_B gt { PSL_rose_B PSL_lly sub /PSL_dy edef} if\n");
+		if (vv == +1) PSL_command (PSL, "PSL_ury PSL_rose_T lt { PSL_rose_T PSL_ury sub /PSL_dy edef} if\n");
+		PSL_command (PSL, "PSL_llx PSL_rose_L lt { PSL_rose_L PSL_llx sub /PSL_dx edef} if\n");
+		PSL_command (PSL, "PSL_urx PSL_rose_R gt { PSL_rose_R PSL_urx sub /PSL_dx edef} if\n");
+		PSL_command (PSL, "PSL_lly PSL_rose_B lt { PSL_rose_B PSL_lly sub /PSL_dy edef} if\n");
+		PSL_command (PSL, "PSL_ury PSL_rose_T gt { PSL_rose_T PSL_ury sub /PSL_dy edef} if\n");
+		PSL_command (PSL, "PSL_dx PSL_dy T\n");	/* Now do the shift, if any */
+		/* BUild coordinates for the plain symbol */
 		gmt_M_memset (x, PSL_MAX_DIMS, double);
+		gmt_M_memset (y, PSL_MAX_DIMS, double);
 		x[0] = x[1] = x[4] = 0.0, x[2] = -0.25 * mr->size, x[3] = -x[2];
 		y[0] = -0.5 * mr->size, y[1] = -y[0], y[2] = y[3] = 0.0; y[4] = y[1] + txt_offset;
 		gmtlib_rotate2D (GMT, x, y, 5, mr->refpoint->x, mr->refpoint->y, angle, xp, yp);	/* Coordinate transformation and placement of the 4 labels */
@@ -3620,10 +3662,17 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		gmt_setfill (GMT, &f, 1);
 		PSL_plotsymbol (PSL, mr->refpoint->x, mr->refpoint->y, &s, PSL_CIRCLE);
 		PSL_plotsegment (PSL, xp[2], yp[2], xp[3], yp[3]);
-		if (mr->label[2][0]) {	/* Wanted the north label */
+		if (mr->label[2][0]) {  /* Place the north label */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_title);
 			PSL_plottext (PSL, xp[4], yp[4], title_size, mr->label[2], angle, PSL_BC, form);
 		}
+#if 0
+		/* Outline the polygon for debug purposes */
+		gmtlib_rotate2D (GMT, xc, yc, np, mr->refpoint->x, mr->refpoint->y, angle, xp, yp);	/* Coordinate transformation to rotated polygon */
+		PSL_command (PSL, "V 0 W 0 0 1 C\n");
+		PSL_plotline (PSL, xp, yp, np, PSL_MOVE|PSL_CLOSE|PSL_STROKE);	/* Lay down bounding box path */
+		PSL_command (PSL, "U\n");
+#endif
 	}
 	PSL_command (PSL, "U\n");	/* Place the rose under gsave/grestore */
 }
@@ -7198,7 +7247,9 @@ void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {
 	if (!mr->plot) return;
 
 	if (mr->mode & GMT_ROSE_SIZE_VAR) {   /* Now compute width from sqrt of map area and desired percentage to nearest integer point */
-		int psize = irint (mr->size * 0.01 * sqrt (GMT->current.map.width * GMT->current.map.height) * 72.0);	/* In points */
+        //int psize = irint (mr->size * 0.01 * sqrt (GMT->current.map.width * GMT->current.map.height) * 72.0);   /* In points */
+        //int psize = irint (mr->size * 0.01 * 0.5 * (GMT->current.map.width + GMT->current.map.height) * 72.0);   /* In points */
+        int psize = irint (mr->size * 0.01 * MAX (GMT->current.map.width, GMT->current.map.height) * 72.0);   /* In points */
 		mr->size = psize / 72.0;	/* Back to inches */
 		mr->mode -= GMT_ROSE_SIZE_SET;
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Map rose size default to %d pt\n", psize);
@@ -7209,7 +7260,8 @@ void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {
 		mr->mode -= GMT_ROSE_OFF_SET;
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Map rose margin default to %d pt\n", psize);
 	}
-	dim[GMT_X] = dim[GMT_Y] = mr->size;
+	dim[GMT_Y] = mr->size;
+	dim[GMT_X] = (mr->type == GMT_ROSE_DIR_PLAIN) ? 0.5 * mr->size : mr->size;
 	gmt_set_refpoint (GMT, mr->refpoint);	/* Finalize reference point plot coordinates, if needed */
 	gmt_adjust_refpoint (GMT, mr->refpoint, dim, mr->off, mr->justify, PSL_MC);	/* Adjust refpoint to MC */
 

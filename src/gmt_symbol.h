@@ -46,9 +46,9 @@
 #define GMT_FRAME_GAP		2.0	/* In points */
 #define GMT_FRAME_RADIUS	6.0	/* In points */
 
-/* Default width of a map roses are 15 and 8 % of map width */
+/* Default width of a map roses are 15 and 10 % of map width */
 #define GMT_MAG_ROSE_DEF_WIDTH	15.0
-#define GMT_DIR_ROSE_DEF_WIDTH	8.0
+#define GMT_DIR_ROSE_DEF_WIDTH	10.0
 
 enum gmt_rose_mode {
 	GMT_ROSE_SIZE_SET	= 0,	/* If size was given via +w */
@@ -195,6 +195,7 @@ struct GMT_MAP_ROSE {
 	double g_int[2];	/* Tick (small) interval for geographic and magnetic directions */
 	bool plot;		/* true if we want to draw the rose */
 	bool do_label;		/* true if we should plot labels for the rose */
+	bool align;		/* true if we want labels readable from south [default rotates with projection] */
 	bool draw_circle[2];	/* True if we should draw the circle(s) */
 	int justify;		/* Gave justification of rose */
 	unsigned int mode;	/* 0 for given width, 1 for percentage of map width [10%], 2 for offsets given */
