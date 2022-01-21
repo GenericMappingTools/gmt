@@ -5046,12 +5046,12 @@ GMT_LOCAL void gmtplot_plot_vector_head_fill (struct GMT_CTRL *GMT, double *xp, 
 
 
 GMT_LOCAL void gmtplot_plot_vector_head (struct GMT_CTRL *GMT, double *xp, double *yp, uint64_t n, unsigned int side, struct GMT_SYMBOL *S) {
-    if (S->v.v_kind[side] == PSL_VEC_ARROW)
-        gmtplot_plot_vector_head_fill (GMT, xp, yp, n, S);
-    else {  /* Plan arrow */
-        /* Here we just draw the line of the plain arrow */
-        gmt_geo_line (GMT, xp, yp, n);
-    }
+	if (S->v.v_kind[side] == PSL_VEC_ARROW)
+	    gmtplot_plot_vector_head_fill (GMT, xp, yp, n, S);
+	else {  /* Plan arrow */
+	    /* Here we just draw the line of the plain arrow */
+	    gmt_geo_line (GMT, xp, yp, n);
+	}
 }
 
 GMT_LOCAL unsigned int gmtplot_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0, double angle_1, double angle_2, struct GMT_PEN *ppen, struct GMT_SYMBOL *S) {
@@ -5061,7 +5061,7 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_smallcircle (struct GMT_CTRL *GMT, dou
 	 * Head length is longer than 90% of the vector length.  We then skip the head and return 1
 	 * +n<norm> is in effect.  We shrink vector pen and head length.  Still, the shrunk head
 	 * may be longer than 90% of the vector length.  We then shrink head (not pen) further and return 2
-     * Note: Angle_1|2 may be degrees or km, depending on modifier +q.
+	 * Note: Angle_1|2 may be degrees or km, depending on modifier +q.
 	*/
 
 	uint64_t n1, n2, n, add;
@@ -6189,8 +6189,8 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 }
 
 void gmt_xy_axis2 (struct GMT_CTRL *GMT, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, bool below, bool annotate, unsigned side) {
-    /* Only used in psscale.c.  Because gmt_xy_axis does not do gridlines (done in gmt_map_basemap at a higher level),
-     * we do that separately in psscale.c */
+	/* Only used in psscale.c.  Because gmt_xy_axis does not do gridlines (done in gmt_map_basemap at a higher level),
+	 * we do that separately in psscale.c */
 	if (annotate) side |= GMT_AXIS_BARB;
 	gmt_xy_axis (GMT, x0, y0, length, val0, val1, A, below, side);
 }
@@ -7247,9 +7247,7 @@ void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {
 	if (!mr->plot) return;
 
 	if (mr->mode & GMT_ROSE_SIZE_VAR) {   /* Now compute width from sqrt of map area and desired percentage to nearest integer point */
-        //int psize = irint (mr->size * 0.01 * sqrt (GMT->current.map.width * GMT->current.map.height) * 72.0);   /* In points */
-        //int psize = irint (mr->size * 0.01 * 0.5 * (GMT->current.map.width + GMT->current.map.height) * 72.0);   /* In points */
-        int psize = irint (mr->size * 0.01 * MAX (GMT->current.map.width, GMT->current.map.height) * 72.0);   /* In points */
+		int psize = irint (mr->size * 0.01 * MAX (GMT->current.map.width, GMT->current.map.height) * 72.0);   /* In points */
 		mr->size = psize / 72.0;	/* Back to inches */
 		mr->mode -= GMT_ROSE_SIZE_SET;
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Map rose size default to %d pt\n", psize);
@@ -7390,8 +7388,8 @@ GMT_LOCAL void gmtplot_draw_eps_symbol (struct GMT_CTRL *GMT, double x0, double 
 
 GMT_LOCAL bool gmtplot_is_azimuth (struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_CUSTOM_SYMBOL_ITEM *s, unsigned int var_no) {
 	/* We either know a particular column has variable azimuths or we were given a constant angle flagged by a trailing 'a' */
-    if (s->angular == GMT_IS_AZIMUTH) return true; /* Must convert a constant azimuth to Cartesian angle */
-    if (s->is_var[var_no] && symbol->type[s->var[var_no]-1] == GMT_IS_AZIMUTH ) return true; /* Must convert variable azimuth to Cartesian angle */
+	if (s->angular == GMT_IS_AZIMUTH) return true; /* Must convert a constant azimuth to Cartesian angle */
+	if (s->is_var[var_no] && symbol->type[s->var[var_no]-1] == GMT_IS_AZIMUTH ) return true; /* Must convert variable azimuth to Cartesian angle */
 	return false;	/* Got Cartesian angle */
 }
 
@@ -8952,9 +8950,9 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		}
 	}
 
-    if (GMT->common.P.active) GMT->current.setting.ps_orientation = PSL_PORTRAIT;
+	if (GMT->common.P.active) GMT->current.setting.ps_orientation = PSL_PORTRAIT;
 
-    if (GMT->current.setting.run_mode == GMT_CLASSIC && !O_active) {  /* Warn if plot dimensions are larger than current paper size */
+	if (GMT->current.setting.run_mode == GMT_CLASSIC && !O_active) {  /* Warn if plot dimensions are larger than current paper size */
 		unsigned int X = (GMT->current.setting.ps_orientation == PSL_LANDSCAPE);
 		unsigned int Y = (GMT->current.setting.ps_orientation == PSL_PORTRAIT);
 		if ((((GMT->current.map.width + GMT->current.setting.map_origin[GMT_X]) * 72) > GMT->current.setting.ps_def_page_size[X]) ||
@@ -9976,7 +9974,7 @@ unsigned int gmt_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, dou
 	else {
 		if (gmt_M_is_zero (length)) return (GMT_NOERROR); /* Only plot vectors with a non-zero length */
 		warn = gmtplot_geo_vector_greatcircle (GMT, lon0, lat0, azimuth, length, pen, S);
-    }
+	}
 	return (warn);
 }
 
