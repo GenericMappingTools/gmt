@@ -34,7 +34,7 @@
 #ifndef GMT_GRID_H
 #define GMT_GRID_H
 
-/* Because Windows, as of 2022, still do not support OpenMP beyond 2.0 (other than experimental) we hvae
+/* Because Windows, as of 2022, still do not support OpenMP beyond 2.0 (other than experimental) we have
  * the problem that counters that are logically positive definite must nevertheless be signed integers
  * in OpenMP 2.  Because we do not want a 2008 implementation to force changes to GMT structure I have
  * now introduced a typedef for use with such loop variables.  This was particularly needed for our
