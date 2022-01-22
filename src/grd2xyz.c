@@ -539,10 +539,13 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
 			bool previous = GMT->common.b.active[GMT_OUT], rst = false;
+			unsigned int was;
 			int (*save) (struct GMT_CTRL *, FILE *, uint64_t, double *, char *);
 			save = GMT->current.io.output;
 			Out = gmt_new_record (GMT, &d_value, NULL);	/* Since we only need to worry about numerics in this module */
-
+			was = GMT->common.d.first_col[GMT_IN];
+			if (GMT->common.d.active[GMT_IN])	/* Change the default to the only column available */
+				GMT->common.d.first_col[GMT_IN] = GMT_X;
 			if (Ctrl->Z.swab) GMT_Report (API, GMT_MSG_INFORMATION, "Binary output data will be byte swapped\n");
 			GMT->current.io.output = gmt_z_output;		/* Override and use chosen output mode */
 			GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set binary as well */
@@ -564,6 +567,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			GMT->current.io.output = save;			/* Reset pointer */
 			GMT->common.b.active[GMT_OUT] = previous;	/* Reset binary */
 			if (rst) GMT->current.io.io_nan_col[0] = GMT_Z;	/* Reset to what it was */
+			if (GMT->common.d.active[GMT_IN]) GMT->common.d.first_col[GMT_IN] = was;	/* Reset to what it was */
 		}
 		else if (Ctrl->E.active) {	/* ESRI format */
 			double slop;

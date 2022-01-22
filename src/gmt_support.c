@@ -4908,6 +4908,28 @@ GMT_LOCAL void gmtsupport_make_template (struct GMTAPI_CTRL *API, char *stem, ch
 		snprintf (path, PATH_MAX, "%s_XXXXXX", stem ? stem : "gmttemp");
 }
 
+int gmt_create_tempdir (struct GMTAPI_CTRL *API, char *name, char path[]) {
+	/* Get unique directory name template and create directory in one go */
+
+	gmtsupport_make_template (API, name, path);	/* Readying the directory name template */
+
+#ifdef _WIN32
+	if (gmt_get_tempname (API, name, NULL, path))
+		return GMT_RUNTIME_ERROR;
+	if (gmt_mkdir (path)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to create directory %s - exiting.\n", path);
+		return GMT_RUNTIME_ERROR;
+	}
+#else
+	/* Create final temp dir name and create it at the same time to avoid race condition */
+	if (mkdtemp (path) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Could not create temporary directory %s.\n", path);
+		return (GMT_RUNTIME_ERROR);
+	}
+#endif
+	return (GMT_NOERROR);
+}
+
 int gmt_get_tempname (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
 	/* Create a unique temporary file or directory name on the system;
 	 * If stem is NULL we use "gmttemp" as file prefix.  If extension is not NULL we append it.

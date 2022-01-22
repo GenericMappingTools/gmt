@@ -233,12 +233,12 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 	Collection = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_DCW_COLLECTION);
 	k = 0;
 	for (collection = 0; collection < 2; collection++) {	/* Read both system and user collections */
-		if (collection == 0) {	/* Look for DCW system file (which requires 2.0.2 or higher) */
-			if (!gmtdcw_get_path (GMT, "dcw-collections", ".txt", path))
+		if (collection == 0) {	/* Look for DCW conf file first so it can override anything in the system file */
+			if (!gmtlib_getuserpath (GMT, "dcw.conf", path))
 				continue;
 		}
-		else {	/* Look for a similar user file in the user dir, if present */
-			if (!gmtlib_getuserpath (GMT, "dcw.conf", path))
+		else {	/* Look for the system DCW collection file second */
+			if (!gmtdcw_get_path (GMT, "dcw-collections", ".txt", path))
 				continue;
 		}
 		/* Here we got the requested path */
