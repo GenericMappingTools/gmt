@@ -295,7 +295,7 @@
         symbols for structural geology and marine biology that you can explore from
         the :ref:`RESOURCES page <symbols_gallery>`, so you have lots of
         examples to use as a template.  The language allows you to design symbols that
-        takes many parameters and can make decisions based on these parameters.
+        take many parameters and can make decisions based on these parameters.
 
     **-Sk**\ *name*\ /\ *size*
         **k**\ ustom symbol. We will look for a symbol definition file called *name*\ .def in
