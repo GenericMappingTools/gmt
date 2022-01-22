@@ -3528,6 +3528,9 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	gmt_xy_to_geo (GMT, &lon, &lat, mr->refpoint->x, mr->refpoint->y);
 	angle = gmt_azim_to_angle (GMT, lon, lat, DIST_TO_2ND_POINT, 90.0);	/* Get angle of E-W direction at this location */
 
+#if 0
+	/* This section can be activated if we need to test for angles of directional roses.
+	 * Then, use export GMT_FAKE_ANGLE=value to change the orientation of the rose. */
 #ifdef DEBUG
 	{
 		char *this_c = NULL;
@@ -3535,6 +3538,8 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 			angle = atof (this_c);
 	}
 #endif
+#endif
+
 	if (angle < 0.0) angle += 360.0;	if (angle >= 360.0) angle -= 360.0;
 	gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 
