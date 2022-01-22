@@ -552,7 +552,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 									Grid->data[ij+x_wrap] = Grid->data[ij];
 									node_is_set[ij+x_wrap] = 1;	/* Mark as visited */
 								}
-								else if (colu == (openmp_int)HH->nxp) {	/* Must replicate right to left column */
+								else if (colu == HH->nxp) {	/* Must replicate right to left column */
 									Grid->data[ij-x_wrap] = Grid->data[ij];
 									node_is_set[ij-x_wrap] = 1;	/* Mark as visited */
 								}
@@ -562,7 +562,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 									Grid->data[ij+y_wrap] = Grid->data[ij];
 									node_is_set[ij+y_wrap] = 1;	/* Mark as visited */
 								}
-								else if (rowu == (openmp_int)HH->nyp) {	/* Must replicate bottom to top row */
+								else if (rowu == HH->nyp) {	/* Must replicate bottom to top row */
 									Grid->data[ij-y_wrap] = Grid->data[ij];
 									node_is_set[ij-y_wrap] = 1;	/* Mark as visited */
 								}
