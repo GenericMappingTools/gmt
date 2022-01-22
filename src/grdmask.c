@@ -284,7 +284,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 	bool wrap_180, replicate_x, replicate_y, worry_about_jumps;
 	unsigned int side = 0, known_side;
 	unsigned int tbl, gmode, n_pol = 0, n_cols = 2, x_wrap, y_wrap;
-	int row, col, row_end, col_end, ii, jj, n_columns, n_rows, error = 0, col_0, row_0;
+	int row, col, row_start, row_end, col_start, col_end, ii, jj, n_columns, n_rows, error = 0, col_0, row_0;
 	openmp_int *d_col = NULL, d_row = 0, max_d_col = 0, rowu, colu;
 	uint64_t ij, k, seg;
 
@@ -518,16 +518,19 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 						last_radius = radius;
 					}
 
-					row_end = row_0 + d_row;
-#ifdef _OPENMP
-#pragma omp parallel for private(row,col,rowu,colu,col_end,jj,ii,ij,wrap_180,distance) shared(Grid,HH,row_0,d_row,col_0,d_col,row_end,xtmp,S,grd_x0,grd_y0,replicate_x,replicate_y,x_wrap,y_wrap,radius,mask_val)
-#endif
-					for (row = row_0 - d_row; row <= row_end; row++) {
+					row_start = row_0 - (int)d_row;
+					row_end   = row_0 + (int)d_row;
+			GMT_Report (API, GMT_MSG_INFORMATION, "Doing point %d for rows %d to %d\n", (int)k, row_start, row_end);
+//#ifdef _OPENMP
+//#pragma omp parallel for private(row,jj,wrap_180,rowu,col_start,col_end,col,ii,colu,ij,distance) shared(row_start,row_end,GMT,Grid,col_0,d_col,Ctrl,mask_val,xtmp,S,k,grd_x0,grd_y0,radius,replicate_x,x_wrap,HH,replicate_y,y_wrap)
+//#endif
+					for (row = row_start; row <= row_end; row++) {
 						jj = row;
 						if (gmt_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range.  This call must happen BEFORE gmt_x_out_of_bounds as it sets wrap_180 */
 						rowu = (openmp_int)jj;
-						col_end = col_0 + d_col[jj];
-						for (col = col_0 - d_col[row]; col <= col_end; col++) {
+						col_start = col_0 - (int)d_col[rowu];
+						col_end   = col_0 + (int)d_col[rowu];
+						for (col = col_start; col <= col_end; col++) {
 							ii = col;
 							if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */
 							colu = (openmp_int)ii;
@@ -603,9 +606,10 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 
 					/* Here we will have to consider the x coordinates as well (or known_side is set) */
 #ifdef _OPENMP
-#pragma omp parallel for private(col,xx,side,ij) shared(Grid,n_columns,do_test,known_side,yy,S,row,Ctrl,z_value,mask_val)
+#pragma omp parallel for private(col,xx,side,ij) shared(n_columns,GMT,Grid,do_test,yy,S,known_side,row,Ctrl,z_value,mask_val)
 #endif
 					for (col = 0; col < n_columns; col++) {	/* Loop over grid columns */
+						ij = gmt_M_ijp (Grid->header, row, col);
 						xx = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 						if (do_test) {	/* Must consider xx to determine if we are inside */
 							if ((side = gmt_inonout (GMT, xx, yy, S)) == GMT_OUTSIDE)
@@ -615,7 +619,6 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 							side = known_side;
 						/* Here, point is inside or on edge, we must assign value */
 
-						ij = gmt_M_ijp (Grid->header, row, col);
 
 						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
 						Grid->data[ij] = (Ctrl->N.mode) ? (gmt_grdfloat)z_value : mask_val[side];
