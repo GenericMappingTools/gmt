@@ -2278,7 +2278,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	}
 #endif
 
-	if (Ctrl->W.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
+	if (Ctrl->W.active) {	/* Extend all segments by specified amount in one or both directions */
 		bool geo;
 		uint64_t seg, tbl, col, n_new = 0, n_old;
 		double par[2], in[2], out[2], dist[2];
