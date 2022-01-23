@@ -328,7 +328,6 @@ EXTERN_MSC int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the nearneighbor main code ----------------------------*/
 
-#if defined(HAVE_GDAL) && ((GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)) || (GDAL_VERSION_MAJOR >= 3)
 	if (Ctrl->N.mode) {	/* Pass over to GDAL */
 		char buf[GMT_LEN128] = {""};
 		struct GMT_OPTION *opt = NULL;
@@ -347,7 +346,6 @@ EXTERN_MSC int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, st);
 		Return (error);
 	}
-#endif
 
 	/* Regular nearest neighbor moving average operation */
 

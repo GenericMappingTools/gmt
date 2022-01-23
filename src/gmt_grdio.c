@@ -1131,14 +1131,12 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	else if (magic) {	/* Reading: determine file format automatically based on grid content */
 		int choice = 0;
 		sscanf (HH->name, "%[^?]?%s", tmp, HH->varname);    /* Strip off variable name */
-#ifdef HAVE_GDAL
 		/* Check if file is an URL */
 		if (gmtlib_found_url_for_gdal(HH->name)) {
 			/* Then check for GDAL grid */
 			if (gmtlib_is_gdal_grid (GMT, header) == GMT_NOERROR)
 				return (GMT_NOERROR);
 		}
-#endif
 		if (!gmt_getdatapath (GMT, tmp, HH->name, R_OK))
 			return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possibly prepended a path from GMT_[GRID|DATA|IMG]DIR */
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
@@ -1171,11 +1169,9 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		ext = gmt_get_ext (file);
 		if (ext && (!strcmp (ext, "txt") || !strcmp (ext, "lis")))
 			return (GMT_GRDIO_UNKNOWN_FORMAT);
-#ifdef HAVE_GDAL
 		/* Then check for GDAL grid */
 		if (gmtlib_is_gdal_grid (GMT, header) == GMT_NOERROR)
 			return (GMT_NOERROR);
-#endif
 		return (GMT_GRDIO_UNKNOWN_FORMAT);	/* No supported format found */
 	}
 	else {			/* Writing: get format type, scale, offset and missing value from GMT->current.setting.io_gridfile_format */
@@ -3630,7 +3626,6 @@ uint64_t gmt_get_active_layers (struct GMT_CTRL *GMT, struct GMT_CUBE *U, double
 	return (n_layers_used);
 }
 
-#ifdef HAVE_GDAL
 GMT_LOCAL void gmtgrdio_gdal_free_from (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread) {
 	int i;
 	if (from_gdalread->band_field_names) {
@@ -3838,4 +3833,3 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 
 	return (GMT_NOERROR);
 }
-#endif
