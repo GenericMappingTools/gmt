@@ -288,7 +288,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 
 	uint64_t ij, k, seg;
 
-	char text_item[GMT_LEN64] = {""};
+	char text_item[GMT_LEN64] = {""}, *node_is_set = NULL;
 
 	gmt_grdfloat mask_val[3], value;
 
@@ -363,6 +363,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 	replicate_y = (HH->nyp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate row */
 	x_wrap = Grid->header->n_columns - 1;				/* Add to node index to go to right column */
 	y_wrap = (Grid->header->n_rows - 1) * Grid->header->n_columns;	/* Add to node index to go to bottom row */
+	node_is_set = gmt_M_memory (GMT, NULL, Grid->header->size, char);
 
 	if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 		if (Ctrl->S.mode == GRDMASK_N_CART_MASK) {
@@ -501,12 +502,14 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 					if (gmt_x_out_of_bounds (GMT, &col_0, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */
 					ij = gmt_M_ijp (Grid->header, row_0, col_0);
 					Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is the nearest node */
+					node_is_set[ij] = 1;	/* Mark as visited */
 					if (Grid->header->registration == GMT_GRID_NODE_REG &&
 					    (col_0 == 0 || col_0 == (int)(Grid->header->n_columns-1)) && periodic_grid) {
 						/* Must duplicate the entry at periodic point */
 						col = (col_0 == 0) ? Grid->header->n_columns-1 : 0;
 						ij = gmt_M_ijp (Grid->header, row_0, col);
 						Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is also the nearest node */
+						node_is_set[ij] = 1;	/* Mark as visited */
 					}
 					if (radius == 0.0) continue;	/* Only consider the nearest node */
 					/* Here we also include all the nodes within the search radius */
@@ -530,6 +533,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 							if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */
 							colu = ii;
 							ij = gmt_M_ijp (Grid->header, rowu, colu);
+							if (node_is_set[ij]) continue;	/* Already set */
 							if (Ctrl->S.mode == GRDMASK_N_CART_MASK)	/* Rectangular are for Cartesian so no need to check radius */
 								Grid->data[ij] = mask_val[GMT_INSIDE];	/* The inside value */
 							else {
@@ -537,22 +541,31 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 								if (distance > radius) continue;	/* Clearly outside */
 								Grid->data[ij] = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
 							}
+							node_is_set[ij] = 1;	/* Mark as visited */
 							/* With periodic, gridline-registered grids there are duplicate rows and/or columns
 							   so we may have to assign the point to more than one node.  The next section deals
 							   with this situation.
 							*/
 
 							if (replicate_x) {	/* Must check if we have to replicate a column */
-								if (colu == 0) 	/* Must replicate left to right column */
+								if (colu == 0) { 	/* Must replicate left to right column */
 									Grid->data[ij+x_wrap] = Grid->data[ij];
-								else if (colu == HH->nxp)	/* Must replicate right to left column */
+									node_is_set[ij+x_wrap] = 1;	/* Mark as visited */
+								}
+								else if (colu == HH->nxp) {	/* Must replicate right to left column */
 									Grid->data[ij-x_wrap] = Grid->data[ij];
+									node_is_set[ij-x_wrap] = 1;	/* Mark as visited */
+								}
 							}
 							if (replicate_y) {	/* Must check if we have to replicate a row */
-								if (rowu == 0)	/* Must replicate top to bottom row */
+								if (rowu == 0) {	/* Must replicate top to bottom row */
 									Grid->data[ij+y_wrap] = Grid->data[ij];
-								else if (rowu == HH->nyp)	/* Must replicate bottom to top row */
+									node_is_set[ij+y_wrap] = 1;	/* Mark as visited */
+								}
+								else if (rowu == HH->nyp) {	/* Must replicate bottom to top row */
 									Grid->data[ij-y_wrap] = Grid->data[ij];
+									node_is_set[ij-y_wrap] = 1;	/* Mark as visited */
+								}
 							}
 						}
 					}
@@ -604,6 +617,8 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 #pragma omp parallel for private(col,xx,side,ij) shared(Grid,n_columns,do_test,known_side,yy,S,row,Ctrl,z_value,mask_val)
 #endif
 					for (col = 0; col < n_columns; col++) {	/* Loop over grid columns */
+						ij = gmt_M_ijp (Grid->header, row, col);
+						if (node_is_set[ij]) continue;	/* Already set */
 						xx = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 						if (do_test) {	/* Must consider xx to determine if we are inside */
 							if ((side = gmt_inonout (GMT, xx, yy, S)) == GMT_OUTSIDE)
@@ -613,10 +628,9 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 							side = known_side;
 						/* Here, point is inside or on edge, we must assign value */
 
-						ij = gmt_M_ijp (Grid->header, row, col);
-
 						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
 						Grid->data[ij] = (Ctrl->N.mode) ? (gmt_grdfloat)z_value : mask_val[side];
+						node_is_set[ij] = 1;	/* Mark as visited */
 					}
 					GMT_Report (API, GMT_MSG_DEBUG, "Polygon %d scanning row %05d\n", n_pol, row);
 				}
@@ -633,6 +647,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	gmt_M_free (GMT, node_is_set);
 	if (Ctrl->S.active)
 		gmt_M_free (GMT, d_col);
 
