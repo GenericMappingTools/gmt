@@ -5716,7 +5716,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 				gmt_geo_to_cart (GMT, y, x, P, true);		/* 3-D vector of current point P */
 				if (set_fixed_azim) {	/* Need 2nd point in azim direction to cross with P */
 					double b_x, b_y;
-					gmt_translate_point (GMT, x, y, fixed_azim, dist_to_end, &b_x, &b_y, NULL);
+					gmtlib_translate_point (GMT, x, y, fixed_azim, dist_to_end, &b_x, &b_y, NULL);
 					gmt_geo_to_cart (GMT, b_y, b_x, R, true);		/* 3-D vector of end point R */
 					gmt_cross3v (GMT, P, R, E);			/* Get pole E to plane trough P and R */
 				}
