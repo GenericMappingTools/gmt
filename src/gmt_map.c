@@ -3273,9 +3273,21 @@ GMT_LOCAL void gmtmap_translate_point_spherical (struct GMT_CTRL *GMT, double lo
 		*back_azimuth = gmtmap_az_backaz_sphere (GMT, lon, lat, *tlon, *tlat, true);
 }
 
-void gmt_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat, double *back_azimuth) {
+void gmtlib_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat, double *back_azimuth) {
 	/* compute new point dist degrees from input point along azimuth */
 	gmtmap_translate_point_spherical (GMT, lon, lat, azimuth, distance, tlon, tlat, back_azimuth);
+}
+
+void gmt_translate_point (struct GMT_CTRL *GMT, double A[3], double B[3], double a_d[], bool geo) {
+	/* Given point in A, azimuth az and distance d, return the point P away from A */
+	if (geo)
+		GMT->current.map.second_point (GMT, A[GMT_X], A[GMT_Y], a_d[0], a_d[1], &B[GMT_X], &B[GMT_Y], NULL);
+	else {	/* Cartesian translation */
+		double s, c;
+		sincosd (90.0 - a_d[0], &s, &c);
+		B[GMT_X] = A[GMT_X] + a_d[1] * c;
+		B[GMT_Y] = A[GMT_Y] + a_d[1] * s;
+	}
 }
 
 GMT_LOCAL void gmtmap_translate_point_geodesic (struct GMT_CTRL *GMT, double lon1, double lat1, double azimuth, double distance_m, double *lon2, double *lat2, double *back_azimuth) {
@@ -3414,7 +3426,7 @@ GMT_LOCAL int gmtmap_init_oblique (struct GMT_CTRL *GMT, bool *search) {
 	o_x = GMT->current.proj.pars[0];	o_y = GMT->current.proj.pars[1];
 
 	if (lrint (GMT->current.proj.pars[6]) == 1) {	/* Must get correct origin, then get second point */
-		double distance = 10.0;	/* Default spherical length for gmt_translate_point */
+		double distance = 10.0;	/* Default spherical length for gmtlib_translate_point */
 		p_x = GMT->current.proj.pars[2];	p_y = GMT->current.proj.pars[3];
 
 		GMT->current.proj.o_pole_lon = p_x;
@@ -3429,7 +3441,7 @@ GMT_LOCAL int gmtmap_init_oblique (struct GMT_CTRL *GMT, bool *search) {
 		if ((90.0 - fabs (o_y)) < distance)
 			distance = 90.0 - fabs (o_y) - GMT_CONV4_LIMIT;
 		/* compute point <distance> degrees from origin along azimuth */
-		gmt_translate_point (GMT, o_x, o_y, az, distance, &b_x, &b_y, NULL);
+		gmtlib_translate_point (GMT, o_x, o_y, az, distance, &b_x, &b_y, NULL);
 
 		GMT->current.proj.pars[0] = o_x;	GMT->current.proj.pars[1] = o_y;
 		GMT->current.proj.pars[2] = b_x;	GMT->current.proj.pars[3] = b_y;

@@ -390,19 +390,6 @@ GMT_LOCAL void gmtvector_get_azpole (struct GMT_CTRL *GMT, double A[3], double P
 	gmt_matrix_vect_mult (GMT, 3U, R, tmp, P);
 }
 
-GMT_LOCAL void gmtvector_translate_point (struct GMT_CTRL *GMT, double A[3], double B[3], double a_d[], bool geo) {
-	/* Given point in A, azimuth az and distance d, return the point P away from A */
-	if (geo)
-		GMT->current.map.second_point (GMT, A[GMT_X], A[GMT_Y], a_d[0], a_d[1], &B[GMT_X], &B[GMT_Y], NULL);
-		// gmt_translate_point (GMT, A[GMT_X], A[GMT_Y], a_d[0], a_d[1], &B[GMT_X], &B[GMT_Y]);
-	else {	/* Cartesian translation */
-		double s, c;
-		sincosd (90.0 - a_d[0], &s, &c);
-		B[GMT_X] = A[GMT_X] + a_d[1] * c;
-		B[GMT_Y] = A[GMT_Y] + a_d[1] * s;
-	}
-}
-
 GMT_LOCAL void gmtvector_mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, double conf, bool geocentric, double *M, double *E) {
 	/* Determines the mean vector M and the covariance matrix C */
 
@@ -731,7 +718,7 @@ EXTERN_MSC int GMT_gmtvector (void *V_API, int mode, void *args) {
 							else
 								Ctrl->T.par[1] = Sin->data[3][row];	/* Pass as is */
 						}
-						gmtvector_translate_point (GMT, vector_1, vector_3, Ctrl->T.par, geo);
+						gmt_translate_point (GMT, vector_1, vector_3, Ctrl->T.par, geo);
 						break;
 					case DO_NOTHING:	/* Probably just want the effect of -C, -E, -N */
 						gmt_M_memcpy (vector_3, vector_1, n_components, double);
