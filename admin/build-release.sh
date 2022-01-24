@@ -27,6 +27,9 @@ reset_config() {
 	if [ -f ${TOPDIR}/cmake/ConfigUser.cmake.orig ]; then # Restore what we had
 		mv -f ${TOPDIR}/cmake/ConfigUser.cmake.orig ${TOPDIR}/cmake/ConfigUser.cmake
 	fi
+	if [ -f ${TOPDIR}/cmake/ConfigUserAdvanced.cmake.orig ]; then # Restore what we had
+		mv -f ${TOPDIR}/cmake/ConfigUserAdvanced.cmake.orig ${TOPDIR}/cmake/ConfigUserAdvanced.cmake
+	fi
 }
 
 abort_build() {	# Called when we abort this script via Crtl-C
@@ -114,6 +117,9 @@ trap abort_build SIGINT
 # 1. Set basic ConfigUser.cmake file for a release build
 if [ -f cmake/ConfigUser.cmake ]; then
 	cp cmake/ConfigUser.cmake cmake/ConfigUser.cmake.orig
+fi
+if [ -f cmake/ConfigUserAdvanced.cmake ]; then
+	cp cmake/ConfigUserAdvanced.cmake cmake/ConfigUserAdvanced.cmake.orig
 fi
 cp -f admin/ConfigReleaseBuild.cmake cmake/ConfigUser.cmake
 # 2a. Make build dir and configure it
