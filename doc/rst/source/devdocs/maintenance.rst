@@ -44,10 +44,11 @@ There are 11 configuration files located in ``.github/workflows/``:
 
 2. ``build.yml`` (Build GMT and run a few simple tests)
 
-   This workflow is run on every commit to the *master* branch and Pull Request branches. The workflow configures
-   and builds GMT on Linux, macOS, and Windows and runs some simple tests. The workflow uses the scripts in the ``ci/``
-   directory for downloading/installing dependencies (``ci/download-coastlines.sh`` and ``ci/install-dependencies-*.sh``),
-   configuring GMT (``ci/config-gmt-*.sh``), building GMT, and running some simple tests (``ci/simple-gmt-tests.*``).
+   This workflow is run on every commit to the *master* branch and Pull Request branches, unless the pull request only
+   involves changes in the ``doc/`` directory. The workflow configures and builds GMT on Linux, macOS, and Windows and
+   runs some simple tests. The workflow uses the scripts in the ``ci/`` directory for downloading/installing
+   dependencies (``ci/download-coastlines.sh`` and ``ci/install-dependencies-*.sh``), configuring
+   GMT (``ci/config-gmt-*.sh``), building GMT, and running some simple tests (``ci/simple-gmt-tests.*``).
 
 3. ``check-links.yml`` (Check links in the repository and website)
 
