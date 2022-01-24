@@ -420,16 +420,16 @@ Karner, G. D., 1982, Spectral representation of isostatic models, *BMR J. Austra
 
 Nakada, M., 1986, Holocene sea levels in oceanic islands: Implications for the rheological
 structure of the Earth's mantle, *Tectonophysics, 121*, 263–276,
-`http://dx.doi.org/10.1016/0040-1951(86)90047-8 <http://dx.doi.org/10.1016/0040-1951(86)90047-8>`_.
+`https://dx.doi.org/10.1016/0040-1951(86)90047-8 <https://dx.doi.org/10.1016/0040-1951(86)90047-8>`_.
 
 Watts, A. B., 2001, *Isostasy and Flexure of the Lithosphere*, 458 pp., Cambridge University Press.
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
-`http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/10.1029/2000JB000083>`_.
+`https://dx.doi.org/10.1029/2000JB000083 <https://dx.doi.org/10.1029/2000JB000083>`_.
 
 Wessel, P., 2016, Regional–residual separation of bathymetry and revised estimates of Hawaii plume flux,
-*Geophys. J. Int., 204(2)*, 932-947, `http://dx.doi.org/10.1093/gji/ggv472 <http://dx.doi.org/10.1093/gji/ggv472>`_.
+*Geophys. J. Int., 204(2)*, 932-947, `https://dx.doi.org/10.1093/gji/ggv472 <https://dx.doi.org/10.1093/gji/ggv472>`_.
 
 See Also
 --------
