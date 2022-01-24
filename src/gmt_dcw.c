@@ -1040,7 +1040,7 @@ void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 		"Append comma-separated list of ISO 3166 codes (or full names) for countries to %s, i.e., "
 		"<code1>,<code2>,... etc., using the 2-character country codes. "
 		"To select a state of a country (if available), append .state, e.g, US.TX for Texas, or just the state name. "
-		"To select a whole continent, use =AF|AN|AS|EU|OC|NA|SA as <code> or give full name. For collections and named regions, "
+		"To select a whole continent, give full name (e.g., Africa). For collections and named regions, "
 		"append their codes or full name. All names are case-insensitive. Available modifiers:", usage[plot], action[plot]);
 	if (plot == 1) {
 		GMT_Usage (API, 3, "+c Set clip paths for the inside  area [none].");
