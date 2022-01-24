@@ -520,10 +520,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 
 					row_start = row_0 - (int)d_row;
 					row_end   = row_0 + (int)d_row;
-			GMT_Report (API, GMT_MSG_INFORMATION, "Doing point %d for rows %d to %d\n", (int)k, row_start, row_end);
-//#ifdef _OPENMP
-//#pragma omp parallel for private(row,jj,wrap_180,rowu,col_start,col_end,col,ii,colu,ij,distance) shared(row_start,row_end,GMT,Grid,col_0,d_col,Ctrl,mask_val,xtmp,S,k,grd_x0,grd_y0,radius,replicate_x,x_wrap,HH,replicate_y,y_wrap)
-//#endif
+					GMT_Report (API, GMT_MSG_DEBUG, "Doing point %d for rows %d to %d\n", (int)k, row_start, row_end);
 					for (row = row_start; row <= row_end; row++) {
 						jj = row;
 						if (gmt_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range.  This call must happen BEFORE gmt_x_out_of_bounds as it sets wrap_180 */
