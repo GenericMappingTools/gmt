@@ -50,12 +50,6 @@ else
   CONFIG_FFTW_ENABLED=no
 fi
 
-if [ "@HAVE_GDAL@" == "TRUE" ]; then
-  CONFIG_GDAL_ENABLED=yes
-else
-  CONFIG_GDAL_ENABLED=no
-fi
-
 if [ "@HAVE_PCRE@" == "TRUE" ] || [ "@HAVE_PCRE2@" == "TRUE" ]; then
   CONFIG_PCRE_ENABLED=yes
 else
@@ -98,7 +92,6 @@ Available values for OPTIONS include:
   --dep-libs    dependent libraries
   --gshhg       location of used GSHHG
   --has-fftw    whether FFTW is used in build
-  --has-gdal    whether GDAL is used in build
   --has-pcre    whether PCRE is used in build
   --has-lapack  whether LAPACK is used in build
   --has-openmp  whether GMT was built with OpenMP support
@@ -129,7 +122,6 @@ This GMT $CONFIG_VERSION has been built with the following features:
   --dep-libs    -> ${CONFIG_DEP_LIBS//;/ }
   --gshhg       -> $CONFIG_GSHHG
   --has-fftw    -> $CONFIG_FFTW_ENABLED
-  --has-gdal    -> $CONFIG_GDAL_ENABLED
   --has-pcre    -> $CONFIG_PCRE_ENABLED
   --has-lapack  -> $CONFIG_LAPACK_ENABLED
   --has-openmp  -> $CONFIG_OPENMP_ENABLED
@@ -185,10 +177,6 @@ for arg in "$@"; do
 
     --has-fftw)
     echo $CONFIG_FFTW_ENABLED
-    ;;
-
-    --has-gdal)
-    echo $CONFIG_GDAL_ENABLED
     ;;
 
     --has-pcre)

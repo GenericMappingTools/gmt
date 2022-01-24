@@ -82,8 +82,7 @@ tickmarks every 5 units:
 
     gmt grdimage red.nc green.nc blue.nc -Jx10i -B5 -P > rgbimage.ps
 
-When GDAL support is built in: To create a sinusoidal projection of a
-remotely located Jessica Rabbit
+To create a sinusoidal projection of a remotely located Jessica Rabbit
 
    ::
 
