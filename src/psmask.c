@@ -839,9 +839,10 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 					i_start = (col > d_col[jj]) ? col - d_col[jj] : 0;
 					for (ii = i_start; ii <= col + d_col[jj]; ii++) {
 						if (ii >= (openmp_int)Grid->header->n_columns) continue;
+						ij = gmt_M_ijp (Grid->header, jj, ii);
+						if (grd[ij]) continue;	/* Already set */
 						distance = gmt_distance (GMT, x0, y0, grd_x0[ii], grd_y0[jj]);
 						if (distance > Ctrl->S.radius) continue;
-						ij = gmt_M_ijp (Grid->header, jj, ii);
 						grd[ij] = 1;
 					}
 				}
