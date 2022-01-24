@@ -87,7 +87,7 @@ if ! [ -x "$(command -v grealpath)" ]; then
 fi
 
 # gnutar is need to build the tarballs
-if ! [ -x "$(command -v gnutar)" ]; then
+if ! [ -x "$(command -v gnutar)" ] &&  ! [ -x "$(command -v gtar)" ]; then
 	echo 'build-release.sh: Error: gnutar is not found in your search PATH.' >&2
 	exit 1
 fi
