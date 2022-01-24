@@ -41,10 +41,13 @@ abort_build() {	# Called when we abort this script via Crtl-C
 
 TOPDIR=$(pwd)
 do_ftp=0
+release=1
 if [ "X${1}" = "X-p" ]; then
 	do_ftp=1
 elif [ "X${1}" = "X-m" ]; then
 	do_ftp=2
+elif [ "X${1}" = "X-t" ]; then
+	release=0
 elif [ $# -gt 0 ]; then
 	cat <<- EOF  >&2
 	Usage: build-release.sh [-p|m]
@@ -55,6 +58,7 @@ elif [ $# -gt 0 ]; then
 	Requires GMT_GSHHG_SOURCE and GMT_DCW_SOURCE to be set in the environment.
 	Passing -p means we copy the files to the SOEST ftp directory
 	Passing -m means only copy the macOS bundle to the SOEST ftp directory
+	Passing -t means test the build-release script without requiring GMT_PUBLIC_RELEASE
 	[Default places no files in the SOEST ftp directory]
 	EOF
 	exit 1
@@ -98,7 +102,7 @@ if [ "X${GMT_DCW_SOURCE}" = "X" ]; then
 	exit 1
 fi
 
-if [ $(egrep -c '^set \(GMT_PUBLIC_RELEASE TRUE\)' cmake/ConfigDefault.cmake) -eq 0 ]; then
+if [ $release -eq 1 ] && [ $(egrep -c '^set \(GMT_PUBLIC_RELEASE TRUE\)' cmake/ConfigDefault.cmake) -eq 0 ]; then
 	echo "build-release.sh: Need to set GMT_PUBLIC_RELEASE to TRUE in cmake/ConfigDefault.cmake" >&2
 	exit 1
 fi
