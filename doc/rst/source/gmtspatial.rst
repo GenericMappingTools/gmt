@@ -224,7 +224,7 @@ Optional Arguments
     segment.  For geographic data you may append a *unit* (see `Units`_). To give separate
     distances for the two ends, give distf*\[*unit*]/distl*\[*unit*] instead.  Optionally,
     append either **+f** or **+l** to only extend the first or last point this way [both].
-    Geographical calculations assume a spherical Earth.
+    The mode of geographical calculations depends on **-j**.
 
 .. include:: explain_-aspatial.rst_
 

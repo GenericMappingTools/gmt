@@ -488,7 +488,7 @@ GMT_LOCAL bool grdspotter_set_age (struct GMT_CTRL *GMT, double *t_smt, struct G
 GMT_LOCAL void grdspotter_normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, gmt_grdfloat *data) {
 	/* Determines the grid's min/max z-values and normalizes the grid
 	 * so that zmax is 100% */
-	unsigned int row, col;
+	openmp_int row, col;
 	uint64_t node;
 	double CVA_scale;	/* Used to normalize CVAs to percent */
 
@@ -511,9 +511,10 @@ GMT_LOCAL void grdspotter_normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID 
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdspotter (void *V_API, int mode, void *args) {
+	openmp_int row, col;
 	unsigned int n_stages;	/* Number of stage rotations (poles) */
 	unsigned int try;		/* Number of current bootstrap estimate */
-	unsigned int row, row2, col, col2, k_step;
+	unsigned int row2, col2, k_step;
 	unsigned int forth_flag;	/* Holds the do_time + 10 flag passed to forthtrack */
 	bool keep_flowlines = false;	/* true if Ctrl->D.active, Ctrl->PA.active, or bootstrap is true */
 	int error = GMT_NOERROR;			/* nonzero when arguments are wrong */
@@ -642,12 +643,12 @@ EXTERN_MSC int GMT_grdspotter (void *V_API, int mode, void *args) {
 	}
 	area = 111.195 * Z->header->inc[GMT_Y] * 111.195 * Z->header->inc[GMT_X];	/* In km^2 at Equator */
 	x_smt = gmt_M_memory (GMT, NULL, Z->header->n_columns, double);
-	for (col = 0; col < Z->header->n_columns; col++) x_smt[col] = D2R * gmt_M_grd_col_to_x (GMT, col, Z->header);
+	for (col = 0; col < (openmp_int)Z->header->n_columns; col++) x_smt[col] = D2R * gmt_M_grd_col_to_x (GMT, col, Z->header);
 	y_smt = gmt_M_memory (GMT, NULL, Z->header->n_rows, double);
-	for (row = 0; row < Z->header->n_rows; row++) y_smt[row] = D2R * gmt_lat_swap (GMT, gmt_M_grd_row_to_y (GMT, row, Z->header), GMT_LATSWAP_G2O);	/* Convert to geocentric */
+	for (row = 0; row < (openmp_int)Z->header->n_rows; row++) y_smt[row] = D2R * gmt_lat_swap (GMT, gmt_M_grd_row_to_y (GMT, row, Z->header), GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	lat_area = gmt_M_memory (GMT, NULL, Z->header->n_rows, double);
 
-	for (row = 0; row < Z->header->n_rows; row++) lat_area[row] = area * cos (y_smt[row]);
+	for (row = 0; row < (openmp_int)Z->header->n_rows; row++) lat_area[row] = area * cos (y_smt[row]);
 
 #ifdef DEBUG2
 	x_cva = G->x;
@@ -959,10 +960,10 @@ EXTERN_MSC int GMT_grdspotter (void *V_API, int mode, void *args) {
 				this_pa = GMT->session.d_NaN;
 				for (m = 0, k = 1; m < np; m++) {	/* Store nearest node indices only */
 					i = (int)gmt_M_grd_x_to_col (GMT, c[k++], G_rad->header);
-					if (i < 0 || (col = i) >= G->header->n_columns) { k += 2; continue;}	/* Outside the CVA box, flag as outside */
+					if (i < 0 || (col = (openmp_int)i) >= (openmp_int)G->header->n_columns) { k += 2; continue;}	/* Outside the CVA box, flag as outside */
 					yg = gmt_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 					j = (int)gmt_M_grd_y_to_row (GMT, yg, G->header);
-					if (j < 0 || (row = j) >= G->header->n_rows) { k++; continue;}	/* Outside the CVA box, flag as outside */
+					if (j < 0 || (row = (openmp_int)j) >= (openmp_int)G->header->n_rows) { k++; continue;}	/* Outside the CVA box, flag as outside */
 					if (Ctrl->PA.active) pa_val = c[k++];
 					node = gmt_M_ijp (G->header, row, col);
 					if (G->data[node] <= CVA_max) continue;	/* Already seen higher CVA values */

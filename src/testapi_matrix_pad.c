@@ -6,8 +6,8 @@
 int main () {
 	struct GMTAPI_CTRL *API = NULL;                /* The API control structure */
 	struct GMT_GRID *G = NULL, *G1, *G2;    /* Structure to hold input grids */
-	unsigned int pad2[4] = {2, 2, 2, 2}, row, col;
-	unsigned int def_pad[4];
+	openmp_int row, col;
+	unsigned int pad2[4] = {2, 2, 2, 2}, def_pad[4];
 	uint64_t ij;
 
 	/* Initialize the GMT session */

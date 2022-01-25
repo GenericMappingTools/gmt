@@ -529,7 +529,7 @@ EXTERN_MSC char * gmt_memory_use (size_t bytes, int width);
 EXTERN_MSC void gmt_sort_order (struct GMT_CTRL *GMT, struct GMT_ORDER *base, uint64_t n, int dir);
 EXTERN_MSC bool gmt_y_out_of_bounds (struct GMT_CTRL *GMT, int *j, struct GMT_GRID_HEADER *h, bool *wrap_180);
 EXTERN_MSC bool gmt_x_out_of_bounds (struct GMT_CTRL *GMT, int *i, struct GMT_GRID_HEADER *h, bool wrap_180);
-EXTERN_MSC bool gmt_row_col_out_of_bounds (struct GMT_CTRL *GMT, double *in, struct GMT_GRID_HEADER *h, unsigned int *row, unsigned int *col);
+EXTERN_MSC bool gmt_row_col_out_of_bounds (struct GMT_CTRL *GMT, double *in, struct GMT_GRID_HEADER *h, openmp_int *row, openmp_int *col);
 EXTERN_MSC int gmt_list_cpt (struct GMT_CTRL *GMT, char option);
 EXTERN_MSC void gmt_scale_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double scale);
 EXTERN_MSC void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high);
@@ -551,7 +551,7 @@ EXTERN_MSC void * gmt_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, si
 EXTERN_MSC char * gmt_make_filename (struct GMT_CTRL *GMT, char *template, unsigned int fmt[], double z, bool closed, unsigned int count[]);
 EXTERN_MSC void gmt_str_setcase (struct GMT_CTRL *GMT, char *value, int mode);
 EXTERN_MSC char * gmt_putusername (struct GMT_CTRL *GMT);
-EXTERN_MSC unsigned int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, double radius, unsigned int mode, unsigned int *d_row, unsigned int *actual_max_d_col);
+EXTERN_MSC openmp_int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, double radius, unsigned int mode, openmp_int *d_row, openmp_int *actual_max_d_col);
 EXTERN_MSC struct GMT_PALETTE * gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, double dz);
 EXTERN_MSC unsigned int gmt_gcd_euclid (unsigned int a, unsigned int b);
 EXTERN_MSC unsigned int gmt_optimal_dim_for_surface (struct GMT_CTRL *GMT, unsigned int factors[], unsigned int n_columns, unsigned int n_rows, struct GMT_SURFACE_SUGGESTION **S);

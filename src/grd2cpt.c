@@ -500,7 +500,8 @@ EXTERN_MSC int gmtlib_compare_observation (const void *a, const void *b);
 
 EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	uint64_t ij, k, ngrd = 0, nxyg, nxy = 0, nfound, ngood;
-	unsigned int row, col, j, cpt_flags = 0;
+	openmp_int row, col;
+	unsigned int j, cpt_flags = 0;
 	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
 	bool write = false, interpolate = true;

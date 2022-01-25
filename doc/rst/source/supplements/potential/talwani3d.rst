@@ -183,7 +183,7 @@ References
 
 Kim, S.-S., and P. Wessel, 2016, New analytic solutions for modeling vertical
 gravity gradient anomalies, *Geochem. Geophys. Geosyst., 17*,
-`http://dx.doi.org/10.1002/2016GC006263 <http://dx.doi.org/10.1002/2016GC006263>`_.
+`https://dx.doi.org/10.1002/2016GC006263 <https://dx.doi.org/10.1002/2016GC006263>`_.
 
 Talwani, M., and M. Ewing, 1960, Rapid computation of gravitational attraction of
 three-dimensional bodies of arbitrary shape, *Geophysics, 25*, 203-225.
