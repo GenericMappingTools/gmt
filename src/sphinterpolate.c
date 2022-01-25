@@ -237,7 +237,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, struct
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_sphinterpolate (void *V_API, int mode, void *args) {
-	unsigned int row, col;
+	openmp_int row, col;
 	int error = GMT_NOERROR;
 
 	bool skip, got_N_pole = false, got_S_pole = false;

@@ -112,7 +112,7 @@ struct GRDIMAGE_CONF {
 	bool int_mode;				/* true if we are to apply illumination */
 	unsigned int *actual_row;	/* Array with actual rows as a function of pseudo row */
 	unsigned int *actual_col;	/* Array of actual columns as a function of pseudo col */
-	int64_t n_columns, n_rows;		/* Signed dimensions for use in OpenMP loops */
+	int64_t n_columns, n_rows;		/* Signed dimensions for use in OpenMP loops (if implemented) */
 	uint64_t nm;				/* Number of pixels in the image */
 	struct GMT_PALETTE *P;		/* Pointer to the active palette [NULL if image] */
 	struct GMT_GRID *Grid;		/* Pointer to the active grid [NULL if image] */

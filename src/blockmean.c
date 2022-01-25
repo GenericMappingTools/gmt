@@ -310,7 +310,8 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_
 
 EXTERN_MSC int GMT_blockmean (void *V_API, int mode, void *args) {
 	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, w_col, *np = NULL;
-	unsigned int row, col, n_input, k, kk, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,0,0,0}, field[BLK_N_FIELDS];
+	openmp_int row, col;
+	unsigned int n_input, k, kk, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,0,0,0}, field[BLK_N_FIELDS];
 	int error;
 	bool use_xy, use_weight, duplicate_col, bail = false;
 	double weight, weight_s2 = 0, weight_pos, weighted_z, iw, half_dx, wesn[4], out[7], *in = NULL;

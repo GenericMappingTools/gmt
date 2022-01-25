@@ -322,8 +322,8 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 
 	/* Create unique directory for outputs, stored in tmpdir */
 
-    if (gmt_create_tempdir (API, "gmt_latex", tmpdir))
-        return NULL;
+	if (gmt_create_tempdir (API, "gmt_latex", tmpdir))
+		return NULL;
 
 	/* Remember where we are */
 	if (getcwd (here, PATH_MAX) == NULL) {

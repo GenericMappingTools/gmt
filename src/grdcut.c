@@ -486,7 +486,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
-		unsigned int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col, sum, side, count[4];
+		openmp_int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col;
+		unsigned int sum, side, count[4];
 		bool go;
 		struct GMT_GRID_HIDDEN *GH = NULL;
 
@@ -594,7 +595,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 				if (!go) col1 = col;	/* Found stopping col */
 			}
 		}
-		if (row0 == 0 && col0 == 0 && row1 == (h->n_rows-1) && col1 == (h->n_columns-1)) {
+		if (row0 == 0 && col0 == 0 && row1 == (openmp_int)(h->n_rows-1) && col1 == (openmp_int)(h->n_columns-1)) {
 			GMT_Report (API, GMT_MSG_WARNING, "Your -Z limits produced no subset - output grid is identical to input grid\n");
 			gmt_M_memcpy (wesn_new, h->wesn, 4, double);
 		}
@@ -887,7 +888,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	nx_old = h->n_columns;		ny_old = h->n_rows;
 
 	if (Ctrl->F.active && Ctrl->In.type == GMT_IS_GRID) {	/* Must reset nodes outside the polygon to NaN */
-		unsigned int row, col, set;
+		openmp_int row, col;
+		unsigned int set;
 		uint64_t n_nodes = 0;
 		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset (unless memory file) */
@@ -943,7 +945,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->N.active && extend) {	/* Now shrink pad back to default and simultaneously extend region and apply nodata values */
-		unsigned int xlo, xhi, ylo, yhi, row, col, n_zero, n_zero_e;
+		openmp_int xlo, xhi, ylo, yhi, row, col;
+		unsigned int n_zero, n_zero_e;
 		double dx, dy;
 		n_zero = 0;	/* Count zeros in the grid before extension */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
@@ -957,20 +960,20 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		/* dx,dy are needed when the grid is pixel-registered as the w/e/s/n bounds are off by 0.5 {dx,dy} relative to node coordinates */
 		dx = h->inc[GMT_X] * h->xy_off;	dy = h->inc[GMT_Y] * h->xy_off;
 
-		xlo = outside[XLO] ? (unsigned int)gmt_M_grd_x_to_col (GMT, wesn_old[XLO] + dx, h) : 0;
-		xhi = outside[XHI] ? (unsigned int)gmt_M_grd_x_to_col (GMT, wesn_old[XHI] - dx, h) : h->n_columns - 1;
-		ylo = outside[YLO] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YLO] + dy, h) : h->n_rows - 1;
-		yhi = outside[YHI] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YHI] - dy, h) : 0;
+		xlo = outside[XLO] ? (openmp_int)gmt_M_grd_x_to_col (GMT, wesn_old[XLO] + dx, h) : 0;
+		xhi = outside[XHI] ? (openmp_int)gmt_M_grd_x_to_col (GMT, wesn_old[XHI] - dx, h) : h->n_columns - 1;
+		ylo = outside[YLO] ? (openmp_int)gmt_M_grd_y_to_row (GMT, wesn_old[YLO] + dy, h) : h->n_rows - 1;
+		yhi = outside[YHI] ? (openmp_int)gmt_M_grd_y_to_row (GMT, wesn_old[YHI] - dy, h) : 0;
 		if (outside[XLO]) {
-			for (row = 0; row < h->n_rows; row++)
+			for (row = 0; row < (openmp_int)h->n_rows; row++)
 				for (col = 0; col < xlo; col++) G->data[gmt_M_ijp(h,row,col)] = Ctrl->N.value;
 		}
 		if (outside[XHI]) {
-			for (row = 0; row < h->n_rows; row++)
-				for (col = xhi+1; col < h->n_columns; col++) G->data[gmt_M_ijp(h,row,col)] = Ctrl->N.value;
+			for (row = 0; row < (openmp_int)h->n_rows; row++)
+				for (col = xhi+1; col < (openmp_int)h->n_columns; col++) G->data[gmt_M_ijp(h,row,col)] = Ctrl->N.value;
 		}
 		if (outside[YLO]) {
-			for (row = ylo+1; row < h->n_rows; row++)
+			for (row = ylo+1; row < (openmp_int)h->n_rows; row++)
 				for (col = xlo; col <= xhi; col++) G->data[gmt_M_ijp(h,row,col)] = Ctrl->N.value;
 		}
 		if (outside[YHI]) {
@@ -1005,11 +1008,11 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->S.set_nan && Ctrl->In.type == GMT_IS_GRID) {	/* Set all nodes outside the circle to NaN */
-		unsigned int row, col;
+		openmp_int row, col;
 		uint64_t n_nodes = 0;
 
-		for (row = 0; row < h->n_rows; row++) {
-			for (col = 0; col < h->n_columns; col++) {
+		for (row = 0; row < (openmp_int)h->n_rows; row++) {
+			for (col = 0; col < (openmp_int)h->n_columns; col++) {
 				distance = gmt_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, G->x[col], G->y[row]);
 				if (distance > Ctrl->S.radius) {	/* Outside circle */
 					node = gmt_M_ijp (h, row, col);

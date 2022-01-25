@@ -498,7 +498,8 @@ GMT_LOCAL void grdfill_nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In
 EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 	char *ID = NULL, *RG_orig_hist = NULL;
 	int error = 0, RG_id = 0;
-	unsigned int hole_number = 0, row, col, limit[4], n_nodes;
+	openmp_int row, col;
+	unsigned int hole_number = 0, limit[4], n_nodes;
 	uint64_t node, offset;
 	int64_t off[4];
 	double wesn[4];
@@ -601,10 +602,10 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 	for (node = 0; node < (uint64_t)Grid->header->pad[YHI]*Grid->header->mx; node++) ID[node] = ID[node+offset] = 1;
 	/* Set the left and right boundary columnss to UINT_MAX */
 	offset = Grid->header->pad[XLO] + Grid->header->n_columns;
-	for (row = 0; row < Grid->header->my; row++) {
-		for (col = 0; col < Grid->header->pad[XLO]; col++)
+	for (row = 0; row < (openmp_int)Grid->header->my; row++) {
+		for (col = 0; col < (openmp_int)Grid->header->pad[XLO]; col++)
 			ID[row*Grid->header->mx+col] = 1;
-		for (col = 0; col < Grid->header->pad[XHI]; col++)
+		for (col = 0; col < (openmp_int)Grid->header->pad[XHI]; col++)
 			ID[row*Grid->header->mx+offset+col] = 1;
 	}
 	/* Initiate the node offsets in the cardinal directions */
