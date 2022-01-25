@@ -344,7 +344,8 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 
 	uint64_t ij, ij1, ij2, ij3, np = 0, i, j, k, n_edge, p, node = 0, seg, n = 0;
 	unsigned int n_input, n_output, side;
-	int row, col, col_min, col_max, row_min, row_max, error = 0;
+	int error = 0, col_min, col_max, row_min, row_max;
+	openmp_int row, col;
 	bool triplets[2] = {false, false}, map_them = false, do_output = true, get_input = false;
 
 	size_t n_alloc;
@@ -631,12 +632,12 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (Ctrl->F.active && F->data) {	/* Not the same area, must copy over pregrid node values */
-			unsigned int frow, fcol;
+			openmp_int frow, fcol;
 			gmt_M_grd_loop (GMT, F, frow, fcol, ij) {
 				row = gmt_M_grd_y_to_row (GMT, yf[frow], Grid->header);
-				if (row < 0 || row >= (int)Grid->header->n_columns) continue;
+				if (row < 0 || row >= (openmp_int)Grid->header->n_columns) continue;
 				col = gmt_M_grd_x_to_col (GMT, xf[fcol], Grid->header);
-				if (col < 0 || col >= (int)Grid->header->n_rows) continue;
+				if (col < 0 || col >= (openmp_int)Grid->header->n_rows) continue;
 				p = gmt_M_ijp (Grid->header, row, col);
 				Grid->data[p] = F->data[ij];	/* This also copies the NaNs from F to Grid */
 			}
@@ -766,10 +767,10 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 			if (row_min < 0) row_min = 0;
 			if (row_max >= n_rows) row_max = Grid->header->n_rows - 1;
 
-			for (row = row_min; row <= row_max; row++) {
+			for (row = (openmp_int)row_min; row <= (openmp_int)row_max; row++) {
 				yp = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 				p = gmt_M_ijp (Grid->header, row, col_min);
-				for (col = col_min; col <= col_max; col++, p++) {
+				for (col = (openmp_int)col_min; col <= (openmp_int)col_max; col++, p++) {
 					if (Ctrl->F.active && !gmt_M_is_fnan (Grid->data[p])) continue;	/* Only do interpolation at this point if grid == NaN so check before doing gmt_non_zero_winding */
 
 					xp = gmt_M_grd_col_to_x (GMT, col, Grid->header);

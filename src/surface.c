@@ -556,7 +556,7 @@ GMT_LOCAL void surface_find_nearest_constraint (struct GMT_CTRL *GMT, struct SUR
 	/* Determines the nearest data point per bin and sets the
 	 * Briggs parameters or, if really close, fixes the node value */
 	uint64_t k, last_index, node, briggs_index;
-	int row, col;
+	openmp_int row, col;
 	double xx, yy, x0, y0, dx, dy;
 	gmt_grdfloat z_at_node, *u = C->Grid->data;
 	unsigned char *status = C->status;
@@ -573,8 +573,8 @@ GMT_LOCAL void surface_find_nearest_constraint (struct GMT_CTRL *GMT, struct SUR
 	for (k = 0; k < C->npoints; k++) {	/* Find constraining value  */
 		if (C->data[k].index != last_index) {	/* Moving to the next node to address its nearest data constraint */
 			/* Note: Index calculations do not consider the boundary padding */
-			row = (int)index_to_row (C->data[k].index, C->current_nx);
-			col = (int)index_to_col (C->data[k].index, C->current_nx);
+			row = (openmp_int)index_to_row (C->data[k].index, C->current_nx);
+			col = (openmp_int)index_to_col (C->data[k].index, C->current_nx);
 			last_index = C->data[k].index;	/* Now this is the last unique index we worked on */
 	 		node = row_col_to_node (row, col, C->current_mx);
 			/* Get coordinates of this node */
@@ -884,7 +884,8 @@ GMT_LOCAL int surface_load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INF
 GMT_LOCAL int surface_write_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *grdfile) {
 	/* Write output grid to file */
 	uint64_t node;
-	int row, col, err, end;
+	openmp_int row, col;
+	int err, end;
 	char *limit[2] = {"lower", "upper"};
 	gmt_grdfloat *u = C->Grid->data;
 
@@ -918,7 +919,7 @@ GMT_LOCAL int surface_write_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, 
 		}
 	}
 	if (C->periodic) {	/* Ensure exact periodicity at E-W boundaries */
-		for (row = 0; row < C->current_ny; row++) {
+		for (row = 0; row < (openmp_int)C->current_ny; row++) {
 			node = row_col_to_node (row, 0, C->current_mx);
 			u[node] = u[node+C->current_nx-1] = (gmt_grdfloat)(0.5 * (u[node] + u[node+C->current_nx-1]));	/* Set these to the same as their average */
 		}
@@ -1089,7 +1090,8 @@ GMT_LOCAL void surface_check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	 * final grid resolution, hence current_stride == 1. */
 
 	uint64_t node, k;
-	int row, col, *d_node = C->offset;
+	openmp_int row, col;
+	int *d_node = C->offset;
 	unsigned char *status = C->status;
 
 	double x0, y0, dx, dy, mean_error = 0.0, mean_squared_error = 0.0, z_est, z_err, curvature, c;
@@ -1106,8 +1108,8 @@ GMT_LOCAL void surface_check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	/* Estimate solution at all data constraints using 3rd order Taylor expansion from nearest node */
 
 	for (k = 0; k < C->npoints; k++) {
-		row = (int)index_to_row (C->data[k].index, C->n_columns);
-		col = (int)index_to_col (C->data[k].index, C->n_columns);
+		row = (openmp_int)index_to_row (C->data[k].index, C->n_columns);
+		col = (openmp_int)index_to_col (C->data[k].index, C->n_columns);
 		node = row_col_to_node (row, col, C->mx);
 	 	if (status[node] == SURFACE_IS_CONSTRAINED) continue;	/* Since misfit by definition is zero so no point adding it */
 		/* Get coordinates of this node */
@@ -2117,7 +2119,8 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		struct GMT_GRID *Gmask = NULL;
 		struct GMT_VECTOR *V = NULL;
 		double *data[2] = {NULL, NULL};
-		uint64_t row, col, ij, dim[3] = {2, C.npoints, GMT_DOUBLE};		/* ncols, nrows, type */
+		openmp_int row, col;
+		uint64_t ij, dim[3] = {2, C.npoints, GMT_DOUBLE};		/* ncols, nrows, type */
 
 		if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, GMT_CONTAINER_ONLY, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			Return (API->error);

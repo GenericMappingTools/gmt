@@ -282,10 +282,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT_OP
 EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 	bool periodic = false, periodic_grid = false, do_test = true;
 	bool wrap_180, replicate_x, replicate_y, worry_about_jumps;
-	unsigned int side = 0, known_side, *d_col = NULL, d_row = 0;
-	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2, rowu, colu, x_wrap, y_wrap;
-	int row, col, row_end, col_end, ii, jj, n_columns, n_rows, error = 0, col_0, row_0;
-
+	unsigned int side = 0, known_side;
+	unsigned int tbl, gmode, n_pol = 0, n_cols = 2, x_wrap, y_wrap;
+	int row, col, row_start, row_end, col_start, col_end, ii, jj, n_columns, n_rows, error = 0, col_0, row_0;
+	openmp_int *d_col = NULL, d_row = 0, max_d_col = 0, rowu, colu;
 	uint64_t ij, k, seg;
 
 	char text_item[GMT_LEN64] = {""}, *node_is_set = NULL;
@@ -367,14 +367,14 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 		if (Ctrl->S.mode == GRDMASK_N_CART_MASK) {
-			max_d_col = urint (Ctrl->S.limit[GMT_X] / Grid->header->inc[GMT_X]);
-			d_row = urint (Ctrl->S.limit[GMT_Y] / Grid->header->inc[GMT_Y]);
-			d_col = gmt_M_memory (GMT, NULL, Grid->header->n_rows, double);
-			for (rowu = 0; rowu < Grid->header->n_rows; rowu++) d_col[rowu] = max_d_col;
+			max_d_col = (openmp_int)urint (Ctrl->S.limit[GMT_X] / Grid->header->inc[GMT_X]);
+			d_row = (openmp_int)urint (Ctrl->S.limit[GMT_Y] / Grid->header->inc[GMT_Y]);
+			d_col = gmt_M_memory (GMT, NULL, Grid->header->n_rows, openmp_int);
+			for (rowu = 0; rowu < (openmp_int)Grid->header->n_rows; rowu++) d_col[rowu] = max_d_col;
 		}
 		else {
-		if (gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
-			Return (GMT_NOT_A_VALID_TYPE);
+			if (gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+				Return (GMT_NOT_A_VALID_TYPE);
 			if (!Ctrl->S.variable_radius) {	/* Read x,y, fixed radius from -S */
 				radius = Ctrl->S.radius;
 				d_col = gmt_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
@@ -466,26 +466,28 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 					if (gmt_M_y_is_lat (GMT, GMT_IN)) {	/* Make special checks for N and S poles */
 						if (gmt_M_is_Npole (S->data[GMT_Y][k])) {	/* N pole */
 							if (radius == 0.0) {	/* Only set the N pole row */
-								gmt_M_col_loop (GMT, Grid, 0, col, ij)	/* Set this entire N row */
+								gmt_M_col_loop (GMT, Grid, 0, colu, ij)	/* Set this entire N row */
 									Grid->data[ij] = mask_val[GMT_INSIDE];
 								continue;
 							}
-							for (row = 0; row < (int)Grid->header->n_rows && (distance = gmt_distance (GMT, 0.0, 90.0, grd_x0[0], grd_y0[row])) <= radius; row++) {
+							for (rowu = 0; rowu < (openmp_int)Grid->header->n_rows && (distance = gmt_distance (GMT, 0.0, 90.0, grd_x0[0], grd_y0[rowu])) <= radius; rowu++) {
 								value = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
-								gmt_M_col_loop (GMT, Grid, row, col, ij)	/* Set this entire row */
+								gmt_M_col_loop (GMT, Grid, rowu, colu, ij)	/* Set this entire row */
 									Grid->data[ij] = value;
 							}
 							continue;
 						}
 						else if (gmt_M_is_Spole (S->data[GMT_Y][k])) {	/* S pole */
 							if (radius == 0.0) {	/* Only set the S pole row */
-								gmt_M_col_loop (GMT, Grid, Grid->header->n_rows - 1, col, ij)	/* Set this entire S row */
+								rowu = (openmp_int)Grid->header->n_rows - 1;
+								gmt_M_col_loop (GMT, Grid, rowu, colu, ij)	/* Set this entire S row */
 									Grid->data[ij] = mask_val[GMT_INSIDE];
 								continue;
 							}
 							for (row = (int)(Grid->header->n_rows - 1); row >= 0 && (distance = gmt_distance (GMT, 0.0, -90.0, grd_x0[0], grd_y0[row])) <= radius; row--) {
 								value = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
-								gmt_M_col_loop (GMT, Grid, row, col, ij)	/* Set this entire row */
+								rowu = (openmp_int)row;
+								gmt_M_col_loop (GMT, Grid, rowu, colu, ij)	/* Set this entire row */
 									Grid->data[ij] = value;
 							}
 							continue;
@@ -519,19 +521,19 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 						last_radius = radius;
 					}
 
-					row_end = row_0 + d_row;
-#ifdef _OPENMP
-#pragma omp parallel for private(row,col,rowu,colu,col_end,jj,ii,ij,wrap_180,distance) shared(Grid,HH,row_0,d_row,col_0,d_col,row_end,xtmp,S,grd_x0,grd_y0,replicate_x,replicate_y,x_wrap,y_wrap,radius,mask_val)
-#endif
-					for (row = row_0 - d_row; row <= row_end; row++) {
+					row_start = row_0 - (int)d_row;
+					row_end   = row_0 + (int)d_row;
+					GMT_Report (API, GMT_MSG_DEBUG, "Doing point %d for rows %d to %d\n", (int)k, row_start, row_end);
+					for (row = row_start; row <= row_end; row++) {
 						jj = row;
 						if (gmt_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range.  This call must happen BEFORE gmt_x_out_of_bounds as it sets wrap_180 */
-						rowu = jj;
-						col_end = col_0 + d_col[jj];
-						for (col = col_0 - d_col[row]; col <= col_end; col++) {
+						rowu = (openmp_int)jj;
+						col_start = col_0 - (int)d_col[rowu];
+						col_end   = col_0 + (int)d_col[rowu];
+						for (col = col_start; col <= col_end; col++) {
 							ii = col;
 							if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */
-							colu = ii;
+							colu = (openmp_int)ii;
 							ij = gmt_M_ijp (Grid->header, rowu, colu);
 							if (node_is_set[ij]) continue;	/* Already set */
 							if (Ctrl->S.mode == GRDMASK_N_CART_MASK)	/* Rectangular are for Cartesian so no need to check radius */
@@ -552,7 +554,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 									Grid->data[ij+x_wrap] = Grid->data[ij];
 									node_is_set[ij+x_wrap] = 1;	/* Mark as visited */
 								}
-								else if (colu == HH->nxp) {	/* Must replicate right to left column */
+								else if (colu == (openmp_int)HH->nxp) {	/* Must replicate right to left column */
 									Grid->data[ij-x_wrap] = Grid->data[ij];
 									node_is_set[ij-x_wrap] = 1;	/* Mark as visited */
 								}
@@ -562,7 +564,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 									Grid->data[ij+y_wrap] = Grid->data[ij];
 									node_is_set[ij+y_wrap] = 1;	/* Mark as visited */
 								}
-								else if (rowu == HH->nyp) {	/* Must replicate bottom to top row */
+								else if (rowu == (openmp_int)HH->nyp) {	/* Must replicate bottom to top row */
 									Grid->data[ij-y_wrap] = Grid->data[ij];
 									node_is_set[ij-y_wrap] = 1;	/* Mark as visited */
 								}
@@ -614,7 +616,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 
 					/* Here we will have to consider the x coordinates as well (or known_side is set) */
 #ifdef _OPENMP
-#pragma omp parallel for private(col,xx,side,ij) shared(Grid,n_columns,do_test,known_side,yy,S,row,Ctrl,z_value,mask_val)
+#pragma omp parallel for private(col,xx,side,ij) shared(n_columns,GMT,Grid,do_test,yy,S,known_side,row,Ctrl,z_value,mask_val)
 #endif
 					for (col = 0; col < n_columns; col++) {	/* Loop over grid columns */
 						ij = gmt_M_ijp (Grid->header, row, col);

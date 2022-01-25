@@ -156,5 +156,5 @@ References
 ----------
 
 Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity,
-*Geophys. Res. Lett., 34 (L03307)*, http://doi.org/10.1029/2006GL028857.
+*Geophys. Res. Lett., 34 (L03307)*, https://doi.org/10.1029/2006GL028857.
 

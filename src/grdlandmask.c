@@ -263,7 +263,9 @@ GMT_LOCAL void grdlandmask_assign_node (struct GMT_CTRL *GMT, struct GMT_GRID *G
 EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	bool temp_shift = false, wrap, used_polygons, double_dip;
 	unsigned int base = 3, k, bin, np, side, np_new;
-	int row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1, error = 0;
+	int row, row_min, row_max, col, col_min, col_max, nx1, ny1;
+	int ii, i, direction, err, ind, error = 0;
+	openmp_int rowu, colu;
 
 	int64_t ij;
 	uint64_t count[GRDLANDMASK_N_CLASSES];
@@ -384,7 +386,7 @@ EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	if (Ctrl->E.linetrace)
 		X = gmt_M_memory (GMT, X, nx_alloc, struct GRDLANDMASK_BINCROSS);
 
-	nx1 = Grid->header->n_columns - 1;	ny1 = Grid->header->n_rows - 1;
+	nx1 = (int)Grid->header->n_columns - 1;	ny1 = (int)Grid->header->n_rows - 1;
 
 	/* Fill out gridnode coordinates and apply the implicit linear projection */
 
@@ -512,8 +514,8 @@ EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 						}
 
 						if (ij != last_ij) {	/* Crossed into another cell */
-							start_col = MIN (last_col, col) + 1;
-							end_col = MAX (last_col, col);
+							start_col = MIN (last_col, (int)col) + 1;
+							end_col = MAX (last_col, (int)col);
 							dx = p[k].lon[pt] - p[k].lon[pt-1];
 
 							/* Find all the bin-line intersections - modified from x2sys_binlist */
@@ -530,7 +532,7 @@ EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 							/* Now add all crossings between this line segment and the gridlines outlining the cells centered on the nodes */
 
-							for (brow = MIN (last_row, row) + 1; brow <= MAX (last_row, row); brow++) {	/* If we go in here we know dy is non-zero */
+							for (brow = MIN (last_row, (int)row) + 1; brow <= MAX (last_row, (int)row); brow++) {	/* If we go in here we know dy is non-zero */
 								if (brow < 0 || brow > (int)C->n_rows) continue;	/* Outside grid */
 								/* Determine intersections between the line segment and parallels */
 								yb = gmt_M_grd_row_to_y (GMT, brow, C) + 0.5 * inc_inch[GMT_Y];
@@ -604,7 +606,7 @@ EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 			if (wrap) {	/* Handle jumps */
 				col_min = irint (ceil (fmod (c.lon_sw - Grid->header->wesn[XLO], 360.0) * HH->r_inc[GMT_X] - Grid->header->xy_off));
 				col_max = irint (floor (fmod (c.lon_sw + c.bsize - Grid->header->wesn[XLO], 360.0) * HH->r_inc[GMT_X] - Grid->header->xy_off));
-				if (col_max < col_min) col_max += Grid->header->n_columns;
+				if (col_max < col_min) col_max += (int)Grid->header->n_columns;
 			}
 			else {	/* Make sure we are inside our grid */
 				double lon_w, lon_e;
@@ -645,19 +647,18 @@ EXTERN_MSC int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	}
 
 #ifdef _OPENMP
-#pragma omp parallel for private(row,col,k,ij) shared(GMT,Grid,Ctrl)
+#pragma omp parallel for private(rowu,colu,k,ij) shared(GMT,Grid,Ctrl)
 #endif
 
-	gmt_M_grd_loop (GMT, Grid, row, col, ij) {	/* Turn levels into mask values */
+	gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {	/* Turn levels into mask values */
 		k = urint (Grid->data[ij]);
 		Grid->data[ij] = Ctrl->N.mask[k];
 		count[k]++;
-		if (col == 0 && double_dip) count[k]++;	/* Count these guys twice */
+		if (colu == 0 && double_dip) count[k]++;	/* Count these guys twice */
 	}
 
 	if (double_dip) { /* Copy over values to the repeating right column */
-		unsigned int row_l;
-		for (row_l = 0, ij = gmt_M_ijp (Grid->header, row_l, 0); row_l < Grid->header->n_rows; row_l++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
+		for (rowu = 0, ij = gmt_M_ijp (Grid->header, rowu, 0); rowu < (openmp_int)Grid->header->n_rows; rowu++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
 	}
 
 	if (temp_shift) {

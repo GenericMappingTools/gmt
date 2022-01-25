@@ -2328,7 +2328,8 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						memmove (&S->text[1], S->text, n_old * sizeof (char *));
 						S->text[0] = strdup ("");
 					}
-					par[0] = gmt_az_backaz (GMT, S->data[GMT_X][1], S->data[GMT_Y][1], S->data[GMT_X][2], S->data[GMT_Y][2], true);
+					/* Make sure we evaluate the outgoing azimuth at the first point */
+					par[0] = gmt_az_backaz (GMT, S->data[GMT_X][1], S->data[GMT_Y][1], S->data[GMT_X][2], S->data[GMT_Y][2], false) + 180.0;
 					par[1] = dist[0];
 					in[GMT_X] = S->data[GMT_X][1];	in[GMT_Y] = S->data[GMT_Y][1];
 					gmt_translate_point (GMT, in, out, par, geo);
@@ -2343,8 +2344,8 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							dist[1] = gmtspatial_dist_to_meter (GMT, Ctrl->W.length[1]);	/* Make sure we have degrees from whatever -W set */
 					}
 					if (S->text) S->text[S->n_rows-1] = strdup ("");
-					/* Get outward azimuth at last point and widen profile */
-					par[0] = gmt_az_backaz (GMT, S->data[GMT_X][S->n_rows-3], S->data[GMT_Y][S->n_rows-3], S->data[GMT_X][S->n_rows-2], S->data[GMT_Y][S->n_rows-2], false);
+					/* Make sure we evaluate the outgoing azimuth at the last point */
+					par[0] = gmt_az_backaz (GMT, S->data[GMT_X][S->n_rows-3], S->data[GMT_Y][S->n_rows-3], S->data[GMT_X][S->n_rows-2], S->data[GMT_Y][S->n_rows-2], true) + 180.0;
 					par[1] = dist[1];
 					in[GMT_X] = S->data[GMT_X][S->n_rows-2];	in[GMT_Y] = S->data[GMT_Y][S->n_rows-2];
 					gmt_translate_point (GMT, in, out, par, geo);
