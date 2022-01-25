@@ -2498,7 +2498,7 @@ void gmt_PvQv (struct GMT_CTRL *GMT, double x, double v_ri[], double pq[], unsig
 double gmt_grd_mean (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W) {
 	/* Compute the [weighted] mean of a grid.  Handle geographic grids with spherical weights W [NULL for cartesian] */
 	uint64_t node, n = 0;
-	unsigned int row, col;
+	openmp_int row, col;
 	double sum_zw = 0.0, sum_w = 0.0;
 	if (W) {	/* Weights provided */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
@@ -2522,7 +2522,7 @@ double gmt_grd_mean (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *
 double gmt_grd_std (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W) {
 	/* Compute the [weighted] std of a grid.  Handle geographic grids with spherical weights W [NULL for cartesian] */
 	uint64_t node, n = 0;
-	unsigned int row, col;
+	openmp_int row, col;
 	double std, mean = 0.0, delta, sumw = 0.0;
 	if (W) {	/* Weights provided */
 		double temp, R, M2 = 0.0;
@@ -2554,7 +2554,7 @@ double gmt_grd_std (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W
 double gmt_grd_rms (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W) {
 	/* Compute the [weighted] rms of a grid.  Handle geographic grids with spherical weights W [NULL for cartesian] */
 	uint64_t node, n = 0;
-	unsigned int row, col;
+	openmp_int row, col;
 	double rms, sum_z2w = 0.0, sum_w = 0.0;
 	if (W) {	/* Weights provided */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
@@ -2582,7 +2582,7 @@ double gmt_grd_median (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 	double wmed;
 
 	if (W) {	/* Weights provided */
-		unsigned int row, col;
+		openmp_int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
 		/* 1. Create array of value,weight pairs, skipping NaNs */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
@@ -2616,7 +2616,7 @@ double gmt_grd_mad (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W
 	uint64_t node, n = 0;
 	double wmed, wmad;
 	if (W) {	/* Weights provided */
-		unsigned int row, col;
+		openmp_int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
 		if (median) {	/* Already have the median */
 			wmed = *median;
@@ -2673,7 +2673,7 @@ double gmt_grd_mode (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *
 	double wmode;
 
 	if (W) {	/* Weights provided */
-		unsigned int row, col;
+		openmp_int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
 		/* 1. Create array of value,weight pairs, skipping NaNs */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
@@ -2709,7 +2709,7 @@ double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 	uint64_t node, n = 0;
 	double wmode, lmsscl;
 	if (W) {	/* Weights provided */
-		unsigned int row, col;
+		openmp_int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
 		if (mode) {	/* Already got the mode */
 			wmode = *mode;
@@ -2773,7 +2773,8 @@ GMT_LOCAL void gmtstat_get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *
 	 * P.Wessel, July 2016.
 	 */
 	uint64_t node;
-	unsigned int row, col, j, first_row = 0, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1, ltype;
+	openmp_int row, col, first_row = 0, last_row = (openmp_int)G->header->n_rows - 1, last_col = (openmp_int)G->header->n_columns - 1;
+	unsigned int j, ltype;
 	double lat, area, f, row_weight, col_weight = 1.0, R2 = pow (0.001 * GMT->current.proj.mean_radius, 2.0);	/* squared mean radius in km */
 	char *aux[6] = {"geodetic", "authalic", "conformal", "meridional", "geocentric", "parametric"};
 	char *rad[5] = {"mean (R_1)", "authalic (R_2)", "volumetric (R_3)", "meridional", "quadratic"};
@@ -2816,7 +2817,7 @@ GMT_LOCAL void gmtstat_get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *
 GMT_LOCAL void gmtstat_get_cart_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	/* Calculate Cartesian cell areas in user units */
 	uint64_t node;
-	unsigned int row, col, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1;
+	openmp_int row, col, last_row = (openmp_int)G->header->n_rows - 1, last_col = (openmp_int)G->header->n_columns - 1;
 	double row_weight = 1.0, col_weight = 1.0, area = G->header->inc[GMT_X] * G->header->inc[GMT_Y];	/* All whole cells have same area */
 	gmt_M_unused(GMT);
 	gmt_M_row_loop (GMT, G, row) {	/* Loop over the rows */

@@ -7305,6 +7305,10 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 				expectation = GMT_IS_DIMENSION;
 			else if (strchr (GMT_LEN_UNITS, c))	/* Found a trailing geo-length unit (d|m|s|e|f|k|M|n|u) */
 				expectation = GMT_IS_GEODIMENSION;
+			else if (gmtlib_maybe_abstime (GMT, s)) {
+				strcat (s, "T");	/* Add missing T */
+				expectation = GMT_IS_ARGTIME;
+			}
 			else 					/* Found nothing - assume floating point */
 				expectation = GMT_IS_FLOAT;
 		}

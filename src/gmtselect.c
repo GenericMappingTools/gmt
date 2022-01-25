@@ -910,7 +910,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->G.active) {	/* Check if we are in/out-side mask cell */
-			unsigned int row, col;
+			openmp_int row, col;
 			if (gmt_M_y_is_outside (GMT, In->data[GMT_Y], G->header->wesn[YLO], G->header->wesn[YHI]) ||	/* Outside y-range */
 				gmt_x_is_outside (GMT, &In->data[GMT_X], G->header->wesn[XLO], G->header->wesn[XHI])) {	/* Outside x-range */
 				inside = false;	/* Outside both y- and x-range (or periodic longitude) for this grid */
