@@ -392,7 +392,8 @@ EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes,
 EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	int i, j, PS_interpolate = 1, PS_transparent = 1, is_eps = 0, error = 0, is_gdal = 0;
 	int k, r = 0, g = 0, b = 0, has_trans = 0;
-	unsigned int row, col, colormap[4*256];;
+	unsigned int row, col;
+	unsigned char colormap[4*256];
 	size_t n;
 	bool free_GMT = false, did_gray = false;
 
