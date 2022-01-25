@@ -16,7 +16,6 @@
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: psimage reads an EPS file or a 1, 8, 24, or 32 bit image and plots it on the page
- * Images are only supported if GMT was built with GDAL support.
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
@@ -409,7 +408,7 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
-	struct GMT_IMAGE *I = NULL;		/* A GMT image datatype, if GDAL is used */
+	struct GMT_IMAGE *I = NULL;		/* A GMT image datatype */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/

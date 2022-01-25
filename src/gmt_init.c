@@ -15741,7 +15741,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	gmt_M_memcpy (spacing, GMT->current.plot.gridline_spacing, 2U, double);	/* Remember these so they can survive the end of the module */
 
-	/* If that's the case, clean up anu GDAL CT object */
+	/* If that's the case, clean up any GDAL CT object */
 	if (GMT->current.gdal_read_in.hCT_fwd)
 		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_fwd);
 	if (GMT->current.gdal_read_in.hCT_inv)

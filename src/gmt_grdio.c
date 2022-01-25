@@ -77,7 +77,7 @@
  *  gmt_grd_flip_vertical  : Flips the grid in vertical direction
  *  gmtgrdio_pack_grid         : Packs or unpacks a grid by calling gmt_scale_and_offset_f()
  *
- *  Reading images via GDAL (if enabled):
+ *  Reading images via GDAL:
  *  gmtlib_read_image          : Read [subset of] an image via GDAL
  *  gmtlib_read_image_info     : Get information for an image via GDAL
  *

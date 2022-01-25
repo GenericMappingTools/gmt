@@ -511,4 +511,4 @@ int gmt_gdal_warp (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) 
 	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
-#endif		//defined(HAVE_GDAL) && ...
+#endif		/* ((GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)) || (GDAL_VERSION_MAJOR >= 3) */

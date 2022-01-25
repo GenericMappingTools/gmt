@@ -35,7 +35,7 @@
 #define THIS_MODULE_NEEDS	"Jg"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc") GMT_ADD_x_OPT
 
-/* These are images that GDAL knows how to read for us. Otherwise we can only deal with ppm */
+/* These are images that GDAL knows how to read for us. */
 #define N_IMG_EXTENSIONS 6
 static char *gdal_ext[N_IMG_EXTENSIONS] = {"tiff", "tif", "gif", "png", "jpg", "bmp"};
 
@@ -283,7 +283,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 					Ctrl->A.file = strdup (opt->arg);
 					Ctrl->A.way = 1;	/* Building image directly, use TRP layout, no call to GDAL, writing a PPM file */
 				}
-				else {	/* Must give file and GDAL driver and this requires GDAL support */
+				else {	/* Must give file and GDAL driver */
 					Ctrl->A.file = strdup (opt->arg);
 					while (Ctrl->A.file[n] != '=' && n > 0) n--;
 					if (n == 0) {	/* Gave no driver, see if we requested one of the standard image formats */
@@ -1172,7 +1172,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	struct GMT_GRID_HEADER *header_work = NULL;	/* Pointer to a GMT header for the image or grid */
 	struct GMT_GRID_HEADER *header_D = NULL, *header_I = NULL, *header_G = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;	/* A GMT image datatype, if GDAL is used */
+	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;	/* A GMT image datatype */
 	struct GMT_IMAGE *Out = NULL;	/* A GMT image datatype, if external interface is used with -A */
 	struct GMT_GRID *G2 = NULL;
 	struct GRDIMAGE_CONF *Conf = NULL;

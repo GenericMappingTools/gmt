@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-GDAL=`gmt grdconvert 2>&1 | grep -c gd`
-if [ $GDAL -eq 0 ]; then exit; fi
-
 ps=transparent_png.ps
 
 # Make several plots to test transparency

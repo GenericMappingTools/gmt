@@ -16,9 +16,8 @@ Bonn. Obviously, the flag of the European Union came to mind as a good
 To avoid adding large files to this example, some steps have been
 already done. First we get the EU flag directly from the web and convert
 it to a grid with values ranging from 0 to 255, where the higher values
-will become yellow and the lower values blue. This use of
-:doc:`grdconvert </grdconvert>` requires GDAL support.
-:doc:`grdedit </grdedit>` then adds the right grid dimension.
+will become yellow and the lower values blue. Then,
+:doc:`grdedit </grdedit>` adds the right grid dimension.
 
 The second step is to reformat the GTOPO30 DEM file to a netCDF grid as
 well and then subsample it at the same pixels as the EU flag. We then
