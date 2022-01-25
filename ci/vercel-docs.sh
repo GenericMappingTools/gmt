@@ -11,7 +11,7 @@ yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.r
 yum install cmake3 ninja-build libcurl-devel netcdf-devel
 # Install Python packages
 # importlib-resources is required for Python <3.7
-pip install docutils==0.17 sphinx importlib-resources
+pip install docutils==0.17 sphinx dvc importlib-resources
 
 # Install latest gs
 curl -SLO https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9533/ghostscript-9.53.3-linux-x86_64.tgz
@@ -28,6 +28,9 @@ set (CMAKE_INSTALL_PREFIX "${GMT_INSTALL_DIR}")
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement \${CMAKE_C_FLAGS}")
 set (CMAKE_C_FLAGS "-Wextra \${CMAKE_C_FLAGS}")
 EOF
+
+# Pull images from DAGsHub repository
+dvc pull
 
 # Build and install GMT
 mkdir build
