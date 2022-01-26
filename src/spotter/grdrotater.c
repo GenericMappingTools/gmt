@@ -1,3 +1,4 @@
+
 /*--------------------------------------------------------------------
  *
  *	Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
@@ -420,7 +421,7 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 	int scol, srow, error = 0;	/* Signed row, col */
 	int n_stages;
 	bool not_global, global = false;
-	unsigned int col, row, col_o, row_o, start_row, stop_row, start_col, stop_col;
+	openmp_int col, row, col_o, row_o, start_row, stop_row, start_col, stop_col;
 	char gfile[PATH_MAX] = {""};
 
 	uint64_t ij, ij_rot, seg, rec, t;
@@ -634,7 +635,7 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 		grd_x = G_rot->x;
 		grd_y = G_rot->y;
 		grd_yc = gmt_M_memory (GMT, NULL, G_rot->header->n_rows, double);
-		for (row = 0; row < G_rot->header->n_rows; row++) grd_yc[row] = gmt_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
+		for (row = 0; row < (openmp_int)G_rot->header->n_rows; row++) grd_yc[row] = gmt_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 
 		/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 
@@ -674,9 +675,9 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 				start_col = (scol > PAD) ? scol - PAD : 0;
 				stop_col  = ((scol + PAD) >= 0) ? scol + PAD : 0;
 				for (row = start_row; row <= stop_row; row++) {
-					if (row >= G_rot->header->n_rows) continue;
+					if (row >= (openmp_int)G_rot->header->n_rows) continue;
 					for (col = start_col; col <= stop_col; col++) {
-						if (col >= G_rot->header->n_columns) continue;
+						if (col >= (openmp_int)G_rot->header->n_columns) continue;
 						ij_rot = gmt_M_ijp (G_rot->header, row, col);
 						if (!gmt_M_is_fnan (G_rot->data[ij_rot])) continue;	/* Already done this */
 						if (not_global && grdrotater_skip_if_outside (GMT, pol, grd_x[col], grd_yc[row])) continue;	/* Outside input polygon */
@@ -686,10 +687,10 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 						yy = gmt_lat_swap (GMT, yy, GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 						scol = (int)gmt_M_grd_x_to_col (GMT, xx, G->header);
 						if (scol < 0) continue;
-						col_o = scol;	if (col_o >= G->header->n_columns) continue;
+						col_o = scol;	if (col_o >= (openmp_int)G->header->n_columns) continue;
 						srow = (int)gmt_M_grd_y_to_row (GMT, yy, G->header);
 						if (srow < 0) continue;
-						row_o = srow;	if (row_o >= G->header->n_rows) continue;
+						row_o = srow;	if (row_o >= (openmp_int)G->header->n_rows) continue;
 						ij = gmt_M_ijp (G->header, row_o, col_o);
 						G_rot->data[ij_rot] = G->data[ij];
 					}

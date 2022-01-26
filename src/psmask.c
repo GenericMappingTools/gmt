@@ -627,8 +627,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
-	unsigned int section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
-	unsigned int io_mode = GMT_WRITE_SET, max_d_col = 0, ii, jj, i_start, j_start, first = 1;
+	openmp_int row, col, *d_col = NULL, d_row = 0, max_d_col = 0, ii, jj, i_start, j_start;
+	unsigned int section, k, n_edges;
+	unsigned int io_mode = GMT_WRITE_SET, first = 1;
 	unsigned int fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
 	int error = 0;
 	bool node_only, make_plot, closed;
@@ -779,10 +780,10 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 			}
-		if (In->data == NULL) {
-			gmt_quit_bad_record (API, In);
-			Return (API->error);
-		}
+			if (In->data == NULL) {
+				gmt_quit_bad_record (API, In);
+				Return (API->error);
+			}
 
 			in = In->data;	/* Only need to process numerical part here */
 
@@ -807,7 +808,7 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 								grd[ij] = 1;
 							continue;
 						}
-						for (row = 0; row < Grid->header->n_rows && (distance = gmt_distance (GMT, 0.0, 90.0, grd_x0[0], grd_y0[row])) <= Ctrl->S.radius; row++) {
+						for (row = 0; row < (openmp_int)Grid->header->n_rows && (distance = gmt_distance (GMT, 0.0, 90.0, grd_x0[0], grd_y0[row])) <= Ctrl->S.radius; row++) {
 							gmt_M_col_loop (GMT, Grid, row, col, ij)	/* Set this entire row */
 								grd[ij] = 1;
 						}
@@ -834,13 +835,14 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 
 				j_start = (row > d_row) ? row - d_row : 0;
 				for (jj = j_start; jj <= row + d_row; jj++) {
-					if (jj >= Grid->header->n_rows) continue;
+					if (jj >= (openmp_int)Grid->header->n_rows) continue;
 					i_start = (col > d_col[jj]) ? col - d_col[jj] : 0;
 					for (ii = i_start; ii <= col + d_col[jj]; ii++) {
-						if (ii >= Grid->header->n_columns) continue;
+						if (ii >= (openmp_int)Grid->header->n_columns) continue;
+						ij = gmt_M_ijp (Grid->header, jj, ii);
+						if (grd[ij]) continue;	/* Already set */
 						distance = gmt_distance (GMT, x0, y0, grd_x0[ii], grd_y0[jj]);
 						if (distance > Ctrl->S.radius) continue;
-						ij = gmt_M_ijp (Grid->header, jj, ii);
 						grd[ij] = 1;
 					}
 				}
@@ -857,8 +859,8 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 
 		/* Force perimeter nodes to be false; thus all contours will be closed */
 
-		for (col = 0, ij = (Grid->header->n_rows-1) * (uint64_t)Grid->header->n_columns; col < Grid->header->n_columns; col++) grd[col] = grd[col+ij] = 0;
-		for (row = 0; row < Grid->header->n_rows; row++) grd[row*Grid->header->n_columns] = grd[(row+1)*Grid->header->n_columns-1] = 0;
+		for (col = 0, ij = (Grid->header->n_rows-1) * (uint64_t)Grid->header->n_columns; col < (openmp_int)Grid->header->n_columns; col++) grd[col] = grd[col+ij] = 0;
+		for (row = 0; row < (openmp_int)Grid->header->n_rows; row++) grd[row*Grid->header->n_columns] = grd[(row+1)*Grid->header->n_columns-1] = 0;
 
 		if (Ctrl->L.active) {	/* Save a copy of the grid to file */
 			struct GMT_GRID *G = NULL;
@@ -946,11 +948,11 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 			double y_bot, y_top, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL;
 			GMT_Report (API, GMT_MSG_INFORMATION, "Tiling...\n");
 
-			for (row = 0; row < Grid->header->n_rows; row++) {
+			for (row = 0; row < (openmp_int)Grid->header->n_rows; row++) {
 				y_bot = grd_y0[row] - inc2[GMT_Y];
 				y_top = grd_y0[row] + inc2[GMT_Y];
 				ij = gmt_M_ijp (Grid->header, row, 0);
-				for (col = 0; col < Grid->header->n_columns; col++, ij++) {
+				for (col = 0; col < (openmp_int)Grid->header->n_columns; col++, ij++) {
 					if (grd[ij] == 0) continue;
 
 					np = gmt_graticule_path (GMT, &xx, &yy, 1, true, grd_x0[col] - inc2[GMT_X], grd_x0[col] + inc2[GMT_X], y_bot, y_top);

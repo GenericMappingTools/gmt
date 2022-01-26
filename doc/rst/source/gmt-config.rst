@@ -18,7 +18,7 @@ Description
 
 **gmt-config** is used by developers who need to know technical information
 about the current GMT installation, such as what include files to supply,
-the path to the library, or if it was built with GDAL support, and more.
+the path to the library, and more.
 
 Required Arguments
 ------------------
@@ -60,9 +60,6 @@ Optional Arguments
 
 **--has-fftw**
     Whether FFTW is used in build.
-
-**--has-gdal**
-    Whether GDAL is used in build.
 
 **--has-pcre**
     Whether PCRE is used in build.

@@ -112,7 +112,7 @@ Optional Arguments
 .. _-E:
 
 **-E**\ *code1,code2,...*\ [**+l**\|\ **L**\|\ **n**][**+c**\|\ **C**][**+g**\ *fill*][**+p**\ *pen*][**+z**]
-    Select painting, clipping or dumping country polygons from the Digital Chart of the World.
+    Select painting, clipping or dumping country polygons from the Digital Chart of the World (DCW).
     This is another dataset independent of GSHHG and hence the **-A** and **-D** options do not apply.
     Append one or more comma-separated countries using either the
     `2-character ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_
@@ -125,8 +125,8 @@ Optional Arguments
     Use **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
     You can append **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list
     countries in that continent or country; repeat if more than one continent or country is requested.
-    Finally, use **+n** to list the named collections or regions, and use **-E**\ *code* to only list
-    collections that contains the listed codes.  All names are case-insensitive.
+    Finally, use **+n** to list the named :ref:`DCW collections <dcw-collections>` or regions, and use **-E**\ *code*\ **+n**
+    to only list collections that contains the listed codes.  All names are case-insensitive.
     To set up clip paths based on your selection, append **+c** or **+C** for inside or outside (area between selection
     and the map boundary) clipping, respectively.  To plot instead,
     append **+p**\ *pen* to draw polygon outlines [no outline] and
@@ -274,13 +274,15 @@ Optional Arguments
 
 .. module_common_ends
 
-Notes
------
+DCW Collections
+---------------
 
-The **-E** option can be expanded to take the user's own custom collections
+.. _dcw-collections:
+
+The **-E** and **-R** options can be expanded to take the user's own custom collections
 and named regions.  Users can create a dcw.conf file and place it in their
 GMT user directory (typically ~/.gmt).  The format of the file is the same
-as the dcw-collections.txt file distributed with DCW::
+as the dcw-collections.txt file distributed with DCW 2.1.0 or later::
 
     # Arbitrary comments and blank lines anywhere
 
@@ -293,7 +295,9 @@ as the dcw-collections.txt file distributed with DCW::
 
 Each *tag:* record must be immediately followed by either a *list:* or *region:* record.
 All tags should be at least 3 characters long. Either the *tag* or the *name* (if available)
-can be used to make selections in **-R** or **-E**.
+can be used to make selections in **-R** or **-E**. The **-E+n** option wil list the contents
+of the collection distributed with DCW as well as any contents in ~/.gmt/dcw.conf. The latter
+file is consulted first and can be used to override same-name tag selections in the system DCW file.
 
 Examples
 --------

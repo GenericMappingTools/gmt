@@ -145,9 +145,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_psl.h"            /* Declarations of structure for GMT PostScript settings */
 #include "gmt_hash.h"           /* Declarations of structure for GMT hashing */
 
-#ifdef HAVE_GDAL
-#	include "gmt_gdalread.h"      /* GDAL support */
-#endif
+#include "gmt_gdalread.h"      /* GDAL support */
 
 #include "gmt_common.h"         /* For holding the GMT common option settings */
 #include "gmt_fft.h"            /* Structures and enums used by programs needing FFTs */

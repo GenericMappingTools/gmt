@@ -971,7 +971,6 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		else
 			nc_del_att (ncid, NC_GLOBAL, "node_offset");
 
-#ifdef HAVE_GDAL
 		/* If we have projection information create a container variable named "grid_mapping" with an attribute
 		   "spatial_ref" that will hold the projection info in WKT format. GDAL and Mirone know use this info */
 		if ((header->ProjRefWKT != NULL) || (header->ProjRefPROJ4 != NULL)) {
@@ -1010,7 +1009,6 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			}
 		}
 L100:
-#endif
 
 		/* Avoid NaN increments */
 		if (gmt_M_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;

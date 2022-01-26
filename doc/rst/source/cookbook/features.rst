@@ -1034,8 +1034,8 @@ use **-G** for this task and some have several options specifying different fill
 Due to PostScript implementation limitations the raster images used
 with **-G** must be less than 146 x 146 pixels in size; for larger
 images see :doc:`/image`. The format of Sun raster files [18]_ is
-outlined in Chapter :doc:`file-formats`. However, if you built GMT
-with GDAL then other image formats can be used as well. Note that under
+outlined in Chapter :doc:`file-formats`; other image formats can be
+used as well. Note that under
 PostScript Level 1 the patterns are filled by using the polygon as a
 *clip path*. Complex clip paths may require more memory than the
 PostScript interpreter has been assigned. There is therefore the
@@ -2397,7 +2397,7 @@ approach should contact the GMT team for guidance.
 +----------+---------------------------------------------------------------+
 | ef       | ESRI Arc/Info ASCII Grid Interchange format (ASCII float)     |
 +----------+---------------------------------------------------------------+
-| gd       | Import/export via GDAL [19]_                                  |
+| gd       | Import/export via GDAL                                        |
 +----------+---------------------------------------------------------------+
 
 Because some formats have limitations on the range of values they can
@@ -2691,8 +2691,7 @@ unit of the z-coordinate. The default is simply "z".
 Modifiers to read and write grids and images via GDAL
 -----------------------------------------------------
 
-If the support has been configured during installation, then GMT can
-read and write a variety of grid and image formats via GDAL. This
+GMT can read and write a variety of grid and image formats via GDAL. This
 extends the capability of GMT to handle data sets from a variety of
 sources.
 
@@ -2964,6 +2963,3 @@ Footnotes
 
 .. [18]
    Convert other graphics formats to Sun ras format using GraphicsMagick's or ImageMagick's **convert** program.
-
-.. [19]
-   Requires building GMT with GDAL.

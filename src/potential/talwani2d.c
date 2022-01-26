@@ -539,7 +539,8 @@ GMT_LOCAL double talwani2d_get_one_output (struct GMT_CTRL *GMT, double x_obs, d
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
-	int srow, error = 0, ns;
+	int error = 0, ns;
+	int64_t srow;
 	unsigned int k, tbl, seg, n = 0, geometry, n_bodies, dup_node = 0, n_duplicate = 0;
 	size_t n_alloc = 0, n_alloc1 = 0;
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 2}, row;
@@ -748,7 +749,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 			/* Spread calculation over selected cores */
 #pragma omp parallel for private(srow,z_level,answer) shared(GMT,Ctrl,S,scl,body,n_bodies, G0)
 #endif
-			for (srow = 0; srow < (int)S->n_rows; srow++) {	/* Calculate attraction at all output locations for this segment. OpenMP requires sign int srow */
+			for (srow = 0; srow < (int64_t)S->n_rows; srow++) {	/* Calculate attraction at all output locations for this segment. OpenMP requires sign int srow */
 				z_level = (S->n_columns == 2 && !(Ctrl->Z.mode & 1)) ? S->data[GMT_Y][srow] : Ctrl->Z.level;
 				answer = talwani2d_get_one_output (GMT, S->data[GMT_X][srow] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax, G0);
 				S->data[GMT_Y][srow] = answer;

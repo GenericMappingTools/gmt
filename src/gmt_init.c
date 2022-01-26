@@ -5636,14 +5636,14 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 			}
 			GMT->current.proj.N_hemi = (strchr ("AB", GMT->common.J.string[1]) == NULL) ? true : false;	/* Upper case -JoA, -JoB allows S pole views */
 			if (n_slashes == 3) {
-				double distance = 10.0;	/* Default spherical length for gmt_translate_point */
+				double distance = 10.0;	/* Default spherical length for gmtlib_translate_point */
 				n = sscanf (args, "%[^/]/%[^/]/%lf/%s", txt_a, txt_b, &az, txt_e);
 				error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
 				error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
 				if ((90.0 - fabs (GMT->current.proj.pars[1])) < distance)
 					distance = 90.0 - fabs (GMT->current.proj.pars[1]) - GMT_CONV4_LIMIT;
 				/* compute point <distance> degrees from origin along azimuth */
-				gmt_translate_point (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], az, distance, &GMT->current.proj.pars[2], &GMT->current.proj.pars[3], NULL);
+				gmtlib_translate_point (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], az, distance, &GMT->current.proj.pars[2], &GMT->current.proj.pars[3], NULL);
 			}
 			else if (n_slashes == 4) {
 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
@@ -15762,14 +15762,12 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	gmt_M_memcpy (spacing, GMT->current.plot.gridline_spacing, 2U, double);	/* Remember these so they can survive the end of the module */
 
-#ifdef HAVE_GDAL
-	/* If that's the case, clean up anu GDAL CT object */
+	/* If that's the case, clean up any GDAL CT object */
 	if (GMT->current.gdal_read_in.hCT_fwd)
 		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_fwd);
 	if (GMT->current.gdal_read_in.hCT_inv)
 		OCTDestroyCoordinateTransformation(GMT->current.gdal_read_in.hCT_inv);
 	GMT->current.gdal_read_in.hCT_fwd = GMT->current.gdal_read_in.hCT_inv = NULL;
-#endif
 
 	if (GMT->hidden.func_level == GMT_TOP_MODULE && GMT->current.ps.oneliner && GMT->current.ps.active) {
 		char *setting = getenv ("GMT_END_SHOW");
@@ -15914,12 +15912,10 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	*/
 	GMT->current.setting.io_lonlat_toggle[GMT_IN] = GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;
 
-#ifdef HAVE_GDAL
 	/* Reset these GDAL in/out stuff */
 	gmt_M_memset (&GMT->current.gdal_read_in,  1, struct GMT_GDALREAD_IN_CTRL);
 	gmt_M_memset (&GMT->current.gdal_read_out, 1, struct GMT_GDALREAD_OUT_CTRL);
 	gmt_M_memset (&GMT->current.gdal_write,    1, struct GMT_GDALWRITE_CTRL);
-#endif
 
 	GMT->parent->cache = false;		/* Otherwise gdalread from externals on Windows would mingle CACHEDIR in fnames */
 
@@ -17427,7 +17423,6 @@ unsigned int gmt_parse_inc_option (struct GMT_CTRL *GMT, char option, char *item
 	return GMT_NOERROR;
 }
 
-#ifdef HAVE_GDAL
 GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	/* Deal with proj.4 or EPSGs passed in -J option */
 	char  *item_t1 = NULL, *item_t2 = NULL, wktext[32] = {""}, *pch;
@@ -17586,7 +17581,6 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
 
 	return error;
 }
-#endif
 
 /*! gmt_parse_common_options interprets the command line for the common, unique options
  * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -a, -b, -c, -d, -e, -f, -g, -h, -i, -j, -l, -n, -o, -p, -q, -r, -s, -t, -w, -:, -- and -^.
@@ -17657,7 +17651,6 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				GMT->common.J.zactive = true;
 			}
 			else if (item && (item[0] == '+' || isdigit(item[0]) || !strncmp(item, "EPSG:", 5) || !strncmp(item, "epsg:", 5))) {
-#ifdef HAVE_GDAL
 				char   source[GMT_LEN1024] = {""}, dest[GMT_LEN1024] = {""}, *pch;
 				bool two = false;
 
@@ -17713,11 +17706,6 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				if (GMT->current.gdal_read_in.hCT_fwd == NULL || GMT->current.gdal_read_in.hCT_inv == NULL)
 					error = 1;
 			}
-#else
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "PROJ.4 can only be used with GDAL linked GMT.\n");
-				error = 1;
-			}
-#endif
 			else {	/* Horizontal map projection */
 				error += (gmt_M_check_condition (GMT, GMT->common.J.active, "Option -J given more than once\n") ||
 				                                 gmtinit_parse_J_option (GMT, item));
@@ -18172,7 +18160,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	struct GMT_CTRL *GMT = NULL;
 	char version[GMT_LEN8] = {""};
-#if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 3)
+#if (GDAL_VERSION_MAJOR >= 3)
 	char *path1 = NULL, *path2 = NULL, *paths[2] = {NULL, NULL};
 	int  local_count = 0;
 #endif
@@ -18229,7 +18217,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	API->GMT = GMT;
 
-#if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 3)
+#if (GDAL_VERSION_MAJOR >= 3)
 	/* Here we allow users to declare a different location for the GDAL's GDAL_DATA and
 	   PROJ4 PROJ_LIB directories. The later may be particularly useful in these days of
 	   transition to GDAL3.0, which imply PROJ4 V6 but many (different) PROJ_LIB from PROJ4 < 6
