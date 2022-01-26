@@ -298,7 +298,8 @@ GMT_LOCAL double polespotter_get_angle_between_trends (struct GMT_CTRL *GMT, dou
 EXTERN_MSC int GMT_polespotter (void *V_API, int mode, void *args) {
 	bool create_great_circles;
 	int error;
-	unsigned int d, n_steps, grow, gcol, k;
+	openmp_int grow, gcol;
+	unsigned int d, n_steps, k;
 	uint64_t node, tbl, seg, row, ng = 0;
 	size_t n_alloc = 0;
 	char header[GMT_LEN128] = {""}, *code = NULL;
@@ -576,9 +577,9 @@ EXTERN_MSC int GMT_polespotter (void *V_API, int mode, void *args) {
 
 		plon = gmt_grd_coord (GMT, Grid->header, GMT_X);
 		plat = gmt_grd_coord (GMT, Grid->header, GMT_Y);
-		for (grow = 0; grow < Grid->header->n_rows; grow++) {	/* Try all possible pole latitudes in selected region */
+		for (grow = 0; grow < (openmp_int)Grid->header->n_rows; grow++) {	/* Try all possible pole latitudes in selected region */
 			plat[grow] = gmt_lat_swap (GMT, plat[grow], GMT_LATSWAP_G2O);	/* Convert latitude to geodetic */
-			for (gcol = 0; gcol < Grid->header->n_columns; gcol++) {	/* Try all possible pole longitudes in selected region */
+			for (gcol = 0; gcol < (openmp_int)Grid->header->n_columns; gcol++) {	/* Try all possible pole longitudes in selected region */
 				node = gmt_M_ijp (Grid->header, grow, gcol);		/* Current grid node */
 				gmt_geo_to_cart (GMT, plat[grow], plon[gcol], X, true);	/* Get x/y/z of current pole X */
 				/* Now visit all our segments */

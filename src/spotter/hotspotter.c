@@ -304,7 +304,8 @@ EXTERN_MSC int GMT_hotspotter (void *V_API, int mode, void *args) {
 	uint64_t node, node_0;		/* Grid indices */
 	uint64_t n_expected_fields;
 	unsigned int n_stages;	/* Number of stage rotations (poles) */
-	unsigned int row, col, kx, ky, m;
+	unsigned int kx, ky, m;
+	openmp_int row, col;
 	int node_x_width;		/* Number of x-nodes covered by the seamount in question (y-dependent) */
 	int node_y_width;		/* Number of y-nodes covered by the seamount */
 	int d_col, d_row, col_0, row_0, n_columns, n_rows;
@@ -417,7 +418,7 @@ EXTERN_MSC int GMT_hotspotter (void *V_API, int mode, void *args) {
 	latfactor  = gmt_M_memory (GMT, NULL, G->header->n_rows, double);
 	ilatfactor = gmt_M_memory (GMT, NULL, G->header->n_rows, double);
 
-	for (row = 0; row < G->header->n_rows; row++) {
+	for (row = 0; row < (openmp_int)G->header->n_rows; row++) {
 		latfactor[row] = G_rad->header->inc[GMT_X] * cos (ypos[row]);
 		ilatfactor[row] = 1.0 / latfactor[row];
 	}
@@ -512,9 +513,9 @@ EXTERN_MSC int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 			/* OK, this point is within our region, get node index */
 
-			col = (unsigned int)gmt_M_grd_x_to_col (GMT, c[kx], G_rad->header);
+			col = (openmp_int)gmt_M_grd_x_to_col (GMT, c[kx], G_rad->header);
 			yg = gmt_lat_swap (GMT, R2D * c[ky], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-			row = (unsigned int)gmt_M_grd_y_to_row (GMT, yg, G->header);
+			row = (openmp_int)gmt_M_grd_y_to_row (GMT, yg, G->header);
 			node = gmt_M_ijp (G->header, row, col);
 
 			if (!processed_node[node]) {	/* Have not added to the CVA at this node yet */

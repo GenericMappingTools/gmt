@@ -533,7 +533,7 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 	 * 3. Grid-registered grids have boundary nodes that only apply to 1/2 the area
 	 *    (and the four corners (unless poles) only 1/4 the area of other cells).
 	 */
-	unsigned int row, col, last_row;
+	openmp_int row, col, last_row;
 	uint64_t ij;
 	double row_weight, col_weight, dy_half = 0.0, dx, y, lat, lat_s, lat_n, s2 = 0.0, f;
 	struct GMT_GRID *A = NULL;
@@ -567,12 +567,12 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 			}
 		}
 		else {	/* If Cartesian then row_weight is a constant 1 except for gridline-registered grids at top or bottom row */
-			row_weight = (A->header->registration == GMT_GRID_NODE_REG && (row == 0 || row == (A->header->n_rows-1))) ? 0.5 : 1.0;	/* Share weight with repeat point */
+			row_weight = (A->header->registration == GMT_GRID_NODE_REG && (row == 0 || row == (openmp_int)(A->header->n_rows-1))) ? 0.5 : 1.0;	/* Share weight with repeat point */
 			row_weight *= A->header->inc[GMT_Y];
 		}
 
 		gmt_M_col_loop (GMT, A, row, col, ij) {	/* Now loop over the columns */
-			col_weight = dx * ((A->header->registration == GMT_GRID_NODE_REG && (col == 0 || col == (A->header->n_columns-1))) ? 0.5 : 1.0);
+			col_weight = dx * ((A->header->registration == GMT_GRID_NODE_REG && (col == 0 || col == (openmp_int)(A->header->n_columns-1))) ? 0.5 : 1.0);
 			A->data[ij] = (gmt_grdfloat)(row_weight * col_weight);
 		}
 	}
@@ -688,7 +688,7 @@ GMT_LOCAL double grdfilter_get_filter_width (struct GMTAPI_CTRL *API, struct GRD
 		if (c) text[L] = c;	/* Restore m|s */
 	}
 	else {	/* Must read the grid */
-		unsigned int row, col;
+		openmp_int row, col;
 		uint64_t node;
 		struct GMT_GRID *W = NULL;
 		if ((W = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, text, NULL)) == NULL) {	/* Get entire grid */
@@ -924,9 +924,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 EXTERN_MSC int GMT_grdfilter (void *V_API, int mode, void *args) {
 	bool fast_way, slow = false, slower = false, same_grid = false;
 	bool spherical = false, full_360, visit_check = false, get_weight_sum = true;
-	unsigned int n_nan = 0, col_out, row_out, effort_level;
+	openmp_int col_out, row_out, col_in, row_in;
+	unsigned int n_nan = 0, effort_level;
 	unsigned int filter_type, one_or_zero = 1, GMT_n_multiples = 0;
-	int i, tid = 0, col_in, row_in, ii, jj, *col_origin = NULL, nx_wrap = 0, error = 0;
+	int i, tid = 0, ii, jj, *col_origin = NULL, nx_wrap = 0, error = 0;
 	uint64_t ij_in, ij_out, ij_wt;
 	double x_scale = 1.0, y_scale = 1.0, x_width, y_width, par[GRDFILTER_N_PARS];
 	double x_out, wt_sum, last_median = 0.0;
@@ -1248,7 +1249,7 @@ EXTERN_MSC int GMT_grdfilter (void *V_API, int mode, void *args) {
 #endif
 	/* Compute nearest xoutput i-indices and shifts once */
 
-	for (col_out = 0; col_out < Gout->header->n_columns; col_out++) {
+	for (col_out = 0; col_out < (openmp_int)Gout->header->n_columns; col_out++) {
 		x_out = gmt_M_grd_col_to_x (GMT, col_out, Gout->header);	/* Current longitude */
 		col_origin[col_out] = (int)gmt_M_grd_x_to_col (GMT, x_out, Gin->header);
 		if (!fast_way) x_shift[col_out] = x_out - gmt_M_grd_col_to_x (GMT, col_origin[col_out], Gin->header);

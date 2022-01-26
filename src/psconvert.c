@@ -1630,10 +1630,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	static char *gs_params_rasnew = "-q -dNOPAUSE -dBATCH -dNOSAFER -dSCANCONVERTERTYPE=2";
 	static char *gs_params_rasold = "-q -dNOPAUSE -dBATCH -dNOSAFER";
 	static char *gs_params = NULL;
-#ifdef HAVE_GDAL
 	struct GMT_GDALREAD_IN_CTRL  *to_gdalread = NULL;
 	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
-#endif
 
 	FILE *fp = NULL, *fpo = NULL, *fpb = NULL, *fp2 = NULL, *fpw = NULL;
 
@@ -1707,10 +1705,6 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		return_image = true;
-#ifndef HAVE_GDAL
-		GMT_Report (API, GMT_MSG_WARNING, "Selecting ppmraw device since GDAL not available.\n");
-		Ctrl->T.device = GS_DEV_PPM;
-#endif
 	}
 
 	if (Ctrl->D.active && (error = psconvert_make_dir_if_needed (API, Ctrl->D.dir))) {	/* Specified output directory; create if it does not exists */
@@ -2408,7 +2402,6 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				fprintf (fpo, "V clippath %s %g %g /Normal PSL_transp F N U\n", ptr, Ctrl->N.fade_level, Ctrl->N.fade_level);
 				transparency = true;
 			}
-#ifdef HAVE_GDAL
 			else if (Ctrl->A.crop && found_proj && !strncmp (line, "%%PageTrailer", 13)) {
 				psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos);
 				fprintf (fpo, "%%%%PageTrailer\n");
@@ -2467,7 +2460,6 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 				continue;
 			}
-#endif
 			fprintf (fpo, "%s\n", line);
 		}
 		if (add_grestore)
@@ -2635,7 +2627,6 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		if (return_image) {	/* Must read in the saved raster image and return via Ctrl->F.file pointer */
 			struct GMT_IMAGE *I = NULL;
-#ifdef HAVE_GDAL	/* Since GMT_Read_Data with GMT_IS_IMAGE, GMT_IS_FILE means a call to GDAL */
 			gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 			/* State how we wish to receive images from GDAL */
 			if (GMT->current.gdal_read_in.O.mem_layout[0])		/* At one point this should never be allowed to be empty */
@@ -2646,44 +2637,6 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, out_file, NULL)) == NULL) {
 				Return (API->error);
 			}
-#else			/* Here we have already set device to PPM which we can read ourselves. */
-			uint64_t dim[GMT_DIM_SIZE] = {0U, 0U, 3U, 0U}; 	/* 3 bands. This might change if we do monochrome at some point */
-			uint64_t row, col, band, nCols, nRows, nBands, nXY;
-			FILE *fp_raw = NULL;
-			unsigned char *tmp;
-			if ((fp_raw = fopen (out_file, "rb")) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to open image file %s\n", out_file);
-				Return (GMT_ERROR_ON_FOPEN);
-			}
-			gmt_fgets (GMT, line, GMT_LEN128, fp_raw);	/* Skip 1st line */
-			gmt_fgets (GMT, line, GMT_LEN128, fp_raw);	/* Skip 2nd line */
-			gmt_fgets (GMT, line, GMT_LEN128, fp_raw);	/* Get 3rd line */
-			if (sscanf (line, "%" PRIu64 " %" PRIu64, &dim[GMT_X], &dim[GMT_Y]) != 2) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to decipher size of image in file %s\n", out_file);
-				fclose (fp_raw);
-				Return (GMT_PARSE_ERROR);
-			}
-			gmt_fgets (GMT, line, GMT_LEN128, fp_raw);	/* Skip 4th line */
-			gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
-			if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to create image structure\n");
-				fclose (fp_raw);
-				Return (API->error);
-			}
-
-			nCols = dim[GMT_X];		nRows = dim[GMT_Y];		nBands = dim[2];	nXY = nRows * nCols;
-			tmp   = gmt_M_memory(GMT, NULL, nCols * nBands, char);
-			for (row = 0; row < nRows; row++) {
-				fread(tmp, sizeof (unsigned char), nCols * nBands, fp_raw);		/* Read a row of nCols by nBands bytes of data */
-				for (col = 0; col < nCols; col++) {
-					for (band = 0; band < nBands; band++) {
-						I->data[row + col*nRows + band*nXY] = tmp[band + col*nBands];
-					}
-				}
-			}
-			gmt_M_free (GMT, tmp);
-			fclose (fp_raw);	fp_raw = NULL;
-#endif
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->F.file, I) != GMT_NOERROR)
 				Return (API->error);
 			gmt_set_pad (GMT, API->pad);	/* Reset padding to GMT default */
