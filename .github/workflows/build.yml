@@ -41,7 +41,7 @@ jobs:
             os: macos-latest
           - name: Windows
             os: windows-latest
-          - name: Linux (without GDAL et al.)
+          - name: Linux (without optional dependencies)
             os: ubuntu-latest
             EXCLUDE_OPTIONAL : true
 
