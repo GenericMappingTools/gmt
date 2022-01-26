@@ -8,7 +8,7 @@ set -x -e
 # Install GMT dependencies
 # Vercel uses Amazon Linux 2 (i.e., EPEL 7)
 yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum install cmake3 ninja-build libcurl-devel netcdf-devel
+yum install cmake3 ninja-build libcurl-devel netcdf-devel gdal gdal-devel
 # Install Python packages
 # importlib-resources is required for Python <3.7
 pip install docutils==0.17 sphinx importlib-resources
