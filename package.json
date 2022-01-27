@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "build:docs": "bash ci/vercel-docs.sh",
-    "build": "npm run build:docs"
+    "build:miniconda": "curl -o ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && bash ~/miniconda.sh -b -p $HOME/miniconda",
+    "build:deps": "conda install mamba -c conda-forge && mamba create -n vercelgmtdocs sphinx dvc ghostscript gdal -c conda-forge",
+    "build:docs": "source activate vercelgmtdocs && bash ci/vercel-docs.sh",
+    "build": "export PATH=$HOME/miniconda/bin:$PATH && export GMT_DATA_SERVER=https://oceania.generic-mapping-tools.org && npm run build:miniconda && npm run build:deps && npm run build:docs"
   }
 }

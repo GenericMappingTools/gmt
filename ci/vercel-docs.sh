@@ -8,19 +8,7 @@ set -x -e
 # Install GMT dependencies
 # Vercel uses Amazon Linux 2 (i.e., EPEL 7)
 yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum install cmake3 ninja-build libcurl-devel netcdf-devel gdal gdal-devel
-# Install Python packages
-# importlib-resources is required for Python <3.7
-python3 -m pip install --user --upgrade pip
-python3 -m venv env
-source env/bin/activate
-python3 -m pip install docutils==0.17 sphinx dvc importlib-resources
-
-# Install latest gs
-curl -SLO https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9533/ghostscript-9.53.3-linux-x86_64.tgz
-tar -xvf ghostscript-9.53.3-linux-x86_64.tgz ghostscript-9.53.3-linux-x86_64/gs-9533-linux-x86_64
-mv ghostscript-9.53.3-linux-x86_64/gs-9533-linux-x86_64 /usr/bin/gs
-gs --version
+yum install cmake3 ninja-build libcurl-devel netcdf-devel
 
 # Following variables can be modified via environment variables
 GMT_INSTALL_DIR=${HOME}/gmt-install-dir
