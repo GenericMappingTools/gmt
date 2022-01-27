@@ -2314,7 +2314,6 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	bool grid_global;
 	double shift_x, x_range, off = 0.0;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
-	//gmt_M_unused (interpolant);	/* Deprecated argument */
 
 	/* First make an educated guess whether the grid and region are geographical and global */
 	grid_global = gmt_grd_is_global (GMT, h);
