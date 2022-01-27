@@ -9,12 +9,18 @@ set -x -e
 # Vercel uses Amazon Linux 2 (i.e., EPEL 7)
 yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install cmake3 ninja-build libcurl-devel netcdf-devel gdal gdal-devel
+
+# Install dvc
+curl -SLO https://github.com/iterative/dvc/releases/download/2.9.3/dvc-2.9.3-1.x86_64.rpm
+yum install dvc-2.9.3-1.x86_64.rpm
+dvc version
+
 # Install Python packages
 # importlib-resources is required for Python <3.7
 python3 -m pip install --user --upgrade pip
 python3 -m venv env
 source env/bin/activate
-python3 -m pip install docutils==0.17 sphinx dvc importlib-resources
+python3 -m pip install docutils==0.17 sphinx importlib-resources
 
 # Install latest gs
 curl -SLO https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9533/ghostscript-9.53.3-linux-x86_64.tgz
