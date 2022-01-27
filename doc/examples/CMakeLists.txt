@@ -16,7 +16,7 @@
 
 if (SPHINX_FOUND)
 	# Convert figures to PNG
-	file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*/*.ps")
+	file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/images/*.ps")
 	set (_examples_png)
 	foreach (_ps ${_examples})
 		get_filename_component (_fig ${_ps} NAME)

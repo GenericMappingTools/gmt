@@ -41,7 +41,7 @@ fi
 brew install ${packages}
 
 if [ "$BUILD_DOCS" = "true" ]; then
-	pip3 install --user docutils==0.17 sphinx
+	pip3 install --user docutils==0.17 sphinx dvc
     # Add sphinx to PATH
     echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
 fi
