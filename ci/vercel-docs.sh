@@ -8,10 +8,7 @@ set -x -e
 # Install GMT dependencies
 # Vercel uses Amazon Linux 2 (i.e., EPEL 7)
 yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum install cmake3 ninja-build libcurl-devel netcdf-devel gdal gdal-devel
-
-yum list | grep sqlite
-exit 1
+yum install cmake3 ninja-build libcurl-devel netcdf-devel gdal gdal-devel libsqlite3x-devel
 
 # Install dvc
 curl -SLO https://www.python.org/ftp/python/3.9.10/Python-3.9.10.tgz
