@@ -10,7 +10,7 @@ set -x -e
 yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install cmake3 ninja-build libcurl-devel netcdf-devel gdal gdal-devel libsqlite3x-devel
 
-# Install dvc
+# Need to configure Python with sqlite extensions for dvc
 curl -SLO https://www.python.org/ftp/python/3.9.10/Python-3.9.10.tgz
 echo '1440acb71471e2394befdb30b1a958d1  Python-3.9.10.tgz' | md5sum -c
 tar -xvf Python-3.9.10.tgz
