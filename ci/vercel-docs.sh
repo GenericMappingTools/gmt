@@ -14,7 +14,7 @@ yum install cmake3 ninja-build libcurl-devel netcdf-devel gdal gdal-devel
 curl -SLO https://www.python.org/ftp/python/3.9.10/Python-3.9.10.tgz
 echo '1440acb71471e2394befdb30b1a958d1  Python-3.9.10.tgz' | md5sum -c
 tar -xvf Python-3.9.10.tgz
-cd Python-3.9.10.tgz
+cd Python-3.9.10
 ./configure --enable-loadable-sqlite-extensions
 make
 make altinstall
