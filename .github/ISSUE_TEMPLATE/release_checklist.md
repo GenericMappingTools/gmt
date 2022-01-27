@@ -63,6 +63,7 @@ assignees: ''
 - [ ] make announcements in the [GMT forum](https://forum.generic-mapping-tools.org/)
 - [ ] make announcements on the [GMT twitter](https://twitter.com/gmt_dev)
 - [ ] update links on the main site (News, Download & Documentation)
+- [ ] update install instructions on the wiki if needed
 
 **After release**:
 
