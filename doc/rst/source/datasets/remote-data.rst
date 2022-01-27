@@ -103,8 +103,8 @@ Single grids are provided as netCDF-4 maximum-lossless compressed short int grid
 much smaller than their original source files without any loss of precision.  To minimize download
 speed, the dataset tiles are all stored as JPEG2000 images on the GMT server due to superior compression,
 but once downloaded to your server directory they are converted to the same short int compressed netCDF4
-format for easier access. This step uses our GDAL bridge and thus requires that you have built GMT with
-GDAL support *and* that your GDAL distribution was built with *openjpeg* support.
+format for easier access. This step uses our GDAL bridge and requires that your GDAL distribution was
+built with *openjpeg* support.
 
 
 .. _jp2_compression:

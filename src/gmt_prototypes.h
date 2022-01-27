@@ -155,7 +155,6 @@ EXTERN_MSC int gmt_parse_j_option (struct GMT_CTRL *GMT, char *arg);
 
 /* gmt_customio.c: */
 
-#ifdef HAVE_GDAL
 /* Format # 22 */
 EXTERN_MSC int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD_IN_CTRL *prhs, struct GMT_GDALREAD_OUT_CTRL *Ctrl);
 EXTERN_MSC int gmt_gdalwrite (struct GMT_CTRL *GMT, char *filename, struct GMT_GDALWRITE_CTRL *prhs);
@@ -166,7 +165,7 @@ EXTERN_MSC int gmt_ogrproj (struct GMT_CTRL *GMT, char *pszSrcSRS, char *pszDstS
 EXTERN_MSC void gmt_ogrproj_one_pt (OGRCoordinateTransformationH hCT, double *xi, double *yi, double *zi);
 void gmt_proj4_fwd (struct GMT_CTRL *GMT, double xi, double yi, double *xo, double *yo);
 void gmt_proj4_inv (struct GMT_CTRL *GMT, double *xi, double *yi, double xo, double yo);
-#	if GDAL_VERSION_MAJOR >= 2
+#if ((GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)) || (GDAL_VERSION_MAJOR >= 3)
 		EXTERN_MSC struct OGR_FEATURES* gmt_ogrread2(struct GMT_CTRL *GMT, struct OGRREAD_CTRL *Ctrl);
 		EXTERN_MSC struct OGR_FEATURES* gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename, double *region);
 		EXTERN_MSC int gmt_gdal_info (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL);
@@ -176,7 +175,6 @@ void gmt_proj4_inv (struct GMT_CTRL *GMT, double *xi, double *yi, double xo, dou
 		EXTERN_MSC int gmt_gdal_translate (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL);
 		EXTERN_MSC int gmt_gdal_warp (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL);
 #	endif
-#endif
 
 /* gmt_fft.c: */
 
@@ -261,9 +259,7 @@ EXTERN_MSC void gmt_map_title (struct GMT_CTRL *GMT, double x, double y);
 EXTERN_MSC void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
 EXTERN_MSC int gmt_ps_append (struct GMT_CTRL *GMT, char *source, unsigned int mode, FILE *dest);
 EXTERN_MSC char * gmt_export2proj4 (struct GMT_CTRL *GMT);
-#ifdef HAVE_GDAL
 EXTERN_MSC char * gmt_importproj4 (struct GMT_CTRL *GMT, char *szProj4, int *scale_pos);
-#endif
 EXTERN_MSC int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers);
 EXTERN_MSC void gmt_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *BP, double Brgb[]);
 EXTERN_MSC void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr);

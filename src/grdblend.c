@@ -103,20 +103,12 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	gmt_grdfloat *z;					/* Row vector holding the current row from this file */
 };
 
-#ifdef HAVE_GDAL
 #define N_NOT_SUPPORTED	8
-#else
-#define N_NOT_SUPPORTED	7
-#endif
 
 GMT_LOCAL int grdblend_found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *file) {
 	/* Check that grid files are not among the unsupported formats that has no row-by-row io yet */
 	unsigned int i, type;
-#ifdef HAVE_GDAL
 	static char *not_supported[N_NOT_SUPPORTED] = {"rb", "rf", "sf", "sd", "af", "ei", "ef", "gd"};
-#else
-	static char *not_supported[N_NOT_SUPPORTED] = {"rb", "rf", "sf", "sd", "af", "ei", "ef"};
-#endif
 	for (i = 0; i < N_NOT_SUPPORTED; i++) {	/* Only allow netcdf (both v3 and new) and native binary output */
 		if (gmt_grd_format_decoder (GMT, not_supported[i], &type) != GMT_NOERROR) {
 			/* no valid type id - which should not happen unless typo in not_supported array */

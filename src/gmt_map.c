@@ -5065,7 +5065,6 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 	return (GMT_NOERROR);
 }
 
-#ifdef HAVE_GDAL
 /*!
  *	TRANSFORMATION ROUTINES FOR PROJ4 TRANSFORMATIONS (GMT_PROJ4_PROJS)
  */
@@ -5143,7 +5142,6 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 	GMT->current.proj.inv = &gmt_proj4_inv;
 	return error;
 }
-#endif
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *
@@ -9631,11 +9629,9 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 			error = gmtmap_init_polyconic (GMT, &search);
 			break;
 
-#ifdef HAVE_GDAL
 		case GMT_PROJ4_PROJS:	/* All proj.4 projections */
 			error = map_init_proj4 (GMT, &search);
 			break;
-#endif
 
 		default:	/* No projection selected, return to a horrible death */
 			Error_and_return (GMT_MAP_NO_PROJECTION, GMT_PROJECTION_ERROR);

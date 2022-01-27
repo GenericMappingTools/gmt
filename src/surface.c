@@ -1664,7 +1664,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Use xyz data in the <breakline> file as a 'soft breakline'. Optional modifier:");
 	GMT_Usage (API, 3, "+z Override any z from the <breakline> file with the appended <z_level> [0].");
 	GMT_Usage (API, 1, "\n%s", GMT_J_OPT);
-	GMT_Usage (API, -2, "Select the data map projection. This projection is only used to add a CRS info to the "
+	GMT_Usage (API, -2, "Select the data map projection. This projection is only used to add CRS info to the "
 		"grid formats that support it, i.e., netCDF, GeoTIFF, and others supported by GDAL.");
 	GMT_Usage (API, 1, "\n-Ll|u<limit>");
 	GMT_Usage (API, -2, "Constrain the range of output values; append directive and value, repeatable:");
