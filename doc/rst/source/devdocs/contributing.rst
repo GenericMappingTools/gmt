@@ -238,6 +238,7 @@ to install the `Sphinx <http://www.sphinx-doc.org/>`_ documentation builder. Aft
 `building GMT <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_, you can build GMT documentation using
 the following commands within the build directory::
 
+  dvc pull
   cmake --build . --target docs_depends     # Generate images included in the documentation
   cmake --build . --target optimize_images  # Optimize PNG images for documentation [optional]
   cmake --build . --target docs_man         # UNIX manual pages

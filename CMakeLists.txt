@@ -117,6 +117,10 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/.gitignore
 		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/package.json
 		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/vercel.json
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/examples/.gitignore
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/examples/images.dvc
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/scripts/.gitignore
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/scripts/images.dvc
 	)
 	add_depend_to_target (gmt_release git_export_release)
 	find_program (GNUTAR NAMES gnutar gtar tar)

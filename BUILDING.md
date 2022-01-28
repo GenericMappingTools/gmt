@@ -55,7 +55,7 @@ Install for building GMT documentation and running tests (not required for gener
 
 - [Sphinx](http://www.sphinx-doc.org) (>=1.8, for building the documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
-- [dvc](https://dvc.org/) (for running the tests)
+- [dvc](https://dvc.org/) (for running the tests and building the documentation)
 - [Ninja](https://ninja-build.org/) (optional, build system focused on speed)
 - [pngquant](https://pngquant.org/) (optional, for optimizing PNG images in the documentation)
 
