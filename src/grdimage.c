@@ -467,6 +467,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
+	if (!GMT->common.n.active && (!Ctrl->C.active || gmt_is_cpt_master (GMT, Ctrl->C.file)))
+		/* Unless user selected -n we want the default not to exceed data range on projection when we are auto-scaling a master table */
+		n_errors += gmtinit_parse_n_option (GMT, "c+c");
+
 	if (!API->external) {	/* I.e, not an External interface */
 		n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3),
 		                                   "Must specify one (or three [deprecated]) input file(s)\n");
