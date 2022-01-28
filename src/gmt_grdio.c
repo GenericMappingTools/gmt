@@ -2312,14 +2312,16 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	 */
 
 	bool grid_global;
-	double shift_x, x_range, off;
+	double shift_x, x_range, off = 0.0;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
-	gmt_M_unused (interpolant);	/* Deprecated argument */
 
 	/* First make an educated guess whether the grid and region are geographical and global */
 	grid_global = gmt_grd_is_global (GMT, h);
 
-	off = (h->registration == GMT_GRID_PIXEL_REG) ? 0.5 : 0.0;
+	if (h->registration == GMT_GRID_PIXEL_REG)
+		off = 0.5;
+	else if (interpolant >= BCR_BSPLINE)
+		off = 1.5;
 	/* Initial assignment of wesn */
 	wesn[YLO] = GMT->common.R.wesn[YLO] - off * h->inc[GMT_Y], wesn[YHI] = GMT->common.R.wesn[YHI] + off * h->inc[GMT_Y];
 	if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_x_is_lon (GMT, GMT_IN)) off = 0.0;
