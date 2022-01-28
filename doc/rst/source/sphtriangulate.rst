@@ -84,7 +84,7 @@ Optional Arguments
 
 **-L**\ *unit*
     Specify the unit used for distance and area calculations. Choose
-    among **e** (m), **f** (foot), **k** (km), **m** (mile), **n**
+    among **e** (m), **f** (foot), **k** (km), **M** (mile), **n**
     (nautical mile), **u** (survey foot), or **d** (spherical degree). A
     spherical approximation is used unless **-je** is set,
     in which case we convert latitudes to authalic
