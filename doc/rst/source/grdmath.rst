@@ -779,7 +779,7 @@ listed argument list. No macro may call another macro. As an example,
 the following macro expects three arguments (radius x0 y0) and sets the
 modes that are inside the given circle to 1 and those outside to 0:
 
-INCIRCLE = CDIST EXCH DIV 1 LE : usage: r x y INCIRCLE to return 1
+**INCIRCLE** = **CDIST EXCH DIV** 1 **LE** : usage: r x y INCIRCLE to return 1
 inside circle
 
 **Note**: Because geographic or time constants may be present in a macro, it
