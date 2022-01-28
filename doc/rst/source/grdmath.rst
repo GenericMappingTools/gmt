@@ -268,7 +268,7 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DDY**       | 1 1   | d(A)/dy Central 1st derivative                                                                         |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **DEG2KM**    | 1 1   | Converts Spherical Degrees to Kilometers                                                               |
+| **DEG2KM**    | 1 1   | Converts spherical degrees to kilometers                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DENAN**     | 2 1   | Replace NaNs in A with values from B                                                                   |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -362,7 +362,7 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **KER**       | 1 1   | Kelvin function ker (A)                                                                                |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **KM2DEG**    | 1 1   | Converts Kilometers to Spherical Degrees                                                               |
+| **KM2DEG**    | 1 1   | Converts kilometers to spherical degrees                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **KN**        | 2 1   | Modified Bessel function of A (2nd kind, order B)                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -779,7 +779,7 @@ listed argument list. No macro may call another macro. As an example,
 the following macro expects three arguments (radius x0 y0) and sets the
 modes that are inside the given circle to 1 and those outside to 0:
 
-INCIRCLE = CDIST EXCH DIV 1 LE : usage: r x y INCIRCLE to return 1
+**INCIRCLE** = **CDIST EXCH DIV** 1 **LE** : usage: r x y INCIRCLE to return 1
 inside circle
 
 **Note**: Because geographic or time constants may be present in a macro, it

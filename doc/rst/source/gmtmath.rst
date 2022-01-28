@@ -281,9 +281,9 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **D2DT2**       | 1 1    | d^2(A)/dt^2 2nd derivative                                                                 |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **D2R**         | 1 1    | Converts Degrees to Radians                                                                |
+| **D2R**         | 1 1    | Converts degrees to radians                                                                |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **DEG2KM**      | 1 1    | Converts Spherical Degrees to Kilometers                                                   |
+| **DEG2KM**      | 1 1    | Converts spherical degrees to kilometers                                                   |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **DENAN**       | 2 1    | Replace NaNs in A with values from B                                                       |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -367,7 +367,7 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **K1**          | 1 1    | Modified Bessel function of A (2nd kind, order 1)                                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **KM2DEG**      | 1 1    | Converts Kilometers to Spherical Degrees                                                   |
+| **KM2DEG**      | 1 1    | Converts kilometers to spherical degrees                                                   |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **KN**          | 2 1    | Modified Bessel function of A (2nd kind, order B)                                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -665,7 +665,7 @@ Notes On Operators
    to 54 bits.  All bitwise operators return NaN if given NaN arguments or
    bit-settings <= 0.
 
-#. TAPER will interpret its argument to be a width in the same units as
+#. **TAPER** will interpret its argument to be a width in the same units as
    the time-axis, but if no time is provided (i.e., plain data tables) then
    the width is taken to be given in number of rows.
 
@@ -674,8 +674,8 @@ Notes On Operators
    sRGB (x, y, z) conversions between all four color spaces.  These functions
    behave differently whether **-Q** is used or not.  With **-Q** we expect
    three input constants and we place three output results on the stack.  Since
-   only the top stack item is printed, you must use operators such as POP and
-   ROLL to get to the item of interest.  Without **-Q**, these operators work
+   only the top stack item is printed, you must use operators such as **POP** and
+   **ROLL** to get to the item of interest.  Without **-Q**, these operators work
    across the three columns and modify the three column entries, returning their
    result as a single three-column item on the stack.
 #. The **VPDF** operator expects angles in degrees.
@@ -693,7 +693,7 @@ listed argument list. No macro may call another macro. As an example,
 the following macro expects that the time-column contains seafloor ages
 in Myr and computes the predicted half-space bathymetry:
 
-**DEPTH** = **SQRT 350 MUL 2500 ADD NEG** : *usage: DEPTH to return
+**DEPTH** = **SQRT** 350 **MUL** 2500 **ADD NEG** : *usage: DEPTH to return
 half-space seafloor depths*
 
 **Note**: Because geographic or time constants may be present in a macro, it
@@ -701,22 +701,22 @@ is required that the optional comment flag (:) must be followed by a space.
 As another example, we show a macro **GPSWEEK** which determines which GPS week
 a timestamp belongs to:
 
-**GPSWEEK** = **1980-01-06T00:00:00 SUB 86400 DIV 7 DIV FLOOR** : *usage: GPS week without rollover*
+**GPSWEEK** = 1980-01-06T00:00:00 **SUB** 86400 **DIV** 7 **DIV FLOOR** : *usage: GPS week without rollover*
 
 Active Column Selection
 -----------------------
 
 When **-C**\ *cols* is set then any operation, including loading of data from files, will
 restrict which columns are affected.
-To avoid unexpected results, note that if you issue a **-C**\ *cols* option before you load
+To avoid unexpected results, note that if you issue a **-C**\ *cols* option *before* you load
 in the data then only those columns will be updated, hence the unspecified columns will be zero.
-On the other hand, if you load the file first and then issue **-C**\ *cols* then the unspecified
+On the other hand, if you load the file *first* and then issue **-C**\ *cols* then the unspecified
 columns will have been loaded but are then ignored until you undo the effect of **-C**.
 
 Absolute Time Column(s)
 -----------------------
 
-If input data have more than one column and the "time" column (id set via **-N** [0])
+If input data have more than one column and the "time" column (set via **-N** [0])
 contains absolute time, then the default output format for any *other* columns containing
 absolute time will be reset to relative time.  Likewise, in scalar mode (**-Q**) the
 time column will be operated on and hence it also will be formatted as relative
@@ -732,8 +732,8 @@ Scalar math with units
 ----------------------
 
 If you use **-Q** to do simple calculations, please note that the support for dimensional units is
-limited to converting a number ending in c, i, or p to internal inches.  Thus, while you can run
-gmt -Qc 1c 1c MUL =, you may be surprised that the output area is not 1 cm squared.  The reason is
+limited to converting a number ending in **c**, **i**, or **p** to internal *inches*.  Thus, while you can run
+"gmt -Qc 1c 1c MUL =", you may be surprised that the output area is not 1 cm squared.  The reason is
 that **gmt math** cannot keep track of what unit any particular item on the stack might be so it will
 assume it is internally in inches and then scale the final output to cm.  In this particular case,
 the unit is in inches squared and scaling by 2.54 once will give 0.3937 inch times cm as the unit.
