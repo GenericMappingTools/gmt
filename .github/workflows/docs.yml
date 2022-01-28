@@ -83,6 +83,10 @@ jobs:
         run: bash ci/download-coastlines.sh
         if: steps.cache-coastline.outputs.cache-hit != 'true'
 
+      # Pull baseline image data from dvc remote (DAGsHub)
+      - name: Pull baseline image data from dvc remote
+        run: dvc pull
+
       - name: Configure GMT
         run: |
           if [ "$RUNNER_OS" != "Windows" ]; then
@@ -115,10 +119,6 @@ jobs:
           workflow: ci-caches.yml
           name: gmt-cache
           path: .gmt
-
-      # Pull baseline image data from dvc remote (DAGsHub)
-      - name: Pull baseline image data from dvc remote
-        run: dvc pull
 
       # Move downloaded files to ~/.gmt directory and list them
       - name: Move and list downloaded remote files
