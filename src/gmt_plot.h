@@ -151,6 +151,7 @@ struct GMT_SYMBOL {
 	double given_size_x;	/* Symbol size read from file or command line */
 	double given_size_y;	/* Symbol size read from file or command line */
 	double gap;			/* Fractional spacing between side-by-side bars when -Sb|B+s[<gap>] is given */
+	double geo_scale;	/* Factor to scale unit-less input in map distances to internal km [1] */
 	bool read_size_cmd;	/* true when -S indicated we must read symbol sizes from file */
 	bool read_size;		/* true when we must read symbol size from file for the current record */
 	bool shade3D;		/* true when we should simulate shading of 3D symbols cube and column */

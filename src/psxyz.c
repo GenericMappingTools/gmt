@@ -269,7 +269,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"axes [in km], and convert azimuths based on map projection. "
 		"Use -SE- for a degenerate ellipse (circle) with only diameter in km given. "
 		"in column 4, or append a fixed diameter in km to -SE instead. "
-		"Append any of the units in %s to the axes [Default is k]. "
+		"Append any of the units in %s to the axes, and "
+		"if reading dimensions from file, just append the unit [Default is k]. "
 		"For a linear projection and -SE we scale the axes by the map scale.", GMT_LINE_BULLET, GMT_LEN_UNITS_DISPLAY, mod_name);
 
 	GMT_Usage (API, 2, "\n%s Rotatable Rectangle: If not given, we read direction, width and height from columns 4-6. "
@@ -277,7 +278,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"dimensions [in km] and convert azimuths based on map projection. "
 		"Use -SJ- for a degenerate rectangle (square w/no rotation) with only one dimension given "
 		"in column 4, or append a fixed dimension to -SJ instead. "
-		"Append any of the units in %s to the dimensions [Default is k]. "
+		"Append any of the units in %s to the axes, and "
+		"if reading dimensions from file, just append the unit [Default is k]. "
 		"For a linear projection and -SJ we scale dimensions by the map scale.", GMT_LINE_BULLET, mod_name, GMT_LEN_UNITS_DISPLAY);
 
 	GMT_Usage (API, 2, "\n%s Front: -Sf<spacing>[/<ticklen>][+r+l][+f+t+s+c+b][+o<offset>][+p<pen>]", GMT_LINE_BULLET);
@@ -1312,6 +1314,10 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					axes[GMT_X] = axes[GMT_Y] = in[ex1], Az = (gmt_M_is_cartesian (GMT, GMT_IN)) ? 90.0 : 0.0;	/* Duplicate diameter as major and minor axes and set azimuth to zero */
 				else 	/* Full ellipse */
 					Az = in[ex1], axes[GMT_X] = in[ex2], axes[GMT_Y] = in[ex3];
+				if (gmt_M_is_geographic (GMT, GMT_IN)) {
+					axes[GMT_X] *= S.geo_scale;
+					axes[GMT_Y] *= S.geo_scale;
+				}
 			}
 
 			if (S.base_set & GMT_BASE_ORIGIN) data[n].flag |= 32;	/* Flag that base needs to be added to height(s) */

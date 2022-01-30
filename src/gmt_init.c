@@ -16717,16 +16717,25 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'E':	/* Expect axis in km to be scaled based on -J */
 			p->symbol = PSL_ELLIPSE;
 			p->convert_angles = 1;
+			p->geo_scale = 1;
 			if (n == 2) {
 				degenerate = true;
 				strcpy (diameter, txt_a);
 			}
 			if (degenerate) {	/* Degenerate ellipse = circle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
-					(void)gmtlib_scanf_geodim (GMT, diameter, &p->size_y);
+					if (strchr (GMT_LEN_UNITS, diameter[0])) {	/* Just gave a map length unit, e.g., n */
+						char one[3] = {"1x"};
+						one[1] = diameter[0];
+						(void)gmtlib_scanf_geodim (GMT, one, &p->geo_scale);
+						p->n_required = 1;	/* Only expect diameter */
+					}
+					else {	/* Got an actual dimension */
+						(void)gmtlib_scanf_geodim (GMT, diameter, &p->size_y);
+						p->par_set = true;
+					}
 					p->size_x = p->size_y;
 					p->factor = 0.0;
-					p->par_set = true;
 				}
 				else {	/* Must read from data file */
 					p->n_required = 1;	/* Only expect diameter */
@@ -16741,6 +16750,11 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->n_required = 0;	/* All set */
 			}
 			else {
+				if (strchr (GMT_LEN_UNITS, txt_a[0])) {	/* Just gave a map length unit, e.g., n */
+					char one[3] = {"1x"};
+					one[1] = txt_a[0];
+					(void)gmtlib_scanf_geodim (GMT, one, &p->geo_scale);
+				}
 				p->n_required = 3;
 				p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
 				p->nondim_col[p->n_nondim++] = 3 + mode;	/* Since they are in geo-units, not inches or cm etc */
