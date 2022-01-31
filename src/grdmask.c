@@ -51,7 +51,7 @@ struct GRDMASK_CTRL {
 		bool polar;
 		double step;
 	} A;
-	struct GRDMASK_C {	/* -Cf|l|o|u[+n|p] */
+	struct GRDMASK_C {	/* -Cf|l|o|u */
 		bool active;
 		unsigned int mode;
 		int sign;
