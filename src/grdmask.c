@@ -38,10 +38,10 @@
 #define GRDMASK_N_CLASSES	3	/* outside, on edge, and inside */
 #define GRDMASK_N_CART_MASK	9
 
-#define BLEND_UPPER	0
-#define BLEND_LOWER	1
-#define BLEND_FIRST	2
-#define BLEND_LAST	3
+#define GRDMASK_SET_UPPER	0
+#define GRDMASK_SET_LOWER	1
+#define GRDMASK_SET_FIRST	2
+#define GRDMASK_SET_LAST	3
 
 
 struct GRDMASK_CTRL {
@@ -84,7 +84,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDMASK_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->C.mode = BLEND_LAST;		/* Set whatever the last polygon says */
+	C->C.mode = GRDMASK_SET_LAST;		/* Set whatever the last polygon says */
 	C->N.mask[GMT_INSIDE] = 1.0;	/* Default inside value */
 	return (C);
 }
@@ -197,10 +197,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				switch (opt->arg[0]) {
-					case 'f': Ctrl->C.mode = BLEND_FIRST; break;
-					case 'l': Ctrl->C.mode = BLEND_LOWER; break;
-					case 'o': Ctrl->C.mode = BLEND_LAST;  break;
-					case 'u': Ctrl->C.mode = BLEND_UPPER; break;
+					case 'f': Ctrl->C.mode = GRDMASK_SET_FIRST; break;
+					case 'l': Ctrl->C.mode = GRDMASK_SET_LOWER; break;
+					case 'o': Ctrl->C.mode = GRDMASK_SET_LAST;  break;
+					case 'u': Ctrl->C.mode = GRDMASK_SET_UPPER; break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C option: Modifiers are f|l|o|u only\n");
 						n_errors++;
@@ -655,7 +655,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 #endif
 					for (col = 0; col < n_columns; col++) {	/* Loop over grid columns */
 						ij = gmt_M_ijp (Grid->header, row, col);
-						if (Ctrl->C.mode == BLEND_FIRST && node_is_set[ij]) continue;	/* Already set */
+						if (Ctrl->C.mode == GRDMASK_SET_FIRST && node_is_set[ij]) continue;	/* Already set */
 						xx = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 						if (do_test) {	/* Must consider xx to determine if we are inside */
 							if ((side = gmt_inonout (GMT, xx, yy, S)) == GMT_OUTSIDE)
@@ -669,9 +669,9 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 						if (!Ctrl->N.mode) z_to_set = mask_val[side];	/* Must update since z depends on side */
 						if (node_is_set[ij]) {	/* Been here before so the Grid has a value; must consult the mode  */
 							switch (Ctrl->C.mode) {
-								case BLEND_UPPER: if (Grid->data[ij] >= z_to_set) continue; break;	/* Already has a higher value; else set below */
-								case BLEND_LOWER: if (Grid->data[ij] <= z_to_set) continue; break;	/* Already has a lower value; else set below */
-								default:	/* Last case BLEND_LAST is always true in that we always update the node */
+								case GRDMASK_SET_UPPER: if (Grid->data[ij] >= z_to_set) continue; break;	/* Already has a higher value; else set below */
+								case GRDMASK_SET_LOWER: if (Grid->data[ij] <= z_to_set) continue; break;	/* Already has a lower value; else set below */
+								default:	/* Last case GRDMASK_SET_LAST is always true in that we always update the node */
 									break;
 							}
 						}
