@@ -1,5 +1,5 @@
 outs:
-- md5: 5faa5105d0b4e287e6ca2d66267b7ed7.dir
-  size: 393927
-  nfiles: 1
+- md5: 87b10bd2cf8cde622a46dca56307552b.dir
+  size: 561267
+  nfiles: 5
   path: grdcut
