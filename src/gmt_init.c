@@ -16725,6 +16725,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->convert_angles = 1;
 			if (n == 2)
 				strcpy (diameter, txt_a);
+			if (text[0] && strchr (text, '/') == NULL) degenerate = true;	/* Allow -SJvalue as degenerate */
 			if (degenerate) {	/* Degenerate ellipse = circle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
 					if (strchr (GMT_LEN_UNITS, diameter[0])) {	/* Just gave a map length unit, e.g., n */
@@ -16886,6 +16887,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->convert_angles = 1;
 			if (n == 2)
 				strcpy (diameter, txt_a);
+			if (text[0] && strchr (text, '/') == NULL) degenerate = true;	/* Allow -SJvalue as degenerate */
 			if (degenerate) {	/* Degenerate rectangle = square with zero angle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
 					if (strchr (GMT_LEN_UNITS, diameter[0])) {	/* Just gave a map length unit, e.g., n */
