@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Test DOT operator in grdmath to simulate sun/shade
 # Sharpen the cos curve by taking sqrt and subtrack some ambient light
+# DVC_TEST
 gmt begin earth_shade ps
 	gmt grdmath -Rg -I30m -rp 120W 15N DOT DUP ABS SQRT EXCH SIGN MUL 0.4 SUB = c.nc
 	gmt grdmath -Rg -I30m -rp 120W 15N DOT ACOS R2D = a.nc
