@@ -2,6 +2,7 @@
 #
 # 6 different global grids specs - supposedly all covering the planet but
 # often have trouble saying that in the w/e/s/n specs.
+# DVC_TEST
 ps=force_global.ps
 gmt grdmath -Rg -I30m X COSD Y COSD MUL = xy0g.grd
 gmt grdmath -R0/359:30/-89:45/89:45 -I30m  X COSD Y COSD MUL = xy1g.grd

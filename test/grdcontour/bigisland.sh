@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Test crosslines for contour annotation placements and scaling
-
+# DVC_TEST
 ps=bigisland.ps
 cat << EOF > crosslines.txt
 > ML to the base

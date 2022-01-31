@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Testing firmoviscous flexure code
+# DVC_TEST
+
 ps=firmoviscous.ps
 gmt set GMT_FFT kiss
 # Set densities

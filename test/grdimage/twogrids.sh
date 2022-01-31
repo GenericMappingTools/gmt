@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #	Test the use of a 2nd data grid in -I to derive intensities from
 #	even though that grid has a different dimension than data grid
+# DVC_TEST
 
 gmt begin twogrids
 	# Get the data grid that will provide the shading

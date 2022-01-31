@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Actually, netCDF is not supported via the virtual file system so comment out for mow
+# DVC_TEST
+
 ps=url_map.ps
 gmt grdimage -Rd -JI15c http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -P -Xc > $ps
 #gmt makecpt -Cglobe > t.cpt

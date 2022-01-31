@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Test talwani2d on 2-D horizontal cylinder
+# DVC_TEST
 ps=cyl2d.ps
 # Make an approximate cylinder with radius R = 1km and center depth 3 km
 # Using density contrast of 1000 kg/m^3

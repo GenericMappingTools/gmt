@@ -2,7 +2,7 @@
 # Documenting issue # 1155 [Andreas].  The problem is that the terminator
 # touches the N pole and what is inside and outside of the global polygon
 # becomes harder to decide.  The 11:30:58 time is ok but an hour later...
-
+# DVC_TEST
 ps=pssolar_fill.ps
 gmt pscoast -P -Rd -JKs0/6i -Dc -A50000 -W0.5p -S175/210/255 -Bafg --MAP_FRAME_TYPE=plain -K -Xc > $ps
 
