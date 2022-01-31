@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Make a series of 4 spikes on a grid, then create a variable
 # filter width grid with 4 quandrants of different widths
+# DVC_TEST
 gmt begin varfilter ps
 	# Make the data:
 	gmt grdmath -R-20/20/-20/20 -I0.25 0 = a.grd

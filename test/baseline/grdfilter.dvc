@@ -1,5 +1,5 @@
 outs:
-- md5: a80bac52d56a2cb63f93efcb2b6c22b2.dir
-  size: 291387
-  nfiles: 1
+- md5: cf01e79eb0dd3f112cc90eec85d19ce3.dir
+  size: 4174507
+  nfiles: 6
   path: grdfilter
