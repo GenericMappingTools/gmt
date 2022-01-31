@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Test the -W[a|c][<pen>][+c[l|f]] option given issue #1184
+# DVC_TEST
 
 ps=pen_choice.ps
 

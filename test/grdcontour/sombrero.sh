@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Test implementation of feature #1141
+# DVC_TEST
 ps=sombrero.ps
 
 gmt grdmath -R-15/15/-15/15 -I0.3 X Y HYPOT DUP 2 MUL PI MUL 8 DIV COS EXCH NEG 10 DIV EXP MUL 0.001 SUB = sombrero.nc

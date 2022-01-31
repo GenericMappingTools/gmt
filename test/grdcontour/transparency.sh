@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Address issue #1126.  Should be fixed.
+# DVC_TEST
 ps=transparency.ps
 gmt xyz2grd -R0/2/0/2 -I1/1 -Gtest.grd << EOF
 0 0 0

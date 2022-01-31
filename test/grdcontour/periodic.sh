@@ -5,6 +5,7 @@
 # degrees have contours cutting right through them.  The bottom plot without -Zp
 # plots as expected.  I added the debug drawing of the helper lines in red, which
 # required the C-code changes to allow a debug pen.
+# DVC_TEST
 ps=periodic.ps
 gmt grdmath -Rg -I1 32 22 SBAZ = t.nc
 # Plot as non-periodic.  This plots labels.  The pile of blue contours around

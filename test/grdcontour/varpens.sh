@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Test variable pens given to -C
-
+# DVC_TEST
 ps=varpens.ps
 cat << EOF > pens.txt
 0	A	1p,red

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Test that contours are oriented correctly
+# DVC_TEST
 
 ps=contours.ps
 
