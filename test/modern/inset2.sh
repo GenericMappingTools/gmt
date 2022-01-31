@@ -3,6 +3,7 @@
 # and uses it to determine -D.  We plot a coast map in the inset using that size and plot
 # a red cross in the middle of the inset and the original map after the inset completes to
 # test that we  are back to the original Mercator -R -J settings.
+# DVC_TEST
 gmt begin inset2 ps
 	gmt grdimage @earth_relief_01m -R-48/-43/-26/-20 -JM16c -B -Cworld
 	gmt inset begin -DjBR+o0.2c -F+p1p,black -R-80/-28/-43/10 -JM6c
