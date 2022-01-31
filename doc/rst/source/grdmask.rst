@@ -16,6 +16,7 @@ Synopsis
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
+[ |-C|\ **f**\|\ **l**\|\ **o**\|\ **u** ]
 [ |-N|\ [**z**\|\ **Z**\|\ **p**\|\ **P**]\ *values* ]
 [ |-S|\ *search\_radius*\|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
@@ -91,6 +92,16 @@ Optional Arguments
     *x* or *y*, respectively.  If your Cartesian data are polar (*theta*, *r*), append
     **t** or **r** to construct stair-case paths whose first move is along
     *theta* or *r*, respectively.
+
+.. _-C:
+
+**-C**\ **f**\|\ **l**\|\ **o**\|\ **u**
+    Clobber mode: Selects the polygon whose *z*-value will determine the
+    grid nodes. Choose from the following modes: **f** for the first polygon
+    to overlap a node; **o** for the last polygon to overlap a node; **l**
+    for the polygon with the lowest *z*-value, and **u** for the polygon with
+    the uppermost *z*-value [Default is **o**]. **Note**: Does not apply to **-S**.
+    For polygon *z*-values, see **-N**.
 
 .. _-N:
 
