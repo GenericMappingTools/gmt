@@ -669,8 +669,8 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 						if (!Ctrl->N.mode) z_to_set = mask_val[side];	/* Must update since z depends on side */
 						if (node_is_set[ij]) {	/* Been here before so the Grid has a value; must consult the mode  */
 							switch (Ctrl->C.mode) {
-								case BLEND_UPPER: if (Grid->data[ij] <= z_to_set) continue; break;	/* Already has a higher value; else set below */
-								case BLEND_LOWER: if (Grid->data[ij] >= z_to_set) continue; break;	/* Already has a lower value; else set below */
+								case BLEND_UPPER: if (Grid->data[ij] >= z_to_set) continue; break;	/* Already has a higher value; else set below */
+								case BLEND_LOWER: if (Grid->data[ij] <= z_to_set) continue; break;	/* Already has a lower value; else set below */
 								default:	/* Last case BLEND_LAST is always true in that we always update the node */
 									break;
 							}
