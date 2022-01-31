@@ -45,7 +45,9 @@ Description
 *pathfiles* that each define a closed polygon. The nodes defined by the
 specified region and lattice spacing will be set equal to one of three
 possible values depending on whether the node is outside, on the polygon
-perimeter, or inside the polygon. The resulting mask may be used in
+perimeter, or inside the polygon, with the assigned  *z* value selected
+via **-N**.  If multiple polygons overlap the same nodes then the polygon
+selected depends on the **-C** selection.  The resulting mask may be used in
 subsequent operations involving :doc:`grdmath` to mask out data from
 polygonal areas. 2. The *pathfiles* simply represent data point locations
 and the mask is set to the inside or outside value depending on whether
