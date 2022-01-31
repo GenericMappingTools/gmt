@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Test grdmath stacking mode -S for available operators
+# DVC_TEST
 ps=reduce.ps
 gmt set PS_MEDIA letter MAP_TITLE_OFFSET 4p FONT_TITLE 12p
 # Create 3 small grids with integers in 0-100 range

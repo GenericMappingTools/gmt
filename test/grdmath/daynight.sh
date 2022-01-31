@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Test the DAYNIGHT operator
 # GRAPHICSMAGICK_RMS = 0.004
-
+# DVC_TEST
 ps=daynight.ps
 gmt grdmath -Rd -I1 30 20 0 DAYNIGHT = a.grd
 gmt grdmath -Rd -I1 30 20 5 DAYNIGHT = b.grd
