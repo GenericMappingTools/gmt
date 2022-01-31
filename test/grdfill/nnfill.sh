@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Testing grdfill with NN infill of NaN areas
+# DVC_TEST
 ps=nnfill.ps
 # Get topo for Hawaiian Islands and set data inside a 200 km radius of 203/20:30 to NaN
 gmt grdmath @earth_relief_05m -R199:30/206/18/23 203 20:30 SDIST 200 GT MUL 0 NAN = islands.nc

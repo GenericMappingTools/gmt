@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Testing grdfill with -L to indicate regions of NaNs
+# DVC_TEST
 ps=showregions.ps
 # Get topo for Hawaiian Islands and set data on land to NaN
 gmt grdclip @earth_relief_10m -R199:30/206/18/23 -Sa0/NaN -Gislands.nc
