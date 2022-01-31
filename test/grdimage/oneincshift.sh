@@ -2,6 +2,8 @@
 # Global pixel grids offset by half a grid increment used to fail but now passes
 # The same for gridline-registered grids work.
 # Here, q0.nc is fine but q.nc is shifted by 1/2 dx.
+# DVC_TEST
+
 ps=oneincshift.ps
 gmt grdmath -Rg -I1 -r Y COSD 20 MUL X SIND MUL = q0.nc
 gmt grdedit -S -R-0:30/359:30/-90/90 q0.nc -Gq.nc

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 # Test the output of gmt grdseamount for evolving Gaussian shapes
+# DVC_TEST
+
 m=g
 ps=growth_${m}.ps
 f=0.2

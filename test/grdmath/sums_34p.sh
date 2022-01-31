@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Test grdmath CUMSUM operators row and col sums in positive direction
+# DVC_TEST
 ps=sums_34p.ps
 gmt set MAP_TITLE_OFFSET 4p FONT_TITLE 12p
 # Create a small grid and compute row and column sums

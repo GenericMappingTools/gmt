@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DVC_TEST
 gmt begin polarpanels ps
   gmt subplot begin 2x2 -Fs5c
     gmt basemap -JP?+a+t45 -R0/90/0/1 -Bxa45f
