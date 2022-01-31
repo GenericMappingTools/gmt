@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 # Test the output of gmt grdseamount for Gaussian shapes
+# DVC_TEST
+
 ps=gseamounts.ps
 gmt set MAP_FRAME_TYPE plain
 # 4 panels of bathymetry:

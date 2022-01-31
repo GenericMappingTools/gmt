@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Compute the magnetic anomaly of our Mexican hat split in two halves
+# DVC_TEST
 
 ps=sombrero_mag.ps
 

@@ -2,6 +2,8 @@
 #
 # Computes the gravity and VGG anomaly over a cylinder and compares
 # with theory and brute (sum of tiny cubes) results in cylinder25.txt
+# DVC_TEST
+
 ps=cyltest.ps
 # cylinder_mod.txt was made thus:
 #cylinder 25 10 10 1333 5084
