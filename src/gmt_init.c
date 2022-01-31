@@ -16568,7 +16568,14 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			n_slash = gmt_count_char (GMT, text, '/');
 			switch (n_slash) {
 				case 0:	/* Gave -SW|w[<diameter>]; n will become 0 or 1 */
-					if ((n = sscanf (&text[1], "%s", txt_a)) != 1)	/* No diameter, read from file */
+					if (strchr (GMT_LEN_UNITS, txt_a[0])) {	/* But watch for -SW<unit> */
+						char one[3] = {"1x"};
+						one[1] = txt_a[0];
+						(void)gmtlib_scanf_geodim (GMT, one, &p->geo_scale);
+						p->w_get_do = true;
+						n = 0;
+					}
+					else if ((n = sscanf (&text[1], "%s", txt_a)) != 1)	/* No diameter, read from file */
 						p->w_get_do = true;
 					p->w_get_a = true;	/* Get two angles */
 					break;
@@ -16588,9 +16595,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->w_get_do = false;
 			}
 			check = false;
-			if (n >= 1) {	/* Got at least the diameter */
-				p->w_radius = gmtinit_get_diameter (GMT, symbol_type, txt_a, &p->w_active);
-			}
+			if (n >= 1)	/* Got at least the diameter */
+					p->w_radius = gmtinit_get_diameter (GMT, symbol_type, txt_a, &p->w_active);
 			if (n_slash == 1)	/* Deprecated syntax */
 				p->w_radius_i = gmtinit_get_diameter (GMT, symbol_type, txt_d, &p->w_active);
 			else if (n_slash == 2) {	/* New syntax for angles */
@@ -16601,8 +16607,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				char q[GMT_LEN256] = {""};
 				unsigned int pos = 0, error = 0;
 				c[0] = '+';	/* Restore that character */
-				while (gmt_getmodopt (GMT, 'S', c, "apr", &pos, q, &error) && error == 0) {
-					switch (q[0]) {
+				while (gmt_getmodopt (GMT, 'S', c, "aipr", &pos, q, &error) && error == 0) {
+					switch (q[0]) {	/* +i done already */
 						case 'a':	/* Arc(s) */
 							type |= GMT_WEDGE_ARCS;	/* Arc only */
 							if (q[1])	/* Got delta_r */
@@ -16717,10 +16723,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'E':	/* Expect axis in km to be scaled based on -J */
 			p->symbol = PSL_ELLIPSE;
 			p->convert_angles = 1;
-			if (n == 2) {
-				degenerate = true;
+			if (n == 2)
 				strcpy (diameter, txt_a);
-			}
 			if (degenerate) {	/* Degenerate ellipse = circle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
 					if (strchr (GMT_LEN_UNITS, diameter[0])) {	/* Just gave a map length unit, e.g., n */
@@ -16880,16 +16884,22 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'J':	/* Expect dimensions in km to be scaled based on -J */
 			p->symbol = PSL_ROTRECT;
 			p->convert_angles = 1;
-			if (n == 2) {
-				degenerate = true;
+			if (n == 2)
 				strcpy (diameter, txt_a);
-			}
 			if (degenerate) {	/* Degenerate rectangle = square with zero angle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
-					(void)gmtlib_scanf_geodim (GMT, diameter, &p->size_y);
+					if (strchr (GMT_LEN_UNITS, diameter[0])) {	/* Just gave a map length unit, e.g., n */
+						char one[3] = {"1x"};
+						one[1] = diameter[0];
+						(void)gmtlib_scanf_geodim (GMT, one, &p->geo_scale);
+						p->n_required = 1;	/* Only expect diameter */
+					}
+					else {	/* Got an actual dimension */
+						(void)gmtlib_scanf_geodim (GMT, diameter, &p->size_y);
+						p->par_set = true;
+					}
 					p->size_x = p->size_y;
 					p->factor = 0.0;
-					p->par_set = true;
 				}
 				else {	/* Must read diameter from data file */
 					p->n_required = 1;	/* Only expect diameter */
@@ -16904,6 +16914,11 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->n_required = 0;	/* All set */
 			}
 			else {	/* Get all three from file */
+				if (strchr (GMT_LEN_UNITS, txt_a[0])) {	/* Just gave a map length unit, e.g., n */
+					char one[3] = {"1x"};
+					one[1] = txt_a[0];
+					(void)gmtlib_scanf_geodim (GMT, one, &p->geo_scale);
+				}
 				p->n_required = 3;
 				p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
 				p->nondim_col[p->n_nondim++] = 3 + mode;	/* Since they are in km, not inches or cm etc */

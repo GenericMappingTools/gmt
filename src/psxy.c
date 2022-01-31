@@ -2186,7 +2186,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 								GMT_Report (API, GMT_MSG_WARNING, "Wedge outer diameter = NaN near line %d. Skipped\n", n_total_read);
 									continue;
 							}
-							dim[0] = factor * in[col++];
+							dim[0] = factor * S.geo_scale * in[col++];
 						}
 						else	/* Set during -S parsing */
 							dim[0] = factor * S.w_radius;
@@ -2211,7 +2211,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 								GMT_Report (API, GMT_MSG_WARNING, "Wedge inner diameter = NaN near line %d. Skipped\n", n_total_read);
 								continue;
 							}
-							S.w_radius_i = factor * in[col];
+							S.w_radius_i = factor * S.geo_scale * in[col];
 						}
 						if (S.convert_angles) {
 							if (gmt_M_is_cartesian (GMT, GMT_IN)) {
