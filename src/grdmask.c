@@ -620,7 +620,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 #endif
 					for (col = 0; col < n_columns; col++) {	/* Loop over grid columns */
 						ij = gmt_M_ijp (Grid->header, row, col);
-						if (node_is_set[ij]) continue;	/* Already set */
+						//if (node_is_set[ij]) continue;	/* Already set */
 						xx = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 						if (do_test) {	/* Must consider xx to determine if we are inside */
 							if ((side = gmt_inonout (GMT, xx, yy, S)) == GMT_OUTSIDE)
