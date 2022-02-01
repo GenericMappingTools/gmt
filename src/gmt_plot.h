@@ -148,13 +148,6 @@ struct GMT_SYMBOL {
 	bool par_set;		/* true if all parameters were set for e,j */
 	bool degenerate;		/* true for E- and J- as degenerate ellipses and rectangles */
 	bool azim;		/* true for-Sl if +A was used */
-	double factor;		/* Scaling needed to unify symbol area for circle, triangles, etc. [1] */
-	double size_x;		/* Current symbol size in x */
-	double size_y;		/* Current symbol size in y */
-	double given_size_x;	/* Symbol size read from file or command line */
-	double given_size_y;	/* Symbol size read from file or command line */
-	double gap;			/* Fractional spacing between side-by-side bars when -Sb|B+s[<gap>] is given */
-	double geo_scale;	/* Factor to scale unit-less input in map distances to internal km [1] */
 	bool read_size_cmd;	/* true when -S indicated we must read symbol sizes from file */
 	bool read_size;		/* true when we must read symbol size from file for the current record */
 	bool shade3D;		/* true when we should simulate shading of 3D symbols cube and column */
@@ -168,6 +161,7 @@ struct GMT_SYMBOL {
 	double given_size_x;	/* Symbol size read from file or command line */
 	double given_size_y;	/* Symbol size read from file or command line */
 	double gap;			/* Fractional spacing between side-by-side bars when -Sb|B+s[<gap>] is given */
+	double geo_scale;	/* Factor to scale unit-less input in map distances to internal km [1] */
 	double angle;			/* Text angle for -Sl<txt>+a<angle} [0] */
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
 
