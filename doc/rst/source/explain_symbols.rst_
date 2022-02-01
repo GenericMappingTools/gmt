@@ -178,11 +178,12 @@
         specific fonts (size and type) and control outline and the fill properties. Note there
         is no mechanism to perfectly center the string; see **-D** to make a simple global adjustment.
 
-    **-Sl**\ *size*\ **+t**\ *string*\ [**+f**\ *font*][**+j**\ *justify*]
+    **-Sl**\ *size*\ **+t**\ *string*\ [**+a**\|\ **A**\ *angle*]\ [**+f**\ *font*][**+j**\ *justify*]
         **l**\ etter or text string (less than 256 characters). Give size, and
         append **+t**\ *string* after the size. **Note**: The size is only approximate;
         no individual scaling is done for different characters. Remember to
-        escape special characters like \*. Optionally, you may append **+f**\ *font*
+        escape special characters like \*. Optionally, you may append **+a** to change the
+        angle with the horiontal [0] or use **+A** to indicate map azimuth instead, **+f**\ *font*
         to select a particular font [Default is :term:`FONT_ANNOT_PRIMARY`] and
         **+j**\ *justify* to change justification [CM].
 
