@@ -306,9 +306,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use upper case 'K' if your custom symbol refers a variable symbol, ?.");
 	gmt_list_custom_symbols (API->GMT);
 
-	GMT_Usage (API, 2, "\n%s Letter: -Sl[<size>]+t<string>[+f<font>][+j<justify]", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "\n%s Letter: -Sl[<size>]+t<string>[a|A<angle>][+f<font>][+j<justify]", GMT_LINE_BULLET);
 	GMT_Usage (API, -3, "Specify <size> of letter; append required and optional modifiers:");
 	GMT_Usage (API, 3, "+t Specify <string> to use (required).");
+	GMT_Usage (API, 3, "+a Set text angle relative to horizontal [0].  Use +A if map azimuth.");
 	GMT_Usage (API, 3, "+f Set specific <font> for text placement [FONT_ANNOT_PRIMARY].");
 	GMT_Usage (API, 3, "+j Change the text justification via <justify> [CM].");
 
@@ -771,6 +772,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	S.base = GMT->session.d_NaN;
 	S.font = GMT->current.setting.font_annot[GMT_PRIMARY];
 	S.u = GMT->current.setting.proj_length_unit;
+	S.justify = PSL_MC;
 
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options, &S)) != 0) Return (error);
@@ -1032,7 +1034,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
 		bool periodic = false, delayed_unit_scaling[2] = {false, false};
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, last_time, col;
-		double xpos[2], width, d, data_magnitude;
+		double xpos[2], width, d, data_magnitude, direction;
 		struct GMT_RECORD *In = NULL;
 
 		if ((error = GMT_Set_Columns (API, GMT_IN, n_needed, GMT_COL_FIX)) != GMT_NOERROR) {
@@ -1861,7 +1863,13 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							PSL_setfill (PSL, GMT->session.no_rgb, data[i].outline);
 						(void) gmt_setfont (GMT, &S.font);
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
-						PSL_plottext (PSL, xpos[item], data[i].y, data[i].dim[0] * PSL_POINTS_PER_INCH, data[i].string, 0.0, PSL_MC, data[i].outline);
+						if (S.azim) {	/* Must update angle */
+							gmt_xy_to_geo (GMT, &dx, &dy, data[i].y, data[i].y);	/* Just recycle dx, dy here */
+							direction = gmt_azim_to_angle (GMT, dx, dy, 0.1, S.angle);
+						}
+						else
+							direction = S.angle;
+						PSL_plottext (PSL, xpos[item], data[i].y, data[i].dim[0] * PSL_POINTS_PER_INCH, data[i].string, direction, S.justify, data[i].outline);
 						gmt_M_str_free (data[i].string);
 						break;
 					case PSL_VECTOR:

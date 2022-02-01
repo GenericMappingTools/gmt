@@ -650,9 +650,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use upper case 'K' if your custom symbol refers a variable symbol, ?.");
 	gmt_list_custom_symbols (API->GMT);
 
-	GMT_Usage (API, 2, "\n%s Letter: -Sl[<size>]+t<string>[+f<font>][+j<justify]", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "\n%s Letter: -Sl[<size>]+t<string>[a|A<angle>][+f<font>][+j<justify]", GMT_LINE_BULLET);
 	GMT_Usage (API, -3, "Specify <size> of letter; append required and optional modifiers:");
 	GMT_Usage (API, 3, "+t Specify <string> to use (required).");
+	GMT_Usage (API, 3, "+a Set text angle relative to horizontal [0].  Use +A if map azimuth.");
 	GMT_Usage (API, 3, "+f Set specific <font> for text placement [FONT_ANNOT_PRIMARY].");
 	GMT_Usage (API, 3, "+j Change the text justification via <justify> [CM].");
 
@@ -2027,7 +2028,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						else if (!Ctrl->G.active)
 							PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
 						(void) gmt_setfont (GMT, &S.font);
-						PSL_plottext (PSL, xpos[item], plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, 0.0, S.justify, outline_setting);
+						direction = (S.azim) ? gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, S.angle) : S.angle;
+						PSL_plottext (PSL, xpos[item], plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, direction, S.justify, outline_setting);
 						break;
 					case PSL_VECTOR:	/* Cartesian vector symbol */
 						gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
