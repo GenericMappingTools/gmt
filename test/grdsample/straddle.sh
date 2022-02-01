@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Testing gmt grdsample over a periodic grid boundary
 # Problem was issue # 1086
+# DVC_TEST
 ps=straddle.ps
 gmt grdcut @earth_relief_04m -R179/196/49/61 -Gc.nc
 gmt grdsample @earth_relief_04m -I0.2/0.2 -R179/196/49/61 -Gs.nc

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Test that +p +g overrides defaults from -W -G respectively
+# DVC_TEST
 gmt begin vector ps
 echo 1 1 4 1 | gmt plot -R0/5/0/2 -Jx1i -Sv0.2i+s+b+e
 

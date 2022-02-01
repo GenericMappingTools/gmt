@@ -2,6 +2,7 @@
 #
 #
 # Test dumping of contour labels and replotting in pstext
+# DVC_TEST
 
 ps=labels.ps
 

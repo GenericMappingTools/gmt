@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Test the output of gmt grdseamount for conical shapes
+# DVC_TEST
 ps=cseamounts.ps
 gmt set MAP_FRAME_TYPE plain
 # 4 panels of bathymetry:

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Computes the gravity anomaly of a sphere both analytical and discrete triangles
+# DVC_TEST
 
 ps=spheres.ps
 
