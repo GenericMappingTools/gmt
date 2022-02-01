@@ -16725,7 +16725,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->convert_angles = 1;
 			if (n == 2)
 				strcpy (diameter, txt_a);
-			if (text[0] && strchr (text, '/') == NULL) degenerate = true;	/* Allow -SJvalue as degenerate */
+			/* Allow -SE<value>[<unit>] to be parsed as degenerate while -SE<unit> is not */
+			if (!degenerate && text[1] && strchr (GMT_LEN_UNITS, text[1]) == NULL && strchr (text, '/') == NULL) degenerate = true;
 			if (degenerate) {	/* Degenerate ellipse = circle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
 					if (strchr (GMT_LEN_UNITS, diameter[0])) {	/* Just gave a map length unit, e.g., n */
@@ -16754,7 +16755,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->n_required = 0;	/* All set */
 			}
 			else {
-				if (strchr (GMT_LEN_UNITS, txt_a[0])) {	/* Just gave a map length unit, e.g., n */
+				if (txt_a[0] && strchr (GMT_LEN_UNITS, txt_a[0])) {	/* Just gave a map length unit, e.g., n */
 					char one[3] = {"1x"};
 					one[1] = txt_a[0];
 					(void)gmtlib_scanf_geodim (GMT, one, &p->geo_scale);
@@ -16887,7 +16888,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->convert_angles = 1;
 			if (n == 2)
 				strcpy (diameter, txt_a);
-			if (text[0] && strchr (text, '/') == NULL) degenerate = true;	/* Allow -SJvalue as degenerate */
+			/* Allow -SJ<value>[<unit>] to be parsed as degenerate while -SJ<unit> is not */
+			if (!degenerate && text[1] && strchr (GMT_LEN_UNITS, text[1]) == NULL && strchr (text, '/') == NULL) degenerate = true;
 			if (degenerate) {	/* Degenerate rectangle = square with zero angle */
 				if (diameter[0]) {	/* Gave a fixed diameter as symbol size */
 					if (strchr (GMT_LEN_UNITS, diameter[0])) {	/* Just gave a map length unit, e.g., n */
@@ -16916,7 +16918,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->n_required = 0;	/* All set */
 			}
 			else {	/* Get all three from file */
-				if (strchr (GMT_LEN_UNITS, txt_a[0])) {	/* Just gave a map length unit, e.g., n */
+				if (txt_a[0] && strchr (GMT_LEN_UNITS, txt_a[0])) {	/* Just gave a map length unit, e.g., n */
 					char one[3] = {"1x"};
 					one[1] = txt_a[0];
 					(void)gmtlib_scanf_geodim (GMT, one, &p->geo_scale);
