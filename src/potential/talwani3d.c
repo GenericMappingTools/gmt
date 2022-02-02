@@ -1014,8 +1014,7 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Dealing with a grid */
-		int64_t row;
-		int col, n_columns = (int)G->header->n_columns, n_rows = (int)G->header->n_rows;	/* To shut up compiler warnings */
+		openmp_int row, col, n_columns = (openmp_int)G->header->n_columns, n_rows = (openmp_int)G->header->n_rows;	/* To shut up compiler warnings */
 		double y_obs, *x_obs = gmt_M_memory (GMT, NULL, G->header->n_columns, double);
 		for (col = 0; col < n_columns; col++) {
 			x_obs[col] = gmt_M_grd_col_to_x (GMT, col, G->header);
@@ -1031,7 +1030,7 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 #ifndef _OPENMP
 			GMT_Report (API, GMT_MSG_INFORMATION, "Finished row %5d\n", row);
 #endif
-			for (col = 0; col < (int)G->header->n_columns; col++) {
+			for (col = 0; col < (openmp_int)G->header->n_columns; col++) {
 				/* Loop over cols; always save the next level before we update the array at that col */
 				node = gmt_M_ijp (G->header, row, col);
 				z_level = (Ctrl->A.active) ? -G->data[node] : G->data[node];	/* Get observation z level and possibly flip direction */

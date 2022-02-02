@@ -17,11 +17,11 @@ EXCLUDE_OPTIONAL=${EXCLUDE_OPTIONAL:-false}
 
 # required packages for compiling GMT
 packages="build-essential cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev \
-          ghostscript curl git"
+          ghostscript curl git libgdal-dev"
 
 # optional packages
 if [ "$EXCLUDE_OPTIONAL" = "false" ]; then
-    packages+=" libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev"
+    packages+=" libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev"
 fi
 
 # packages for building documentation
@@ -42,7 +42,7 @@ sudo apt-get install -y --no-install-recommends --no-install-suggests $packages
 # Install more packages for building documentation
 if [ "$BUILD_DOCS" = "true" ]; then
     sudo snap install pngquant
-    pip3 install --user docutils==0.17 sphinx
+    pip3 install --user docutils==0.17 sphinx dvc
     # Add sphinx to PATH
     echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
 fi

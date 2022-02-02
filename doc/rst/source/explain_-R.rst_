@@ -43,8 +43,8 @@ The **-R** option defines the map region or data domain of interest. It may be s
    country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
    or the full state name (e.g., Texas). To specify a whole continent, prepend **=** to any of the continent codes
    **AF** (Africa), **AN** (Antarctica), **AS** (Asia), **EU** (Europe), **OC** (Oceania), **NA** (North America),
-   or **SA** (South America), or spell out the full continent name. Finally, append any collection abbreviations
-   or full names for the extent of the collection or named region. All names are case-insensitive.
+   or **SA** (South America), or spell out the full continent name. Finally, append any :ref:`DCW collection <dcw-collections>`
+   abbreviations or full names for the extent of the collection or named region. All names are case-insensitive.
    The following modifiers can be appended:
 
    - **+r** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Testing gmt grdcut -Zn
+# DVC_TEST
 
 ps=shrink.ps
 

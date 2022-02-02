@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#
+# DVC_TEST
 
 ps=grdimage.ps
 image="gmt grdimage t.nc -Ct.cpt -JX1i -B1 -BWeSn --FONT_ANNOT_PRIMARY=10p"

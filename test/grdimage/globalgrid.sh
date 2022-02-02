@@ -3,7 +3,7 @@
 # Check if we can wrap global grids over longitude
 # Note: This recently changed due to https://github.com/GenericMappingTools/gmt/pull/4451
 # so the PS has been updated.
-#
+# DVC_TEST
 
 ps=globalgrid.ps
 

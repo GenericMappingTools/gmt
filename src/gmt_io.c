@@ -4501,14 +4501,12 @@ int gmt_fclose (struct GMT_CTRL *GMT, FILE *stream) {
 	}
 	/* Regular file */
 	err = fclose (stream);
-#ifdef HAVE_GDAL
 	if (GMT->current.io.tempfile[0] && !access (GMT->current.io.tempfile, F_OK)) {
 		/* Converted a shapefile to a temporary GMT/OGR file.  Now delete that file */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Remove temporary GMT/OGR file %s\n", GMT->current.io.tempfile);
 		gmt_remove_file (GMT, GMT->current.io.tempfile);
 		GMT->current.io.tempfile[0] = '\0';	/* Flag as no longer active */
 	}
-#endif
 	return (err);
 }
 
@@ -5046,7 +5044,6 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 		fd = gmtio_nc_fopen (GMT, &filename[first], mode);
 		if (!fd) {	/* No, was not a netCDF file */
 			if ((c = gmt_getdatapath (GMT, &filename[first], path, R_OK)) != NULL) {	/* Got the file path */
-#ifdef HAVE_GDAL
 				char *ext = gmt_get_ext (c);	/* Get pointer to extension (or NULL if no extension) */
 				if (ext && mode[0] == 'r' && !strncmp (ext, "shp", 3U)) {	/* Got a shapefile for reading */
 					/* We will do a system call to ogr2ogr in order to read the shapefile */
@@ -5070,8 +5067,7 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 					sprintf (GMT->current.io.filename[GMT_IN], "%s <converted from %s via ogr2ogr>", GMT->current.io.tempfile, c);
 					c = GMT->current.io.tempfile;	/* Open this temporary instead */
 				}
-#endif
-                		fd = fopen (c, mode);
+				fd = fopen (c, mode);
 			}
 		}
 		return (fd);
@@ -5351,14 +5347,10 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 
 	/* If we got here and a full path is given, we give up ... unless it is one of those /vsi.../ files */
 	if (stem[0] == '/') {
-#ifdef HAVE_GDAL
 		if (gmtlib_found_url_for_gdal ((char *)stem))
 			return ((char *)stem);			/* With GDAL all the /vsi-stuff is given existence credit */
 		else
 			return (NULL);
-#else
-		return (NULL);
-#endif
 	}
 
 #ifdef WIN32
@@ -7305,6 +7297,10 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 				expectation = GMT_IS_DIMENSION;
 			else if (strchr (GMT_LEN_UNITS, c))	/* Found a trailing geo-length unit (d|m|s|e|f|k|M|n|u) */
 				expectation = GMT_IS_GEODIMENSION;
+			else if (gmtlib_maybe_abstime (GMT, s)) {
+				strcat (s, "T");	/* Add missing T */
+				expectation = GMT_IS_ARGTIME;
+			}
 			else 					/* Found nothing - assume floating point */
 				expectation = GMT_IS_FLOAT;
 		}
@@ -8724,11 +8720,9 @@ struct GMT_IMAGE *gmtlib_create_image (struct GMT_CTRL *GMT) {
 	IH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	IH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	gmt_grd_init (GMT, I->header, NULL, false); /* Set default values */
-#ifdef HAVE_GDAL
 	if (GMT->current.gdal_read_in.O.mem_layout[0])
 		gmt_strncpy (I->header->mem_layout, GMT->current.gdal_read_in.O.mem_layout, 4);	/* Set the current memory layout */
 	else
-#endif
 		gmt_strncpy (I->header->mem_layout, GMT_IMAGE_LAYOUT, 4);	/* Set the default array memory layout */
 	GMT_Set_Index (GMT->parent, I->header, GMT_IMAGE_LAYOUT);
 	return (I);

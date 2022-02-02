@@ -1211,7 +1211,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 EXTERN_MSC int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	bool wrote_one = false;
-	unsigned int i, j, row, col, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
+	openmp_int row, col;
+	unsigned int i, j, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
 	unsigned int k, l, i3, n_jlon, n_jlat, n_coef;
 	int error = 0;
 	uint64_t ij, jj;
@@ -1345,8 +1346,8 @@ EXTERN_MSC int GMT_grdredpol (void *V_API, int mode, void *args) {
 	}
 
 	/* Generate vectors of lon & lats */
-	for (col = 0; col < Gin->header->n_columns; col++) ftlon[col] = gmt_M_grd_col_to_x (GMT, col, Gin->header);
-	for (row = 0; row < Gin->header->n_rows; row++) ftlat[row] = gmt_M_grd_row_to_y (GMT, row, Gin->header);
+	for (col = 0; col < (openmp_int)Gin->header->n_columns; col++) ftlon[col] = gmt_M_grd_col_to_x (GMT, col, Gin->header);
+	for (row = 0; row < (openmp_int)Gin->header->n_rows; row++) ftlat[row] = gmt_M_grd_row_to_y (GMT, row, Gin->header);
 
 	n_jlon = urint ((Gin->header->wesn[XHI] - Gin->header->wesn[XLO]) / Ctrl->W.wid) + 1;
 	n_jlat = urint ((Gin->header->wesn[YHI] - Gin->header->wesn[YLO]) / Ctrl->W.wid) + 1;

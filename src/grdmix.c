@@ -288,7 +288,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 #if DEBUG
 /* For developers debugging only, and under -Vd to boot */
 GMT_LOCAL void grdmix_dump_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, char *file) {
-	uint64_t row, col, node, pix = 0;
+	openmp_int row, col;
+	uint64_t node, pix = 0;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Image = %s [%s]\n", file, I->header->mem_layout);
 	if (I->header->n_bands == 1) {
 		gmt_M_grd_loop (GMT, I, row, col, node) {	/* The node is one per pixel here */
@@ -312,7 +313,8 @@ GMT_LOCAL void grdmix_dump_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, cha
 
 GMT_LOCAL float *grdmix_get_array (struct GMT_CTRL *GMT, struct GRDMIX_AIW *X, int type, struct GMT_GRID **G, struct GMT_IMAGE **I, struct GMT_GRID_HEADER *h, float min, float max, char *name) {
 	/* Function to either read a grid, and image, or use a constant; then build and return the array with the information */
-	uint64_t row, col, node;
+	openmp_int row, col;
+	uint64_t node;
 	float *array = gmt_M_memory (GMT, NULL, h->size, float);
 	if (X->mode == 0) {	/* Got a grid or image */
 		if (type == GMT_NOTSET) {	/* Got a grid */
@@ -357,7 +359,8 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	int error = 0;
 	unsigned int img = 0, k, band;
-	int64_t row, col, node, pix;
+	openmp_int row, col;
+	int64_t node, pix;
 
 	float *weights = NULL, *intens = NULL, *alpha = NULL;
 

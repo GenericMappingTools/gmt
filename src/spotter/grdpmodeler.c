@@ -266,7 +266,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 #define Return(code) {gmt_M_free (GMT, p); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdpmodeler (void *V_API, int mode, void *args) {
-	unsigned int col, row, inside, stage, n_stages, registration, k;
+	openmp_int col, row;
+	unsigned int inside, stage, n_stages, registration, k;
 	int retval, error = 0;
 
 	bool skip, spotted;
@@ -422,11 +423,11 @@ EXTERN_MSC int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	grd_y  = gmt_M_memory (GMT, NULL, G->header->n_rows, double);
 	grd_yc = gmt_M_memory (GMT, NULL, G->header->n_rows, double);
 	/* Precalculate node coordinates in both degrees and radians */
-	for (row = 0; row < G->header->n_rows; row++) {
+	for (row = 0; row < (openmp_int)G->header->n_rows; row++) {
 		grd_y[row]  = gmt_M_grd_row_to_y (GMT, row, G->header);
 		grd_yc[row] = gmt_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 	}
-	for (col = 0; col < G->header->n_columns; col++) grd_x[col] = gmt_M_grd_col_to_x (GMT, col, G->header);
+	for (col = 0; col < (openmp_int)G->header->n_columns; col++) grd_x[col] = gmt_M_grd_col_to_x (GMT, col, G->header);
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 

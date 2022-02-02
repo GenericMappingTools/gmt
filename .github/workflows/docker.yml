@@ -41,7 +41,6 @@ jobs:
           - ubuntu:16.04  # CMake 3.5.1  + GNU 5.4.0;  EOL: 2026-04-23
           - ubuntu:18.04  # CMake 3.10.2 + GNU 7.4.0;  EOL: 2028-04-26
           - ubuntu:20.04  # CMake 3.16.3 + GNU 9.3.0;  EOL: 2030-04-23
-          - ubuntu:21.04  # CMake 3.18.4 + GNU 10.3.0; EOL: 2022-01-20
           - ubuntu:21.10  # CMake 3.18.4 + GNU 11.2.0; EOL: 2022-07-14
           - debian:9      # CMake 3.7.2  + GNU 6.3.0;  EOL: 2022-06-30
           - debian:10     # CMake 3.13.4 + GNU 8.3.0;  EOL: 2024-06-01

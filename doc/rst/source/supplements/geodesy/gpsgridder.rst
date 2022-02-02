@@ -255,7 +255,7 @@ doi:10.1007/978-3-319-21578-5_2.
 
 Sandwell, D. T. and P. Wessel, 2016, Interpolation of 2-D Vector Data Using Constraints from Elasticity,
 *Geophys. Res. Lett., 43*, 10,703-10,709,
-`http://dx.doi.org/10.1002/2016GL070340 <http://dx.doi.org/10.1002/2016GL070340>`_
+`https://dx.doi.org/10.1002/2016GL070340 <https://dx.doi.org/10.1002/2016GL070340>`_
 
 See Also
 --------

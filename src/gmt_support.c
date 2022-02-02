@@ -4908,6 +4908,28 @@ GMT_LOCAL void gmtsupport_make_template (struct GMTAPI_CTRL *API, char *stem, ch
 		snprintf (path, PATH_MAX, "%s_XXXXXX", stem ? stem : "gmttemp");
 }
 
+int gmt_create_tempdir (struct GMTAPI_CTRL *API, char *name, char path[]) {
+	/* Get unique directory name template and create directory in one go */
+
+	gmtsupport_make_template (API, name, path);	/* Readying the directory name template */
+
+#ifdef _WIN32
+	if (gmt_get_tempname (API, name, NULL, path))
+		return GMT_RUNTIME_ERROR;
+	if (gmt_mkdir (path)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to create directory %s - exiting.\n", path);
+		return GMT_RUNTIME_ERROR;
+	}
+#else
+	/* Create final temp dir name and create it at the same time to avoid race condition */
+	if (mkdtemp (path) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Could not create temporary directory %s.\n", path);
+		return (GMT_RUNTIME_ERROR);
+	}
+#endif
+	return (GMT_NOERROR);
+}
+
 int gmt_get_tempname (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
 	/* Create a unique temporary file or directory name on the system;
 	 * If stem is NULL we use "gmttemp" as file prefix.  If extension is not NULL we append it.
@@ -5694,7 +5716,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 				gmt_geo_to_cart (GMT, y, x, P, true);		/* 3-D vector of current point P */
 				if (set_fixed_azim) {	/* Need 2nd point in azim direction to cross with P */
 					double b_x, b_y;
-					gmt_translate_point (GMT, x, y, fixed_azim, dist_to_end, &b_x, &b_y, NULL);
+					gmtlib_translate_point (GMT, x, y, fixed_azim, dist_to_end, &b_x, &b_y, NULL);
 					gmt_geo_to_cart (GMT, b_y, b_x, R, true);		/* 3-D vector of end point R */
 					gmt_cross3v (GMT, P, R, E);			/* Get pole E to plane trough P and R */
 				}
@@ -11255,8 +11277,10 @@ int64_t gmt_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int smo
 	 * Note: grd has a pad while edge does not!
 	 */
 
-	static unsigned int col_0, row_0, side;
-	unsigned int nans = 0, row, col;
+	static unsigned int  side;
+	static openmp_int col_0, row_0;
+	unsigned int nans = 0;
+	openmp_int row, col;
 	int scol;
 	uint64_t n2, n_edges, offset;
 	int64_t n = 0;
@@ -11271,13 +11295,13 @@ int64_t gmt_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int smo
 		unsigned int i;
 		gmt_M_memset (edge, n_edges, unsigned int);
 		col_0 = side = 0;
-		row_0 = G->header->n_rows - 1;
+		row_0 = (openmp_int)G->header->n_rows - 1;
 		for (i = 1, bit[0] = 1; i < 32; i++) bit[i] = bit[i-1] << 1;
 		*first = false;
 	}
 
 	if (side == 0) {	/* Southern boundary */
-		for (col = col_0, row = row_0; col < G->header->n_columns-1; col++) {
+		for (col = col_0, row = row_0; col < (openmp_int)G->header->n_columns-1; col++) {
 			if ((n = gmtsupport_trace_contour (GMT, G, true, edge, x, y, col, row, 0, offset, bit, &nans))) {
 				if (orient) gmtsupport_orient_contour (G, *x, *y, n, orient);
 				if ((n = gmtsupport_smooth_contour (GMT, x, y, n, smooth_factor, int_scheme)) < 0) return n;
@@ -11286,8 +11310,8 @@ int64_t gmt_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int smo
 			}
 		}
 		if (n == 0) {	/* No more crossing of southern boundary, go to next side (east) */
-			col_0 = G->header->n_columns - 2;
-			row_0 = G->header->n_rows - 1;
+			col_0 = (openmp_int)G->header->n_columns - 2;
+			row_0 = (openmp_int)G->header->n_rows - 1;
 			side++;
 		}
 	}
@@ -11302,7 +11326,7 @@ int64_t gmt_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int smo
 			}
 		}
 		if (n == 0) {	/* No more crossing of eastern boundary, go to next side (north) */
-			col_0 = G->header->n_columns - 2;
+			col_0 = (openmp_int)G->header->n_columns - 2;
 			row_0 = 1;
 			side++;
 		}
@@ -11325,7 +11349,7 @@ int64_t gmt_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int smo
 	}
 
 	if (side == 3) {	/* Western boundary */
-		for (col = col_0, row = row_0; row < G->header->n_rows; row++) {
+		for (col = col_0, row = row_0; row < (openmp_int)G->header->n_rows; row++) {
 			if ((n = gmtsupport_trace_contour (GMT, G, true, edge, x, y, col, row, 3, offset, bit, &nans))) {
 				if (orient) gmtsupport_orient_contour (G, *x, *y, n, orient);
 				if ((n = gmtsupport_smooth_contour (GMT, x, y, n, smooth_factor, int_scheme)) < 0) return n;
@@ -11341,8 +11365,8 @@ int64_t gmt_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int smo
 	}
 
 	if (side == 4) {	/* Then loop over interior boxes (vertical edges) */
-		for (row = row_0; row < G->header->n_rows; row++) {
-			for (col = col_0; col < G->header->n_columns-1; col++) {
+		for (row = row_0; row < (openmp_int)G->header->n_rows; row++) {
+			for (col = col_0; col < (openmp_int)G->header->n_columns-1; col++) {
                 if (row == 60 && col == 1)
                     n = 0;
 				if ((n = gmtsupport_trace_contour (GMT, G, true, edge, x, y, col, row, 3, offset, bit, &nans))) {
@@ -11368,8 +11392,8 @@ int64_t gmt_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int smo
 	}
 
 	if (side == 5) {	/* Then loop over interior boxes (horizontal edges) */
-		for (row = row_0; row < G->header->n_rows; row++) {
-			for (col = col_0; col < G->header->n_columns-1; col++) {
+		for (row = row_0; row < (openmp_int)G->header->n_rows; row++) {
+			for (col = col_0; col < (openmp_int)G->header->n_columns-1; col++) {
 				if ((n = gmtsupport_trace_contour (GMT, G, true, edge, x, y, col, row, 2, offset, bit, &nans))) {
 					if (nans && (n2 = gmtsupport_trace_contour (GMT, G, false, edge, &x2, &y2, col-1, row, 0, offset, bit, &nans))) {
 						/* Must trace in other direction, then splice */
@@ -13251,7 +13275,7 @@ bool gmt_x_out_of_bounds (struct GMT_CTRL *GMT, int *i, struct GMT_GRID_HEADER *
 }
 
 /*! . */
-bool gmt_row_col_out_of_bounds (struct GMT_CTRL *GMT, double *in, struct GMT_GRID_HEADER *h, unsigned int *row, unsigned int *col) {
+bool gmt_row_col_out_of_bounds (struct GMT_CTRL *GMT, double *in, struct GMT_GRID_HEADER *h, openmp_int *row, openmp_int *col) {
 	/* Return false and pass back unsigned row,col if inside region, or return true (outside) */
 	int signed_row, signed_col;
 	gmt_M_unused(GMT);
@@ -13259,10 +13283,10 @@ bool gmt_row_col_out_of_bounds (struct GMT_CTRL *GMT, double *in, struct GMT_GRI
 	if (signed_row < 0) return (true);
 	signed_col = (int)gmt_M_grd_x_to_col (GMT, in[GMT_X], h);
 	if (signed_col < 0) return (true);
-	*row = signed_row;
-	if (*row >= h->n_rows) return (true);
-	*col = signed_col;
-	if (*col >= h->n_columns) return (true);
+	*row = (openmp_int)signed_row;
+	if (*row >= (openmp_int)h->n_rows) return (true);
+	*col = (openmp_int)signed_col;
+	if (*col >= (openmp_int)h->n_columns) return (true);
 	return (false);	/* Inside the node region */
 }
 
@@ -15594,7 +15618,7 @@ int gmt_polygon_centroid (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n
 }
 
 /*! . */
-unsigned int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, double radius, unsigned int mode, unsigned int *d_row, unsigned int *actual_max_d_col) {
+openmp_int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, double radius, unsigned int mode, openmp_int *d_row, openmp_int *actual_max_d_col) {
 	/* When we search all nodes within a radius R on a grid, we first rule out nodes that are
 	 * outside the circumscribing rectangle.  However, for geographic data the circle becomes
 	 * elliptical in lon/lat space due to the cos(lat) shrinking of the length of delta_lon.
@@ -15604,7 +15628,7 @@ unsigned int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, do
 	 * in the same units as the radius.  We also return the widest value in the d_col array via
 	 * the actual_max_d_col value.
 	 */
-	unsigned int max_d_col, row, *d_col = gmt_M_memory (GMT, NULL, G->header->n_rows, unsigned int);
+	openmp_int max_d_col, row, *d_col = gmt_M_memory (GMT, NULL, G->header->n_rows, unsigned int);
 	double dist_x, dist_y, lon, lat;
 
 	lon = G->header->wesn[XLO] + G->header->inc[GMT_X];
@@ -15613,7 +15637,7 @@ unsigned int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, do
 	if (mode) {	/* Input data is geographical, so circle widens with latitude due to cos(lat) effect */
 		max_d_col = urint (ceil (G->header->n_columns / 2.0) + 0.1);	/* Upper limit on +- halfwidth */
 		*actual_max_d_col = 0;
-		for (row = 0; row < G->header->n_rows; row++) {
+		for (row = 0; row < (openmp_int)G->header->n_rows; row++) {
 			lat = gmt_M_grd_row_to_y (GMT, row, G->header);
 			/* Determine longitudinal width of one grid ell at this latitude */
 			dist_x = gmt_distance (GMT, G->header->wesn[XLO], lat, lon, lat);
@@ -15625,14 +15649,14 @@ unsigned int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, do
 	else {	/* Plain Cartesian data with rectangular box */
 		dist_x = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], lon, G->header->wesn[YLO]);
 		*actual_max_d_col = max_d_col = urint (ceil (radius / dist_x) + 0.1);
-		for (row = 0; row < G->header->n_rows; row++) d_col[row] = max_d_col;
+		for (row = 0; row < (openmp_int)G->header->n_rows; row++) d_col[row] = max_d_col;
 	}
 	*d_row = urint (ceil (radius / dist_y) + 0.1);	/* The constant half-width of nodes in y-direction */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Max node-search half-widths are: half_x = %d, half_y = %d\n", *d_row, *actual_max_d_col);
 	return (d_col);		/* The (possibly variable) half-width of nodes in x-direction as function of y */
 }
 
-/* THese three functions are used by grdmath and gmtmath only */
+/* These three functions are used by grdmath and gmtmath only */
 
 /*! . */
 int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct GMT_MATH_MACRO **M) {

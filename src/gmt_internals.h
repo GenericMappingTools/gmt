@@ -292,13 +292,11 @@ EXTERN_MSC const char *gmtlib_module_group (void *API, struct GMT_MODULEINFO M[]
 
 EXTERN_MSC int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in);
 
-#ifdef HAVE_GDAL
 EXTERN_MSC int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn,
 			unsigned int *pad, unsigned int complex_mode);		/* Function to read true images via GDAL */
 int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image, struct GMT_IMAGE *I);
 EXTERN_MSC int gmtlib_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC void gmtlib_GDALDestroyDriverManager (struct GMTAPI_CTRL *API);
-#endif
 
 /* LOCAL MACROS USED BY GMT_*.C ONLY - NOT PART OF GMT_DEV.H DISTRIBUTION */
 

@@ -48,11 +48,11 @@
 
 /* Some local macros to simplify coding */
 /*! Loop over all nodes including the pad */
-#define grdmath_row_padloop(C,G,row,ij) for (row = 0, ij = 0; (int)row < (int)G->header->my; row++)
-#define grdmath_col_padloop(C,G,col,ij) for (col = 0; (int)col < (int)G->header->mx; col++, ij++)
+#define grdmath_row_padloop(C,G,row,ij) for (row = 0, ij = 0; row < (openmp_int)G->header->my; row++)
+#define grdmath_col_padloop(C,G,col,ij) for (col = 0; col < (openmp_int)G->header->mx; col++, ij++)
 #define grdmath_grd_padloop(C,G,row,col,ij) grdmath_row_padloop(C,G,row,ij) grdmath_col_padloop(C,G,col,ij)
 /*! Just a loop over columns */
-#define grdmath_col_padloop2(C,G,col) for (col = 0; (int)col < (int)G->header->mx; col++)
+#define grdmath_col_padloop2(C,G,col) for (col = 0; col < (openmp_int)G->header->mx; col++)
 
 #define GRDMATH_ARG_IS_OPERATOR		 0
 #define GRDMATH_ARG_IS_FILE		-1
@@ -1021,7 +1021,8 @@ GMT_LOCAL void grdmath_BCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: BCDF 3 1 Binomial cumulative distribution function for p = A, n = B and x = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double p, x, n;
 
 	prev1 = last - 1;
@@ -1058,7 +1059,8 @@ GMT_LOCAL void grdmath_BPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: BPDF 3 1 Binomial probability density function for p = A, n = B and x = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double p, q, x, n;
 
 	prev1 = last - 1;
@@ -1083,8 +1085,8 @@ GMT_LOCAL void grdmath_BPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 		gmt_M_grd_loop (GMT, info->G, row, col, node) stack[prev2]->G->data[node] = value;
 		return;
 	}
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 			p = (stack[prev2]->constant) ? stack[prev2]->factor : (double)stack[prev2]->G->data[node];
 			n = (stack[prev1]->constant) ? stack[prev1]->factor : (double)stack[prev1]->G->data[node];
 			x = (stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node];
@@ -1329,7 +1331,8 @@ GMT_LOCAL void grdmath_BLEND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 /*OPERATOR: BLEND 3 1 Blend A and B using weights in C (0-1 range) as A*C+B*(1-C).  */
 {
 	uint64_t node, n_warn = 0;
-	unsigned int prev1, prev2, row, col;
+	openmp_int row, col;
+	unsigned int prev1, prev2;
 	double z1, z2, w;
 
 	prev1 = last - 1;
@@ -1337,8 +1340,8 @@ GMT_LOCAL void grdmath_BLEND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 	if (stack[prev2]->constant && stack[prev2]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for BLEND!\n");
 	if (stack[prev1]->constant && stack[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for BLEND!\n");
 	if (stack[last]->constant  && stack[last]->factor  == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand three == 0 for BLEND!\n");
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 			z1 = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
 			z2 = (stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node];
 			w  = (stack[last]->constant)  ? stack[last]->factor  : stack[last]->G->data[node];
@@ -1352,7 +1355,8 @@ GMT_LOCAL void grdmath_BLEND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 GMT_LOCAL void grdmath_CAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: CAZ 2 1 Cartesian azimuth from grid nodes to stack x,y.  */
 {
-	uint64_t node, row, col;
+	openmp_int row, col;
+	uint64_t node;
 	unsigned int prev = last - 1;
 	double x, y, az;
 	gmt_M_unused(GMT);
@@ -1371,7 +1375,8 @@ GMT_LOCAL void grdmath_CAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 GMT_LOCAL void grdmath_CBAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: CBAZ 2 1 Cartesian back-azimuth from grid nodes to stack x,y.  */
 {
-	uint64_t node, row, col;
+	openmp_int row, col;
+	uint64_t node;
 	unsigned int prev = last - 1;
 	double x, y, az;
 	gmt_M_unused(GMT);
@@ -1390,7 +1395,8 @@ GMT_LOCAL void grdmath_CBAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 GMT_LOCAL void grdmath_CDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: CDIST 2 1 Cartesian distance between grid nodes and stack x,y.  */
 {
-	uint64_t node, row, col;
+	openmp_int row, col;
+	uint64_t node;
 	unsigned int prev = last - 1;
 	double a, b;
 
@@ -1408,7 +1414,8 @@ GMT_LOCAL void grdmath_CDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 GMT_LOCAL void grdmath_CDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: CDIST2 2 1 As CDIST but only to nodes that are != 0.  */
 {
-	uint64_t node, row, col;
+	openmp_int row, col;
+	uint64_t node;
 	unsigned int prev = last - 1;
 	double a, b;
 
@@ -1442,7 +1449,8 @@ GMT_LOCAL void grdmath_CHI2CRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info
 /*OPERATOR: CHI2CRIT 2 1 Chi-squared distribution critical value for alpha = A and nu = B.  */
 {
 	uint64_t node;
-	unsigned int prev = last - 1, row, col;
+	openmp_int row, col;
+	unsigned int prev = last - 1;
 	double a, b;
 
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for CHI2CRIT!\n");
@@ -1458,13 +1466,14 @@ GMT_LOCAL void grdmath_CHI2CDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: CHI2CDF 2 1 Chi-squared cumulative distribution function for chi2 = A and nu = B.  */
 {
 	uint64_t node;
-	unsigned int prev = last - 1, row, col;
+	openmp_int row, col;
+	unsigned int prev = last - 1;
 	double a, b, q;
 
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for CHI2CDF!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for CHI2CDF!\n");
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 			gmt_chi2 (GMT, a, b, &q);
@@ -1477,13 +1486,14 @@ GMT_LOCAL void grdmath_CHI2PDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: CHI2PDF 2 1 Chi-squared probability density function for chi = A and nu = B.  */
 {
 	uint64_t node, nu;
-	unsigned int prev = last - 1, row, col;
+	unsigned int prev = last - 1;
+	openmp_int row, col;
 	double c;
 
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for CHI2PDF!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for CHI2PDF!\n");
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 			c = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			nu = lrint ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
 			stack[prev]->G->data[node] = (float)gmt_chi2_pdf (GMT, c, nu);
@@ -1495,7 +1505,8 @@ GMT_LOCAL void grdmath_COMB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: COMB 2 1 Combinations n_C_r, with n = A and r = B.  */
 {
 	uint64_t node;
-	unsigned int prev = last - 1, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev = last - 1, error = 0;
 	double a, b;
 
 	if (stack[prev]->constant && stack[prev]->factor < 0.0) {
@@ -1511,8 +1522,8 @@ GMT_LOCAL void grdmath_COMB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 		gmt_M_grd_loop (GMT, info->G, row, col, node) stack[prev]->G->data[node] = value;
 		return;
 	}
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 			stack[prev]->G->data[node] = (float)gmt_combination (GMT, irint(a), irint(b));
@@ -1611,12 +1622,13 @@ GMT_LOCAL void grdmath_PCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: PCDF 2 1 Poisson cumulative distribution function x = A and lambda = B.  */
 {
 	uint64_t node;
-	unsigned int prev = last - 1, row, col;
+	unsigned int prev = last - 1;
+	openmp_int row, col;
 	double a, b, prob;
 
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for PCDF!\n");
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 			gmt_poisson_cdf (GMT, a, b, &prob);
@@ -1629,12 +1641,13 @@ GMT_LOCAL void grdmath_PPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: PPDF 2 1 Poisson probability density function for x = A and lambda = B.  */
 {
 	uint64_t node;
-	unsigned int prev = last - 1, row, col;
+	unsigned int prev = last - 1;
+	openmp_int row, col;
 	double a, b;
 
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for PPDF!\n");
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 			stack[prev]->G->data[node] = (float)gmt_poissonpdf (GMT, a, b);
@@ -1680,7 +1693,8 @@ GMT_LOCAL void grdmath_CUMSUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 {
 	bool add = false;
 	uint64_t node, previous, mx, shift;
-	unsigned int prev = last - 1, row, col;
+	unsigned int prev = last - 1;
+	openmp_int row, col;
 	int code;
 
 	if (!stack[last]->constant) {
@@ -1706,7 +1720,7 @@ GMT_LOCAL void grdmath_CUMSUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 			gmt_M_row_loop (GMT, info->G, row) {	/* Process sums by row in positive x-direction*/
 				node = gmt_M_ijp (info->G->header, row, 1);	/* Node of 2nd col in this row */
 				if (add && row) stack[prev]->G->data[node-1] += stack[prev]->G->data[node-shift];
-				for (col = 1; col < info->G->header->n_columns; col++, node++)
+				for (col = 1; col < (openmp_int)info->G->header->n_columns; col++, node++)
 					stack[prev]->G->data[node] += stack[prev]->G->data[node-1];
 			}
 			break;
@@ -1717,7 +1731,7 @@ GMT_LOCAL void grdmath_CUMSUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 			gmt_M_row_loop (GMT, info->G, row) {	/* Process sums by row in negative x-direction*/
 				node = gmt_M_ijp (info->G->header, row, info->G->header->n_columns-2);	/* Node of 2nd col from the right in this row */
 				if (add && row) stack[prev]->G->data[node+1] += stack[prev]->G->data[node-shift];
-				for (col = 1; col < info->G->header->n_columns; col++, node--)
+				for (col = 1; col < (openmp_int)info->G->header->n_columns; col++, node--)
 					stack[prev]->G->data[node] += stack[prev]->G->data[node+1];
 			}
 			break;
@@ -1728,7 +1742,7 @@ GMT_LOCAL void grdmath_CUMSUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 			gmt_M_col_loop (GMT, info->G, 0, col, node) {	/* Process sums by column in positive y-direction */
 				previous = gmt_M_ijp (info->G->header, info->G->header->n_rows-1, col);	/* Last row for this column */
 				if (add && col) stack[prev]->G->data[previous] += stack[prev]->G->data[previous-shift];
-				for (row = 1; row < info->G->header->n_rows; row++) {
+				for (row = 1; row < (openmp_int)info->G->header->n_rows; row++) {
 					node = previous - mx;	/* current node in this column */
 					stack[prev]->G->data[node] += stack[prev]->G->data[previous];
 					previous = node;
@@ -1742,7 +1756,7 @@ GMT_LOCAL void grdmath_CUMSUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 			gmt_M_col_loop (GMT, info->G, 0, col, node) {	/* Process sums by column in negative y-direction */
 				previous = gmt_M_ijp (info->G->header, 0, col);	/* First row for this column */
 				if (add && col) stack[prev]->G->data[previous] += stack[prev]->G->data[previous+shift];
-				for (row = 1; row < info->G->header->n_rows; row++) {
+				for (row = 1; row < (openmp_int)info->G->header->n_rows; row++) {
 					node = previous + mx;	/* current node in this column */
 					stack[prev]->G->data[node] += stack[prev]->G->data[previous];
 					previous = node;
@@ -1756,7 +1770,7 @@ GMT_LOCAL void grdmath_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: CURV 1 1 Curvature of A (Laplacian).  */
 {
 	uint64_t node;
-	unsigned int row, col, mx;
+	openmp_int row, col, mx;
 	double cy, *cx = NULL;
 	float *z = NULL;
 
@@ -1786,8 +1800,8 @@ GMT_LOCAL void grdmath_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	mx = info->G->header->mx;
 	cy = 1.0 / (info->dy * info->dy);
 
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 		z[node] = (float)(cx[row] * (stack[last]->G->data[node+1] - 2.0 * stack[last]->G->data[node] + stack[last]->G->data[node-1]) + \
 			cy * (stack[last]->G->data[node+mx] - 2.0 * stack[last]->G->data[node] + stack[last]->G->data[node-mx]));
 		}
@@ -1802,7 +1816,7 @@ GMT_LOCAL void grdmath_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 /*OPERATOR: D2DX2 1 1 d^2(A)/dx^2 2nd derivative.  */
 {
 	uint64_t node, ij;
-	unsigned int row, col;
+	openmp_int row, col;
 	double c, left, next_left;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
 
@@ -1838,7 +1852,7 @@ GMT_LOCAL void grdmath_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 /*OPERATOR: D2DY2 1 1 d^2(A)/dy^2 2nd derivative.  */
 {
 	uint64_t node, ij;
-	unsigned int row, col, mx;
+	openmp_int row, col, mx;
 	double c, bottom, next_bottom;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
 
@@ -1875,7 +1889,7 @@ GMT_LOCAL void grdmath_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 /*OPERATOR: D2DXY 1 1 d^2(A)/dxdy 2nd derivative.  */
 {
 	uint64_t node;
-	unsigned int row, col, mx;
+	openmp_int row, col, mx;
 	double *cx = NULL, cy;
 	float *z = NULL;
 
@@ -1929,7 +1943,8 @@ GMT_LOCAL void grdmath_D2R (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 
 GMT_LOCAL void grdmath_DAYNIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: DAYNIGHT 3 1 Return 1 where sun at (A, B) shines and 0 elsewhere, with C transition width.  */
-	int64_t node, row, col, k;			/* int since VS 2013/OMP 2.0 doesn't allow unsigned index variables */
+	openmp_int row, col;
+	uint64_t node, k;
 	unsigned int prev1, prev2;
 	double x0, y0, iw, d;
 
@@ -1974,9 +1989,9 @@ dn_next2:
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,d) shared(info,stack,prev2,GMT,x0,y0)
 #endif
-		for (row = 0; row < info->G->header->my; row++) {
+		for (row = 0; row < (openmp_int)info->G->header->my; row++) {
 			node = row * info->G->header->mx;
-			for (col = 0; col < info->G->header->mx; col++, node++) {
+			for (col = 0; col < (openmp_int)info->G->header->mx; col++, node++) {
 				d = gmt_distance (GMT, x0, y0, info->d_grd_x[col], info->d_grd_y[row]);	/* Distance in degrees from (A,B) */
 				stack[prev2]->G->data[node] = (d > 90.0) ? 0.0f : 1.0f;
 			}
@@ -1987,9 +2002,9 @@ dn_next2:
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,d) shared(info,stack,prev2,last,GMT,x0,y0,iw)
 #endif
-		for (row = 0; row < info->G->header->my; row++) {
+		for (row = 0; row < (openmp_int)info->G->header->my; row++) {
 			node = row * info->G->header->mx;
-			for (col = 0; col < info->G->header->mx; col++, node++) {
+			for (col = 0; col < (openmp_int)info->G->header->mx; col++, node++) {
 				d = gmt_distance (GMT, x0, y0, info->d_grd_x[col], info->d_grd_y[row]);	/* Distance in degrees from (A,B) */
 				stack[prev2]->G->data[node] = (float) (0.5 + atan ((90.0 - d) * iw) / M_PI);
 			}
@@ -1999,9 +2014,9 @@ dn_next2:
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,d,iw) shared(info,stack,prev2,last,GMT,x0,y0)
 #endif
-		for (row = 0; row < info->G->header->my; row++) {
+		for (row = 0; row < (openmp_int)info->G->header->my; row++) {
 			node = row * info->G->header->mx;
-			for (col = 0; col < info->G->header->mx; col++, node++) {
+			for (col = 0; col < (openmp_int)info->G->header->mx; col++, node++) {
 				d = gmt_distance (GMT, x0, y0, info->d_grd_x[col], info->d_grd_y[row]);	/* Distance in degrees from (A,B) */
 				iw = 1.0 / (double)stack[last]->G->data[node];	/* Allowed to have variable width */
 				stack[prev2]->G->data[node] = (float) (0.5 + atan ((90.0 - d) * iw) / M_PI);
@@ -2014,7 +2029,7 @@ GMT_LOCAL void grdmath_DDX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 /*OPERATOR: DDX 1 1 d(A)/dx Central 1st derivative.  */
 {
 	uint64_t node, ij;
-	unsigned int row, col;
+	openmp_int row, col;
 	double c, left, next_left;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
 
@@ -2049,7 +2064,7 @@ GMT_LOCAL void grdmath_DDY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 /*OPERATOR: DDY 1 1 d(A)/dy Central 1st derivative.  */
 {
 	uint64_t node, ij;
-	unsigned int row, col, mx;
+	openmp_int row, col, mx;
 	double c, bottom, next_bottom;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
 
@@ -2132,7 +2147,8 @@ GMT_LOCAL void grdmath_DIV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 GMT_LOCAL void grdmath_dot2d (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 {	/* Get x,y and compute 2-D unit vector then take dot products with vectors represented by grid locations */
 	uint64_t node;
-	unsigned int prev = last - 1, row, col;
+	unsigned int prev = last - 1;
+	openmp_int row, col;
 	bool update = true;
 	double X[2], P[2];
 
@@ -2141,8 +2157,8 @@ GMT_LOCAL void grdmath_dot2d (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 		gmt_normalize2v (GMT, P);	/* Normalize vector */
 		update = false;
 	}
-	for (row = 0, node = 0; row < info->G->header->my; row++) {
-		for (col = 0; col < info->G->header->mx; col++, node++) {	/* Visit each node */
+	for (row = 0, node = 0; row < (openmp_int)info->G->header->my; row++) {
+		for (col = 0; col < (openmp_int)info->G->header->mx; col++, node++) {	/* Visit each node */
 			if (update) {	/* Must compute updated vector from grids A and B */
 				P[GMT_X] = stack[prev]->G->data[node];	P[GMT_Y] = stack[last]->G->data[node];
 				gmt_normalize2v (GMT, P);
@@ -2157,7 +2173,8 @@ GMT_LOCAL void grdmath_dot2d (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 GMT_LOCAL void grdmath_dot3d (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 {	/* Get lon,lat and compute 3-D unit vector then take dot products with vectors represented by grid locations */
 	uint64_t node;
-	unsigned int prev = last - 1, row, col;
+	unsigned int prev = last - 1;
+	openmp_int row, col;
 	bool update = true;
 	double X[3], P[3];
 
@@ -2165,8 +2182,8 @@ GMT_LOCAL void grdmath_dot3d (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 		gmt_geo_to_cart (GMT, stack[last]->factor, stack[prev]->factor, P, true);
 		update = false;
 	}
-	for (row = 0, node = 0; row < info->G->header->my; row++) {
-		for (col = 0; col < info->G->header->mx; col++, node++) {	/* Visit each node */
+	for (row = 0, node = 0; row < (openmp_int)info->G->header->my; row++) {
+		for (col = 0; col < (openmp_int)info->G->header->mx; col++, node++) {	/* Visit each node */
 			if (update)	/* Must compute updated vector from grids A and B */
 				gmt_geo_to_cart (GMT, stack[last]->G->data[node], stack[prev]->G->data[node], P, true);
 			gmt_geo_to_cart (GMT, info->d_grd_y[row], info->d_grd_x[col], X, true);	/* 3-D unit vector for this node */
@@ -2205,7 +2222,8 @@ GMT_LOCAL void grdmath_ECDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: ECDF 2 1 Exponential cumulative distribution function for x = A and lambda = B.  */
 {
 	uint64_t node;
-	unsigned int prev = last - 1, row, col;
+	openmp_int row, col;
+	unsigned int prev = last - 1;
 	double a, b;
 
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for PCDF!\n");
@@ -2220,7 +2238,8 @@ GMT_LOCAL void grdmath_ECRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 /*OPERATOR: ECRIT 2 1 Exponential distribution critical value for alpha = A and lambda = B.  */
 {
 	uint64_t node;
-	unsigned int prev = last - 1, row, col;
+	openmp_int row, col;
+	unsigned int prev = last - 1;
 	double a, b;
 
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for PCDF!\n");
@@ -2235,7 +2254,8 @@ GMT_LOCAL void grdmath_EPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: EPDF 2 1 Exponential probability density function for x = A and lambda = B.  */
 {
 	uint64_t node;
-	unsigned int prev = last - 1, row, col;
+	openmp_int row, col;
+	unsigned int prev = last - 1;
 	double a, b;
 
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for PCDF!\n");
@@ -2376,7 +2396,7 @@ GMT_LOCAL void grdmath_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: EXTREMA 1 1 Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere.  */
 {
 	uint64_t node;
-	unsigned int row, col;
+	openmp_int row, col;
 	int dx, dy, diag, product, mx1;
 	float *z = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
@@ -2450,7 +2470,8 @@ GMT_LOCAL void grdmath_FCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 {
 	uint64_t node;
 	int nu1, nu2;
-	unsigned int prev1, prev2, row, col;
+	unsigned int prev1, prev2;
+	openmp_int row, col;
 	double alpha;
 
 	prev1 = last - 1;
@@ -2458,8 +2479,8 @@ GMT_LOCAL void grdmath_FCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 	if (stack[prev2]->constant && stack[prev2]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for FCRIT!\n");
 	if (stack[prev1]->constant && stack[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for FCRIT!\n");
 	if (stack[last]->constant  && stack[last]->factor  == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand three == 0 for FCRIT!\n");
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 			alpha = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
 			nu1 = irint ((stack[prev1]->constant) ? stack[prev1]->factor : (double)stack[prev1]->G->data[node]);
 			nu2 = irint ((stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node]);
@@ -2472,15 +2493,16 @@ GMT_LOCAL void grdmath_FCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: FCDF 3 1 F cumulative distribution function for F = A, nu1 = B, and nu2 = C.  */
 {
 	uint64_t node, nu1, nu2;
-	unsigned int prev1, prev2, row, col;
+	unsigned int prev1, prev2;
+	openmp_int row, col;
 	double F;
 
 	prev1 = last - 1;
 	prev2 = last - 2;
 	if (stack[prev1]->constant && stack[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for FCDF!\n");
 	if (stack[last]->constant  && stack[last]->factor  == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand three == 0 for FCDF!\n");
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 			F = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
 			nu1 = lrint ((stack[prev1]->constant) ? stack[prev1]->factor : (double)stack[prev1]->G->data[node]);
 			nu2 = lrint ((stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node]);
@@ -2493,7 +2515,8 @@ GMT_LOCAL void grdmath_FISHER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 /*OPERATOR: FISHER 3 1 Fisher probability density function for lon = A, lat = B and kappa = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col;
+	unsigned int prev1, prev2;
+	openmp_int row, col;
 	double lon, lat, kappa;
 
 	prev1 = last - 1;
@@ -2513,7 +2536,7 @@ GMT_LOCAL void grdmath_FLIPLR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 /*OPERATOR: FLIPLR 1 1 Reverse order of values in each row.  */
 {
 	uint64_t node;
-	unsigned int mx1, row, col_l, col_r, mx_half;
+	openmp_int mx1, row, col_l, col_r, mx_half;
 
 	/* Reverse order of all rows */
 
@@ -2524,9 +2547,9 @@ GMT_LOCAL void grdmath_FLIPLR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 
 	/* This must also apply to the pads since any BCs there must be flipped as well, hence a local loop is used */
 
-	mx_half = info->G->header->mx / 2;
-	mx1 = info->G->header->mx - 1;
-	for (node = row = 0; row < info->G->header->my; row++, node += info->G->header->mx) {	/* Do this to all rows */
+	mx_half = (openmp_int)info->G->header->mx / 2;
+	mx1 = (openmp_int)info->G->header->mx - 1;
+	for (node = row = 0; row < (openmp_int)info->G->header->my; row++, node += info->G->header->mx) {	/* Do this to all rows */
 		for (col_l = 0, col_r = mx1; col_l < mx_half; col_l++, col_r--) gmt_M_float_swap (stack[last]->G->data[node+col_l], stack[last]->G->data[node+col_r]);
 	}
 }
@@ -2534,7 +2557,7 @@ GMT_LOCAL void grdmath_FLIPLR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 GMT_LOCAL void grdmath_FLIPUD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: FLIPUD 1 1 Reverse order of values in each column.  */
 {
-	unsigned int my1, mx, row_t, row_b, col, my_half;
+	openmp_int my1, mx, row_t, row_b, col, my_half;
 
 	/* Reverse order of all columns */
 
@@ -2545,9 +2568,9 @@ GMT_LOCAL void grdmath_FLIPUD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 
 	/* This must also apply to the pads since any BCs there must be flipped as well, hence a local loop is used */
 
-	my_half = info->G->header->my / 2;
-	my1 = info->G->header->my - 1;
-	mx = info->G->header->mx;
+	my_half = (openmp_int)info->G->header->my / 2;
+	my1 = (openmp_int)info->G->header->my - 1;
+	mx = (openmp_int)info->G->header->mx;
 	for (col = 0; col < mx; col++) {	/* Do this to all cols */
 		for (row_t = 0, row_b = my1; row_t < my_half; row_t++, row_b--) gmt_M_float_swap (stack[last]->G->data[(uint64_t)row_t*(uint64_t)mx+(uint64_t)col], stack[last]->G->data[(uint64_t)row_b*(uint64_t)mx+(uint64_t)col]);
 	}
@@ -2584,7 +2607,8 @@ GMT_LOCAL void grdmath_FPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: FPDF 3 1 F probability density function for F = A, nu1 = B and nu2 = C.  */
 {
 	uint64_t node, nu1, nu2;
-	unsigned int prev1, prev2, row, col;
+	unsigned int prev1, prev2;
+	openmp_int row, col;
 	double F;
 
 	prev1 = last - 1;
@@ -2592,8 +2616,8 @@ GMT_LOCAL void grdmath_FPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	if (stack[prev2]->constant && stack[prev2]->factor < 0.0)  GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one < 0 for FCDF!\n");
 	if (stack[prev1]->constant && stack[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for FCDF!\n");
 	if (stack[last]->constant  && stack[last]->factor  == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand three == 0 for FCDF!\n");
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 			F = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
 			nu1 = lrint ((stack[prev1]->constant) ? stack[prev1]->factor : (double)stack[prev1]->G->data[node]);
 			nu2 = lrint ((stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node]);
@@ -2636,7 +2660,8 @@ GMT_LOCAL void grdmath_HSV2LAB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: HSV2LAB 3 3 Convert hsv to lab, with h = A, s = B and v = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double hsv[4], rgb[4], lab[3];
 
 	prev1 = last - 1;
@@ -2683,7 +2708,8 @@ GMT_LOCAL void grdmath_HSV2RGB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: HSV2RGB 3 3 Convert hsv to rgb, with h = A, s = B and v = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double rgb[4], hsv[4];
 
 	prev1 = last - 1;
@@ -2728,7 +2754,8 @@ GMT_LOCAL void grdmath_HSV2XYZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: HSV2XYZ 3 3 Convert hsv to xyz, with h = A, s = B and v = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double hsv[4], rgb[4], xyz[3];
 
 	prev1 = last - 1;
@@ -2901,7 +2928,7 @@ GMT_LOCAL void grdmath_INRANGE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 GMT_LOCAL void grdmath_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: INSIDE 1 1 1 when inside or on polygon(s) in A, else 0.  */
 {	/* Suitable for geographic (lon, lat) data and polygons */
-	int64_t row, col;			/* int since VS 2013/OMP 2.0 doesn't allow unsigned index variables */
+	openmp_int row, col;
 	uint64_t node, seg;
 	unsigned int inside;
 	struct GMT_DATATABLE *T = NULL;
@@ -2927,9 +2954,9 @@ GMT_LOCAL void grdmath_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,seg,node,inside,S) shared(info,stack,last,GMT,T)
 #endif
-	for (row = 0; row < info->G->header->my; row++) {
+	for (row = 0; row < (openmp_int)info->G->header->my; row++) {
 		node = row * info->G->header->mx;
-		for (col = 0; col < info->G->header->mx; col++, node++) {
+		for (col = 0; col < (openmp_int)info->G->header->mx; col++, node++) {
 			for (seg = inside = 0; !inside && seg < T->n_segments; seg++) {
 				S = T->segment[seg];
 				if (gmt_polygon_is_hole (GMT, S)) continue;	/* Holes are handled within gmt_inonout */
@@ -3123,7 +3150,7 @@ GMT_LOCAL void grdmath_KURT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: KURT 1 1 Kurtosis of A.  */
 {
 	uint64_t node, n = 0;
-	unsigned int row, col;
+	openmp_int row, col;
 	double mean = 0.0, sum2 = 0.0, kurt = 0.0, delta;
 	float f_kurt;
 
@@ -3194,7 +3221,8 @@ GMT_LOCAL void grdmath_LAB2HSV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: LAB2HSV 3 3 Convert lab to hsv, with l = A, a = B and b = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double hsv[4], lab[4], rgb[4];
 
 	prev1 = last - 1;
@@ -3243,7 +3271,8 @@ GMT_LOCAL void grdmath_LAB2RGB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: LAB2RGB 3 3 Convert lab to rgb, with l = A, a = B and b = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double lab[3], rgb[3];
 
 	prev1 = last - 1;
@@ -3289,7 +3318,8 @@ GMT_LOCAL void grdmath_LAB2XYZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: LAB2XYZ 3 3 Convert lab to xyz, with l = A, a = B and b = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double lab[3], xyz[3];
 
 	prev1 = last - 1;
@@ -3377,9 +3407,9 @@ GMT_LOCAL void grdmath_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,d) shared(info,stack,last,GMT,T)
 #endif
-	for (row = 0; row < info->G->header->my; row++) {
+	for (row = 0; row < (openmp_int)info->G->header->my; row++) {
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Row %d\n", row);
-		for (col = 0; col < info->G->header->mx; col++) {	/* Visit each node */
+		for (col = 0; col < (openmp_int)info->G->header->mx; col++) {	/* Visit each node */
 			(void) gmt_near_lines (GMT, info->d_grd_x[col], info->d_grd_y[row], T, 1, &d, NULL, NULL);
 			node = gmt_M_ij(info->G->header,row,col);
 			stack[last]->G->data[node] = (float)d;
@@ -3437,7 +3467,7 @@ GMT_LOCAL void grdmath_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Row %d\n", row);
 #endif
 		node = gmt_M_ij (info->G->header, row, 0);	/* Starting node for this row */
-		for (col = 0; (int)col < (int)info->G->header->mx; col++, node++) {	/* Visit each col including the pad */
+		for (col = 0; col < (uint64_t)info->G->header->mx; col++, node++) {	/* Visit each col including the pad */
 			lon = info->d_grd_x[col], lat = info->d_grd_y[row];	/* Current node coordinates */
 			i = (int)floor(lon/bin_size);	/* Determine horizontal bin number given the bin size */
 			/* For any new bin along a row, find the closest center of coastline bins */
@@ -3492,9 +3522,9 @@ GMT_LOCAL void grdmath_LDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,d) shared(info,stack,prev,GMT,T)
 #endif
-	for (row = 0; row < info->G->header->my; row++) {
+	for (row = 0; row < (openmp_int)info->G->header->my; row++) {
 		node = row * info->G->header->mx;
-		for (col = 0; col < info->G->header->mx; col++, node++) {
+		for (col = 0; col < (openmp_int)info->G->header->mx; col++, node++) {
 			if (col == 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Row %d\n", row);
 			if (stack[prev]->G->data[node] == 0.0)
 				stack[prev]->G->data[node] = GMT->session.f_NaN;
@@ -3612,7 +3642,7 @@ GMT_LOCAL void grdmath_LMSSCLW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 GMT_LOCAL void grdmath_LOWER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: LOWER 1 1 The lowest (minimum) value of A.  */
 	uint64_t node;
-	unsigned int row, col;
+	openmp_int row, col;
 	float low = FLT_MAX;
 	gmt_M_unused(GMT);
 
@@ -3928,7 +3958,7 @@ GMT_LOCAL void grdmath_NEQ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 GMT_LOCAL void grdmath_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: NORM 1 1 Normalize (A) so max(A)-min(A) = 1.  */
 	uint64_t node, n = 0;
-	unsigned int row, col;
+	openmp_int row, col;
 	float z, zmin = FLT_MAX, zmax = -FLT_MAX;
 	double a;
 
@@ -4003,9 +4033,9 @@ GMT_LOCAL void grdmath_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,dummy) shared(info,stack,last,GMT,T)
 #endif
-	for (row = 0; row < info->G->header->my; row++) {
+	for (row = 0; row < (openmp_int)info->G->header->my; row++) {
 		node = row * info->G->header->mx;
-		for (col = 0; col < info->G->header->mx; col++, node++) {
+		for (col = 0; col < (openmp_int)info->G->header->mx; col++, node++) {
 			stack[last]->G->data[node] = (float)gmt_mindist_to_point (GMT, info->d_grd_x[col], info->d_grd_y[row], T, dummy);
 		}
 	}
@@ -4014,8 +4044,8 @@ GMT_LOCAL void grdmath_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 
 GMT_LOCAL void grdmath_PDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: PDIST2 2 1 As PDIST, from points in ASCII file B but only to nodes where A != 0.  */
-	int64_t node, row, col;			/* int since VS 2013/OMP 2.0 doesn't allow unsigned index variables */
-	uint64_t dummy[2];
+	uint64_t node, dummy[2];	
+	openmp_int row, col;
 	unsigned int prev;
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -4028,9 +4058,9 @@ GMT_LOCAL void grdmath_PDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,dummy) shared(info,stack,prev,GMT,T)
 #endif
-	for (row = 0; row < info->G->header->my; row++) {
+	for (row = 0; row < (openmp_int)info->G->header->my; row++) {
 		node = row * info->G->header->mx;
-		for (col = 0; col < info->G->header->mx; col++, node++) {
+		for (col = 0; col < (openmp_int)info->G->header->mx; col++, node++) {
 			if (stack[prev]->G->data[node] == 0.0)
 				stack[prev]->G->data[node] = GMT->session.f_NaN;
 			else
@@ -4044,7 +4074,8 @@ GMT_LOCAL void grdmath_PDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 GMT_LOCAL void grdmath_PERM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: PERM 2 1 Permutations n_P_r, with n = A and r = B.  */
 	uint64_t node;
-	unsigned int prev = last - 1, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev = last - 1, error = 0;
 	double a, b;
 
 	if (stack[prev]->constant && stack[prev]->factor < 0.0) {
@@ -4060,8 +4091,8 @@ GMT_LOCAL void grdmath_PERM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 		gmt_M_grd_loop (GMT, info->G, row, col, node) stack[prev]->G->data[node] = value;
 		return;
 	}
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 			stack[prev]->G->data[node] = (float)gmt_permutation (GMT, irint(a), irint(b));
@@ -4210,7 +4241,7 @@ GMT_LOCAL void grdmath_POW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 
 GMT_LOCAL float grdmath_wquant_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *G, struct GMT_GRID *W, double q, bool use_grid, double weight) {
 	uint64_t node, n = 0;
-	unsigned int row, col;
+	openmp_int row, col;
 	float p;
 	double w = 1.0;
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, info->nm, struct GMT_OBSERVATION);
@@ -4439,7 +4470,8 @@ GMT_LOCAL void grdmath_RGB2HSV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: RGB2HSV 3 3 Convert rgb to hsv, with r = A, g = B and b = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double rgb[4], hsv[4];
 
 	prev1 = last - 1;
@@ -4484,7 +4516,8 @@ GMT_LOCAL void grdmath_RGB2LAB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: RGB2LAB 3 3 Convert rgb to lab, with r = A, g = B and b = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double rgb[3], lab[3];
 
 	prev1 = last - 1;
@@ -4528,7 +4561,8 @@ GMT_LOCAL void grdmath_RGB2XYZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: RGB2XYZ 3 3 Convert rgb to xyz, with r = A, g = B and b = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double rgb[3], xyz[3];
 
 	prev1 = last - 1;
@@ -4684,7 +4718,8 @@ GMT_LOCAL void grdmath_ROLL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 GMT_LOCAL void grdmath_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: ROTX 2 1 Rotate A by the (constant) shift B in x-direction.  */
 	uint64_t node;
-	unsigned int col, row, prev = last - 1, *new_col = NULL, n_columns;
+	unsigned int prev = last - 1;
+	openmp_int col, row, *new_col = NULL, n_columns;
 	int colx, shift;
 	float *z = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (info->G->header);
@@ -4699,12 +4734,12 @@ GMT_LOCAL void grdmath_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 	if (stack[prev]->constant || !shift) return;	/* Trivial since A is a constant or shift is zero */
 	if (shift < 0) shift += info->G->header->n_columns;	/* Same thing */
-	n_columns = info->G->header->n_columns;
+	n_columns = (openmp_int)info->G->header->n_columns;
 	/* Set up permutation vector */
 
-	new_col = gmt_M_memory (GMT, NULL, n_columns, unsigned int);
+	new_col = gmt_M_memory (GMT, NULL, n_columns, openmp_int);
 	z = gmt_M_memory (GMT, NULL, n_columns, float);
-	for (col = colx = 0; col < info->G->header->n_columns; col++, colx++) new_col[colx] = (colx + shift) % info->G->header->n_columns;	/* Move by shift but rotate around */
+	for (col = colx = 0; col < (openmp_int)info->G->header->n_columns; col++, colx++) new_col[colx] = (colx + shift) % info->G->header->n_columns;	/* Move by shift but rotate around */
 	gmt_M_row_loop (GMT, info->G, row) {	/* For each row */
 		gmt_M_col_loop (GMT, info->G, row, col, node) z[new_col[col]] = stack[prev]->G->data[node];	/* Copy one row of data to z with shift */
 		node = gmt_M_ijp (info->G->header, row, 0);		/* First col */
@@ -4716,7 +4751,8 @@ GMT_LOCAL void grdmath_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 GMT_LOCAL void grdmath_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: ROTY 2 1 Rotate A by the (constant) shift B in y-direction.  */
-	unsigned int row, col, prev = last - 1, *new_row = NULL;
+	unsigned int prev = last - 1;
+	openmp_int row, col, *new_row = NULL;
 	int rowx, shift;
 	float *z = NULL;
 
@@ -4732,12 +4768,12 @@ GMT_LOCAL void grdmath_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	if (shift < 0) shift += info->G->header->n_rows;	/* Same thing */
 	/* Set up permutation vector */
 
-	new_row = gmt_M_memory (GMT, NULL, info->G->header->n_rows, unsigned int);
+	new_row = gmt_M_memory (GMT, NULL, info->G->header->n_rows, openmp_int);
 	z = gmt_M_memory (GMT, NULL, info->G->header->n_rows, float);
-	for (row = rowx = 0; row < info->G->header->n_rows; row++, rowx++) new_row[rowx] = (rowx + info->G->header->n_rows - shift) % info->G->header->n_rows;	/* Move by shift but rotate around */
-	for (col = 0; col < info->G->header->n_columns; col++) {	/* For each column */
-		for (row = 0; row < info->G->header->n_rows; row++) z[new_row[row]] = stack[prev]->G->data[gmt_M_ijp(info->G->header, row, col)];	/* Copy one column of data to z with shift */
-		for (row = 0; row < info->G->header->n_rows; row++) stack[prev]->G->data[gmt_M_ijp(info->G->header, row, col)] = z[row];	/* Replace this column */
+	for (row = rowx = 0; row < (openmp_int)info->G->header->n_rows; row++, rowx++) new_row[rowx] = (rowx + info->G->header->n_rows - shift) % info->G->header->n_rows;	/* Move by shift but rotate around */
+	for (col = 0; col < (openmp_int)info->G->header->n_columns; col++) {	/* For each column */
+		for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) z[new_row[row]] = stack[prev]->G->data[gmt_M_ijp(info->G->header, row, col)];	/* Copy one column of data to z with shift */
+		for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) stack[prev]->G->data[gmt_M_ijp(info->G->header, row, col)] = z[row];	/* Replace this column */
 	}
 	gmt_M_free (GMT, z);
 	gmt_M_free (GMT, new_row);
@@ -4746,7 +4782,8 @@ GMT_LOCAL void grdmath_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 GMT_LOCAL void grdmath_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: SDIST 2 1 Spherical distance (in km) between grid nodes and stack lon,lat (A, B).  */
 	int error = GMT_NOERROR;
-	int64_t node, row, col;			/* int since VS 2013/OMP 2.0 doesn't allow unsigned index variables */
+	uint64_t node;	
+	openmp_int row, col;
 	unsigned int prev = last - 1;
 	double x0, y0;
 
@@ -4761,9 +4798,9 @@ GMT_LOCAL void grdmath_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x0,y0) shared(info,stack,prev,last,GMT)
 #endif
-	for (row = 0; row < info->G->header->my; row++) {
+	for (row = 0; row < (openmp_int)info->G->header->my; row++) {
 		node = row * info->G->header->mx;
-		for (col = 0; col < info->G->header->mx; col++, node++) {
+		for (col = 0; col < (openmp_int)info->G->header->mx; col++, node++) {
 			x0 = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			y0 = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 			stack[prev]->G->data[node] = (float) gmt_distance (GMT, x0, y0, info->d_grd_x[col], info->d_grd_y[row]);
@@ -4774,7 +4811,8 @@ GMT_LOCAL void grdmath_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 GMT_LOCAL void grdmath_SDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: SDIST2 2 1 As SDIST but only to nodes that are != 0.  */
 	int error = GMT_NOERROR;
-	int64_t node, row, col;			/* int since VS 2013/OMP 2.0 doesn't allow unsigned index variables */
+	uint64_t node;	
+	openmp_int row, col;
 	unsigned int prev = last - 1;
 	double x0, y0;
 
@@ -4789,9 +4827,9 @@ GMT_LOCAL void grdmath_SDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x0,y0) shared(info,stack,prev,last,GMT)
 #endif
-	for (row = 0; row < info->G->header->my; row++) {
+	for (row = 0; row < (openmp_int)info->G->header->my; row++) {
 		node = row * info->G->header->mx;
-		for (col = 0; col < info->G->header->mx; col++, node++) {
+		for (col = 0; col < (openmp_int)info->G->header->mx; col++, node++) {
 			if (stack[prev]->G->data[node] == 0.0)
 				stack[prev]->G->data[node] = GMT->session.f_NaN;
 			else {
@@ -4804,7 +4842,8 @@ GMT_LOCAL void grdmath_SDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 }
 
 GMT_LOCAL void grdmath_AZ_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last, bool reverse) {
-	int64_t node, row, col;			/* int since VS 2013/OMP 2.0 still doesn't allow unsigned index variables */
+	uint64_t node;	
+	openmp_int row, col;
 	unsigned int prev = last - 1;
 	double x0 = 0.0, y0 = 0.0, az;
 
@@ -4813,9 +4852,9 @@ GMT_LOCAL void grdmath_AZ_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x0,y0,az) shared(info,stack,prev,last,GMT,reverse)
 #endif
-	for (row = 0; row < info->G->header->my; row++) {
+	for (row = 0; row < (openmp_int)info->G->header->my; row++) {
 		node = row * info->G->header->mx;
-		for (col = 0; col < info->G->header->mx; col++, node++) {
+		for (col = 0; col < (openmp_int)info->G->header->mx; col++, node++) {
 			x0 = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			y0 = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 			az = gmt_az_backaz (GMT, info->d_grd_x[col], info->d_grd_y[row], x0, y0, reverse);
@@ -4936,7 +4975,7 @@ GMT_LOCAL void grdmath_SKEW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: SKEW 1 1 Skewness of A.  */
 {
 	uint64_t node, n = 0;
-	unsigned int row, col;
+	openmp_int row, col;
 	double mean = 0.0, sum2 = 0.0, skew = 0.0, delta;
 	float f_skew;
 
@@ -5051,7 +5090,8 @@ GMT_LOCAL void grdmath_STEP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 GMT_LOCAL void grdmath_STEPX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: STEPX 1 1 Heaviside step function in x: H(x-A).  */
 {
-	uint64_t node, row, col;
+	uint64_t node;
+	openmp_int row, col;
 	double a;
 	gmt_M_unused(GMT);
 
@@ -5067,7 +5107,8 @@ GMT_LOCAL void grdmath_STEPX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 GMT_LOCAL void grdmath_STEPY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: STEPY 1 1 Heaviside step function in y: H(y-A).  */
 {
-	uint64_t node, row, col;
+	uint64_t node;
+	openmp_int row, col;
 	double a;
 	gmt_M_unused(GMT);
 
@@ -5104,7 +5145,7 @@ GMT_LOCAL void grdmath_SUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	if (stack[last]->constant)
 		sum = stack[last]->factor * stack[last]->G->header->nm;
 	else {
-		uint64_t row, col;
+		openmp_int row, col;
 		gmt_M_grd_loop (GMT, info->G, row, col, node) {
 			if (gmt_M_is_fnan (stack[last]->G->data[node])) continue;
 			sum += stack[last]->G->data[node];
@@ -5152,7 +5193,8 @@ GMT_LOCAL void grdmath_TAPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 /*OPERATOR: TAPER 2 1 Unit weights cosine-tapered to zero within A and B of x and y grid margins.  */
 {
 	uint64_t node;
-	unsigned int prev = last - 1, row, col;
+	unsigned int prev = last - 1;
+	openmp_int row, col;
 	double strip, scale, start, stop, from_start, from_stop, w_y, *w_x = NULL;
 
 	if (!(stack[last]->constant && stack[prev]->constant)) {
@@ -5222,11 +5264,11 @@ GMT_LOCAL void grdmath_TCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 /*OPERATOR: TCRIT 2 1 Student's t-distribution critical value for alpha = A and nu = B.  */
 {
 	uint64_t node;
-	int b, row;
-	unsigned int prev, col;
+	int b;
+	unsigned int prev = last - 1;
+	openmp_int row, col;
 	double a;
 
-	prev = last - 1;
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for TCRIT!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for TCRIT!\n");
 	if (stack[prev]->constant && stack[last]->constant) {	/* Compute once then copy */
@@ -5241,8 +5283,8 @@ GMT_LOCAL void grdmath_TCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,a,b) shared(info,stack,prev,last,GMT)
 #endif
-		for (row = 0; row < (int)info->G->header->n_rows; row++) {
-			for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+		for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+			for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 				a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 				b = irint ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
 				stack[prev]->G->data[node] = (float)gmt_tcrit (GMT, a, (double)b);
@@ -5255,14 +5297,14 @@ GMT_LOCAL void grdmath_TCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: TCDF 2 1 Student's t cumulative distribution function for t = A, and nu = B.  */
 {
 	uint64_t node, b;
-	unsigned int prev, row, col;
+	unsigned int prev = last - 1;
+	openmp_int row, col;
 	double a;
 
-	prev = last - 1;
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for TCDF!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for TCDF!\n");
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = lrint ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
 			stack[prev]->G->data[node] = (float)gmt_t_cdf (GMT, a, b);
@@ -5274,14 +5316,14 @@ GMT_LOCAL void grdmath_TPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: TPDF 2 1 Student's t probability density function for t = A and nu = B.  */
 {
 	uint64_t node, b;
-	unsigned int prev, row, col;
+	unsigned int prev = last - 1;
+	openmp_int row, col;
 	double a;
 
-	prev = last - 1;
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for TCDF!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for TCDF!\n");
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+	for (row = 0; row < (openmp_int)info->G->header->n_rows; row++) {
+		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < (openmp_int)info->G->header->n_columns; col++, node++) {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = lrint ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
 			stack[prev]->G->data[node] = (float)gmt_t_pdf (GMT, a, b);
@@ -5295,7 +5337,8 @@ GMT_LOCAL void grdmath_TRIM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	/* Determine cumulative distribution and find left and right tail z cutoffs,
 	 * then set grid values in the tails to NaN */
 	uint64_t node;
-	unsigned int prev1, prev2, row, col;
+	openmp_int row, col;
+	unsigned int prev1, prev2;
 	gmt_grdfloat global_zmin, global_zmax, *tmp_grid = NULL;
 
 	prev1 = last - 1;
@@ -5343,7 +5386,7 @@ GMT_LOCAL void grdmath_UPPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 /*OPERATOR: UPPER 1 1 The highest (maximum) value of A.  */
 {
 	uint64_t node;
-	unsigned int row, col;
+	openmp_int row, col;
 	float high = -FLT_MAX;
 	gmt_M_unused(GMT);
 
@@ -5364,7 +5407,7 @@ GMT_LOCAL float grdmath_wvar_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *inf
 	/* Use West (1979) algorithm to compute mean and corrected sum of squares.
 	 * https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance */
 	uint64_t node, n = 0;
-	unsigned int row, col;
+	openmp_int row, col;
 	double temp, mean = 0.0, sumw = 0.0, delta, R, M2 = 0.0, w = 1.0;
 	if (!use_grid) w = weight;
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
@@ -5403,7 +5446,7 @@ GMT_LOCAL void grdmath_VAR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	}
 	else {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
 		uint64_t n = 0;
-		unsigned int row, col;
+		openmp_int row, col;
 		double mean = 0.0, sum2 = 0.0, delta;
 		gmt_M_grd_loop (GMT, info->G, row, col, node) {
 			if (gmt_M_is_fnan (stack[last]->G->data[node])) continue;
@@ -5436,7 +5479,8 @@ GMT_LOCAL void grdmath_VPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: VPDF 3 1 Von Mises probability density function for angles = A, mu = B and kappa = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col;
+	openmp_int row, col;
+	unsigned int prev1, prev2;
 	double x, mu, kappa;
 
 	prev1 = last - 1;
@@ -5455,7 +5499,8 @@ GMT_LOCAL void grdmath_WCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: WCDF 3 1 Weibull cumulative distribution function for x = A, scale = B, and shape = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col;
+	openmp_int row, col;
+	unsigned int prev1, prev2;
 	double x, a, b;
 
 	prev1 = last - 1;
@@ -5474,7 +5519,8 @@ GMT_LOCAL void grdmath_WCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 /*OPERATOR: WCRIT 3 1 Weibull distribution critical value for alpha = A, scale = B, and shape = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col;
+	openmp_int row, col;
+	unsigned int prev1, prev2;
 	double alpha, a, b;
 
 	prev1 = last - 1;
@@ -5493,7 +5539,8 @@ GMT_LOCAL void grdmath_WPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 /*OPERATOR: WPDF 3 1 Weibull probability density function for x = A, scale = B and shape = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col;
+	openmp_int row, col;
+	unsigned int prev1, prev2;
 	double x, a, b;
 
 	prev1 = last - 1;
@@ -5566,7 +5613,8 @@ GMT_LOCAL void grdmath_XYZ2HSV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: XYZ2HSV 3 3 Convert xyz to hsv, with x = A, y = B and z = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double rgb[4], hsv[4], xyz[3];
 	gmt_M_unused (GMT);
 
@@ -5616,7 +5664,8 @@ GMT_LOCAL void grdmath_XYZ2LAB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: XYZ2LAB 3 3 Convert xyz to lab, with x = A, y = B and z = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double lab[3], xyz[3];
 	gmt_M_unused (GMT);
 
@@ -5663,7 +5712,8 @@ GMT_LOCAL void grdmath_XYZ2RGB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 /*OPERATOR: XYZ2RGB 3 3 Convert xyz to rgb, with x = A, y = B and z = C.  */
 {
 	uint64_t node;
-	unsigned int prev1, prev2, row, col, error = 0;
+	openmp_int row, col;
+	unsigned int prev1, prev2, error = 0;
 	double rgb[3], xyz[3];
 	gmt_M_unused (GMT);
 
@@ -5731,7 +5781,8 @@ GMT_LOCAL void grdmath_Y1 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 GMT_LOCAL void grdmath_YLM_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last, bool ortho)
 {
 	/* Returns geophysical normalization, unless M < 0, then orthonormalized form */
-	int64_t node, row, col;			/* int since VS 2013/OMP 2.0 doesn't allow unsigned index variables */
+	int64_t node;
+	openmp_int row, col;
 	unsigned int prev = last - 1;
 	int L, M;
 	double x, z, P, C, S;
@@ -5748,7 +5799,7 @@ GMT_LOCAL void grdmath_YLM_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x,P,S,C) shared(info,stack,prev,GMT,L,M,ortho,z)
 #endif
-	for (row = 0; row < info->G->header->my; row++) {	/* For each latitude */
+	for (row = 0; row < (openmp_int)info->G->header->my; row++) {	/* For each latitude */
 		node = row * info->G->header->mx;
 
 		x = sind (info->d_grd_y[row]);	/* Plm takes cos(colatitude) = sin(latitude) */
@@ -6256,7 +6307,8 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 	bool subset;
 	char *in_file = NULL, *label = NULL;
 
-	uint64_t node, row, col;
+	uint64_t node;
+	openmp_int row, col;
 
 	struct GRDMATH_STACK *stack[GRDMATH_STACK_SIZE];
 	struct GRDMATH_STORE *recall[GRDMATH_STORE_SIZE];

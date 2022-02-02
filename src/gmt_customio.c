@@ -1623,13 +1623,8 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	if (GMT->session.grdformat[header->type][1] == 'd') {
-#ifdef HAVE_GDAL
 		GMT_Report(GMT->parent, GMT_MSG_INFORMATION,
 			"Surfer 7 format in GMT is read-only but you can do it via GDAL by appending '=gd:GS7BG' to the file name\n");
-#else
-		GMT_Report(GMT->parent, GMT_MSG_INFORMATION,
-			"As mentioned in the manual, Surfer 7 format in GMT is read-only\n");
-#endif
 		return (GMT_NOERROR);
 	}
 
@@ -1719,7 +1714,6 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	return (GMT_NOERROR);
 }
 
-#ifdef HAVE_GDAL
 #include "gmt_gdalread.c"
 #include "gmt_gdalwrite.c"
 #include "gmt_ogrproj.c"		/* For coordinate conversions but can "enter" here too */
@@ -2173,8 +2167,6 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	return (GMT_NOERROR);
 }
 
-#endif
-
 /* Add custom code here */
 
 /* 12: NOAA NGDC MGG Format */
@@ -2432,21 +2424,12 @@ void gmtlib_grdio_init (struct GMT_CTRL *GMT) {
 	/* FORMAT: Import via the GDAL interface */
 
 	id                        = GMT_GRID_IS_GD;
-#ifdef HAVE_GDAL
 	GMT->session.grdformat[id]  = "gd = Import/export through GDAL";
 	GMT->session.readinfo[id]   = &gmt_gdal_read_grd_info;
 	GMT->session.updateinfo[id] = &gmt_gdal_write_grd_info;
 	GMT->session.writeinfo[id]  = &gmt_gdal_write_grd_info;
 	GMT->session.readgrd[id]    = &gmt_gdal_read_grd;
 	GMT->session.writegrd[id]   = &gmt_gdal_write_grd;
-#else
-	GMT->session.grdformat[id]  = "gd = Import/export through GDAL (not supported)";
-	GMT->session.readinfo[id]   = &gmt_dummy_grd_info;
-	GMT->session.updateinfo[id] = &gmt_dummy_grd_info;
-	GMT->session.writeinfo[id]  = &gmt_dummy_grd_info;
-	GMT->session.readgrd[id]    = &gmt_dummy_grd_read;
-	GMT->session.writegrd[id]   = &gmt_dummy_grd_read;
-#endif
 
 	/* ----------------------------------------------
 	 * ADD CUSTOM FORMATS BELOW AS THEY ARE NEEDED */

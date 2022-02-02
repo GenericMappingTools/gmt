@@ -228,7 +228,8 @@ static int parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT_OP
 
 EXTERN_MSC int GMT_sph2grd (void *V_API, int mode, void *args) {
 	bool ortho = false, duplicate_col;
-	int row, col, n_columns, error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0, kk = 0;
+	openmp_int row, col, n_columns;
+	int error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0, kk = 0;
 	unsigned int n_PLM, n_CS, n_CS_nx, next_10_percent = 10;
 	uint64_t tbl, seg, drow, node, k;
 	char text[GMT_LEN32] = {""};
@@ -417,7 +418,7 @@ EXTERN_MSC int GMT_sph2grd (void *V_API, int mode, void *args) {
 	}
 	percent_inc = 100.0 / Grid->header->n_rows;	/* Percentage of whole grid represented by one row */
 	duplicate_col = (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
-	n_columns = (duplicate_col) ? Grid->header->n_columns - 1 : Grid->header->n_columns;
+	n_columns = (duplicate_col) ? (openmp_int)Grid->header->n_columns - 1 : (openmp_int)Grid->header->n_columns;
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Start evaluating the spherical harmonic series\n");
 

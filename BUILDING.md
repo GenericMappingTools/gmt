@@ -26,13 +26,13 @@ To build GMT, you have to install:
 - [CMake](https://cmake.org/) (>=2.8.12)
 - [netCDF](https://www.unidata.ucar.edu/software/netcdf/) (>=4.0, netCDF-4/HDF5 support mandatory)
 - [curl](https://curl.haxx.se/)
+- [GDAL](https://www.gdal.org/) (Ability to read and write numerous grid and image formats)
 
 ### Optional dependencies
 
 Optionally install these for more capabilities within GMT:
 
 - [Ghostscript](https://www.ghostscript.com/) (Ability to convert PostScript plots to PDF and rasters)
-- [GDAL](https://www.gdal.org/) (Ability to read and write numerous grid and image formats)
 - [GEOS](https://trac.osgeo.org/geos/) (Ability to buffer lines and polygons)
 - [PCRE](https://www.pcre.org/) or PCRE2 (Regular expression support)
 - [FFTW](http://www.fftw.org/) single-precision (Fast FFTs, >=3.3 [not needed under macOS])
@@ -55,7 +55,7 @@ Install for building GMT documentation and running tests (not required for gener
 
 - [Sphinx](http://www.sphinx-doc.org) (>=1.8, for building the documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
-- [dvc](https://dvc.org/) (for running the tests)
+- [dvc](https://dvc.org/) (for running the tests and building the documentation)
 - [Ninja](https://ninja-build.org/) (optional, build system focused on speed)
 - [pngquant](https://pngquant.org/) (optional, for optimizing PNG images in the documentation)
 

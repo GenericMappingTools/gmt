@@ -720,7 +720,8 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->E.active) {
-			unsigned int row, col, r, c;
+			openmp_int row, col;
+			unsigned int r, c;
 			float z, z0 = -FLT_MAX * Ctrl->E.val;
 			double *x = NULL, *y = NULL;
 			x = gmt_grd_coord (GMT, header, GMT_X);

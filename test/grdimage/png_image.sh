@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Testing gmt grdimage with a PNG
+# DVC_TEST
 
 gmt begin png_image ps
 	gmt grdmath -R0/5/0/5 -I1 -r X DUP UPPER DIV 255 MUL = r.grd
