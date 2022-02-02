@@ -227,7 +227,7 @@ static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct G
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'N':	/* -N<sectors>[+m<minsectors>]] or -Nn */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -263,7 +263,7 @@ static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct G
 				Ctrl->W.active = true;
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

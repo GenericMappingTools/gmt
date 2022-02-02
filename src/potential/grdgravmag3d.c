@@ -390,7 +390,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 						gmt_parse_common_options(GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
-					n_errors += gmt_default_error(GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
@@ -434,7 +434,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				Ctrl->H.bhatta = true;
 				break;
 			default:
-				n_errors += gmt_default_error(GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

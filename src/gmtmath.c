@@ -840,7 +840,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 					gmt_parse_o_option (GMT, opt->arg);
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'I':	/* Reverse output order */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -885,7 +885,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 		}
 	}
 
