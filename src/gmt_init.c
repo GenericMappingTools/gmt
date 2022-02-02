@@ -8612,8 +8612,12 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 int gmt_default_option_error (struct GMT_CTRL *GMT, struct GMT_OPTION *opt) {
 	int error = gmt_default_error (GMT, opt->option);
 	if (error) {
-		if (opt->option == GMT_OPT_INFILE)
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Module does not expect an input file [%s]\n", opt->arg);
+		if (opt->option == GMT_OPT_INFILE) {	/* Seen as input file */
+			if (opt->arg[0] && strchr (opt->arg, '+'))
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s was seen as an input file but looks like an option with modifiers; did you forget a leading hyphen?\n", opt->arg);
+			else
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s was seen as an input file which is not expected by this module\n", opt->arg);
+		}
 		else if (opt->option == GMT_OPT_OUTFILE)
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Module does not expect an output file [%s]\n", opt->arg);
 	}
