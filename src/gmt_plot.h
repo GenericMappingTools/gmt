@@ -161,6 +161,7 @@ struct GMT_SYMBOL {
 	double given_size_x;	/* Symbol size read from file or command line */
 	double given_size_y;	/* Symbol size read from file or command line */
 	double gap;			/* Fractional spacing between side-by-side bars when -Sb|B+s[<gap>] is given */
+	double geo_scale;	/* Factor to scale unit-less input in map distances to internal km [1] */
 	double angle;			/* Text angle for -Sl<txt>+a<angle} [0] */
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
 

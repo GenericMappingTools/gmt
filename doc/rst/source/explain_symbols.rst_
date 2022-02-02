@@ -114,7 +114,9 @@
         geographical instead of plot-distance units.  For degenerate ellipses (i.e.,
         circles) with just a *diameter* given via the input data, use **-SE-**. For a
         linear projection we assume the dimensions are given in the same units as **-R**.
-        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s) [Default is k for km].
+        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s);
+        if dimensions are read from the input then either just append the unit for these values
+        or append the unit to each dimension in the file (do not do both) [Default is k for km].
         The shape of the ellipse will be affected by the properties of the map projection.
 
     **-Sj**\ *direction*/*width*/*height*
@@ -130,7 +132,9 @@
         instead of plot-distance units. For a degenerate rectangle (i.e., square)
         with one *dimension* expected to be given via the input data, use **-SJ-**. For
         a linear projection we assume the dimensions are given in the same units as **-R**.
-        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s) [Default is k for km].
+        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s);
+        if dimensions are read from the input then either just append the unit for these values
+        or append the unit to each dimension in the file (do not do both) [Default is k for km].
         The shape of the rectangle will be affected by the properties of the map projection.
 
     **-Sr**\ *width*/*height*
@@ -158,6 +162,9 @@
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
         directions unchanged).  The two diameters are expected in geographic units.
+        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s);
+        if dimensions are read from the input then either just append the unit for these values
+        or append the unit to each dimension in the file (do not do both) [Default is k for km].
         However, if specified on the command line we also accept plot dimension units.
         Append **+i** and append a nonzero inner diameter *inner* or it will be read last [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
@@ -165,7 +172,6 @@
         Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
-        For allowable geographical units, see `Units`_ [Default is k for km].
 
     Text is normally placed with :doc:`text` but there are times we wish to treat a character
     of even a string as a symbol to be plotted:
