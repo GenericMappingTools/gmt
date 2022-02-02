@@ -765,7 +765,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 				if (gmt_M_compat_check (GMT, 4))
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -L is deprecated; use -N modifiers in the future.\n");
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'M':	/* Geographic data */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -774,7 +774,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 						gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'N':	/* Grid dimension setting or inquiery */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -809,7 +809,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 					grdfft_add_operation (GMT, Ctrl, GRDFFT_ISOSTASY, 5, par);
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 #ifdef DEBUG
 			case '=':	/* Do nothing */
@@ -818,7 +818,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 				break;
 #endif
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
