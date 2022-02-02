@@ -218,7 +218,7 @@ static int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_O
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'Q':
 				switch (opt->arg[0]) {
@@ -265,7 +265,7 @@ static int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

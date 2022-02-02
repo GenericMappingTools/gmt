@@ -8609,6 +8609,17 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 	return (error);
 }
 
+int gmt_default_option_error (struct GMT_CTRL *GMT, struct GMT_OPTION *opt) {
+	int error = gmt_default_error (GMT, opt->option);
+	if (error) {
+		if (opt->option == GMT_OPT_INFILE)
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Module does not expect an input file [%s]\n", opt->arg);
+		else if (opt->option == GMT_OPT_OUTFILE)
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Module does not expect an output file [%s]\n", opt->arg);
+	}
+	return error;
+}
+
 unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char *arg, unsigned int *mode, double inc[]) {
 	/* If given +e|r|R<incs> we must parse and get the mode and 1, 2, or 4 increments */
 	unsigned int n_errors = 0, k;

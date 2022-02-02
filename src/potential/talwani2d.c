@@ -201,7 +201,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 				else if (n == 1) Ctrl->Z.mode = 1;
 				break;
 			default:
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

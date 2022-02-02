@@ -170,7 +170,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct GMT
 				if (gmt_M_compat_check (GMT, 5))	/* Honor old -A[<unit>] option */
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -A is deprecated; use -F instead.\n");
 				else {
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 					break;
 				}
 				/* Intentionally fall through - to get -F */
@@ -205,10 +205,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct GMT
 					n_errors += gmt_parse_inc_option (GMT, 'D', format);
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

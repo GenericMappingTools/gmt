@@ -268,7 +268,7 @@ static int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struct G
 				break;	/* Probably a rotation lon/lat/angle with negative longitude */
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
