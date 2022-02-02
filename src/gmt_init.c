@@ -8605,7 +8605,14 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 			break;
 	}
 
-	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -%c\n", option);
+	if (error) {
+		if (option == GMT_OPT_INFILE)	/* Seen as input file */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Module does not expect input files\n");
+		else if (option == GMT_OPT_OUTFILE)	/* Seen as output file */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Module does not expect output files\n");
+		else
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -%c\n", option);
+	}
 	return (error);
 }
 
@@ -8618,8 +8625,6 @@ int gmt_default_option_error (struct GMT_CTRL *GMT, struct GMT_OPTION *opt) {
 			else
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s was seen as an input file which is not expected by this module\n", opt->arg);
 		}
-		else if (opt->option == GMT_OPT_OUTFILE)
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Module does not expect an output file [%s]\n", opt->arg);
 	}
 	return error;
 }
