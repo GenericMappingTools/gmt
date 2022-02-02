@@ -289,7 +289,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 				}
 				/* Intentionally fall through - if not compat mode we fall down here on purpose and fail I think */
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

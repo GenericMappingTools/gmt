@@ -288,7 +288,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 					if (gmt_M_compat_check (GMT, 6))
 						GMT_Report (API, GMT_MSG_COMPAT, "-Clon/lat[W<pen>][Psize] is deprecated; use -D<lon>/<lat>[+z<lon>/<lat>[+p<pen>][+s<size>]] instead.\n");
 					else {	/* Hard error */
-						n_errors += gmt_default_error (GMT, opt->option);
+						n_errors += gmt_default_option_error (GMT, opt);
 						continue;
 					}
 					sscanf (opt->arg, "%lf/%lf", &Ctrl->OLD_C.lon2, &Ctrl->OLD_C.lat2);
@@ -325,7 +325,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 					if (gmt_M_compat_check (GMT, 6))
 						GMT_Report (API, GMT_MSG_COMPAT, "-Clon/lat[W<pen>][Psize] is deprecated; use -D<lon>/<lat>[+z<lon>/<lat>[+p<pen>][+s<size>]] instead.\n");
 					else {	/* Hard error */
-						n_errors += gmt_default_error (GMT, opt->option);
+						n_errors += gmt_default_option_error (GMT, opt);
 						continue;
 					}
 					sscanf (opt->arg, "%lf/%lf", &Ctrl->OLD_C.lon2, &Ctrl->OLD_C.lat2);
@@ -507,7 +507,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 
 		}
