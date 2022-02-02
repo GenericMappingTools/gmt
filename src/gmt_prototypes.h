@@ -107,6 +107,7 @@ EXTERN_MSC unsigned int gmt_parse_inc_option (struct GMT_CTRL *GMT, char option,
 EXTERN_MSC int gmt_set_missing_options (struct GMT_CTRL *GMT, char *options);
 EXTERN_MSC unsigned int gmt_add_R_if_modern_and_true (struct GMT_CTRL *GMT, const char *needs, bool do_it);
 EXTERN_MSC int gmt_default_error (struct GMT_CTRL *GMT, char option);
+EXTERN_MSC int gmt_default_option_error (struct GMT_CTRL *GMT, struct GMT_OPTION *opt);
 EXTERN_MSC bool gmt_get_time_system (struct GMT_CTRL *GMT, char *name, struct GMT_TIME_SYSTEM *time_system);
 EXTERN_MSC int gmt_hash_lookup (struct GMT_CTRL *GMT, const char *key, struct GMT_HASH *hashnode, unsigned int n, unsigned int n_hash);
 EXTERN_MSC void gmt_syntax (struct GMT_CTRL *GMT, char option);

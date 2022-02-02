@@ -8605,8 +8605,28 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 			break;
 	}
 
-	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -%c\n", option);
+	if (error) {
+		if (option == GMT_OPT_INFILE)	/* Seen as input file */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Module does not expect input files\n");
+		else if (option == GMT_OPT_OUTFILE)	/* Seen as output file */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Module does not expect output files\n");
+		else
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option -%c\n", option);
+	}
 	return (error);
+}
+
+int gmt_default_option_error (struct GMT_CTRL *GMT, struct GMT_OPTION *opt) {
+	int error = gmt_default_error (GMT, opt->option);
+	if (error) {
+		if (opt->option == GMT_OPT_INFILE) {	/* Seen as input file */
+			if (opt->arg[0] && strchr (opt->arg, '+'))
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s was seen as an input file but looks like an option with modifiers; did you forget a leading hyphen?\n", opt->arg);
+			else
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s was seen as an input file which is not expected by this module\n", opt->arg);
+		}
+	}
+	return error;
 }
 
 unsigned int gmt_parse_region_extender (struct GMT_CTRL *GMT, char option, char *arg, unsigned int *mode, double inc[]) {

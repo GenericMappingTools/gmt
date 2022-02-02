@@ -896,7 +896,7 @@ EXTERN_MSC int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				sprintf (fpercent_limit, GMT->current.setting.format_float_out, percent_limit);
 				break;
 			default:
-				error += gmt_default_error (GMT, opt->option);
+				error += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
