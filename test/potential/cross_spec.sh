@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Compare gmt gravfft and gmt grdfft calculations of admittance and coherence between bathymetry and geoid over the Azores
+# DVC_TEST
 ps=cross_spec.ps
 gmt set GMT_FFT kiss
 gmt gravfft @bathy_1m.nc @geoid_1m.nc -N+d -Iwck -fg > coh.txt

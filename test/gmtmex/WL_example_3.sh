@@ -5,7 +5,7 @@
 #
 # GMT_KNOWN_FAILURE_LINUX
 # GMT_KNOWN_FAILURE_WINDOWS
-#
+# DVC_TEST
 gmt begin WL_example_3 ps
   # Import sea surface temperature grids from several HDF5 layers (lon, lat, sst, sst_qual)
   # Speed up processing by using native binary intermediary files

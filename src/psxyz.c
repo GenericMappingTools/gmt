@@ -269,7 +269,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"axes [in km], and convert azimuths based on map projection. "
 		"Use -SE- for a degenerate ellipse (circle) with only diameter in km given. "
 		"in column 4, or append a fixed diameter in km to -SE instead. "
-		"Append any of the units in %s to the axes [Default is k]. "
+		"Append any of the units in %s to the axes, and "
+		"if reading dimensions from file, just append the unit [Default is k]. "
 		"For a linear projection and -SE we scale the axes by the map scale.", GMT_LINE_BULLET, GMT_LEN_UNITS_DISPLAY, mod_name);
 
 	GMT_Usage (API, 2, "\n%s Rotatable Rectangle: If not given, we read direction, width and height from columns 4-6. "
@@ -277,7 +278,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"dimensions [in km] and convert azimuths based on map projection. "
 		"Use -SJ- for a degenerate rectangle (square w/no rotation) with only one dimension given "
 		"in column 4, or append a fixed dimension to -SJ instead. "
-		"Append any of the units in %s to the dimensions [Default is k]. "
+		"Append any of the units in %s to the axes, and "
+		"if reading dimensions from file, just append the unit [Default is k]. "
 		"For a linear projection and -SJ we scale dimensions by the map scale.", GMT_LINE_BULLET, mod_name, GMT_LEN_UNITS_DISPLAY);
 
 	GMT_Usage (API, 2, "\n%s Front: -Sf<spacing>[/<ticklen>][+r+l][+f+t+s+c+b][+o<offset>][+p<pen>]", GMT_LINE_BULLET);
@@ -304,9 +306,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use upper case 'K' if your custom symbol refers a variable symbol, ?.");
 	gmt_list_custom_symbols (API->GMT);
 
-	GMT_Usage (API, 2, "\n%s Letter: -Sl[<size>]+t<string>[+f<font>][+j<justify]", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "\n%s Letter: -Sl[<size>]+t<string>[a|A<angle>][+f<font>][+j<justify]", GMT_LINE_BULLET);
 	GMT_Usage (API, -3, "Specify <size> of letter; append required and optional modifiers:");
 	GMT_Usage (API, 3, "+t Specify <string> to use (required).");
+	GMT_Usage (API, 3, "+a Set text angle relative to horizontal [0].  Use +A if map azimuth.");
 	GMT_Usage (API, 3, "+f Set specific <font> for text placement [FONT_ANNOT_PRIMARY].");
 	GMT_Usage (API, 3, "+j Change the text justification via <justify> [CM].");
 
@@ -769,6 +772,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	S.base = GMT->session.d_NaN;
 	S.font = GMT->current.setting.font_annot[GMT_PRIMARY];
 	S.u = GMT->current.setting.proj_length_unit;
+	S.justify = PSL_MC;
 
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options, &S)) != 0) Return (error);
@@ -1030,7 +1034,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
 		bool periodic = false, delayed_unit_scaling[2] = {false, false};
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, last_time, col;
-		double xpos[2], width, d, data_magnitude;
+		double xpos[2], width, d, data_magnitude, direction;
 		struct GMT_RECORD *In = NULL;
 
 		if ((error = GMT_Set_Columns (API, GMT_IN, n_needed, GMT_COL_FIX)) != GMT_NOERROR) {
@@ -1070,6 +1074,12 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (S.symbol == PSL_WEDGE) {
+			if (S.w_get_do && S.w_active) gmt_set_column_type (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
+			if (S.w_get_di && S.w_active) {
+				unsigned int col = ex1 + 1;
+				if (S.w_get_a) col += 2;
+				gmt_set_column_type (GMT, GMT_IN, col, GMT_IS_GEODIMENSION);
+			}
 			if (S.v.status == PSL_VEC_OUTLINE2) {	/* Wedge spider pen specified separately */
 				PSL_defpen (PSL, "PSL_spiderpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
 				last_spiderpen = S.v.pen;
@@ -1312,6 +1322,10 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					axes[GMT_X] = axes[GMT_Y] = in[ex1], Az = (gmt_M_is_cartesian (GMT, GMT_IN)) ? 90.0 : 0.0;	/* Duplicate diameter as major and minor axes and set azimuth to zero */
 				else 	/* Full ellipse */
 					Az = in[ex1], axes[GMT_X] = in[ex2], axes[GMT_Y] = in[ex3];
+				if (gmt_M_is_geographic (GMT, GMT_IN)) {
+					axes[GMT_X] *= S.geo_scale;
+					axes[GMT_Y] *= S.geo_scale;
+				}
 			}
 
 			if (S.base_set & GMT_BASE_ORIGIN) data[n].flag |= 32;	/* Flag that base needs to be added to height(s) */
@@ -1582,7 +1596,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_WARNING, "Wedge outer diameter = NaN near line %d. Skipped\n", n_total_read);
 								continue;
 						}
-						data[n].dim[PSL_WEDGE_RADIUS_O] = in[col++];
+						data[n].dim[PSL_WEDGE_RADIUS_O] = in[col++] * S.geo_scale;
 					}
 					else	/* Set during -S parsing */
 						data[n].dim[PSL_WEDGE_RADIUS_O] = S.w_radius;
@@ -1607,7 +1621,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_WARNING, "Wedge inner diameter = NaN near line %d. Skipped\n", n_total_read);
 							continue;
 						}
-						S.w_radius_i = in[col];
+						S.w_radius_i = in[col] * S.geo_scale;
 					}
 					if (S.convert_angles) {
 						if (gmt_M_is_cartesian (GMT, GMT_IN)) {
@@ -1849,7 +1863,13 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							PSL_setfill (PSL, GMT->session.no_rgb, data[i].outline);
 						(void) gmt_setfont (GMT, &S.font);
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
-						PSL_plottext (PSL, xpos[item], data[i].y, data[i].dim[0] * PSL_POINTS_PER_INCH, data[i].string, 0.0, PSL_MC, data[i].outline);
+						if (S.azim) {	/* Must update angle */
+							gmt_xy_to_geo (GMT, &dx, &dy, data[i].y, data[i].y);	/* Just recycle dx, dy here */
+							direction = gmt_azim_to_angle (GMT, dx, dy, 0.1, S.angle);
+						}
+						else
+							direction = S.angle;
+						PSL_plottext (PSL, xpos[item], data[i].y, data[i].dim[0] * PSL_POINTS_PER_INCH, data[i].string, direction, S.justify, data[i].outline);
 						gmt_M_str_free (data[i].string);
 						break;
 					case PSL_VECTOR:
@@ -1888,9 +1908,9 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						if (S.w_active)	{	/* Geo-wedge */
 							unsigned int status = lrint (data[i].dim[PSL_WEDGE_STATUS]);
-							gmt_xy_to_geo (GMT, &dx, &dy, data[i].y, data[i].y);	/* Just recycle dx, dy here */
-							gmt_geo_wedge (GMT, dx, dy, data[n].dim[PSL_WEDGE_RADIUS_I], S.w_radius, data[n].dim[PSL_WEDGE_DR], data[i].dim[PSL_WEDGE_ANGLE_BEGIN],
-								data[i].dim[PSL_WEDGE_ANGLE_END], data[n].dim[PSL_WEDGE_DA], status, fill_active || get_rgb, outline_active);
+							gmt_xy_to_geo (GMT, &dx, &dy, data[i].x, data[i].y);	/* Just recycle dx, dy here */
+							gmt_geo_wedge (GMT, dx, dy, data[i].dim[PSL_WEDGE_RADIUS_I], data[i].dim[PSL_WEDGE_RADIUS_O], data[i].dim[PSL_WEDGE_DR], data[i].dim[PSL_WEDGE_ANGLE_BEGIN],
+								data[i].dim[PSL_WEDGE_ANGLE_END], data[i].dim[PSL_WEDGE_DA], status, fill_active || get_rgb, outline_active);
 						}
 						else
 							PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_WEDGE);

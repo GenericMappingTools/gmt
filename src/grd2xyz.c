@@ -418,7 +418,8 @@ void place_base_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, b
 
 EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	bool first = true, first_geo = true;
-	unsigned int row, col, n_output, w_col = 3, orig_mode;
+	openmp_int row, col;
+	unsigned int n_output, w_col = 3, orig_mode;
 	int error = 0, write_error = 0;
 
 	uint64_t ij, ij_gmt, n_total = 0, n_suppressed = 0;
@@ -626,7 +627,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 					}
 					strcat (record, item);
 					rec_len += len;
-					if (col < (G->header->n_columns-1)) { strcat (record, " "); rec_len++;}
+					if (col < (openmp_int)(G->header->n_columns-1)) { strcat (record, " "); rec_len++;}
 				}
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write a whole y line */
 			}
@@ -650,11 +651,11 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Option -T: Translating coordinates to ensure x_min = y_min = z_min = 0\n");
 			if (!gmt_M_is_zero (G->x[0])) {	/* Shift x coordinates */
 				double origin = G->x[0];
-				for (col = 0; col < G->header->n_columns; col++) G->x[col] -= origin;
+				for (col = 0; col < (openmp_int)G->header->n_columns; col++) G->x[col] -= origin;
 			}
 			if (!gmt_M_is_zero (G->y[0])) {	/* Shift y coordinates */
 				double origin = G->y[G->header->n_rows-1];
-				for (row = 0; row < G->header->n_rows; row++) G->y[row] -= origin;
+				for (row = 0; row < (openmp_int)G->header->n_rows; row++) G->y[row] -= origin;
 			}
 			gmt_M_grd_loop (GMT, G, row, col, ij) {	/* Change data range from z_min/z_max to <base>/(z_max-<bas>) */
 				if (gmt_M_is_dnan (G->data[ij])) G->data[ij] = (gmt_grdfloat)G->header->z_min;	/* Replace NaN's with zmin */
@@ -682,8 +683,8 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 #endif
 				fwrite (&n_tri_write, sizeof (unsigned int), 1U, fp);
 			}
-			for (row = 1; row < G->header->n_rows; row++) {	/* Deal with triangles made up of nodes at row and row-1 */
-				for (col = 0; col < (G->header->n_columns-1); col++) {	/* Deal with triangles for col and col+1 */
+			for (row = 1; row < (openmp_int)G->header->n_rows; row++) {	/* Deal with triangles made up of nodes at row and row-1 */
+				for (col = 0; col < (openmp_int)(G->header->n_columns-1); col++) {	/* Deal with triangles for col and col+1 */
 					ij = gmt_M_ijp (G->header, row, col);	/* LL node of this grid cell */
 					/* Do UL and LR triangles */
 					grd2xyz_out_triangle (GMT, fp, G, row, col, ij, 1, Ctrl->T.binary);
@@ -691,11 +692,11 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				}
 			}
 			/* Time to write the four sides and base */
-			for (col = 0; col < (G->header->n_columns-1); col++) {	/* Deal with triangles for S and N facade */
+			for (col = 0; col < (openmp_int)(G->header->n_columns-1); col++) {	/* Deal with triangles for S and N facade */
 				place_SN_triangles (GMT, fp, G, 0, col, Ctrl->T.binary);
 				place_SN_triangles (GMT, fp, G, G->header->n_rows-1, col, Ctrl->T.binary);
 			}
-			for (row = 0; row < (G->header->n_rows-1); row++) {	/* Deal with triangles for E and W facade */
+			for (row = 0; row < (openmp_int)(G->header->n_rows-1); row++) {	/* Deal with triangles for E and W facade */
 				place_WE_triangles (GMT, fp, G, row, 0, Ctrl->T.binary);
 				place_WE_triangles (GMT, fp, G, row, G->header->n_columns-1, Ctrl->T.binary);
 			}

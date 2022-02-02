@@ -44,9 +44,6 @@
 #cmakedefine HAVE_PCRE2
 #cmakedefine HAVE_POSIX_ERE
 
-/* compile with GDAL support <gdal.h> */
-#cmakedefine HAVE_GDAL
-
 /* compile with GEOS support <geos_c.h> */
 #cmakedefine HAVE_GEOS
 

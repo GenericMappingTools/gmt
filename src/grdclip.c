@@ -284,7 +284,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OP
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdclip (void *V_API, int mode, void *args) {
-	unsigned int row, col, k;
+	openmp_int row, col;
+	unsigned int k;
 	int error = 0;
 	bool new_grid, go = false;
 

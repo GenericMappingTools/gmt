@@ -46,8 +46,7 @@
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
 
-# Exclude optional GDAL, GEOS ,PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
-#set (GMT_EXCLUDE_GDAL TRUE)
+# Exclude optional GEOS, PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
 #set (GMT_EXCLUDE_GEOS TRUE)
 #set (GMT_EXCLUDE_PCRE TRUE)
 #set (GMT_EXCLUDE_PCRE2 TRUE)

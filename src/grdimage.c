@@ -35,11 +35,9 @@
 #define THIS_MODULE_NEEDS	"Jg"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc") GMT_ADD_x_OPT
 
-#ifdef HAVE_GDAL
-/* These are images that GDAL knows how to read for us. Otherwise we can only deal with ppm */
+/* These are images that GDAL knows how to read for us. */
 #define N_IMG_EXTENSIONS 6
 static char *gdal_ext[N_IMG_EXTENSIONS] = {"tiff", "tif", "gif", "png", "jpg", "bmp"};
-#endif
 
 #define GRDIMAGE_NAN_INDEX	(GMT_NAN - 3)
 
@@ -112,7 +110,7 @@ struct GRDIMAGE_CONF {
 	bool int_mode;				/* true if we are to apply illumination */
 	unsigned int *actual_row;	/* Array with actual rows as a function of pseudo row */
 	unsigned int *actual_col;	/* Array of actual columns as a function of pseudo col */
-	int64_t n_columns, n_rows;		/* Signed dimensions for use in OpenMP loops */
+	int64_t n_columns, n_rows;		/* Signed dimensions for use in OpenMP loops (if implemented) */
 	uint64_t nm;				/* Number of pixels in the image */
 	struct GMT_PALETTE *P;		/* Pointer to the active palette [NULL if image] */
 	struct GMT_GRID *Grid;		/* Pointer to the active grid [NULL if image] */
@@ -149,11 +147,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* Deall
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
-#ifdef HAVE_GDAL
 	const char *A = " [-A<out_img>[=<driver>]]";
-#else
-	const char *A = " [-A]";
-#endif
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *extra[2] = {A, " [-A]"};
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
@@ -177,15 +171,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (API->external)	/* External interface */
 		GMT_Usage (API, 1, "\n-A Return a GMT raster image instead of a PostScript plot.");
 	else {
-#ifdef HAVE_GDAL
 		GMT_Usage (API, 1, "\n-A<out_img>[=<driver>]");
 		GMT_Usage (API, -2, "Save image in a raster format (.bmp, .gif, .jpg, .png, .tif) instead of PostScript. "
 			"If filename does not have any of these extensions then append =<driver> to select "
 			"the desired image format. The 'driver' is the driver code name used by GDAL. "
 			"See GDAL documentation for available drivers. Note: any vector elements are lost.");
-#else
-		GMT_Usage (API, 1, "\n-A Save image in a PPM format (give .ppm extension) instead of PostScript.");
-#endif
 	}
 	GMT_Option (API, "B-");
 	GMT_Usage (API, 1, "\n-C<cpt>");
@@ -197,12 +187,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D[r]");
 	if (API->external)	/* External interface */
 		GMT_Usage (API, -2, "Input is an image instead of a grid. Append r to equate image region to -R region.");
-#ifdef HAVE_GDAL
 	else {
 		GMT_Usage (API, -2, "GMT automatically detects standard image formats. For non-standard formats you must "
 			"use -D to force it to be seen as an image. Append r to equate image region with -R region.");
 	}
-#endif
 	GMT_Usage (API, 1, "\n-Ei|<dpi>");
 	GMT_Usage (API, -2, "Set dpi for the projected grid which must be constructed [100] "
 		"if -J implies a nonlinear graticule [Default gives same size as input grid]. "
@@ -295,8 +283,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 					Ctrl->A.file = strdup (opt->arg);
 					Ctrl->A.way = 1;	/* Building image directly, use TRP layout, no call to GDAL, writing a PPM file */
 				}
-#ifdef HAVE_GDAL
-				else {	/* Must give file and GDAL driver and this requires GDAL support */
+				else {	/* Must give file and GDAL driver */
 					Ctrl->A.file = strdup (opt->arg);
 					while (Ctrl->A.file[n] != '=' && n > 0) n--;
 					if (n == 0) {	/* Gave no driver, see if we requested one of the standard image formats */
@@ -322,10 +309,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 						}
 					}
 				}
-#else
-				else
-						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Your selection requires building GMT with GDAL support.\n");
-#endif
 				break;
 
 			case 'C':	/* CPT */
@@ -335,7 +318,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
-#ifdef HAVE_GDAL
 			case 'D':	/* Get an image via GDAL */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				if (!API->external)			/* For externals we actually still need the -D */
@@ -344,7 +326,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				Ctrl->D.active = true;
 				Ctrl->D.mode = (opt->arg[0] == 'r');
 				break;
-#endif
 			case 'E':	/* Sets dpi */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
@@ -488,16 +469,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 
 	if (!GMT->common.n.active && (!Ctrl->C.active || gmt_is_cpt_master (GMT, Ctrl->C.file)))
 		/* Unless user selected -n we want the default not to exceed data range on projection when we are auto-scaling a master table */
-		n_errors += gmtinit_parse_n_option (GMT, "b+c");
+		n_errors += gmtinit_parse_n_option (GMT, "c+c");
 
-	if (Ctrl->D.active) {	/* Only OK with memory input or GDAL support */
-		if (!gmt_M_file_is_memory (Ctrl->In.file)) {
-#ifndef HAVE_GDAL
-			GMT_Report (API, GMT_MSG_ERROR, "Option -D: Requires building GMT with GDAL support.\n");
-			n_errors++;
-#endif
-		}
-	}
 	if (!API->external) {	/* I.e, not an External interface */
 		n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3),
 		                                   "Must specify one (or three [deprecated]) input file(s)\n");
@@ -1160,6 +1133,46 @@ GMT_LOCAL bool grdimage_adjust_R_consideration (struct GMT_CTRL *GMT, struct GMT
 	return false;
 }
 
+
+void grdimage_reset_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *zmin, double *zmax) {
+	/* grdimage via gmt_grd_setregion may extend the grid outward to ensure we have enough nodes to
+	 * fill the map.  However, some of these nodes are actally outside the w/e/s/n requested. Here,
+	 * we check for simple cases where we can shrink the w/e/s/n back temporarily to recompute the grid
+	 * zmin/zmax which are often used for scaling of a CPT.  This can be done in these situations:
+	 * 	1. Not an oblique projection
+	 * 	2. -R was set and is not 360 in longitude
+	 * 	3. G->header->wesn is not 360 in longitude
+	 */
+	unsigned int pad[4], k, n_pad = 0;
+	double old_wesn[4], new_wesn[4], old_z_min, old_z_max;
+	if (GMT->common.R.oblique) return;	/* Do nothing for oblique maps */
+	if (!GMT->common.R.active[RSET]) return;	/* Do nothing if -R was not set */
+	if (gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI])) return;	/* Do nothing for 360 grids */
+	if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) return;	/* Do nothing for global maps */
+	/* OK, may try to do a bit of work */
+	gmt_M_memcpy (old_wesn, G->header->wesn, 4, double);	/* Save a copy of what we have */
+	gmt_M_memcpy (new_wesn, G->header->wesn, 4, double);	/* Save a copy of what we have */
+	old_z_min = G->header->z_min;	old_z_max = G->header->z_max;
+	pad[XLO] = (G->header->wesn[XLO] < GMT->common.R.wesn[XLO]) ? irint (floor ((GMT->common.R.wesn[XLO] - G->header->wesn[XLO]) / G->header->inc[GMT_X])) : 0;
+	pad[XHI] = (G->header->wesn[XHI] > GMT->common.R.wesn[XHI]) ? irint (floor ((G->header->wesn[XHI] - GMT->common.R.wesn[XHI]) / G->header->inc[GMT_X])) : 0;
+	pad[YLO] = (G->header->wesn[YLO] < GMT->common.R.wesn[YLO]) ? irint (floor ((GMT->common.R.wesn[YLO] - G->header->wesn[YLO]) / G->header->inc[GMT_Y])) : 0;
+	pad[YHI] = (G->header->wesn[YHI] > GMT->common.R.wesn[YHI]) ? irint (floor ((G->header->wesn[YHI] - GMT->common.R.wesn[YHI]) / G->header->inc[GMT_Y])) : 0;
+	for (k = 0; k < 4; k++) if (pad[k]) {
+		new_wesn[k] = GMT->common.R.wesn[k];	/* Snap back to -R */
+		n_pad++;	/* Number of nonzero pads */
+	}
+	if (n_pad == 0) return;	/* No change */
+	gmt_M_memcpy (G->header->wesn, new_wesn, 4, double);	/* Temporarily update the header */
+	for (k = 0; k < 4; k++) G->header->pad[k] += pad[k];	/* Temporarily change the pad */
+	gmt_set_grddim (GMT, G->header);	/* Change header items */
+	gmt_grd_zminmax (GMT, G->header, G->data);		/* Recompute the min/max */
+	*zmin = G->header->z_min;	*zmax = G->header->z_max;	/* These are then passed out */
+	gmt_M_memcpy (G->header->wesn, old_wesn, 4, double);	/* Reset the header */
+	for (k = 0; k < 4; k++) G->header->pad[k] -= pad[k];	/* Reset the pad */
+	gmt_set_grddim (GMT, G->header);	/* Reset header items */
+	G->header->z_min = old_z_min;	G->header->z_max = old_z_max;	/* Restore original min/max */
+}
+
 EXTERN_MSC int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in);
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -1199,7 +1212,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	struct GMT_GRID_HEADER *header_work = NULL;	/* Pointer to a GMT header for the image or grid */
 	struct GMT_GRID_HEADER *header_D = NULL, *header_I = NULL, *header_G = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;	/* A GMT image datatype, if GDAL is used */
+	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;	/* A GMT image datatype */
 	struct GMT_IMAGE *Out = NULL;	/* A GMT image datatype, if external interface is used with -A */
 	struct GMT_GRID *G2 = NULL;
 	struct GRDIMAGE_CONF *Conf = NULL;
@@ -1274,7 +1287,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 	}
 
-#ifdef HAVE_GDAL
 	if (!Ctrl->D.active && (ftype = gmt_raster_type (GMT, Ctrl->In.file, false)) == GMT_IS_IMAGE) {
 		/* The input file is an ordinary image instead of a grid and -R may be required to use it */
 		Ctrl->D.active = true;
@@ -1293,7 +1305,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-#endif
 
 	gmt_detect_oblique_region (GMT, Ctrl->In.file);	/* Ensure a proper and smaller -R for oblique projections */
 
@@ -1364,12 +1375,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			I->y = gmt_grd_coord (GMT, I->header, GMT_Y);
 		}
 
-#ifdef HAVE_GDAL
 		if (!Ctrl->A.active && gmtlib_ind2rgb(GMT, &I)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Error converting from indexed to RGB\n");
 			Return (API->error);
 		}
-#endif
 
 		gray_only  = (I->header->n_bands == 1 && I->n_indexed_colors == 0);	/* Got a grayscale image */
 		got_z_grid = false;		/* Flag that we are using a GMT_IMAGE instead of a GMT_GRID as main input */
@@ -1598,8 +1607,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	has_content = (got_z_grid) ? false : true;	/* Images always have content but grids may be all NaN */
 	if (got_z_grid) {	/* Got a single grid so need to convert z to color via a CPT */
 		if (Ctrl->C.active) {	/* Read a palette file */
+			double zmin = Grid_orig->header->z_min, zmax = Grid_orig->header->z_max;
 			char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file, Grid_orig->header);
-			if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, Grid_orig->header->z_min, Grid_orig->header->z_max, Ctrl->C.dz)) == NULL) {
+			grdimage_reset_grd_minmax (GMT, Grid_orig, &zmin, &zmax);
+			if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, zmin, zmax, Ctrl->C.dz)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
 				gmt_free_header (API->GMT, &header_G);
 				gmt_free_header (API->GMT, &header_I);
@@ -1781,11 +1792,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			img_wesn[YLO] -= 0.5 * img_inc[1];		img_wesn[YHI] += 0.5 * img_inc[1];
 		}
 		if (Ctrl->Q.active) dim[GMT_Z]++;	/* Flag to remind us that we need to allocate a transparency array in GMT_Create_Data */
-#ifdef HAVE_GDAL
 		if (GMT->current.gdal_read_in.O.mem_layout[0])
 			strcpy (mem_layout, GMT->current.gdal_read_in.O.mem_layout);	/* Backup current layout */
 		else
-#endif
 			gmt_strncpy (mem_layout, "TRPa", 4);					/* Don't let it be empty (maybe it will screw?) */
 		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");			/* Set grdimage's default image memory layout */
 

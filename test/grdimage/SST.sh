@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Test based on Bug #1140.  SST.nc is a compressed version of the original grid
+# DVC_TEST
+
 ps=SST.ps
 gmt makecpt -T-10/30/2 -Cwysiwyg > sst.cpt
 gmt grdimage @SST.nc -Bafg -Rg -JG135/45/90/6i -K -Csst.cpt -X0.75i -Yc -P > $ps

@@ -16,7 +16,6 @@
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: psimage reads an EPS file or a 1, 8, 24, or 32 bit image and plots it on the page
- * Images are only supported if GMT was built with GDAL support.
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
@@ -346,7 +345,6 @@ GMT_LOCAL int file_is_eps (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 if 
 
 #define Return(code) {gmt_M_free (GMT, table); return (code);}
 
-#ifdef HAVE_GDAL
 GMT_LOCAL int psimage_find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int *r, int *g, int *b) {
 	size_t i, j;
 	int idx;
@@ -384,7 +382,6 @@ GMT_LOCAL int psimage_find_unique_color (struct GMT_CTRL *GMT, unsigned char *rg
 	}
 	Return (3);
 }
-#endif
 
 #undef Return
 
@@ -394,7 +391,9 @@ EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes,
 
 EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	int i, j, PS_interpolate = 1, PS_transparent = 1, is_eps = 0, error = 0, is_gdal = 0;
+	int k, r = 0, g = 0, b = 0, has_trans = 0;
 	unsigned int row, col;
+	unsigned char colormap[4*256];
 	size_t n;
 	bool free_GMT = false, did_gray = false;
 
@@ -410,11 +409,7 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
-#ifdef HAVE_GDAL
-	int k, r = 0, g = 0, b = 0, has_trans = 0;
-	unsigned char colormap[4*256];
-	struct GMT_IMAGE *I = NULL;		/* A GMT image datatype, if GDAL is used */
-#endif
+	struct GMT_IMAGE *I = NULL;		/* A GMT image datatype */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -462,7 +457,6 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 			Return (GMT_IMAGE_READ_ERROR);
 		}
 	}
-#ifdef HAVE_GDAL
 	else  {	/* Read a raster image */
 		bool R_save = GMT->common.R.active[RSET];
 		GMT->common.R.active[RSET] = false;	/* Temporarily unset any active -R since we do not want it to be used for a subset of this image! */
@@ -533,13 +527,6 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 		header.height = I->header->n_rows;
 		header.depth = (int)I->header->n_bands * 8;
 	}
-#else
-	else {	/* Without GDAL we can only read EPS files */
-		GMT_Report (API, GMT_MSG_ERROR, "Unsupported file format for file %s!\n", file);
-		gmt_M_str_free (file);
-		Return (GMT_RUNTIME_ERROR);
-	}
-#endif
 
 	if (Ctrl->M.active && header.depth == 24) {	/* Downgrade to grayshade image */
 		did_gray = true;
@@ -547,14 +534,12 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 		buffer = psl_gray_encode (PSL, &n, picture);
 		header.depth = 8;
 		if (is_eps) PSL_free (picture); /* EPS ile */
-#ifdef HAVE_GDAL
 		else {	/* Got it via GMT_Read_Data */
 			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
 				gmt_M_str_free (file);
 				Return (API->error);
 			}
 		}
-#endif
 		picture = buffer;
 	}
 
@@ -568,14 +553,10 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 		buffer = gmt_M_memory (GMT, NULL, n, unsigned char);
 		for (i = 0; i < j; i++) buffer[i] = (unsigned char)rint(255 * Ctrl->G.rgb[PSIMAGE_TRA][i]);
 		gmt_M_memcpy (&(buffer[j]), picture, n - j, unsigned char);
-#ifdef HAVE_GDAL
 		if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {	/* If I is NULL then nothing is done */
 			gmt_M_str_free (file);
 			Return (API->error);
 		}
-#else
-		PSL_free (picture);
-#endif
 		picture = buffer;
 		free_GMT = true;
 	}
@@ -700,11 +681,9 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	gmt_plotend (GMT);
 	gmt_M_str_free (file);
 
-#ifdef HAVE_GDAL
 	if (I && GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
 		Return (API->error);	/* If I is NULL then nothing is done */
 	}
-#endif
 	if (free_GMT) {
 		gmt_M_free (GMT, picture);
 	}

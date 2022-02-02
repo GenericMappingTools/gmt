@@ -434,7 +434,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
-	unsigned int justify, row, col, col_0, row_0, d_col, d_row, k, n_warn[3] = {0, 0, 0}, warn;
+	openmp_int row, col, col_0, row_0, d_col, d_row;
+	unsigned int justify, k, n_warn[3] = {0, 0, 0}, warn;
 	int error = 0;
 	bool Geographic;
 
@@ -692,9 +693,9 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 		uint64_t v_n = 0;
 		char v_unit[GMT_LEN8] = {""};
 
-		for (row = row_0; row < Grid[1]->header->n_rows; row += d_row) {
+		for (row = row_0; row < (openmp_int)Grid[1]->header->n_rows; row += d_row) {
 			y = gmt_M_grd_row_to_y (GMT, row, Grid[0]->header);	/* Latitude OR y OR radius */
-			for (col = col_0; col < Grid[1]->header->n_columns; col += d_col) {
+			for (col = col_0; col < (openmp_int)Grid[1]->header->n_columns; col += d_col) {
 
 				ij = gmt_M_ijp (Grid[0]->header, row, col);
 				if (gmt_M_is_fnan (Grid[0]->data[ij]) || gmt_M_is_fnan (Grid[1]->data[ij])) continue;	/* Cannot plot NaN-vectors */
@@ -769,9 +770,9 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 		Ctrl->Q.S.symbol = was;	/* Restore to original type */
 	}
 
-	for (row = row_0; row < Grid[1]->header->n_rows; row += d_row) {
+	for (row = row_0; row < (openmp_int)Grid[1]->header->n_rows; row += d_row) {
 		y = gmt_M_grd_row_to_y (GMT, row, Grid[0]->header);	/* Latitude OR y OR radius */
-		for (col = col_0; col < Grid[1]->header->n_columns; col += d_col) {
+		for (col = col_0; col < (openmp_int)Grid[1]->header->n_columns; col += d_col) {
 
 			ij = gmt_M_ijp (Grid[0]->header, row, col);
 			if (gmt_M_is_fnan (Grid[0]->data[ij]) || gmt_M_is_fnan (Grid[1]->data[ij])) continue;	/* Cannot plot NaN-vectors */

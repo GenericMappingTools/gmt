@@ -197,7 +197,7 @@ Examples
 .. include:: explain_example.rst_
 
 To resample the file profiles.tdgmb, which contains
-(time,distance,gravity,magnetics,bathymetry) records, at 1km equidistant
+(time,distance,gravity,magnetics,bathymetry) records, at 1 km equidistant
 intervals using Akima's spline, use::
 
     gmt sample1d profiles.tdgmb -N1 -Fa -T1 > profiles_equi_d.tdgmb

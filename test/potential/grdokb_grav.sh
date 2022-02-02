@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Compute the gravity anomaly of the water layer above the Gorringe bank
+# DVC_TEST
 
 ps=grdokb_grav.ps
 

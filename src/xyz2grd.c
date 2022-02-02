@@ -303,15 +303,10 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LOCAL void xyz2grd_protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
+GMT_LOCAL void xyz2grd_protect_J (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	if (GMT_Find_Option (API, 'J', options) != NULL) {
-#ifdef HAVE_GDAL
 		struct GMT_OPTION *opt = GMT_Make_Option (API, 'f', "0f,1f");
 		(void)GMT_Append_Option(API, opt, options);
-#else
-		GMT_Report(API, GMT_MSG_ERROR,
-		           "-J option to set grid's referencing system is only available when GMT was build with GDAL\n");
-#endif
 	}
 }
 

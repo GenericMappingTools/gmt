@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Testing gmt grdcut -Z
+# DVC_TEST
 
 ps=subset.ps
 

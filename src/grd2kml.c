@@ -885,7 +885,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 					}
 					/* Will pass -W so grdimage will notify us if there was no valid image data imaged */
 					if (!Ctrl->W.active) {
-						/* Build the grdimage command to write an image directly via GDAL - no need to go via PostSCript */
+						/* Build the grdimage command to write an image directly via GDAL - no need to go via PostScript */
 						char imagefile[PATH_MAX] = {""};
 						if (Ctrl->D.single)
 							sprintf (imagefile, "%s/L%2.2dR%3.3dC%3.3d.%s", Ctrl->N.prefix, level, row, col, ext[im_type]);

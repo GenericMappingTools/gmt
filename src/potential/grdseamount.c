@@ -610,10 +610,12 @@ GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAM
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
-	int error, scol, srow, scol_0, srow_0;
+	int scol, srow, scol_0, srow_0, error;
 
-	unsigned int n_out, nx1, d_mode, row, col, row_0, col_0, rmode, inc_mode;
-	unsigned int max_d_col, d_row, *d_col = NULL, t, t_use, build_mode, t0_col = 0, t1_col = 0;
+	openmp_int row, col, max_d_col, d_row, nx1, *d_col = NULL;
+
+	unsigned int n_out, d_mode, rmode, inc_mode;
+	unsigned int t, t_use, build_mode, t0_col = 0, t1_col = 0;
 
 	uint64_t n_expected_fields, n_smts = 0, tbl, seg, rec, ij;
 
@@ -760,7 +762,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (rec = 0; rec < S->n_rows; rec++, n_smts++) {
 				if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in, &code)) continue;
-				for (col = 0; col < n_expected_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
+				for (col = 0; col < (openmp_int)n_expected_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
 				if (Ctrl->C.input) {
 					noise = 0.0;
 					switch (code) {
@@ -829,7 +831,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
-	nx1 = Grid->header->n_columns + Grid->header->registration - 1;
+	nx1 = (openmp_int)Grid->header->n_columns + Grid->header->registration - 1;
 	if (map && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) periodic = true;
 	replicate = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);
 	if (Ctrl->A.active) for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->A.value[GMT_OUT];
@@ -956,10 +958,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 					scol_0 = (int)gmt_M_grd_x_to_col (GMT, in[GMT_X], Grid->header);	/* Center column */
 					if (scol_0 < 0) continue;	/* Still outside x-range */
-					if ((col_0 = scol_0) >= Grid->header->n_columns) continue;	/* Still outside x-range */
+					if (scol_0 >= (int)Grid->header->n_columns) continue;	/* Still outside x-range */
 					srow_0 = (int)gmt_M_grd_y_to_row (GMT, in[GMT_Y], Grid->header);	/* Center row */
 					if (srow_0 < 0) continue;	/* Still outside y-range */
-					if ((row_0 = srow_0) >= Grid->header->n_rows) continue;	/* Still outside y-range */
+					if (srow_0 >= (int)Grid->header->n_rows) continue;	/* Still outside y-range */
 
 					c = (map) ? cosd (in[GMT_Y]) : 1.0;	/* Flat Earth area correction */
 
@@ -1010,17 +1012,17 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 					for (srow = srow_0 - (int)d_row; srow <= (srow_0 + (int)d_row); srow++) {
 						if (srow < 0) continue;
-						if ((row = srow) >= Grid->header->n_rows) continue;
+						if ((row = (openmp_int)srow) >= (openmp_int)Grid->header->n_rows) continue;
 						y = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 						first = replicate;	/* Used to help us deal with duplicate columns for grid-line registered global grids */
 						for (scol = scol_0 - (int)d_col[row]; scol <= (scol_0 + (int)d_col[row]); scol++) {
 							if (!periodic) {
 								if (scol < 0) continue;
-								if ((col = scol) >= Grid->header->n_columns) continue;
+								if ((col = (openmp_int)scol) >= (openmp_int)Grid->header->n_columns) continue;
 							}
 							if (scol < 0)	/* Periodic grid: Break on through to other side! */
 								col = scol + nx1;
-							else if ((col = scol) >= Grid->header->n_columns) 	/* Periodic grid: Wrap around to other side */
+							else if ((col = (openmp_int)scol) >= (openmp_int)Grid->header->n_columns) 	/* Periodic grid: Wrap around to other side */
 								col -= nx1;
 							/* "silent" else we are inside w/e */
 							x = gmt_M_grd_col_to_x (GMT, col, Grid->header);

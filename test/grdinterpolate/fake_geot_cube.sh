@@ -2,6 +2,7 @@
 # Create 8 layers of geographic data with abs time z, faking it
 # The original PS was made with the commented out lines so that we
 # can be sure the stacking into a cube and pulling out layers work
+# DVC_TEST
 gmt begin fake_geot_cube ps
 	gmt set MAP_FRAME_TYPE plain PROJ_ELLIPSOID sphere TIME_UNIT d FORMAT_CLOCK_MAP=- FONT_TAG=12p
 	gmt math -T2020-01-01T/2020-01-08T/1 -o0 --FORMAT_CLOCK_OUT=hh T = t.txt

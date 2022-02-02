@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Test script demonstrating problem discussed in message #7065 [Sabin].
 # grdmask does not create the mask for the polygon in the W hemisphere (?)
+# DVC_TEST
 ps=twoblobs.ps
 gmt makecpt -T0,1,2 -Cwhite,red > t.cpt
 cat << EOF > two.txt

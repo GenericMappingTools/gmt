@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Testing gmt grdsample
+# DVC_TEST
 
 ps=sample.ps
 

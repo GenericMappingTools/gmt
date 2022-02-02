@@ -183,7 +183,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 
 EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 
-	int error = 0, row, col;
+	int error = 0;
+	openmp_int row, col;
 	unsigned int registration;
 
 	uint64_t ij;
@@ -346,7 +347,7 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	HH = gmt_get_H_hidden (Gin->header);
 	lon = gmt_M_memory (GMT, NULL, Gout->header->n_columns, double);
-	for (col = 0; col < (int)Gout->header->n_columns; col++) {
+	for (col = 0; col < (openmp_int)Gout->header->n_columns; col++) {
 		lon[col] = gmt_M_grd_col_to_x (GMT, col, Gout->header);
 		if (!HH->nxp)
 			/* Nothing */;
@@ -363,7 +364,7 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,lat,ij) shared(GMT,Gin,Gout,lon)
 #endif
-	for (row = 0; row < (int)Gout->header->n_rows; row++) {
+	for (row = 0; row < (openmp_int)Gout->header->n_rows; row++) {
 		lat = gmt_M_grd_row_to_y (GMT, row, Gout->header);
 		if (!HH->nyp)
 			/* Nothing */;
@@ -371,7 +372,7 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 			lat -= Gin->header->inc[GMT_Y] * HH->nyp;
 		else if (lat < Gin->header->wesn[YLO])
 			lat += Gin->header->inc[GMT_Y] * HH->nyp;
-		for (col = 0; col < (int)Gout->header->n_columns; col++) {
+		for (col = 0; col < (openmp_int)Gout->header->n_columns; col++) {
 			ij = gmt_M_ijp (Gout->header, row, col);
 			Gout->data[ij] = (gmt_grdfloat)gmt_bcr_get_z (GMT, Gin, lon[col], lat);
 			if (Gout->data[ij] < Gout->header->z_min) Gout->header->z_min = Gout->data[ij];
