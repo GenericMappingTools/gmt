@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 # Test the output of gmt grdseamount for evolving Conical shapes
+# DVC_TEST
+
 m=c
 ps=growth_${m}.ps
 f=0.2

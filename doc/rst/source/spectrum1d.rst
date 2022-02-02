@@ -178,18 +178,14 @@ Examples
 .. include:: explain_example.rst_
 
 Suppose data.g is gravity data in mGal, sampled every 1.5 km. To write
-its power spectrum, in mGal\*\*2-km, to the file data.xpower, use
-
-   ::
+its power spectrum, in mGal\*\*2-km, to the file data.xpower, use::
 
     gmt spectrum1d data.g -S256 -D1.5 -Ndata
 
 Suppose in addition to data.g you have data.t, which is topography in
 meters sampled at the same points as data.g. To estimate various
 features of the transfer function, considering data.t as input and
-data.g as output, use
-
-   ::
+data.g as output, use::
 
     paste data.t data.g | gmt spectrum1d -S256 -D1.5 -Ndata -C > results.txt
 

@@ -83,6 +83,10 @@ jobs:
         run: bash ci/download-coastlines.sh
         if: steps.cache-coastline.outputs.cache-hit != 'true'
 
+      # Pull baseline image data from dvc remote (DAGsHub)
+      - name: Pull baseline image data from dvc remote
+        run: dvc pull
+
       - name: Configure GMT
         run: |
           if [ "$RUNNER_OS" != "Windows" ]; then

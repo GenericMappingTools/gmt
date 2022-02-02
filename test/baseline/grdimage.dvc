@@ -1,0 +1,5 @@
+outs:
+- md5: fd665378d77e257c792d2581d671e82e.dir
+  size: 8683519
+  nfiles: 30
+  path: grdimage

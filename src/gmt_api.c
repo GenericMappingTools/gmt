@@ -4675,7 +4675,7 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 			/* Here we will read the image data themselves. */
 			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			 * Otherwise we extract the entire file domain */
-            if (GMT->common.R.active[RSET] && !S_obj->region) { /* subregion not passed to object yet */
+            if (GMT->common.R.active[RSET] && !S_obj->region && !GMT->common.R.oblique) { /* subregion not passed to object yet */
                 gmt_M_memcpy (S_obj->wesn, GMT->common.R.wesn, 4U, double);
                 S_obj->region = true;
             }

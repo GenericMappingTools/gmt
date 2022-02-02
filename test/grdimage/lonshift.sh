@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Check if we can wrap global grids over longitude
-#
+# DVC_TEST
 
 ps=lonshift.ps
 

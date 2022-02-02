@@ -238,6 +238,7 @@ to install the `Sphinx <http://www.sphinx-doc.org/>`_ documentation builder. Aft
 `building GMT <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_, you can build GMT documentation using
 the following commands within the build directory::
 
+  dvc pull
   cmake --build . --target docs_depends     # Generate images included in the documentation
   cmake --build . --target optimize_images  # Optimize PNG images for documentation [optional]
   cmake --build . --target docs_man         # UNIX manual pages
@@ -418,7 +419,7 @@ As the baseline images are large blob files that can change often, it is not ide
 we use `data version control (dvc) <https://dvc.org/>`_ to track the test images, which is like ``git`` but for data.
 ``dvc`` stores the hash (md5sum) of a file or an md5sum that describes the contents of a directory. For each test
 ``test/<module>/*.sh`` that generates a .PS file, there is a baseline image file in ``test/baseline/<module>/``
-that is compared to the test result using `GraphicsMagick <http://www.graphicsmagick.org/>`_. Each of the
+that is compared to the test result using `GraphicsMagick <www.graphicsmagick.org>`_. Each of the
 directories ``test/baseline/<module>`` are tracked by ``dvc`` using the file ``test/baseline/<module>.dvc``. This file
 contains the hash of a JSON .dir file stored in the .dvc cache. The .dir file contains information about each tracked
 file in the directory, which is used to push/pull the files to/from remote storage. The ``test/baseline/<module>.dvc``

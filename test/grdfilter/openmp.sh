@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Testing gmt grdfilter if openmp is used.
+# DVC_TEST
 
 ps=openmp.ps
 
@@ -8,7 +9,7 @@ if ! [[ ${HAVE_OPENMP} =~ TRUE|ON ]]; then
   # and since no PS is produced without OpenMP, we simply duplicate
   # the original so they both exist and are identical.
   echo "OpenMP not available - just duplicating PS to pass test"
-  cp "${GMT_SRCDIR:-.}"/$ps .
+  cp $baseline/${psref:-$ps} .
   exit 0
 fi
 FILT=g			# Gaussian filter

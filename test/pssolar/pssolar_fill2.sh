@@ -4,6 +4,7 @@
 # becomes harder to decide.  This case shows that while pssolar selects the
 # wrong side, dumping it to file and plotting via psxy selects the correct side.
 # We are faking the orig PS by using psxy for both, then commenting that out
+# DVC_TEST
 ps=pssolar_fill2.ps
 gmt pscoast -Rd -JKs0/7i -Dc -A50000 -W0.5p -S175/210/255 -Bafg --MAP_FRAME_TYPE=plain -P -K -Xc > $ps
 

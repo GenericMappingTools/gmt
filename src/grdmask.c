@@ -38,6 +38,12 @@
 #define GRDMASK_N_CLASSES	3	/* outside, on edge, and inside */
 #define GRDMASK_N_CART_MASK	9
 
+#define GRDMASK_SET_UPPER	0
+#define GRDMASK_SET_LOWER	1
+#define GRDMASK_SET_FIRST	2
+#define GRDMASK_SET_LAST	3
+
+
 struct GRDMASK_CTRL {
 	struct GRDMASK_A {	/* -A[m|y|p|x|r|t<step>] */
 		bool active;
@@ -45,6 +51,11 @@ struct GRDMASK_CTRL {
 		bool polar;
 		double step;
 	} A;
+	struct GRDMASK_C {	/* -Cf|l|o|u */
+		bool active;
+		unsigned int mode;
+		int sign;
+	} C;
 	struct GRDMASK_G {	/* -G<maskfile> */
 		bool active;
 		char *file;
@@ -73,6 +84,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDMASK_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->C.mode = GRDMASK_SET_LAST;		/* Set whatever the last polygon says */
 	C->N.mask[GMT_INSIDE] = 1.0;	/* Default inside value */
 	return (C);
 }
@@ -103,6 +115,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"unless m or p is appended to first follow meridian then parallel, or vice versa. For Cartesian data, use -Ax "
 		"or -Ay to connect first in x, then y, or vice versa. Ignored if -S is used since input data are then considered "
 		"to be points. If -R is theta/r, use -At or -Ar to connect first in theta, then r, or vice versa.");
+	GMT_Usage (API, 1, "\n-Cf|l|o|u");
+	GMT_Usage (API, -2, "Clobber modes affects how polygons sets node values and is determined by the mode:");
+	GMT_Usage (API, 3, "f: First input polygon determines the final node value.");
+	GMT_Usage (API, 3, "l: Lowest input polygon value determines the final node value.");
+	GMT_Usage (API, 3, "o: Last input polygon overrides any previous node value [Default].");
+	GMT_Usage (API, 3, "u: Highest input polygon value determines the final node value.");
+	GMT_Usage (API, -2, "Note: Does not apply if -S is used.");
 	GMT_Usage (API, 1, "\n-N[z|Z|p|P][<values>]");
 	GMT_Usage (API, -2, "Set <out>/<edge>/<in> to use if node is outside, on the path, or inside. NaN is a valid entry. "
 		"[Default values are 0/0/1]. Alternatively, use -Nz (inside) or -NZ (inside & edge) to set the inside nodes "
@@ -172,6 +191,20 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT_OP
 #ifdef DEBUG
 					default: Ctrl->A.step = atof (opt->arg); break; /* Undocumented test feature; requires step in degrees */
 #endif
+				}
+				break;
+			case 'C':	/* Clobber mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				Ctrl->C.active = true;
+				switch (opt->arg[0]) {
+					case 'f': Ctrl->C.mode = GRDMASK_SET_FIRST; break;
+					case 'l': Ctrl->C.mode = GRDMASK_SET_LOWER; break;
+					case 'o': Ctrl->C.mode = GRDMASK_SET_LAST;  break;
+					case 'u': Ctrl->C.mode = GRDMASK_SET_UPPER; break;
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C option: Modifiers are f|l|o|u only\n");
+						n_errors++;
+						break;
 				}
 				break;
 			case 'G':	/* Output filename */
@@ -290,7 +323,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 
 	char text_item[GMT_LEN64] = {""}, *node_is_set = NULL;
 
-	gmt_grdfloat mask_val[3], value;
+	gmt_grdfloat mask_val[3], value, z_to_set;
 
 	double distance, xx, yy, z_value, xtmp, radius = 0.0, last_radius = -DBL_MAX, *grd_x0 = NULL, *grd_y0 = NULL;
 
@@ -589,6 +622,8 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
 					z_value += 1.0;
 
+				if (Ctrl->N.mode) z_to_set = (gmt_grdfloat)z_value;	/* Can set the value once here */
+
 				if (worry_about_jumps) gmt_eliminate_lon_jumps (GMT, S->data[GMT_X], S->n_rows);	/* Since many segments may have been read we cannot be sure there are no junps */
 
 				for (row = 0; row < n_rows; row++) {	/* Loop over grid rows */
@@ -616,11 +651,11 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 
 					/* Here we will have to consider the x coordinates as well (or known_side is set) */
 #ifdef _OPENMP
-#pragma omp parallel for private(col,xx,side,ij) shared(n_columns,GMT,Grid,do_test,yy,S,known_side,row,Ctrl,z_value,mask_val)
+#pragma omp parallel for private(col,ij,xx,side,z_to_set) shared(n_columns,Grid,row,Ctrl,node_is_set,GMT,do_test,yy,S,known_side,z_value,mask_val)
 #endif
 					for (col = 0; col < n_columns; col++) {	/* Loop over grid columns */
 						ij = gmt_M_ijp (Grid->header, row, col);
-						if (node_is_set[ij]) continue;	/* Already set */
+						if (Ctrl->C.mode == GRDMASK_SET_FIRST && node_is_set[ij]) continue;	/* Already set */
 						xx = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 						if (do_test) {	/* Must consider xx to determine if we are inside */
 							if ((side = gmt_inonout (GMT, xx, yy, S)) == GMT_OUTSIDE)
@@ -631,10 +666,21 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 						/* Here, point is inside or on edge, we must assign value */
 
 						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
-						Grid->data[ij] = (Ctrl->N.mode) ? (gmt_grdfloat)z_value : mask_val[side];
+						if (!Ctrl->N.mode) z_to_set = mask_val[side];	/* Must update since z depends on side */
+						if (node_is_set[ij]) {	/* Been here before so the Grid has a value; must consult the mode  */
+							switch (Ctrl->C.mode) {
+								case GRDMASK_SET_UPPER: if (Grid->data[ij] >= z_to_set) continue; break;	/* Already has a higher value; else set below */
+								case GRDMASK_SET_LOWER: if (Grid->data[ij] <= z_to_set) continue; break;	/* Already has a lower value; else set below */
+								default:	/* Last case GRDMASK_SET_LAST is always true in that we always update the node */
+									break;
+							}
+						}
+						Grid->data[ij] = z_to_set;
 						node_is_set[ij] = 1;	/* Mark as visited */
 					}
+#ifndef _OPENMP
 					GMT_Report (API, GMT_MSG_DEBUG, "Polygon %d scanning row %05d\n", n_pol, row);
+#endif
 				}
 			}
 			else {	/* 2 or fewer points in the "polygon" */

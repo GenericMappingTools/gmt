@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Test that proj info is well propagated into nc and gtiff files and that grdimage
 # produces well referenced geotiffs
+# DVC_TEST
 
 ps=grdimage_img_tif.ps
 
