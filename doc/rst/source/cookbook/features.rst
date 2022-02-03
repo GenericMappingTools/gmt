@@ -317,6 +317,7 @@ are known. The **auto** flag is supported for the following parameters:
 :term:`MAP_ANNOT_MIN_SPACING`      Minimum space between annotations [11.00p]
 :term:`MAP_ANNOT_OFFSET_PRIMARY`   Primary annotation offset from axis [3.30p]
 :term:`MAP_ANNOT_OFFSET_SECONDARY` Secondary annotation offset from axis [3.30p]
+:term:`MAP_EMBELLISHMENT_MODE`     Scales attributes relative to feature size
 :term:`MAP_FRAME_AXES`             Axes that are drawn and annotated
 :term:`MAP_FRAME_PEN`              Pen width of plain frame [1.65p]
 :term:`MAP_FRAME_WIDTH`            Width of fancy frame [3.30p]
@@ -366,6 +367,11 @@ non-polar plots using **MAP_FRAME_AXES**\ =\ **auto** is **WrStZ**.
 For **MAP_LABEL_OFFSET, **auto** will scale the offset based on figure size if
 **MAP_LABEL_MODE** is set to **annot**, but will default to **32p** if
 **MAP_LABEL_MODE** is set to **axis**.
+
+For **MAP_EMBELLISHMENT_MODE**, **auto** means we uses the given size of the
+embellishment to set relative sizes of ticks, texts and labels, and offsets.
+These are otherwise controlled by numerous default settings; see discussion
+under :ref:`Embellishments <GMT_Embellishments>`.
 
 Changing GMT defaults
 ~~~~~~~~~~~~~~~~~~~~~

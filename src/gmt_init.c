@@ -221,6 +221,7 @@ static struct GMT_parameter GMT_keyword_active[]= {
 	{ 0, "MAP_ANNOT_ORTHO"},
 	{ 0, "MAP_DEFAULT_PEN"},
 	{ 0, "MAP_DEGREE_SYMBOL"},
+	{ 0, "MAP_EMBELLISHMENT_MODE"},
 	{ 0, "MAP_FRAME_AXES"},
 	{ 0, "MAP_FRAME_PEN"},
 	{ 0, "MAP_FRAME_PERCENT"},
@@ -6321,6 +6322,8 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	strcpy (GMT->current.setting.map_annot_ortho, "we");
 	/* MAP_DEGREE_SYMBOL (degree) */
 	GMT->current.setting.map_degree_symbol = gmt_degree;
+	/* MAP_EMBELLISHMENT_MODE */
+	GMT->current.setting.map_embellishment_mode = 0;	/* Manual */
 	/* MAP_FRAME_AXES */
 	strcpy (GMT->current.setting.map_frame_axes, "WESNZ");
 	error += gmtinit_decode5_wesnz (GMT, "WESNZ", false);
@@ -6695,6 +6698,8 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT->current.setting.map_annot_offset[GMT_SECONDARY] = GMT->session.d_NaN; /* 3p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = 'p';
+	/* MAP_EMBELLISHMENT_MODE */
+	GMT->current.setting.map_embellishment_mode = 1;	/* Auto */
 	/* MAP_FRAME_AXES */
 	strcpy (GMT->current.setting.map_frame_axes, "auto");
 	/* MAP_FRAME_TYPE (plain) */
@@ -8373,15 +8378,20 @@ void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 */
 void gmt_maprose_syntax (struct GMT_CTRL *GMT, char type, char *string) {
 	/* Used in psbasemap and pscoast -T option.  pass type as m or d */
+	double ps;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T%c parsing failure.  Correct syntax:\n", type);
-	if (type == 'm')
+	if (type == 'm') {
 		GMT_Usage (API, 1, "\n-T%c%s", type, GMT_TROSE_MAG);
-	else
+		ps = GMT_MAG_ROSE_DEF_WIDTH;
+	}
+	else {
 		GMT_Usage (API, 1, "\n-T%c%s", type, GMT_TROSE_DIR);
+		ps = GMT_DIR_ROSE_DEF_WIDTH;
+	}
 	GMT_Usage (API, -2, "%s", string);
 	gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
-	GMT_Usage (API, -2, "Set required size of the rose via +w<diameter>. Other rose modifiers are optional:");
+	GMT_Usage (API, -2, "Set size of the rose via +w<diameter> in units of %s or append %% for percentage of map width [%g %% if +w not given]. Other optional rose modifiers are:", GMT_DIM_UNITS_DISPLAY, ps);
 	if (type == 'm') {
 		GMT_Usage (API, 3, "+d Set magnetic <declination>[/<dlabel>], where "
 			"<dlabel> is an optional label for the magnetic compass needle. "
@@ -10715,8 +10725,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			error += gmtlib_plot_C_format (GMT);	/* Update format statement since degree symbol may have changed */
 			break;
-		case GMTCASE_BASEMAP_AXES:
-			gmt_M_compat_translate ("MAP_FRAME_AXES");
+		case GMTCASE_MAP_EMBELLISHMENT_MODE:
+			if (!strncmp (lower_value, "auto", 4))
+				GMT->current.setting.map_embellishment_mode = 1;	/* Auto */
+			else if (!strncmp (lower_value, "manual", 6))
+				GMT->current.setting.map_embellishment_mode = 0;	/* Manual */
+			else
+				error = true;
 			break;
 		case GMTCASE_MAP_FRAME_AXES:
 			strncpy (GMT->current.setting.map_frame_axes, value, 5U);
@@ -12302,6 +12317,12 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				case gmt_none:		strcpy (value, "none");		break;
 				default: strcpy (value, "undefined");
 			}
+			break;
+		case GMTCASE_MAP_EMBELLISHMENT_MODE:
+			if (GMT->current.setting.map_embellishment_mode)
+				strcpy (value, "auto");
+			else
+				strcpy (value, "manual");
 			break;
 		case GMTCASE_BASEMAP_AXES:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
