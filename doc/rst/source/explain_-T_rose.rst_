@@ -25,7 +25,7 @@
     - **+o**\ *dx*\ [/*dy*] to offset the :ref:`anchor point <Anchor_Point_o>` by *dx* and optionally *dy* (if different
       than *dx*).
     - **+w**\ *width* to set the width of the rose in plot coordinates (append **i**\ nch, **c**\ m, or **p**\ oints),
-      or append unit % for a size in percentage of map width [8%].
+      or append unit % for a size in percentage of map width [10%].
 
 **-Tm**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ 
 [**+j**\ *justify*][**+l**\ [*w,e,s,n*]][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]\ [**+w**\ *width*]
