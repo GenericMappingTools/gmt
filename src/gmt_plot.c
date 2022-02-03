@@ -3631,6 +3631,7 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 			np = 4;
 		}
 		gmtlib_rotate2D (GMT, xc, yc, np, mr->refpoint->x, mr->refpoint->y, angle, xp, yp);	/* Coordinate transformation to rotated polygon */
+        if (GMT->current.proj.z_project.plane >= 0) PSL_command (PSL, "PSL_GPP setmatrix\n");  /* Reset to normal perspective first */
 		PSL_plotline (PSL, xp, yp, np, PSL_MOVE|PSL_CLOSE);	/* Lay down bounding box path but do not draw it */
 		PSL_command (PSL, "pathbbox N /PSL_ury edef /PSL_urx edef /PSL_lly edef /PSL_llx edef\n");	/* Get bounding box coordinates */
 		PSL_defunits (PSL, "PSL_rose_L", mr->off[GMT_X]);	/* PSL coordinate of left margin */
@@ -3647,6 +3648,7 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 		PSL_command (PSL, "PSL_lly PSL_rose_B lt { PSL_rose_B PSL_lly sub /PSL_dy edef} if\n");
 		PSL_command (PSL, "PSL_ury PSL_rose_T gt { PSL_rose_T PSL_ury sub /PSL_dy edef} if\n");
 		PSL_command (PSL, "PSL_dx PSL_dy T\n");	/* Now do the shift, if any */
+        if (GMT->current.proj.z_project.plane >= 0) PSL_command (PSL, "PSL_setview setmatrix\n");  /* Back to perspective view */
 		/* BUild coordinates for the plain symbol */
 		gmt_M_memset (x, PSL_MAX_DIMS, double);
 		gmt_M_memset (y, PSL_MAX_DIMS, double);
@@ -6718,7 +6720,7 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 				cosd(az), sind(az) * GMT->current.proj.z_project.sin_el, 0.0, GMT->current.proj.z_project.cos_el, xx * PSL->internal.x2ix, yy * PSL->internal.y2iy);
 			gmt_xy_axis (GMT, 0.0, -GMT->common.R.wesn[ZLO], GMT->current.proj.zmax - GMT->current.proj.zmin, GMT->common.R.wesn[ZLO],
 				GMT->common.R.wesn[ZHI], &GMT->current.map.frame.axis[GMT_Z], below, GMT->current.map.frame.side[Z_SIDE]);
-			PSL_command (PSL, "PSL_GPP setmatrix\n");
+			PSL_command (PSL, "PSL_GPP setmatrix\n");    /* Return to normal current transformation matrix */
 		}
 	}
 
@@ -10364,7 +10366,7 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 
 	a = b = c = d = e = f = 0.0;
 	if (plane < 0)			/* Reset to original matrix */
-		PSL_command (PSL, "PSL_GPP setmatrix\n");
+		PSL_command (PSL, "PSL_GPP setmatrix\n"); /* Return to normal current transformation matrix */
 	else {	/* New perspective plane: compute all derivatives and use full matrix */
 		if (plane >= GMT_ZW) level = gmt_z_to_zz (GMT, level);	/* First convert world z coordinate to projected z coordinate */
 		switch (plane % 3) {
@@ -10398,6 +10400,7 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 		PSL_command (PSL, "%s [%.12g %.12g %.12g %.12g %.12g %.12g] concat\n",
 			(GMT->current.proj.z_project.plane >= 0) ? "PSL_GPP setmatrix" : "/PSL_GPP matrix currentmatrix def",
 			a, b, c, d, e * PSL->internal.x2ix, f * PSL->internal.y2iy);
+        PSL_command (PSL, "/PSL_setview matrix currentmatrix def\n");    /* Also save the new view matrix as a variable in case we need to undo for offset calculations */
 	}
 
 	/* Store value of plane */
