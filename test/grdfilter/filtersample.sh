@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 ps=filtersample.ps
 
 if [[ ${HAVE_GLIB_GTHREAD} =~ TRUE|ON ]]; then
