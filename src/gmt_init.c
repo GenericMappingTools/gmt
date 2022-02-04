@@ -14667,9 +14667,21 @@ GMT_LOCAL bool gmtinit_replace_missing_with_questionmark (struct GMTAPI_CTRL *AP
 
 	/* Category 1 projections: Always has slashes and need to end in /? */
 	if ((strchr ("cC", arg[0]) && !strncmp (&arg[1], "yl_stere", 8U)) || strchr ("aAbBcCdDeEfFgGlLoOsStT", arg[0])) {	/* These projection all must end in / and if no ? then append it */
+		char *c = NULL;
+		if (strchr ("oO", arg[0]) && (c = strstr (arg, "+v"))) {	/* Got a -Jo with modifier +v - temporarily remove modifer to check for missing ? */
+			c[0] = '\0';	/* Chop you go */
+			L = strlen (arg) - 1;	/* Recompute position of last char */
+		}
+		else if (strchr ("gG", arg[0]) && (c = gmt_first_modifier (API->GMT, arg, "atvwz"))) {	/* General perspective with one or more modifiers */
+			c[0] = '\0';	/* Chop you go */
+			L = strlen (arg) - 1;	/* Recompute position of last char */			
+		}
 		if (arg[L] == '/')	/* User followed instructions and left a trailing / */
-			sprintf (newarg, "%s?", arg);
-		else {
+			sprintf (newarg, "%s?", arg);	/* newarg has no trailing modifiers yet */
+		if (c) c[0] = '+';	/* Undo chop so debug stagement below may show all of arg */
+		if (arg[L] == '/' && c)	/* Now we can append the modifiers */
+			strcat (newarg, c);
+		if (arg[L] != '/') {
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s has no trailing slash. Assumed to be a complete geographic projection\n", arg);
 			return false;
 		}
