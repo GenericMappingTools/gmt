@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Test a 2x2 basemap matrix with different history settings
 # at different hierarchical levels, showing of splines
-# DVC_TEST
 cat << EOF > t.txt
 5	0.5
 12	7

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Test the output of gmt grdflexure for single Gaussian seamount on elastic plate
-# DVC_TEST
 
 ps=flexure_e.ps
 m=g

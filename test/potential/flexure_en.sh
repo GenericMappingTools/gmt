@@ -2,7 +2,6 @@
 #
 # Test the output of gmt grdflexure for single circular Gaussian seamount
 # on elastic plate with in-plane stresses
-# DVC_TEST
 
 ps=flexure_en.ps
 m=g

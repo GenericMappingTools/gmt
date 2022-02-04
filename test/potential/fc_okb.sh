@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Compute the gravity anomaly of the Flemish Cap Guyot
-# DVC_TEST
 
 ps=fc_okb.ps
 

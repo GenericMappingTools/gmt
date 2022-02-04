@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Test shrinking vector heads, part 2
 # Get fill and/or pen color via CPT on z values
-# DVC_TEST
 gmt begin shrinkvec2 ps
 	gmt math -T0/2/0.1 -o1,0 0 = | awk '{printf "%s\t%s\t%s\t0\t%si\n", $1, $2, $2, $2}' > data.txt
 	gmt makecpt -Cjet -T0/2

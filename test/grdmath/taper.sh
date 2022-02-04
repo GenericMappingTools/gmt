@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 ps=taper.ps
 gmt grdmath -R0/10/0/10 -I0.1 2 0 TAPER = x.nc
 gmt grdmath -R0/10/0/10 -I0.1 0 2 TAPER = y.nc

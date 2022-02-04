@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Testing the smoothing spline option
-# DVC_TEST
 
 gmt begin smooth ps
 	gmt subplot begin 2x1 -Fs6.5i/4.5i -Scb -Srl -A -Y0.75i

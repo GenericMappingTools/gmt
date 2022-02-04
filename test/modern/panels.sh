@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Test very minimal 2x2 basemap matrix
-# DVC_TEST
 gmt begin panels ps
   gmt subplot begin 2x2 -Fs3i -M5p -A -Scb -Srl -Bwstr -R0/80/0/10
     gmt basemap
