@@ -15409,7 +15409,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if ((opt = GMT_Make_Option (API, 'R', "")) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				n_slashes = gmt_count_char (GMT, GMT->init.history[id], '/');	/* May need to know if it is 3 (2-D) or 5 (3-D) later regarding -p -JZ */
-				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Added -R to options since history is available.\n");
+				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Added -R to options since history is available [%s].\n", GMT->init.history[id]);
 			}
 			else if (strchr (required, 'g') || strchr (required, 'd')) {	/* No history but can examine input data sets */
 				if (gmtinit_determine_R_option_from_data (API, required, false, options)) {
@@ -15426,7 +15426,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if ((id = gmt_get_option_id (id + 1, str)) >= 0 && GMT->init.history[id]) {	/* There is history for this -J */
 					if ((opt = GMT_Make_Option (API, 'J', "")) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-					GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J to options since there is history available.\n");
+					GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J to options since history is available [%s].\n", GMT->init.history[id]);
 					got_J = true;
 				}
 			}
