@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Plot images with different central meridian in rectangular projections
-# DVC_TEST
 
 gmt begin noJshiftimg ps
 	gmt grdimage -JQ60/14c -B @earth_day_01d
