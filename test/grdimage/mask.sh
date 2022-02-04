@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 # Test colorizing 1-bit images in grdimage
+# DVC_TEST
+
 ps=mask.ps
 
 # Created mask.nc this way, now in git

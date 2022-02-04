@@ -13669,13 +13669,14 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 
 /*! . */
 int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_ROSE *ms) {
+	bool do_f = false;
 	unsigned int error = 0, k, order[4] = {3,1,0,2};
 	int n;
 	char txt_a[GMT_LEN256] = {""}, string[GMT_LEN256] = {""};
 	struct GMT_MAP_PANEL *save_panel = ms->panel;	/* In case it was set and we wipe it below with gmt_M_memset */
 
-	/* SYNTAX is -Td|m[g|j|n|x]<refpoint>+w<width>[+f[<kind>]][+i<pen>][+j<justify>][+l<w,e,s,n>][+m[<dec>[/<dlabel>]]][+o<dx>[/<dy>]][+p<pen>][+t<ints>]
-	 * 1)  +f: fancy direction rose, <kind> = 1,2,3 which is the level of directions [1].
+	/* SYNTAX is -Td|m[g|j|n|x]<refpoint>[+w<width>][+f|F[<kind>]][+i<pen>][+j<justify>][+l<w,e,s,n>][+m[<dec>[/<dlabel>]]][+o<dx>[/<dy>]][+p<pen>][+t<ints>]
+	 * 1)  +f: fancy direction rose, <kind> = 1,2,3 which is the level of directions [1]. Use +F to flip W/E/S/N so readable from south
 	 * 2)  Tm: magnetic rose.  Optionally, append +d<dec>[/<dlabel>], where <dec> is magnetic declination and dlabel its label [no declination info].
 	 * If  -Tm, optionally set annotation interval with +t
 	 */
@@ -13686,7 +13687,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	}
 	gmt_M_memset (ms, 1, struct GMT_MAP_ROSE);
 	ms->panel = save_panel;	/* In case it is not NULL */
-	if (!strstr (text, "+w")) return gmtsupport_getrose_old (GMT, option, text, ms);	/* Old-style args */
+	if (!strstr (text, "+w") && (strchr ("gjn", text[1]) == NULL || strchr ("fm", text[1]))) return gmtsupport_getrose_old (GMT, option, text, ms);	/* Most likely old-style args */
 
 	/* Assign default values */
 	ms->type = GMT_ROSE_DIR_PLAIN;
@@ -13708,22 +13709,27 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		return (1);	/* Failed basic parsing */
 	}
 
-	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "dfijloptw", GMT_MSG_ERROR)) return (1);
+	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "dfFijloptw", GMT_MSG_ERROR)) return (1);
 
-	/* Get required +w modifier */
+	/* Get optional +d, +f|F, +i, +j, +l, +o, +p, +t, +w modifiers */
 	if (gmt_get_modifier (ms->refpoint->args, 'w', string))	{	/* Get rose dimensions */
 		if (string[0] == '\0') {	/* Got nutin' */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  No width argument given to +w modifier\n", option);
 			error++;
 		}
-		else
+		else if (strchr (string, '%')) {	/* Got size in percentage of map width */
+			ms->size = atof (string);
+			ms->mode = GMT_ROSE_SIZE_VAR;
+		}
+		else {	/* Fixed width given */
 			ms->size = gmt_M_to_inch (GMT, string);
+			ms->mode = GMT_ROSE_SIZE_SET;
+		}
 	}
-	else {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Rose dimension modifier +w<length> is required\n", option);
-		error++;
+	else {	/* Compute once map width is known */
+		ms->size = (ms->type == GMT_ROSE_MAG) ? GMT_MAG_ROSE_DEF_WIDTH : GMT_DIR_ROSE_DEF_WIDTH;
+		ms->mode = GMT_ROSE_SIZE_VAR;
 	}
-	/* Get optional +d, +f, +i, +j, +l, +o, +p, +t, +w modifier */
 	if (gmt_get_modifier (ms->refpoint->args, 'd', string)) {	/* Want magnetic directions */
 		if (ms->type != GMT_ROSE_MAG) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Cannot specify +d<info> when -Td is selected\n", option);
@@ -13740,15 +13746,21 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		else
 			ms->kind = 1;	/* Flag that we did not get declination parameters */
 	}
-	if (gmt_get_modifier (ms->refpoint->args, 'f', string)) {	/* Want fancy rose, optionally set what kind */
+	if (gmt_get_modifier (ms->refpoint->args, 'F', string)) {	/* Want fancy rose, optionally set what kind; text angle will be -90/90  */
+		ms->align = true;	/* Adjust so readable from south */
+		do_f = true;
+	}
+	else if (gmt_get_modifier (ms->refpoint->args, 'f', string))
+		do_f = true;
+	if (do_f) {	/* Want fancy rose, optionally set what kind */
 		if (ms->type == GMT_ROSE_MAG) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Cannot give both +f and +m\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Cannot specify +f|F<kind> when -Tm is selected\n", option);
 			error++;
 		}
 		ms->type = GMT_ROSE_DIR_FANCY;
 		ms->kind = (string[0]) ? atoi (string) : 1;
 		if (ms->kind < 1 || ms->kind > 3) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Modifier +f<kind> must be 1, 2, or 3\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Modifier +f|F<kind> must be 1, 2, or 3\n", option);
 			error++;
 		}
 	}
@@ -13796,6 +13808,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Failed to parse offset arguments for +o modifier\n", option);
 			error++;
 		}
+		ms->mode |= GMT_ROSE_OFF_SET;
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'p', string)) {
 		if (string[0] && gmt_getpen (GMT, string, &ms->pen[GMT_ROSE_SECONDARY])) error++;
@@ -13809,6 +13822,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c:  Modifier +t<intervals> expects 3 or 6 intervals\n", option);
 			error++;
 		}
+		ms->mode |= GMT_ROSE_INT_SET;
 	}
 	ms->plot = true;
 	return (error);

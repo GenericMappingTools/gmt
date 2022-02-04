@@ -441,7 +441,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -469,7 +469,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 
 	if (!GMT->common.n.active && (!Ctrl->C.active || gmt_is_cpt_master (GMT, Ctrl->C.file)))
 		/* Unless user selected -n we want the default not to exceed data range on projection when we are auto-scaling a master table */
-		n_errors += gmtinit_parse_n_option (GMT, "b+c");
+		n_errors += gmtinit_parse_n_option (GMT, "c+c");
 
 	if (!API->external) {	/* I.e, not an External interface */
 		n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3),
@@ -1133,6 +1133,46 @@ GMT_LOCAL bool grdimage_adjust_R_consideration (struct GMT_CTRL *GMT, struct GMT
 	return false;
 }
 
+
+void grdimage_reset_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *zmin, double *zmax) {
+	/* grdimage via gmt_grd_setregion may extend the grid outward to ensure we have enough nodes to
+	 * fill the map.  However, some of these nodes are actally outside the w/e/s/n requested. Here,
+	 * we check for simple cases where we can shrink the w/e/s/n back temporarily to recompute the grid
+	 * zmin/zmax which are often used for scaling of a CPT.  This can be done in these situations:
+	 * 	1. Not an oblique projection
+	 * 	2. -R was set and is not 360 in longitude
+	 * 	3. G->header->wesn is not 360 in longitude
+	 */
+	unsigned int pad[4], k, n_pad = 0;
+	double old_wesn[4], new_wesn[4], old_z_min, old_z_max;
+	if (GMT->common.R.oblique) return;	/* Do nothing for oblique maps */
+	if (!GMT->common.R.active[RSET]) return;	/* Do nothing if -R was not set */
+	if (gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI])) return;	/* Do nothing for 360 grids */
+	if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) return;	/* Do nothing for global maps */
+	/* OK, may try to do a bit of work */
+	gmt_M_memcpy (old_wesn, G->header->wesn, 4, double);	/* Save a copy of what we have */
+	gmt_M_memcpy (new_wesn, G->header->wesn, 4, double);	/* Save a copy of what we have */
+	old_z_min = G->header->z_min;	old_z_max = G->header->z_max;
+	pad[XLO] = (G->header->wesn[XLO] < GMT->common.R.wesn[XLO]) ? irint (floor ((GMT->common.R.wesn[XLO] - G->header->wesn[XLO]) / G->header->inc[GMT_X])) : 0;
+	pad[XHI] = (G->header->wesn[XHI] > GMT->common.R.wesn[XHI]) ? irint (floor ((G->header->wesn[XHI] - GMT->common.R.wesn[XHI]) / G->header->inc[GMT_X])) : 0;
+	pad[YLO] = (G->header->wesn[YLO] < GMT->common.R.wesn[YLO]) ? irint (floor ((GMT->common.R.wesn[YLO] - G->header->wesn[YLO]) / G->header->inc[GMT_Y])) : 0;
+	pad[YHI] = (G->header->wesn[YHI] > GMT->common.R.wesn[YHI]) ? irint (floor ((G->header->wesn[YHI] - GMT->common.R.wesn[YHI]) / G->header->inc[GMT_Y])) : 0;
+	for (k = 0; k < 4; k++) if (pad[k]) {
+		new_wesn[k] = GMT->common.R.wesn[k];	/* Snap back to -R */
+		n_pad++;	/* Number of nonzero pads */
+	}
+	if (n_pad == 0) return;	/* No change */
+	gmt_M_memcpy (G->header->wesn, new_wesn, 4, double);	/* Temporarily update the header */
+	for (k = 0; k < 4; k++) G->header->pad[k] += pad[k];	/* Temporarily change the pad */
+	gmt_set_grddim (GMT, G->header);	/* Change header items */
+	gmt_grd_zminmax (GMT, G->header, G->data);		/* Recompute the min/max */
+	*zmin = G->header->z_min;	*zmax = G->header->z_max;	/* These are then passed out */
+	gmt_M_memcpy (G->header->wesn, old_wesn, 4, double);	/* Reset the header */
+	for (k = 0; k < 4; k++) G->header->pad[k] -= pad[k];	/* Reset the pad */
+	gmt_set_grddim (GMT, G->header);	/* Reset header items */
+	G->header->z_min = old_z_min;	G->header->z_max = old_z_max;	/* Restore original min/max */
+}
+
 EXTERN_MSC int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in);
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -1567,8 +1607,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	has_content = (got_z_grid) ? false : true;	/* Images always have content but grids may be all NaN */
 	if (got_z_grid) {	/* Got a single grid so need to convert z to color via a CPT */
 		if (Ctrl->C.active) {	/* Read a palette file */
+			double zmin = Grid_orig->header->z_min, zmax = Grid_orig->header->z_max;
 			char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file, Grid_orig->header);
-			if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, Grid_orig->header->z_min, Grid_orig->header->z_max, Ctrl->C.dz)) == NULL) {
+			grdimage_reset_grd_minmax (GMT, Grid_orig, &zmin, &zmax);
+			if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, zmin, zmax, Ctrl->C.dz)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
 				gmt_free_header (API->GMT, &header_G);
 				gmt_free_header (API->GMT, &header_I);

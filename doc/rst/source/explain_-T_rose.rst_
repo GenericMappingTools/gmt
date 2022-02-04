@@ -1,5 +1,5 @@
-**-Td**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+f**\ [*level*]]\
-[**+j**\ *justify*]\ [**+l**\ [*w,e,s,n*]][**+o**\ *dx*\ [/*dy*]]
+**-Td**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+f**\|\ **F**\ [*level*]]\ [**+j**\ *justify*]\ 
+[**+l**\ [*w,e,s,n*]][**+o**\ *dx*\ [/*dy*]]\ [**+w**\ *width*]
 
     Draw a map directional rose on the map at the location defined by the reference (*refpoint*) and anchor point
     (set by **+o**\ *dx*\ [/*dy*] and/or **+j**\ *justify*). Give the reference point on the map for the rose using one
@@ -7,14 +7,14 @@
 
     .. include:: explain_refpoint.rst_
 
-    The following modifiers can be appended to |-T|\ **d** (**+w** is required), with additional explanation and
+    The following optional modifiers can be appended to |-T|\ **d**, with additional explanation and
     examples provided in the :ref:`Placing-dir-map-roses` cookbook section. Optionally, use |-F| to place a panel
     behind the directional rose.
 
-    - **+w**\ *width* to set the width of the rose in plot coordinates (append **i**\ nch, **c**\ m, or **p**\ oints).
     - **+f**\ [*level*] to get a "fancy" rose, and optionally specify the *level* of fanciness. Level **1** draws
       the two principal E-W, N-S orientations, **2** adds the two intermediate NW-SE and NE-SW orientations, while **3**
-      adds the eight minor orientations WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW [default is **1**].
+      adds the eight minor orientations WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW [default is **1**].  Use **+F** to
+      force the labels to be readable from the south if the projection has extensive rotation of the directions.
     - **+j**\ *justify* to set the justification :ref:`anchor point <Anchor_Point_j>`, where *justify* is a 2-character
       :ref:`justification code <Reference_Points>` that is a combination of a horizontal (**L**, **C**, or **R**) and a
       vertical (**T**, **M**, or **B**) code. **Note**: If **j** is used to set the reference point
@@ -24,9 +24,11 @@
       to override the default. Skip a specific label by leaving it blank.
     - **+o**\ *dx*\ [/*dy*] to offset the :ref:`anchor point <Anchor_Point_o>` by *dx* and optionally *dy* (if different
       than *dx*).
+    - **+w**\ *width* to set the width of the rose in plot coordinates (append **i**\ nch, **c**\ m, or **p**\ oints),
+      or append unit % for a size in percentage of map width [10%].
 
-**-Tm**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\
-[**+i**\ *pen*]\ [**+j**\ *justify*][**+l**\ [*w,e,s,n*]][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]
+**-Tm**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ 
+[**+j**\ *justify*][**+l**\ [*w,e,s,n*]][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]\ [**+w**\ *width*]
 
     Draw a map magnetic rose on the map at the location defined by the reference (*refpoint*) and anchor point
     (set by **+o**\ *dx*\ [/*dy*] and/or **+j**\ *justify*). Give the reference point on the map for the rose using one
@@ -34,11 +36,10 @@
 
     .. include:: explain_refpoint.rst_
 
-    The following modifiers can be appended to |-T|\ **m** (**+w** is required), with additional explanation and
+    The following optional modifiers can be appended to |-T|\ **m**, with additional explanation and
     examples provided in the :ref:`Placing-mag-map-roses` cookbook section. Optionally, use |-F| to place a panel
     behind the magnetic rose.
 
-    - **+w**\ *width* to set the width of the rose in plot coordinates (append **i**\ nch, **c**\ m, or **p**\ oints).
     - **+d**\ *dec*\ [/\ *dlabel*] to assign the magnetic declination and set *dlabel*, which is a label for the
       magnetic compass needle (omit *dlabel* to format a label from *dec*, or give *-* to bypass labeling). With **+d**,
       both directions to geographic and magnetic north are plotted [default is geographic only].
@@ -54,6 +55,10 @@
     - **+p**\ *pen* to draw the outline of the outer circle in the specified :ref:`pen <-Wpen_attrib>`.
     - **+t**\ *ints* to specify the annotation and two tick interval levels for the geographic and magnetic directions
       by providing three slash-separated intervals. Specify separate intervals by appending three slash-separated
-      geographic intervals followed by three slash-separated magnetic intervals [default is **30**/**5**/**1**]
+      geographic intervals followed by three slash-separated magnetic intervals [default is **30**/**5**/**1**].
+      **Note**: If :term:`MAP_EMBELLISHMENT_MODE` is **auto** and the compass size is smaller than 2.5 cm then the
+      interval defaults are reset to **90**/**30**/**3**/**9450**/**15**/**3**.
     - **+o**\ *dx*\ [/*dy*] to offset the :ref:`anchor point <Anchor_Point_o>` by *dx* and optionally *dy* (if different
       than *dx*).
+    - **+w**\ *width* to set the width of the rose in plot coordinates (append **i**\ nch, **c**\ m, or **p**\ oints).
+      or append unit % for a size in percentage of map width [15%].

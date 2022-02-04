@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 # Compute E-W and N-S deflections over synthetic seamount
+# DVC_TEST
+
 ps=deflections.ps
 order=2
 gmt set GMT_FFT kiss

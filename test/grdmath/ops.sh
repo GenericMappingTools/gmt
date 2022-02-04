@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# DVC_TEST
 ps=ops.ps
 # Create a unit spike at (0,0)
 echo 0 0 1 | gmt xyz2grd -GA.grd -R-2/2/-2/2 -I1 -di0

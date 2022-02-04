@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Testing gmt grdcut -F
+# DVC_TEST
 
 gmt begin polycut
 	# Get France polygon

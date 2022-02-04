@@ -133,7 +133,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, struct 
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

@@ -144,7 +144,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'N':	/* Backwards compatible.  n_columns/n_rows can now be set with -I */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -155,7 +155,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 					n_errors += gmt_parse_inc_option (GMT, 'I', format);
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'T':	/* Convert from pixel file <-> gridfile */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
@@ -164,7 +164,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

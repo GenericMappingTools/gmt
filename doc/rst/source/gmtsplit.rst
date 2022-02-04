@@ -80,7 +80,7 @@ Optional Arguments
 
 **-D**\ *minimum\_distance*
     Do not write a segment out unless it is at least *minimum\_distance*
-    units long [0]
+    units long [0].
 
 .. _-F:
 

@@ -174,7 +174,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *wd*\ [**k**]
-    Set water depth (or observation height) relative to topography [0].  Append **k** to indicate km.
+    Set water depth (or observation height) relative to topography in meters [0].  Append **k** to indicate km.
 
 .. _-Z:
 

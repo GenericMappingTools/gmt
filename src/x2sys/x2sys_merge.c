@@ -117,7 +117,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct GM
 				Ctrl->M.file = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
