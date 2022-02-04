@@ -70,7 +70,7 @@ Optional Arguments (begin mode)
 .. _-C:
 
 **-C**\ [*side*]\ *clearance*
-    Reserve a space of dimension *clearance* between the inner set plot area and the given inset box on the specified
+    Reserve a space of dimension *clearance* between the actual inset plot area and the given inset box on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**, or **x** for both **w** and **e**
     or **y** for both **s** and **n**.  No *side* means all sides. The option is repeatable to set aside space
     on more than one side.  Alternatively, if all sides are to be set you can also give a pair of values separated by slashes
