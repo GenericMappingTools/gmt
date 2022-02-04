@@ -1,0 +1,5 @@
+outs:
+- md5: 7586758d5877717f63e731b07be746c8.dir
+  size: 24177
+  nfiles: 1
+  path: gmtsplit

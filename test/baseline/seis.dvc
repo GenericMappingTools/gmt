@@ -1,0 +1,5 @@
+outs:
+- md5: 90371beb37da2d936b6c8f0ea34cb65d.dir
+  size: 931886
+  nfiles: 15
+  path: seis
