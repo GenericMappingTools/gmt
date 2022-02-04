@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 
 ps=onelayer.ps
 

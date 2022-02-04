@@ -2,7 +2,6 @@
 # Create 8 layers of geographic data with Cartesian z, faking it
 # The original PS was made with the commented out lines so that we
 # can be sure the stacking into a cube and pulling out layers work
-# DVC_TEST
 gmt begin fake_geoz_cube ps
 	gmt set MAP_FRAME_TYPE plain PROJ_ELLIPSOID sphere
 	gmt math -T1/8/1 -o0 --FORMAT_FLOAT_OUT=%01.0f T = z.txt

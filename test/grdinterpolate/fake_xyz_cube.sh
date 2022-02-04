@@ -2,7 +2,6 @@
 # Create 8 layers of Cartesian data, faking it
 # The original PS was made with the commented out lines so that we
 # can be sure the stacking into a cube and pulling out layers work
-# DVC_TEST
 gmt begin fake_xyz_cube ps
 	gmt math -T1/8/1 -o0 --FORMAT_FLOAT_OUT=%01.0f T = z.txt
 	while read z; do
