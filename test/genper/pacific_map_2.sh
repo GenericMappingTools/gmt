@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 
 ps=pacific_map_2.ps
 
