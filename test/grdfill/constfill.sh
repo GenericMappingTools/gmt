@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Testing grdfill with constant infill of NaN areas
-# DVC_TEST
 ps=constfill.ps
 # Get topo for Hawaiian Islands and set data on land to NaN
 gmt grdclip @earth_relief_05m -R199:30/206/18/23 -Sa0/NaN -Gislands.nc
