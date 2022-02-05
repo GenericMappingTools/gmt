@@ -36,7 +36,7 @@
 #define THIS_MODULE_PURPOSE	"Manage figure inset setup and completion"
 #define THIS_MODULE_KEYS	">X}"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS	"JRV"
+#define THIS_MODULE_OPTIONS	"JRVXY"
 
 /* Control structure for inset */
 
