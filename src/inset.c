@@ -22,7 +22,7 @@
  * Brief synopsis: gmt inset determines dimensions and offsets for a figure inset.
  * It has two modes of operation:
  *	1) Initialize a new inset, which determines dimensions and sets parameters:
- *	   gmt inset begin -D<params> [-F<panel>] [-M<margins>] [-N] [-V]
+ *	   gmt inset begin -D<params> [-C<side><clearance>] [-F<panel>] [-N] [-V]
  *	   Sugsequent plot calls will be placed in the inset window.
  *	2) Exit inset mode, which resets plot origin and previous -R -J parameters:
  *	   gmt inset end [-V]
@@ -49,6 +49,11 @@ struct INSET_CTRL {
 		bool active;
 		unsigned int mode;	/* INSET_BEGIN|END*/
 	} In;
+	struct INSET_C {	/* -C[side]<clearance>  */
+		bool active;
+		bool set[4];	/* separate active for each side */
+		double gap[4];	/* Internal margins (in inches) on the 4 sides [0/0/0/0] */
+	} C;
 	struct INSET_D {	/* -D[g|j|n|x]<refpoint>+w<width>[/<height>][+j<justify>[+o<dx>[/<dy>]][+t] or <xmin>/<xmax>/<ymin>/<ymax>[+r][+t][+u] */
 		bool active;
 		struct GMT_MAP_INSET inset;
@@ -57,10 +62,6 @@ struct INSET_CTRL {
 		bool active;
 		/* The panel is a member of GMT_MAP_INSET */
 	} F;
-	struct INSET_M {	/* -M<margin> | <xmargin>/<ymargin>  | <wmargin>/<emargin>/<smargin>/<nmargin>  */
-		bool active;
-		double margin[4];
-	} M;
 	struct INSET_N {	/* -N  (no clip) */
 		bool active;
 	} N;
@@ -84,18 +85,25 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct INSET_CTRL *C) {	/* Dealloca
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin -D%s |\n\t-D%s\n", name, GMT_INSET_A, GMT_INSET_B);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n\t[-M<margins>] [-N] [%s] [%s]\n\n", GMT_PANEL, GMT_V_OPT, GMT_PAR_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s]\n\n", name, GMT_V_OPT);
+
+	GMT_Usage (API, 0, "usage: %s begin -D%s | -D%s [-C[<side>]<clearance>] [-F%s] [-N] [%s] [%s]",
+		name, GMT_INSET_A, GMT_INSET_B, GMT_PANEL, GMT_V_OPT, GMT_PAR_OPT);
+
+	GMT_Usage (API, 0, "\nusage: %s end [%s]", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	gmt_mapinset_syntax (API->GMT, 'D', "Design a simple map inset as specified below:");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C[<side>]<clearance>");
+	GMT_Usage (API, -2, "Specify a gap of dimension <clearance> to the <side> (w|e|s|n) of the plottable inset. "
+		"Shrinks the size for the inset plot to make room for margins. "
+		"Repeatable for more than one side. Use <side> = x or y to set w&e or s&n, respectively. "
+		"No specified <side> means we set the same clearance on all sides, or you can "
+		"give <xmargin>/<ymargin> or <wmargin>/<emargin>/<smargin>/<nmargin> for different values [no clearances].");
+
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map inset.", 3);
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Allows for space around the inset. Append a uniform <margin>, separate <xmargin>/<ymargin>,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [no margin].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip anything that exceeds the map inset boundaries [Default will clip].\n");
+	GMT_Usage (API, 1, "\n-N Do Not clip anything that exceeds the map inset boundaries [Default will clip].");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
@@ -109,7 +117,7 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k;
+	unsigned int n_errors = 0, k, side;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -149,26 +157,45 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'M':	/* inset margins */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				GMT_Report (API, GMT_MSG_COMPAT, "-M option is deprecated; use -C instead.\n");
+				/* Fall through on purpose */
+			case 'C':	/* Clearance/inside margins */
+				Ctrl->C.active = true;
 				if (opt->arg[0] == 0) {	/* Gave nothing */
-					GMT_Report (API, GMT_MSG_ERROR, "Option -M: No margins given.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: No clearance specified.\n");
 					n_errors++;
 				}
-				else {	/* Process 1, 2, or 4 margin values */
-					k = GMT_Get_Values (API, opt->arg, Ctrl->M.margin, 4);
+				else if (strchr ("wesnxy", opt->arg[0])) {	/* Gave a specific side directive */
+					switch (opt->arg[0]) {
+						case 'w':	side = XLO;	Ctrl->C.gap[XLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'e':	side = XHI;	Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 's':	side = YLO;	Ctrl->C.gap[YLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'n':	side = YHI;	Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'x':	side = XLO;	Ctrl->C.gap[XLO] = Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'y':	side = YLO;	Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+					}
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[side]);
+					Ctrl->C.set[side] = true;
+					if (strchr ("xy", opt->arg[0])) Ctrl->C.set[side+1] = true;	/* Since two margins are set */
+				}
+				else {	/* Process 1, 2, or 4 margin values (and also because of deprecated -M) */
+					k = GMT_Get_Values (API, opt->arg, Ctrl->C.gap, 4);
 					if (k == 1)	/* Same page margin in all directions */
-						Ctrl->M.margin[XHI] = Ctrl->M.margin[YLO] = Ctrl->M.margin[YHI] = Ctrl->M.margin[XLO];
+						Ctrl->C.gap[XHI] = Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = Ctrl->C.gap[XLO];
 					else if (k == 2) {	/* Separate page margins in x and y */
-						Ctrl->M.margin[YLO] = Ctrl->M.margin[YHI] = Ctrl->M.margin[XHI];
-						Ctrl->M.margin[XHI] = Ctrl->M.margin[XLO];
+						Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = Ctrl->C.gap[XHI];
+						Ctrl->C.gap[XHI] = Ctrl->C.gap[XLO];
 					}
 					else if (k != 4) {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -M: Bad number of margins given.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Bad number (%d) of margins given.\n", k);
 						n_errors++;
 					}
 					/* Since GMT_Get_Values returns in default project length unit, convert to inch */
-					for (k = 0; k < 4; k++) Ctrl->M.margin[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+					for (k = 0; k < 4; k++) Ctrl->C.gap[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+					for (side = XLO; side <= YHI; side++) {
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[side]);
+						Ctrl->C.set[side] = true;
+					}
 				}
 				break;
 
@@ -189,17 +216,17 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Option -D is required for gmt inset begin\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Option -J: Requires -R as well!\n");
 	}
-	else {	/* gmt inset end was given, when -D -F -M -N are not allowed */
+	else {	/* gmt inset end was given, when -C -D -F -N are not allowed */
+		if (Ctrl->C.active) {
+			GMT_Report (API, GMT_MSG_ERROR, "Option -C: Not valid for gmt inset end.\n");
+			n_errors++;
+		}
 		if (Ctrl->D.active) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -D: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 		if (Ctrl->F.active) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -F: Not valid for gmt inset end.\n");
-			n_errors++;
-		}
-		if (Ctrl->M.active) {
-			GMT_Report (API, GMT_MSG_ERROR, "Option -M: Not valid for gmt inset end.\n");
 			n_errors++;
 		}
 		if (Ctrl->N.active) {
@@ -314,7 +341,7 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 
 	if (Ctrl->In.mode == INSET_BEGIN) {	/* Determine and save inset attributes */
 		/* Here we need to compute dimensions and save those plus current plot -R -J to the inset information file,
-		 * then inset a gsave command, translate origin to the inset, adjust for any margins, compute new scales/widths
+		 * then inset a gsave command, translate origin to the inset, adjust for any clearances, compute new scales/widths
 		 * and maybe draw the panel. */
 
 		char *cmd = NULL;
@@ -331,7 +358,7 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 
 		/* Set the new origin as indicated */
 
-		PSL_setorigin (PSL, Ctrl->D.inset.refpoint->x + Ctrl->M.margin[XLO], Ctrl->D.inset.refpoint->y + Ctrl->M.margin[YLO], 0.0, PSL_FWD);	/* Shift plot a bit */
+		PSL_setorigin (PSL, Ctrl->D.inset.refpoint->x + Ctrl->C.gap[XLO], Ctrl->D.inset.refpoint->y + Ctrl->C.gap[YLO], 0.0, PSL_FWD);	/* Shift plot a bit */
 
 		/* First get the -B options in place before inset was called */
 		sprintf (ffile, "%s/gmt.frame.%d", API->gwf_dir, fig);
@@ -355,7 +382,7 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, cmd);
 		fprintf (fp, "# ORIGIN: %g %g\n", Ctrl->D.inset.refpoint->x, Ctrl->D.inset.refpoint->y);
 		fprintf (fp, "# DIMENSION: %g %g\n", Ctrl->D.inset.dim[GMT_X], Ctrl->D.inset.dim[GMT_Y]);
-		fprintf (fp, "# MARGINS: %g %g %g %g\n", Ctrl->M.margin[XLO], Ctrl->M.margin[XHI], Ctrl->M.margin[YLO], Ctrl->M.margin[YHI]);
+		fprintf (fp, "# MARGINS: %g %g %g %g\n", Ctrl->C.gap[XLO], Ctrl->C.gap[XHI], Ctrl->C.gap[YLO], Ctrl->C.gap[YHI]);
 		fprintf (fp, "# REGION: %s\n", GMT->common.R.string);
 		fprintf (fp, "# PROJ: %s\n", GMT->common.J.string);
 		fprintf (fp, "# FRAME: %s\n", Bopts);
