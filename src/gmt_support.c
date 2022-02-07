@@ -3865,6 +3865,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 						prev_sign = next_sign;
 						i2 = j2;
 						/* Add next_point to our polygon */
+						assert (np < n_int_edges);	/* Otherwise we want to know */
 						xcoord[np] = x_pos[2*next_point];
 						ycoord[np] = y_pos[2*next_point];
 						if (edge_use[j])	/* Now used twice */
