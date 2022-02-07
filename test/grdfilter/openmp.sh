@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Testing gmt grdfilter if openmp is used.
-# DVC_TEST
 
 ps=openmp.ps
 

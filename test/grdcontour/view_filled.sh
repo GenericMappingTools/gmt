@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Test grdcontour -N with perspective
-# DVC_TEST
 ps=view_filled.ps
 
 gmt makecpt -T675/975/25 -Cjet > t.cpt

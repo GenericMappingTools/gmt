@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 
 # Test gmt surface with periodic boundary conditions in longitude
 ps=periodic.ps

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Compute FAA and VGG for case of variable density
-# DVC_TEST
 
 ps=variablerho.ps
 gmt set GMT_FFT kiss

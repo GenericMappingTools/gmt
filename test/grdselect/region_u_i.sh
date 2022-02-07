@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Test grdselect for the intersection and union of geographic grids
 # One grid is 360 off to test the wrap-around
-# DVC_TEST
 
 gmt grdmath -R212/242/0/30     -fg -I2 X = 1.grd
 gmt grdmath -R-135/-105/10/40  -fg -I5 X = 2.grd

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 
 ps=grdtime.ps
 # tsu_chile60.nc contains predicted tsunami travel times in hours since the earthquake

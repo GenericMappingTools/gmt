@@ -3,7 +3,6 @@
 # Bourne shell replica of GMT/MEX example 2 (Japan trench)
 # This is Figure 3 in Wessel & Luis, 2017
 # Need JP.txt which we replicate here
-# DVC_TEST
 cat << EOF > JP.txt
 # Trace of the Japan Trench
  143.0175   36.3400

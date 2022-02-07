@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Drape image via three r,g,b grids on top of 3-D topo relief
 # testing both old and new syntax
-# DVC_TEST
 ps=rgb.ps
 gmt grdmath -R0/6/0/6 -I0.1 X 6 DIV 255 MUL = r.nc
 gmt grdmath -R0/6/0/6 -I0.1 Y 6 DIV 255 MUL = g.nc

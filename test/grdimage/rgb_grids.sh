@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Testing gmt grdimage if given red, green, blue grids
-# DVC_TEST
 
 ps=rgb_grids.ps
 gmt grdmath -R0/5/0/5 -I0.1 -r X DUP UPPER DIV 255 MUL = r.grd

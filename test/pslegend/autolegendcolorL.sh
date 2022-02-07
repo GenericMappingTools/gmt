@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 cat << EOF > p.txt
 > -LFirst
 0 0

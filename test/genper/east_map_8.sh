@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 ps=east_map_8.ps
 
 EARTH_MODEL=e

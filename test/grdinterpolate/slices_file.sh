@@ -2,7 +2,6 @@
 # Test grdinterpolate slicing along equator through a 3-D grid
 # Getting the file directly from IRIS.
 # This script tests ability to supply our own profile file
-# DVC_TEST
 
 gmt begin slices_file ps
 	gmt set PROJ_ELLIPSOID sphere

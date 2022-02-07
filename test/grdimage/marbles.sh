@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Plot the NASA Blue Marble 1x1 degree geotiff in different projections
-# DVC_TEST
 
 ps=marbles.ps
 gmt grdimage -JG0/0/3i @earth_day_01d -P -Y7i -K > $ps
