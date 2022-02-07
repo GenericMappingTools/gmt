@@ -3800,8 +3800,8 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 			if (i >= n_int_edges) edge_use[i] = 1;	/* These edges will only be used once (sign is not important here) */
 		}
 		/* Need temp array to hold the coordinates of a single polygon [I hope this is large enough - don't know yet] */
-		xcoord = gmt_M_memory (GMT, NULL, n_int_edges/2, double);
-		ycoord = gmt_M_memory (GMT, NULL, n_int_edges/2, double);
+		xcoord = gmt_M_memory (GMT, NULL, n_int_edges, double);
+		ycoord = gmt_M_memory (GMT, NULL, n_int_edges, double);
 
 		/* Now stitch together the closed polygons */
 		seg = 0;
@@ -3865,6 +3865,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 						prev_sign = next_sign;
 						i2 = j2;
 						/* Add next_point to our polygon */
+						assert (np < n_int_edges);	/* Otherwise we want to know */
 						xcoord[np] = x_pos[2*next_point];
 						ycoord[np] = y_pos[2*next_point];
 						if (edge_use[j])	/* Now used twice */
