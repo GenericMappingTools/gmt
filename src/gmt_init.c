@@ -995,9 +995,9 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
-	/* Syntax: -Xa|r|f|c<off>, -X[-|+]w[/<n>][-|+]<off>, where
+	/* Syntax: -Xa|r|f|c<off>, -X[-|+][<f>]w[/<d>][-|+]<off>, where
 	 * w is the width of the previous plot command. */
-	int i = 0;
+	int i = 0, j;
 	if (!text || !text[0]) {	/* Default is -Xr0 */
 		GMT->current.ps.origin[GMT_X] = GMT->common.X.mode = 'r';
 		GMT->common.X.off = GMT->current.setting.map_origin[GMT_X] = 0.0;
@@ -1018,11 +1018,20 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 			}
 			else if (text[i] == '+')	/* In case the user explicitly gave a + */
 				i++;	/* Skip the plus sign */
+			if (text[i] != 'w') {	/* Must assume it is the scale f */
+				j = i + 1;	while (text[j] != 'w') j++;	text[j] = '\0';	/* Hide w */
+				GMT->current.setting.map_origin[GMT_X] *= atof (&text[i]);	/* Scale by f */
+				text[j] = 'w';
+				i = j;	/* Skip past f */
+			}
 			i++;	/* Skip past the w */
 			if (text[i] == '/') {	/* Wanted a fraction of the width */
-				i++;	/* Skip the slash */
-				GMT->current.setting.map_origin[GMT_X] /= atof (&text[i]);
-				while (isdigit (text[i]) || text[i] == '.') i++;	/* Wind past the denominator */
+				int was;
+				i++;	/* Skip past the slash */
+				j = i;	while (text[j] && strchr ("-+", text[j]) == NULL) j++;	was = text[j];	text[j] = '\0';	/* Temporarily hide any trailing +/-<offset> */
+				GMT->current.setting.map_origin[GMT_X] /= atof (&text[i]);	/* Do the division */
+				text[j] = was;	/* Restore the optional offset */
+				i = j;	/* Skip past d */
 			}
 			/* Now add the offset the user added, if given */
 			if (text[i]) GMT->current.setting.map_origin[GMT_X] += gmt_M_to_inch (GMT, &text[i]);
@@ -1038,9 +1047,9 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
-	/* Syntax: -Ya|r|f|c<off>, -Y[-|+]h[/<n>][-|+]<off>, where
+	/* Syntax: -Ya|r|f|c<off>, -Y[-|+][<f>]h[/<d>][-|+]<off>, where
 	 * h is the height of the previous plot command. */
-	int i = 0;
+	int i = 0, j;
 	if (!text || !text[0]) {	/* Default is -Yr0 */
 		GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = 'r';
 		GMT->common.Y.off = GMT->current.setting.map_origin[GMT_Y] = 0.0;
@@ -1061,11 +1070,20 @@ GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
 			}
 			else if (text[i] == '+')	/* In case the user explicitly gave a + */
 				i++;	/* Skip the plus sign */
+			if (text[i] != 'h') {	/* Must assume it is the scale m */
+				j = i + 1;	while (text[j] != 'h') j++;	text[j] = '\0';	/* Hide h */
+				GMT->current.setting.map_origin[GMT_Y] *= atof (&text[i]);
+				text[j] = 'h';
+				i = j;	/* Skip past f */
+			}
 			i++;	/* Skip past the h */
 			if (text[i] == '/') {	/* Wanted a fraction of the height */
-				i++;	/* Skip the slash */
-				GMT->current.setting.map_origin[GMT_Y] /= atof (&text[i]);
-				while (isdigit (text[i]) || text[i] == '.') i++;	/* Wind past the denominator */
+				int was;
+				i++;	/* Skip past the slash */
+				j = i;	while (text[j] && strchr ("-+", text[j]) == NULL) j++;	was = text[j];	text[j] = '\0';	/* Temporarily hide any trailing +/-<offset> */
+				GMT->current.setting.map_origin[GMT_Y] /= atof (&text[i]);	/* Do the division */
+				text[j] = was;	/* Restore the optional offset */
+				i = j;	/* Skip past d */
 			}
 			/* Now add the offset the user added, if given */
 			if (text[i]) GMT->current.setting.map_origin[GMT_Y] += gmt_M_to_inch (GMT, &text[i]);
