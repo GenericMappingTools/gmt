@@ -389,7 +389,7 @@ GMT_LOCAL struct GMT_DATASET *pslegend_get_dataset_pointer (struct GMTAPI_CTRL *
 		return (NULL);
 	}
 	/* Initialize counters to zero */
-	D->n_records = D->table[0]->n_records = 0;
+	D->n_records = D->n_segments = D->table[0]->n_records = 0;
 	for (seg = 0; seg < n_segments; seg++)
 		D->table[0]->segment[seg]->n_rows = 0;
 	return (D);
