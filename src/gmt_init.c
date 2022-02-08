@@ -15044,14 +15044,16 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	/* First handle any half-hearted naming of remote datasets where _g or _p should be appended */
 
 	if (options) {
-	  for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-		  if (!gmtinit_might_be_remotefile (opt->arg)) continue;
-		  if (remote_first) {
-			  gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
-			  remote_first = false;
-		  }
-		  gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
+		if (!strcmp (mod_name, "grdtrack")) API->use_gridline_registration = true;	/* Override API default since grdtrack is a data processor */
+		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
+			if (!gmtinit_might_be_remotefile (opt->arg)) continue;
+			if (remote_first) {
+				gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
+				remote_first = false;
+			}
+			gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
 		}
+		API->use_gridline_registration = false;	/* Reset API default setting */
 	}
 
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
