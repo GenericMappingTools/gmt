@@ -175,8 +175,8 @@ Optional Arguments
     append **+yb**\|\ **t**\|\ *y0* to connect first and last point to anchor points at either *ymin*, *ymax*, or *y0*.
     Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
     All constructed polygons are assumed to have a constant *z* value.
-    **Note**: When options like **-G** and **-Z** are passed via segment headers you will need **-L** to ensure
-    your segments are interpreted as polygons.
+    **Note**: When option **-Z** is passed via segment headers you will need **-L** to ensure
+    your segments are interpreted as polygons, else they are seen as lines.
 
 .. _-N:
 
