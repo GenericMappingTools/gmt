@@ -253,7 +253,9 @@ double gmt_bcr_get_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, 
 		for (i = 0; i < HH->bcr_n; i++) {
 			/* assure that index is inside bounds of the array G->data: */
 			node = ij + i;
-			assert (node < G->header->size);
+			/* node may be outside if xx, yy is exactly at a node and wx, wy is zero exept at that point. If so,
+			 * we just skip this node as it does not affect calculation, and calling assert is too draconian */
+			if (node >= G->header->size) continue;
 			w = wx[i] * wy[j];
 			retval += G->data[node] * w;
 			wsum += w;
