@@ -156,6 +156,10 @@ To enable testing, you need to *uncomment* the following lines in your ``ConfigU
 
   set (DO_API_TESTS ON)
 
+Optionally, uncomment the following line to run tests on the supplement modules::
+
+  set (DO_SUPPLEMENT_TESTS ON)
+
 Optionally, uncomment the following line and change ``4`` to the number of ctest jobs to run simultaneously::
 
   set (N_TEST_JOBS 4)
