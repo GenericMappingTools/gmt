@@ -28,8 +28,8 @@ Description
 -----------
 
 **grdgradient** may be used to compute the directional derivative in a
-given direction (|-A|), or to find the direction (|-S|) [and the magnitude
-(|-D|)] of the vector gradient of the data.
+given direction (|-A|), or to find the direction (|-D|) [and the magnitude
+(|-S|)] of the vector gradient of the data.
 
 Estimated values in the first/last row/column of output depend on
 boundary conditions (see **-n**).
