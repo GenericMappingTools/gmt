@@ -16677,7 +16677,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 	enum GMT_enum_refpoint mode = GMT_REFPOINT_NOTSET;
 	char txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""}, the_rest[GMT_LEN256] = {""};
 	static char *kind = GMT_REFPOINT_CODES;	/* The five types of refpoint specifications */
-	char *arg = strdup (arg_in);	/* SInce it may be a constant */
+	char *arg = strdup (arg_in);	/* Since it may be a constant */
 	struct GMT_REFPOINT *A = NULL;
 
 	switch (arg[0]) {
@@ -16730,6 +16730,16 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Parsing of arguments (%s )failed \n", option, &arg[k]);
 				gmt_M_str_free (arg);
 				return NULL;	/* Not so good */
+			}
+			if (n == 3 && gmt_count_char (GMT, arg, '/') == 3) {	/* GMT4-style -D<x>/<y>/<w>/<h> setting */
+				if (gmt_M_compat_check (GMT, 4)) {
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Your -%c option arguments %s were given in an deprecated format, see documentation\n", option, arg_in);
+					mode = GMT_REFPOINT_PLOT;	/* The only way in GMT 4 */
+				}
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your -%c option arguments %s were given in an obsolete format, see documentation\n", option, arg_in);
+					return NULL;
+				}
 			}
 		}
 	}
