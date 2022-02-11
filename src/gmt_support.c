@@ -3488,7 +3488,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 #endif
 
 	uint64_t dim[GMT_DIM_SIZE] = {1, 0, 2, 2};
-	int i, j, k, n, km1, j2, i2, seg, n_int_edges, n_edges, first_edge = 0, n_extra = 0;
+	int i, j, k, n, km1, j2, i2, seg, n_int_edges, n_edges, first_edge = 0, n_extra = 0, np_alloc;
 	int n_to_clip = 0, n_int_vertex = 0, p = 0, corners = 0, n_vertex, change, n_edges_2;
 	unsigned int geometry, side, corner;
 	char header[GMT_LEN64] = {""};
@@ -3811,8 +3811,9 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 			if (i >= n_int_edges) edge_use[i] = 1;	/* These edges will only be used once (sign is not important here) */
 		}
 		/* Need temp array to hold the coordinates of a single polygon [I hope this is large enough - don't know yet] */
-		xcoord = gmt_M_memory (GMT, NULL, 2 * n_int_edges, double);
-		ycoord = gmt_M_memory (GMT, NULL, 2 * n_int_edges, double);
+		np_alloc = 2 * n_int_edges;
+		xcoord = gmt_M_memory (GMT, NULL, np_alloc, double);
+		ycoord = gmt_M_memory (GMT, NULL, np_alloc, double);
 
 		/* Now stitch together the closed polygons */
 		seg = 0;
@@ -3876,7 +3877,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 						prev_sign = next_sign;
 						i2 = j2;
 						/* Add next_point to our polygon */
-						assert (np < n_int_edges);	/* Otherwise we want to know */
+						assert (np < np_alloc);	/* Otherwise we want to know */
 						xcoord[np] = x_pos[2*next_point];
 						ycoord[np] = y_pos[2*next_point];
 						if (edge_use[j])	/* Now used twice */
