@@ -34,7 +34,7 @@ gmt begin GMT_blend
 	EOF
 	printf "0	22\n100	22\n" | gmt plot -W1p,blue
 	gmt text -F+f12p,Times-Italic+j -Dj4p <<- EOF
-	100 50 TL z = 1, w = 1
+	0	45 TL z = 1, w = 1
 	60  40 TR z = 2, w = 2
 	75  35 TR z = 3, w = 4
 	EOF
