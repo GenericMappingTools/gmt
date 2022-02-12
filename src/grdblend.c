@@ -234,6 +234,8 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 		}
 	}
 	else {	/* Must read blend file */
+		bool got_region;
+		unsigned int nr;
 		size_t n_alloc = 0;
 		struct GMT_RECORD *In = NULL;
 		char r_in[GMT_LEN256] = {""}, file[PATH_MAX] = {""};
@@ -251,7 +253,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			/* Data record to process */
 
 			/* Data record to process.  We permit this kind of records:
-			 * file [-Rinner_region ] [weight]
+			 * file [[-R]inner_region ] [weight]
 			 * i.e., file is required but region [grid extent] and/or weight [1] are optional
 			 */
 
@@ -263,9 +265,22 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			}
 			if (n == n_alloc) L = gmt_M_malloc (GMT, L, n, &n_alloc, struct BLEND_LIST);
 			L[n].file = strdup (file);
-			L[n].region = (n_scanned > 1 && r_in[0] == '-' && r_in[1] == 'R') ? strdup (r_in) : strdup ("-");
-			if (n_scanned == 2 && !(r_in[0] == '-' && (r_in[1] == '\0' || r_in[1] == 'R'))) weight = atof (r_in);	/* Got "file weight" record */
-			L[n].weight = (n_scanned == 1 || (n == 2 && r_in[0] == '-')) ? 1.0 : weight;	/* Default weight is 1 if none were given */
+			nr = (n_scanned > 1) ? gmt_char_count (r_in, '/') : 0;	/* Count 3 slashes means we got w/e/s/n */
+			if (n_scanned > 1 && nr == 3) {	/* Got a region specification */
+				if (strncmp (r_in, "-R", 2U)) {	/* No -R present, add it */
+					L[n].region = calloc (strlen (r_in)+3, sizeof (char));	/* Allocate enough space for -R and region */
+					sprintf (L[n].region, "-R%s", r_in);
+				}
+				else	/* Got full -Rregion setting */
+					L[n].region = strdup (r_in);
+				got_region = true;
+			}
+			else {	/* Flag there was no inner region specified (or - given) */
+				L[n].region = strdup ("-");
+				got_region = false;
+			}
+			if (n_scanned == 2 && !got_region) weight = atof (r_in);	/* Got "file weight" record with no region present */
+			L[n].weight = (n_scanned == 1 || (n_scanned == 2 && got_region)) ? 1.0 : weight;	/* Default weight is 1 if none or - were given */
 			if ((t_data = gmt_file_is_a_tile (GMT->parent, L[n].file, GMT_LOCAL_DIR)) != GMT_NOTSET) {
 				srtm_job = gmt_use_srtm_coverage (GMT->parent, &(L[n].file), &t_data, &srtm_res);	/* true if this dataset uses SRTM for 1s and 3s resolutions */
 				if (gmt_access (GMT, &L[n].file[1], F_OK)) {	/* Tile must be downloaded */
@@ -650,11 +665,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<blendfile> | <grid1> <grid2> ...");
 	GMT_Usage (API, -2, "<blendfile> is an ASCII file (or standard input) with blending parameters for each input grid. "
-		"Each record has 1-3 items: filename [-R<inner_reg>] [<weight>]. "
-		"Relative weights are <weight> [1] inside the given -R [grid domain] and cosine taper to 0 "
-		"at actual grid -R. Skip <inner_reg> if inner region should equal the actual region. "
-		"Give a negative weight to invert the sense of the taper (i.e., |<weight>| outside given R.) "
-		"If <weight> is not given we default to 1. "
+		"Each record has 1-3 items: filename [<inner_reg>] [<weight>]. "
+		"Relative weights per grid are <weight> [1] inside the given inner region and cosine taper to 0 "
+		"at actual grid limits. Skip <inner_reg> if inner region should equal the actual grid region "
+		"and the relative weights for the entire grid is set to 1. "
+		"Give a negative weight to invert the sense of the taper (i.e., |<weight>| outside the inner region.) "
+		"If <weight> is not specified we default to 1. "
 		"Grids not in netCDF or native binary format will be converted first. "
 		"Grids not co-registered with the output -R -I will be resampled first.");
 	GMT_Usage (API, -2, "Alternatively, if all grids have the same weight (1) and inner region == outer region, "
