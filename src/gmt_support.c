@@ -5,7 +5,7 @@
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
- *	the Free Software Foundation; version 3 or any later version.
+ *	the Free Software Foundation; version 3 or any later version.f
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -3496,7 +3496,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 	struct triangulateio In, Out, vorOut;
 	struct GMT_DATASET *P = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
-	double dy, new_x, xe, ye, xp, yp, x0, y0;
+	double dy, new_x, xe, ye, xp, yp, x0, y0, v_wesn[4];
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Voronoi partitioning calculated by Jonathan Shewchuk's Triangle [http://www.cs.cmu.edu/~quake/triangle.html]\n");
 
@@ -3538,16 +3538,22 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 	/* Count Voronoi vertices and number of infinite rays */
 	for (i = 0, k = 0; i < n_int_edges; i++, k += 2)
 		if (vorOut.edgelist[k+1] == -1) n_extra++;	/* Infinite rays */
-	/* Count Voronoi vertices outside w/e/s/n region */
-	for (i = k = 0; i < n_int_vertex; i++, k += 2)
+	/* Count Voronoi vertices outside specified w/e/s/n region and update v_wesn region */
+	gmt_M_memcpy (v_wesn, wesn, 4, double);
+	for (i = k = 0; i < n_int_vertex; i++, k += 2) {
+		if (vorOut.pointlist[k] < wesn[XLO])   v_wesn[XLO] = vorOut.pointlist[k];
+		if (vorOut.pointlist[k] > wesn[XHI])   v_wesn[XHI] = vorOut.pointlist[k];
+		if (vorOut.pointlist[k+1] < wesn[YLO]) v_wesn[YLO] = vorOut.pointlist[k+1];
+		if (vorOut.pointlist[k+1] > wesn[YHI]) v_wesn[YHI] = vorOut.pointlist[k+1];
 		if (vorOut.pointlist[k] < wesn[XLO] || vorOut.pointlist[k] > wesn[XHI] || vorOut.pointlist[k+1] < wesn[YLO] || vorOut.pointlist[k+1] > wesn[YHI])
 			n_to_clip++;
+	}
 
 #ifdef DEBUG
 	GMT_Report (GMT->parent, verbose, "Output from triangulate:\n");
 	for (i = k = 0; i < n_int_edges; i++, k += 2) {
 		if (vorOut.edgelist[k+1] == -1)
-			GMT_Report (GMT->parent, verbose, "Edge %8" PRIu64 " Point %8d to infinity normlist = %8g\t%8g slp = %8g\n", i, vorOut.edgelist[k], vorOut.normlist[k], vorOut.normlist[k+1], (vorOut.normlist[k] / vorOut.normlist[k+1]));
+			GMT_Report (GMT->parent, verbose, "Edge %8" PRIu64 " Point %8d to infinity normlist = %8g\t%8g slp = %8g\n", i, vorOut.edgelist[k], vorOut.normlist[k], vorOut.normlist[k+1], (vorOut.normlist[k] / vorOut.normlist[k+1]));s
 		else
 			GMT_Report (GMT->parent, verbose, "Edge %8" PRIu64 " Point %8d to %8d\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1]);
 	}
@@ -3600,25 +3606,25 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 			//}
 			/* Determine (xe, ye), the intersection of the ray and the bounding box */
 			if (vorOut.normlist[km1] < 0.0) {	/* Ray will intersect x = xmin, called side = 4 */
-				xe = wesn[XLO];	side = 4;
+				xe = v_wesn[XLO];	side = 4;
 			}
 			else {	/* Ray will intersect x = xmax, called side = 2 */
-				xe = wesn[XHI];	side = 2;
+				xe = v_wesn[XHI];	side = 2;
 			}
 			/* Compute y-value at the intersection or ray and border */
 			dy = fabs ((vorOut.normlist[k] / vorOut.normlist[km1]) * (xe - xp));
 			ye = yp + dy * copysign (1.0, vorOut.normlist[k]);
-			if (ye < wesn[YLO]) {	/* Recompute the x-crossing along y = ymin instead and set ye to ymin */
+			if (ye < v_wesn[YLO]) {	/* Recompute the x-crossing along y = ymin instead and set ye to ymin */
 				side = 1;	/* South */
-				new_x = xp + (wesn[YLO] - yp) * (xe - xp) / (ye - yp);
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", xe, ye, new_x, wesn[YLO]);
-				xe = new_x;	ye = wesn[YLO];
+				new_x = xp + (v_wesn[YLO] - yp) * (xe - xp) / (ye - yp);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", xe, ye, new_x, v_wesn[YLO]);
+				xe = new_x;	ye = v_wesn[YLO];
 			}
-			else if (ye > wesn[YHI]) {	/* Recompute the x-crossing along y = ymax instead  and set ye to ymax */
+			else if (ye > v_wesn[YHI]) {	/* Recompute the x-crossing along y = ymax instead  and set ye to ymax */
 				side = 3;	/* North */
-				new_x = xp + (wesn[YHI] - yp) * (xe - xp) / (ye - yp);
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", xe, ye, new_x, wesn[YHI]);
-				xe = new_x;	ye = wesn[YHI];
+				new_x = xp + (v_wesn[YHI] - yp) * (xe - xp) / (ye - yp);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", xe, ye, new_x, v_wesn[YHI]);
+				xe = new_x;	ye = v_wesn[YHI];
 			}
 			/* Update the truncated ray (-1) in the edge list with a new vertex and add the vertex coordinates to pointlist */
 			if (mode) point_type[n_vertex] = (unsigned char)side;	/* Mark as a border point 1-4 */
@@ -3632,43 +3638,43 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 			x0 = vorOut.pointlist[i2++];
 			y0 = vorOut.pointlist[i2];
 			/* Must check if one of the two points (xp,yp) and (x0,y0) lies outside the region; if so compute intersection with side */
-			if (xp < wesn[XLO]) {	/* Crossing at xmin */
-				xe = wesn[XLO];
+			if (xp < v_wesn[XLO]) {	/* Crossing at xmin */
+				xe = v_wesn[XLO];
 				ye = y0 - (y0 - yp) * (x0 - xe) / (x0 - xp);
 				change = k - 1;	side = 4;
 			}
-			else if (xp > wesn[XHI]) {	/* Crossing at xmax */
-				xe = wesn[XHI];
+			else if (xp > v_wesn[XHI]) {	/* Crossing at xmax */
+				xe = v_wesn[XHI];
 				ye = y0 - (y0 - yp) * (x0 - xe) / (x0 - xp);
 				change = k - 1;	side = 2;
 			}
-			else if (yp < wesn[YLO]) {	/* Crossing at ymin */
-				ye = wesn[YLO];
+			else if (yp < v_wesn[YLO]) {	/* Crossing at ymin */
+				ye = v_wesn[YLO];
 				xe = x0 - (x0 - xp) * (y0 - ye) / (y0 - yp);
 				change = k - 1;	side = 1;
 			}
-			else if (yp > wesn[YHI]) {	/* Crossing at ymax */
-				ye = wesn[YHI];
+			else if (yp > v_wesn[YHI]) {	/* Crossing at ymax */
+				ye = v_wesn[YHI];
 				xe = x0 - (x0 - xp) * (y0 - ye) / (y0 - yp);
 				change = k - 1;	side = 3;
 			}
-			else if (x0 < wesn[XLO]) {	/* Crossing at xmin */
-				xe = wesn[XLO];
+			else if (x0 < v_wesn[XLO]) {	/* Crossing at xmin */
+				xe = v_wesn[XLO];
 				ye = yp - (yp - y0) * (xp - xe) / (xp - x0);
 				change = k;	side = 4;
 			}
-			else if (x0 > wesn[XHI]) {	/* Crossing at xmax */
-				xe = wesn[XHI];
+			else if (x0 > v_wesn[XHI]) {	/* Crossing at xmax */
+				xe = v_wesn[XHI];
 				ye = yp - (yp - y0) * (xp - xe) / (xp - x0);
 				change = k;	side = 2;
 			}
-			else if (y0 < wesn[YLO]) {	/* Crossing at ymin */
-				ye = wesn[YLO];
+			else if (y0 < v_wesn[YLO]) {	/* Crossing at ymin */
+				ye = v_wesn[YLO];
 				xe = xp - (xp - x0) * (yp - ye) / (yp - y0);
 				change = k;	side = 1;
 			}
-			else if (y0 > wesn[YHI]) {	/* Crossing at ymax */
-				ye = wesn[YHI];
+			else if (y0 > v_wesn[YHI]) {	/* Crossing at ymax */
+				ye = v_wesn[YHI];
 				xe = xp - (xp - x0) * (yp - ye) / (yp - y0);
 				change = k;	side = 3;
 			}
