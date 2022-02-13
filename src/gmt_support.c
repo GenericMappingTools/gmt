@@ -5,7 +5,7 @@
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
- *	the Free Software Foundation; version 3 or any later version.f
+ *	the Free Software Foundation; version 3 or any later version.
  *
  *	This program is distributed in the hope that it will be useful,
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -3613,22 +3613,22 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 		if (vorOut.edgelist[k] == -1) {	/* Infinite ray; calculate intersection with region boundary */
 			/* Each edgelist always has a Voronoi vertex as the first point so j2 is never 2 * (-1) */
 			/* Determine (xe, ye), the intersection of the ray and the bounding box */
-			if (vorOut.normlist[km1] < 0.0) {	/* Ray will intersect x = xmin, called side = 4 */
+			if (vorOut.normlist[km1] < 0.0) {	/* Slope pointing to the left; Ray will intersect x = xmin, called side = 4 */
 				xe = wesn[XLO];	side = 4;
 			}
-			else {	/* Ray will intersect x = xmax, called side = 2 */
+			else {	/* Slope pointing to the right; Ray will intersect x = xmax, called side = 2 */
 				xe = wesn[XHI];	side = 2;
 			}
-			/* Compute y-value at the intersection or ray and border */
+			/* Compute y-value at the intersection of ray with border */
 			dy = fabs ((vorOut.normlist[k] / vorOut.normlist[km1]) * (xe - xp));
 			ye = yp + dy * copysign (1.0, vorOut.normlist[k]);
-			if (ye < wesn[YLO]) {	/* Recompute the x-crossing along y = ymin instead and set ye to ymin */
+			if (ye < wesn[YLO]) {	/* Crossed south before west or east: Recompute the x-crossing along y = ymin instead and set ye to ymin */
 				side = 1;	/* South */
 				new_x = xp + (wesn[YLO] - yp) * (xe - xp) / (ye - yp);
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", xe, ye, new_x, wesn[YLO]);
 				xe = new_x;	ye = wesn[YLO];
 			}
-			else if (ye > wesn[YHI]) {	/* Recompute the x-crossing along y = ymax instead  and set ye to ymax */
+			else if (ye > wesn[YHI]) {	/* Crossed north before west or east: Recompute the x-crossing along y = ymax instead  and set ye to ymax */
 				side = 3;	/* North */
 				new_x = xp + (wesn[YHI] - yp) * (xe - xp) / (ye - yp);
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", xe, ye, new_x, wesn[YHI]);
@@ -3636,8 +3636,8 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 			}
 			/* Update the truncated ray (-1) in the edge list with a new vertex and add the vertex coordinates to pointlist */
 			if (mode) point_type[n_vertex] = (unsigned char)side;	/* Mark as a border point 1-4 */
-			vorOut.edgelist[k] = n_vertex++;		/* Replace the -1 with the actual point on the boundary */
-			vorOut.pointlist[p++] = xe;				/* Add the ray intersection point to the pointlist */
+			vorOut.edgelist[k] = n_vertex++;		/* Replace the -1 with the new point on the boundary */
+			vorOut.pointlist[p++] = xe;				/* Add the ray intersection coordinates to the pointlist */
 			vorOut.pointlist[p++] = ye;
 		}
 	}
