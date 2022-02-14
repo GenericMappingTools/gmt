@@ -16475,6 +16475,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->v.v_angle  = (float)atand ((0.5 * p->v.h_width / p->v.h_length) * 2.0);
 			p->v.parsed_v4 = true;
 			p->size_x = p->given_size_x = p->v.h_length;
+			check = false;
 		}
 		else if (strchr ("vV", symbol_type) && text[1] && strchr ("bhstBHST", text[1])) {	/* Old style */
 			//GMT_Report (GMT->parent, GMT_MSG_COMPAT, "bhstBHST vector modifiers is deprecated GMT3/4 syntax; see -S%c for current syntax.\n", text[0]);
