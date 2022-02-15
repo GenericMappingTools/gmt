@@ -97,7 +97,9 @@ resolution in the original grid or image. To improve responsiveness, the larger 
 for node spacings 05m and smaller) have been split into smaller tiles.  When the 06m or lower resolution
 files are accessed the first time we download the entire file, regardless of your selected region (**-R**).
 However, for the tiled data sets we only download the tiles that intersect your selected region
-the first time they are referenced.
+the first time they are referenced. **Note**: The mask grids are not tiled as they are very small even
+for 15s resolution (due to byte format and effective compression), and neither are images (at least for
+as long as GMT does not have the capability of blending image tiles - this may change in the future).
 
 Single grids are provided as netCDF-4 maximum-lossless compressed short int grids, making the files
 much smaller than their original source files without any loss of precision.  To minimize download

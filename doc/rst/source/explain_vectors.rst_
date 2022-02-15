@@ -124,6 +124,7 @@ To center the vector on the balance point, use **-Svb**; to align point with the
 use **-Svh**; to align point with the vector tail, use **-Svt** [Default]. To give the
 head point’s coordinates instead of direction and length, use **-Svs**. Upper case
 **B**, **H**, **T**, **S** will draw a double-headed vector [Default is single head].
+**Note**: If :math:`h_l/h_w` are given as 0/0 then only the head-less vector stick will be plotted.
 
 .. figure:: /_images/GMT_vector4.*
     :width: 600 px

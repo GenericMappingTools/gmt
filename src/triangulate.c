@@ -284,7 +284,7 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (strchr (opt->arg, 'n')) {
-					GMT_Report (API, GMT_MSG_WARNING, "-Qn is experimental and unstable.\n");
+					GMT_Report (API, GMT_MSG_INFORMATION, "-Qn is experimental and may be unstable.\n");
 					Ctrl->Q.mode |= 1;
 				}
 				break;
