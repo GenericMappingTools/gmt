@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Testing gmt pslegend capabilities
-# DVC_TEST
 
 ps=legend.ps
 

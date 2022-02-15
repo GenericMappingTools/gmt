@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Testing gmt grdcut -Zmin/max
-# DVC_TEST
 ps=cut.ps
 
 gmt grdmath -R0/10/0/10 -I1 X Y MUL = t.nc

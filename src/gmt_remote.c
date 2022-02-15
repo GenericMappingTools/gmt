@@ -467,7 +467,7 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	 * 2. Users who do not care about registration.  If so, they get p if available. */
 	char newfile[GMT_LEN256] = {""}, dir[GMT_LEN128] = {""}, reg[2] = {'p', 'g'};
 	char *file = NULL, *infile = NULL, *ext = NULL, *c = NULL, *p = NULL, *q = NULL;
-	int k_data, k;
+	int k_data, k, kstart = 0, kstop = 2, kinc = 1;
 	size_t L;
 	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') return;
 	if (gmt_M_file_is_memory (file)) return;	/* Not a remote file for sure */
@@ -487,7 +487,10 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	if (q == NULL) return;	/* Should never happen but definitively nothing more to do here - just a safety valve */
 	q += strlen (p);	/* Move to the end of family name after which any registration codes would be found */
 	if (strstr (q, "_p") || strstr (q, "_g")) goto clean_up;	/* Already have the registration codes */
-	for (k = 0; k < 2; k++) {
+	if (API->use_gridline_registration) {	/* Switch order so checking for g first, then p */
+		kstart = 1; kstop = -1; kinc = -1;
+	}
+	for (k = kstart; k != kstop; k += kinc) {
 		/* First see if this _<reg> version exists of this dataset */
 		sprintf (newfile, "%s_%c", infile, reg[k]);
 		if ((k_data = gmt_remote_dataset_id (API, newfile)) != GMT_NOTSET) {
@@ -502,6 +505,7 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 			gmt_M_str_free (*file_ptr);
 			*file_ptr = strdup (newfile);
 			API->remote_id = k_data;
+			GMT_Report (API, GMT_MSG_DEBUG, "Input remote grid modified to have registration: %s\n", newfile);
 			goto clean_up;
 		}
 	}

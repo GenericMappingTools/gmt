@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Test very minimal 2x2 basemap matrix with log10 and power axes
-# DVC_TEST
 gmt begin powlog ps
   gmt subplot begin 2x2 -Fs3i -M5p -A -Scb -Srl -Bwstr -R1/100/0/100
     gmt basemap -JX?l/?p0.5

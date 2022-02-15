@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Computes the magnetic anomaly of a cube
-# DVC_TEST
 
 ps=cube_mag.ps
 

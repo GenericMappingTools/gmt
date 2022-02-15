@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Test segmentizing option -F in psxy with geographic data
-# DVC_TEST
 ps=geosegmentize.ps
 
 function plotpts

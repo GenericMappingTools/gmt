@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Check shading of images from topo for regular and straddling region
-# DVC_TEST
 
 gmt begin imgshade ps
 	gmt subplot begin 2x1 -Fs16c/9.2c

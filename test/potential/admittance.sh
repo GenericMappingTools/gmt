@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Compute admittance for synthetic model and data.
-# DVC_TEST
 ps=admittance.ps
 gmt set GMT_FFT kiss
 order=4

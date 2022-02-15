@@ -995,9 +995,9 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
-	/* Syntax: -Xa|r|f|c<off>, -X[-|+]w[/<n>][-|+]<off>, where
+	/* Syntax: -Xa|r|f|c<off>, -X[-|+][<f>]w[/<d>][-|+]<off>, where
 	 * w is the width of the previous plot command. */
-	int i = 0;
+	int i = 0, j;
 	if (!text || !text[0]) {	/* Default is -Xr0 */
 		GMT->current.ps.origin[GMT_X] = GMT->common.X.mode = 'r';
 		GMT->common.X.off = GMT->current.setting.map_origin[GMT_X] = 0.0;
@@ -1018,11 +1018,20 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 			}
 			else if (text[i] == '+')	/* In case the user explicitly gave a + */
 				i++;	/* Skip the plus sign */
+			if (text[i] != 'w') {	/* Must assume it is the scale f */
+				j = i + 1;	while (text[j] != 'w') j++;	text[j] = '\0';	/* Hide w */
+				GMT->current.setting.map_origin[GMT_X] *= atof (&text[i]);	/* Scale by f */
+				text[j] = 'w';
+				i = j;	/* Skip past f */
+			}
 			i++;	/* Skip past the w */
 			if (text[i] == '/') {	/* Wanted a fraction of the width */
-				i++;	/* Skip the slash */
-				GMT->current.setting.map_origin[GMT_X] /= atof (&text[i]);
-				while (isdigit (text[i]) || text[i] == '.') i++;	/* Wind past the denominator */
+				int was;
+				i++;	/* Skip past the slash */
+				j = i;	while (text[j] && strchr ("-+", text[j]) == NULL) j++;	was = text[j];	text[j] = '\0';	/* Temporarily hide any trailing +/-<offset> */
+				GMT->current.setting.map_origin[GMT_X] /= atof (&text[i]);	/* Do the division */
+				text[j] = was;	/* Restore the optional offset */
+				i = j;	/* Skip past d */
 			}
 			/* Now add the offset the user added, if given */
 			if (text[i]) GMT->current.setting.map_origin[GMT_X] += gmt_M_to_inch (GMT, &text[i]);
@@ -1038,9 +1047,9 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
-	/* Syntax: -Ya|r|f|c<off>, -Y[-|+]h[/<n>][-|+]<off>, where
+	/* Syntax: -Ya|r|f|c<off>, -Y[-|+][<f>]h[/<d>][-|+]<off>, where
 	 * h is the height of the previous plot command. */
-	int i = 0;
+	int i = 0, j;
 	if (!text || !text[0]) {	/* Default is -Yr0 */
 		GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = 'r';
 		GMT->common.Y.off = GMT->current.setting.map_origin[GMT_Y] = 0.0;
@@ -1061,11 +1070,20 @@ GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
 			}
 			else if (text[i] == '+')	/* In case the user explicitly gave a + */
 				i++;	/* Skip the plus sign */
+			if (text[i] != 'h') {	/* Must assume it is the scale m */
+				j = i + 1;	while (text[j] != 'h') j++;	text[j] = '\0';	/* Hide h */
+				GMT->current.setting.map_origin[GMT_Y] *= atof (&text[i]);
+				text[j] = 'h';
+				i = j;	/* Skip past f */
+			}
 			i++;	/* Skip past the h */
 			if (text[i] == '/') {	/* Wanted a fraction of the height */
-				i++;	/* Skip the slash */
-				GMT->current.setting.map_origin[GMT_Y] /= atof (&text[i]);
-				while (isdigit (text[i]) || text[i] == '.') i++;	/* Wind past the denominator */
+				int was;
+				i++;	/* Skip past the slash */
+				j = i;	while (text[j] && strchr ("-+", text[j]) == NULL) j++;	was = text[j];	text[j] = '\0';	/* Temporarily hide any trailing +/-<offset> */
+				GMT->current.setting.map_origin[GMT_Y] /= atof (&text[i]);	/* Do the division */
+				text[j] = was;	/* Restore the optional offset */
+				i = j;	/* Skip past d */
 			}
 			/* Now add the offset the user added, if given */
 			if (text[i]) GMT->current.setting.map_origin[GMT_Y] += gmt_M_to_inch (GMT, &text[i]);
@@ -15026,14 +15044,16 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	/* First handle any half-hearted naming of remote datasets where _g or _p should be appended */
 
 	if (options) {
-	  for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-		  if (!gmtinit_might_be_remotefile (opt->arg)) continue;
-		  if (remote_first) {
-			  gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
-			  remote_first = false;
-		  }
-		  gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
+		if (!strcmp (mod_name, "grdtrack")) API->use_gridline_registration = true;	/* Override API default since grdtrack is a data processor */
+		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
+			if (!gmtinit_might_be_remotefile (opt->arg)) continue;
+			if (remote_first) {
+				gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
+				remote_first = false;
+			}
+			gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
 		}
+		API->use_gridline_registration = false;	/* Reset API default setting */
 	}
 
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
@@ -16455,6 +16475,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->v.v_angle  = (float)atand ((0.5 * p->v.h_width / p->v.h_length) * 2.0);
 			p->v.parsed_v4 = true;
 			p->size_x = p->given_size_x = p->v.h_length;
+			check = false;
 		}
 		else if (strchr ("vV", symbol_type) && text[1] && strchr ("bhstBHST", text[1])) {	/* Old style */
 			//GMT_Report (GMT->parent, GMT_MSG_COMPAT, "bhstBHST vector modifiers is deprecated GMT3/4 syntax; see -S%c for current syntax.\n", text[0]);

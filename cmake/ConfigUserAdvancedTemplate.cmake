@@ -198,6 +198,9 @@
 # Uncomment the following line to enable running low-level C tests of the API
 #set (DO_API_TESTS ON)
 
+# Uncomment the following line to enable running tests of the GMT supplements
+#set (DO_SUPPLEMENT_TESTS ON)
+
 # Uncomment the following line if you need to run the full tests suite using
 # the gmtserver "test" distribution instead of the default server.
 # You may wish to rename existing cache and server dirs so you can restore afterwards

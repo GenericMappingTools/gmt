@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Test only giving a few subplots, Roman labeling, and -A override for one subplot
-# DVC_TEST
 gmt begin somepanels ps
   gmt subplot begin 3x3 -F6i/8.5i -M5p -A1+c+r+o0.2i+jBR -Scb+lXLABEL -Srl+lYLABEL -Bwstr -T"FIGURE HEADER" -R0/100/0/10
     gmt basemap -c0

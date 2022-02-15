@@ -17,14 +17,10 @@ local_script=$(basename "${script_name}")
 script="@GMT_SOURCE_DIR@/${script_name}"
 src="@GMT_SOURCE_DIR@/${script_dir}"
 
-dvc_test=$(grep DVC_TEST "$script" -c)
-
 if [[ $src == *"doc/examples"* ]]; then
   baseline="@GMT_SOURCE_DIR@/doc/examples/images"
-  dvc_test=1
 elif [[ $src == *"doc/scripts"* ]]; then
-  baseline="@GMT_SOURCE_DIR@/doc/scripts/images/"
-  dvc_test=1
+  baseline="@GMT_SOURCE_DIR@/doc/scripts/images"
 else
   baseline="@GMT_SOURCE_DIR@/test/baseline/${script_dir#test}"
 fi
@@ -168,11 +164,7 @@ for ps in *.ps ; do
       echo "$now ${script_dir}/${ps}: RMS Error = N/A Limit = $GRAPHICSMAGICK_RMS Failure = known" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
   else
     # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-    if [ $dvc_test -gt 0 ]; then
-      rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}_diff.png" "$ps" "$baseline/${psref:-$ps}") || pscmpfailed="yes"
-    else
-      rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}_diff.png" "$ps" "$src/${psref:-$ps}") || pscmpfailed="yes"
-    fi
+    rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}_diff.png" "$ps" "$baseline/${psref:-$ps}") || pscmpfailed="yes"
     rms=$(perl -ne 'print $1 if /Total: ([0-9.]+)/' <<< "$rms")
     if [ -z "$rms" ]; then
       rms="NA"

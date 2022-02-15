@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 
 ps=sph_4.ps
 

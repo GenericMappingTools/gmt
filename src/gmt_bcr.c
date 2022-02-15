@@ -253,7 +253,9 @@ double gmt_bcr_get_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, 
 		for (i = 0; i < HH->bcr_n; i++) {
 			/* assure that index is inside bounds of the array G->data: */
 			node = ij + i;
-			assert (node < G->header->size);
+			/* node may be outside if xx, yy is exactly at a node and wx, wy is zero exept at that point. If so,
+			 * we just skip this node as it does not affect calculation, and calling assert is too draconian */
+			if (node >= G->header->size) continue;
 			w = wx[i] * wy[j];
 			retval += G->data[node] * w;
 			wsum += w;
@@ -294,7 +296,9 @@ double gmt_bcr_get_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 		for (i = 0; i < HH->bcr_n; i++) {
 			/* assure that index is inside bounds of the array G->data: */
 			node = ij + i;
-			assert (node < G->header->size);
+			/* node may be outside if xx, yy is exactly at a node and wx, wy is zero exept at that point. If so,
+			 * we just skip this node as it does not affect calculation, and calling assert is too draconian */
+			if (node >= G->header->size) continue;
 			if (!gmt_M_is_fnan (G->data[node])) {
 				w = wx[i] * wy[j];
 				retval += G->data[node] * w;
@@ -320,7 +324,7 @@ int gmtlib_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, do
 	   B-spline or bicubic) at xx, yy. 8-bit components is assumed per band.  */
 
 	unsigned int i, j, b, nb = G->header->n_bands;
-	uint64_t ij;
+	uint64_t ij, node;
 	double retval[4], wsum, wx[4] = {0.0, 0.0, 0.0, 0.0}, wy[4] = {0.0, 0.0, 0.0, 0.0}, w;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
@@ -336,9 +340,13 @@ int gmtlib_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, do
 	wsum = 0.0;
 	for (j = 0; j < HH->bcr_n; j++) {
 		for (i = 0; i < HH->bcr_n; i++) {
+			node = ij + i;
+			/* node may be outside if xx, yy is exactly at a node and wx, wy is zero exept at that point. If so,
+			 * we just skip this node as it does not affect calculation, and calling assert is too draconian */
+			if (node >= G->header->size) continue;
 			w = wx[i] * wy[j];
 			wsum += w;
-			for (b = 0; b < nb; b++) retval[b] += G->data[nb*(ij+i)+b] * w;
+			for (b = 0; b < nb; b++) retval[b] += G->data[nb*node+b] * w;
 		}
 		ij += G->header->mx;
 	}

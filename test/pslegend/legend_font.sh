@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 gmt begin legend_font ps
 	cat <<-EOF > t.txt
 	H 48p,Helvetica-Bold Bold Header

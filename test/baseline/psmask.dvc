@@ -1,0 +1,5 @@
+outs:
+- md5: 956cf30e576b0cdaf8568bdb092536f2.dir
+  size: 449723
+  nfiles: 2
+  path: psmask

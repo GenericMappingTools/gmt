@@ -1,0 +1,5 @@
+outs:
+- md5: d85339d18ffd80f9db5cd12e6e556dda.dir
+  size: 71118
+  nfiles: 2
+  path: gmtconvert

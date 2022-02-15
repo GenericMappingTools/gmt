@@ -2,7 +2,6 @@
 #
 # Test using the cumulative density function to create an equal-area
 # CPT for a chunk of the word.
-# DVC_TEST
 
 gmt begin equalarea ps
 	gmt set MAP_FRAME_TYPE plain

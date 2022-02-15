@@ -2,7 +2,6 @@
 # Demonstrate the auto-legend entry for grdvector Cartesian vectors
 # Make a fake data set of data vectors in mm/yr, plot them with a reference length of 25 mm/yr
 # and just plot something else (a circle) later to make sure of alignment
-# DVC_TEST
 gmt grdmath -R0/30/30/60 -I5 -fg X = x.grd
 gmt grdmath -R0/30/30/60 -I5 -fg Y 30 SUB = y.grd
 # Set the LL grid values to the same as the UR values
