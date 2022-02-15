@@ -38,13 +38,6 @@ if [ "$BUILD_DOCS" = "true" ]; then
     echo "$(python -m site --user-site)\..\Scripts" >> $GITHUB_PATH
 
     choco install pngquant
-    choco install graphicsmagick
-    # Add GraphicsMagick to PATH
-    echo 'C:\Program Files\GraphicsMagick-1.3.32-Q8' >> $GITHUB_PATH
-
-    choco install ffmpeg
-    # Add ffmpeg to PATH
-    echo 'C:\ProgramData\chocolatey\lib\ffmpeg\tools' >> $GITHUB_PATH
 fi
 
 if [ "$RUN_TESTS" = "true" ]; then
