@@ -64,7 +64,7 @@ Optional Arguments
     when the slope of :math:`z(x,y)` is downhill in the :math:`a` direction, the
     correct sense for shading the illumination of an image (see
     :doc:`grdimage` and :doc:`grdview`) by a light source above the x,y plane
-    shining from the:math:`a` direction. Optionally, supply two azimuths,
+    shining from the :math:`a` direction. Optionally, supply two azimuths,
     **-A**\ *azim*/*azim2*, in which case the gradients in each of these
     directions are calculated and the one larger in magnitude is
     retained; this is useful for illuminating data with two directions
@@ -123,7 +123,7 @@ Optional Arguments
       :math:`\sigma` is estimated using the L1 norm of :math:`(g - o)` if it is
       not given.
     - **-Nt** - Normalize using a cumulative Cauchy distribution yielding:
-      :math:`g_n = \frac{2(a)}{\pi}(\tan^{-1}(\frac{g - o}{\sigma}))` where
+      :math:`g_n = \frac{2a}{\pi}(\tan^{-1}(\frac{g - o}{\sigma}))` where
       :math:`\sigma` is estimated using the L2 norm of :math:`(g -o)` if it
       is not given.
       
