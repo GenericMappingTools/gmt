@@ -23,7 +23,7 @@ Synopsis
 [ |-G|\ *fill*\|\ **+z** ]
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
-[ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*] ]
+[ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] ]
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-S|\ [*symbol*][*size*] ]
 [ |-T| ]
@@ -206,7 +206,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*] |ex_OPT-L|
+**-L**\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] |ex_OPT-L|
     Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment.
     Append **+d** to build symmetrical envelope around y(x) using deviations dy(x) given in extra column 3.
     Append **+D** to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from extra columns 3-4.
