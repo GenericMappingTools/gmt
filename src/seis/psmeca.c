@@ -375,15 +375,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->A.active = true;
 				n_errors += psmeca_A_parse (GMT, Ctrl, opt->arg);
 				break;
-			case 'Z':	/* Deprecated -Zcpt option */
-				if (gmt_M_compat_check (GMT, 6)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "-Z is deprecated from 6.2.0; use -C instead.\n");
-				}
-				else {
-					n_errors += gmt_default_option_error (GMT, opt);
-					continue;
-				}
-				/* Fall through on purpose */
 			case 'C':	/* Either modern -Ccpt option or a deprecated -C now served by -A */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				/* Change position [set line attributes] */
@@ -630,6 +621,18 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				if (opt->arg && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
+				}
+				break;
+			case 'Z':	/* Deprecated -Zcpt option, parse as -Ccpt */
+				if (gmt_M_compat_check (GMT, 6)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "-Z is deprecated from 6.2.0; use -C instead.\n");
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+					Ctrl->C.active = true;
+					if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				}
+				else {
+					n_errors += gmt_default_option_error (GMT, opt);
+					continue;
 				}
 				break;
 			default:	/* Report bad options */
