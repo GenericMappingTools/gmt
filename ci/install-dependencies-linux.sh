@@ -26,7 +26,7 @@ fi
 
 # packages for building documentation
 if [ "$BUILD_DOCS" = "true" ]; then
-    packages+=" python3-pip python3-setuptools python3-wheel graphicsmagick ffmpeg"
+    packages+=" python3-pip python3-setuptools python3-wheel"
 fi
 
 # packages for running GMT tests

@@ -21,7 +21,7 @@ packages="ninja curl pcre2 netcdf gdal geos fftw ghostscript"
 
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
-    packages+=" graphicsmagick ffmpeg pngquant"
+    packages+=" pngquant"
 fi
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
