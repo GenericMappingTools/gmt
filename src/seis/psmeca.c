@@ -623,6 +623,18 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 					n_errors++;
 				}
 				break;
+			case 'Z':	/* Deprecated -Zcpt option, parse as -Ccpt */
+				if (gmt_M_compat_check (GMT, 6)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "-Z is deprecated from 6.2.0; use -C instead.\n");
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+					Ctrl->C.active = true;
+					if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				}
+				else {
+					n_errors += gmt_default_option_error (GMT, opt);
+					continue;
+				}
+				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);
 				break;
