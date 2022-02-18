@@ -11,7 +11,7 @@
 #	4) sphinx-build 
 #	5) grealpath (package coreutils)
 #	6) GNU tar (package gnutar on MacPorts or gnu-tar on Homebrew)
-#	7) For OpenMP: clang-mp-11 and clang++-mp-11 must be installed and in path (package clang-11 in macport or llvm & libomp in homebrew)
+#	7) For OpenMP: clang-mp-11 and clang++-mp-11 must be installed and in path (package clang-11 in macport or llvm@11 & libomp in homebrew)
 #
 #  Notes:
 #	1. CMAKE_INSTALL_PATH, EXEPLUSLIBS, and EXESHARED in build-macos-external-list.sh may need to be changed for different users.
