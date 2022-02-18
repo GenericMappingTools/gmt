@@ -947,10 +947,10 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					}
 
 					if (Ctrl->E.active) {	/* Avoid grazing crossovers */
-						/* Ensure azimuths are positive (adding 360) then double to get orientations and then delete by 2 to get final difference */
+						/* Ensure azimuths are positive (adding 360) then double to get orientations and then delete by 2 and subtract to get final absolute difference */
 						double delta_orientation = fabs (fmod (2.0 * (out[6] + 360.0), 360.0) / 2.0 - fmod (2.0 * (out[7] + 360.0), 360.0) / 2.0);
 						if (delta_orientation > Ctrl->E.limit)
-							continue;	/* SKip this crossover */
+							continue;	/* Skip this crossover */
 					}
 
 					/* Calculate crossover and mean value */
