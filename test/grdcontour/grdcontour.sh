@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# GRAPHICSMAGICK_RMS = 0.04
 
 ps=grdcontour.ps
 
