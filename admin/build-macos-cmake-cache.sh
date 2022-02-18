@@ -11,8 +11,8 @@ if [ ${DISTRO} = "MacPorts" ]; then
     clangxx="/opt/local/bin/clang++-mp-${CLANG_V}"
 elif [ ${DISTRO} = "HomeBrew" ]; then
 	top=/usr/local
-    clang="/usr/local/opt/llvm/bin/clang-${CLANG_V}"
-    clangxx="/usr/local/opt/llvm/bin/clang-${CLANG_V}"
+    clang="/usr/local/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
+    clangxx="/usr/local/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
 else	# Requires either MacPorts of HomeBrew
 	exit 1
 fi
