@@ -15,7 +15,7 @@ Synopsis
 **gmt x2sys_cross** *track(s)* |-T|\ *TAG* [ |-A|\ *pairs* ]
 [ |-C|\ [*runtimes*] ]
 [ |-D|\ [**S**\|\ **N**] ]
-[ |-E|\ [*limit*] ]
+[ |-E|\ *limit* ]
 [ |-I|\ **l**\|\ **a**\|\ **c** ]
 [ |-Q|\ **e**\|\ **i** ]
 [ |-S|\ **l**\|\ **u**\|\ **h**\ *speed* ]
@@ -82,8 +82,8 @@ Optional Arguments
 .. _-E:
 
 **-E**\ *limit*
-    Exclude crossovers from grazing lines whose difference in orientation is less than
-    *limit* [0].
+    Exclude crossovers from acutely intersecting tracks where the difference in track
+    orientations is less than *limit* degrees [0].
 
 .. _-I:
 
