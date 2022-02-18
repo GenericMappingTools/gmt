@@ -15,6 +15,7 @@ Synopsis
 **gmt x2sys_cross** *track(s)* |-T|\ *TAG* [ |-A|\ *pairs* ]
 [ |-C|\ [*runtimes*] ]
 [ |-D|\ [**S**\|\ **N**] ]
+[ |-E|\ [*limit*] ]
 [ |-I|\ **l**\|\ **a**\|\ **c** ]
 [ |-Q|\ **e**\|\ **i** ]
 [ |-S|\ **l**\|\ **u**\|\ **h**\ *speed* ]
@@ -77,6 +78,12 @@ Optional Arguments
     for the south or north pole, respectively.  The conversion is used because the
     algorithm used to find crossovers are inherently a Cartesian algorithm that can
     run into trouble with data that has large longitudinal range at higher latitudes.
+
+.. _-E:
+
+**-E**\ *limit*
+    Exclude crossovers from grazing lines whose difference in orientation is less than
+    *limit* [0].
 
 .. _-I:
 
