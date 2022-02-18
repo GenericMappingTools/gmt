@@ -433,6 +433,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	double t_scale;				/* Scale to give time in seconds */
 	double plat[2] = {0.0, 0.0};		/* Pole latitude for polar reprojections */
 	double ymin[2] = {0.0, 0.0}, ymax[2] = {0.0, 0.0};	/* Latitude range of each file */
+	double delta_orientation;	/* Angle bewteen to intersecting tracks */
 
 	clock_t tic = 0, toc = 0;
 
@@ -794,9 +795,37 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			nx = gmt_crossover (GMT, data[SET_A][s->x_col], data[SET_A][s->y_col], data_set[SET_A].ms_rec, ylist[SET_A], n_rec[SET_A], data[SET_B][s->x_col], data[SET_B][s->y_col], data_set[SET_B].ms_rec, ylist[SET_B], n_rec[SET_B], (A == B), is_geographic, &XC);
 
 			if (nx && xover_locations_only) {	/* Report crossover locations only */
-				sprintf (line, "%s - %s", trk_name[A], trk_name[B]);
-				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, line);
+				double az[2];
+				first_crossover = true;
 				for (i = 0; i < nx; i++) {
+					if (Ctrl->E.active) {
+						for (k = 0; k < 2; k++) {	/* For each of the two data sets involved */
+							/* Get node number to each side of crossover location */
+							/*	--o----------o--------o----X---------o-------o----------o-- ----> time
+							                          ^    ^       ^
+							                        left xover   right			*/
+
+							left[k]  = lrint (floor (XC.xnode[k][i]));
+							right[k] = lrint (ceil  (XC.xnode[k][i]));
+
+							if (left[k] == right[k]) {	/* Crosses exactly on a node; move left or right so interpolation will work */
+								if (left[k] > 0)
+									left[k]--;	/* Move back so cross occurs at right[k] */
+								else
+									right[k]++;	/* Move forward so cross occurs at left[k] */
+							}
+							az[k] = (*GMT->current.map.azimuth_func) (GMT, data[k][s->x_col][right[k]], data[k][s->y_col][right[k]], data[k][s->x_col][left[k]], data[k][s->y_col][left[k]], false);
+						}
+						/* Ensure azimuths are positive (adding 360) then double to get orientations and then delete by 2 and subtract to get final absolute difference */
+						delta_orientation = fabs (fmod (2.0 * (az[0] + 360.0), 360.0) / 2.0 - fmod (2.0 * (az[1] + 360.0), 360.0) / 2.0);
+						if (delta_orientation < Ctrl->E.limit)
+							continue;	/* Skip this crossover */
+					}
+					if (first_crossover) {
+						sprintf (line, "%s - %s", trk_name[A], trk_name[B]);
+						GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, line);
+						first_crossover = false;
+					}
 					out[GMT_X] = XC.x[i];
 					out[GMT_Y] = XC.y[i];
 					if (do_project)
@@ -829,8 +858,8 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 						/* Get node number to each side of crossover location */
 
 				/*	--o----------o--------o----X---------o-------o----------o-- ----> time
-							      ^    ^       ^
-							    left xover   right			*/
+				                          ^    ^       ^
+				                        left xover   right			*/
 
 						left[k]  = lrint (floor (XC.xnode[k][i]));
 						right[k] = lrint (ceil  (XC.xnode[k][i]));
@@ -949,7 +978,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					if (Ctrl->E.active) {	/* Avoid grazing crossovers */
 						/* Ensure azimuths are positive (adding 360) then double to get orientations and then delete by 2 and subtract to get final absolute difference */
 						double delta_orientation = fabs (fmod (2.0 * (out[6] + 360.0), 360.0) / 2.0 - fmod (2.0 * (out[7] + 360.0), 360.0) / 2.0);
-						if (delta_orientation > Ctrl->E.limit)
+						if (delta_orientation < Ctrl->E.limit)
 							continue;	/* Skip this crossover */
 					}
 
