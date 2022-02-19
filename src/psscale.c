@@ -1238,7 +1238,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					}
 					PSL_plotcolorimage (PSL, x0 + gap, 0.0, z_width[ii] - 2*gap, width, PSL_BL, tmp, 1, ny, depth);
 					gmt_M_free (GMT, tmp);
-					PSL_setfill (PSL, GMT->session.no_rgb, center);
+					//PSL_setfill (PSL, GMT->session.no_rgb, center);
+					PSL_setfill (PSL, GMT->session.no_rgb, PSL_NONE);
 				}
 				else {
 					gmt_M_rgb_copy (rgb, P->data[ii].rgb_low);
@@ -1551,7 +1552,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					gmt_M_rgb_copy (rgb, P->data[ii].rgb_low);
 					if (Ctrl->I.active) gmt_illuminate (GMT, max_intens[1], rgb);
 					if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-					PSL_setfill (PSL, rgb, center);
+					//PSL_setfill (PSL, rgb, center);
+					PSL_setfill (PSL, rgb, PSL_NONE);
 				}
 				if (P->data[ii].fill) {	/* Must undo rotation so patterns remain aligned with original setup */
 					PSL_setorigin (PSL, x0 + gap, 0.0, -90.0, PSL_FWD);
@@ -1913,6 +1915,9 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 				tr_status = 0;
 		}
 	}
+
+	if (!Ctrl->N.active && !P->is_continuous)	/* If -N not set we should default to rectangles if possible due to macOS Preview blurring */
+		Ctrl->N.mode = N_FAVOR_POLY;
 
 	if (Ctrl->D.extend && P->is_wrapping) {
 		GMT_Report (API, GMT_MSG_ERROR, "Cannot use +e for cycling color bar; +e deactivated\n");
