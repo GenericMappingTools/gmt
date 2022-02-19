@@ -17,7 +17,7 @@ pip install sphinx importlib-resources
 # Install dvc
 wget https://dvc.org/rpm/dvc.repo -O /etc/yum.repos.d/dvc.repo
 yum update
-yum install dvc
+yum install --nogpgcheck dvc
 
 # Following variables can be modified via environment variables
 GMT_INSTALL_DIR=${HOME}/gmt-install-dir
