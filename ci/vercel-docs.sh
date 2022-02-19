@@ -14,6 +14,12 @@ yum install cmake3 ninja-build libcurl-devel netcdf-devel gdal gdal-devel wget
 # importlib-resources is required for Python <3.7
 pip install sphinx importlib-resources
 
+# Install latest gs
+curl -SLO https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9533/ghostscript-9.53.3-linux-x86_64.tgz
+tar -xvf ghostscript-9.53.3-linux-x86_64.tgz ghostscript-9.53.3-linux-x86_64/gs-9533-linux-x86_64
+mv ghostscript-9.53.3-linux-x86_64/gs-9533-linux-x86_64 /usr/bin/gs
+gs --version
+
 # Install dvc
 wget https://dvc.org/rpm/dvc.repo -O /etc/yum.repos.d/dvc.repo
 yum update
