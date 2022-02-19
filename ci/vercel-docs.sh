@@ -15,7 +15,9 @@ yum install cmake3 ninja-build libcurl-devel netcdf-devel gdal gdal-devel
 pip install sphinx importlib-resources
 
 # Install dvc
-yum install https://github.com/iterative/dvc/releases/download/2.9.4/dvc-2.9.4-1.x86_64.rpm
+wget https://dvc.org/rpm/dvc.repo -O /etc/yum.repos.d/dvc.repo
+yum update
+yum install dvc
 
 # Following variables can be modified via environment variables
 GMT_INSTALL_DIR=${HOME}/gmt-install-dir
