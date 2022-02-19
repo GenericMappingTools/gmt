@@ -10,12 +10,12 @@ set -x -e
 yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install cmake3 ninja-build libcurl-devel netcdf-devel gdal gdal-devel
 
-# Install spjhinx and dvc via miniconda
-curl -o ~/miniconda.sh https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash ~/miniconda.sh -b -p $HOME/miniconda
-export PATH=$HOME/miniconda/bin:$PATH
-conda install mamba -c conda-forge -y
-mamba install sphinx dvc ghostscript -c conda-forge -y
+# Install Sphinx
+# importlib-resources is required for Python <3.7
+pip install sphinx importlib-resources
+
+# Install dvc
+yum install https://github.com/iterative/dvc/releases/download/2.9.4/dvc-2.9.4-1.x86_64.rpm
 
 # Following variables can be modified via environment variables
 GMT_INSTALL_DIR=${HOME}/gmt-install-dir
