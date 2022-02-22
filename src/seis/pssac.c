@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *  Copyright (c) 2016-2021 by Dongdong Tian
+ *  Copyright (c) 2016-2022 by Dongdong Tian
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -401,7 +401,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				}
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

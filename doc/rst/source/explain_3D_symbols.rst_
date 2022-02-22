@@ -10,9 +10,9 @@
         of uniform color (upper case **U** and **O**). The column may also
         be a multiband symbol using the **+v**\|\ **i** modifiers.
 
-    **-So**\ *size*\ [**c**\|\ **i**\|\ **p**\|\ **u**][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *nz*]
+    **-So**\ *size*\ [**c**\|\ **i**\|\ **p**\|\ **q**][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *nz*]
         c\ **o**\ lumn (3-D) extending from *base* to *z*.  The *size* sets base width
-        (Use *xsize/ysize* if they are not the same).  Append **u** if *size* is in the users' x-units
+        (Use *xsize/ysize* if they are not the same).  Append **q** if *size* is a quantity in the users' x-units
         [Default is plot-distance units].  If no *size* is given we expect both *xsize*
         and *ysize* as two extra data columns.  By default, *base* = 0.  Append
         **+b**\ *base* to change this value.  If *base* is not appended then we read it
@@ -26,8 +26,8 @@
         *z* values must equal the band number (0, 1, ..., *nz*\ -1) to assign the band color.
         Thus, input records are either (*x y z1 z2 ... zn*) or (*x y dz1 dz2 ... dzn*).
 
-    **-Su**\ *size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]
+    **-Su**\ *size*\ [**c**\|\ **i**\|\ **p**\|\ **q**]
         c\ **u**\ be (3-D).  The *size* sets length of all sides. Append
-        **u** if *size* is in x-units [Default is plot-distance units].
+        **q** if *size* is a quantity in x-units [Default is plot-distance units].
         The facet colors will be modified to simulate shading.
         Use **-SU** to disable 3-D illumination.

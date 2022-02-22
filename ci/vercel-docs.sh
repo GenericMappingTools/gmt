@@ -8,10 +8,25 @@ set -x -e
 # Install GMT dependencies
 # Vercel uses Amazon Linux 2 (i.e., EPEL 7)
 yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-yum install cmake3 ninja-build libcurl-devel netcdf-devel
+yum install cmake3 ninja-build libcurl-devel netcdf-devel gdal gdal-devel libsqlite3x-devel
+
+# Need to configure Python with sqlite extensions for dvc
+curl -SLO https://www.python.org/ftp/python/3.9.10/Python-3.9.10.tgz
+echo '1440acb71471e2394befdb30b1a958d1  Python-3.9.10.tgz' | md5sum -c
+tar -xvf Python-3.9.10.tgz
+cd Python-3.9.10
+./configure --enable-loadable-sqlite-extensions
+make
+make altinstall
+cd ../
+python3.9 --version
+
 # Install Python packages
 # importlib-resources is required for Python <3.7
-pip install docutils==0.17 sphinx importlib-resources
+python3.9 -m pip install --user --upgrade pip
+python3.9 -m venv env
+source env/bin/activate
+python3.9 -m pip install sphinx dvc
 
 # Install latest gs
 curl -SLO https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9533/ghostscript-9.53.3-linux-x86_64.tgz
@@ -28,6 +43,9 @@ set (CMAKE_INSTALL_PREFIX "${GMT_INSTALL_DIR}")
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement \${CMAKE_C_FLAGS}")
 set (CMAKE_C_FLAGS "-Wextra \${CMAKE_C_FLAGS}")
 EOF
+
+# Pull images from DAGsHub repository
+dvc pull
 
 # Build and install GMT
 mkdir build

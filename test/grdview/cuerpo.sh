@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # This test is based on a query by Eduardo Suarez
-
 ps=cuerpo.ps
 
 gmt makecpt -Crainbow -T65/125/20 > cuerpo.cpt

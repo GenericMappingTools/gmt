@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Test the output of gmt grdseamount for evolving Polynomial shapes
+
 m=o
 ps=growth_${m}.ps
 f=0.2

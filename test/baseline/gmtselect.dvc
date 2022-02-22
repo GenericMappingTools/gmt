@@ -1,0 +1,5 @@
+outs:
+- md5: dd2f8187016c620442cc37237ea6719d.dir
+  size: 311659
+  nfiles: 3
+  path: gmtselect

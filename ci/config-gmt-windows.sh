@@ -18,6 +18,7 @@ enable_testing()
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_API_TESTS ON)
+set (DO_SUPPLEMENT_TESTS ON)
 set (SUPPORT_EXEC_IN_BINARY_DIR TRUE)
 
 # Turn on testing of upcoming long-option syntax for common GMT options

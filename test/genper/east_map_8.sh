@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 ps=east_map_8.ps
 
 EARTH_MODEL=e

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_mag_rose
-	gmt set GMT_THEME cookbook
+	gmt set GMT_THEME cookbook MAP_EMBELLISHMENT_MODE manual
 # Magnetic rose with a specified declination
 	gmt basemap -R-10/-2/12.8812380332/0.661018975345+r -JOc0/0/50/60/7i -B -BWSne -X1.25i --MAP_ANNOT_OBLIQUE=lon_horizontal,lat_parallel --FONT_ANNOT_PRIMARY=12p
 	gmt basemap -Tmg-2/0.5+w2.5i+d-14.5+t45/10/5+i0.25p,blue+p0.25p,red+l+jCM \

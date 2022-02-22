@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -326,10 +326,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "Shared libraries must be in standard system paths or set via environmental parameter %s.\n\n", LIB_PATH);
 		}
 		else {
-			char libraries[GMT_LEN128] = {"netCDF"};	/* Always linked with netCDF */
-#ifdef HAVE_GDAL
-			strcat (libraries, ", GDAL");
-#endif
+			char libraries[GMT_LEN128] = {"netCDF, GDAL"};	/* Always linked with netCDF and GDAL */
 #ifdef HAVE_PCRE
 			strcat (libraries, ", PCRE");
 #endif

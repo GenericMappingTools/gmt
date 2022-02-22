@@ -3,7 +3,7 @@ README file for GMT supplemental mgd77 programs.
 Distributed under the GNU Lesser Public License; see file
 LICENSE.TXT in main GMT directory.
 
-AUTHORS:	Paul Wessel and Michael Chandler
+AUTHORS:	Paul Wessel and Michael Hamilton (nee Chandler)
 DATE:		01-MAY-2011
 VERSION:	2 (GMT 5 revision)
 INSTALL INFO:	The mgd77 directory should install under GMT/src
@@ -31,7 +31,7 @@ they do:
 man-files for all the above programs can be found in the manl subdirectory.
 An overview of the package can be found in:
 
-Wessel, P., and M. T. Chandler (2007), The mgd77 supplement to the Generic
+Wessel, P., and M. T. Hamilton (nee Chandler) (2007), The mgd77 supplement to the Generic
    Mapping Tools, Computers & Geosciences, 33(1), 62-75.
 
 Note that the functionality provided by the mgg supplement's gmt2bin,
