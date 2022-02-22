@@ -16,7 +16,7 @@
 
 GMT is an open source collection of about 90 command-line tools for manipulating
 geographic and Cartesian data sets (including filtering, trend fitting, gridding,
-projecting, etc.) and producing high-quality illustrations ranging from simple x–y
+projecting, etc.) and producing high-quality illustrations ranging from simple x-y
 plots via contour maps to artificially illuminated surfaces, 3D perspective
 views and animations. The GMT supplements add another 50 more specialized and discipline-specific
 tools. GMT supports over 30 map projections and transformations and requires
@@ -64,7 +64,7 @@ our latest article in the reference list of your future publications that
 will benefit from the availability of GMT:
 
 > Wessel, P., Luis, J. F., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019).
-> The Generic Mapping Tools version 6. Geochemistry, Geophysics, Geosystems, 20, 5556–5564.
+> The Generic Mapping Tools version 6. Geochemistry, Geophysics, Geosystems, 20, 5556-5564.
 > https://doi.org/10.1029/2019GC008515
 
 ## Software support
