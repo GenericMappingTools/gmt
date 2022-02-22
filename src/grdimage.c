@@ -1153,10 +1153,10 @@ void grdimage_reset_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *G, double
 	gmt_M_memcpy (old_wesn, G->header->wesn, 4, double);	/* Save a copy of what we have */
 	gmt_M_memcpy (new_wesn, G->header->wesn, 4, double);	/* Save a copy of what we have */
 	old_z_min = G->header->z_min;	old_z_max = G->header->z_max;
-	pad[XLO] = (G->header->wesn[XLO] < GMT->common.R.wesn[XLO]) ? irint (floor ((GMT->common.R.wesn[XLO] - G->header->wesn[XLO]) / G->header->inc[GMT_X])) : 0;
-	pad[XHI] = (G->header->wesn[XHI] > GMT->common.R.wesn[XHI]) ? irint (floor ((G->header->wesn[XHI] - GMT->common.R.wesn[XHI]) / G->header->inc[GMT_X])) : 0;
-	pad[YLO] = (G->header->wesn[YLO] < GMT->common.R.wesn[YLO]) ? irint (floor ((GMT->common.R.wesn[YLO] - G->header->wesn[YLO]) / G->header->inc[GMT_Y])) : 0;
-	pad[YHI] = (G->header->wesn[YHI] > GMT->common.R.wesn[YHI]) ? irint (floor ((G->header->wesn[YHI] - GMT->common.R.wesn[YHI]) / G->header->inc[GMT_Y])) : 0;
+	pad[XLO] = (G->header->wesn[XLO] < GMT->common.R.wesn[XLO]) ? irint (floor ((GMT->common.R.wesn[XLO] - G->header->wesn[XLO] + GMT_CONV12_LIMIT) / G->header->inc[GMT_X])) : 0;
+	pad[XHI] = (G->header->wesn[XHI] > GMT->common.R.wesn[XHI]) ? irint (floor ((G->header->wesn[XHI] - GMT->common.R.wesn[XHI] + GMT_CONV12_LIMIT) / G->header->inc[GMT_X])) : 0;
+	pad[YLO] = (G->header->wesn[YLO] < GMT->common.R.wesn[YLO]) ? irint (floor ((GMT->common.R.wesn[YLO] - G->header->wesn[YLO] + GMT_CONV12_LIMIT) / G->header->inc[GMT_Y])) : 0;
+	pad[YHI] = (G->header->wesn[YHI] > GMT->common.R.wesn[YHI]) ? irint (floor ((G->header->wesn[YHI] - GMT->common.R.wesn[YHI] + GMT_CONV12_LIMIT) / G->header->inc[GMT_Y])) : 0;
 	for (k = 0; k < 4; k++) if (pad[k]) {
 		new_wesn[k] = GMT->common.R.wesn[k];	/* Snap back to -R */
 		n_pad++;	/* Number of nonzero pads */
