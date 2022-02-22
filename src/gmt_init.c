@@ -7143,7 +7143,8 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 		"Append a comma-separated list of ISO 3166 codes for countries to set region, i.e., "
 		"<code1>,<code2>,... etc., using the 2-character ISO country codes (see pscoast -E+l for list). "
 		"To select a state of a country (if available), append .state, e.g, US.TX for Texas. "
-		"To select a whole continent, give =AF|AN|AS|EU|OC|NA|SA as <code>. "
+		"To select a whole continent, give the full name as <code> (e.g, -RAfrica). "
+		"To select a DCW collection, give collection tag as <code> (see pscoast -E+n for list). "
 		"Use +r to modify the region from polygon(s): Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc> "
 		"to round region to these multiples; use +R to extend region by those increments instead, "
 		"or use +e which is like +r but makes sure the region extends at least by %g x <inc>.", GMT_REGION_INCFACTOR);
