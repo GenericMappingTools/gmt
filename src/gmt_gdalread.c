@@ -426,6 +426,16 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		anSrcWin[2] = irint ((dfLRX - dfULX) / adfGeoTransform[1]);
 		anSrcWin[3] = irint ((dfLRY - dfULY) / adfGeoTransform[5]);
 
+		/* First check if we have a compliant raster (right handed coordinates) */
+		if (anSrcWin[2] < 0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your raster has x-coordinates increasing to the left - exiting\n");
+			return(GMT_NOTSET);
+		}
+		if (anSrcWin[3] < 0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your raster has y-coordinates increasing down rows - exiting\n");
+			return(GMT_NOTSET);
+		}
+		/* Next check if we are outside valid y-range since that check is always Cartesian */
 		if (anSrcWin[0] < 0 || anSrcWin[1] < 0
 		    || anSrcWin[0] + anSrcWin[2] > GDALGetRasterXSize(hDataset)
 		    || anSrcWin[1] + anSrcWin[3] > GDALGetRasterYSize(hDataset)) {
@@ -982,7 +992,16 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			anSrcWin[3] = irint (dfULY - dfLRY);
 		}
 
-		/* First check if we are outside valid y-range since that check is always Cartesian */
+		/* First check if we have a compliant raster (right handed coordinates) */
+		if (anSrcWin[2] < 0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your raster has x-coordinates increasing to the left - exiting\n");
+			return(GMT_NOTSET);
+		}
+		if (anSrcWin[3] < 0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your raster has y-coordinates increasing down rows - exiting\n");
+			return(GMT_NOTSET);
+		}
+		/* Next check if we are outside valid y-range since that check is always Cartesian */
 		if (anSrcWin[1] < 0 || (anSrcWin[1] + anSrcWin[3]) > YDim) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Computed -srcwin falls outside raster size of %dx%d in the y-direction.\n",
 				XDim, YDim);
