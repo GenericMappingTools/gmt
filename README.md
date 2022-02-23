@@ -110,11 +110,18 @@ GDAL (ogr2ogr, gdal_translate), [Ghostscript](https://www.ghostscript.com),
 [xdg-open](https://www.freedesktop.org/wiki/Software/xdg-utils/), and
 [GraphicsMagick](http://www.graphicsmagick.org).
 
-GMT uses (or can access) data derived from these sources:
+GMT uses (or can access) raster data derived from these sources:
 
 - [Scientific Color Maps (CPT)](http://www.fabiocrameri.ch/visualisation.php)
-- [Earth 15" DEM](http://dx.doi.org/10.1029/2019EA000658)
+- [Earth 15" IGPP DEM](https://www.essoar.org/doi/10.1002/essoar.10508279.1)
+- [Earth 15" GEBCO DEM](https://www.gebco.net/data_and_products/gridded_bathymetry_data/)
 - [Earth 1" SRTM DEM](https://lpdaac.usgs.gov/products/srtmgl3v003)
+- [Earth 15" GSHHG land/sea masks](http://www.soest.hawaii.edu/pwessel/)
 - [Earth 1' crustal age](http://dx.doi.org/10.1029/2020GC009214)
 - [Earth 30" Blue Marble images](https://visibleearth.nasa.gov/images/57752/blue-marble-land-surface-shallow-water-and-shaded-topography)
 - [Earth 30" Black Marble images](https://earthobservatory.nasa.gov/features/NightLights/page3.php)
+- [Earth 1' EGM2008 Geoid Anomalies](https://earth-info.nga.mil)
+- [Earth 1' Free-Air Gravity Anomalies from Altimetry](https://topex.ucsd.edu/marine_grav/mar_grav.html)
+- [Earth 1' Vertical Gravity Gradients from Altimetry](https://topex.ucsd.edu/marine_grav/mar_grav.html)
+- [Earth 2' EMAG2 Magnetic Anomalies](https://www.ncei.noaa.gov)
+- [Earth 3' WDMAM Magnetic Anomalies](https://wdmam.org)
