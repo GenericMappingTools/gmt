@@ -189,7 +189,7 @@ if (APPLE)
 			set(path \"\${\${default_embedded_path_var}}\")
 			# Embed *.dylib in the lib folder:
 			if(item MATCHES \"[.]dylib\$\")
-				set(path \"@executable_path/../lib\")
+				set(path \"@loader_path/../lib\")
 			endif()
 			set(\${default_embedded_path_var} \"\${path}\" PARENT_SCOPE)
 		endfunction(gp_item_default_embedded_path_override)
