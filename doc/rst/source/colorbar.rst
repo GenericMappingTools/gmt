@@ -260,6 +260,8 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+.. include:: macos_preview_issue.rst_
+
 .. module_common_ends
 
 Examples
