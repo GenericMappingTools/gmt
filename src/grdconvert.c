@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -106,12 +106,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		if (!strstr (grdformats[i], "not supported"))
 			GMT_Usage (API, -2, grdformats[i]);
 	}
-#ifdef HAVE_GDAL
 	GMT_Usage (API, -1, "When <id>=gd on output, the grid will be saved using the GDAL library. Specify <driver> and "
 		"optionally <dataType>. Driver names are as in GDAL (e.g., netCDF, GTiFF, etc.) <dataType> is "
 		"u8|u16|i16|u32|i32|float32; i|u denote signed|unsigned integer.  Default type is float32. Both driver "
 		"names and data types are case insensitive.");
-#endif
 	return (GMT_MODULE_USAGE);
 }
 
@@ -221,7 +219,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

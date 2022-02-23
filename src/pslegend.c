@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -288,7 +288,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_O
 					Ctrl->F.panel->mode |= GMT_PANEL_FILL;
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'L':	/* Sets linespacing in units of fontsize [1.1] */
 				GMT_Report (API, GMT_MSG_COMPAT, "Option -L is deprecated; -D...+l%s was set instead, use this in the future.\n", opt->arg);
@@ -324,7 +324,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_O
 #endif
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -389,7 +389,7 @@ GMT_LOCAL struct GMT_DATASET *pslegend_get_dataset_pointer (struct GMTAPI_CTRL *
 		return (NULL);
 	}
 	/* Initialize counters to zero */
-	D->n_records = D->table[0]->n_records = 0;
+	D->n_records = D->n_segments = D->table[0]->n_records = 0;
 	for (seg = 0; seg < n_segments; seg++)
 		D->table[0]->segment[seg]->n_rows = 0;
 	return (D);
@@ -404,7 +404,7 @@ GMT_LOCAL void pslegend_maybe_realloc_table (struct GMT_CTRL *GMT, struct GMT_DA
 	unsigned int mode = (T->segment[0]->text) ? GMT_WITH_STRINGS : 0;
 	if (k < TH->n_alloc) return;	/* Not yet */
 	T->segment = gmt_M_memory (GMT, T->segment, TH->n_alloc + GMT_SMALL_CHUNK, struct GMT_DATASEGMENT *);
-	for (unsigned int seg = TH->n_alloc; seg < TH->n_alloc + GMT_SMALL_CHUNK; seg++) {
+	for (unsigned int seg = (unsigned int)TH->n_alloc; seg < (unsigned int)TH->n_alloc + GMT_SMALL_CHUNK; seg++) {
 		T->segment[seg] = gmt_get_segment (GMT, T->n_columns);
 		gmt_alloc_segment (GMT, T->segment[seg], n_rows, T->n_columns, mode, true);
 	}
@@ -1671,8 +1671,11 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 										else	/* Add +jc */
 											strcat (sub, "+jc");
 									}
-									else	/* The necessary arguments not supplied, so we make a reasonable default */
-										sprintf (sub, PSLEGEND_VECTOR_ARG, PSLEGEND_VECTOR_SIZE*x);	/* Head size is 40% of length */
+									else {	/* The necessary arguments not supplied, so we make a reasonable default */
+										double hs = PSLEGEND_VECTOR_SIZE * x;	/* Max head size is 40% of length */
+										if (hs > (H / 0.57735026919)) hs = H / 0.57735026919;	/* Truncate if head width is too large compared to H */
+										sprintf (sub, PSLEGEND_VECTOR_ARG, hs);	/* Remember, the format has %gi to set this in inches */
+									}
 									if (txt_c[0] == '-') strcat (sub, "+g-");
 									else { strcat (sub, "+g"); strcat (sub, txt_c);}
 									if (txt_d[0] == '-') strcat (sub, "+p-");

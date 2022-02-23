@@ -1,20 +1,20 @@
+/*--------------------------------------------------------------------
+ *
+ *  Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *  See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation; version 3 or any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  Contact info: www.generic-mapping-tools.org
+ *--------------------------------------------------------------------*/
 /*
- * Include file defining structures used in the binary GSHHG files
- *
- *	Copyright (c) 1996-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- *	See LICENSE.TXT file for copying and redistribution conditions.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU Lesser General Public License as published by
- *	the Free Software Foundation; version 3 or any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU Lesser General Public License for more details.
- *
- *	Contact info: www.generic-mapping-tools.org
- *
  *	14-SEP-2004.  PW: Version 1.3.  Header is now n * 8 bytes (n = 5)
  *			  For use with version 1.3 of GSHHG
  *	2-MAY-2006.  PW: Version 1.4.  Header is now 32 bytes (all int 4)

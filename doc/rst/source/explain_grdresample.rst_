@@ -12,4 +12,5 @@ map areas may show up with fore- or background color due to the resampling.
 In that case you have two options: (1) Modify your CPT to fit the resampled
 extrema (reported with **-V**) or (2) Impose clipping of resampled values
 so they do not exceed the input min/max values (add **+c** to your **-n**
-option).
+option). **Note**: If **-n** is not set and no CPT is given (or a master
+CPT is given or implied), we automatically set **-nc+c**.

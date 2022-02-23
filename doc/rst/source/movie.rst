@@ -200,7 +200,8 @@ Optional Arguments
 .. _-L:
 
 **-L**\ *labelinfo*\ [*modifiers*]
-    Automatic labeling of individual frames.  Repeatable up to 32 labels.  Places the chosen label at the frame perimeter:
+    Automatic labeling of individual frames [Default is running frame number (f)].
+    Repeatable up to 32 labels.  Places the chosen label at the frame perimeter:
     **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
     in seconds of each frame [Default is 1/*framerate*],
     **s**\ *string* uses the fixed text *string* as the label,

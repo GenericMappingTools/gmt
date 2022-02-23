@@ -1,6 +1,5 @@
 #
-#
-# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -25,6 +24,20 @@ if (DO_TESTS)
 	if (NOT DO_API_TESTS)
 		list (REMOVE_ITEM GMT_TEST_DIRS api)
 	endif (NOT DO_API_TESTS)
+
+	if (NOT DO_SUPPLEMENT_TESTS)
+		list (REMOVE_ITEM GMT_TEST_DIRS geodesy)
+		list (REMOVE_ITEM GMT_TEST_DIRS gmtmex)
+		list (REMOVE_ITEM GMT_TEST_DIRS gshhg)
+		list (REMOVE_ITEM GMT_TEST_DIRS img)
+		list (REMOVE_ITEM GMT_TEST_DIRS mgd77)
+		list (REMOVE_ITEM GMT_TEST_DIRS potential)
+		list (REMOVE_ITEM GMT_TEST_DIRS pssac)
+		list (REMOVE_ITEM GMT_TEST_DIRS segy)
+		list (REMOVE_ITEM GMT_TEST_DIRS seis)
+		list (REMOVE_ITEM GMT_TEST_DIRS spotter)
+		list (REMOVE_ITEM GMT_TEST_DIRS x2sys)
+	endif (NOT DO_SUPPLEMENT_TESTS)
 
 	# Remove latex-specific tests if latex or dvips not found
 	if (NOT LATEX OR NOT DVIPS)

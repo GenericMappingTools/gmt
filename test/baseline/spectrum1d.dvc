@@ -1,0 +1,5 @@
+outs:
+- md5: bbf9847a80c9479aa660093b19825699.dir
+  size: 49045
+  nfiles: 1
+  path: spectrum1d

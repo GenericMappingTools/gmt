@@ -1,20 +1,19 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Lesser General Public License as published by
- *   the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
- *   Contact info: www.generic-mapping-tools.org
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
-/*
- */
 
 #include "gmt_dev.h"
 #include "spotter.h"
@@ -235,7 +234,7 @@ static int parse (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *Ctrl, struct GM
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -299,7 +298,8 @@ GMT_LOCAL double polespotter_get_angle_between_trends (struct GMT_CTRL *GMT, dou
 EXTERN_MSC int GMT_polespotter (void *V_API, int mode, void *args) {
 	bool create_great_circles;
 	int error;
-	unsigned int d, n_steps, grow, gcol, k;
+	openmp_int grow, gcol;
+	unsigned int d, n_steps, k;
 	uint64_t node, tbl, seg, row, ng = 0;
 	size_t n_alloc = 0;
 	char header[GMT_LEN128] = {""}, *code = NULL;
@@ -577,9 +577,9 @@ EXTERN_MSC int GMT_polespotter (void *V_API, int mode, void *args) {
 
 		plon = gmt_grd_coord (GMT, Grid->header, GMT_X);
 		plat = gmt_grd_coord (GMT, Grid->header, GMT_Y);
-		for (grow = 0; grow < Grid->header->n_rows; grow++) {	/* Try all possible pole latitudes in selected region */
+		for (grow = 0; grow < (openmp_int)Grid->header->n_rows; grow++) {	/* Try all possible pole latitudes in selected region */
 			plat[grow] = gmt_lat_swap (GMT, plat[grow], GMT_LATSWAP_G2O);	/* Convert latitude to geodetic */
-			for (gcol = 0; gcol < Grid->header->n_columns; gcol++) {	/* Try all possible pole longitudes in selected region */
+			for (gcol = 0; gcol < (openmp_int)Grid->header->n_columns; gcol++) {	/* Try all possible pole longitudes in selected region */
 				node = gmt_M_ijp (Grid->header, grow, gcol);		/* Current grid node */
 				gmt_geo_to_cart (GMT, plat[grow], plon[gcol], X, true);	/* Get x/y/z of current pole X */
 				/* Now visit all our segments */

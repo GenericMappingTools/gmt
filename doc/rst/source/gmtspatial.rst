@@ -26,6 +26,7 @@ Synopsis
 [ |-S|\ **b**\ *width*\|\ **h**\|\ **i**\|\ **u**\|\ **s**\|\ **j** ]
 [ |-T|\ [*clippolygon*] ]
 [ |SYN_OPT-V| ]
+[ |-W|\ *dist*\[*unit*][**+f**\|\ **l**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -215,6 +216,16 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+.. --W:
+
+**-W**\ *dist*\[*unit*][**+f**\|\ **l**]
+    Extend all segments with a new first and last point such that these points are *dist* away
+    from their neighbor point in the direction implied by the two points at each end of the
+    segment.  For geographic data you may append a *unit* (see `Units`_). To give separate
+    distances for the two ends, give distf*\[*unit*]/distl*\[*unit*] instead.  Optionally,
+    append either **+f** or **+l** to only extend the first or last point this way [both].
+    The mode of geographical calculations depends on **-j**.
+
 .. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
@@ -267,51 +278,37 @@ as well as the land area in km squared, try::
     gmt spatial @GSHHS_h_Australia.txt -fg -Qk
 
 To turn all lines in the multisegment file lines.txt into closed polygons,
-run
-
-   ::
+run::
 
     gmt spatial lines.txt -F > polygons.txt
 
 To compute the area of all geographic polygons in the multisegment file
-polygons.txt, run
-
-   ::
+polygons.txt, run::
 
     gmt spatial polygons.txt -Q > areas.txt
 
 Same data, but now orient all polygons to go counter-clockwise and write
-their areas to the segment headers, run
-
-   ::
+their areas to the segment headers, run::
 
     gmt spatial polygons.txt -Q+h -E+p > areas.txt
 
 To determine the areas of all the polygon segments in the file janmayen_land_full.txt,
 add this information to the segment headers, sort the segments from largest
-to smallest in area but only keep polygons with area larger than 1000 sq. meters, run
-
-   ::
+to smallest in area but only keep polygons with area larger than 1000 sq. meters, run::
 
     gmt spatial -Qe+h+p+c1000+sd -V janmayen_land_full.txt > largest_pols.txt
 
-To determine the intersections between the polygons A.txt and B.txt, run
-
-   ::
+To determine the intersections between the polygons A.txt and B.txt, run::
 
     gmt spatial A.txt B.txt -Ie > crossovers.txt
 
-To truncate polygons A.txt against polygon B.txt, resulting in an open line segment, run
-
-   ::
+To truncate polygons A.txt against polygon B.txt, resulting in an open line segment, run::
 
     gmt spatial A.txt -TB.txt > line.txt
 
 If you want to plot a polygon with holes (donut polygon) from a multiple segment file
 which contains both perimeters and holes, it could be necessary first to reorganize the file
-so it can plotted with plot. To do this, run
-
-   ::
+so it can plotted with plot. To do this, run::
 
     gmt spatial file.txt -Sh > organized_file.txt
 

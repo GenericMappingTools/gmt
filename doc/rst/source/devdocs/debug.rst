@@ -77,7 +77,7 @@ Applications).  Xcode may change as versions change; the images below is for Xco
       :align: center
 
    Normally you do not need to set any "Environmental Variables", but if you are debugging a module that
-   calls an external program (e.g., gs, gdal_translate, etc.) then you may need to add the name PATH and
+   calls an external program (e.g., *gs*, *gdal_translate*, etc.) then you may need to add the name PATH and
    place the path to that program under "Value".  Likewise, if the module needs to find a particular environmental
    setting like $X2SYS_HOME, then you must set those here as well.
 
@@ -191,3 +191,157 @@ done you can proceed to installing the master GMT.jl:
    codes in the Julia console. Execution should
    stop at your stop point after the first GMT library call takes place from your Julia script. You are now in Xcode
    and can follow strategies outlined above (`Xcode on macOS`_).
+
+Visual Studio Code on macOS
+---------------------------
+
+Developers may want to use Visual Studio Code rather than Xcode because it is often faster to configure than Xcode and
+can be used on multiple platforms. For general information about Visual Studio Code, refer to the
+`VSCode documentation <https://code.visualstudio.com/docs>`_.
+
+Prerequisites
+~~~~~~~~~~~~~
+
+#. Install the `GMT build and runtime dependencies <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md#build-and-runtime-dependencies>`_.
+   These instructions assume that you have the Ninja build system installed.
+#. Setup your ``ConfigUser.cmake`` and ``ConfigUserAdvanced.cmake`` following the instructions in :ref:`setting up your environment <devdocs/contributing:Setting up your environment>`.
+#. Install Visual Studio Code.
+#. Install the ``C/C++`` extension by Microsoft (Click on the extensions tab or View/Extensions). Additional
+   extensions that you may find helpful are ``CMake`` by twxs, ``CMake Tools`` by Microsoft, and ``Bash Debug`` by rogalmic.
+#. Add ``.vscode/`` to your global .gitignore.
+
+Getting started
+~~~~~~~~~~~~~~~
+
+#. Navigate to the top of your cloned GMT repository. If you are using the :ref:`developer aliases <devdocs/contributing:Using build and test aliases>`,
+   you can enter ``gtop`` in the terminal.
+#. Open the workspace in VSCode::
+
+      code .
+
+#. You will need to check the repository path in the pop-up window and click 'Yes, I trust the authors' in order to debug
+   GMT with VSCode.
+#. Press command+shift+P to open the VSCode command pallette. Select 'C/C++: Edit Configurations (JSON)'. This will
+   create a new ``.vscode`` directory that contains all VSCode project settings and a ``.vscode/c_cpp_properties.json``
+   file. This new file should not be listed by ``git status`` if you properly completed the prerequisite steps.
+   If needed, you can edit the compiler path or add header files to the intellisense includePath. You may need to update
+   ``macFrameworkPath`` when you update your operating system.
+#. Create a new file ``.vscode/project.env`` that will contain environment variables for your project. In VSCode, you can
+   quickly create a new file by right-clicking on the ``.vscode`` folder in the file explorer and typing the file name.
+   Add these contents to ``project.env`` and modify to fit your set-up (i.e., set ``USER_NAME`` and ``REPO_DIR``)::
+
+      GMT_SESSION_NAME="vscodedebug"
+      USER_NAME="<your user name>"
+      REPO_DIR="<path to the local GMT repository>"
+      GMT_LIBRARY_PATH="${REPO_DIR}/vbuild/gmt6/lib"
+      GMT_SHARE_PATH="${REPO_DIR}/vbuild/gmt6/share"
+      GMT_DATA_SERVER=https://oceania.generic-mapping-tools.org
+
+Building GMT
+~~~~~~~~~~~~
+
+#. Create a new ``.vscode/tasks.json`` file. Add these contents to ``.vscode/tasks.json``
+   and modify to fit your set-up (e.g., update the ``CMAKE_OSX_DEPLOYMENT_TARGET`` flag for your OS)::
+
+      {
+          "version": "2.0.0",
+          "tasks": [
+              {
+                  "label": "ninja build",
+                  "type": "shell",
+                  "options": {
+                      "cwd": "${workspaceRoot}",
+                      "env": {
+                          "ADD_FLAGS": "-DCMAKE_OSX_DEPLOYMENT_TARGET=12.1"
+                      }
+                  },
+                  "command": "rm -rf vbuild; mkdir vbuild; cd vbuild; cmake -DCMAKE_INSTALL_PREFIX=\"${workspaceRoot}/vbuild/gmt6\" -DCMAKE_BUILD_TYPE=Debug ${ADD_FLAGS} -G \"Ninja\" ..; ninja; ninja install; mkdir debug; cp ${workspaceRoot}/.vscode/project.env debug/project.env"
+              },
+              {
+                  "label": "ninja rebuild",
+                  "type": "shell",
+                  "options": {
+                      "cwd": "${workspaceRoot}"
+                  },
+                  "command": "cd vbuild; ninja; ninja install; mkdir debug; cp ${workspaceRoot}/.vscode/project.env debug/project.env"
+              }
+          ]
+      }
+
+#. Press command+shift+p to open the command pallette. Select ``Tasks: Run Task``, then select ``ninja build``, and finally
+   select ``Run without scanning the task output``.
+
+#. If you make changes to the source code and did not delete the ``vbuild`` directory, you can update by pressing
+   command+shift+p, selecting ``Tasks: Run Task`` and selecting ``ninja rebuild``.
+
+Debugging GMT
+~~~~~~~~~~~~~
+
+#. Create a new ``.vscode/launch.json`` file. Add these contents and modify to fit your needs::
+
+      {
+          "version": "2.0.0",
+          "configurations": [
+              {
+                  "name": "begin",
+                  "type": "cppdbg",
+                  "request": "launch",
+                  "program": "${workspaceFolder}/vbuild/src/gmt",
+                  "args": ["begin","test","png"],
+                  "stopAtEntry": false,
+                  "cwd": "${workspaceFolder}/vbuild/debug/",
+                  "environment": [],
+                  "envFile": "${workspaceFolder}/vbuild/debug/project.env",
+                  "externalConsole": false,
+                  "MIMode": "lldb"
+              },
+              {
+                  "name": "basemap",
+                  "type": "cppdbg",
+                  "request": "launch",
+                  "program": "${workspaceFolder}/vbuild/src/gmt",
+                  "args": ["basemap","-R0/120/-90/-45","-Bfg","-JS0/-90/10c"],
+                  "stopAtEntry": true,
+                  "cwd": "${workspaceFolder}/vbuild/debug/",
+                  "environment": [],
+                  "envFile": "${workspaceFolder}/vbuild/debug/project.env",
+                  "externalConsole": false,
+                  "MIMode": "lldb"
+              },
+              {
+                  "name": "end",
+                  "type": "cppdbg",
+                  "request": "launch",
+                  "program": "${workspaceFolder}/vbuild/src/gmt",
+                  "args": ["end","show"],
+                  "stopAtEntry": false,
+                  "cwd": "${workspaceFolder}/vbuild/debug/",
+                  "environment": [],
+                  "envFile": "${workspaceFolder}/vbuild/debug/project.env",
+                  "externalConsole": false,
+                  "MIMode": "lldb"
+              }
+          ]
+      }
+
+#. Open ``src/gmt.c`` and add a breakpoint at this line (usually ~L112) by clicking just left of the line number::
+
+      status = GMT_Call_Module (api_ctrl, module, argc-1-modulename_arg_n, argv+1+modulename_arg_n)
+
+#. Click on the debug panel and select ``gmt begin`` in the dropdown menu.
+#. Click on the green arrow next to ``gmt begin``.
+#. You can then use the debug panel for standard debugging actions including continue, step over, step into, etc.
+#. You can use the variables panel to inspect options or hover the mouse over the variable in the file window for a
+   quick view.
+#. Usually, you would just click continue on the debugger for the ``gmt begin`` step. Then, you can switch the debugger
+   to the actual command task that you want to debug (in this example ``gmt basemap``) and once again click the green arrow.
+#. To finalize the session and view the output, select the ``gmt end`` step in the debugger and click the green arrow.
+
+To change the GMT module to debug, either create a new task based on the template provided or modify the ``name``
+and ``args`` settings for the ``gmt basemap`` task in ``tasks.json``. The first argument should be the gmt module and the
+remaining arguments to the gmt module are provided as a comma separated list. Any files required by the command should
+be placed in ``vbuild/debug``.
+
+You can skip debugging ``gmt begin``, ``gmt end``, or other GMT commands by opening a terminal, adding 
+``vbuild/gmt6/bin`` to your path, exporting ``GMT_SESSION_NAME=vscodedebug``, and then mixing VSCode
+debugging with CLI commands.
