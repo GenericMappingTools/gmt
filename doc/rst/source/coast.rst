@@ -111,30 +111,47 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *code1,code2,...*\ [**+l**\|\ **L**\|\ **n**][**+c**\|\ **C**][**+g**\ *fill*][**+p**\ *pen*][**+z**]
+**-E**\ *code1,code2,...*\ [**+l**\|\ **L**\|\ **n**][**+c**\|\ **C**][**+e**][**+g**\ *fill*][**+p**\ *pen*][**+r**][**+R**][**+z**]
     Select painting, clipping or dumping country polygons from the Digital Chart of the World (DCW).
-    This is another dataset independent of GSHHG and hence the **-A** and **-D** options do not apply.
-    Append one or more comma-separated countries using either the
-    `2-character ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_
-    (e.g., NO for Norway) or the full country name (e.g., Norway).
-    To select a state of a country (if available), append .state, e.g, US.TX for Texas.  To specify a
-    whole continent, prepend = to any of the continent codes AF (Africa), AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
-    NA (North America), or SA (South America), or spell out the full names.  To specify a collection or named region,
-    give either the code or the full name. Append **+l** to
-    just list the countries and their codes [no data extraction or plotting takes place].
-    Use **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
-    You can append **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list
-    countries in that continent or country; repeat if more than one continent or country is requested.
-    Finally, use **+n** to list the named :ref:`DCW collections <dcw-collections>` or regions, and use **-E**\ *code*\ **+n**
-    to only list collections that contains the listed codes.  All names are case-insensitive.
-    To set up clip paths based on your selection, append **+c** or **+C** for inside or outside (area between selection
-    and the map boundary) clipping, respectively.  To plot instead,
-    append **+p**\ *pen* to draw polygon outlines [no outline] and
-    **+g**\ *fill* to fill them [no fill].  One of **+c**\|\ **C**\|\ **g**\|\ **p** must be
-    specified unless **-M** is in effect, in which case only one **-E** option can be given;
-    append **+z** to place the country code in the segment headers via **-Z**\ *code* settings.
-    Otherwise, you may repeat **-E** to give different groups of items their own pen/fill settings.
-    If neither **-J** nor **-M** are set then we just print the **-R**\ *wesn* string.
+    This is another dataset independent of GSHHG and hence the |-A| and |-D| options do not apply. The following codes
+    are supported:
+
+    -  Append one or more comma-separated countries using either the
+       `2-character ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_
+       (e.g., NO for Norway) or the full country name (e.g., Norway). Append .\ *state* to a country code to select a
+       state of a country (if available), e.g., US.TX for Texas.
+    - Append =\ *continent* to specify a continent, using either the full names or the abbreviations AG (Africa),
+      AF (Africa), AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA (South America).
+    - To specify a collection or named region, give either the code of the full name.
+
+    The following modifiers are supported:
+
+    - **+l** to just list the countries and their codes (no data extraction or plotting takes place).
+    - **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
+    - **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list countries in that continent or country;
+      repeat if more than one continent or country is requested.
+    - **+n** to list the named :ref:`DCW collections <dcw-collections>` or regions (**-E**\ *code*\ **+n** will list
+      collections that contains the listed codes). All names are case-insensitive.
+    - **+c** to set up an inside clip path based on your selection.
+    - **+C** to set up an outside (area between selection and map boundary) clip path based on your selection.
+    - **+p**\ *pen* to draw polygon outlines [Default is no outline].
+    - **+e** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
+      *winc*/*einc*/*sinc*/*ninc*, while ensuring that the bounding box is adjusted by at least 0.25 times the
+      increment [Default is no adjustment], where *inc* can be positive to expand the region or negative to shrink
+      the region.
+    - **+g**\ *fill* to fill polygons [Default is no fill].
+    - **+r** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
+      *winc*/*einc*/*sinc*/*ninc* [Default is no adjustment]. For example, **-R**\ *FR*\ **+r**\ 1 will select the
+      national bounding box of France rounded to nearest integer degree, where *inc* can be positive to expand the
+      region or negative to shrink the region.
+    - **+R** to adjust the region by adding the amounts specified by *inc*, *xinc*/*yinc*, or
+      *winc*/*einc*/*sinc*/*ninc* [Default is no extension], where *inc* can be positive to expand the
+      region or negative to shrink the region.
+    - **+z** to place the country code in the segment headers via **-Z**\ *code* settings (for use with |-M|).
+
+    One of **+c**\|\ **C**\|\ **g**\|\ **p** must be specified unless |-M| is in effect, in which case only one
+    **-E** option can be given. Otherwise, you may repeat **-E** to give different groups of items their own pen/fill
+    settings. If neither |-J| nor |-M| are set then we just print the **-R**\ *wesn* string.
 
 .. _-F:
 
