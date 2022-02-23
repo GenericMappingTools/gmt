@@ -57,10 +57,12 @@ Required Arguments
 
     .. include:: explain_refpoint.rst_
 
-    Append **+w**\ *width*\ [/*height*] to set
-    the width (and height) of the legend box in plot coordinates (inches, cm, etc.).
-    If *height* is zero or not given then we estimate *height* based the expected
-    vertical extent of the items to be placed.
+    Append **+w**\ *width*\ [/*height*] to set the width (and height) of the legend box
+    in plot coordinates (inches, cm, etc.). **Note**: If **+w** is not given then we compute
+    the width within the *Postscript* code.  Currently, this is only possible if just
+    legend codes **D**, **H**, **L**, **S**, or **V** are used and that the number of symbol
+    columns (**N**) is 1. If *height* is zero or not given then we estimate *height* based
+    the expected vertical extent of the items to be placed.
     By default, the anchor point on the legend is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
@@ -91,6 +93,8 @@ Optional Arguments
     cookbook section:
 
     .. include:: explain_-F_box.rst_
+
+    **Note**: If legend *width* is not set via **-D** then modifier **+r** in **-F** is disabled.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_

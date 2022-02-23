@@ -82,6 +82,8 @@ extern "C" {
 
 /* PSL codes for vector attributes */
 
+#define BIT(no)		((unsigned int)(1 << (no)))
+
 enum PSL_enum_vecattr {
 	PSL_VEC_ARROW		= 0,		/* Default head symbol is arrow */
 	PSL_VEC_TERMINAL	= 1,		/* Cross-bar normal to vector */
@@ -93,28 +95,31 @@ enum PSL_enum_vecattr {
 	PSL_VEC_BEGIN		= 1,		/* Place vector head at beginning of vector. Add PSL_VEC_BEGIN_L for left only, PSL_VEC_BEGIN_R for right only */
 	PSL_VEC_END			= 2,		/* Place vector head at end of vector.  Add PSL_VEC_END_L for left only, and PSL_VEC_END_R for right only */
 	PSL_VEC_HEADS		= 3,		/* Mask for either head end */
-	PSL_VEC_BEGIN_L		= 4,		/* Left-half head at beginning */
-	PSL_VEC_BEGIN_R		= 8,		/* Right-half head at beginning */
-	PSL_VEC_END_L		= 16,		/* Left-half head at end */
-	PSL_VEC_END_R		= 32,		/* Right-half head at end */
+	PSL_VEC_BEGIN_L		= BIT(2),	/* Left-half head at beginning */
+	PSL_VEC_BEGIN_R		= BIT(3),	/* Right-half head at beginning */
+	PSL_VEC_END_L		= BIT(4),	/* Left-half head at end */
+	PSL_VEC_END_R		= BIT(5),	/* Right-half head at end */
 	PSL_VEC_JUST_B		= 0,		/* Align vector beginning at (x,y) */
-	PSL_VEC_JUST_C		= 64,		/* Align vector center at (x,y) */
-	PSL_VEC_JUST_E		= 128,		/* Align vector end at (x,y) */
-	PSL_VEC_JUST_S		= 256,		/* Align vector center at (x,y) */
-	PSL_VEC_ANGLES		= 512,		/* Got start/stop angles instead of az, length */
-	PSL_VEC_POLE		= 1024,		/* Got pole of small/great circle */
-	PSL_VEC_OUTLINE		= 2048,		/* Draw vector head outline using default pen */
-	PSL_VEC_OUTLINE2	= 4096,		/* Draw vector head outline using supplied v_pen */
-	PSL_VEC_FILL		= 8192,		/* Fill vector head using default fill */
-	PSL_VEC_FILL2		= 16384,	/* Fill vector head using supplied v_fill) */
-	PSL_VEC_MARC90		= 32768,	/* Matharc only: if angles subtend 90, draw straight angle symbol */
-	PSL_VEC_OFF_BEGIN	= 65536,	/* Starting point of vector should be moved a distance along the line */
-	PSL_VEC_OFF_END		= 131072,	/* End point of vector should be moved a distance along the line */
-	PSL_VEC_MID_FWD		= 262144,	/* End point of vector should be moved a distance along the line */
-	PSL_VEC_MID_BWD		= 524288,	/* End point of vector should be moved a distance along the line */
-	PSL_VEC_COMPONENTS	= 1048576,	/* Not yet needed in postscriptlight: Got vector dx, dy Cartesian components */
-	PSL_VEC_SCALE		= 2097152,	/* Not yet needed in postscriptlight: If not set we determine the required inch-to-degree scale */
-	PSL_VEC_LINE		= 4194304};	/* Flag that we are adding vector heads to a line, not a stand-alone vector */
+	PSL_VEC_JUST_C		= BIT(6),	/* Align vector center at (x,y) */
+	PSL_VEC_JUST_E		= BIT(7),	/* Align vector end at (x,y) */
+	PSL_VEC_JUST_S		= BIT(8),	/* Align vector center at (x,y) */
+	PSL_VEC_ANGLES		= BIT(9),	/* Got start/stop angles instead of az, length */
+	PSL_VEC_POLE		= BIT(10),	/* Got pole of small/great circle */
+	PSL_VEC_OUTLINE		= BIT(11),	/* Draw vector head outline using default pen */
+	PSL_VEC_OUTLINE2	= BIT(12),	/* Draw vector head outline using supplied v_pen */
+	PSL_VEC_FILL		= BIT(13),	/* Fill vector head using default fill */
+	PSL_VEC_FILL2		= BIT(14),	/* Fill vector head using supplied v_fill) */
+	PSL_VEC_MARC90		= BIT(15),	/* Matharc only: if angles subtend 90, draw straight angle symbol */
+	PSL_VEC_OFF_BEGIN	= BIT(16),	/* Starting point of vector should be moved a distance along the line */
+	PSL_VEC_OFF_END		= BIT(17),	/* End point of vector should be moved a distance along the line */
+	PSL_VEC_MID_FWD		= BIT(18),	/* End point of vector should be moved a distance along the line */
+	PSL_VEC_MID_BWD		= BIT(19),	/* End point of vector should be moved a distance along the line */
+	PSL_VEC_COMPONENTS	= BIT(20),	/* Not yet needed in postscriptlight: Got vector dx, dy Cartesian components */
+	PSL_VEC_SCALE		= BIT(21),	/* Not yet needed in postscriptlight: If not set we determine the required inch-to-degree scale */
+	PSL_VEC_LINE		= BIT(22),	/* Flag that we are adding vector heads to a line, not a stand-alone vector */
+	PSL_VEC_MAGNIFY		= BIT(23),	/* Flag that we are adding vector heads to a line, not a stand-alone vector */
+	PSL_VEC_FIXED		= BIT(24),	/* Flag that we were given a fixed length to override for each vector */
+	PSL_VEC_MAGCPT		= BIT(25)};	/* Flag that says use user data magnitude as internal data for CPT lookup */
 
 enum PSL_enum_vecdim {	/* Indices into the dim[] array passed to psl_vector */
 	PSL_VEC_XTIP 			= 0,	/* x-coordinate of tip of vector in inches */

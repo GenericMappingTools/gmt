@@ -1,0 +1,5 @@
+outs:
+- md5: bb87b8a2fd52352442d2a897da2d6a63.dir
+  size: 450775
+  nfiles: 5
+  path: segy

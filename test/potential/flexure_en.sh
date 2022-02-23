@@ -2,6 +2,7 @@
 #
 # Test the output of gmt grdflexure for single circular Gaussian seamount
 # on elastic plate with in-plane stresses
+
 ps=flexure_en.ps
 m=g
 f=0.2

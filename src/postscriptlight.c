@@ -804,7 +804,7 @@ static int psl_convert_path_new (struct PSL_CTRL *PSL, double *x, double *y, int
 				if (by < 0 || by > dy) break;
 			}
 			else {
-				if (by > 0 || bx < dy) break;
+				if (by > 0 || by < dy) break;
 			}
 			/* Generic case where the intermediate point is within the x- and y-range */
 			db = abs((int)(dx * by) - (int)(bx * dy));

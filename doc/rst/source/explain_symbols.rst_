@@ -114,7 +114,9 @@
         geographical instead of plot-distance units.  For degenerate ellipses (i.e.,
         circles) with just a *diameter* given via the input data, use **-SE-**. For a
         linear projection we assume the dimensions are given in the same units as **-R**.
-        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s) [Default is k for km].
+        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s);
+        if dimensions are read from the input then either just append the unit for these values
+        or append the unit to each dimension in the file (do not do both) [Default is k for km].
         The shape of the ellipse will be affected by the properties of the map projection.
 
     **-Sj**\ *direction*/*width*/*height*
@@ -130,7 +132,9 @@
         instead of plot-distance units. For a degenerate rectangle (i.e., square)
         with one *dimension* expected to be given via the input data, use **-SJ-**. For
         a linear projection we assume the dimensions are given in the same units as **-R**.
-        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s) [Default is k for km].
+        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s);
+        if dimensions are read from the input then either just append the unit for these values
+        or append the unit to each dimension in the file (do not do both) [Default is k for km].
         The shape of the rectangle will be affected by the properties of the map projection.
 
     **-Sr**\ *width*/*height*
@@ -158,6 +162,9 @@
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
         directions unchanged).  The two diameters are expected in geographic units.
+        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s);
+        if dimensions are read from the input then either just append the unit for these values
+        or append the unit to each dimension in the file (do not do both) [Default is k for km].
         However, if specified on the command line we also accept plot dimension units.
         Append **+i** and append a nonzero inner diameter *inner* or it will be read last [0].
         Append **+a**\ [*dr*] to draw the arc line (at inner and outer diameter);
@@ -165,7 +172,6 @@
         Append **+r**\ [*da*] to draw radial lines (at start and stop directions)
         if *da* is appended then we draw all radial lines separated angularly by *da*.
         These spider-web lines are drawn using the current pen unless **+p**\ *pen* is added.
-        For allowable geographical units, see `Units`_ [Default is k for km].
 
     Text is normally placed with :doc:`text` but there are times we wish to treat a character
     of even a string as a symbol to be plotted:
@@ -178,11 +184,12 @@
         specific fonts (size and type) and control outline and the fill properties. Note there
         is no mechanism to perfectly center the string; see **-D** to make a simple global adjustment.
 
-    **-Sl**\ *size*\ **+t**\ *string*\ [**+f**\ *font*][**+j**\ *justify*]
+    **-Sl**\ *size*\ **+t**\ *string*\ [**+a**\|\ **A**\ *angle*]\ [**+f**\ *font*][**+j**\ *justify*]
         **l**\ etter or text string (less than 256 characters). Give size, and
         append **+t**\ *string* after the size. **Note**: The size is only approximate;
         no individual scaling is done for different characters. Remember to
-        escape special characters like \*. Optionally, you may append **+f**\ *font*
+        escape special characters like \*. Optionally, you may append **+a** to change the
+        angle with the horiontal [0] or use **+A** to indicate map azimuth instead, **+f**\ *font*
         to select a particular font [Default is :term:`FONT_ANNOT_PRIMARY`] and
         **+j**\ *justify* to change justification [CM].
 
@@ -293,9 +300,9 @@
         Custom symbols are designed using the :ref:`Custom Symbol Macro Language <Custom_symbols>`.
         We supply about 40 custom symbols, and users have contributed discipline-specific
         symbols for structural geology and marine biology that you can explore from
-        the RESOURCES page (see sidebar), so you have lots of
+        the :ref:`RESOURCES page <symbols_gallery>`, so you have lots of
         examples to use as a template.  The language allows you to design symbols that
-        takes many parameters and can make decisions based on these parameters.
+        take many parameters and can make decisions based on these parameters.
 
     **-Sk**\ *name*\ /\ *size*
         **k**\ ustom symbol. We will look for a symbol definition file called *name*\ .def in

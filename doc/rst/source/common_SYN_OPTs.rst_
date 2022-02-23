@@ -1,6 +1,6 @@
 .. |SYN_OPT-B| replace:: |-B|\ [**p**\|\ **s**]\ *parameters*
 
-.. |SYN_OPT-D2| replace:: |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*]
+.. |SYN_OPT-D2| replace:: |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+c**\ [-\|\ *cpt*]][**+d**\ *dname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*][**+v**\ *varname*]
 
 .. |SYN_OPT-D3| replace:: |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+v**\ *vname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*]
 

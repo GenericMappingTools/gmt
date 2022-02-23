@@ -243,7 +243,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -277,7 +277,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdedit task */
 	bool grid_was_read = false, do_J = false;
 
-	unsigned int row, col;
+	openmp_int row, col;
 	int error;
 
 	uint64_t ij, n_data, n_use;
@@ -356,6 +356,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 		G->header->ProjRefPROJ4 = projstring;
 
 	if (Ctrl->D.active) {
+		bool was_NaN, is_NaN;
 		double scale_factor, add_offset;
 		gmt_grdfloat nan_value;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Decode and change attributes in file %s\n", out_file);
@@ -365,7 +366,9 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 		if (gmt_decode_grd_h_info (GMT, Ctrl->D.information, G->header))
 			Return (GMT_PARSE_ERROR);
 
-		if (nan_value != G->header->nan_value) {
+		was_NaN = gmt_M_is_dnan (nan_value);
+		is_NaN  = gmt_M_is_dnan (G->header->nan_value);
+		if (was_NaN != is_NaN || (was_NaN == false && is_NaN == false && nan_value != G->header->nan_value)) {
 			/* Must read data */
 			if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL)
 				Return (API->error);
@@ -452,7 +455,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 			if (gmt_M_grd_duplicate_column (GMT, G->header, GMT_IN)) {	/* Make sure longitudes got replicated */
 				/* Possibly need to replicate e/w value */
 				if (col == 0) {ij = gmt_M_ijp (G->header, row, G->header->n_columns-1); G->data[ij] = (gmt_grdfloat)in[GMT_Z]; n_use++; }
-				else if (col == (G->header->n_columns-1)) {ij = gmt_M_ijp (G->header, row, 0); G->data[ij] = (gmt_grdfloat)in[GMT_Z]; n_use++; }
+				else if (col == (openmp_int)(G->header->n_columns-1)) {ij = gmt_M_ijp (G->header, row, 0); G->data[ij] = (gmt_grdfloat)in[GMT_Z]; n_use++; }
 			}
 		} while (true);
 

@@ -449,7 +449,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			/* t_index will be determined later from t_value when the nc-file is opened */
 		}
 		else if (c != NULL && *c == '[') {
-			sscanf (c+1, "%" SCNuS ",%" SCNuS ",%" SCNuS "", &HH->t_index[0], &HH->t_index[1], &HH->t_index[2]);
+			sscanf (c+1, "%" PRIuS ",%" PRIuS ",%" PRIuS "", &HH->t_index[0], &HH->t_index[1], &HH->t_index[2]);
 			*c = '\0';
 		}
 	}
@@ -896,8 +896,10 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			/* Valid range is already in packed units, so do not convert */
 			header->z_min = dummy[0], header->z_max = dummy[1];
 		}
-		if (gmtlib_nc_get_att_vtext (GMT, ncid, z_id, "cpt", header, NULL, 0))	/* Found cpt attribute */
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "netCDF grid %s has a default CPT %s.\n", HH->cpt);
+		if (gmtlib_nc_get_att_vtext (GMT, ncid, z_id, "cpt", header, NULL, 0) == NC_NOERR)	/* Found cpt attribute */
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "netCDF grid %s has a default CPT %s.\n", HH->name, HH->cpt);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "netCDF grid %s has no default CPT.\n", HH->name);
 
 		if (gmt_M_is_dnan (header->z_min) && gmt_M_is_dnan (header->z_max)) {
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "netCDF grid %s information has zmin = zmax = NaN. Reset to 0/0.\n", HH->name);
@@ -969,7 +971,6 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		else
 			nc_del_att (ncid, NC_GLOBAL, "node_offset");
 
-#ifdef HAVE_GDAL
 		/* If we have projection information create a container variable named "grid_mapping" with an attribute
 		   "spatial_ref" that will hold the projection info in WKT format. GDAL and Mirone know use this info */
 		if ((header->ProjRefWKT != NULL) || (header->ProjRefPROJ4 != NULL)) {
@@ -1008,7 +1009,6 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			}
 		}
 L100:
-#endif
 
 		/* Avoid NaN increments */
 		if (gmt_M_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
@@ -1032,10 +1032,8 @@ L100:
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		gmtnc_put_units (ncid, z_id, header->z_units);
-		if (GMT->parent->remote_info && GMT->parent->remote_id != GMT_NOTSET && GMT->parent->remote_info[GMT->parent->remote_id].CPT[0] != '-') {	/* Subset of remote grid with default CPT, save name as an attribute */
+		if (GMT->parent->remote_info && GMT->parent->remote_id != GMT_NOTSET && GMT->parent->remote_info[GMT->parent->remote_id].CPT[0] != '-')	/* Subset of remote grid with default CPT, save name as an attribute */
 			HH->cpt = strdup (GMT->parent->remote_info[GMT->parent->remote_id].CPT);
-			gmt_M_err_trap (nc_put_att_text (ncid, z_id, "cpt", strlen (HH->cpt), HH->cpt));
-		}
 
 		if (header->z_scale_factor != 1.0) {
 			gmt_M_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1U, &header->z_scale_factor));
@@ -1048,6 +1046,12 @@ L100:
 		}
 		else if (job == 'u')
 			nc_del_att (ncid, z_id, "add_offset");
+
+		if (HH->cpt) {
+			gmt_M_err_trap (nc_put_att_text (ncid, z_id, "cpt", strlen (HH->cpt), HH->cpt));
+		}
+		else if (job == 'u')	/* Remove any previous if updating the header */
+			nc_del_att (ncid, z_id, "cpt");
 
 		if (z_type != NC_FLOAT && z_type != NC_DOUBLE)
 			header->nan_value = rintf (header->nan_value); /* round to integer */

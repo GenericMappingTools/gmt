@@ -112,6 +112,8 @@ struct GMT_VECT_ATTR {
 	unsigned int status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
 	unsigned int v_kind[2];	/* Type of vector heads */
 	bool parsed_v4;		/* true if we parsed old-style <vectorwidth/headlength/headwidth> attribute */
+	bool v_norm_d;		/* true if Cartesian vector shrinking limit is in data unit not plot unit */
+	bool v_unit_d;		/* true if vector magnitude is in data unit and not plot/map unit */
 	float v_angle;		/* Head angle */
 	float v_norm;		/* shrink when lengths are smaller than this */
 	float v_norm_limit;	/* Only shrink down to this factor [0.25] */
@@ -121,6 +123,7 @@ struct GMT_VECT_ATTR {
 	float h_width;		/* Width of vector head in inches */
 	float pole[2];		/* Longitude and latitude of geovector pole */
 	float scale;		/* Converts inches to spherical degrees */
+	float value;		/* Original data quantity */
 	float comp_scale;	/* Converts hypot (dx, dy) to inches */
 	float v_trim[2];	/* Offsets from begin/end point in inches */
 	struct GMT_PEN pen;	/* Pen for outline of head */
@@ -133,21 +136,18 @@ struct GMT_SYMBOL {
 	/* Voodoo: If next line is not the first member in this struct, psxy -Sl<size>/Text will have corrupt 'Text'
 		   in non-debug binaries compiled with VS2010 */
 	char string[GMT_LEN256];	/* Character code to plot (could be octal) */
-
 	int symbol;	/* Symbol id */
 	unsigned int n_required;	/* Number of additional columns necessary to decode chosen symbol */
 	unsigned int justify;	/* Justification of text item for -Sl symbol [PSL_MC = centered] */
 	unsigned int u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
 	unsigned int read_symbol_cmd;	/* 1 when -S indicated we must read symbol type from file, 2 with -SK is used */
+	unsigned int convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
+	unsigned int n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
+	unsigned int nondim_col[GMT_MAX_SYMBOL_COLS];	/* Which columns has angles or km for this symbol */
 	bool u_set;		/* true if u was set */
 	bool par_set;		/* true if all parameters were set for e,j */
 	bool degenerate;		/* true for E- and J- as degenerate ellipses and rectangles */
-	double factor;		/* Scaling needed to unify symbol area for circle, triangles, etc. [1] */
-	double size_x;		/* Current symbol size in x */
-	double size_y;		/* Current symbol size in y */
-	double given_size_x;	/* Symbol size read from file or command line */
-	double given_size_y;	/* Symbol size read from file or command line */
-	double gap;			/* Fractional spacing between side-by-side bars when -Sb|B+s[<gap>] is given */
+	bool azim;		/* true for-Sl if +A was used */
 	bool read_size_cmd;	/* true when -S indicated we must read symbol sizes from file */
 	bool read_size;		/* true when we must read symbol size from file for the current record */
 	bool shade3D;		/* true when we should simulate shading of 3D symbols cube and column */
@@ -155,10 +155,15 @@ struct GMT_SYMBOL {
 	bool accumulate;	/* true if -So|b|B takes many band z and they are increments, not total z values */
 	bool diagonal;		/* true if -Sr+s is given */
 	bool sidebyside;		/* true if -Sb|B+s[<gap>] is given */
+	double factor;		/* Scaling needed to unify symbol area for circle, triangles, etc. [1] */
+	double size_x;		/* Current symbol size in x */
+	double size_y;		/* Current symbol size in y */
+	double given_size_x;	/* Symbol size read from file or command line */
+	double given_size_y;	/* Symbol size read from file or command line */
+	double gap;			/* Fractional spacing between side-by-side bars when -Sb|B+s[<gap>] is given */
+	double geo_scale;	/* Factor to scale unit-less input in map distances to internal km [1] */
+	double angle;			/* Text angle for -Sl<txt>+a<angle} [0] */
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
-	unsigned int convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
-	unsigned int n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
-	unsigned int nondim_col[GMT_MAX_SYMBOL_COLS];	/* Which columns has angles or km for this symbol */
 
 	/* These apply to bar|column symbols */
 

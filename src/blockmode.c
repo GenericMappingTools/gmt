@@ -269,7 +269,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -520,7 +520,8 @@ EXTERN_MSC int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	int way, error = 0;
 
-	unsigned int row, col, emode = 0, n_input, n_output;
+	openmp_int row, col;
+	unsigned int emode = 0, n_input, n_output;
 	unsigned int k, kk, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,7,0,0}, field[BLK_N_FIELDS];
 
 	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;

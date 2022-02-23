@@ -64,7 +64,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ [**c**][*size*][**+i**\ *spacing*]
-    Append **c** to annotate using the MGD77 cruise ID [Default uses the
+    Append **c** to annotate the track using the MGD77 cruise ID [Default uses the
     filename prefix]. Optional *size* is the font size in points. The
     leg annotation font is controlled by :term:`FONT_LABEL`. By default,
     each leg is annotated every time it enters the map region.
@@ -123,11 +123,11 @@ Optional Arguments
 
 **-Sa**\ *startdist*
     Do not plot data that are less than *startdist* meter along track
-    from port of departure. Append **k** for km, **m** for miles, or
+    from port of departure. Append **k** for km, **M** for miles, or
     **n** for nautical miles [Default is 0 meters].
 **-Sb**\ *stopdist*
     Do not plot data that are more than *stopdist* meter along track
-    from port of departure. Append **k** for km, **m** for miles, or
+    from port of departure. Append **k** for km, **M** for miles, or
     **n** for nautical miles [Default is end of track].
 
 .. _-T:

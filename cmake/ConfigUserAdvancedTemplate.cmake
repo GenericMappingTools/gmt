@@ -46,8 +46,7 @@
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
 
-# Exclude optional GDAL, GEOS ,PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
-#set (GMT_EXCLUDE_GDAL TRUE)
+# Exclude optional GEOS, PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
 #set (GMT_EXCLUDE_GEOS TRUE)
 #set (GMT_EXCLUDE_PCRE TRUE)
 #set (GMT_EXCLUDE_PCRE2 TRUE)
@@ -198,6 +197,9 @@
 
 # Uncomment the following line to enable running low-level C tests of the API
 #set (DO_API_TESTS ON)
+
+# Uncomment the following line to enable running tests of the GMT supplements
+#set (DO_SUPPLEMENT_TESTS ON)
 
 # Uncomment the following line if you need to run the full tests suite using
 # the gmtserver "test" distribution instead of the default server.

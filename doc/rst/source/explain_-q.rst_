@@ -1,2 +1,2 @@
-**-q**\ [**i**\|\ **o**][~]\ *rows*\|\ *limits*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**] :ref:`(more ...) <-q_full>`
+**-q**\ [**i**\|\ **o**][~]\ *rows*\|\ *limits*\ [**+c**\ *col*][**+a**\|\ **t**\|\ **s**] :ref:`(more ...) <-q_full>`
     Select input or output rows or data limit(s) [all].

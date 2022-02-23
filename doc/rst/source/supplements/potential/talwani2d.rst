@@ -177,7 +177,7 @@ Chapman, M. E., 1979, Techniques for interpretation of geoid anomalies,
 
 Kim, S.-S., and P. Wessel, 2016, New analytic solutions for modeling vertical
 gravity gradient anomalies, *Geochem. Geophys. Geosyst., 17*,
-`http://dx.doi.org/10.1002/2016GC006263 <http://dx.doi.org/10.1002/2016GC006263>`_.
+`https://dx.doi.org/10.1002/2016GC006263 <https://dx.doi.org/10.1002/2016GC006263>`_.
 
 Talwani, M., J. L. Worzel, and M. Landisman, 1959, Rapid gravity computations for
 two-dimensional bodies with application to the Mendocino submarine fracture zone,

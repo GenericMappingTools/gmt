@@ -1,0 +1,5 @@
+outs:
+- md5: cc8d74962ecb3df5534ba3e5fb345469.dir
+  size: 1373563
+  nfiles: 25
+  path: psscale

@@ -317,7 +317,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				if (gmt_M_compat_check (GMT, 4))
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -L is deprecated; use -N modifiers in the future.\n");
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -368,7 +368,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.zm, &Ctrl->Z.zl);
 				break;
 			default:
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -651,7 +651,7 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 	 * we are done with using the addresses Orig[k] directly. */
 
 	if (Ctrl->W.active) {	/* Need to adjust for a different observation level relative to topo.grd */
-		unsigned int row, col;
+		openmp_int row, col;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Remove %g m from topography grid %s\n", Ctrl->W.water_depth, Ctrl->In.file[0]);
 		gmt_M_grd_loop (GMT, Grid[0], row, col, m)
 			Grid[0]->data[m] -= (gmt_grdfloat)Ctrl->W.water_depth;

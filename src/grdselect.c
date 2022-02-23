@@ -367,7 +367,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -594,7 +594,6 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 				continue;
 		}
 		if (Ctrl->C.active) {	/* Specified -P to only keep those data sources that contain one or more of these points */
-			bool overlap, crossed;
 			double w = header->wesn[XLO], e = header->wesn[XHI];	/* This is set once if Cartesian; otherwise per segment */
 			uint64_t row;
 			pass = true;
