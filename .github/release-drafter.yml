@@ -15,6 +15,8 @@ categories:
     label: 'new core module feature'
   - title: 'Supplement updates in GMT $RESOLVED_VERSION'
     label: 'supplement update'
+  - title: 'Enhancements in GMT $RESOLVED_VERSION'
+    label: 'enhancement'
   - title: 'Documentation updates in GMT $RESOLVED_VERSION'
     label: 'documentation'
   - title: 'Maintenance updates in GMT $RESOLVED_VERSION'

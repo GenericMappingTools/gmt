@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -262,7 +262,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			default:		/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -521,6 +521,7 @@ EXTERN_MSC int GMT_pssolar (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->M.active) {						/* Dump terminator(s) polygons to stdout; no plotting takes place */
 		int n_items;
+		uint64_t row;
 		char  *terms[4] = {"Day/night", "Civil", "Nautical", "Astronomical"};
 		double out[2];
 		struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);
@@ -550,8 +551,8 @@ EXTERN_MSC int GMT_pssolar (void *V_API, int mode, void *args) {
 			S = gmt_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
 			sprintf (record, "%s terminator", terms[n]);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
-			for (j = 0; j < S->n_rows; j++) {
-				out[GMT_X] = S->data[GMT_X][j];	out[GMT_Y] = S->data[GMT_Y][j];
+			for (row = 0; row < S->n_rows; row++) {
+				out[GMT_X] = S->data[GMT_X][row];	out[GMT_Y] = S->data[GMT_Y][row];
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 			gmt_free_segment (GMT, &S);

@@ -33,7 +33,7 @@ Required Arguments
 ------------------
 
 *info.tbf*
-    Name of a single track bin file. If not given, *stdin* will be read.
+    Name of a single track bin file. If not given, standard input will be read.
 
 .. include:: explain_tag.rst_
 

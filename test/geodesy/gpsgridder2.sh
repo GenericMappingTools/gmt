@@ -46,7 +46,7 @@ gmt pscoast $R -JM7i -P -Glightgray -Ba1f30m -BWSne -K -Df -X1i -Wfaint > $ps
 gmt psxy @CA_fault_data.txt -J -R -W0.5p -O -K >> $ps
 gmt psvelo data.lluvenct -J -R -Se.008i/0.95+f8p -A9p -W0.2p,red -O -K >> $ps
 # Shrink down heads of vectors shorter than 10 km
-gmt grdvector GPS_u.nc GPS_v.nc -Ix${DEC}/${DEC} -J -R -O -K -Q0.06i+e+n10 -Gblue -W0.2p,blue -S100i --MAP_VECTOR_SHAPE=0.2 >> $ps
+gmt grdvector GPS_u.nc GPS_v.nc -Ix${DEC}/${DEC} -J -R -O -K -Q0.06i+e+n10/0 -Gblue -W0.2p,blue -S100i --MAP_VECTOR_SHAPE=0.2 >> $ps
 #
 # Place the scale using a geovector of length RATE
 #

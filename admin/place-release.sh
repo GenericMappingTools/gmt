@@ -29,7 +29,7 @@ if [ ! -d cmake ]; then
 fi
 
 # 1. Get the version string
-Version=$(src/gmt --version)
+Version=$(build/src/gmt --version)
 # 2. Build the release.sh script
 cat << EOF > /tmp/release.sh
 #!/bin/bash
@@ -38,6 +38,10 @@ cat << EOF > /tmp/release.sh
 if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then
 	cp -f gmt-${Version}-darwin-x86_64.dmg ../gmt/bin
 	chmod og+r ../gmt/bin/gmt-${Version}-darwin-x86_64.dmg
+fi
+if [ -f gmt-${Version}-darwin-arm64.dmg ]; then
+	cp -f gmt-${Version}-darwin-arm64.dmg ../gmt/bin
+	chmod og+r ../gmt/bin/gmt-${Version}-darwin-arm64.dmg
 fi
 # Place Windows 32-bit installer with read and execute permissions
 if [ -f gmt-${Version}-win32.exe ]; then

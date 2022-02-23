@@ -42,7 +42,7 @@ Description
 -----------
 
 **grdseamount** will compute the combined shape of multiple synthetic seamounts given their individual shape
-parameters.  We read from *table* (or stdin) a list of seamount locations and sizes and can evaluate either
+parameters.  We read from *table* (or standard input) a list of seamount locations and sizes and can evaluate either
 Gaussian, parabolic, conical, polynomial or disc shapes, which may be circular or elliptical, and optionally
 truncated. Various scaling options are available to modify the result, including an option to add in
 a background depth (more complicated backgrounds may be added via :doc:`grdmath </grdmath>`).

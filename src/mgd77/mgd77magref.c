@@ -1,17 +1,19 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2009-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- *    See README file for copying and redistribution conditions.
+ *	Copyright (c) 2009-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
-/*
- * mgd77magref produces output derived from input locations and time and
- * the CM4 or IGRF magnetic field models.
- *
- * Author:	Joaquim Luis and Paul Wessel
- * Date:	1-MAY-2009
- * Version:	1.0
- *
- */
 
 #include "gmt_dev.h"
 #include "mgd77.h"
@@ -97,7 +99,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Here, (<lon>, <lat>) is the geocentric position on the ellipsoid [but see -G], "
 		"<alt> is the altitude in km positive above the ellipsoid, and "
 		"<time> is the time of data acquisition, in <date>T<clock> format (but see -A+y). "
-		"We read <stdin> if no input file is given.");
+		"We read standard input if no input file is given.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A+a<alt>+t<date>+y");
 	GMT_Usage (API, -2, "Adjust how the input records are interpreted. Append modifiers:");
@@ -407,7 +409,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 				}
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

@@ -48,7 +48,7 @@ Description
 **grdcontour** reads a 2-D grid file and produces a contour map by
 tracing each contour through the grid. Various options that affect the plotting
 are available. Alternatively, the *x, y, z* positions of the contour lines
-may be saved to one or more output files (or stdout) and no plot is produced.
+may be saved to one or more output files (or standard output) and no plot is produced.
 
 Required Arguments
 ------------------
@@ -128,7 +128,7 @@ Optional Arguments
 **-D**\ *template*
     Dump contours as data line segments; no plotting takes place.
     Append filename template which may contain C-format specifiers.
-    If no filename template is given we write all lines to stdout.
+    If no filename template is given we write all lines to standard output.
     If filename has no specifiers then we write all lines to a single file.
     If a float format (e.g., %6.2f) is found we substitute the contour z-value.
     If an integer format (e.g., %06d) is found we substitute a running segment count.

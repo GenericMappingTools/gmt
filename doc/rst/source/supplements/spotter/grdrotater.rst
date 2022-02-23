@@ -84,7 +84,7 @@ Optional Arguments
     time is implied then *rotoutline* must contain a C-format specifier
     to format a floating point number (reconstruction time) to text.
     If only one time is implied and **-D** is not set then we write the
-    polygon to stdout (but see **-N**).
+    polygon to standard output (but see **-N**).
 
 .. _-F:
 
@@ -96,7 +96,7 @@ Optional Arguments
 
 **-N**
     Do Not output the rotated polygon outline [Default will write it to
-    stdout, or to a file via **-D**].
+    standard output, or to a file via **-D**].
 
 .. _-R:
 

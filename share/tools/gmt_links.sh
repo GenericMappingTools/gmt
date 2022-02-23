@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This script creates, removes, or lists symbolic links for each GMT

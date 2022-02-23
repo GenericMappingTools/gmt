@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -214,7 +214,7 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
@@ -241,7 +241,7 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
@@ -255,7 +255,7 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				if (opt->option == 'b') b_only = true;
 				break;
 		}
@@ -303,22 +303,17 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LOCAL void xyz2grd_protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
+GMT_LOCAL void xyz2grd_protect_J (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	if (GMT_Find_Option (API, 'J', options) != NULL) {
-#ifdef HAVE_GDAL
 		struct GMT_OPTION *opt = GMT_Make_Option (API, 'f', "0f,1f");
 		(void)GMT_Append_Option(API, opt, options);
-#else
-		GMT_Report(API, GMT_MSG_ERROR,
-		           "-J option to set grid's referencing system is only available when GMT was build with GDAL\n");
-#endif
 	}
 }
 
 EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	bool previous_bin_i = false, previous_bin_o = false;
 	int error = 0, scol, srow;
-	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1;
+	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1, was;
 	uint64_t n_empty = 0, n_confused = 0;
 	uint64_t ij, ij_gmt, n_read, n_filled = 0, n_used = 0, n_req;
 
@@ -572,7 +567,13 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	if (gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file)) Return (GMT_RUNTIME_ERROR);
 
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
-	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && gmt_M_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing since nan_proxy is NaN... */
+	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN]) {
+		was = GMT->common.d.first_col[GMT_IN];
+		if (gmt_M_is_fnan (no_data_f))	/* No point testing since nan_proxy is NaN... */
+			GMT->common.d.active[GMT_IN] = false;
+		else if (GMT->common.d.first_col[GMT_IN] == GMT_Z)	/* Change the default to the only column available */
+			GMT->common.d.first_col[GMT_IN] = GMT_X;
+	}
 
 	if (Ctrl->Z.active) {	/* Need to override input method since reading single input column as z (not x,y) */
 		zcol = GMT_X;
@@ -722,6 +723,8 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	if (Ctrl->Z.active) {
 		GMT->current.io.input = save_i;	/* Reset pointer */
 		GMT->common.b.active[GMT_IN] = previous_bin_i;	/* Reset binary */
+		if (GMT->common.d.active[GMT_IN])	/* Reset column */
+			GMT->common.d.first_col[GMT_IN] = was;
 		if (ij != io.n_expected) {	/* Input amount does not match expectations */
 			GMT_Report (API, GMT_MSG_ERROR, "Found %" PRIu64 " records, but %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
 				GMT_Report (API, GMT_MSG_ERROR, "(You are probably misterpreting xyz2grd with an interpolator; see 'surface' man page)\n");

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -184,7 +184,10 @@ GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		gmt_setpen (GMT, &(T->vecpen));
 		PSL_plotsegment (PSL, x, y, x + T->x_offset, y + T->y_offset);
 	}
-	x += T->x_offset;	y += T->y_offset;	/* Move to the actual reference point */
+	if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
+		gmt_smart_justify (GMT, T->block_justify, T->paragraph_angle, T->x_offset, T->y_offset, &x, &y, Ctrl->D.justify);
+	else
+		x += T->x_offset,	y += T->y_offset;	/* Move to the actual reference point */
 	if (T->boxflag) {	/* Need to lay down the box first, then place text */
 		int mode = 0;
 		struct GMT_FILL *fill = NULL;
@@ -347,7 +350,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D[j|J]<dx>[/<dy>][+v[<pen>]]");
 	GMT_Usage (API, -2, "Add <dx>,<dy> to the text origin AFTER projecting with -J. If <dy> is not given it equals <dx> [0/0]. "
 		"Use -Dj to move text origin away from point (direction determined by text's justification). "
-		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). Optional modifier:");
+		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). Cannot be used with -M. Optional modifier:");
 	GMT_Usage (API, 3, "+v: Draw line from text to original point; optionally append a <pen> [%s].", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Usage (API, 1, "\n-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]");
 	GMT_Usage (API, -2, "Specify values for text attributes that apply to all text records:");
@@ -596,7 +599,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				if (gmt_M_compat_check (GMT, 4)) /* Warn and pass through */
 					GMT_Report (API, GMT_MSG_COMPAT, "-m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				/* Intentionally fall through */
 			case 'M':	/* Paragraph mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
@@ -636,7 +639,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
@@ -651,7 +654,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 					n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->C.mode), "Option -T: must add o, O, c, or C\n");
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
@@ -691,7 +694,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

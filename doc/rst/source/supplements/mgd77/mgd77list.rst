@@ -397,7 +397,7 @@ Optional Arguments
 **-Nd**\|\ **s**\ *unit*
     Append **d** for distance or **s** for speed, then give the desired
     *unit* as **e** (meter or m/s), **f** (feet or feet/s), **k** (km or
-    km/hr), **m** (miles or miles/hr), **n** (nautical miles or knots),
+    km/hr), **M** (miles or miles/hr), **n** (nautical miles or knots),
     or **u** (survey feet or sfeet/s). [Default is **-Ndk** **-Nse** (km
     and m/s)].
 
@@ -426,12 +426,12 @@ Optional Arguments
 **-Sa**\ *startdist*
     Do not list data that are less than *startdist* meter along track
     from port of departure. Append **e** for meter, **f** for feet,
-    **k** for km, **m** for miles, **n** for nautical miles, or **u**
+    **k** for km, **M** for miles, **n** for nautical miles, or **u**
     for survey feet [Default is 0e (meters)].
 **-Sb**\ *stopdist*
     Do not list data that are *stopdist* or more meters along track from
     port of departure. Append **e** for meter, **f** for feet, **k** for
-    km, **m** for miles, **n** for nautical miles, or **u** for survey
+    km, **M** for miles, **n** for nautical miles, or **u** for survey
     feet [Default is end of track].
 
 .. _-T:

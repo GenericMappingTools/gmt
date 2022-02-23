@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -247,7 +247,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -287,7 +287,8 @@ GMT_LOCAL void grdtrend_load_pstuff_xonly (double *pstuff, unsigned int n_model,
 	/* Compute Legendre polynomials of x[i] as needed  */
 	/* If x has changed, compute new Legendre polynomials as needed.
 	 * Remember: pstuff[0] == 1 throughout.   Here, n_models is in 1-4 range*/
-
+	gmt_M_unused (y);
+	gmt_M_unused (newy);
 	if (newx) {
 		if (n_model > 1) pstuff[1] = x;
 		if (n_model > 2) pstuff[2] = 0.5 * (3.0 * x * x - 1.0);
@@ -301,6 +302,8 @@ GMT_LOCAL void grdtrend_load_pstuff_yonly (double *pstuff, unsigned int n_model,
 	/* Compute Legendre polynomials of y[j] as needed  */
 	/* If y has changed, compute new Legendre polynomials as needed.
 	 * Remember: pstuff[0] == 1 throughout.  Here, n_models is in 0-3 range */
+	gmt_M_unused (x);
+	gmt_M_unused (newx);
 
 	if (newy) {
 		if (n_model > 1) pstuff[1] = y;
@@ -338,7 +341,8 @@ GMT_LOCAL void grdtrend_load_pstuff_xy (double *pstuff, unsigned int n_model, do
 
 GMT_LOCAL void grdtrend_compute_trend (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_GRID *T, double *xval, double *yval, double *gtd, double *pstuff, p_to_eval_func eval) {
 	/* Find trend from a model  */
-	unsigned int row, col, k;
+	openmp_int row, col;
+	unsigned int k;
 	uint64_t ij;
 	gmt_M_unused(GMT);
 
@@ -351,7 +355,7 @@ GMT_LOCAL void grdtrend_compute_trend (struct GMT_CTRL *GMT, struct GRDTREND_CTR
 
 GMT_LOCAL void grdtrend_compute_resid (struct GMT_CTRL *GMT, struct GMT_GRID *D, struct GMT_GRID *T, struct GMT_GRID *R) {
 	/* Find residuals from a trend  */
-	unsigned int row, col;
+	openmp_int row, col;
 	uint64_t ij;
 	gmt_M_unused(GMT);
 
@@ -364,7 +368,7 @@ GMT_LOCAL void grdtrend_grd_trivial_model (struct GMT_CTRL *GMT, struct GRDTREND
 	where x,y are normalized to range [-1,1] and there are no
 	NaNs in grid file, and problem is unweighted least squares.  */
 
-	unsigned int row, col;
+	openmp_int row, col;
 	uint64_t ij;
 	double x2, y2, sumx2 = 0.0, sumy2 = 0.0, sumx2y2 = 0.0;
 	gmt_M_unused(GMT);
@@ -417,7 +421,7 @@ GMT_LOCAL void grdtrend_grd_trivial_model (struct GMT_CTRL *GMT, struct GRDTREND
 
 GMT_LOCAL double grdtrend_compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W, double scale) {
 	/* Find Chi-Squared from weighted residuals  */
-	unsigned int row, col;
+	openmp_int row, col;
 	uint64_t ij;
 	double tmp, chisq = 0.0;
 	gmt_M_unused(GMT);
@@ -435,7 +439,7 @@ GMT_LOCAL double grdtrend_compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *
 
 GMT_LOCAL double grdtrend_compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W) {
 	/* Find weights from residuals  */
-	unsigned int row, col;
+	openmp_int row, col;
 	uint64_t j = 0, j2, ij;
 	gmt_grdfloat r, mad, scale;
 
@@ -511,7 +515,8 @@ GMT_LOCAL void grdtrend_load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID 
 	loading only lower triangular part of gtg and then filling
 	by symmetry after row,col loop.  */
 
-	unsigned int row, col, k, l, n_used = 0;
+	openmp_int row, col;
+	unsigned int k, l, n_used = 0;
 	uint64_t ij;
 	gmt_M_unused(GMT);
 
@@ -578,7 +583,8 @@ EXTERN_MSC int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	bool trivial, weighted, set_ones = true;
 	int error = 0;
-	unsigned int row, col, iterations;
+	openmp_int row, col;
+	unsigned int iterations;
 
 	uint64_t ij;
 
@@ -698,10 +704,10 @@ EXTERN_MSC int GMT_grdtrend (void *V_API, int mode, void *args) {
 	/* Set up xval and yval lookup tables */
 
 	dv = 2.0 / (double)(G->header->n_columns - 1);
-	for (col = 0; col < G->header->n_columns - 1; col++) xval[col] = -1.0 + col * dv;
+	for (col = 0; col < (openmp_int)G->header->n_columns - 1; col++) xval[col] = -1.0 + col * dv;
 	xval[G->header->n_columns - 1] = 1.0;
 	dv = 2.0 / (double)(G->header->n_rows - 1);
-	for (row = 0; row < G->header->n_rows - 1; row++) yval[row] = -1.0 + row * dv;
+	for (row = 0; row < (openmp_int)G->header->n_rows - 1; row++) yval[row] = -1.0 + row * dv;
 	yval[G->header->n_rows - 1] = 1.0;
 	/* In the above cases, this will cause the existence of a bad last row (or col)
 	   but cannot set it to zero because: "grdtrend [ERROR]: Gauss returns error code 3".

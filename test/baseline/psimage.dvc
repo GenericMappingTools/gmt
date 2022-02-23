@@ -1,0 +1,5 @@
+outs:
+- md5: 9b43a20da87f87f52574a2276b1231f8.dir
+  size: 1071278
+  nfiles: 5
+  path: psimage

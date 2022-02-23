@@ -20,11 +20,11 @@ Synopsis (begin mode)
 
 **gmt inset begin**
 |-D|\ *inset-box*
+[ |-C|\ [*side*]\ *clearance* ]
 [ |-F|\ *box* ]
-[ |-M|\ *margins* ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
-[ |SYN_OPT-J| ]
+[ |-J|\ *parameters* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 
@@ -67,6 +67,16 @@ Required Arguments (begin mode)
 Optional Arguments (begin mode)
 -------------------------------
 
+.. _-C:
+
+**-C**\ [*side*]\ *clearance*
+    Reserve a space of dimension *clearance* between the actual inset plot area and the given inset box on the specified
+    side, using *side* values from **w**, **e**, **s**, or **n**, or **x** for both **w** and **e**
+    or **y** for both **s** and **n**.  No *side* means all sides. The option is repeatable to set aside space
+    on more than one side.  Alternatively, if all sides are to be set you can also give a pair of values separated by slashes
+    (for setting separate horizontal and vertical margins), or the full set of four separate margins. Such space
+    will be left untouched by the inset map plotting.  Append units as desired [Default is set by :term:`PROJ_LENGTH_UNIT`].
+
 .. _-F:
 
 **-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]]\
@@ -82,15 +92,6 @@ Optional Arguments (begin mode)
 .. include:: explain_-J.rst_
     :start-after: **Syntax**
     :end-before: **Description**
-
-.. _-M:
-
-**-M**\ *margins*
-    This is clearance that is added around the inside of the inset.  Plotting will take place
-    within the inner region only. The margins can be a single value, a pair of values separated by slashes
-    (for setting separate horizontal and vertical margins), or the full set of four margins (for setting
-    separate left, right, bottom, and top margins) [no margins]. Append units as desired [Default is set
-    by :term:`PROJ_LENGTH_UNIT`].
 
 .. _-N:
 
@@ -139,7 +140,7 @@ To make a simple basemap plot called inset.pdf that demonstrates the inset modul
 
     gmt begin inset pdf
       gmt basemap -R0/40/20/60 -JM6.5i -Bafg -B+glightgreen
-      gmt inset begin -DjTR+w2.5i+o0.2i -F+gpink+p0.5p -M0.25i
+      gmt inset begin -DjTR+w2.5i+o0.2i -F+gpink+p0.5p -C0.25i
         gmt basemap -Rg -JA20/20/ -Bafg
         gmt text -F+f18p+cTR+tINSET -Dj-0.15i -N
       gmt inset end

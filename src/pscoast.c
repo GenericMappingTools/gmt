@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -64,6 +64,16 @@
 #define RIVER	1
 
 #define NOT_REALLY_AN_ERROR -999
+
+enum pscoast_fill_level {
+	PSCOAST_OCEAN = 0,
+	PSCOAST_LAND = 1,
+	PSCOAST_LAKE = 2,
+	PSCOAST_ISLAND = 3,
+	PSCOAST_POND = 4,
+	PSCOAST_RIVER = 5,
+	PSCOAST_NFILL = 6
+};
 
 /* Control structure for pscoast */
 
@@ -136,9 +146,10 @@ struct PSCOAST_CTRL {
 		struct GMT_PEN pen[GSHHS_MAX_LEVEL];
 	} W;
 #ifdef DEBUG
-	struct PSCOAST_DBG {	/* -+<bin> */
+	struct PSCOAST_DBG {	/* -+<bin>[,<bin2>,...] */
 		bool active;
-		int bin;
+		int bin[GMT_LEN16];	/* Mxx 16 bins - no check so be careful */
+		int n_bin;
 	} debug;
 #endif
 };
@@ -257,8 +268,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: When feature-specific pens are used, those not set are deactivated.");
 	GMT_Option (API, "X,bo,c,do,p,t");
 #ifdef DEBUG
-	GMT_Usage (API, 1, "\n-+<bin>");
-	GMT_Usage (API, -2, "Print only a single bin (debug option).");
+	GMT_Usage (API, 1, "\n-+<bin> (repeatable up to 16 times)");
+	GMT_Usage (API, -2, "Plot only the specified bins (debug option).");
 #endif
 	GMT_Option (API, ".");
 
@@ -436,7 +447,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				if (gmt_M_compat_check (GMT, 4))	/* Warn and fall through on purpose */
 					GMT_Report (API, GMT_MSG_COMPAT, "-m option is deprecated and reverted back to -M.\n");
 				else {
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 					break;
 				}
 				/* Intentionally fall through */
@@ -526,19 +537,21 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 #ifdef DEBUG
 			case '+':
 				Ctrl->debug.active = true;
-				Ctrl->debug.bin = atoi (opt->arg);
+				Ctrl->debug.bin[Ctrl->debug.n_bin++] = atoi (opt->arg);
 				break;
 #endif
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
 	if ((error = gmt_DCW_list (GMT, &(Ctrl->E.info)))) {	/* This is either success or failure... */
-		if (error != GMT_DCW_LIST) n_errors++;	/* Not good */
-		else return NOT_REALLY_AN_ERROR;	/* If +l|L was given we list countries and return a fake error that will be replaced by 0 */
+		if (error != GMT_DCW_LIST)
+			return (1);	/* Not good */
+		else
+			return NOT_REALLY_AN_ERROR;	/* If +l|L was given we list countries and return a fake error that will be replaced by 0 */
 	}
 
 	if (!GMT->common.J.active) {	/* So without -J we can only do -M or report region only */
@@ -649,6 +662,17 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 	return (n_errors);
 }
 
+#ifdef DEBUG
+GMT_LOCAL bool pscoast_skip_if_debug (struct PSCOAST_CTRL *Ctrl, int bin) {
+	bool found = false;
+	int k;
+	if (!Ctrl->debug.active) return false;	/* No skip if not in debug mode */
+	for (k = 0; !found && k < Ctrl->debug.n_bin; k++)
+		if (Ctrl->debug.bin[k] == bin) found = true;
+	return (!found);
+}
+#endif
+
 GMT_LOCAL bool pscoast_add_this_polygon_to_path (struct GMT_CTRL *GMT, int k0, struct GMT_GSHHS_POL *p, int level, int k) {
 	/* Determines if we should add the current polygon pol[k] to the growing path we are constructing */
 
@@ -744,7 +768,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 
-	struct GMT_FILL fill[6], no_fill;	/* Colors for (0) water, (1) land, (2) lakes, (3) islands in lakes, (4) lakes in islands in lakes, (5) riverlakes */
+	struct GMT_FILL fill[PSCOAST_NFILL], no_fill;
 	struct GMT_SHORE c;
 	struct GMT_BR b, r;
 	struct GMT_GSHHS_POL *p = NULL;
@@ -783,10 +807,10 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		Ctrl->D.set = 'a';	/* Auto-select resolution under modern mode if -D not given */
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
 	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set, true);
-	fill[0] = (Ctrl->S.active) ? Ctrl->S.fill : no_fill;	/* Ocean fill */
-	fill[1] = fill[3] = (Ctrl->G.active) ? Ctrl->G.fill : no_fill;	/* Continent and islands in lakes fill */
-	fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[0];	/* Lakes and ponds-in-islands-in-lakes fill */
-	fill[5] = (Ctrl->C.active) ? Ctrl->C.fill[RIVER] : fill[2];		/* River-lake fill */
+	fill[PSCOAST_OCEAN] = (Ctrl->S.active) ? Ctrl->S.fill : no_fill;	/* Ocean fill */
+	fill[PSCOAST_LAND] = fill[PSCOAST_ISLAND] = (Ctrl->G.active) ? Ctrl->G.fill : no_fill;	/* Continent and islands in lakes fill */
+	fill[PSCOAST_LAKE] = fill[PSCOAST_POND] = (Ctrl->C.set[LAKE]) ? Ctrl->C.fill[LAKE] : fill[PSCOAST_OCEAN];	/* Lakes and ponds-in-islands-in-lakes fill */
+	fill[PSCOAST_RIVER] = (Ctrl->C.set[RIVER]) ? Ctrl->C.fill[RIVER] : fill[PSCOAST_LAKE];		/* River-lake fill */
 	need_coast_base = (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active);
 	if (Ctrl->Q.active) need_coast_base = false;	/* Since we just end clipping */
 	if (Ctrl->G.active && Ctrl->S.active) {	/* Must check if any of then are transparent */
@@ -928,7 +952,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_map_basemap (GMT);
 	}
 
-	for (i = 0; i < 5; i++) if (fill[i].use_pattern) fill_in_use = true;
+	for (i = 0; i < PSCOAST_NFILL; i++) if (fill[i].use_pattern) fill_in_use = true;
 
 	if (fill_in_use && !clobber_background) {	/* Force clobber when fill is used since our routine cannot deal with clipped fills */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Pattern fill requires oceans to be painted first\n");
@@ -961,11 +985,11 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		recursive = false;
 		if (!Ctrl->S.active) {	/* Since we are painting wet areas we must now reset them to white */
 			if (GMT->current.map.frame.paint[GMT_Z])	/* Let ocean color match cancas fill color */
-				fill[0] = GMT->current.map.frame.fill[GMT_Z];
+				fill[PSCOAST_OCEAN] = GMT->current.map.frame.fill[GMT_Z];
 			else
-				gmt_init_fill (GMT, &fill[0], 1.0, 1.0, 1.0);	/* Default Ocean color = white */
+				gmt_init_fill (GMT, &fill[PSCOAST_OCEAN], 1.0, 1.0, 1.0);	/* Default Ocean color = white */
 		}
-		fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[0];	/* If lake not set then use ocean */
+		fill[PSCOAST_LAKE] = fill[PSCOAST_POND] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[PSCOAST_OCEAN];	/* If lake not set then use ocean */
 	}
 
 	if (clobber_background) {	/* Paint entire map as ocean first, then lay land on top */
@@ -1035,7 +1059,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 		bin = c.bins[ind];
 #ifdef DEBUG
-		if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
+		if (pscoast_skip_if_debug (Ctrl, bin)) continue;
 #endif
 		if ((err = gmt_get_shore_bin (GMT, ind, &c)) != 0) {
 			GMT_Report (API, GMT_MSG_ERROR, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
@@ -1200,7 +1224,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 			bin = r.bins[ind];
 
 #ifdef DEBUG
-			if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
+		if (pscoast_skip_if_debug (Ctrl, bin)) continue;
 #endif
 			gmt_get_br_bin (GMT, ind, &r, Ctrl->I.list, Ctrl->I.n_rlevels);
 
@@ -1270,7 +1294,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			bin = b.bins[ind];
 #ifdef DEBUG
-			if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
+		if (pscoast_skip_if_debug (Ctrl, bin)) continue;
 #endif
 			gmt_get_br_bin (GMT, ind, &b, Ctrl->N.list, Ctrl->N.n_blevels);
 

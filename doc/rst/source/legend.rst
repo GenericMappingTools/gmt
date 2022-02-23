@@ -37,7 +37,7 @@ Description
 -----------
 
 Makes legends that can be overlaid on maps. It reads
-specific legend-related information from an input file [or stdin].
+specific legend-related information from an input file [or standard input].
 Unless otherwise noted, annotations will be made using the primary
 annotation font and size in effect (i.e., :term:`FONT_ANNOT_PRIMARY`)
 
@@ -57,10 +57,12 @@ Required Arguments
 
     .. include:: explain_refpoint.rst_
 
-    Append **+w**\ *width*\ [/*height*] to set
-    the width (and height) of the legend box in plot coordinates (inches, cm, etc.).
-    If *height* is zero or not given then we estimate *height* based the expected
-    vertical extent of the items to be placed.
+    Append **+w**\ *width*\ [/*height*] to set the width (and height) of the legend box
+    in plot coordinates (inches, cm, etc.). **Note**: If **+w** is not given then we compute
+    the width within the *Postscript* code.  Currently, this is only possible if just
+    legend codes **D**, **H**, **L**, **S**, or **V** are used and that the number of symbol
+    columns (**N**) is 1. If *height* is zero or not given then we estimate *height* based
+    the expected vertical extent of the items to be placed.
     By default, the anchor point on the legend is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
@@ -92,6 +94,8 @@ Optional Arguments
 
     .. include:: explain_-F_box.rst_
 
+    **Note**: If legend *width* is not set via **-D** then modifier **+r** in **-F** is disabled.
+
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
     :start-after: **Syntax**
@@ -102,8 +106,8 @@ Optional Arguments
 **-M**
     Modern mode only: Read both (1) the hidden auto-generated legend information file created by
     plotting-modules' **-l** option and (2) additional information from input file(s) given on the
-    command line (or via *stdin*) [hidden file only].  For classic mode an input file must be
-    given or else we will read from *stdin*.
+    command line (or via standard input) [hidden file only].  For classic mode an input file must be
+    given or else we will read from standard input.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -253,9 +257,9 @@ Legend Codes
     of the column, with the optional explanatory *text* starting *dx2*
     from the margin, printed with :term:`FONT_ANNOT_PRIMARY`. If *dx1* is given
     as **-** then it is automatically computed from half the largest symbol size.
-    If *dx2* is given as **-** then it is automatically computed as 1.5
-    times the largest symbol size.  Use **-** if
-    no *fill* or outline (*pen*) is required. Alternatively, the *fill*
+    If *dx2* is given as **-** then it is automatically computed as the largest
+    symbol size plus one character width at the current annotation font size.
+    Use **-** if no *fill* or outline (*pen*) is required. Alternatively, the *fill*
     may be specified indirectly via z=\ *value* and the color is assigned
     via the CPT look-up (requires a prior **A** code).  When plotting just a
     symbol, without text, *dx2* and *text* can be omitted.  The *dx1* value
@@ -271,9 +275,9 @@ Legend Codes
     Note that for a line segment you should use the horizontal dash symbol (**-**).
     If just a single size if given then we will provide reasonable
     arguments to plot the symbol  (See `Defaults`_).
-    Alternatively, combine the required
-    arguments into a single, comma-separated string and use that as the
-    symbol size (again, see :doc:`plot` for details on the arguments needed).
+    Alternatively, combine the required arguments into a single, comma-separated
+    string and use that as the symbol size (again, see :doc:`plot` for details on
+    the arguments needed).
 **T** *paragraph-text*
     One or more of these **T** records with *paragraph-text* printed
     with :term:`FONT_ANNOT_PRIMARY`. To specify special positioning and
@@ -295,8 +299,12 @@ Defaults
 When attributes are not provided, or extended symbol information (for symbols taking more than just an overall size) are
 not given as comma-separated quantities, we will provide the following defaults:
 
+Geographic symbols: If *size* is given as **-** then we default to the character height at the current annotation font size.
+
+Line/vector: If *size* is given as **-** then we default to a length of 2.5 times the character width at the current annotation font size.
+
 Front: The *size* argument is *length*\ [/*gap*\ [*ticklength*]]. Front symbol is left-side (here, that means upper side) box,
-with *ticklength* set 30% of the given symbol *length (if not specified separately), and *gap* defaulting to -1 (one
+with *ticklength* set 30% of the given symbol *length* (if not specified separately), and *gap* defaulting to -1 (one
 entered front symbol) if not specified.  Modifiers to the symbol argument can be provided.
 
 Vector: Head size is 30% of given symbol size.

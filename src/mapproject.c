@@ -1,19 +1,19 @@
 /*--------------------------------------------------------------------
-*
-*	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
-*	See LICENSE.TXT file for copying and redistribution conditions.
-*
-*	This program is free software; you can redistribute it and/or modify
-*	it under the terms of the GNU Lesser General Public License as published by
-*	the Free Software Foundation; version 3 or any later version.
-*
-*	This program is distributed in the hope that it will be useful,
-*	but WITHOUT ANY WARRANTY; without even the implied warranty of
-*	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*	GNU Lesser General Public License for more details.
-*
-*	Contact info: www.generic-mapping-tools.org
-*--------------------------------------------------------------------*/
+ *
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
+ *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: mapproject reads a pair of coordinates [+ optional data fields] from
  * standard input or file(s) and transforms the coordinates according to the
@@ -34,6 +34,8 @@
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
  * Version:	6 API
+ *
+ * Note on KEYS: LD(= means -L takes an optional input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -750,7 +752,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -1049,7 +1051,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 				n_output = 2;	break;
 			case GMT_MP_M_RSTRING:
 				tmode = GMT_COL_FIX;	/* Fall through on purpose here */
-			case GMT_MP_M_REGION: GMT_MP_M_RSTRING:
+			case GMT_MP_M_REGION:
 				if (GMT->current.proj.search && (error = gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false)))
 					Return (GMT_RUNTIME_ERROR);
 				gmt_M_memcpy (w_out, GMT->common.R.wesn, 4, double);

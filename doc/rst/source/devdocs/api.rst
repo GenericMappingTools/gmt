@@ -375,7 +375,7 @@ The top-level grid structure, holding both header and data array, depends on the
        char   remark[GMT_GRID_REMARK_LEN160];  /* Comments regarding this data set */
    };
 
-   The basic grid header holds the metadata written to grid files.
+The basic grid header holds the metadata written to grid files.
 
 GMT images
 ~~~~~~~~~~

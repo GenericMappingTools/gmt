@@ -145,7 +145,7 @@ Optional Arguments
 
 **-W**\ *n\_try*
     Get *n\_try* bootstrap estimates of the maximum CVA location; the
-    longitude and latitude results are written to stdout [Default is no
+    longitude and latitude results are written to standard output [Default is no
     bootstrapping]. Cannot be used with **-M**.
 
 .. _-Z:

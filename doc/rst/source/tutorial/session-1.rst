@@ -300,7 +300,7 @@ to the common switches we may need to use some of several coast-specific options
 ====== ================================================================================================
 Option Purpose
 ====== ================================================================================================
-**-A** Exclude small features or those of high hierarchical levels (see :doc:`GSHHG </datasets/gshhg>`)
+**-A** Exclude small features or those of high hierarchical levels (see `GSHHG <https://github.com/GenericMappingTools/gshhg-gmt#readme>`_.)
 **-D** Select data resolution (**f**\ ull, **h**\ igh, **i**\ ntermediate, **l**\ ow, or **c**\ rude)
 **-G** Set color of dry areas (default does not paint)
 **-I** Draw rivers (chose features from one or more hierarchical categories)

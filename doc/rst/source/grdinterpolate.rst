@@ -122,7 +122,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *x/y*\|\ *pointfile*\ [**+h**\ *header*]
-    Rather that compute gridded output, create tile/spatial series through the stacked
+    Rather that compute gridded output, create time or spatial series through the stacked
     grids at the given point (*x/y*) or the list of points in *pointfile*.  If you need
     a series of points defined by an origin and an end point or similar, you can make
     such a file first with :doc:`project`.  By default we simply sample the cube at
@@ -142,7 +142,9 @@ Optional Arguments
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     For details on array creation, see `Generate 1D Array`_.  **Note**: If **-Z** is set
     and no output times are set with **-T** we simply rewrite the grid-produced cube as
-    a 3-D data cube file and exit.
+    a 3-D data cube file and exit. Also, for **-E** and **-S** you may also just give
+    a range via -T**\ *min/max* to limit the layers considered, with no interpolation
+    between the selected layers.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

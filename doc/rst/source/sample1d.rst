@@ -14,6 +14,7 @@ Synopsis
 
 **gmt sample1d** [ *table* ]
 [ |-A|\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+d**][**+l**] ]
+[ |-E| ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] ]
@@ -57,7 +58,7 @@ Required Arguments
     This is one or more ASCII [of binary, see
     **-bi**] files with one column containing the
     independent *time* variable (which must be monotonically in/de-creasing)
-    and the remaining columns holding other data values. If no file is
+    and any number of optional columns holding other data values. If no file is
     provided, **sample1d** reads from standard input.
 
 Optional Arguments
@@ -81,6 +82,14 @@ Optional Arguments
     **Note**: Calculation mode for loxodromes is spherical, hence **-je**
     cannot be used in combination with **+l**.
 
+.. _-E:
+
+**-E**
+    If the input dataset contains records with trailing text then we will attempt
+    to add these to output records that exactly match the input times.  Output records
+    that have no matching input record times will have no trailing text appended [Default
+    ignores trailing text].
+
 .. _-F:
 
 **-Fl**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**]
@@ -102,7 +111,11 @@ Optional Arguments
 
 **-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**]
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
-    For details on array creation, see `Generate 1D Array`_.
+    For details on array creation, see `Generate 1D Array`_.  **Note**: For resampling of spatial
+    (*x,y* or *lon,lat*) series you must give an increment with a valid distance unit;
+    see `Units`_ for map units or use **c** if plain Cartesian coordinates.  The first two
+    columns must contain the spatial coordinates.  From these we calculate distances in the
+    chosen units and interpolate using this parametric series.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -188,56 +201,40 @@ Examples
 .. include:: explain_example.rst_
 
 To resample the file profiles.tdgmb, which contains
-(time,distance,gravity,magnetics,bathymetry) records, at 1km equidistant
-intervals using Akima's spline, use
-
-   ::
+(time,distance,gravity,magnetics,bathymetry) records, at 1 km equidistant
+intervals using Akima's spline, use::
 
     gmt sample1d profiles.tdgmb -N1 -Fa -T1 > profiles_equi_d.tdgmb
 
 To resample the file depths.dt at positions listed in the file
-grav_pos.dg, using a cubic spline for the interpolation, use
-
-   ::
+grav_pos.dg, using a cubic spline for the interpolation, use::
 
     gmt sample1d depths.txt -Tgrav_pos.dg -Fc > new_depths.txt
 
 To resample the file points.txt every 0.01 from 0-6, using a cubic spline for the
-interpolation, but output the first derivative instead (the slope), try
-
-   ::
+interpolation, but output the first derivative instead (the slope), try::
 
     gmt sample1d points.txt -T0/6/0.01 -Fc+d1 > slopes.txt
 
 To resample the file track.txt which contains lon, lat, depth every 2
-nautical miles, use
-
-   ::
+nautical miles, use::
 
     gmt sample1d track.txt -T2n -AR > new_track.txt
 
 To do approximately the same, but make sure the original points are
-included, use
-
-   ::
+included, use::
 
     gmt sample1d track.txt -T2n -Af > new_track.txt
 
-To obtain a rhumb line (loxodrome) sampled every 5 km instead, use
-
-   ::
+To obtain a rhumb line (loxodrome) sampled every 5 km instead, use::
 
     gmt sample1d track.txt -T5k -AR+l > new_track.txt
 
-To sample temperatures.txt every month from 2000 to 2018, use
-
-   ::
+To sample temperatures.txt every month from 2000 to 2018, use::
 
     gmt sample1d temperatures.txt -T2000T/2018T/1o > monthly_temp.txt
 
-To use a smoothing spline on a topographic profile for a given fit parameter, try
-
-   ::
+To use a smoothing spline on a topographic profile for a given fit parameter, try::
 
     gmt sample1d @topo_crossection.txt -T300/500/0.1 -Fs0.001 > smooth.txt
 

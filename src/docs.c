@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -139,7 +139,7 @@ EXTERN_MSC int GMT_docs (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			else if (print_url) {
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting local file %s to stdout\n", name);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting local file %s to standard output\n", name);
 				printf ("%s\n", opt->arg);
 			}
 			else {	/* Open in suitable viewer */
@@ -299,7 +299,7 @@ EXTERN_MSC int GMT_docs (void *V_API, int mode, void *args) {
 			called = true;
 
 			if (print_url) {
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting URL %s to stdout\n", URL);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting URL %s to standard output\n", URL);
 				printf ("%s\n", URL);
 			}
 			else {

@@ -110,7 +110,7 @@ int five_psoid(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, int body_ty
 	bool first = true;
 	double a, b, c, z_c, x0, y0, z_top, z_bot;
 	double dfi, d_sli, ai0, ai1, bi0, bi1, zi0, zi1;
-	double d_tet, half_width_x, half_width_y, dx, dy, dz, rad_x, rad_y;
+	double d_tet, half_width_x, dx, dy, rad_x, rad_y;
 	struct GRAVMAG_XY *ellipse[2];
 	
 	i_tri = Ctrl->n_raw_triang;		/* Start over any previous raw triang collection */
@@ -154,9 +154,8 @@ int five_psoid(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, int body_ty
 
 	dfi = (TWO_PI / npts_circ);		d_tet = (M_PI_2 / n_slices);
 	d_sli = c / n_slices;
-	half_width_x = 0.5 * a;			half_width_y = 0.5 * b;
+	half_width_x = 0.5 * a;
 	dx = n_sigmas * a / n_slices;	dy = n_sigmas * b / n_slices; 
-	dz = c / n_slices;	/* repeated but ok */
 
 	for (j = 0; j < Ctrl->n_slices; j++) {
 		j1 = j + 1;

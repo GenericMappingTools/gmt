@@ -62,7 +62,7 @@ provide a second file with network information, such as a triangular
 mesh used for finite element modeling. In addition to contours, the area
 between contours may be painted according to the CPT.
 Alternatively, the *x, y, z* positions of the contour lines may be saved to
-one or more output files (or stdout) and no plot is produced.
+one or more output files (or standard output) and no plot is produced.
 
 Required Arguments
 ------------------
