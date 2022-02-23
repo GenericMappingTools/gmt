@@ -3,5 +3,5 @@
 gmt begin GMT_obl_baja
 	gmt set GMT_THEME cookbook
 	gmt set MAP_ANNOT_OBLIQUE lon_horizontal,lat_horizontal,tick_extend
-	gmt coast -R122W/35N/107W/22N+r -JOa120W/25N/-30/6c+v -Gsienna -Ba5g5 -B+f -N1/1p -EUS+gburlywood -Smintcream -TdjBL+w0.5i+l
+	gmt coast -R122W/35N/107W/22N+r -JOa120W/25N/-30/6c+v -Gsienna -Ba5g5 -B+f -N1/1p -EUS+gburlywood -Smintcream -TdjBL+l
 gmt end show

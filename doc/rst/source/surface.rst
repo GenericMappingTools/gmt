@@ -121,7 +121,7 @@ Optional Arguments
 
 .. |Add_-J| replace::
     Select the data map projection. This projection is only used to add a referencing info
-    to the grid formats that support it. E.g. netCDF, GeoTIFF, and others supported by GDAL.
+    to the grid formats that support it. E.g., netCDF, GeoTIFF, and others supported by GDAL.
 .. include:: explain_-J.rst_
     :start-after: **Syntax**
     :end-before: **Description**

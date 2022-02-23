@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Compute FAA, VGG, and geoid over synthetic conical seamount
+
 ps=fields.ps
 order=2
 dx=1

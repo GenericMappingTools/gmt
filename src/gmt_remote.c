@@ -1,16 +1,16 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *      This program is free software; you can redistribute it and/or modify
- *      it under the terms of the GNU Lesser General Public License as published by
- *      the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- *      This program is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *      GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
@@ -214,10 +214,12 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, in
 	}
 	if ((k = gmtremote_parse_version (line))) {
 		fclose (fp);
+		gmt_chop (line);
 		if (k == 2)
 			GMT_Report (API, GMT_MSG_NOTICE, "Your GMT version too old to use the remote data mechanism - please upgrade to %s or later\n", line);
 		else
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to parse \"%s\" to extract GMT version\n", line);
+		*n = 0;	/* No good */
 		return NULL;
 	}	
 	if ((I = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_INFO)) == NULL) {
@@ -317,7 +319,7 @@ GMT_LOCAL int gmtremote_compare_key (const void *item_1, const void *item_2) {
 }
 
 int gmtremote_wind_to_file (const char *file) {
-	int k = strlen (file) - 2;	/* This jumps past any trailing / for tiles */
+	int k = (int)(strlen (file) - 2);	/* This jumps past any trailing / for tiles */
 	while (k >= 0 && file[k] != '/') k--;
 	return (k+1);
 }
@@ -465,7 +467,7 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	 * 2. Users who do not care about registration.  If so, they get p if available. */
 	char newfile[GMT_LEN256] = {""}, dir[GMT_LEN128] = {""}, reg[2] = {'p', 'g'};
 	char *file = NULL, *infile = NULL, *ext = NULL, *c = NULL, *p = NULL, *q = NULL;
-	int k_data, k;
+	int k_data, k, kstart = 0, kstop = 2, kinc = 1;
 	size_t L;
 	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') return;
 	if (gmt_M_file_is_memory (file)) return;	/* Not a remote file for sure */
@@ -477,6 +479,7 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	ext = gmt_chop_ext (infile);
 	/* If the remote file is found then there is nothing to do */
 	if ((k_data = gmt_remote_dataset_id (API, infile)) == GMT_NOTSET) goto clean_up;
+	API->remote_id = k_data;
 	L = strlen (API->remote_info[k_data].dir) - 1;	/* Length of dir minus trailing slash */
 	strncpy (dir, API->remote_info[k_data].dir, L);	dir[L] = '\0';	/* Duplicate dir without slash */
 	p = strrchr (dir, '/') + 1;	/* Start of final subdirectory (skipping over the slash we found) */
@@ -484,7 +487,10 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	if (q == NULL) return;	/* Should never happen but definitively nothing more to do here - just a safety valve */
 	q += strlen (p);	/* Move to the end of family name after which any registration codes would be found */
 	if (strstr (q, "_p") || strstr (q, "_g")) goto clean_up;	/* Already have the registration codes */
-	for (k = 0; k < 2; k++) {
+	if (API->use_gridline_registration) {	/* Switch order so checking for g first, then p */
+		kstart = 1; kstop = -1; kinc = -1;
+	}
+	for (k = kstart; k != kstop; k += kinc) {
 		/* First see if this _<reg> version exists of this dataset */
 		sprintf (newfile, "%s_%c", infile, reg[k]);
 		if ((k_data = gmt_remote_dataset_id (API, newfile)) != GMT_NOTSET) {
@@ -498,6 +504,8 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 			}
 			gmt_M_str_free (*file_ptr);
 			*file_ptr = strdup (newfile);
+			API->remote_id = k_data;
+			GMT_Report (API, GMT_MSG_DEBUG, "Input remote grid modified to have registration: %s\n", newfile);
 			goto clean_up;
 		}
 	}
@@ -981,17 +989,24 @@ void gmt_refresh_server (struct GMTAPI_CTRL *API) {
 	 *   sizes, or gone altogether).  In all these case we delete the file so that when the
 	 *   user requests it, it forces a download of the updated file.
 	 */
+	int err1 = GMT_NOERROR, err2 = GMT_NOERROR;
 
-	if (gmtremote_refresh (API, GMT_INFO_INDEX))	/* Watch out for changes on the server info once a day */
+	if ((err1 = gmtremote_refresh (API, GMT_INFO_INDEX)))	/* Watch out for changes on the server info once a day */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Unable to obtain remote information file %s\n", GMT_INFO_SERVER_FILE);
 	else if (API->remote_info == NULL) {	/* Get server file attribution info if not yet loaded */
 		if ((API->remote_info = gmtremote_data_load (API, &API->n_remote_info)) == NULL) {	/* Failed to load the info file */
+			err1 = GMT_RUNTIME_ERROR;
 			GMT_Report (API, GMT_MSG_INFORMATION, "Unable to read server information file\n");
 		}
 	}
 
-	if (gmtremote_refresh (API, GMT_HASH_INDEX)) {	/* Watch out for changes on the server hash once a day */
+	if ((err2 = gmtremote_refresh (API, GMT_HASH_INDEX))) {	/* Watch out for changes on the server hash once a day */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Unable to obtain remote hash table %s\n", GMT_HASH_SERVER_FILE);
+	}
+
+	if (err1 || err2) {	/* SCrewed, might as well turn off */
+		API->GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;	/* Temporarily turn off auto download in this session only */
+		API->GMT->current.io.internet_error = true;		/* No point trying again */			
 	}
 }
 

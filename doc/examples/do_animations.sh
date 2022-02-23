@@ -17,7 +17,7 @@ fi
 for i in anim??; do
     echo "Running animation ${i}"
     cd $i
-    bash $i.sh animate
+    bash $i.sh
     cd ..
 done
 

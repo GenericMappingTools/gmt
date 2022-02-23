@@ -1,6 +1,5 @@
 #
-#
-# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -47,8 +46,7 @@
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
 
-# Exclude optional GDAL, GEOS ,PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
-#set (GMT_EXCLUDE_GDAL TRUE)
+# Exclude optional GEOS, PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
 #set (GMT_EXCLUDE_GEOS TRUE)
 #set (GMT_EXCLUDE_PCRE TRUE)
 #set (GMT_EXCLUDE_PCRE2 TRUE)
@@ -200,6 +198,9 @@
 # Uncomment the following line to enable running low-level C tests of the API
 #set (DO_API_TESTS ON)
 
+# Uncomment the following line to enable running tests of the GMT supplements
+#set (DO_SUPPLEMENT_TESTS ON)
+
 # Uncomment the following line if you need to run the full tests suite using
 # the gmtserver "test" distribution instead of the default server.
 # You may wish to rename existing cache and server dirs so you can restore afterwards
@@ -241,6 +242,8 @@
 #add_definitions(-DUSE_MODULE_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for module options
 #add_definitions(-DEXPORT_GMTLIB)				# Turn on to access normally un-exported or static gmtlib functions from external tools
 #add_definitions(-DNO_THEMES) 	                # Turn off implementation of GMT_THEME for debugging
+# Uncomment this statement if you are a developer debugging PSL and want exact line coordinates:
+#add_definitions(-DPSL_EXACT_LINE)
 
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}") # recommended even for release build
 #set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")            # extra warnings

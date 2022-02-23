@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -153,7 +153,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "t: Tables:  Same as D but the counts resets per table.");
 	GMT_Usage (API, 1, "\n-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>]");
 	GMT_Usage (API, -2, "Return textstring -Rw/e/s/n to nearest multiple of <dx>/<dy> (assumes at least two columns). "
-		"Give -Ie to just report the min/max extent in the -Rw/e/s/n string (no multiples). "
+		"Give -Ie to just report the min/max extent in the -Rw/e/s/n string (no multiples). Give -I<dx>/0 or -I0/<dy> for mixed exact and rounded result. "
 		"If -C is set then no -R string is issued.  Instead, the number of increments "
 		"given determines how many columns are rounded off to the nearest multiple. "
 		"If only one increment is given we also use it for the second column (for backwards compatibility). "
@@ -223,7 +223,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Flags are a|f|s.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Flags are a|t|s.\n");
 						break;
 				}
 				break;
@@ -378,7 +378,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				/* Otherwise we fall through on purpose to get an error */
 				/* Intentionally fall through */
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -396,7 +396,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 		Ctrl->D.ncol = 2;
 	}
 	if (Ctrl->I.active && !(Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)) {	/* SHould have increments */
-		for (k = 0; k < Ctrl->I.ncol; k++) if (Ctrl->I.inc[k] <= 0.0) {
+		for (k = 0; k < Ctrl->I.ncol; k++) if (Ctrl->I.inc[k] < 0.0) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -I: Must specify positive increment for column %d.\n", k);
 			n_errors++;
 		}
@@ -655,16 +655,16 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					do_report = false;
 				}
 				else if (Ctrl->L.active) { /* Round down to nearest inc for this segment or table */
-					wesn[XLO]  = (ceil ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
-					wesn[XHI]  = (floor  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
-					wesn[YLO] = (ceil ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
-					wesn[YHI] = (floor  ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
+					wesn[XLO] = (Ctrl->I.inc[GMT_X] > 0.0) ? (ceil  ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X] : xyzmin[GMT_X];
+					wesn[XHI] = (Ctrl->I.inc[GMT_X] > 0.0) ? (floor ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X] : xyzmax[GMT_X];
+					wesn[YLO] = (Ctrl->I.inc[GMT_Y] > 0.0) ? (ceil  ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y] : xyzmin[GMT_Y];
+					wesn[YHI] = (Ctrl->I.inc[GMT_Y] > 0.0) ? (floor ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y] : xyzmax[GMT_Y];
 				}
 				else { /* Round up to nearest inc */
-					wesn[XLO]  = (floor ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
-					wesn[XHI]  = (ceil  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
-					wesn[YLO] = (floor ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
-					wesn[YHI] = (ceil  ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
+					wesn[XLO] = (Ctrl->I.inc[GMT_X] > 0.0) ? (floor ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X] : xyzmin[GMT_X];
+					wesn[XHI] = (Ctrl->I.inc[GMT_X] > 0.0) ? (ceil  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X] : xyzmax[GMT_X];
+					wesn[YLO] = (Ctrl->I.inc[GMT_Y] > 0.0) ? (floor ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y] : xyzmin[GMT_Y];
+					wesn[YHI] = (Ctrl->I.inc[GMT_Y] > 0.0) ? (ceil  ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y] : xyzmax[GMT_Y];
 					if (Ctrl->D.active) {	/* Center the selected region * better */
 						double off = 0.5 * (xyzmin[GMT_X] + xyzmax[GMT_X] - wesn[XLO] - wesn[XHI]);
 						if (Ctrl->D.inc[GMT_X] > 0.0) off = rint (off / Ctrl->D.inc[GMT_X]) * Ctrl->D.inc[GMT_X];
@@ -774,8 +774,8 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 							high = wesn[YHI];
 						}
 						else if (Ctrl->L.active) {
-							low  = (Ctrl->I.active) ? ceil  (xyzmin[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmin[col];
-							high = (Ctrl->I.active) ? floor (xyzmax[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmax[col];
+							low  = (Ctrl->I.active && Ctrl->I.inc[col] > 0.0) ? ceil  (xyzmin[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmin[col];
+							high = (Ctrl->I.active && Ctrl->I.inc[col] > 0.0) ? floor (xyzmax[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmax[col];
 							if (low  > xyzminL[col]) xyzminL[col] = low;
 							if (high < xyzmax[col])  xyzmaxL[col] = high;
 							if (do_report) {	/* Last time so finalize */
@@ -784,8 +784,8 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 							}
 						}
 						else {
-							low  = (Ctrl->I.active) ? floor (xyzmin[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmin[col];
-							high = (Ctrl->I.active) ? ceil  (xyzmax[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmax[col];
+							low  = (Ctrl->I.active && Ctrl->I.inc[col] > 0.0) ? floor (xyzmin[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmin[col];
+							high = (Ctrl->I.active && Ctrl->I.inc[col] > 0.0) ? ceil  (xyzmax[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmax[col];
 						}
 					}
 					else {	/* Just the facts, ma'am */

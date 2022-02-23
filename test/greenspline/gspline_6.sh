@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#
 
 ps=gspline_6.ps
 

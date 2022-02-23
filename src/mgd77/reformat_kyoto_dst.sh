@@ -3,7 +3,7 @@
 # Example command to reformat the DST indices downloaded from
 # http://wdc.kugi.kyoto-u.ac.jp/dstae/index.html
 #
-# Thanks to Michael Chandler
+# Thanks to Michael Hamilton (nee Chandler)
 
 
 

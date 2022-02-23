@@ -1,0 +1,5 @@
+outs:
+- md5: c09c2ddcb41f98eeea8782eb1aea186d.dir
+  size: 5999889
+  nfiles: 11
+  path: spotter
