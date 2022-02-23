@@ -121,14 +121,15 @@ Optional Arguments
     or an HTML hexadecimal color (e.g. #aabbcc ).
     If **-S** is set, let symbol fill color be
     determined by the *value* in the fourth column. Additional fields are
-    shifted over by one column (optional size would be in 5th rather than
+    shifted over by one column (optional *size* would be in 5th rather than
     4th field, etc.). An exception to this rule is for multi-band 3-D
     columns where each band gets its color from each slice in the CPT.
-    If **-S** is not set, then we expect the user
-    to supply a multisegment file (where each segment header contains a
-    **-Z**\ *value* string. The *vauel* will control the color of the line or
-    polygon (if **-L** is set) via the CPT.  If modern mode and no argument is given
-    then we select the current CPT.
+    If **-S** is not set, then it expects the user to
+    supply a multisegment file where each segment header contains a
+    **-Z**\ *value* string. The *value* will control the color of the line or
+    polygon (if **-L** is set) via the CPT.  Alternatively, see the **-Z**
+    option for how to assign *z*-values. **Note**: If modern mode and no
+    argument is given then we select the current CPT.
 
 .. _-D:
 
@@ -175,8 +176,8 @@ Optional Arguments
     append **+yb**\|\ **t**\|\ *y0* to connect first and last point to anchor points at either *ymin*, *ymax*, or *y0*.
     Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
     All constructed polygons are assumed to have a constant *z* value.
-    **Note**: When options like **-G** and **-Z** are passed via segment headers you will need **-L** to ensure
-    your segments are interpreted as polygons.
+    **Note**: When option **-Z** is passed via segment headers you will need **-L** to ensure
+    your segments are interpreted as polygons, else they are seen as lines.
 
 .. _-N:
 
@@ -236,7 +237,7 @@ Optional Arguments
     Instead of specifying a symbol or polygon fill and outline color via **-G** and **-W**,
     give both a *value* via **-Z** and a color lookup table via **-C**.  Alternatively,
     give the name of a *file* with one z-value (read from the last column) for each polygon in the input data.
-    To apply the color obtain to a fill, use **-G+z**; to apply it to the pen color, append **+z** to **-W**.
+    To apply the color obtained to a fill, use **-G+z**; to apply it to the pen color, append **+z** to **-W**.
 
 .. include:: explain_-aspatial.rst_
 
@@ -294,17 +295,13 @@ Examples
 To plot blue columns (width = 1.25 cm) at the positions listed in the
 file heights.xyz on a 3-D projection of the space (0-10), (0-10),
 (0-100), with tickmarks every 2, 2, and 10, viewing it from the
-southeast at 30 degree elevation, use:
-
-   ::
+southeast at 30 degree elevation::
 
     gmt plot3d heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c \
               -Gblue -Bx2+lXLABEL -By2+lYLABEL -Bz10+lZLABEL -B+t"3-D PLOT" -p135/30 \
               -U+c -W -pdf heights
 
-To plot a point with color and outline dictated by the *t.cpt* file for the *level*-value 65, try
-
-   ::
+To plot a point with color and outline dictated by the *t.cpt* file for the *level*-value 65::
 
     echo 175 30 0 | gmt plot3d -R150/200/20/50 -JM15c -B -Sc0.5c -Z65 -G+z -Ct.cpt -pdf map
 

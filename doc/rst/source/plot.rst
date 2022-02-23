@@ -23,7 +23,7 @@ Synopsis
 [ |-G|\ *fill*\|\ **+z** ]
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
-[ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*] ]
+[ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] ]
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-S|\ [*symbol*][*size*] ]
 [ |-T| ]
@@ -111,13 +111,15 @@ Optional Arguments
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
     If **-S** is set, let symbol fill color be
-    determined by the z-value in the third column. Additional fields are
-    shifted over by one column (optional size would be 4th rather than 3rd
-    field, etc.). If **-S** is not set, then it expects the user to
+    determined by the *z*-value in the third column. Additional fields are
+    shifted over by one column (optional *size* would be 4th rather than 3rd
+    field, etc.).
+    If **-S** is not set, then it expects the user to
     supply a multisegment file where each segment header contains a
-    **-Z**\ *val* string. The *val* will control the color of the line or
-    polygon (if **-L** is set) via the CPT.  If modern mode and no argument is given
-    then we select the current CPT.
+    **-Z**\ *value* string. The *value* will control the color of the line or
+    polygon (if **-L** is set) via the CPT.  Alternatively, see the **-Z**
+    option for how to assign *z*-values. **Note**: If modern mode and no
+    argument is given then we select the current CPT.
 
 .. _-D:
 
@@ -204,7 +206,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*] |ex_OPT-L|
+**-L**\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yb**\|\ **t**\|\ *y0*][**+p**\ *pen*] |ex_OPT-L|
     Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment.
     Append **+d** to build symmetrical envelope around y(x) using deviations dy(x) given in extra column 3.
     Append **+D** to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from extra columns 3-4.
@@ -212,8 +214,8 @@ Optional Arguments
     Append **+xl**\|\ **r**\|\ *x0* to connect first and last point to anchor points at either *xmin*, *xmax*, or *x0*, or
     append **+yb**\|\ **t**\|\ *y0* to connect first and last point to anchor points at either *ymin*, *ymax*, or *y0*.
     Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
-    **Note**: When options like **-G** and **-Z** are passed via segment headers you will need **-L** to ensure
-    your segments are interpreted as polygons.
+    **Note**: When option **-Z** is passed via segment headers you will need **-L** to ensure
+    your segments are interpreted as polygons, else they are seen as lines.
 
 .. _-N:
 
@@ -281,7 +283,7 @@ Optional Arguments
     Instead of specifying a symbol or polygon fill and outline color via **-G** and **-W**,
     give both a *value* via **-Z** and a color lookup table via **-C**.  Alternatively,
     give the name of a *file* with one z-value (read from the last column) for each polygon in the input data.
-    To apply the color obtain to a fill, use **-G+z**; to apply it to the pen color, append **+z** to **-W**.
+    To apply the color obtained to a fill, use **-G+z**; to apply it to the pen color, append **+z** to **-W**.
 
 .. include:: explain_-aspatial.rst_
 
@@ -336,39 +338,29 @@ Examples
 
 To plot solid red circles (diameter = 0.2 cm) at the positions listed
 in the remote file DSDP.txt on a Mercator map at 0.3 cm/degree of the area 100E to
-160E, 20S to 30N, with automatic tick-marks and gridlines, use
-
-   ::
+160E, 20S to 30N, with automatic tick-marks and gridlines::
 
     gmt plot @DSDP.txt -R100/160/-20/30 -Jm0.3c -Sc0.2c -Gred -Bafg -pdf map
 
 To plot the xyz values in the file quakes.xyzm as circles with size
 given by the magnitude in the 4th column and color based on the depth in
-the third using the CPT rgb.cpt on a linear map, use
-
-   ::
+the third using the CPT rgb.cpt on a linear map::
 
     gmt plot quakes.xyzm -R0/1000/0/1000 -JX6i -Sc -Crgb -B200 -pdf map
 
 To plot the file trench.txt on a Mercator map, with white triangles with
-sides 0.25 inch on the left side of the line, spaced every 0.8 inch, use
-
-   ::
+sides 0.25 inch on the left side of the line, spaced every 0.8 inch::
 
     gmt plot trench.txt -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -B10 -pdf map
 
-To plot a circle with color dictated by the *t.cpt* file for the *z*-value 65, try
-
-   ::
+To plot a circle with color dictated by the *t.cpt* file for the *z*-value 65::
 
     echo 175 30 | gmt plot -R150/200/20/50 -JM15c -B -Sc0.5c -Z65 -Ct.cpt -G+z -pdf map
 
 To plot the data in the file misc.txt as symbols determined by the code in
 the last column, and with size given by the magnitude in the 4th column,
 and color based on the third column via the CPT chrome on a
-linear map, use
-
-   ::
+linear mape::
 
     gmt plot misc.txt -R0/100/-50/100 -JX6i -S -Cchrome -B20 -pdf map
 
@@ -377,9 +369,7 @@ straight Cartesian vectors, math circular vectors, or geo-vectors (these
 form small or great circles on the Earth).  These can have optional heads at either
 end, and heads may be the traditional arrow, a circle, or a terminal cross-line.
 To place a few vectors with
-a circle at the start location and an arrow head at the end, try
-
-   ::
+a circle at the start location and an arrow head at the end::
 
     gmt plot -R0/50/-50/50 -JX6i -Sv0.15i+bc+ea -Gyellow -W0.5p -Baf -pdf map << EOF
     10 10 45 2i
@@ -389,9 +379,7 @@ a circle at the start location and an arrow head at the end, try
 To plot vectors (red vector heads, solid stem) from the file data.txt that contains
 record of the form lon, lat, dx, dy, where dx, dy are the Cartesian
 vector components given in user units, and these user units should be converted
-to cm given the scale 3.60, try
-
-   ::
+to cm given the scale 3.60::
 
     gmt plot -R20/40/-20/0 -JM6i -Sv0.15i+e+z3.6c -Gred -W0.25p -Baf data.txt -pdf map
 

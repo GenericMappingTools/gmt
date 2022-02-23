@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -331,7 +331,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 
 			case 'M':	/* Geographic data */
@@ -340,7 +340,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 					if (gmt_M_is_cartesian (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'N':	/* Normalization */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -398,13 +398,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->A.active || Ctrl->D.active || Ctrl->E.active), "Must specify -A, -D, or -E\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->D.active, "Cannot specify both -A and -D\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->S.file, "Option -S: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->D.active, "Option -S: Requires -D\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->N.active && Ctrl->Q.mode == 2) && !Ctrl->G.file && !Ctrl->S.active, "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (Ctrl->N.set[0] && Ctrl->N.norm <= 0.0), "Option -N: Normalization amplitude must be > 0\n");
@@ -427,7 +429,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	bool bad, new_grid = false, separate = false;
 	int p[4], mx, error = 0;
-	unsigned int row, col, n, orig_pad[4];
+	openmp_int row, col;
+	unsigned int n, orig_pad[4];
 	uint64_t ij, ij0, n_used = 0;
 
 	char format[GMT_BUFSIZ] = {""}, buffer[GMT_GRID_REMARK_LEN160] = {""};
@@ -640,7 +643,7 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	reduction(+:ave_gradient)
 #endif
 #endif
-	for (row = 0, ij0 = 0ULL; row < Grid->header->n_rows; row++) {	/* ij0 is the index in a non-padded grid */
+	for (row = 0, ij0 = 0ULL; row < (openmp_int)Grid->header->n_rows; row++) {	/* ij0 is the index in a non-padded grid */
 		if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
 			lat = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Grid->header->inc[GMT_X] * cosd (lat);
@@ -654,7 +657,7 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 			x_factor = x_factor_set;
 			if (Ctrl->A.mode == GRDGRADIENT_FIX && Ctrl->A.two) x_factor2 = x_factor2_set;
 		}
-		for (col = 0; col < Grid->header->n_columns; col++, ij0++) {
+		for (col = 0; col < (openmp_int)Grid->header->n_columns; col++, ij0++) {
 			ij = gmt_M_ijp (Grid->header, row, col);	/* Index into padded grid (with at least 1 row/col padding) */
 			for (n = 0, bad = false; !bad && n < 4; n++) if (gmt_M_is_fnan (Grid->data[ij+p[n]])) bad = true;
 			if (bad) {	/* One of the 4-star corners = NaN; assign NaN answer and skip to next node */
@@ -738,14 +741,14 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 		double sum;
 		/* If the N or S poles are included then we only want a single estimate at these repeating points */
 		if (Grid->header->wesn[YLO] == -90.0 && Grid->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple N pole estimates */
-			for (col = 0, ij = gmt_M_ijp (Grid->header, 0, 0), sum = 0.0; col < Grid->header->n_columns; col++, ij++) sum += Grid->data[ij];
+			for (col = 0, ij = gmt_M_ijp (Grid->header, 0, 0), sum = 0.0; col < (openmp_int)Grid->header->n_columns; col++, ij++) sum += Grid->data[ij];
 			sum /= Grid->header->n_columns;	/* Average gradient */
-			for (col = 0, ij = gmt_M_ijp (Grid->header, 0, 0); col < Grid->header->n_columns; col++, ij++) Grid->data[ij] = (gmt_grdfloat)sum;
+			for (col = 0, ij = gmt_M_ijp (Grid->header, 0, 0); col < (openmp_int)Grid->header->n_columns; col++, ij++) Grid->data[ij] = (gmt_grdfloat)sum;
 		}
 		if (Grid->header->wesn[YLO] == -90.0 && Grid->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple S pole estimates */
-			for (col = 0, ij = gmt_M_ijp (Grid->header, Grid->header->n_rows - 1, 0), sum = 0.0; col < Grid->header->n_columns; col++, ij++) sum += Grid->data[ij];
+			for (col = 0, ij = gmt_M_ijp (Grid->header, Grid->header->n_rows - 1, 0), sum = 0.0; col < (openmp_int)Grid->header->n_columns; col++, ij++) sum += Grid->data[ij];
 			sum /= Grid->header->n_columns;	/* Average gradient */
-			for (col = 0, ij = gmt_M_ijp (Grid->header, Grid->header->n_rows - 1, 0); col < Grid->header->n_columns; col++, ij++) Grid->data[ij] = (gmt_grdfloat)sum;
+			for (col = 0, ij = gmt_M_ijp (Grid->header, Grid->header->n_rows - 1, 0); col < (openmp_int)Grid->header->n_columns; col++, ij++) Grid->data[ij] = (gmt_grdfloat)sum;
 		}
 	}
 

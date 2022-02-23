@@ -111,7 +111,11 @@ Optional Arguments
 
 **-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**]
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
-    For details on array creation, see `Generate 1D Array`_.
+    For details on array creation, see `Generate 1D Array`_.  **Note**: For resampling of spatial
+    (*x,y* or *lon,lat*) series you must give an increment with a valid distance unit;
+    see `Units`_ for map units or use **c** if plain Cartesian coordinates.  The first two
+    columns must contain the spatial coordinates.  From these we calculate distances in the
+    chosen units and interpolate using this parametric series.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -197,7 +201,7 @@ Examples
 .. include:: explain_example.rst_
 
 To resample the file profiles.tdgmb, which contains
-(time,distance,gravity,magnetics,bathymetry) records, at 1km equidistant
+(time,distance,gravity,magnetics,bathymetry) records, at 1 km equidistant
 intervals using Akima's spline, use::
 
     gmt sample1d profiles.tdgmb -N1 -Fa -T1 > profiles_equi_d.tdgmb

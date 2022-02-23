@@ -133,7 +133,7 @@ h1, h2, h3, h4, h5, h6 {
     border: 1px solid rgba(0,0,0,.125);
     border-radius: 0.5rem;
     margin: 0.25em;
-    flex: 0 1 175px;
+    flex: 0 1 200px;
 }
 
 .team-img {
@@ -144,14 +144,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .team-card-body {
-    padding: 1.25rem;
+    padding: 0.65rem;
     height: 135px;
 }
 
 .team-card-text {
     display: flex;
     margin-block-start: 0em;
-    margin-block-end: 0.2em;
+    margin-block-end: 0.0em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
 }

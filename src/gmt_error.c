@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -74,5 +74,5 @@ const char *gmt_error_string[] = {
 	/* GMT_MAP_NO_REGION */			"No map region selected",
 	/* GMT_MAP_NO_PROJECTION */		"No projection selected",
 	/* GMT_MAP_BAD_DIST_FLAG */		"Wrong flag passed to gmt_dist_array",
-	/* GMT_MAP_BAD_MEASURE_UNIT */		"Bad measurement unit.  Choose among " GMT_DIM_UNITS_DISPLAY,
+	/* GMT_MAP_BAD_MEASURE_UNIT */		("Bad measurement unit.  Choose among " GMT_DIM_UNITS_DISPLAY)
 };

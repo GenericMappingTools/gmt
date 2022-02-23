@@ -84,7 +84,10 @@ Required Arguments
     **-G** as many times as you have grids you wish to sample.
     Alternatively, use **-G+l**\ *list* to pass a list of file names.
     The grids are sampled and results are output in the order given.
-    (See :ref:`Grid File Formats <grd_inout_full>`).
+    (See :ref:`Grid File Formats <grd_inout_full>`). **Note**: If *gridfile*
+    is a remote global grid and no registration is specified then **grdtrack**
+    will default to gridline registration (instead of the default pixel registration)
+    to ensure all input points are inside the grid.
 
 Optional Arguments
 ------------------

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -339,7 +339,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -720,7 +720,8 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->E.active) {
-			unsigned int row, col, r, c;
+			openmp_int row, col;
+			unsigned int r, c;
 			float z, z0 = -FLT_MAX * Ctrl->E.val;
 			double *x = NULL, *y = NULL;
 			x = gmt_grd_coord (GMT, header, GMT_X);
@@ -1195,6 +1196,8 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 						HH->name, HH->is_netcdf4 ? "netCDF-4" : "classic", text);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
+			/* Print CPT status */
+			sprintf (record, "%s: Default CPT: ", HH->name);	if (HH->cpt) strcat (record, HH->cpt);	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		} /* !(Ctrl->T.active || (Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED))) */
 		else {
 			if (header->z_min < global_vmin) global_vmin = header->z_min;

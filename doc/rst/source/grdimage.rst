@@ -23,7 +23,7 @@ Synopsis
 [ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
 [ |-M| ]
 [ |-N| ]
-[ |-Q|\ [*color*] ]
+[ |-Q|\ [*color*][**+z**\ *value*] ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -49,8 +49,8 @@ intensities in the (-1,+1) range or instructions to derive intensities
 from the input data grid. Values outside this range will be
 clipped. Such intensity files can be created from the grid using
 :doc:`grdgradient` and, optionally, modified by :doc:`grdmath` or
-:doc:`grdhisteq`. A third alternative is available when GMT is built
-with GDAL support. Pass *image* which can be an image file (geo-referenced or not).
+:doc:`grdhisteq`. Alternatively , pass *image* which can be an image
+file (geo-referenced or not).
 In this case the image can optionally be illuminated with the
 file provided via the **-I** option. Here, if image has no coordinates
 then those of the intensity file will be used.
@@ -87,9 +87,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *out_img*\ [**=**\ *driver*]
-    Save an image in a raster format instead of PostScript. Use extension .ppm for a Portable
-    Pixel Map format which is the only raster format GMT can natively write. For GMT installations
-    configured with GDAL support there are more choices: Append *out_img* to select
+    Save an image in a raster format instead of PostScript. Append *out_img* to select
     the image file name and extension. If the extension is one of .bmp, .gif, .jpg, .png, or .tif
     then no driver information is required. For other output formats you must append the required
     GDAL driver. The *driver* is the driver code name used by GDAL; see your GDAL installation's
@@ -168,9 +166,10 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*color*]
+**-Q**\ [*color*][**+z**\ *value*]
     Make grid nodes with NaN values transparent, using the color-masking
     feature in PostScript Level 3 (the PS device must support PS Level 3).
+    Use **+z** to select another grid value than NaN.
     If input is instead an image then black pixels are set to be transparent;
     append an alternate color to select another pixel value to be transparent.
 
@@ -289,8 +288,7 @@ tickmarks every 5 units::
 
     gmt grdimage red.nc green.nc blue.nc -Jx10i -B5 -pdf rgbimage
 
-When GDAL support is built in: To create a sinusoidal projection of a
-remotely located Jessica Rabbit::
+To create a sinusoidal projection of a remotely located Jessica Rabbit::
 
     gmt grdimage -JI15c -Rd http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -pdf jess
 

@@ -226,10 +226,10 @@ Optional Arguments
     by the Ghostscript. In that case you really must use **-B** or use a
     slightly off-white color.
 
-    Together with **-V** it prints on screen the gdal_translate
-    (gdal_translate is a command line tool from the GDAL package)
+    Together with **-V** it prints on screen the *gdal_translate*
+    (*gdal_translate* is a command line tool from the `GDAL package <https://gdal.org/>`_)
     command that reads the raster + world file and creates a true
-    geotiff file. Append **+g** to do a system call to gdal_translate
+    geotiff file. Append **+g** to do a system call to *gdal_translate*
     and create a geoTIFF image right away. The output file will have a
     .tiff extension.
 
@@ -272,7 +272,7 @@ Optional Arguments
     **psconvert** can create a georeferenced raster image with a world
     file OR uses GDAL to convert the GMT PostScript file to geotiff.
     GDAL uses `PROJ <https://proj.org/>`_ for its projection library. To provide with the
-    information it needs to do the georeferencing, GMT 4.5 embeds a
+    information it needs to do the georeferencing, GMT embeds a
     comment near the start of the PostScript file defining the
     projection using **PROJ** syntax. Users with pre-GMT v4.5 PostScript
     files, or even non-GMT ps files, can provide the information
@@ -415,7 +415,7 @@ fine-tune the result. Use **-S** to examine the actual command used, and
 add custom options via one or more instances of the **-C** option. For
 instance, to turn on image interpolation for all images, improving image
 quality for scaled images at the expense of speed, use
-**-C**-dDOINTERPOLATE. See www.ghostscript.com for complete
+**-C**-dDOINTERPOLATE. See https://www.ghostscript.com/ for complete
 documentation.
 
 Making KMZ files

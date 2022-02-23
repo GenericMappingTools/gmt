@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -169,7 +169,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -278,7 +278,8 @@ GMT_LOCAL struct GRDHISTEQ_CELL *grdhisteq_do_hist_equalization_cart (struct GMT
 GMT_LOCAL struct GRDHISTEQ_CELL *grdhisteq_do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, unsigned int n_cells, bool quadratic) {
 	/* Do basic area-weighted histogram equalization */
 	uint64_t i, j, node, nxy = 0;
-	unsigned int n_cells_m1 = 0, current_cell, row, col;
+	openmp_int row, col;
+	unsigned int n_cells_m1 = 0, current_cell;
 	double cell_w, delta_w, target_w, wsum = 0.0;
 	struct GRDHISTEQ_CELL *cell = gmt_M_memory (GMT, NULL, n_cells, struct GRDHISTEQ_CELL);
 	struct GMT_GRID *W = gmt_duplicate_grid (GMT, Grid, GMT_DUPLICATE_ALLOC);
@@ -366,7 +367,7 @@ GMT_LOCAL int grdhisteq_compare_indices (const void *point_1, const void *point_
 
 GMT_LOCAL int grdhisteq_do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm) {
 	/* Make an output grid file with standard normal scores */
-	unsigned int row, col;
+	openmp_int row, col;
 	uint64_t i = 0, j = 0, ij, nxy;
 	double dnxy;
 	struct INDEXED_DATA *indexed_data = NULL;

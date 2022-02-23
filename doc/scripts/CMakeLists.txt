@@ -1,6 +1,5 @@
 #
-#
-# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -17,7 +16,7 @@
 
 if (SPHINX_FOUND)
 	# Convert PS to PNG
-	file (GLOB _scripts_ps2png RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*.ps")
+	file (GLOB _scripts_ps2png RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/images/*.ps")
 	set (_scripts_png)
 	foreach (_fig ${_scripts_ps2png})
 		string (REPLACE ".ps" ".png" _png_fig ${_fig})
@@ -34,7 +33,7 @@ if (SPHINX_FOUND)
 	endforeach (_fig ${_scripts_ps2png})
 
 	# Convert PS to PDF
-	set (_scripts_ps2pdf GMT_RGBchart_a4.ps GMT_RGBchart_letter.ps GMT_RGBchart_tabloid.ps GMT_App_F_stand+_iso+.ps GMT_App_F_symbol_dingbats.ps)
+	set (_scripts_ps2pdf images/GMT_RGBchart_a4.ps images/GMT_RGBchart_letter.ps images/GMT_RGBchart_tabloid.ps images/GMT_App_F_stand+_iso+.ps images/GMT_App_F_symbol_dingbats.ps)
 	set (_scripts_pdf)
 	foreach (_fig ${_scripts_ps2pdf})
 		string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
