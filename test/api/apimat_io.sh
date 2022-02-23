@@ -2,7 +2,6 @@
 #
 # Test the C API for reading and writing native matrices.
 # We read @hotspots.txt and write it out again, then plot it.
-# DVC_TEST
 
 ps=apimat_io.ps
 testapi_matrix_io

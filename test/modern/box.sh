@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 gmt begin box ps
   gmt subplot begin 2x2 -M0.05i -Fs3i/3i -Scb -Sr+tc -R0/5/0/5 -Bwest -T"VERY LONG HEADER STRING"
     gmt basemap -B+t"title 1"

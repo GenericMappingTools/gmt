@@ -1,0 +1,5 @@
+outs:
+- md5: 94c95069d9aa64fc7af1bf4f67da675a.dir
+  size: 112002
+  nfiles: 1
+  path: trend2d

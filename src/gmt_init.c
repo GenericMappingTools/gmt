@@ -221,6 +221,7 @@ static struct GMT_parameter GMT_keyword_active[]= {
 	{ 0, "MAP_ANNOT_ORTHO"},
 	{ 0, "MAP_DEFAULT_PEN"},
 	{ 0, "MAP_DEGREE_SYMBOL"},
+	{ 0, "MAP_EMBELLISHMENT_MODE"},
 	{ 0, "MAP_FRAME_AXES"},
 	{ 0, "MAP_FRAME_PEN"},
 	{ 0, "MAP_FRAME_PERCENT"},
@@ -994,9 +995,9 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
-	/* Syntax: -Xa|r|f|c<off>, -X[-|+]w[/<n>][-|+]<off>, where
+	/* Syntax: -Xa|r|f|c<off>, -X[-|+][<f>]w[/<d>][-|+]<off>, where
 	 * w is the width of the previous plot command. */
-	int i = 0;
+	int i = 0, j;
 	if (!text || !text[0]) {	/* Default is -Xr0 */
 		GMT->current.ps.origin[GMT_X] = GMT->common.X.mode = 'r';
 		GMT->common.X.off = GMT->current.setting.map_origin[GMT_X] = 0.0;
@@ -1017,11 +1018,20 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 			}
 			else if (text[i] == '+')	/* In case the user explicitly gave a + */
 				i++;	/* Skip the plus sign */
+			if (text[i] != 'w') {	/* Must assume it is the scale f */
+				j = i + 1;	while (text[j] != 'w') j++;	text[j] = '\0';	/* Hide w */
+				GMT->current.setting.map_origin[GMT_X] *= atof (&text[i]);	/* Scale by f */
+				text[j] = 'w';
+				i = j;	/* Skip past f */
+			}
 			i++;	/* Skip past the w */
 			if (text[i] == '/') {	/* Wanted a fraction of the width */
-				i++;	/* Skip the slash */
-				GMT->current.setting.map_origin[GMT_X] /= atof (&text[i]);
-				while (isdigit (text[i]) || text[i] == '.') i++;	/* Wind past the denominator */
+				int was;
+				i++;	/* Skip past the slash */
+				j = i;	while (text[j] && strchr ("-+", text[j]) == NULL) j++;	was = text[j];	text[j] = '\0';	/* Temporarily hide any trailing +/-<offset> */
+				GMT->current.setting.map_origin[GMT_X] /= atof (&text[i]);	/* Do the division */
+				text[j] = was;	/* Restore the optional offset */
+				i = j;	/* Skip past d */
 			}
 			/* Now add the offset the user added, if given */
 			if (text[i]) GMT->current.setting.map_origin[GMT_X] += gmt_M_to_inch (GMT, &text[i]);
@@ -1037,9 +1047,9 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
-	/* Syntax: -Ya|r|f|c<off>, -Y[-|+]h[/<n>][-|+]<off>, where
+	/* Syntax: -Ya|r|f|c<off>, -Y[-|+][<f>]h[/<d>][-|+]<off>, where
 	 * h is the height of the previous plot command. */
-	int i = 0;
+	int i = 0, j;
 	if (!text || !text[0]) {	/* Default is -Yr0 */
 		GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = 'r';
 		GMT->common.Y.off = GMT->current.setting.map_origin[GMT_Y] = 0.0;
@@ -1060,11 +1070,20 @@ GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
 			}
 			else if (text[i] == '+')	/* In case the user explicitly gave a + */
 				i++;	/* Skip the plus sign */
+			if (text[i] != 'h') {	/* Must assume it is the scale m */
+				j = i + 1;	while (text[j] != 'h') j++;	text[j] = '\0';	/* Hide h */
+				GMT->current.setting.map_origin[GMT_Y] *= atof (&text[i]);
+				text[j] = 'h';
+				i = j;	/* Skip past f */
+			}
 			i++;	/* Skip past the h */
 			if (text[i] == '/') {	/* Wanted a fraction of the height */
-				i++;	/* Skip the slash */
-				GMT->current.setting.map_origin[GMT_Y] /= atof (&text[i]);
-				while (isdigit (text[i]) || text[i] == '.') i++;	/* Wind past the denominator */
+				int was;
+				i++;	/* Skip past the slash */
+				j = i;	while (text[j] && strchr ("-+", text[j]) == NULL) j++;	was = text[j];	text[j] = '\0';	/* Temporarily hide any trailing +/-<offset> */
+				GMT->current.setting.map_origin[GMT_Y] /= atof (&text[i]);	/* Do the division */
+				text[j] = was;	/* Restore the optional offset */
+				i = j;	/* Skip past d */
 			}
 			/* Now add the offset the user added, if given */
 			if (text[i]) GMT->current.setting.map_origin[GMT_Y] += gmt_M_to_inch (GMT, &text[i]);
@@ -6321,6 +6340,8 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	strcpy (GMT->current.setting.map_annot_ortho, "we");
 	/* MAP_DEGREE_SYMBOL (degree) */
 	GMT->current.setting.map_degree_symbol = gmt_degree;
+	/* MAP_EMBELLISHMENT_MODE */
+	GMT->current.setting.map_embellishment_mode = 0;	/* Manual */
 	/* MAP_FRAME_AXES */
 	strcpy (GMT->current.setting.map_frame_axes, "WESNZ");
 	error += gmtinit_decode5_wesnz (GMT, "WESNZ", false);
@@ -6695,6 +6716,8 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT->current.setting.map_annot_offset[GMT_SECONDARY] = GMT->session.d_NaN; /* 3p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = 'p';
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = 'p';
+	/* MAP_EMBELLISHMENT_MODE */
+	GMT->current.setting.map_embellishment_mode = 1;	/* Auto */
 	/* MAP_FRAME_AXES */
 	strcpy (GMT->current.setting.map_frame_axes, "auto");
 	/* MAP_FRAME_TYPE (plain) */
@@ -7120,7 +7143,8 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 		"Append a comma-separated list of ISO 3166 codes for countries to set region, i.e., "
 		"<code1>,<code2>,... etc., using the 2-character ISO country codes (see pscoast -E+l for list). "
 		"To select a state of a country (if available), append .state, e.g, US.TX for Texas. "
-		"To select a whole continent, give =AF|AN|AS|EU|OC|NA|SA as <code>. "
+		"To select a whole continent, give the full name as <code> (e.g, -RAfrica). "
+		"To select a DCW collection, give collection tag as <code> (see pscoast -E+n for list). "
 		"Use +r to modify the region from polygon(s): Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc> "
 		"to round region to these multiples; use +R to extend region by those increments instead, "
 		"or use +e which is like +r but makes sure the region extends at least by %g x <inc>.", GMT_REGION_INCFACTOR);
@@ -8373,15 +8397,20 @@ void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 */
 void gmt_maprose_syntax (struct GMT_CTRL *GMT, char type, char *string) {
 	/* Used in psbasemap and pscoast -T option.  pass type as m or d */
+	double ps;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T%c parsing failure.  Correct syntax:\n", type);
-	if (type == 'm')
+	if (type == 'm') {
 		GMT_Usage (API, 1, "\n-T%c%s", type, GMT_TROSE_MAG);
-	else
+		ps = GMT_MAG_ROSE_DEF_WIDTH;
+	}
+	else {
 		GMT_Usage (API, 1, "\n-T%c%s", type, GMT_TROSE_DIR);
+		ps = GMT_DIR_ROSE_DEF_WIDTH;
+	}
 	GMT_Usage (API, -2, "%s", string);
 	gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
-	GMT_Usage (API, -2, "Set required size of the rose via +w<diameter>. Other rose modifiers are optional:");
+	GMT_Usage (API, -2, "Set size of the rose via +w<diameter> in units of %s or append %% for percentage of map width [%g %% if +w not given]. Other optional rose modifiers are:", GMT_DIM_UNITS_DISPLAY, ps);
 	if (type == 'm') {
 		GMT_Usage (API, 3, "+d Set magnetic <declination>[/<dlabel>], where "
 			"<dlabel> is an optional label for the magnetic compass needle. "
@@ -10715,8 +10744,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			error += gmtlib_plot_C_format (GMT);	/* Update format statement since degree symbol may have changed */
 			break;
-		case GMTCASE_BASEMAP_AXES:
-			gmt_M_compat_translate ("MAP_FRAME_AXES");
+		case GMTCASE_MAP_EMBELLISHMENT_MODE:
+			if (!strncmp (lower_value, "auto", 4))
+				GMT->current.setting.map_embellishment_mode = 1;	/* Auto */
+			else if (!strncmp (lower_value, "manual", 6))
+				GMT->current.setting.map_embellishment_mode = 0;	/* Manual */
+			else
+				error = true;
 			break;
 		case GMTCASE_MAP_FRAME_AXES:
 			strncpy (GMT->current.setting.map_frame_axes, value, 5U);
@@ -12302,6 +12336,12 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				case gmt_none:		strcpy (value, "none");		break;
 				default: strcpy (value, "undefined");
 			}
+			break;
+		case GMTCASE_MAP_EMBELLISHMENT_MODE:
+			if (GMT->current.setting.map_embellishment_mode)
+				strcpy (value, "auto");
+			else
+				strcpy (value, "manual");
 			break;
 		case GMTCASE_BASEMAP_AXES:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -14646,9 +14686,21 @@ GMT_LOCAL bool gmtinit_replace_missing_with_questionmark (struct GMTAPI_CTRL *AP
 
 	/* Category 1 projections: Always has slashes and need to end in /? */
 	if ((strchr ("cC", arg[0]) && !strncmp (&arg[1], "yl_stere", 8U)) || strchr ("aAbBcCdDeEfFgGlLoOsStT", arg[0])) {	/* These projection all must end in / and if no ? then append it */
+		char *c = NULL;
+		if (strchr ("oO", arg[0]) && (c = strstr (arg, "+v"))) {	/* Got a -Jo with modifier +v - temporarily remove modifer to check for missing ? */
+			c[0] = '\0';	/* Chop you go */
+			L = strlen (arg) - 1;	/* Recompute position of last char */
+		}
+		else if (strchr ("gG", arg[0]) && (c = gmt_first_modifier (API->GMT, arg, "atvwz"))) {	/* General perspective with one or more modifiers */
+			c[0] = '\0';	/* Chop you go */
+			L = strlen (arg) - 1;	/* Recompute position of last char */			
+		}
 		if (arg[L] == '/')	/* User followed instructions and left a trailing / */
-			sprintf (newarg, "%s?", arg);
-		else {
+			sprintf (newarg, "%s?", arg);	/* newarg has no trailing modifiers yet */
+		if (c) c[0] = '+';	/* Undo chop so debug stagement below may show all of arg */
+		if (arg[L] == '/' && c)	/* Now we can append the modifiers */
+			strcat (newarg, c);
+		if (arg[L] != '/') {
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s has no trailing slash. Assumed to be a complete geographic projection\n", arg);
 			return false;
 		}
@@ -14993,14 +15045,16 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	/* First handle any half-hearted naming of remote datasets where _g or _p should be appended */
 
 	if (options) {
-	  for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-		  if (!gmtinit_might_be_remotefile (opt->arg)) continue;
-		  if (remote_first) {
-			  gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
-			  remote_first = false;
-		  }
-		  gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
+		if (!strcmp (mod_name, "grdtrack")) API->use_gridline_registration = true;	/* Override API default since grdtrack is a data processor */
+		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
+			if (!gmtinit_might_be_remotefile (opt->arg)) continue;
+			if (remote_first) {
+				gmt_refresh_server (API);	/* Refresh hash and info tables as needed */
+				remote_first = false;
+			}
+			gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
 		}
+		API->use_gridline_registration = false;	/* Reset API default setting */
 	}
 
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
@@ -15388,7 +15442,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if ((opt = GMT_Make_Option (API, 'R', "")) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				n_slashes = gmt_count_char (GMT, GMT->init.history[id], '/');	/* May need to know if it is 3 (2-D) or 5 (3-D) later regarding -p -JZ */
-				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Added -R to options since history is available.\n");
+				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Added -R to options since history is available [%s].\n", GMT->init.history[id]);
 			}
 			else if (strchr (required, 'g') || strchr (required, 'd')) {	/* No history but can examine input data sets */
 				if (gmtinit_determine_R_option_from_data (API, required, false, options)) {
@@ -15405,7 +15459,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if ((id = gmt_get_option_id (id + 1, str)) >= 0 && GMT->init.history[id]) {	/* There is history for this -J */
 					if ((opt = GMT_Make_Option (API, 'J', "")) == NULL) return NULL;	/* Failure to make option */
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-					GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J to options since there is history available.\n");
+					GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J to options since history is available [%s].\n", GMT->init.history[id]);
 					got_J = true;
 				}
 			}
@@ -16422,6 +16476,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->v.v_angle  = (float)atand ((0.5 * p->v.h_width / p->v.h_length) * 2.0);
 			p->v.parsed_v4 = true;
 			p->size_x = p->given_size_x = p->v.h_length;
+			check = false;
 		}
 		else if (strchr ("vV", symbol_type) && text[1] && strchr ("bhstBHST", text[1])) {	/* Old style */
 			//GMT_Report (GMT->parent, GMT_MSG_COMPAT, "bhstBHST vector modifiers is deprecated GMT3/4 syntax; see -S%c for current syntax.\n", text[0]);

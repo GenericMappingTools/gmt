@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 #
 # Tests mapproject for azimuth calculation
 # Important to use backazimuth in this example!

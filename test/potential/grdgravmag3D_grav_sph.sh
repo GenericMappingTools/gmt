@@ -3,7 +3,6 @@
 # Computes the gravity anomaly over a sphere with radius r = 15 m and center at -15 m.
 # The sphere is approximated by two hemispheres
 # Compare with analytical expressions
-# DVC_TEST
 
 ps=grdgravmag3D_grav_sph.ps
 r=10

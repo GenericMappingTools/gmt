@@ -21,7 +21,7 @@ packages="ninja curl pcre2 netcdf gdal geos fftw ghostscript"
 
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
-    packages+=" graphicsmagick ffmpeg pngquant"
+    packages+=" pngquant"
 fi
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
@@ -41,7 +41,7 @@ fi
 brew install ${packages}
 
 if [ "$BUILD_DOCS" = "true" ]; then
-	pip3 install --user docutils==0.17 sphinx dvc
+	pip3 install --user sphinx dvc
     # Add sphinx to PATH
     echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
 fi

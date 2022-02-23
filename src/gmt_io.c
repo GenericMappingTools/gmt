@@ -7381,6 +7381,39 @@ void gmt_set_tbl_minmax (struct GMT_CTRL *GMT, unsigned int geometry, struct GMT
 }
 
 /*! . */
+void gmt_set_dataset_verify (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
+	/* Function that does basic sanity checking of an externally produced GMT
+	 * data set to ensure internal counters are self-consistent */
+
+	uint64_t tbl, seg, n_records = 0, n_segments = 0;
+	struct GMT_DATATABLE *T = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
+	if (!D) return;	/* No dataset given */
+	for (tbl = 0; tbl < D->n_tables; tbl++) {
+		T = D->table[tbl];
+		for (seg = 0; seg < T->n_segments; seg++) {
+			S = T->segment[seg];
+			n_records += S->n_rows;
+			if (S->n_columns != T->n_columns) {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_set_dataset_verify: Segment %" PRIu64 " in table %" PRIu64 " has %" PRIu64 " columns but table header says it only has %" PRIu64 "\n", seg, tbl, S->n_columns, T->n_columns);
+			}
+		}
+		if (T->n_columns != D->n_columns) {
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_set_dataset_verify: Table %" PRIu64 " has %" PRIu64 " columns but dataset header says it only has %" PRIu64 "\n", tbl, T->n_columns, D->n_columns);
+		}
+		n_segments += T->n_segments;
+	}
+	if (n_segments != D->n_segments) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_set_dataset_verify: Data set has %" PRIu64 " segments but header says it only has %" PRIu64 "\n", n_segments, D->n_segments);
+		D->n_segments = n_segments;	/* Update total number of segments to match realilty */
+	}
+	if (n_records != D->n_records) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_set_dataset_verify: Data set has %" PRIu64 " data records but header says it only has %" PRIu64 "\n", n_records, D->n_records);
+		D->n_records = n_records;	/* Update total number of records to match realilty */
+	}
+}
+
+/*! . */
 void gmt_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	uint64_t tbl, col;
 	struct GMT_DATATABLE *T = NULL;

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 # Check clipping of lines crossing over the horizon AND dateline (N pole)
 
 ps=clipping1.ps

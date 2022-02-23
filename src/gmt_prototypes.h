@@ -303,6 +303,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 /* gmt_io.c: */
 
+EXTERN_MSC void gmt_set_dataset_verify (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
 EXTERN_MSC unsigned int gmt_realloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t dim[]);
 EXTERN_MSC void gmt_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t chunk);
 EXTERN_MSC int gmt_get_precision_width (struct GMT_CTRL *GMT, double x);

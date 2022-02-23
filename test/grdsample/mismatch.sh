@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Make sure the read region includes all nodes needed for sampling write region
-# DVC_TEST
 gmt begin mismatch ps
 	gmt grdmath -R1/7/0/6 -I1 X Y MUL = t.grd
 	gmt grdcontour t.grd -W0.25p,blue -C1 -Jx1i -Bafg1 -B+t"grdsample wesn_i (blue) and wesn_o (red) regions"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# DVC_TEST
+# GRAPHICSMAGICK_RMS = 0.04
 
 ps=grdcontour.ps
 

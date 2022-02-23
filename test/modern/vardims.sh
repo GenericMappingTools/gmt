@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Test the variable widths and heights options for subplots
 # This test uses a variable subplot dimensions
-# DVC_TEST
 gmt begin vardims ps
   gmt subplot begin 3x2 -Fs2i,4i/2.5i,5i,1.25i -Srl+p -Scb -BWSne -M0 -AA+v -T"Variable dimensions"
     gmt basemap -R0/5/0/5 -B+gpink

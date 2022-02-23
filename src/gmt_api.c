@@ -3792,6 +3792,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
 					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_DUPLICATE with GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating data table from GMT_DATASET memory location\n");
+				gmt_set_dataset_verify (GMT, S_obj->resource);    /* Basic sanity checking of incoming dataset */
 				Din_obj = gmt_duplicate_dataset (GMT, S_obj->resource, GMT_ALLOC_NORMAL|GMT_ALLOC_VIA_ICOLS, NULL);
 				if ((tbl + Din_obj->n_tables) >= n_alloc) {	/* Need more space to hold these new tables */
 					n_alloc += Din_obj->n_tables;
@@ -3809,6 +3810,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 
 			case GMT_IS_REFERENCE:	/* Just pass memory locations to tables */
 				if ((Din_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+				gmt_set_dataset_verify (GMT, Din_obj);   /* Basic sanity checking of incoming dataset */
 				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
 					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_REFERENCE with GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_INFORMATION, "Referencing data table from GMT_DATASET memory location\n");
@@ -10078,6 +10080,7 @@ GMT_LOCAL void gmtapi_get_record_init (struct GMTAPI_CTRL *API) {
 		case GMT_IS_DUPLICATE:	/* Only for datasets */
 		case GMT_IS_REFERENCE:	/* Only for datasets */
 			API->current_get_D_set = gmtapi_get_dataset_data (S->resource);	/* Get the right dataset */
+			gmt_set_dataset_verify (GMT, API->current_get_D_set);    /* Basic sanity checking of incoming dataset */
 			API->current_get_n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : API->current_get_D_set->n_columns;
 			API->api_get_record = gmtapi_get_record_dataset;
 			if (!(API->current_get_D_set->type & GMT_READ_TEXT)) GMT->current.io.record.text = NULL;

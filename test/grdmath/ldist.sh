@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Purpose:  Compute Cartesian distances from square and triangular polygons
-# DVC_TEST
 ps=ldist.ps
 # Triangle
 cat << EOF > p.txt

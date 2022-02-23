@@ -156,6 +156,10 @@ To enable testing, you need to *uncomment* the following lines in your ``ConfigU
 
   set (DO_API_TESTS ON)
 
+Optionally, uncomment the following line to run tests on the supplement modules::
+
+  set (DO_SUPPLEMENT_TESTS ON)
+
 Optionally, uncomment the following line and change ``4`` to the number of ctest jobs to run simultaneously::
 
   set (N_TEST_JOBS 4)
@@ -459,8 +463,6 @@ Migrating existing test images to dvc
 #. Remove the test image from git tracking (``git rm --cached <module>/<test-image>.ps``).
 #. Create a new directory for the image in ``baseline``, if one does not already exist (``mkdir baseline/<module>``).
 #. Move the test image to the new directory (``mv <module>/<test-image>.ps baseline/<module>/``).
-#. Add a comment ``# DVC_TEST`` to the test script that references the image. This is used to specify that the testing
-   mechanism should search in ``baseline/<module>`` for the baseline image.
 #. Repeat steps 4, 6, and 7 for other .PS based tests for the module.
 #. Run the GMT test suite to check that the tests work properly with the new structure.
 #. Add the directory to dvc (``dvc add baseline/<module>``).

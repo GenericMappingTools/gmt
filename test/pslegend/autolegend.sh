@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 gmt begin autolegend ps
   gmt plot -R0/7.2/3/7.2 -Jx1i -B @Table_5_11.txt -Sc0.15i -Glightgreen -Wfaint -lApples+H"LEGEND"+f16p+D
   gmt plot @Table_5_11.txt -W1.5p,gray -l"My Lines"

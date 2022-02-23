@@ -2,7 +2,6 @@
 #
 # Check that gmt grd2cpt estimates correct upper/lower bounds <= z_min && >= z_max
 # We try lower and upper, then flip sign on grid and try min and high
-# DVC_TEST
 
 ps=paintallzs.ps
 echo "6	3	0	1" > t.txt

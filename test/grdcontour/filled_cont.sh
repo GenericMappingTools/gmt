@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Test the new -N option in grdcontour and compare to manual grdview+grdcontour
-# DVC_TEST
 ps=filled_cont.ps
 
 gmt makecpt -T675/975/25 -Cjet > t.cpt

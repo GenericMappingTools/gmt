@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Testing gmt spatial segment extensions via -W
-# DVC_TEST
 cat << EOF > t.txt
 -0.5	1.5
 0.25	2.0

@@ -59,7 +59,7 @@ gmt begin
 	gmt makecpt -T0/$DepthMax -Chot -I -H > q.cpt
 	# 1c. Draw profile
 	gmt basemap -R0/$KM/0/$DepthMax -JX$W/-$H -Bg25 -BwESn -Bxaf+l"Distance (km)" -Byaf+l"Depth (km)" -X$X -Y$Y
-	gmt inset begin -DjLB+w$Wa/$Ha+o0.1c/0.2c -F+p+gwhite+s+r -M0.15c
+	gmt inset begin -DjLB+w$Wa/$Ha+o0.1c/0.2c -F+p+gwhite+s+r -C0.15c
 		gmt plot angles.txt -Wthinnest,red -Bnw -Bg -R0/1/0/1 -JX?/-? --MAP_FRAME_TYPE=graph -Fr0/0 -i0-1+s0.9
 		gmt text angles.txt -F+f6 -N
 	gmt inset end

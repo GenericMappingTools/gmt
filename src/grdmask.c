@@ -666,7 +666,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 						/* Here, point is inside or on edge, we must assign value */
 
 						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
-						if (!Ctrl->N.mode) z_to_set = mask_val[side];	/* Must update since z depends on side */
+						z_to_set = (Ctrl->N.mode) ? z_value : mask_val[side];	/* Must update since z depends on side */
 						if (node_is_set[ij]) {	/* Been here before so the Grid has a value; must consult the mode  */
 							switch (Ctrl->C.mode) {
 								case GRDMASK_SET_UPPER: if (Grid->data[ij] >= z_to_set) continue; break;	/* Already has a higher value; else set below */

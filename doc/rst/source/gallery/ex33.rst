@@ -9,7 +9,7 @@ used to automatically create a suite of crossing profiles of uniform
 spacing and length and then sample one or more grids along these
 profiles; we also use the median stacking option to create a stacked
 profile, showed above the map, with the gray area representing the
-variations about the stacked median profile.
+:math:`2\sigma` confidence bounds on the stacked median profile.
 
 
 .. literalinclude:: /_verbatim/ex33.txt

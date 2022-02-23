@@ -2,7 +2,6 @@
 #
 # Test the output of gmt grdflexure for single circular Gaussian seamount
 # on a general linear viscoelastic foundation
-# DVC_TEST
 
 ps=flexure_gl.ps
 m=g

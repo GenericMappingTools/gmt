@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Ensure the bug reported by https://github.com/GenericMappingTools/gmt/issues/6217 is gone
 # Black dots are input points to be connected by blue line
-# DVC_TEST
 gmt begin line_shortening ps
 	cat <<- EOF > v.txt
 	2 4
