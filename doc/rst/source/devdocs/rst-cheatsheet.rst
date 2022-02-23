@@ -8,7 +8,6 @@ You can see the literal source code of the ReST file on the right,
 and the rendered web page on the left.
 
 .. note::
-
     Try a online reStructuredText editor (e.g. https://livesphinx.herokuapp.com/),
     if you want to preview texts written in ReST.
 

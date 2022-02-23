@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1081,6 +1081,7 @@ GMT_LOCAL int gmtmap_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double 
 
 GMT_LOCAL int gmtmap_jump_xy (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {
 	/* true if x- or y-distance between points exceeds 1/2 map width at this y value or map height */
+	bool periodic;
 	double dx, dy, map_half_width, map_half_height;
 
 	if (!(gmt_M_is_cylindrical (GMT) || gmt_M_is_perspective (GMT) || gmt_M_is_misc (GMT))) return (0);	/* Only projections with periodic boundaries may apply */
@@ -1090,7 +1091,7 @@ GMT_LOCAL int gmtmap_jump_xy (struct GMT_CTRL *GMT, double x0, double y0, double
 	map_half_width = MAX (gmt_half_map_width (GMT, y0), gmt_half_map_width (GMT, y1));
 	if (fabs (map_half_width) < GMT_CONV4_LIMIT) return (0);	/* Very close to a pole for some projections */
 	map_half_height = 0.5 * GMT->current.map.height;	/* We assume this is constant */
-
+	periodic = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	dx = x1 - x0;
 	if (fabs (dx) > map_half_width) {	/* Possible jump; let's see how far apart those longitudes really are */
 		/* This test on longitudes was added to deal with issue #672, also see test/psxy/nojump.sh */
@@ -1098,7 +1099,10 @@ GMT_LOCAL int gmtmap_jump_xy (struct GMT_CTRL *GMT, double x0, double y0, double
 		double half_lon_range = (GMT->common.R.oblique) ? 180.0 : 0.5 * (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]);
 		gmt_xy_to_geo (GMT, &last_lon, &dummy, x0, y0);
 		gmt_xy_to_geo (GMT, &this_lon, &dummy, x1, y1);
-		gmt_M_set_delta_lon (last_lon, this_lon, dlon);	/* Beware of jumps due to sign differences */
+		if (periodic)
+			dlon = last_lon - this_lon;
+		else
+			gmt_M_set_delta_lon (last_lon, this_lon, dlon);	/* Beware of jumps due to sign differences */
 		if (fabs (dlon) < half_lon_range) /* Not going the long way so we judge this to be no jump */
 			return (0);
 		/* Jump it is */
@@ -3052,15 +3056,21 @@ GMT_LOCAL int gmtmap_init_cylstereo (struct GMT_CTRL *GMT, bool *search) {
 
 GMT_LOCAL int gmtmap_init_stereo (struct GMT_CTRL *GMT, bool *search) {
 	unsigned int i;
+	bool std_parallel = (lrint (GMT->current.proj.pars[5]) == 1);
 	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, dummy = 0.0, radius = 0.0, latg, D = 1.0;
 
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	latg = GMT->current.proj.pars[1];
 
+	if (std_parallel && !doubleAlmostEqual (fabs (latg), 90.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot set true scale at given parallel when stereographic projection is not polar!\n");
+		return (GMT_RUNTIME_ERROR);
+	}
+
 	gmtmap_set_polar (GMT);
 
 	if (GMT->current.setting.proj_scale_factor == -1.0) GMT->current.setting.proj_scale_factor = 0.9996;	/* Select default map scale for Stereographic */
-	if (GMT->current.proj.polar && (lrint (GMT->current.proj.pars[5]) == 1)) GMT->current.setting.proj_scale_factor = 1.0;	/* Gave true scale at given parallel set below */
+	if (GMT->current.proj.polar && std_parallel) GMT->current.setting.proj_scale_factor = 1.0;	/* Gave true scale at given parallel set below */
 	/* Equatorial view has a problem with infinite loops.  Until I find a cure
 	  we set projection center latitude to 0.001 so equatorial works for now */
 
@@ -3075,9 +3085,8 @@ GMT_LOCAL int gmtmap_init_stereo (struct GMT_CTRL *GMT, bool *search) {
 		if (GMT->current.proj.polar) {
 			e1p = 1.0 + GMT->current.proj.ECC;	e1m = 1.0 - GMT->current.proj.ECC;
 			D /= d_sqrt (pow (e1p, e1p) * pow (e1m, e1m));
-			if (lrint (GMT->current.proj.pars[5]) == 1) {	/* Gave true scale at given parallel */
+			if (std_parallel) {	/* Gave true scale at given parallel */
 				double k_p, m_c, t_c, es;
-
 				sincosd (fabs (GMT->current.proj.pars[4]), &s, &c);
 				es = GMT->current.proj.ECC * s;
 				m_c = c / d_sqrt (1.0 - GMT->current.proj.ECC2 * s * s);
@@ -3264,9 +3273,21 @@ GMT_LOCAL void gmtmap_translate_point_spherical (struct GMT_CTRL *GMT, double lo
 		*back_azimuth = gmtmap_az_backaz_sphere (GMT, lon, lat, *tlon, *tlat, true);
 }
 
-void gmt_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat, double *back_azimuth) {
+void gmtlib_translate_point (struct GMT_CTRL *GMT, double lon, double lat, double azimuth, double distance, double *tlon, double *tlat, double *back_azimuth) {
 	/* compute new point dist degrees from input point along azimuth */
 	gmtmap_translate_point_spherical (GMT, lon, lat, azimuth, distance, tlon, tlat, back_azimuth);
+}
+
+void gmt_translate_point (struct GMT_CTRL *GMT, double A[3], double B[3], double a_d[], bool geo) {
+	/* Given point in A, azimuth az and distance d, return the point P away from A */
+	if (geo)
+		GMT->current.map.second_point (GMT, A[GMT_X], A[GMT_Y], a_d[0], a_d[1], &B[GMT_X], &B[GMT_Y], NULL);
+	else {	/* Cartesian translation */
+		double s, c;
+		sincosd (90.0 - a_d[0], &s, &c);
+		B[GMT_X] = A[GMT_X] + a_d[1] * c;
+		B[GMT_Y] = A[GMT_Y] + a_d[1] * s;
+	}
 }
 
 GMT_LOCAL void gmtmap_translate_point_geodesic (struct GMT_CTRL *GMT, double lon1, double lat1, double azimuth, double distance_m, double *lon2, double *lat2, double *back_azimuth) {
@@ -3405,7 +3426,7 @@ GMT_LOCAL int gmtmap_init_oblique (struct GMT_CTRL *GMT, bool *search) {
 	o_x = GMT->current.proj.pars[0];	o_y = GMT->current.proj.pars[1];
 
 	if (lrint (GMT->current.proj.pars[6]) == 1) {	/* Must get correct origin, then get second point */
-		double distance = 10.0;	/* Default spherical length for gmt_translate_point */
+		double distance = 10.0;	/* Default spherical length for gmtlib_translate_point */
 		p_x = GMT->current.proj.pars[2];	p_y = GMT->current.proj.pars[3];
 
 		GMT->current.proj.o_pole_lon = p_x;
@@ -3420,7 +3441,7 @@ GMT_LOCAL int gmtmap_init_oblique (struct GMT_CTRL *GMT, bool *search) {
 		if ((90.0 - fabs (o_y)) < distance)
 			distance = 90.0 - fabs (o_y) - GMT_CONV4_LIMIT;
 		/* compute point <distance> degrees from origin along azimuth */
-		gmt_translate_point (GMT, o_x, o_y, az, distance, &b_x, &b_y, NULL);
+		gmtlib_translate_point (GMT, o_x, o_y, az, distance, &b_x, &b_y, NULL);
 
 		GMT->current.proj.pars[0] = o_x;	GMT->current.proj.pars[1] = o_y;
 		GMT->current.proj.pars[2] = b_x;	GMT->current.proj.pars[3] = b_y;
@@ -5044,7 +5065,6 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 	return (GMT_NOERROR);
 }
 
-#ifdef HAVE_GDAL
 /*!
  *	TRANSFORMATION ROUTINES FOR PROJ4 TRANSFORMATIONS (GMT_PROJ4_PROJS)
  */
@@ -5122,7 +5142,6 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 	GMT->current.proj.inv = &gmt_proj4_inv;
 	return error;
 }
-#endif
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *
@@ -7459,6 +7478,15 @@ int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B
 	return (0);				/* Return zero if intersection is between A and B */
 }
 
+GMT_LOCAL void gmtmap_swap_if_needed (int way, double previous, double *xc, double *yc) {
+	/* Check if we need to swap the order of (xc,yc).  Note: xc may be yc and vice versa; see the calls */
+	if (way == 0) return;	/* Nothing to consider */
+	if ((way > 0 && xc[0] > previous) || (way < 0 && xc[1] > previous)) {	/* Flip the order of xc,yc to fit the need */
+		gmt_M_double_swap (xc[0], xc[1]);
+		gmt_M_double_swap (yc[0], yc[1]);
+	}
+}
+
 /*! . */
 uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t *nn, bool add_crossings) {
 	/* Accepts x/y array for a line in projected inches and looks for
@@ -7512,17 +7540,11 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 			if (add_crossings) {	/* Find and insert the crossings */
 				if (way[k] == -2 || way[k] == +2) {	/* Jump in y for TM */
 					gmtmap_get_crossings_y (GMT, xc, yc, xin[i], yin[i], xin[i-1], yin[i-1]);
-					if (way[k] == -2) {	/* Add top border point first */
-						gmt_M_double_swap (xc[0], xc[1]);
-						gmt_M_double_swap (yc[0], yc[1]);
-					}
+					gmtmap_swap_if_needed (way[k], y[j-1], yc, xc);	/* Passing previous y and yc, xc for y-crossing */
 				}
-				else {	/* Jump in x */
+				else {	/* Jump in x for any projection with periodic w/e boundaries */
 					gmtmap_get_crossings_x (GMT, xc, yc, xin[i], yin[i], xin[i-1], yin[i-1]);
-					if (way[k] == 1) {	/* Add right border point first */
-						gmt_M_double_swap (xc[0], xc[1]);
-						gmt_M_double_swap (yc[0], yc[1]);
-					}
+					gmtmap_swap_if_needed (way[k], x[j-1], xc, yc);	/* Passing previous x and xc, yc for x-crossing */
 				}
 				x[j] = xc[0];	y[j++] = yc[0];	/* End of one segment */
 				jc = j;		/* Node of first point in next segment */
@@ -8064,7 +8086,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	 */
 
 	bool in = false, out = false;
-	int col_in, row_in, col_out, row_out;
+	openmp_int col_in, row_in, col_out, row_out;
  	uint64_t ij_in, ij_out;
 	short int *nz = NULL;
 	double x_proj = 0.0, y_proj = 0.0, z_int, inv_nz;
@@ -8142,7 +8164,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	O->header->z_min = FLT_MAX; O->header->z_max = -FLT_MAX;	/* Min/max for out */
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		bool skip_repeat = false, duplicate_east = false;
-		int n_columns = O->header->n_columns, n_rows = O->header->n_rows, kase, duplicate_col;
+		openmp_int n_columns = O->header->n_columns, n_rows = O->header->n_rows, kase, duplicate_col;
 		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
 		/* Cannot do OPENMP yet here since it would require a reduction into an output array (nz) */
 		kase = gmt_whole_earth (GMT, I->header->wesn, GMT->common.R.wesn);
@@ -8246,7 +8268,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 //#ifdef _OPENMP
 //#pragma omp parallel for private(row_out,y_proj,col_out,ij_out,x_proj,z_int,inv_nz) shared(O,GMT,y_out_proj,x_out_proj,inverse,x_out,y_out,I,nz)
 //#endif
-	for (row_out = 0; row_out < (int)O->header->n_rows; row_out++) {	/* Loop over the output grid row coordinates */
+	for (row_out = 0; row_out < (openmp_int)O->header->n_rows; row_out++) {	/* Loop over the output grid row coordinates */
 		if (gmt_M_is_rect_graticule (GMT)) y_proj = y_out_proj[row_out];
 		gmt_M_col_loop (GMT, O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
 			if (gmt_M_is_rect_graticule (GMT))
@@ -8347,7 +8369,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	 */
 
 	bool in = false, out = false;
-	int col_in, row_in, col_out, row_out, b, nb = I->header->n_bands;
+	openmp_int col_in, row_in, col_out, row_out, b, nb = I->header->n_bands;
  	uint64_t ij_in, ij_out;
 	short int *nz = NULL;
 	double x_proj = 0.0, y_proj = 0.0, inv_nz, rgb[4];
@@ -8413,7 +8435,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	/* PART 1: Project input image points and do a blockmean operation */
 
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
-		int n_columns = O->header->n_columns, n_rows = O->header->n_rows;
+		openmp_int n_columns = O->header->n_columns, n_rows = O->header->n_rows;
 		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
 		/* Cannot do OPENMP yet here since it would require a reduction into an output array (nz) */
 
@@ -8431,9 +8453,9 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 				/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
 
-				row_out = (int)gmt_M_grd_y_to_row (GMT, y_proj, O->header);
+				row_out = (openmp_int)gmt_M_grd_y_to_row (GMT, y_proj, O->header);
 				if (row_out < 0 || row_out >= n_rows) continue;	/* Outside our grid region */
-				col_out = (int)gmt_M_grd_x_to_col (GMT, x_proj, O->header);
+				col_out = (openmp_int)gmt_M_grd_x_to_col (GMT, x_proj, O->header);
 				if (col_out < 0 || col_out >= n_columns) continue;	/* Outside our grid region */
 
 				/* OK, this projected point falls inside the projected grid's rectangular domain */
@@ -8469,7 +8491,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 //#ifdef _OPENMP
 //#pragma omp parallel for private(row_out,y_proj,col_out,ij_out,x_proj,z_int,inv_nz,b) shared(O,GMT,y_out_proj,x_out_proj,inverse,x_out,y_out,I,nz,z_int_bg,nb)
 //#endif
-	for (row_out = 0; row_out < (int)O->header->n_rows; row_out++) {	/* Loop over the output grid row coordinates */
+	for (row_out = 0; row_out < (openmp_int)O->header->n_rows; row_out++) {	/* Loop over the output grid row coordinates */
 		if (gmt_M_is_rect_graticule (GMT)) y_proj = y_out_proj[row_out];
 		gmt_M_col_loop (GMT, O, row_out, col_out, ij_out) {	/* Loop over the output grid col coordinates */
 			if (gmt_M_is_rect_graticule (GMT))
@@ -9607,11 +9629,9 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 			error = gmtmap_init_polyconic (GMT, &search);
 			break;
 
-#ifdef HAVE_GDAL
 		case GMT_PROJ4_PROJS:	/* All proj.4 projections */
 			error = map_init_proj4 (GMT, &search);
 			break;
-#endif
 
 		default:	/* No projection selected, return to a horrible death */
 			Error_and_return (GMT_MAP_NO_PROJECTION, GMT_PROJECTION_ERROR);
@@ -10044,4 +10064,28 @@ int gmt_circle_to_region (struct GMT_CTRL *GMT, double lon, double lat, double r
 		if (wesn[XHI] < 0.0)   wesn[XLO] += 360.0, wesn[XHI] += 360.0;
 	}
 	return (code);
+}
+
+double gmt_get_az_dist_from_components (struct GMT_CTRL *GMT, double lon, double lat, double dx, double dy, bool user_unit, double *azim) {
+	/* Given a location and dx_km,dy_km of a geovector in map distance, compute equivalent length (in km) and azimuth */
+	double x2, y2, L;
+	if (user_unit) {	/* No geographic lengths given, just Cartesian user vector components */
+		*azim = 90.0 - atan2d (dy, dx);
+		L = hypot (dx, dy);
+		return (L);
+	}
+	/* Here we have geographic components */
+	if (doubleAlmostEqual (lat, -90.0) || doubleAlmostEqual (lat, 90.0))	/* No x adjustment possible */
+		x2 = lon;
+	else 
+		x2 = lon + dx / (cosd (lat) * GMT->current.proj.DIST_KM_PR_DEG);
+	y2 = lat + dy / GMT->current.proj.DIST_KM_PR_DEG;
+	if (fabs (y2) > 90.0) {	/* Across the pole we go */
+		x2 += 180.0;
+		y2 = copysign (180 - fabs (y2), lat);
+	}
+	L = 0.001 * gmt_great_circle_dist_meter (GMT, lon, lat, x2, y2);
+	*azim = gmt_az_backaz (GMT, lon, lat, x2, y2, false);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Geovector components (%g, %g) converted to azim = %g and length = %g km\n", dx, dy, *azim, L);
+	return (L);
 }

@@ -224,6 +224,7 @@ Optional Arguments (set mode)
     Placement, justification, etc. are all inherited from how **-A** was specified by the
     initial **subplot begin** command.  **Note**: Overriding means you initiate the tag
     machinery with **-A** when **subplot begin** was called, otherwise the option is ignored.
+    To *not* set any tag for this panel, use **-A-**.
 
 .. _subplot_set-C2:
 

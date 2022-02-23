@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -190,6 +190,14 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 
+			/* Show DCW version of the current release */
+			else if (!strncmp (argv[arg_n], "--show-dcw", 10U)) {
+				char version[16] = {"unknown"};
+				gmt_DCW_version (api_ctrl, version);
+				fprintf(stdout, "%s\n", version);
+				status = GMT_NOERROR;
+			}
+
 			/* Show DOI of the current release */
 			else if (!strncmp (argv[arg_n], "--show-doi", 10U)) {
 				fprintf(stdout, "%s\n", GMT_VERSION_DOI);
@@ -199,6 +207,14 @@ int main (int argc, char *argv[]) {
 			/* Show the directory that contains the 'gmt' executable */
 			else if (!strncmp (argv[arg_n], "--show-bindir", 10U)) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->init.runtime_bindir);
+				status = GMT_NOERROR;
+			}
+
+			/* Show GSHHG version of the current release */
+			else if (!strncmp (argv[arg_n], "--show-gshhg", 10U)) {
+				char version[16] = {"unknown"};
+				gmt_shore_version (api_ctrl, version);
+				fprintf(stdout, "%s\n", version);
 				status = GMT_NOERROR;
 			}
 
@@ -258,6 +274,9 @@ int main (int argc, char *argv[]) {
 					type = 1;	/* Select csh */
 				if (type < 2) {	/* Start the shell via env and pass -e to exit script upon error */
 					printf ("#!/usr/bin/env -S %s -e\n", shell[type]);
+#ifdef __APPLE__
+					if (type == 0) printf ("set -e\n");	/* Explicitly needed for bash under macOS */
+#endif
 					printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
 				}
 				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], name, comment[type]);
@@ -307,10 +326,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "Shared libraries must be in standard system paths or set via environmental parameter %s.\n\n", LIB_PATH);
 		}
 		else {
-			char libraries[GMT_LEN128] = {"netCDF"};	/* Always linked with netCDF */
-#ifdef HAVE_GDAL
-			strcat (libraries, ", GDAL");
-#endif
+			char libraries[GMT_LEN128] = {"netCDF, GDAL"};	/* Always linked with netCDF and GDAL */
 #ifdef HAVE_PCRE
 			strcat (libraries, ", PCRE");
 #endif
@@ -344,7 +360,9 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --show-cores        Show number of available cores.\n");
 			fprintf (stderr, "  --show-datadir      Show directory/ies with user data.\n");
 			fprintf (stderr, "  --show-dataserver   Show URL of the remote GMT data server.\n");
+			fprintf (stderr, "  --show-dcw          Show the DCW data version used.\n");
 			fprintf (stderr, "  --show-doi          Show the DOI for the current release.\n");
+			fprintf (stderr, "  --show-gshhg        Show the GSHHG data version used.\n");
 			fprintf (stderr, "  --show-library      Show path of the shared GMT library.\n");
 			fprintf (stderr, "  --show-modules      Show all modern module names.\n");
 			fprintf (stderr, "  --show-modules-core Show all modern module names (core only).\n");

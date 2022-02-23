@@ -150,7 +150,7 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| replace:: 0x20 .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
@@ -185,7 +185,7 @@ Examples
 
 .. include:: explain_example.rst_
 
-To examine the population inside a circle of 1000km radius for all nodes in a 5x5 arc degree grid,
+To examine the population inside a circle of 1000 km radius for all nodes in a 5x5 arc degree grid,
 using the remote file @capitals.gmt, and plot the resulting grid using default projection and colors, try::
 
     gmt begin map

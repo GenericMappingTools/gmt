@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -103,7 +103,6 @@
  */
 
 #include "gmt_dev.h"
-#include "gmt_common_byteswap.h"
 #include "gmt_internals.h"
 #include "mgd77/mgd77.h"
 #include "x2sys.h"

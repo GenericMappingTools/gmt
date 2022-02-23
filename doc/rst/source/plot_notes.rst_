@@ -19,7 +19,8 @@ Segment header records may contain one of more of the following options:
 **-W-**
     Turn outline off
 **-Z**\ *zval*
-    Obtain fill via cpt lookup using z-value *zval*
+    Obtain fill via cpt lookup using z-value *zval* (what the color is used
+    for is controlled further by **-L** or **-W**)
 **-Z**\ *NaN*
     Get the NaN color from the CPT
 **-t**\ *transparency*

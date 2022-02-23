@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -124,16 +124,18 @@ extern "C" {
 #	define GMT_LOCAL static
 #endif
 
+#include "gmt_common_byteswap.h"    /* Byte-swap inline functions */
+
 #include "gmt_common_math.h" /* Shared math functions */
 #include "gmt.h"             /* All GMT high-level API */
 #include "gmt_private.h"     /* API declaration needed by libraries */
+#include "gmt_constants.h"   /* All basic constant definitions */
 #include "gmt_hidden.h"      /* Hidden bookkeeping structure for API containers */
 
 struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 #include "gmt_notposix.h"       /* Non-POSIX extensions */
 
-#include "gmt_constants.h"      /* All basic constant definitions */
 #include "gmt_modern.h"         /* Modern mode constant definitions */
 #include "gmt_macros.h"         /* All basic macros definitions */
 #include "gmt_dimensions.h"     /* Constant definitions created by configure */
@@ -143,9 +145,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_psl.h"            /* Declarations of structure for GMT PostScript settings */
 #include "gmt_hash.h"           /* Declarations of structure for GMT hashing */
 
-#ifdef HAVE_GDAL
-#	include "gmt_gdalread.h"      /* GDAL support */
-#endif
+#include "gmt_gdalread.h"      /* GDAL support */
 
 #include "gmt_common.h"         /* For holding the GMT common option settings */
 #include "gmt_fft.h"            /* Structures and enums used by programs needing FFTs */

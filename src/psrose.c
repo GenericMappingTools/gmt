@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -443,7 +443,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -896,6 +896,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 				dim[PSL_VEC_XTIP] = radius * c;
 				dim[PSL_VEC_YTIP] = radius * s;
 				f = (radius < Ctrl->M.S.v.v_norm) ? radius / Ctrl->M.S.v.v_norm : 1.0;
+				if (f < Ctrl->M.S.v.v_norm_limit) f = Ctrl->M.S.v.v_norm_limit;
 				dim[PSL_VEC_TAIL_WIDTH]  = f * Ctrl->M.S.v.v_width;
 				dim[PSL_VEC_HEAD_LENGTH] = f * Ctrl->M.S.v.h_length;
 				dim[PSL_VEC_HEAD_WIDTH]  = f * Ctrl->M.S.v.h_width;

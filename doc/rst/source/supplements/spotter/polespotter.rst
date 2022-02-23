@@ -46,7 +46,7 @@ fracture zones and the great circle extensions of abyssal hills
 are expected to intersect at potential rotation poles.  The assumption
 is that abyssal hill lines are meridians and fracture zones are parallels
 with respect to the rotation pole.  Line density may be computed and returned
-via a grid, the great circle lines may be returned via stdout, and the
+via a grid, the great circle lines may be returned via standard output, and the
 intersections of the great circles may be saved to file.  In line mode
 it will determine which line segments are compatible with a given trial
 pole, while in pole mode it will compute chi-squared misfits for all the

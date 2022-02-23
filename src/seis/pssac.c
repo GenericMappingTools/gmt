@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *  Copyright (c) 2016-2021 by Dongdong Tian
+ *  Copyright (c) 2016-2022 by Dongdong Tian
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -401,7 +401,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				}
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -653,7 +653,7 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 
 	read_from_ascii = (Ctrl->In.n == 0) || (Ctrl->In.n == 1 && !issac(Ctrl->In.file[0]));
 	if (read_from_ascii) {      /* Got a ASCII file or read from stdin */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Reading from saclist file or stdin\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Reading from saclist file or standard input\n");
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {    /* Register data input */
 			Return (API->error);
 		}

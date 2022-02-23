@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -88,7 +88,7 @@
 #define GMT_TOP_MODULE	1	/* func_level of top-level module being called */
 
 #define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode, in points (~11.6 meters) */
-#define GMT_PAPER_MARGIN_AUTO	5	/* Default paper margin under modern mode, in inches (12.7 centimeter) for auto-size mode */
+#define GMT_PAPER_MARGIN_AUTO	40	/* Default paper margin under modern mode, in inches (101.6 centimeter) for auto-size mode */
 #define GMT_PAPER_MARGIN_FIXED	1	/* Default paper margin under modern mode, in inches (2.54 centimeter) for fixed-size mode */
 
 #define GMT_JPEG_DEF_QUALITY	90	/* Default JPG quality value for psconvert -Tj */
@@ -434,10 +434,9 @@ enum GMT_enum_customsymb {
 	GMT_CUSTOM_DEF  = 1,
 	GMT_CUSTOM_EPS  = 2};
 
-//#define GMT_LEGEND_DX1_MUL 1.0	/* Default offset from margin to center of symbol if given as '-' times max symbol size */
-//#define GMT_LEGEND_DX2_MUL 2.0	/* Default offset from margin to start of label if given as '-' times max symbol size */
 #define GMT_LEGEND_DX1_MUL 0.5	/* Default offset from margin to center of symbol if given as '-' times max symbol size */
 #define GMT_LEGEND_DX2_MUL 1.5	/* Default offset from margin to start of label if given as '-' times max symbol size */
+#define GMT_LEGEND_DXL_MUL 1.25	/* Same as GMT_LEGEND_DX2_MUL but for line or vector symbols that typically are longer tgat circles etc */
 
 /*! Various mode for axes */
 enum GMT_enum_oblique {
@@ -670,5 +669,13 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 	GMT_DATA_DIR   = 2,	/* Use the data directory */
 	GMT_LOCAL_DIR  = 3,	/* Use the local (current) directory */
 	GMT_REMOTE_DIR = 4}; /* File is on the remote server */
+
+/* Constants for controlling the written grid history via grdedit and grdconvert */
+enum GMT_grid_history {
+	GMT_GRDHISTORY_NONE	= 0,	/* No output history at all */
+	GMT_GRDHISTORY_OLD	= 1,	/* Only save the previous command history in the output [Default] */
+	GMT_GRDHISTORY_NEW	= 2,	/* Only save the current module command history in the output  */
+	GMT_GRDHISTORY_BOTH	= 3		/* Append current module history to previous history  */
+};
 
 #endif  /* GMT_CONSTANTS_H */

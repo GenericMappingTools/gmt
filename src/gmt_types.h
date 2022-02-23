@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -383,11 +383,9 @@ struct GMT_CURRENT {
 	struct GMT_PSL ps;		/* Hold parameters related to PSL setup */
 	struct GMT_OPTION *options;	/* Pointer to current program's options */
 	struct GMT_FFT_HIDDEN fft;	/* Structure with info that must survive between FFT calls */
-#ifdef HAVE_GDAL
 	struct GMT_GDALREAD_IN_CTRL  gdal_read_in;  /* Hold parameters related to options transmitted to gdalread */
 	struct GMT_GDALREAD_OUT_CTRL gdal_read_out; /* Hold parameters related to options transmitted from gdalread */
 	struct GMT_GDALWRITE_CTRL    gdal_write;    /* Hold parameters related to options transmitted to gdalwrite */
-#endif
 };
 
 struct GMT_INTERNAL {

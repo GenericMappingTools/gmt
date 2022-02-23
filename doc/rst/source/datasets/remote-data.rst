@@ -49,12 +49,8 @@ image and not create a bloated file that exceeds what the eye (or printers) can 
 :doc:`/grdcut` with the **-D** option to inquire about the automatic resolution. **Note**: Grid
 processing tools require the data resolution to be specified since no plot is being generated.
 
-Currently, GMT provides the following datasets (with their special names in parentheses)
-
-- `Global Earth Relief Grids`_ (``earth_relief``)
-- `Global Earth Seafloor Crustal Age Grids`_ (``earth_age``)
-- `Global Earth Day/Night Images`_ (``earth_day`` and ``earth_night``)
-- `Global Earth Mask Grids`_ (``earth_mask``)
+Details about the remote datasets currently provided by GMT can be found at
+`Remote Datasets <https://www.generic-mapping-tools.org/remote-datasets/>`_.
 
 Many of the remote datasets have a preferred, default color table that will be used unless you
 override that default by giving your desired CPT information.
@@ -101,14 +97,16 @@ resolution in the original grid or image. To improve responsiveness, the larger 
 for node spacings 05m and smaller) have been split into smaller tiles.  When the 06m or lower resolution
 files are accessed the first time we download the entire file, regardless of your selected region (**-R**).
 However, for the tiled data sets we only download the tiles that intersect your selected region
-the first time they are referenced.
+the first time they are referenced. **Note**: The mask grids are not tiled as they are very small even
+for 15s resolution (due to byte format and effective compression), and neither are images (at least for
+as long as GMT does not have the capability of blending image tiles - this may change in the future).
 
 Single grids are provided as netCDF-4 maximum-lossless compressed short int grids, making the files
 much smaller than their original source files without any loss of precision.  To minimize download
 speed, the dataset tiles are all stored as JPEG2000 images on the GMT server due to superior compression,
 but once downloaded to your server directory they are converted to the same short int compressed netCDF4
-format for easier access. This step uses our GDAL bridge and thus requires that you have built GMT with
-GDAL support *and* that your GDAL distribution was built with *openjpeg* support.
+format for easier access. This step uses our GDAL bridge and requires that your GDAL distribution was
+built with *openjpeg* support.
 
 
 .. _jp2_compression:
@@ -148,18 +146,8 @@ or obtain the required subset grid directly via::
 
     gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -Gsubset.grd -V
 
-----
+Currently Available Remote Data Sets
+-------------------------------------
 
-.. include:: earth-relief.rst_
-
-----
-
-.. include:: earth-age.rst_
-
-----
-
-.. include:: earth-daynight.rst_
-
-----
-
-.. include:: earth-masks.rst_
+Documentation for the individual remote datasets available through the GMT server and its
+mirrors can be found at `Remote Datasets <https://www.generic-mapping-tools.org/remote-datasets/>`_.

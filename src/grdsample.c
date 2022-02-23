@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -94,6 +94,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+EXTERN_MSC int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item);	/* Because of deprecated -Q */
+
 static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdsample and sets parameters in CTRL.
@@ -144,7 +146,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'N':	/* Backwards compatible.  n_columns/n_rows can now be set with -I */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -155,8 +157,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 					n_errors += gmt_parse_inc_option (GMT, 'I', format);
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
+			case 'Q':	/* Deprecated option, use -n instead */
+				if (gmt_M_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -Q is deprecated; -n%s was set instead, use this in the future.\n", opt->arg);
+					n_errors += gmtinit_parse_n_option (GMT, opt->arg);
+				}
+				else
+					n_errors += gmt_default_option_error (GMT, opt);
 			case 'T':	/* Convert from pixel file <-> gridfile */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
@@ -164,7 +173,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -183,7 +192,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 
 EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 
-	int error = 0, row, col;
+	int error = 0;
+	openmp_int row, col;
 	unsigned int registration;
 
 	uint64_t ij;
@@ -279,6 +289,12 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 			}
 		}
 		if (!wrap_360_o && !wrap_360_i) {	/* Can only shrink wesn_i if there is no 360-wrapping going on */
+			if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap between these two wesn_? arrays */
+				if ((wesn_o[XLO] - wesn_i[XLO]) >= 360.0)
+					wesn_i[XLO] += 360.0, wesn_i[XHI] += 360.0;
+				else if ((wesn_o[XLO] - wesn_i[XLO]) <= -360.0)
+					wesn_i[XLO] -= 360.0, wesn_i[XHI] -= 360.0;
+			}
 			k = 0;
 			while (wesn_i[XLO] < wesn_o[XLO]) wesn_i[XLO] += Gin->header->inc[GMT_X], k++;	/* Now on or inside boundary */
 			if (wesn_i[XLO] > Gin->header->wesn[XLO] && k) wesn_i[XLO] -= Gin->header->inc[GMT_X];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
@@ -340,7 +356,7 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	HH = gmt_get_H_hidden (Gin->header);
 	lon = gmt_M_memory (GMT, NULL, Gout->header->n_columns, double);
-	for (col = 0; col < (int)Gout->header->n_columns; col++) {
+	for (col = 0; col < (openmp_int)Gout->header->n_columns; col++) {
 		lon[col] = gmt_M_grd_col_to_x (GMT, col, Gout->header);
 		if (!HH->nxp)
 			/* Nothing */;
@@ -357,7 +373,7 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,lat,ij) shared(GMT,Gin,Gout,lon)
 #endif
-	for (row = 0; row < (int)Gout->header->n_rows; row++) {
+	for (row = 0; row < (openmp_int)Gout->header->n_rows; row++) {
 		lat = gmt_M_grd_row_to_y (GMT, row, Gout->header);
 		if (!HH->nyp)
 			/* Nothing */;
@@ -365,7 +381,7 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 			lat -= Gin->header->inc[GMT_Y] * HH->nyp;
 		else if (lat < Gin->header->wesn[YLO])
 			lat += Gin->header->inc[GMT_Y] * HH->nyp;
-		for (col = 0; col < (int)Gout->header->n_columns; col++) {
+		for (col = 0; col < (openmp_int)Gout->header->n_columns; col++) {
 			ij = gmt_M_ijp (Gout->header, row, col);
 			Gout->data[ij] = (gmt_grdfloat)gmt_bcr_get_z (GMT, Gin, lon[col], lat);
 			if (Gout->data[ij] < Gout->header->z_min) Gout->header->z_min = Gout->data[ij];

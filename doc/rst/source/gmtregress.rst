@@ -41,7 +41,7 @@ Synopsis
 Description
 -----------
 
-**regress** reads one or more data tables [or *stdin*]
+**regress** reads one or more data tables [or standard input]
 and determines the best linear [weighted] regression model :math:`y(x) = a + b x` for each segment using the chosen parameters.
 The user may specify which data and model components should be reported.  By default, the model will be evaluated at the
 input points, but alternatively you can specify an equidistant range over which to evaluate

@@ -68,7 +68,7 @@ ASCII unless **-bo** is set) are as follows:
     Signal-to-Noise-Ratio (SNR) is coh / (1 - coh). SNR = 1 when coh = 0.5.
 
 In addition, a single file with all of the above as individual columns will
-be written to *stdout* (unless disabled via **-T**).
+be written to standard output (unless disabled via **-T**).
 
 Required Arguments
 ------------------
@@ -132,7 +132,7 @@ Optional Arguments
 .. _-T:
 
 **-T**
-    Disable the writing of a single composite results table to stdout.  Only individual output
+    Disable the writing of a single composite results table to standard output.  Only individual output
     files for each selected component (see **-C**) will be written.
 
 .. _-W:
@@ -178,18 +178,14 @@ Examples
 .. include:: explain_example.rst_
 
 Suppose data.g is gravity data in mGal, sampled every 1.5 km. To write
-its power spectrum, in mGal\*\*2-km, to the file data.xpower, use
-
-   ::
+its power spectrum, in mGal\*\*2-km, to the file data.xpower, use::
 
     gmt spectrum1d data.g -S256 -D1.5 -Ndata
 
 Suppose in addition to data.g you have data.t, which is topography in
 meters sampled at the same points as data.g. To estimate various
 features of the transfer function, considering data.t as input and
-data.g as output, use
-
-   ::
+data.g as output, use::
 
     paste data.t data.g | gmt spectrum1d -S256 -D1.5 -Ndata -C > results.txt
 

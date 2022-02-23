@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -379,7 +379,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 					N_active = true;
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'S':
 				if (gmt_M_compat_check (GMT, 5)) {
@@ -400,7 +400,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 					n_errors += gmt_M_check_condition (GMT, k != 3, "Option -S: Correct syntax:\n\t-S[x]<x0>/<y0>/<length>[/<units>]\n");
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
@@ -427,7 +427,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -561,7 +561,7 @@ EXTERN_MSC int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 
-			if (gmt_segment_BB_outside_map_BB (GMT, T->segment[seg])) continue;
+			/* Cannot exclude segments whose x,y are all outside since we do not yet know the coordinates of the amplitude curve */
 
 			PSL_comment (PSL, "%s\n", T->segment[seg]->header);
 

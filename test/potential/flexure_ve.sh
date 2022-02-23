@@ -2,6 +2,7 @@
 #
 # Test the output of gmt grdflexure for single circular Gaussian seamount
 # on a viscoelastic plate
+
 ps=flexure_ve.ps
 m=g
 f=0.2

@@ -184,7 +184,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *mode*
-    Determine a suitable range for the **-T** option from the input table(s) (or stdin).
+    Determine a suitable range for the **-T** option from the input table(s) (or standard input).
     Choose from several types of range determinations:
     **-Sr** will use the data range min/max, **-S**\ *inc*\ [**+d**] will use the data min/max but rounded
     to nearest *inc* (append **+d** to resample to a discrete CPT), **-Sa**\ *scl* will

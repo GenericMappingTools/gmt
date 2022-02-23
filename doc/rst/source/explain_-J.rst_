@@ -224,10 +224,10 @@ respectively):
 
     **-Js**\|\ **S**\ *lon0/lat0*\ [*/horizon*]\ */*\ *scale*\|\ *width* (General Stereographic **[C]**).
         *lon0/lat0* specifies the projection center. *horizon* specifies the max distance from projection center (in
-        degrees, < 180, default 90). Give *scale* (with **-Js**; as **1:**\ *xxxx* (true at pole) or *lat0*/**1:**\
-        *xxxx* (true at standard parallel *lat*) or *radius/lat* (*radius* in :ref:`plot-units <plt-units>` from origin
+        degrees, < 180, default 90). Give *scale* (with **-Js**; as **1:**\ *xxxx* (true at pole) or *lat*/**1:**\
+        *xxxx* (true at standard parallel *lat* and requires *lat0* = ±90) or *radius/lat* (*radius* in :ref:`plot-units <plt-units>` from origin
         to the oblique latitude *lat*). Note if **1:**\ *xxxx* is used then to specify *horizon* you must also specify
-        the *lat* as +-90 to avoid ambiguity.) or width (with **-JS**; in :ref:`plot-units <plt-units>`).
+        the *lat* as ±90 to avoid ambiguity.) or width (with **-JS**; in :ref:`plot-units <plt-units>`).
 
     **MISCELLANEOUS PROJECTIONS:**
 

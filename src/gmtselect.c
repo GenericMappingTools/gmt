@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,6 +39,8 @@
  *
  * Any one of these conditions may be negated for the opposite result
  * Both binary and ASCII data files are accommodated
+ *
+ * Note on KEYS: CD(= and LD(= mean -C and -L take input Datasets as arguments which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -521,7 +523,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				break;
 #endif
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -908,7 +910,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->G.active) {	/* Check if we are in/out-side mask cell */
-			unsigned int row, col;
+			openmp_int row, col;
 			if (gmt_M_y_is_outside (GMT, In->data[GMT_Y], G->header->wesn[YLO], G->header->wesn[YHI]) ||	/* Outside y-range */
 				gmt_x_is_outside (GMT, &In->data[GMT_X], G->header->wesn[XLO], G->header->wesn[XHI])) {	/* Outside x-range */
 				inside = false;	/* Outside both y- and x-range (or periodic longitude) for this grid */

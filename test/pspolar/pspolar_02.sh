@@ -34,4 +34,4 @@ EOF
 
 done
 
-gmt psbasemap -R -J -P -V -O -B0 >> $ps
+gmt psbasemap -R -J -P -O -B0 >> $ps

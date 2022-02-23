@@ -62,7 +62,10 @@ the triangulations is either that of Watson [1982] [Default] or Shewchuk
 selected). This choice is made during the GMT installation.  Furthermore,
 if the Shewchuk algorithm is installed then you can also perform the
 calculation of Voronoi polygons and optionally grid your data via the
-natural nearest neighbor algorithm.
+natural nearest neighbor algorithm.  **Note**: For geographic data with
+global or very large extent you should consider :doc:`sphtriangulate`
+instead since **triangulate** is a Cartesian or small-geographic area operator
+and is unaware of periodic or polar boundary conditions.
 
 Required Arguments
 ------------------

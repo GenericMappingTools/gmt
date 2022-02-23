@@ -11,8 +11,7 @@ gmt begin ex32
 	# Here we get and convert the flag of Europe directly from the web through grdconvert using
 	# GDAL support. We take into account the dimension of the flag (1000x667 pixels)
 	# for a ratio of 3x2.
-	# Because GDAL support will not be standard for most users, we have stored
-	# the result, @euflag.nc in this directory.
+	# So simplify this example, we have stored the result, @euflag.nc in this directory.
 
 	Rflag=-R3/9/50/54
 	# gmt grdconvert \
