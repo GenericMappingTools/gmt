@@ -33,7 +33,7 @@ choco install ninja
 choco install ghostscript --version 9.50
 
 if [ "$BUILD_DOCS" = "true" ]; then
-    pip install --user docutils==0.17 sphinx dvc
+    pip install --user sphinx dvc
     # Add sphinx to PATH
     echo "$(python -m site --user-site)\..\Scripts" >> $GITHUB_PATH
 
