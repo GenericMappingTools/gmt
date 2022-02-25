@@ -2010,9 +2010,10 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		}
 	}
 	if (D[PAR]) {
+		n_para++;
 		if (n_para >= 0) {	/* End of last paragraph for sure */
 			S[PAR]->n_rows = krow[PAR];
-			D[PAR]->table[0]->n_segments = n_para;
+			D[PAR]->table[0]->n_segments = D[PAR]->n_segments = n_para;
 			D[PAR]->table[0]->n_records += S[PAR]->n_rows;
 			D[PAR]->n_records = D[PAR]->table[0]->n_records;
 			S[PAR] = D[PAR]->table[0]->segment[n_para] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, krow[PAR], 0U, NULL, S[PAR]);
