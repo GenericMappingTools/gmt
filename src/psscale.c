@@ -809,7 +809,7 @@ GMT_LOCAL unsigned int psscale_set_custom_annot (struct GMT_CTRL *GMT, struct GM
 GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width, unsigned int tr_status) {
 	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0, p_arg;
 	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nv, nm, barmem, k, justify, no_B_mode = Ctrl->S.mode;
-	int this_just, p_val, center = 0;
+	int this_just, p_val, center = 0, outline = 0;
 	bool reverse, all = true, use_image, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
 	bool B_set = GMT->current.map.frame.set[GMT_X], skip_lines = Ctrl->S.skip, need_image;
 	char format[GMT_LEN256] = {""}, text[GMT_LEN256] = {""}, test[GMT_LEN256] = {""}, unit[GMT_LEN256] = {""}, label[GMT_LEN256] = {""}, endash;
@@ -943,7 +943,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		endash = '-';	/* Use hyphen */
 
 	if ((gap >= 0.0 || Ctrl->L.interval) && !P->is_continuous) {	/* Want to center annotations for discrete colortable, using lower z0 value */
-		center = (Ctrl->L.interval || gap >= 0.0) ? 1 : 0;
+		center  = (Ctrl->L.interval || gap >= 0.0) ? 1 : 0;
+		outline = (gap > 0.0)  ? 1 : 0;
 		if (gap > 0.0) skip_lines = true;
 		gap *= 0.5;
 		if (Ctrl->L.interval) {
@@ -1200,7 +1201,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					x0 = x1;
 					continue;
 				}
-				gmt_setfill (GMT, f, center);	/* Set fill and paint box */
+				gmt_setfill (GMT, f, outline);	/* Set fill and paint box */
 				if (P->data[ii].rgb_low[3] > 0.0) {
 					transp[GMT_FILL_TRANSP] = P->data[ii].rgb_low[3];
 					PSL_settransparencies (PSL, transp);
@@ -1227,7 +1228,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					PSL_settransparencies (PSL, transp);
 				}
 				if ((f = P->data[ii].fill) != NULL)	/* Using pattern fills */
-					gmt_setfill (GMT, f, center);
+					gmt_setfill (GMT, f, outline);
 				else if (Ctrl->I.active) {
 					nb = (P->is_gray || Ctrl->M.active) ? 1 : 3;
 					tmp = gmt_M_memory (GMT, NULL, ny*nb, unsigned char);
@@ -1238,13 +1239,13 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					}
 					PSL_plotcolorimage (PSL, x0 + gap, 0.0, z_width[ii] - 2*gap, width, PSL_BL, tmp, 1, ny, depth);
 					gmt_M_free (GMT, tmp);
-					PSL_setfill (PSL, GMT->session.no_rgb, center);
+					PSL_setfill (PSL, GMT->session.no_rgb, outline);
 				}
 				else {
 					gmt_M_rgb_copy (rgb, P->data[ii].rgb_low);
 					if (Ctrl->I.active) gmt_illuminate (GMT, max_intens[1], rgb);
 					if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-					PSL_setfill (PSL, rgb, center);
+					PSL_setfill (PSL, rgb, outline);
 				}
 				PSL_plotbox (PSL, x0+gap, 0.0, x1-gap, width);
 				if (P->data[ii].rgb_low[3] > 0.0) {
@@ -1504,7 +1505,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					x0 = x1;
 					continue;
 				}
-				gmt_setfill (GMT, f, center);	/* Set fill and paint box */
+				gmt_setfill (GMT, f, outline);	/* Set fill and paint box */
 				/* Must undo rotation so patterns remain aligned with original setup */
 				PSL_setorigin (PSL, x0 + gap, 0.0, -90.0, PSL_FWD);
 				if (P->data[ii].rgb_low[3] > 0.0) {
@@ -1534,7 +1535,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					PSL_settransparencies (PSL, transp);
 				}
 				if ((f = P->data[ii].fill) != NULL)	/* Using pattern fills */
-					gmt_setfill (GMT, f, center);
+					gmt_setfill (GMT, f, outline);
 				else if (Ctrl->I.active) {
 					nb = (P->is_gray || Ctrl->M.active) ? 1 : 3;
 					tmp = gmt_M_memory (GMT, NULL, ny*nb, unsigned char);
@@ -1545,13 +1546,13 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					}
 					PSL_plotcolorimage (PSL, x0 + gap, 0.0, z_width[ii] - 2*gap, width, PSL_BL, tmp, 1, ny, depth);
 					gmt_M_free (GMT, tmp);
-					PSL_setfill (PSL, GMT->session.no_rgb, center);
+					PSL_setfill (PSL, GMT->session.no_rgb, outline);
 				}
 				else {
 					gmt_M_rgb_copy (rgb, P->data[ii].rgb_low);
 					if (Ctrl->I.active) gmt_illuminate (GMT, max_intens[1], rgb);
 					if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
-					PSL_setfill (PSL, rgb, center);
+					PSL_setfill (PSL, rgb, outline);
 				}
 				if (P->data[ii].fill) {	/* Must undo rotation so patterns remain aligned with original setup */
 					PSL_setorigin (PSL, x0 + gap, 0.0, -90.0, PSL_FWD);
@@ -1913,6 +1914,9 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 				tr_status = 0;
 		}
 	}
+
+	if (!Ctrl->N.active && !P->is_continuous)	/* If -N not set we should default to rectangles if possible due to macOS Preview blurring */
+		Ctrl->N.mode = N_FAVOR_POLY;
 
 	if (Ctrl->D.extend && P->is_wrapping) {
 		GMT_Report (API, GMT_MSG_ERROR, "Cannot use +e for cycling color bar; +e deactivated\n");
