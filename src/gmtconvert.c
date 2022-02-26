@@ -92,6 +92,7 @@ struct GMTCONVERT_CTRL {
 	} Q;
 	struct GMTCONVERT_S {	/* -S[~]\"search string\" */
 		bool active;
+		bool exact;
 		struct GMT_TEXT_SELECTION *select;
 	} S;
 	struct GMTCONVERT_T {	/* -T[h][d[[~]selection]] */
@@ -187,9 +188,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"or +f<file> for a file list with one <range> selection per line. "
 		"A leading ~ will invert the selection and write all segments but the ones listed.");
 	GMT_Usage (API, 1, "\n-S[~]\"search string\"");
-	GMT_Usage (API, -2, "Only output segments whose headers contain the pattern \"string\". "
+	GMT_Usage (API, -2, "Only output segments whose headers contain the pattern \"string\"[+e]. "
 		"Use -S~\"string\" to output segment that DO NOT contain this pattern. "
 		"If your pattern begins with ~, escape it with \\~. "
+		"Append +e to require an exact match [Default will match sub-strings]. "
 		"To match OGR aspatial values, use name=value, and to match headers against "
 		"extended regular expressions use -S[~]/regexp/[i] (i for case-insensitive). "
 		"Give +f<file> for a file list with such patterns, one per line. "
@@ -358,7 +360,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 			case 'S':	/* Segment header pattern search */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
+				if ((c = strstr (opt->arg, "+e"))) {	/* exact match */
+					Ctrl->S.exact = true;
+					c[0] = '\0';	/* Temporarily hide this string */
+				}
 				Ctrl->S.select = gmt_set_text_selection (GMT, opt->arg);
+				c[0] = '+';	/* Restore */
 				break;
 			case 'T':	/* -T[h]: Do not write segment headers, -Td: Skip duplicate records */
 				strncpy (p, opt->arg, GMT_BUFSIZ-1);
@@ -710,7 +717,7 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			SHo = gmt_get_DS_hidden (So);
 			if (Ctrl->L.active) SHo->mode = GMT_WRITE_HEADER;	/* Only write segment header */
 			if (Ctrl->S.active) {		/* See if the combined segment header has text matching our search string */
-				match = gmt_get_segtext_selection (GMT, Ctrl->S.select, S, match);
+				match = gmt_get_segtext_selection (GMT, Ctrl->S.select, S, Ctrl->S.exact, match);
 				if (Ctrl->S.select->invert == match) SHo->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			}
 			if (Ctrl->Q.active && !gmt_get_int_selection (GMT, Ctrl->Q.select, seg)) SHo->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */

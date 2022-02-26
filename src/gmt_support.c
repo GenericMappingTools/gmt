@@ -16443,8 +16443,18 @@ void gmt_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION **
 	gmt_M_free (GMT, *S);
 }
 
+GMT_LOCAL bool gmtsupport_match (char *txt1, char *txt2, bool exact) {
+	/* Helper function to do the comparison */
+	bool match;
+	if (exact)
+		match = (strcmp (txt1, txt2) == 0);
+	else
+		match = (strstr (txt1, txt2) != NULL);
+	return (match);
+}
+
 /*! . */
-bool gmt_get_segtext_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION *S, struct GMT_DATASEGMENT *T, bool last_match) {
+bool gmt_get_segtext_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION *S, struct GMT_DATASEGMENT *T, bool exact, bool last_match) {
 	/* Return true if the pattern was found; see at end for what to check for in calling program */
 	bool match;
 	struct GMT_DATASEGMENT_HIDDEN *TH = gmt_get_DS_hidden (T);
@@ -16452,7 +16462,7 @@ bool gmt_get_segtext_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION 
 	if (last_match && gmt_polygon_is_hole (GMT, T))	/* Check if current polygon is a hole */
 		match = true;	/* Extend a true match on a perimeter to its trailing holes */
 	else if (S->ogr_match)	/* Compare to single aspatial value */
-		match = (TH->ogr && strstr (TH->ogr->tvalue[S->ogr_item], S->pattern[0]) != NULL);		/* true if we matched */
+		match = (TH->ogr && gmtsupport_match (TH->ogr->tvalue[S->ogr_item], S->pattern[0], exact));		/* true if we matched */
 	else if (T->header) {	/* Could be one or n patterns to check */
 		uint64_t k = 0;
 		match = false;
@@ -16462,7 +16472,7 @@ bool gmt_get_segtext_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION 
 			 	match = gmtlib_regexp_match (GMT, T->header, S->pattern[k], S->caseless[k]);	/* true if we matched */
 			else
 #endif
-				match = (strstr (T->header, S->pattern[k]) != NULL);
+				match = gmtsupport_match (T->header, S->pattern[k], exact);
 			k++;
 		}
 	}
