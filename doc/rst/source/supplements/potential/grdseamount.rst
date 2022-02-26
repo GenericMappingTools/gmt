@@ -41,20 +41,20 @@ Synopsis
 Description
 -----------
 
-**grdseamount** will compute the combined shape of multiple synthetic seamounts given their individual shape
+**grdseamount** will compute the combined topographic shape of multiple synthetic seamounts given their individual shape
 parameters.  We read from *table* (or standard input) a list of seamount locations and sizes and can evaluate either
 Gaussian, parabolic, conical, polynomial or disc shapes, which may be circular or elliptical, and optionally
 truncated. Various scaling options are available to modify the result, including an option to add in
-a background depth (more complicated backgrounds may be added via :doc:`grdmath </grdmath>`).
+a background depth (more complicated backgrounds may be added separately via :doc:`grdmath </grdmath>`).
 The input data must contain *lon*, *lat*, *radius*, *height* for each seamount.
-For elliptical features (**-E**) we expect *lon*, *lat*, *azimuth*, *semi-major*, *semi-minor*,
-*height* instead. If flattening is specified (via **-F**) with no value appended
+For elliptical features (requires **-E**) we expect *lon*, *lat*, *azimuth*, *semi-major*, *semi-minor*,
+*height* instead. If seamount flattening is specified (via **-F**) with no value appended
 then a final column with *flattening* is expected (cannot be used for plateaus).
 For temporal evolution of topography the **-T** option may be used, in which case the
 data file must have two final columns with the start and stop time of seamount construction.
 In this case you may choose to write out a cumulative shape or just the increments produced
-by each time step (see **-Q**).  Finally, for mixing shapes you can use the trailing text to set
-the shape by using **-C** without an argument.
+by each time step (see **-Q**).  Finally, for mixing different seamount shapes in the input *table*
+you can use the trailing text to give the shape code by using **-C** without an argument.
 
 Required Arguments (if **-L** not given)
 ----------------------------------------
@@ -87,16 +87,16 @@ Optional Arguments
 .. _-A:
 
 **-A**\ [*out/in*]
-    Build a mask grid, append outside/inside values [1/NaN].
+    Build a mask grid; append outside/inside values [1/NaN].
     Here, height and flattening are ignored and **-L**, **-N** and **-Z** are disallowed.
 
 .. _-C:
 
 **-C**\ [**c**\|\ **d**\|\ **g**\|\ **o**\|\ **p**]
     Select seamount shape function: choose among **c** (cone), **d** (disc), **g** (Gaussian)
-    **o** (polynomial) and **p** (parabolic) shape [Default is Gaussian].  All but the disc can
+    **o** (polynomial) and **p** (parabolic) shapes [Default is Gaussian].  All but the disc can
     furthermore be truncated via a flattening parameter *f* set by **-F**.  If **-C** is not given any
-    argument then we will read the shape code from the last input column.  If **-C** is not given
+    argument then we will read the shape code from the trailing text.  If **-C** is not given
     at all then we default to Gaussian shapes [**g**].  **Note**: The polynomial model has an amplitude
     for a normalized radius *r* that is given by :math:`h(r) = \frac{(1+r)^3(1-r)^3)}{1+r^3}`.  It is
     very similar to the Gaussian model (volume is just ~2.4% larger) but *h* goes exactly to zero at
@@ -121,7 +121,7 @@ Optional Arguments
 
 **-E**
     Elliptical data format. We expect the input records to contain
-    *lon, lat, azimuth, major, minor, height* (with  the latter in m)
+    *lon, lat, azimuth, semi-major, semi-minor, height* (with  the latter in meter)
     for each seamount.  [Default is Circular data format, expecting
     *lon, lat, radius, height*].
 
@@ -136,8 +136,9 @@ Optional Arguments
 .. _-F:
 
 **-F**\ [*flattening*]
-    Seamounts are to be truncated to guyots.  Append *flattening* from 0 (no flattening) to 1 (no feature!), otherwise we expect
-    to find it in last input column [no truncation].  Ignored if used with **-Cd**.
+    Seamounts are to be truncated to guyots.  Append *flattening* from 0 (no flattening) to 1
+    (**Note**: no feature will be produced!), otherwise we expect to find the flattening in
+    the last input column [no truncation].  Ignored if used with **-Cd**.
 
 .. _-L:
 
@@ -150,19 +151,20 @@ Optional Arguments
 **-M**\ [*list*]
     Write the times and names of all grids that were created to the text file *list*.
     Requires **-T**.  If not *list* file is given then we write to standard output.
+    The output listing is suitable to be used as input to :doc:`grdflexure </supplements/potential/grdflexure>`.
 
 .. _-N:
 
 **-N**\ *norm*
-    Normalize grid so maximum grid height equals *norm* [no normalization]
+    Normalize grid so maximum grid height equals *norm* [no normalization].
 
 .. _-Q:
 
 **-Q**\ *bmode*/*fmode*\ [**+d**]
-    Only to be used in conjunction with **-T**.  Append two different modes settings:
-    The *bmode* determines how we construct the surface.  Specify **c** for cumulative
+    Can only be used in conjunction with **-T**.  Append two different modes settings separated by a slash:
+    The *bmode* determines how we construct the surface: Specify **c** for cumulative
     volume through time [Default], or **i** for incremental volume added for each time slice.
-    The *fmode* determines the volume flux curve we use.  Give **c** for a constant volume flux or
+    The *fmode* determines the volume flux curve we use: Give **c** for a constant volume flux or
     **g** for a Gaussian volume flux [Default] between the start and stop times of each feature. These fluxes
     integrate to a linear or error-function volume fraction over time, respectively, as shown below.
     By default we compute the exact cumulative and incremental values for the seamounts specified.  Append
@@ -207,7 +209,8 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *level*
-    Set the background depth [0].
+    Set the background water depth [0]. As all seamounts have positive relief, you may
+    use a larger negative *level* to place them under water.
 
 .. |Add_-bi| replace:: [Default is 4 input columns].
 .. include:: ../../explain_-bi.rst_
