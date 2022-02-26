@@ -14896,7 +14896,7 @@ void gmtinit_complete_RJ (struct GMT_CTRL *GMT, char *codes, struct GMT_OPTION *
 		gmt_M_memset (str, 3, char);
 		str[0] = codes[j];
 		if ((id = gmt_get_option_id (0, str)) == GMT_NOTSET) continue;	/* Not an option we have history for yet */
-		if (codes[j] == 'R' && !GMT->current.ps.active) id++;		/* Examine -RG history if not a plotter */
+		if (codes[j] == 'R' && !GMT->current.ps.active || !GMT->init.history[id]) id++;		/* Examine -RG history if not a plotter or no -RP */
 		if (GMT->init.history[id] == NULL) continue;	/* No history for this option */
 		if (codes[j] == 'J') {	/* Must now search for actual option since -J only has the code (e.g., -JM) */
 			/* Continue looking for -J<code> */
