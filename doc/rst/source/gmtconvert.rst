@@ -22,7 +22,7 @@ Synopsis
 [ |-L| ]
 [ |-N|\ *col*\ [**+a**\|\ **d**] ]
 [ |-Q|\ [**~**]\ *selection*]
-[ |-S|\ [**~**]\ *"search string"*[**+e**] \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
+[ |-S|\ [**~**]\ *"search string"*\|\ **+f**\|\ *file*\ [**+e**] \| |-S|\ [**~**]/\ *regexp*/[**i**][**+e**] ]
 [ |-T|\ [**h**][**d**\ [[**~**]\ *selection*]] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+n**] ]
@@ -175,7 +175,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**~**]\ *"search string"*[**+e**] or **-S**\ [**~**]/\ *regexp*/[**i**]
+**-S**\ [**~**]\ *"search string"*\|\ **+f**\|\ *file*\ [**+e**] \| |-S|\ [**~**]/\ *regexp*/[**i**][**+e**]
     Only output those segments whose header record contains the
     specified text string. To reverse the search, i.e., to output
     segments whose headers do *not* contain the specified pattern, use
@@ -191,7 +191,7 @@ Optional Arguments
     in slashes. Append **i** for case-insensitive matching.
     For a list of such patterns, give **+f**\ *file* with one pattern per line.
     To give a single pattern starting with "+f", escape it with a backslash.
-    Finally, append **+e** at the end to request an exact match [Default will
+    Finally, append **+e** as last modifier to request an exact match [Default will
     match any sub-string in the target].
 
 .. _-T:
