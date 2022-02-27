@@ -194,8 +194,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"To match OGR aspatial values, use name=value, and to match headers against "
 		"extended regular expressions use -S[~]/regexp/[i] (i for case-insensitive). "
 		"Instead of \"search string\", give +f<file> for a file with such patterns, one per line. "
-		"To give a single pattern starting with +f, escape it with \\+f.");
-		"Any of these three forms accept an optional +e to require an exact match [Default will match sub-strings]. "
+		"To give a single pattern starting with +f, escape it with \\+f. "
+		"Any of these three forms accept an optional +e to require an exact match [Default will match sub-strings]. ");
 	GMT_Usage (API, 1, "\n-T[h][d[[~]<selection>]]");
 	GMT_Usage (API, -2, "Skip certain types of records.  Append one or both of these directives:");
 	GMT_Usage (API, 3, "h: Prevent the writing of segment headers [Default].");
