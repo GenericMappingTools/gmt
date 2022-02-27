@@ -93,7 +93,7 @@ Required Arguments
     If just **-E** is given and **-F** is used it means no plate is given
     and we will return a purely viscous response with or without an asthenospheric layer.
     Select a general linear viscoelastic response by supplying both an initial and
-    final elastic thickness; this response also requires **-M**.
+    final elastic thickness *Te2*; this response also requires **-M**.
 
 .. _-G:
 
