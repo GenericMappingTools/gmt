@@ -22,7 +22,7 @@ Synopsis
 [ |-L| ]
 [ |-N|\ *col*\ [**+a**\|\ **d**] ]
 [ |-Q|\ [**~**]\ *selection*]
-[ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
+[ |-S|\ [**~**]\ *"search string"*\|\ **+f**\|\ *file*\ [**+e**] \| |-S|\ [**~**]/\ *regexp*/[**i**][**+e**] ]
 [ |-T|\ [**h**][**d**\ [[**~**]\ *selection*]] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+n**] ]
@@ -175,7 +175,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**~**]\ *"search string"* or **-S**\ [**~**]/\ *regexp*/[**i**]
+**-S**\ [**~**]\ *"search string"*\|\ **+f**\|\ *file*\ [**+e**] \| |-S|\ [**~**]/\ *regexp*/[**i**][**+e**]
     Only output those segments whose header record contains the
     specified text string. To reverse the search, i.e., to output
     segments whose headers do *not* contain the specified pattern, use
@@ -190,7 +190,9 @@ Optional Arguments
     headers against extended regular expressions enclose the expression
     in slashes. Append **i** for case-insensitive matching.
     For a list of such patterns, give **+f**\ *file* with one pattern per line.
-    To give a single pattern starting with +f, escape it with a backslash.
+    To give a single pattern starting with "+f", escape it with a backslash.
+    Finally, append **+e** as last modifier to request an exact match [Default will
+    match any sub-string in the target].
 
 .. _-T:
 
@@ -199,7 +201,7 @@ Optional Arguments
     suppress segment headers [Default], and/or **d** to suppress duplicate
     data records.  Use **-Thd** to suppress both types of records.  By default,
     all columns must be identical across the two records to skip the record.
-    ALternatively, append a column *selection* to only use those columns
+    Alternatively, append a column *selection* to only use those columns
     in the comparisons instead.  The *selection* syntax is
     *range*\ [,\ *range*,...] where each *range* of items is either a single
     column *number* or a range with stepped increments given via *start*\ [:*step*:]\ :*stop*
@@ -294,6 +296,11 @@ To extract all segments in the file big_file.txt whose headers contain
 the string "RIDGE AXIS", try::
 
     gmt convert big_file.txt -S"RIDGE AXIS" > subset.txt
+
+To only get the segments in the file big_file.txt whose headers exactly
+matches the string "Spitsbergen", try::
+
+    gmt convert big_file.txt -SSpitsbergen+e > subset.txt
 
 To invert the selection of segments whose headers begin with "profile "
 followed by an integer number and any letter between "g" and "l", try::
