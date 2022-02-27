@@ -297,6 +297,11 @@ the string "RIDGE AXIS", try::
 
     gmt convert big_file.txt -S"RIDGE AXIS" > subset.txt
 
+To only get the segments in the file big_file.txt whose headers exactly
+matches the string "Spitsbergen", try::
+
+    gmt convert big_file.txt -SSpitsbergen+e > subset.txt
+
 To invert the selection of segments whose headers begin with "profile "
 followed by an integer number and any letter between "g" and "l", try::
 
