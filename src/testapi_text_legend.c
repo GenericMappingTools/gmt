@@ -10,20 +10,20 @@ int main () {
 	char input[GMT_VF_LEN] = {""};     			/* String to hold virtual input filename */
 	char args[128] = {""};            			/* String to hold module command arguments */
 
-	uint64_t dim[4] = {1, 1, 2, 0};
+	uint64_t dim[4] = {1, 1, 2, 0};	/* one table with one segment with two rows and no columns (just trailing text) */
 
 	/* Initialize the GMT session */
 	API = GMT_Create_Session ("test", 2U, GMT_SESSION_EXTERNAL, NULL);
 	/* Create a dataset */
 	if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (EXIT_FAILURE);
 	/**/
-	S = D->table[0]->segment[0];
+	S = D->table[0]->segment[0];	/* Get the pointer to the only segment and add specific strings */
 	S->text[0] = strdup ("P");
 	S->text[1] = strdup ("T d = [0 0; 1 1; 2 1; 3 0.5; 2 0.25]");
 	/* Associate our data table with a virtual file */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN|GMT_IS_REFERENCE, D, input);
 	/* Prepare the module arguments */
-	sprintf (args, "%s -R-3/3/-3/3 -JX12 -Baf -BWSen -F+p+ggray -Dg-1.8/2.6+w12c+jTL -P > t.ps\n", input);
+	sprintf (args, "%s -R-3/3/-3/3 -JX12 -Baf -BWSen -F+p+ggray -Dg-1.8/2.6+w12c+jTL -P\n", input);
 
 	/* Call the pslegend module */
 	GMT_Call_Module (API, "pslegend", GMT_MODULE_CMD, args);
