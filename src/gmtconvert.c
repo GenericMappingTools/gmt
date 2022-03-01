@@ -692,8 +692,7 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		if ((Ctrl->S.select->ogr_item = gmt_get_ogr_id (GMT->current.io.OGR, Ctrl->S.select->pattern[0])) != GMT_NOTSET) {
 			Ctrl->S.select->ogr_match = true;
 			p++;
-			gmt_M_str_free (Ctrl->S.select->pattern[0]);	/* Free the old string */
-			Ctrl->S.select->pattern[0] = strdup (p);		/* Copy over start value */
+			strcpy (Ctrl->S.select->pattern[0], p);	/* Shift over the string after skipping name= */
 		}
 	}
 
