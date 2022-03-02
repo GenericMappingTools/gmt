@@ -251,7 +251,7 @@ and output an incremental grid every 0.1 Myr from 3 Ma to 1.9 Ma, we can try:
     0	0	-20	120	60	5000	3.0M	2M
     50	80	-40	110	50	4000	2.8M	21.9M
     EOF
-    gmt grdseamount -Rk-1024/1022/-1122/924 -I2000 -Gsmt_%3.1f_%s.nc t.txt -T3M/1.9M/0.1M -Qi/c -Dk -E -F0.2 -Cg -Ml.lis
+    gmt grdseamount -R-1024/1022/-1122/924+uk -I2000 -Gsmt_%3.1f_%s.nc t.txt -T3M/1.9M/0.1M -Qi/c -Dk -E -F0.2 -Cg -Ml.lis
 
 The file l.lis will contain records with numerical time, gridfile, and unit time.
 
