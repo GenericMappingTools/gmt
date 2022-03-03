@@ -105,7 +105,7 @@ struct GRDSEAMOUNT_CTRL {
 		unsigned int mode;
 		double value;
 	} L;
-	struct GRDSEAMOUNT_K {	/* -K<densecube> */
+	struct GRDSEAMOUNT_K {	/* -K<densmodel> */
 		bool active;
 		char *file;
 	} K;
@@ -181,7 +181,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s] "
-		"[-E] [-F[<flattening>]] [-H<href>/<rho_lo>/<rho_hi>[+d<densify>][+p<p>]] [-K<densitycube>] "
+		"[-E] [-F[<flattening>]] [-H<href>/<rho_lo>/<rho_hi>[+d<densify>][+p<p>]] [-K<densmodel>] "
 		"[-L[<hcut>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<r_scale>] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] "
 		"[%s] [-W<meandensity>] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
@@ -224,8 +224,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Control the density function by these modifiers:");
 	GMT_Usage (API, 3, "+d Density increase due to water pressure over full depth implied by <h_ref> [0].");
 	GMT_Usage (API, 3, "+p Polynomial power coefficient for density change with burial depth [1 (linear)].");
-	GMT_Usage (API, 1, "\n-K<densitycube>");
-	GMT_Usage (API, -2, "Write a 3-D cube with variable seamount densities [no cube written].");
+	GMT_Usage (API, 1, "\n-K<densmodel>");
+	GMT_Usage (API, -2, "Write a 2-D crossection showing variable seamount densities [no grid written].");
 	GMT_Usage (API, 1, "\n-L[<hcut>]");
 	GMT_Usage (API, -2, "List area, volume, and mean height for each seamount; NO grid is created so -R -I are not required. "
 		"Optionally, append the noise-floor cutoff level [0].");
@@ -649,8 +649,22 @@ GMT_LOCAL double grdseamount_poly_solver (double in[], double f, double v, bool 
 }
 
 GMT_LOCAL double grdseamount_density (struct GRDSEAMOUNT_CTRL *Ctrl, double z, double h) {
-	/* Passing in the current seamounts height (h) and the curent radial point (r,z) */
-	double rho = Ctrl->H.rho_lo + Ctrl->H.del_rho * pow ((h - z) / Ctrl->H.h_ref, Ctrl->H.p) + Ctrl->H.densify * (Ctrl->H.h_ref - z) / Ctrl->H.h_ref;
+	/* Passing in the current seamounts height (h) and the curent radial point (r,z).
+	 * We return the density at this point inside the seamount with reference height 1 */
+	double u = (h - z);
+	double q = (1.0 - z);
+
+	double rho = Ctrl->H.rho_lo + Ctrl->H.densify * q + Ctrl->H.del_rho * pow (u, Ctrl->H.p);
+	return (rho);
+}
+
+GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double z, double h) {
+	/* Passing in the current seamounts height (h) and the current radial point (r,z).
+	 * We return the vertically averaged density for this r */
+	double u = (h - z) / Ctrl->H.h_ref;
+	double q = (Ctrl->H.h_ref - z) / Ctrl->H.h_ref;
+
+	double rho = Ctrl->H.rho_lo + 0.5 * Ctrl->H.densify * q + Ctrl->H.del_rho * pow (u, Ctrl->H.p) / (Ctrl->H.p + 1.0);
 	return (rho);
 }
 
@@ -1176,7 +1190,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								if (Grid->data[ij] > max) max = Grid->data[ij];
 							}
 							if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
-								rho = (gmt_grdfloat)grdseamount_density (Ctrl, z_assign, amplitude);
+								rho = (gmt_grdfloat)grdseamount_mean_density (Ctrl, z_assign, amplitude);
 								Ave->data[ij] += (gmt_grdfloat)(rho * z_assign);
 								rho_weight[ij] += (gmt_grdfloat)(z_assign);
 							}
@@ -1254,9 +1268,55 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while writing list of grid files to %s\n", Ctrl->M.file);
 		goto wrap_up;
 	}
-	if (Ctrl->W.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_WRITE_NORMAL, NULL, Ctrl->W.file, Ave) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_ERROR, "Failure while writing average density grid to %s\n", Ctrl->W.file);
-		goto wrap_up;
+	if (Ctrl->W.active) {
+		for (ij = 0; ij < Ave->header->size; ij++) if (rho_weight[ij] > 0.0) Ave->data[ij] /= rho_weight[ij]; else Ave->data[ij] = GMT->session.f_NaN;
+		if (Ctrl->W.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_WRITE_NORMAL, NULL, Ctrl->W.file, Ave) != GMT_NOERROR) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while writing average density grid to %s\n", Ctrl->W.file);
+			goto wrap_up;
+		}
+	}
+
+	if (Ctrl->K.active) {
+		double range[4] = {-1.0, 1.0, 0.0, 1.0}, inc[2] = {0.01, 0.01};
+		struct GMT_GRID *Model = NULL;
+		if ((Model = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, range, inc,
+			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
+			gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h);
+			Return (API->error);
+		}
+		switch (inc_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
+			case SHAPE_CONE:  h_scale = 1.0 / (1.0 - Ctrl->F.value); break;
+			case SHAPE_DISC:  h_scale = 1.0; break;
+			case SHAPE_PARA:  h_scale = 1.0 / (1.0 - Ctrl->F.value * Ctrl->F.value); break;
+			case SHAPE_POLY:  h_scale = 1.0 / poly_smt_func (Ctrl->F.value); break;
+			case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * Ctrl->F.value * Ctrl->F.value); break;
+		}
+		for (col = 0; col < Model->header->n_columns; col++) {
+			rr = fabs (Model->x[col]);	/* Now in 0-1 range */
+			if (inc_mode == SHAPE_CONE)	/* Circular cone case */
+				add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr) * h_scale;
+			else if (inc_mode == SHAPE_DISC)	/* Circular disc/plateau case */
+				add = (rr <= 1.0) ? 1.0 : 0.0;
+			else if (inc_mode == SHAPE_PARA)	/* Circular parabolic case */
+				add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
+			else if (inc_mode == SHAPE_POLY)	/* Circular parabolic case */
+				add = (rr < Ctrl->F.value) ? 1.0 : poly_smt_func (rr) * h_scale;
+			else	/* Circular Gaussian case */
+				add = (rr < Ctrl->F.value) ? 1.0 : exp (-4.5 * rr * rr) * h_scale - noise;
+			for (row = 0; row < Model->header->n_rows; row++) {
+				//fprintf (stderr, "rr = %g y = %g z = %g\n", rr, Model->y[row], add);
+				ij = gmt_M_ijp (Model->header, row, col);
+				if (Model->y[row] > add)
+					Model->data[ij] = GMT->session.f_NaN;
+				else
+					Model->data[ij] = (gmt_grdfloat)grdseamount_density (Ctrl, Model->y[row], add);
+			}
+		}
+
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_WRITE_NORMAL, NULL, Ctrl->K.file, Model) != GMT_NOERROR) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while writing seamount density model grid to %s\n", Ctrl->K.file);
+			goto wrap_up;
+		}
 	}
 
 wrap_up:

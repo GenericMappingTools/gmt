@@ -22,7 +22,7 @@ Synopsis
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
 [ |-H|\ *href*/*rho_lo*/*rho_hi*\ [**+d**\|\ *densify*][**+p**\|\ *power*] ]
-[ |-K|\ [*densitycube*] ]
+[ |-K|\ [*densitymodel*] ]
 [ |-L|\ [*cut*] ]
 [ |-M|\ [*list*] ]
 [ |-N|\ *norm* ]
@@ -157,8 +157,10 @@ Optional Arguments
 
 .. _-K:
 
-**-K**\ *densitycube*
-    Append a file name to hold a 3-D cube with density variations [no cube].
+**-K**\ *densitymodel*
+    Append a file name to hold a crossection grid with the densities of the reference model.
+    We use normalized coordinates (*x* goes from -1 to +1) and *z* from 0 to 1, both in increments
+    of 0.01.
 
 .. _-L:
 
