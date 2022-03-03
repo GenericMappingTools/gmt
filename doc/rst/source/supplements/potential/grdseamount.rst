@@ -155,6 +155,14 @@ Optional Arguments
 
     \rho(r,z) = \rho_l + \left ( \rho_h - \rho_l \right ) \left ( \frac{h-z(r)}{h_r} \right )^p + \Delta \rho \left (\frac{h_r-z(r)}{h_r} \right )
 
+.. figure:: /_images/GMT_seamount_density.*
+   :width: 500 px
+   :align: center
+
+   A linear density distribution selected via option **-H**.  Flank density can be affected by water
+   pressure if :math:`\Delta \rho > 0` while the normalized internal density gradient is raised to
+   power *p* to allow for nonlinear gradients.
+
 .. _-K:
 
 **-K**\ *densitymodel*
