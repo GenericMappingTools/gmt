@@ -466,9 +466,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == SHAPE_DISC && Ctrl->F.active, "Cannot specify -F for discs; ignored\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->N.active || Ctrl->Z.active || Ctrl->L.active || Ctrl->T.active), "Option -A: Cannot use -L, -N, -T or -Z with -A\n");
 	if (!Ctrl->L.active) {	/* Just a listing, cannot use -R -I -r -G -M -Z */
-		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
-		n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
-		n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Option -G: Must specify output file or template\n");
+		if (!Ctrl->K.active) {
+			n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
+			n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
+			n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Option -G: Must specify output file or template\n");
+		}
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'), "Option -G: Filename template must contain format specifier when -T is used\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Q.bmode == SMT_INCREMENTAL, "Option -Z: Cannot be used with -Qi\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Option -M: Requires time information via -T\n");
@@ -770,6 +772,54 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdseamount main code ----------------------------*/
 
+	inc_mode = Ctrl->C.mode;
+	if (Ctrl->K.active) {
+		/* Here we create the crossection of a normalized reference seamount that goes from
+		 * -1 to +1 in x and 0-1 in y (height).  Using steps of 0.005 to yield a 401 x 201 grid
+		 * with densities inside the seamount and NaN outside */
+		double range[4] = {-1.0, 1.0, 0.0, 1.0}, inc[2] = {0.005, 0.005};
+		struct GMT_GRID *Model = NULL;
+		if ((Model = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, range, inc,
+			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
+			gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h);
+			Return (API->error);
+		}
+		switch (inc_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
+			case SHAPE_CONE:  h_scale = 1.0 / (1.0 - Ctrl->F.value); break;
+			case SHAPE_DISC:  h_scale = 1.0; break;
+			case SHAPE_PARA:  h_scale = 1.0 / (1.0 - Ctrl->F.value * Ctrl->F.value); break;
+			case SHAPE_POLY:  h_scale = 1.0 / poly_smt_func (Ctrl->F.value); break;
+			case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * Ctrl->F.value * Ctrl->F.value); break;
+		}
+		for (col = 0; col < Model->header->n_columns; col++) {
+			rr = fabs (Model->x[col]);	/* Now in 0-1 range */
+			if (inc_mode == SHAPE_CONE)	/* Circular cone case */
+				add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr) * h_scale;
+			else if (inc_mode == SHAPE_DISC)	/* Circular disc/plateau case */
+				add = (rr <= 1.0) ? 1.0 : 0.0;
+			else if (inc_mode == SHAPE_PARA)	/* Circular parabolic case */
+				add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
+			else if (inc_mode == SHAPE_POLY)	/* Circular parabolic case */
+				add = (rr < Ctrl->F.value) ? 1.0 : poly_smt_func (rr) * h_scale;
+			else	/* Circular Gaussian case */
+				add = (rr < Ctrl->F.value) ? 1.0 : exp (-4.5 * rr * rr) * h_scale - noise;
+			for (row = 0; row < Model->header->n_rows; row++) {
+				ij = gmt_M_ijp (Model->header, row, col);
+				if (Model->y[row] > add)	/* Outside the seamount */
+					Model->data[ij] = GMT->session.f_NaN;
+				else	/* Evaluate the density at this depth */
+					Model->data[ij] = (gmt_grdfloat)grdseamount_density (Ctrl, Model->y[row], add);
+			}
+		}
+
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_WRITE_NORMAL, NULL, Ctrl->K.file, Model) != GMT_NOERROR) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while writing seamount density model grid to %s\n", Ctrl->K.file);
+			goto wrap_up;
+		}
+		if (!Ctrl->L.active && !Ctrl->G.active)
+			Return (GMT_NOERROR);
+	}
+
 	code = Ctrl->C.code;
 	/* Specify expected columns */
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
@@ -799,7 +849,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	shape_func[SHAPE_POLY] = grdseamount_poly_area_volume_height;
 	phi_solver[SHAPE_POLY] = grdseamount_poly_solver;
 
-	build_mode = inc_mode = Ctrl->C.mode;
+	build_mode = Ctrl->C.mode;
 	cone_increments = (Ctrl->T.active && Ctrl->Q.disc);
 	if (cone_increments) inc_mode = SHAPE_DISC;
 
@@ -1280,51 +1330,6 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		for (ij = 0; ij < Ave->header->size; ij++) if (rho_weight[ij] > 0.0) Ave->data[ij] /= rho_weight[ij]; else Ave->data[ij] = GMT->session.f_NaN;
 		if (Ctrl->W.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_WRITE_NORMAL, NULL, Ctrl->W.file, Ave) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while writing average density grid to %s\n", Ctrl->W.file);
-			goto wrap_up;
-		}
-	}
-
-	if (Ctrl->K.active) {
-		/* Here we create the crossection of a normalized reference seamount that goes from
-		 * -1 to +1 in x and 0-1 in y (height).  Using steps of 0.005 to yield a 401 x 201 grid
-		 * with densities inside the seamount and NaN outside */
-		double range[4] = {-1.0, 1.0, 0.0, 1.0}, inc[2] = {0.005, 0.005};
-		struct GMT_GRID *Model = NULL;
-		if ((Model = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, range, inc,
-			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
-			gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h);
-			Return (API->error);
-		}
-		switch (inc_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
-			case SHAPE_CONE:  h_scale = 1.0 / (1.0 - Ctrl->F.value); break;
-			case SHAPE_DISC:  h_scale = 1.0; break;
-			case SHAPE_PARA:  h_scale = 1.0 / (1.0 - Ctrl->F.value * Ctrl->F.value); break;
-			case SHAPE_POLY:  h_scale = 1.0 / poly_smt_func (Ctrl->F.value); break;
-			case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * Ctrl->F.value * Ctrl->F.value); break;
-		}
-		for (col = 0; col < Model->header->n_columns; col++) {
-			rr = fabs (Model->x[col]);	/* Now in 0-1 range */
-			if (inc_mode == SHAPE_CONE)	/* Circular cone case */
-				add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr) * h_scale;
-			else if (inc_mode == SHAPE_DISC)	/* Circular disc/plateau case */
-				add = (rr <= 1.0) ? 1.0 : 0.0;
-			else if (inc_mode == SHAPE_PARA)	/* Circular parabolic case */
-				add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
-			else if (inc_mode == SHAPE_POLY)	/* Circular parabolic case */
-				add = (rr < Ctrl->F.value) ? 1.0 : poly_smt_func (rr) * h_scale;
-			else	/* Circular Gaussian case */
-				add = (rr < Ctrl->F.value) ? 1.0 : exp (-4.5 * rr * rr) * h_scale - noise;
-			for (row = 0; row < Model->header->n_rows; row++) {
-				ij = gmt_M_ijp (Model->header, row, col);
-				if (Model->y[row] > add)	/* Outside the seamount */
-					Model->data[ij] = GMT->session.f_NaN;
-				else	/* Evaluate the density at this depth */
-					Model->data[ij] = (gmt_grdfloat)grdseamount_density (Ctrl, Model->y[row], add);
-			}
-		}
-
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_WRITE_NORMAL, NULL, Ctrl->K.file, Model) != GMT_NOERROR) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failure while writing seamount density model grid to %s\n", Ctrl->K.file);
 			goto wrap_up;
 		}
 	}

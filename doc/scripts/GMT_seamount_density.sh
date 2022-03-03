@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Show the seamount density model offered in grdseamount
-echo 0 0 50 6000 | gmt grdseamount -R-100/100/-100/100+uk -Dk -I1000 -Gsmt.grd -H6000/2500/3000+p1+d200 -Kmodel.grd -Cg
 gmt begin GMT_seamount_density
+	echo 0 0 50 6000 | gmt grdseamount -H6000/2500/3000+p1+d200 -Kmodel.grd -Cg
 	gmt makecpt -Chot -I -T2500/3000 --COLOR_NAN=white
 	# Plot density reference model above
 	gmt grdimage model.grd -R0/1/0/1 -JX15c/4c -Bxafg1+l"Normalized radial distance, @%6%r@%%" -By+l"Normalized height, @%6%h(r)@%%"
