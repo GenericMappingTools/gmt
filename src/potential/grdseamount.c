@@ -661,7 +661,7 @@ GMT_LOCAL double grdseamount_density (struct GRDSEAMOUNT_CTRL *Ctrl, double z, d
 GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double z, double h) {
 	/* Passing in the current seamounts height (h) and the current radial point (r,z).
 	 * We return the vertically averaged density for this r */
-	double u = (h - z) / Ctrl->H.h_ref;
+	double u = z / Ctrl->H.h_ref;
 	double q = (Ctrl->H.h_ref - z) / Ctrl->H.h_ref;
 
 	double rho = Ctrl->H.rho_lo + 0.5 * Ctrl->H.densify * q + Ctrl->H.del_rho * pow (u, Ctrl->H.p) / (Ctrl->H.p + 1.0);
