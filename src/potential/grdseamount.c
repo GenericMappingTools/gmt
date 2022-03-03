@@ -220,10 +220,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-F[<flattening>]");
 	GMT_Usage (API, -2, "Seamounts are truncated. Append flattening or expect it in an extra input column [no truncation]. ");
 	GMT_Usage (API, 1, "\n-H<href>/<rho_lo>/<rho_hi>[+d<densify>][+p<p>]");
-	GMT_Usage (API, -2, "Set parameters for the reference seamount height, flank density and deep core density. "
+	GMT_Usage (API, -2, "Set parameters for the reference seamount height (in m), flank and deep core densities (kg/m^3 or g/cm^3). "
 		"Control the density function by these modifiers:");
-	GMT_Usage (API, 3, "+d Density increase due to water pressure over full depth implied by <h_ref> [0].");
-	GMT_Usage (API, 3, "+p Polynomial power coefficient for density change with burial depth [1 (linear)].");
+	GMT_Usage (API, 3, "+d Density increase (kg/m^3 or g/cm^3) due to water pressure over full depth implied by <h_ref> [0].");
+	GMT_Usage (API, 3, "+p Polynomial power coefficient (> 0) for density change with burial depth [1 (linear)].");
 	GMT_Usage (API, 1, "\n-K<densmodel>");
 	GMT_Usage (API, -2, "Write a 2-D crossection showing variable seamount densities [no grid written].");
 	GMT_Usage (API, 1, "\n-L[<hcut>]");
@@ -352,6 +352,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 						switch (txt[0]) {
 							case 'd':	/* Get densify rate over reference water depth */
 								Ctrl->H.densify = atof (&txt[1]);
+								if (Ctrl->H.densify < 10.0) Ctrl->H.densify *= 1000;	/* Gave units of g/cm^3 */
+
 								break;
 							case 'p':	/* Get power coefficient */
 								Ctrl->H.p = atof (&txt[1]);
@@ -367,6 +369,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 					GMT_Report (API, GMT_MSG_ERROR, "Option -H: Unable to parse the three values\n");
 					n_errors++;
 				}
+				if (Ctrl->H.rho_lo < 10.0) Ctrl->H.rho_lo *= 1000;	/* Gave units of g/cm^3 */
+				if (Ctrl->H.rho_lo < 10.0) Ctrl->H.rho_lo *= 1000;	/* Gave units of g/cm^3 */
 				Ctrl->H.del_rho = Ctrl->H.rho_hi - Ctrl->H.rho_lo;
 				break;
 			case 'I':	/* Grid spacing */
@@ -471,6 +475,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode == TRUNC_ARG && (Ctrl->F.value < 0.0 || Ctrl->F.value >= 1.0), "Option -F: Flattening must be in 0-1 range\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->K.active && !Ctrl->H.active, "Option -K: Requires density model function via -H\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && !Ctrl->H.active, "Option -W: Requires density model function via -H\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.p <= 0.0, "Option -H: Power value must be positive\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.densify < 0.0, "Option -H: Densify value must be positive or zero\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.lo > Ctrl->H.hi, "Option -H: Low density cannot exceed the high density\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.h_ref <= 0.0, "Option -H: Reference seamount height must be positive\n");
 	}
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */

@@ -146,7 +146,8 @@ Optional Arguments
 .. _-H:
 
 **-H**\ *href*/*rho_lo*/*rho_hi*\ [**+d**\ *densify*][**+p**\ *power*]
-    Set reference seamount parameters that defines an *ad-hoc* variable radial density function.
+    Set reference seamount parameters for an *ad-hoc* variable radial density function. Give
+    the low and high seamount densities in km/m^3 or g/cm^3 and the reference height in meters.
     Use modifers **+d** and **+p** to change the water-pressure-driven flank density increase
     over the reference height [0] and variable density profile power [1, i.e., a linear change].
     Here, *h* is the peak height of any seamount and *z(r)* is its shape.
@@ -168,7 +169,7 @@ Optional Arguments
 **-K**\ *densitymodel*
     Append a file name to hold a crossection grid with the densities of the reference model.
     We use normalized coordinates (*x* goes from -1 to +1) and *z* from 0 to 1, both in increments
-    of 0.01.
+    of 0.005, yielding a 401 x 201 grid.
 
 .. _-L:
 
