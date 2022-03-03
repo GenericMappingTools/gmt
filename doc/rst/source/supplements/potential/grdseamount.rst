@@ -169,7 +169,8 @@ Optional Arguments
 **-K**\ *densitymodel*
     Append a file name to hold a crossection grid with the densities of the reference model.
     We use normalized coordinates (*x* goes from -1 to +1) and *z* from 0 to 1, both in increments
-    of 0.005, yielding a 401 x 201 grid.
+    of 0.005, yielding a 401 x 201 grid. **Note**: This option can be used without creating the
+    seamount grid, hence **-R**, **-I**, **-G**, and **-D** are not required.
 
 .. _-L:
 
