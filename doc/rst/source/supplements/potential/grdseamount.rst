@@ -147,7 +147,9 @@ Optional Arguments
 
 **-H**\ *href*/*rho_lo*/*rho_hi*\ [**+d**\ *densify*][**+p**\ *power*]
     Set reference seamount parameters that defines an *ad-hoc* variable radial density function.
-    Use modifers **+d** and **+p** to change the water-pressure-driven flank density increate [0] and profile power [1, i.e., linear].
+    Use modifers **+d** and **+p** to change the water-pressure-driven flank density increase
+    over the reference height [0] and variable density profile power [1, i.e., a linear change].
+    Here, *h* is the peak height of any seamount and *z(r)* is its shape.
 
 .. math::
 
