@@ -1277,7 +1277,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->K.active) {
-		double range[4] = {-1.0, 1.0, 0.0, 1.0}, inc[2] = {0.01, 0.01};
+		/* Here we create the crossection of a normalized reference seamount that goes from
+		 * -1 to +1 in x and 0-1 in y (height).  Using steps of 0.005 to yield a 401 x 201 grid
+		 * with densities inside the seamount and NaN outside */
+		double range[4] = {-1.0, 1.0, 0.0, 1.0}, inc[2] = {0.005, 0.005};
 		struct GMT_GRID *Model = NULL;
 		if ((Model = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, range, inc,
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
@@ -1304,11 +1307,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			else	/* Circular Gaussian case */
 				add = (rr < Ctrl->F.value) ? 1.0 : exp (-4.5 * rr * rr) * h_scale - noise;
 			for (row = 0; row < Model->header->n_rows; row++) {
-				//fprintf (stderr, "rr = %g y = %g z = %g\n", rr, Model->y[row], add);
 				ij = gmt_M_ijp (Model->header, row, col);
-				if (Model->y[row] > add)
+				if (Model->y[row] > add)	/* Outside the seamount */
 					Model->data[ij] = GMT->session.f_NaN;
-				else
+				else	/* Evaluate the density at this depth */
 					Model->data[ij] = (gmt_grdfloat)grdseamount_density (Ctrl, Model->y[row], add);
 			}
 		}
