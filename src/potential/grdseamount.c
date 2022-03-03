@@ -91,6 +91,11 @@ struct GRDSEAMOUNT_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct GRDSEAMOUNT_H {	/* -H<hr/rho_low/rho_high>[+d<densify>][+p<pvalue>] */
+		bool active;
+		double h_ref, rho_lo, rho_hi;
+		double p, densify;
+	} H;
 	struct GRDSEAMOUNT_I {	/* -I (for checking only) */
 		bool active;
 	} I;
@@ -99,6 +104,10 @@ struct GRDSEAMOUNT_CTRL {
 		unsigned int mode;
 		double value;
 	} L;
+	struct GRDSEAMOUNT_K {	/* -K<densecube> */
+		bool active;
+		char *file;
+	} K;
 	struct GRDSEAMOUNT_M {	/* -M<outlist> */
 		bool active;
 		char *file;
@@ -122,6 +131,10 @@ struct GRDSEAMOUNT_CTRL {
 		unsigned int n_times;
 		struct GMT_MODELTIME *time;	/* The current sequence of times */
 	} T;
+	struct GRDSEAMOUNT_W {	/* -W<avedensgrid> */
+		bool active;
+		char *file;
+	} W;
 	struct GRDSEAMOUNT_Z {	/* -Z<base> [0] */
 		bool active;
 		double value;
@@ -147,6 +160,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->Q.fmode = FLUX_GAUSSIAN;
 	C->S.value = 1.0;
 	C->T.n_times = 1;
+	C->H.p = 1.0;	/* Linear density increase */
+	C->H.densify = 0.0;	/* No water-driven compaction on flanks */
 
 	return (C);
 }
@@ -154,8 +169,10 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->K.file);
 	gmt_M_str_free (C->M.file);
 	gmt_M_free (GMT, C->T.time);
+	gmt_M_str_free (C->W.file);
 	gmt_M_free (GMT, C);
 }
 
@@ -163,8 +180,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s] "
-		"[-E] [-F[<flattening>]] [-L[<hcut>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<r_scale>] "
-		"[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[-E] [-F[<flattening>]] [-H<href>/<rho_lo>/<rho_hi>[+d<densify>][+p<p>]] [-K<densitycube>] "
+		"[-L[<hcut>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<r_scale>] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] "
+		"[%s] [-W<meandensity>] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
@@ -200,6 +218,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Read lon, lat, azimuth, major, minor, height (m) for each seamount.");
 	GMT_Usage (API, 1, "\n-F[<flattening>]");
 	GMT_Usage (API, -2, "Seamounts are truncated. Append flattening or expect it in an extra input column [no truncation]. ");
+	GMT_Usage (API, 1, "\n-H<href>/<rho_lo>/<rho_hi>[+d<densify>][+p<p>]");
+	GMT_Usage (API, -2, "Set parameters for the reference seamount height, flank density and deep core density. "
+		"Control the density function by these modifiers:");
+	GMT_Usage (API, 3, "+d Density increase due to water pressure over full depth implied by <h_ref> [0].");
+	GMT_Usage (API, 3, "+p Polynomial power coefficient for density change with burial depth [1 (linear)].");
+	GMT_Usage (API, 1, "\n-K<densitycube>");
+	GMT_Usage (API, -2, "Write a 3-D cube with variable seamount densities [no cube written].");
 	GMT_Usage (API, 1, "\n-L[<hcut>]");
 	GMT_Usage (API, -2, "List area, volume, and mean height for each seamount; NO grid is created so -R -I are not required. "
 		"Optionally, append the noise-floor cutoff level [0].");
@@ -223,6 +248,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Note: This option implies two extra input columns with <start> and <stop> time for each seamount's life span. "
 		"Use -Q to select cumulative versus incremental construction.");
 	GMT_Option (API, "V");
+	GMT_Usage (API, 1, "\n-W<meandensity>");
+	GMT_Usage (API, -2, "Write a 2-D grid with the vertically averaged seamount densities [no grid written].");
 	GMT_Usage (API, 1, "\n-Z<base>");
 	GMT_Usage (API, -2, "Set the reference depth [0].  Not allowed for -Qi.");
 	GMT_Option (API, "bi,di,e");
@@ -314,10 +341,48 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
+			case 'H':	/* Reference seamount density parameters */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
+				Ctrl->H.active = true;
+				if ((c = gmt_first_modifier (GMT, opt->arg, "dp"))) {
+					unsigned int pos = 0;
+					char txt[GMT_LEN256] = {""};
+					while (gmt_getmodopt (GMT, 'H', c, "dp", &pos, txt, &n_errors) && n_errors == 0) {
+						switch (txt[0]) {
+							case 'd':	/* Get densify rate over reference water depth */
+								Ctrl->H.densify = atof (&txt[1]);
+								break;
+							case 'p':	/* Get power coefficient */
+								Ctrl->H.p = atof (&txt[1]);
+								break;
+							default:
+								n_errors++;
+								break;
+						}
+					}
+					c[0] = '\0';	/* Chop off all modifiers so range can be determined */
+				}
+				if (sscanf (opt->arg, "%lg/%lg/%lg", &Ctrl->H.h_ref, &Ctrl->H.rho_lo, &Ctrl->H.rho_hi) != 3) {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -H: Unable to parse the three values\n");
+					n_errors++;
+				}
+				break;
 			case 'I':	/* Grid spacing */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
+				break;
+			case 'K':	/* Output file name for density grid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->K.active);
+				Ctrl->K.active = true;
+				if (opt->arg[0]) {
+					Ctrl->K.file = strdup (opt->arg);
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->K.file))) n_errors++;
+				}
+				else {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -K: No file name appended\n");
+					n_errors++;
+				}
 				break;
 			case 'L':	/* List area, volume and mean height only, then exit */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
@@ -367,6 +432,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				Ctrl->T.active = true;
 				if ((Ctrl->T.n_times = gmt_modeltime_array (GMT, opt->arg, &Ctrl->T.log, &Ctrl->T.time)) == 0)
 					n_errors++;
+				break;
+			case 'W':	/* Output file name for density cube */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				Ctrl->W.active = true;
+				if (opt->arg[0]) {
+					Ctrl->W.file = strdup (opt->arg);
+					if (GMT_Get_FilePath (API, GMT_IS_CUBE, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->W.file))) n_errors++;
+				}
+				else {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -W: No file name appended\n");
+					n_errors++;
+				}
 				break;
 			case 'Z':	/* Background relief level */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);

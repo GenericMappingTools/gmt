@@ -21,6 +21,8 @@ Synopsis
 [ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
+[ |-H|\ *href*/*rho_lo*/*rho_hi*\ [**+d**\|\ *densify*][**+p**\|\ *power*] ]
+[ |-K|\ [*densitycube*] ]
 [ |-L|\ [*cut*] ]
 [ |-M|\ [*list*] ]
 [ |-N|\ *norm* ]
@@ -29,6 +31,7 @@ Synopsis
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ [**+l**] ]
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
+[ |-W|\ [*avedensity*] ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
@@ -140,6 +143,22 @@ Optional Arguments
     (**Note**: no feature will be produced!), otherwise we expect to find the flattening in
     the last input column [no truncation].  Ignored if used with **-Cd**.
 
+.. _-H:
+
+**-H**\ *href*/*rho_lo*/*rho_hi*\ [**+d**\|\ *densify*][**+p**\|\ *power*]
+    Set reference seamount parameters that defines an *ad-hoc* variable radial density function
+
+.. math::
+
+    \rho(r,z) = \rho_l + \left ( \rho_h - \rho_l \right ) \left ( \frac{h-z(r)}{h_r} \right )^p + \Delta \rho \left (\frac{h_r-z(r)}{h_r} \right )
+
+    Use modifers **+d** and **+p** to change the water-pressure-driven flank density increate [0] and profile power [1, i.e., linear].
+
+.. _-K:
+
+**-K**\ *densitycube*
+    Append a file name to hold a 3-D cube with density variations [no cube].
+
 .. _-L:
 
 **-L**\ [*cut*]
@@ -205,6 +224,11 @@ Optional Arguments
 .. include:: /explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. _-W:
+
+**-W**\ *avedensity*
+    Append a file name to hold a 2-D grid with the vertically averaged density variations [no grid].
 
 .. _-Z:
 
