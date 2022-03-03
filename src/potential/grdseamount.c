@@ -370,7 +370,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 					n_errors++;
 				}
 				if (Ctrl->H.rho_lo < 10.0) Ctrl->H.rho_lo *= 1000;	/* Gave units of g/cm^3 */
-				if (Ctrl->H.rho_lo < 10.0) Ctrl->H.rho_lo *= 1000;	/* Gave units of g/cm^3 */
+				if (Ctrl->H.rho_hi < 10.0) Ctrl->H.rho_hi *= 1000;	/* Gave units of g/cm^3 */
 				Ctrl->H.del_rho = Ctrl->H.rho_hi - Ctrl->H.rho_lo;
 				break;
 			case 'I':	/* Grid spacing */
@@ -477,7 +477,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && !Ctrl->H.active, "Option -W: Requires density model function via -H\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.p <= 0.0, "Option -H: Power value must be positive\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.densify < 0.0, "Option -H: Densify value must be positive or zero\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.lo > Ctrl->H.hi, "Option -H: Low density cannot exceed the high density\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.rho_lo > Ctrl->H.rho_hi, "Option -H: Low density cannot exceed the high density\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.h_ref <= 0.0, "Option -H: Reference seamount height must be positive\n");
 	}
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
@@ -666,8 +666,8 @@ GMT_LOCAL double grdseamount_density (struct GRDSEAMOUNT_CTRL *Ctrl, double z, d
 	return (rho);
 }
 
-GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double z, double h) {
-	/* Passing in the current seamounts height (h) and the current radial point (r,z).
+GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double z) {
+	/* Passing in the current seamounts height h(r)).
 	 * We return the vertically averaged density for this r */
 	double u = z / Ctrl->H.h_ref;
 	double q = (Ctrl->H.h_ref - z) / Ctrl->H.h_ref;
@@ -1198,7 +1198,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								if (Grid->data[ij] > max) max = Grid->data[ij];
 							}
 							if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
-								rho = (gmt_grdfloat)grdseamount_mean_density (Ctrl, z_assign, amplitude);
+								rho = (gmt_grdfloat)grdseamount_mean_density (Ctrl, z_assign);
 								Ave->data[ij] += (gmt_grdfloat)(rho * z_assign);
 								rho_weight[ij] += (gmt_grdfloat)(z_assign);
 							}
