@@ -15195,12 +15195,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		opt_J = gmtinit_find_J_option (API, *options);
 		if (GMT->hidden.func_level == GMT_CONTROLLER) {	/* The -R -J -O -K prohibition only applies to top-level module call */
 			/* 1. No -O allowed */
-			if ((opt = GMT_Find_Option (API, 'O', *options))) {
+			if (is_PS && (opt = GMT_Find_Option (API, 'O', *options))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Option -O not allowed for modern GMT mode.\n");
 				n_errors++;
 			}
 			/* 2. No -K allowed */
-			if ((opt = GMT_Find_Option (API, 'K', *options))) {
+			if (is_PS && (opt = GMT_Find_Option (API, 'K', *options))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Option -K not allowed for modern GMT mode.\n");
 				n_errors++;
 			}
