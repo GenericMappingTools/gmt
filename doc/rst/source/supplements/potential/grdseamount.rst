@@ -145,14 +145,13 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *href*/*rho_lo*/*rho_hi*\ [**+d**\|\ *densify*][**+p**\|\ *power*]
-    Set reference seamount parameters that defines an *ad-hoc* variable radial density function
+**-H**\ *href*/*rho_lo*/*rho_hi*\ [**+d**\ *densify*][**+p**\ *power*]
+    Set reference seamount parameters that defines an *ad-hoc* variable radial density function.
+    Use modifers **+d** and **+p** to change the water-pressure-driven flank density increate [0] and profile power [1, i.e., linear].
 
 .. math::
 
     \rho(r,z) = \rho_l + \left ( \rho_h - \rho_l \right ) \left ( \frac{h-z(r)}{h_r} \right )^p + \Delta \rho \left (\frac{h_r-z(r)}{h_r} \right )
-
-    Use modifers **+d** and **+p** to change the water-pressure-driven flank density increate [0] and profile power [1, i.e., linear].
 
 .. _-K:
 
