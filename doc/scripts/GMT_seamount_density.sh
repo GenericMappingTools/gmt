@@ -18,8 +18,8 @@ gmt begin GMT_seamount_density
 	printf "0.6	%s\n0.95	%s\n" $y $y | gmt plot -W0.25p
 	printf "0.6	0.3\n0.95	0.3\n" | gmt plot -W0.25p
 	printf "0.6	0\n0.6	0.15\n0.95	0.15\n" | gmt plot -W0.25p
-	echo 0.2 1 "@~r@~@-1@-" | gmt text -F+f10p+jTR -Dj2p -N
-	echo 0 0 "@~r@~@-2@-" | gmt text -F+f10p,white+jBL -Dj2p/4p -N
+	echo 0.2 1 "@~r@~@-l@-" | gmt text -F+f10p+jTR -Dj2p -N
+	echo 0 0 "@~r@~@-h@-" | gmt text -F+f10p,white+jBL -Dj2p/4p -N
 	gmt text -F+f12p+jLM -Dj3p <<- EOF
 	0.95	$y @[h_r - h(r)@[
 	0.95	0.3 @[h(r) - z@[

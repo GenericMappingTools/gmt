@@ -149,8 +149,9 @@ Optional Arguments
     Set reference seamount parameters for an *ad-hoc* variable radial density function. Give
     the low and high seamount densities in km/m^3 or g/cm^3 and the reference height in meters.
     Use modifers **+d** and **+p** to change the water-pressure-driven flank density increase
-    over the reference height [0] and variable density profile power [1, i.e., a linear change].
-    Here, *h* is the peak height of any seamount and *z(r)* is its shape.
+    over the full reference height [0] and the variable density profile power [1, i.e., a linear change].
+    Here, *h* is the peak height of any seamount and *z(r)* is its shape.  If the seamount is
+    truncated (vai **-F**) then *h* refers to the untruncated height.
 
 .. math::
 
@@ -162,7 +163,9 @@ Optional Arguments
 
    A linear density distribution selected via option **-H**.  Flank density can be affected by water
    pressure if :math:`\Delta \rho > 0` while the normalized internal density gradient is raised to
-   power *p* to allow for nonlinear gradients.
+   power *p* to allow for nonlinear gradients.  **Note**: The reference height refers to a very tall
+   seamount for which the supplied densities are suitable.  Smaller samounts will thus see lower core
+   densities by virtue of being smaller.
 
 .. _-K:
 
