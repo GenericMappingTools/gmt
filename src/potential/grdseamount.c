@@ -741,6 +741,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM = 0.0, v_curr, v_prev, *V = NULL;
 	double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch, prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf;
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL, g_noise = exp (-4.5), g_scl = 1.0 / (1.0 - g_noise), phi_prev, phi_curr;
+	double orig_add, r_assign;
 	void (*shape_func[N_SHAPES]) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
 	double (*phi_solver[N_SHAPES]) (double in[], double f, double v, bool elliptical);
 
@@ -791,18 +792,19 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			case SHAPE_POLY:  h_scale = 1.0 / poly_smt_func (Ctrl->F.value); break;
 			case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * Ctrl->F.value * Ctrl->F.value); break;
 		}
+		/* Note: We use the unflattened hight since the guyot shape happened due to erosion later */
 		for (col = 0; col < Model->header->n_columns; col++) {
 			rr = fabs (Model->x[col]);	/* Now in 0-1 range */
 			if (inc_mode == SHAPE_CONE)	/* Circular cone case */
-				add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr) * h_scale;
+				add = (1.0 - rr) * h_scale;
 			else if (inc_mode == SHAPE_DISC)	/* Circular disc/plateau case */
 				add = (rr <= 1.0) ? 1.0 : 0.0;
 			else if (inc_mode == SHAPE_PARA)	/* Circular parabolic case */
-				add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
+				add = (1.0 - rr*rr) * h_scale;
 			else if (inc_mode == SHAPE_POLY)	/* Circular parabolic case */
-				add = (rr < Ctrl->F.value) ? 1.0 : poly_smt_func (rr) * h_scale;
+				add = poly_smt_func (rr) * h_scale;
 			else	/* Circular Gaussian case */
-				add = (rr < Ctrl->F.value) ? 1.0 : exp (-4.5 * rr * rr) * h_scale - noise;
+				add = exp (-4.5 * rr * rr) * h_scale - noise;
 			for (row = 0; row < Model->header->n_rows; row++) {
 				ij = gmt_M_ijp (Model->header, row, col);
 				if (Model->y[row] > add)	/* Outside the seamount */
@@ -1203,6 +1205,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								dx = 0.0;	/* Break point here if debugging */
 							}
 #endif
+							/* In the following, orig_add is the height of the sesamount prrior to any truncation, while add is the current value (subject to truncation) */
 							if (Ctrl->E.active) {	/* For elliptical bases we must deal with direction etc */
 								dx = (map) ? (x - in[GMT_X]) * GMT->current.proj.DIST_KM_PR_DEG * c : (x - in[GMT_X]);
 								dy = (map) ? (y - in[GMT_Y]) * GMT->current.proj.DIST_KM_PR_DEG : (y - in[GMT_Y]);
@@ -1211,32 +1214,48 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								rr = sqrt (-this_r/4.5);	/* Convert this r^2 to a normalized radius 0-1 inside cone */
 								if (Ctrl->A.active && rr > 1.0) continue;	/* Beyond the seamount base so nothing to do for a mask */
 								if (inc_mode == SHAPE_CONE) {	/* Elliptical cone case */
-									if (rr < 1.0)	/* Since in minor direction rr may exceed 1 and be outside the ellipse */
-										add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr) * h_scale;
+									if (rr < 1.0) {	/* Since in minor direction rr may exceed 1 and be outside the ellipse */
+										orig_add = (1.0 - rr) * h_scale;
+										add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
+									}
 									else
-										add = 0.0;
+										orig_add = add = 0.0;
 								}
 								else if (inc_mode == SHAPE_DISC)	/* Elliptical disc/plateau case */
-									add = (rr <= 1.0) ? 1.0 : 0.0;
-								else if (inc_mode == SHAPE_PARA)	/* Elliptical parabolic case */
-									add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
-								else if (inc_mode == SHAPE_POLY)	/* Elliptical parabolic case */
-									add = (rr < Ctrl->F.value) ? 1.0 : poly_smt_func (rr) * h_scale;
-								else	/* Elliptical Gaussian case */
-									add = (rr < Ctrl->F.value) ? 1.0 : exp (this_r) * h_scale - noise;
+									orig_add = add = (rr <= 1.0) ? 1.0 : 0.0;
+								else if (inc_mode == SHAPE_PARA) {	/* Elliptical parabolic case */
+									orig_add = (1.0 - rr*rr) * h_scale;
+									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
+								}
+								else if (inc_mode == SHAPE_POLY) {	/* Elliptical parabolic case */
+									orig_add = poly_smt_func (rr) * h_scale;
+									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
+								}
+								else {	/* Elliptical Gaussian case */
+									orig_add = exp (this_r) * h_scale - noise;
+									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
+								}
 							}
 							else {	/* Circular features are simpler */
 								rr = this_r / r_km;	/* Now in 0-1 range */
-								if (inc_mode == SHAPE_CONE)	/* Circular cone case */
-									add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr) * h_scale;
+								if (inc_mode == SHAPE_CONE) {	/* Circular cone case */
+									orig_add = (1.0 - rr) * h_scale;
+									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
+								}
 								else if (inc_mode == SHAPE_DISC)	/* Circular disc/plateau case */
-									add = (rr <= 1.0) ? 1.0 : 0.0;
-								else if (inc_mode == SHAPE_PARA)	/* Circular parabolic case */
-									add = (rr < Ctrl->F.value) ? 1.0 : (1.0 - rr*rr) * h_scale;
-								else if (inc_mode == SHAPE_POLY)	/* Circular parabolic case */
-									add = (rr < Ctrl->F.value) ? 1.0 : poly_smt_func (rr) * h_scale;
-								else	/* Circular Gaussian case */
-									add = (rr < Ctrl->F.value) ? 1.0 : exp (f * this_r * this_r) * h_scale - noise;
+									orig_add = add = (rr <= 1.0) ? 1.0 : 0.0;
+								else if (inc_mode == SHAPE_PARA) {	/* Circular parabolic case */
+									orig_add = (1.0 - rr*rr) * h_scale;
+									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
+								}
+								else if (inc_mode == SHAPE_POLY) {	/* Circular parabolic case */
+									orig_add = poly_smt_func (rr) * h_scale;
+									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
+								}
+								else {	/* Circular Gaussian case */
+									orig_add = exp (f * this_r * this_r) * h_scale - noise;
+									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
+								}
 							}
 							if (add <= 0.0) continue;	/* No amplitude, so skip */
 							ij = gmt_M_ijp (Grid->header, row, col);	/* Current node location */
@@ -1248,24 +1267,25 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								if (Grid->data[ij] > max) max = Grid->data[ij];
 							}
 							if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
-								rho = (gmt_grdfloat)grdseamount_mean_density (Ctrl, z_assign);
-								Ave->data[ij] += (gmt_grdfloat)(rho * z_assign);
-								rho_weight[ij] += (gmt_grdfloat)(z_assign);
+								r_assign = amplitude * orig_add;
+								rho = (gmt_grdfloat)grdseamount_mean_density (Ctrl, r_assign);
+								Ave->data[ij] += (gmt_grdfloat)(rho * r_assign);
+								rho_weight[ij] += (gmt_grdfloat)(r_assign);
 							}
 							if (first) {	/* May have to copy over to repeated column in global gridline-registered grids */
 								if (col == 0) {	/* Must copy from x_min to repeated column at x_max */
 									if (Ctrl->A.active) Grid->data[ij+nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij+nx1] += (gmt_grdfloat)z_assign;
 									if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
-										Ave->data[ij+nx1] += (gmt_grdfloat)rho * z_assign;
-										rho_weight[ij+nx1] += (gmt_grdfloat)rho * z_assign;
+										Ave->data[ij+nx1] += (gmt_grdfloat)rho * r_assign;
+										rho_weight[ij+nx1] += (gmt_grdfloat)rho * r_assign;
 									}
 									first = false;
 								}
 								else if (col == nx1) {	/* Must copy from x_max to repeated column at x_min */
 									if (Ctrl->A.active) Grid->data[ij-nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij-nx1] += (gmt_grdfloat)z_assign;
 									if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
-										Ave->data[ij-nx1] += (gmt_grdfloat)rho * z_assign;
-										rho_weight[ij-nx1] += (gmt_grdfloat)rho * z_assign;
+										Ave->data[ij-nx1] += (gmt_grdfloat)rho * r_assign;
+										rho_weight[ij-nx1] += (gmt_grdfloat)rho * r_assign;
 									}
 									first = false;
 								}
@@ -1326,7 +1346,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while writing list of grid files to %s\n", Ctrl->M.file);
 		goto wrap_up;
 	}
-	if (Ctrl->W.active) {
+	if (Ctrl->W.active) {	/* Average if multiple seamounts overprint on the same node */
 		for (ij = 0; ij < Ave->header->size; ij++) if (rho_weight[ij] > 0.0) Ave->data[ij] /= rho_weight[ij]; else Ave->data[ij] = GMT->session.f_NaN;
 		if (Ctrl->W.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_WRITE_NORMAL, NULL, Ctrl->W.file, Ave) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while writing average density grid to %s\n", Ctrl->W.file);
