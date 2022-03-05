@@ -30,7 +30,8 @@ Description
 **grdfill** reads a grid that presumably has unfilled holes that the user
 wants to fill in some fashion.  Holes are identified by NaN values but
 this criteria can be changed via **-N**.  There are several different algorithms that
-can be used to replace the hole values.  **Note**: One of **-A** or **-L** is required.
+can be used to replace the hole values.  **Note**: One of **-A** or **-L** is required,
+and if no holes are found we output the original unchanged grid.
 
 Required Arguments
 ------------------

@@ -100,7 +100,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"[Default radius is sqrt(nx^2+ny^2), with (nx,ny) the dimensions of the grid].");
 	GMT_Usage (API, 3, "s: Fill in NaN holes with a spline (optionally append tension).");
 	GMT_Usage (API, -2, "Note: -A is required unless -L is used.");
-	gmt_outgrid_syntax (API, 'G', "Give filename for where to write the filled-in grid");
+	gmt_outgrid_syntax (API, 'G', "Give filename for where to write the output grid");
 	GMT_Usage (API, 1, "\n-L[p]");
 	GMT_Usage (API, -2, "Just list the sub-regions w/e/s/n of each hole. "
 		"No grid fill takes place and -G is ignored. "
@@ -671,7 +671,8 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else if (hole_number) {	/* Must write the revised grid if there were any holes*/
+	else {	/* Must write the revised grid whether there are any holes or not */
+		if (hole_number == 0) GMT_Report (API, GMT_MSG_WARNING, "No holes detected in grid - grid unchanged\n");
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
 			free(RG_orig_hist);
 			Return (API->error);
@@ -680,9 +681,6 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 			free(RG_orig_hist);
 			Return (API->error);
 		}
-	}
-	else {
-		GMT_Report (API, GMT_MSG_WARNING, "No holes detected in grid - grid was not updated\n");
 	}
 
 	if (Ctrl->A.mode == ALG_SPLINE) {
