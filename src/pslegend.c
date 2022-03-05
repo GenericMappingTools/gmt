@@ -2016,7 +2016,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 			D[PAR]->table[0]->n_segments = D[PAR]->n_segments = n_para;
 			D[PAR]->table[0]->n_records += S[PAR]->n_rows;
 			D[PAR]->n_records = D[PAR]->table[0]->n_records;
-			S[PAR] = D[PAR]->table[0]->segment[n_para] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, krow[PAR], 0U, NULL, S[PAR]);
+			S[PAR] = D[PAR]->table[0]->segment[n_para-1] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, krow[PAR], 0U, NULL, S[PAR]);
 		}
 
 		/* Create option list, register D[PAR] as input source */
