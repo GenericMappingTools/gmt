@@ -108,6 +108,8 @@ function psldemo()
 for apiprog in $(ls @GMT_BINARY_DIR@/src/test*); do
     apiprog=$(basename $apiprog)
     eval "${apiprog}() { valgrind_wrapper \"@GMT_BINARY_DIR@/src/${apiprog}\" \"\$@\"; }"
+	# export function definitions to subshells
+    export -f ${apiprog}
 done
 
 # export function definitions to subshells
