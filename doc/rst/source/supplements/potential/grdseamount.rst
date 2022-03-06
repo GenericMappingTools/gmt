@@ -243,8 +243,13 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ *avedensity*
-    Append a file name to hold a 2-D grid with the vertically averaged density variations [no grid].
+.. |Add_outgrid| replace:: Give the name of the vertically averaged density grid file. If |-T| is set then *outgrid* must be a filename
+    template that contains a floating point format (C syntax).  If the filename template also contains
+    either %s (for unit name) or %c (for unit letter) then we use the corresponding time (in units specified in |-T|)
+    to generate the individual file names, otherwise we use time in years with no unit.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-Z:
 
