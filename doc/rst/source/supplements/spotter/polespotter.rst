@@ -17,7 +17,7 @@ Synopsis
 [ |-D|\ *spacing* ]
 [ |-E|\ **a**\|\ **f**\ *sigma* ]
 [ |-F|\ *fracturezones* ]
-[ |-G|\ *grid* ]
+[ |-G|\ *outgrid* ]
 [ |SYN_OPT-I| ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
@@ -46,7 +46,7 @@ fracture zones and the great circle extensions of abyssal hills
 are expected to intersect at potential rotation poles.  The assumption
 is that abyssal hill lines are meridians and fracture zones are parallels
 with respect to the rotation pole.  Line density may be computed and returned
-via a grid, the great circle lines may be returned via stdout, and the
+via a grid, the great circle lines may be returned via standard output, and the
 intersections of the great circles may be saved to file.  In line mode
 it will determine which line segments are compatible with a given trial
 pole, while in pole mode it will compute chi-squared misfits for all the
@@ -86,14 +86,16 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *grid*
-    Specify name for output grid.  For spot mode we will accumulate
+.. |Add_outgrid| replace::  Specify name for output grid.  For spot mode we will accumulate
     great circle line density for the grid.  Each bin that is crossed
     by a great circle is incremented by 1, multiplied by cos(latitude),
     the length of the fracture zone or abyssal line segment used to
-    define the great circle, and any overall weight set via **-E**.
+    define the great circle, and any overall weight set via |-E|.
     In pole mode we return the chi-squared misfit surface.  Not used
     in line mode.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -145,10 +147,10 @@ Optional Arguments
     2 (FZ intersect FZ), where AH means an abyssal hill great circle and FZ
     means a bisector great circle to a fracture zone.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 5 input columns].
 .. include:: ../../explain_-bi.rst_
@@ -160,7 +162,7 @@ Optional Arguments
 .. include:: ../../explain_-e.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-h.rst_../../explain_-V.rst_
+.. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_-ocols.rst_

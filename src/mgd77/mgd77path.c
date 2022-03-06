@@ -1,7 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2004-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- *    See README file for copying and redistribution conditions.
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * mgd77path accepts MGD77 cruise names and returns the full system
@@ -59,16 +70,22 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> A[c] -D [-I<code>] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <cruise(s)> [-A[c]] [-D] [-Ia|c|m|t] [%s] [%s]\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	MGD77_Cruise_Explain (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\t-A List full cruise pAths [Default].  Append c to only get cruise names.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D List all directories with MGD77 files instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files. [Default ignores none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A[c]");
+	GMT_Usage (API, -2, "List full cruise pAths [Default].  Append c to only get cruise names.");
+	GMT_Usage (API, 1, "\n-D List all directories with MGD77 files instead.");
+	GMT_Usage (API, 1, "\n-Ia|c|m|t");
+	GMT_Usage (API, -2, "Ignore certain data file formats from consideration. Append combination of acmt to ignore [Default ignores none]:");
+	GMT_Usage (API, 3, "a: MGD77 ASCII table.");
+	GMT_Usage (API, 3, "c: MGD77+ netCDF table.");
+	GMT_Usage (API, 3, "m: MGD77T ASCII table.");
+	GMT_Usage (API, 3, "t: Plain table.");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
@@ -101,20 +118,23 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct GMT_
 					/* Purposfully falling through to catch 'A' instead */
 				}
 				else {
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 					break;
 				}
 				/* Intentionally fall through */
 			case 'A':	/* Show list of paths to MGD77 files */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0] == 'c' || opt->arg[0] == '-') Ctrl->A.mode = true;
 				break;
 
 			case 'D':	/* Show list of directories with MGD77 files */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (Ctrl->I.n < 3) {
 					if (strchr ("acmt", (int)opt->arg[0]))
@@ -131,7 +151,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct GMT_
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

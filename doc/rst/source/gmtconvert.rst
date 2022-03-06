@@ -17,12 +17,12 @@ Synopsis
 [ |-C|\ [**+l**\ *min*][**+u**\ *max*][**+i**]]
 [ |-D|\ [*template*\ [**+o**\ *orig*]] ]
 [ |-E|\ [**f**\|\ **l**\|\ **m**\|\ **M**\ *stride*] ]
-[ |-F|\ [**c**\|\ **n**\|\ **r**\|\ **v**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
+[ |-F|\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **t**\|\ **s**\|\ **r**\|\ *refpoint*] ]
 [ |-I|\ [**tsr**] ]
 [ |-L| ]
 [ |-N|\ *col*\ [**+a**\|\ **d**] ]
 [ |-Q|\ [**~**]\ *selection*]
-[ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
+[ |-S|\ [**~**]\ *"search string"*\|\ **+f**\|\ *file*\ [**+e**] \| |-S|\ [**~**]/\ *regexp*/[**i**][**+e**] ]
 [ |-T|\ [**h**][**d**\ [[**~**]\ *selection*]] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+n**] ]
@@ -37,6 +37,7 @@ Synopsis
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
 [ |SYN_OPT-s| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -89,7 +90,7 @@ Optional Arguments
 
 **-D**\ [*template*\ [**+o**\ *orig*]]
     For multiple segment data, dump each segment to a separate output
-    file [Default writes a multiple segment file to stdout]. Append a
+    file [Default writes a multiple segment file to standard output]. Append a
     format template for the individual file names; this template
     **must** contain a C format specifier that can format an integer
     argument (the running segment number across all tables); this is
@@ -115,22 +116,22 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**c**\|\ **n**\|\ **r**\|\ **v**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*]
+**-F**\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **t**\|\ **s**\|\ **r**\|\ *refpoint*]
     Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
     Append one of four line connection schemes:
     **c**\ : Form continuous line segments for each group [Default].
-    **r**\ : Form line segments from a reference point reset for each group.
+    **p**\ : Form line segments from a reference point reset for each group.
     **n**\ : Form networks of line segments between all points in each group.
     **v**\ : Form vector line segments suitable for :doc:`plot` **-Sv+s**.
     Optionally, append the one of four segmentation methods to define the group:
     **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
     and set group reference point to the very first point of the first file.
-    **f**\ : Consider all data in each file to be a single separate group and
+    **t**\ : Consider all data in each table to be a single separate group and
     reset the group reference point to the first point of each group.
     **s**\ : Segment headers are honored so each segment is a group; the group
     reference point is reset to the first point of each incoming segment [Default].
     **r**\ : Same as **s**, but the group reference point is reset after
-    each record to the previous point (this method is only available with the **-Fr** scheme).
+    each record to the previous point (this method is only available with the **-Fp** scheme).
     Instead of the codes **a**\|\ **f**\|\ **s**\|\ **r** you may append
     the coordinates of a *refpoint* which will serve as a fixed external
     reference point for all groups.
@@ -174,7 +175,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**~**]\ *"search string"* or **-S**\ [**~**]/\ *regexp*/[**i**]
+**-S**\ [**~**]\ *"search string"*\|\ **+f**\|\ *file*\ [**+e**] \| |-S|\ [**~**]/\ *regexp*/[**i**][**+e**]
     Only output those segments whose header record contains the
     specified text string. To reverse the search, i.e., to output
     segments whose headers do *not* contain the specified pattern, use
@@ -189,7 +190,9 @@ Optional Arguments
     headers against extended regular expressions enclose the expression
     in slashes. Append **i** for case-insensitive matching.
     For a list of such patterns, give **+f**\ *file* with one pattern per line.
-    To give a single pattern starting with +f, escape it with a backslash.
+    To give a single pattern starting with "+f", escape it with a backslash.
+    Finally, append **+e** as last modifier to request an exact match [Default will
+    match any sub-string in the target].
 
 .. _-T:
 
@@ -198,7 +201,7 @@ Optional Arguments
     suppress segment headers [Default], and/or **d** to suppress duplicate
     data records.  Use **-Thd** to suppress both types of records.  By default,
     all columns must be identical across the two records to skip the record.
-    ALternatively, append a column *selection* to only use those columns
+    Alternatively, append a column *selection* to only use those columns
     in the comparisons instead.  The *selection* syntax is
     *range*\ [,\ *range*,...] where each *range* of items is either a single
     column *number* or a range with stepped increments given via *start*\ [:*step*:]\ :*stop*
@@ -207,10 +210,10 @@ Optional Arguments
     trailing text to the comparison as well, add the column *t* to the list.
     If no numerical columns are specified, just *t*, then we only consider trailing text.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -252,6 +255,8 @@ Optional Arguments
 
 .. include:: explain_-s.rst_
 
+.. include:: explain_-w.rst_
+
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
@@ -291,6 +296,11 @@ To extract all segments in the file big_file.txt whose headers contain
 the string "RIDGE AXIS", try::
 
     gmt convert big_file.txt -S"RIDGE AXIS" > subset.txt
+
+To only get the segments in the file big_file.txt whose headers exactly
+matches the string "Spitsbergen", try::
+
+    gmt convert big_file.txt -SSpitsbergen+e > subset.txt
 
 To invert the selection of segments whose headers begin with "profile "
 followed by an integer number and any letter between "g" and "l", try::
@@ -338,7 +348,7 @@ where we reset the origin of the sequential numbering from 0 to 5000, try::
 
 To only read rows 100-200 and 500-600 from file junk.txt, try::
 
-    gmt convert junk.txt -q100-200,500-600 < subset.txt
+    gmt convert junk.txt -q100-200,500-600 > subset.txt
 
 To get all rows except those bad ones between rows 1000-2000, try::
 

@@ -3,6 +3,7 @@
 # Show a basic seismicity legend
 #
 gmt begin GMT_seislegend ps
+	gmt set GMT_THEME cookbook
 	gmt set FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
 
 	# Create standard seismicity color table

@@ -13,6 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdconvert** *ingrid* |-G|\ *outgrid*
+[ |-C|\ **b**\|\ **c**\|\ **n**\|\ **p** ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -32,57 +33,30 @@ be written and to specify scaling, translation, and NaN-value.
 Required Arguments
 ------------------
 
-*ingrid*\ [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]]
-    The grid file to be read. Append format =\ *id* code if not a
-    standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
-    below), you may optionally append any of **+s**\ *scale*, **+o**\ *offset*,
-    and **+n**\ *invalid*. The first two options will scale the data
-    and then offset them with the specified amounts after reading
-    while the latter lets you supply a value that represents an invalid
-    grid entry, i.e., 'Not-a-Number' (for floating-point grids this is
-    unnecessary since the IEEE NaN is used; however integers need a
-    value which means no data available). When *id=gd*, the file will
-    be read using the GDAL library, which will take care to detect the
-    format of the file being read. This mechanism is actually used
-    automatically when the file format is not one of those that GMT
-    recognize. However, sometimes the guessing may fail, so adding
-    *id=gd* forces a read via GDAL.
-    See Section :ref:`grid-file-format` of the GMT Technical Reference and Cookbook for more information.
+.. |Add_ingrid| replace:: 2-D gridded data set to be read.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 
-**-G**\ *outgrid*\ [=id[**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]][*:driver*\ [/*datatype*]]]
-    The grid file to be written. Append format =\ *id* code if not a
-    standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
-    below), you may optionally append  any of **+s**\ *scale*,
-    **+o**\ *offset*, and **+n**\ *invalid*.  These modifiers are
-    particularly practical when storing the data as integers, by
-    first removing an offset and then scaling down the values.
-    Since the scale and offset are applied in reverse order when
-    reading, this does not affect the data values (except for
-    round-offs).  The **+n** modifier let you append a value
-    that represents 'Not-a-Number' (for floating-point grids this is
-    unnecessary since the IEEE NaN is used; however integers need a
-    value which means no data available). You may specify **+s**\ *a*
-    for auto-adjusting the scale and/or offset of packed integer grids
-    (=\ *id*\ **+s**\ *a* is a shorthand for =\ *id*\ **+s**\ *a*\ **+o**\ *a*).
-    When *id*\ =\ *gd*, the file will be saved using the
-    GDAL library. Append the format *:driver* and optionally the output
-    *datatype*. The driver names are those used by GDAL itself (e.g.,
-    netCDF, GTiFF, etc.), and the data type is one of
-    *u8*\|\ *u16*\|\ *i16*\|\ *u32*\|\ *i32*\|\ *float32*,
-    where 'i' and 'u' denote signed and unsigned integers respectively.
-    The default type is *float32*. Note also that both driver names and
-    data types are case insensitive.
-    See Section :ref:`grid-file-format` of the GMT Technical Reference and Cookbook for more information.
-
-    Consider setting :term:`IO_NC4_DEFLATION_LEVEL`
-    to reduce file size and to further increase read/write performance.
-    Especially when working with subsets of global grids, masks, and grids with
-    repeating grid values, the improvement is usually significant.
+.. |Add_outgrid| replace:: Give the name of the output converted grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
+
+.. _-C:
+
+**-Cb**\|\ **c**\|\ **n**\|\ **p**
+    Normally, output grids store the current module's command-line history.
+    Use **-C** to specify what the output grid's command history should be:
+    Append directive **b** to write both the previous and the current module's 
+    command histories, **c** to only write the current module's command
+    history, **n** to save no history whatsoever [Default], or select **p**
+    to instead save only the previous command history.
 
 .. _-N:
 
@@ -92,15 +66,15 @@ Optional Arguments
     that do not recognize GMT headers. It
     only applies to native grids and is ignored for netCDF output.
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -132,7 +106,7 @@ the =\ *id* suffix to the filename *outgrid*.
 
 When reading files, **grdconvert** and other GMT programs will try
 to automatically recognize the type of the input grid file. If this
-fails you may append the =\ *id* suffix to the filename *ingrid*.
+fails you may append the =\ *ID* suffix to the filename *ingrid*.
 
 +----------+---------------------------------------------------------------+
 | ID       | Explanation                                                   |
@@ -201,7 +175,7 @@ without loss of data range or significance. For more details, see
 
 By default, GMT programs will read the first 2-dimensional grid
 contained in a COARDS-compliant netCDF file. Alternatively, use
-*ingrid*\ **?**\ *varname* (ahead of any optional suffix **=**\ *id*)
+*ingrid*\ **?**\ *varname* (ahead of any optional suffix **=**\ *ID*)
 to specify the requested variable *varname*. Since **?** has special
 meaning as a wildcard, escape this meaning by placing the full filename
 and suffix between quotes.

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,7 @@
  *	gmt_weibull_crit      :
  *	gmt_binom_pdf         :
  *	gmt_binom_cdf         :
+ *	gmt_vonmises_pdf      :
  *	gmt_zdist             :
  *	gmt_zcrit             :
  *	gmt_tcrit             :
@@ -149,7 +150,7 @@ GMT_LOCAL int gmtstat_ln_gamma_r (struct GMT_CTRL *GMT, double x, double *lngam)
 		return (0);
 	}
 	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Ln Gamma:  Bad x (x <= 0).\n");
-	return (-1);
+	return (GMT_NOTSET);
 }
 
 GMT_LOCAL void gmtstat_gamma_ser (struct GMT_CTRL *GMT, double *gamser, double a, double x, double *gln) {
@@ -159,7 +160,7 @@ GMT_LOCAL void gmtstat_gamma_ser (struct GMT_CTRL *GMT, double *gamser, double a
 	int n;
 	double sum, del, ap;
 
-	if (gmtstat_ln_gamma_r (GMT, a, gln) == -1) {
+	if (gmtstat_ln_gamma_r (GMT, a, gln) == GMT_NOTSET) {
 		*gamser = GMT->session.d_NaN;
 		return;
 	}
@@ -194,7 +195,7 @@ GMT_LOCAL void gmtstat_gamma_cf (struct GMT_CTRL *GMT, double *gammcf, double a,
 	double gold = 0.0, g, fac = 1.0, b1 = 1.0;
 	double b0 = 0.0, anf, ana, an, a1, a0 = 1.0;
 
-	if (gmtstat_ln_gamma_r (GMT, a, gln) == -1) {
+	if (gmtstat_ln_gamma_r (GMT, a, gln) == GMT_NOTSET) {
 		*gln = GMT->session.d_NaN;
 		return;
 	}
@@ -281,11 +282,11 @@ GMT_LOCAL int gmtstat_inc_beta (struct GMT_CTRL *GMT, double a, double b, double
 
 	if (a <= 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtstat_inc_beta:  Bad a (a <= 0).\n");
-		return(-1);
+		return(GMT_NOTSET);
 	}
 	if (b <= 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtstat_inc_beta:  Bad b (b <= 0).\n");
-		return(-1);
+		return(GMT_NOTSET);
 	}
 	if (x > 0.0 && x < 1.0) {
 		gmtstat_ln_gamma_r(GMT, a, &gama);
@@ -325,7 +326,7 @@ GMT_LOCAL int gmtstat_inc_beta (struct GMT_CTRL *GMT, double a, double b, double
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtstat_inc_beta:  Bad x (x > 1).\n");
 		*ibeta = 1.0;
 	}
-	return (-1);
+	return (GMT_NOTSET);
 }
 
 GMT_LOCAL int gmtstat_f_q (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1, double chisq2, uint64_t nu2, double *prob) {
@@ -359,7 +360,7 @@ GMT_LOCAL int gmtstat_f_q (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1, do
 
 	if (nu1 <= 0 || nu2 <= 0 || chisq1 < 0.0 || chisq2 < 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtstat_f_q:  Bad argument(s).\n");
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	/* Extreme cases evaluate immediately:  */
@@ -378,7 +379,7 @@ GMT_LOCAL int gmtstat_f_q (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1, do
 
 	if (gmtstat_inc_beta (GMT, 0.5*nu2, 0.5*nu1, chisq2/(chisq2+chisq1), prob) ) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtstat_f_q:  Trouble in gmtstat_inc_beta call.\n");
-		return (-1);
+		return (GMT_NOTSET);
 	}
 	return (0);
 }
@@ -411,7 +412,7 @@ GMT_LOCAL int gmtstat_f_test_new (struct GMT_CTRL *GMT, double chisq1, uint64_t 
 	if (chisq1 <= 0.0 || chisq2 <= 0.0 || nu1 < 1 || nu2 < 1) {
 		*prob = GMT->session.d_NaN;
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtstat_f_test_new: Bad argument(s).\n");
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	gmtstat_f_q (GMT, chisq1, nu1, chisq2, nu2, &q);
@@ -472,11 +473,11 @@ GMT_LOCAL int gmtstat_f_test (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1,
 
 	if (chisq1 <= 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_f_test:  Chi-Square One <= 0.0\n");
-		return(-1);
+		return(GMT_NOTSET);
 	}
 	if (chisq2 <= 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_f_test:  Chi-Square Two <= 0.0\n");
-		return(-1);
+		return(GMT_NOTSET);
 	}
 	if (chisq1 > chisq2) {
 		f = chisq1/chisq2;
@@ -490,11 +491,11 @@ GMT_LOCAL int gmtstat_f_test (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1,
 	}
 	if (gmtstat_inc_beta(GMT, 0.5*df2, 0.5*df1, df2/(df2+df1*f), &p1) ) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_f_test:  Trouble on 1st gmtstat_inc_beta call.\n");
-		return(-1);
+		return(GMT_NOTSET);
 	}
 	if (gmtstat_inc_beta(GMT, 0.5*df1, 0.5*df2, df1/(df1+df2/f), &p2) ) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtstat_f_test:  Trouble on 2nd gmtstat_inc_beta call.\n");
-		return(-1);
+		return(GMT_NOTSET);
 	}
 	*prob = p1 + (1.0 - p2);
 	return (0);
@@ -539,7 +540,7 @@ GMT_LOCAL int gmtstat_student_t_a (struct GMT_CTRL *GMT, double t, uint64_t n, d
 	if (t < 0.0 || n == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtstat_student_t_a:  Bad argument(s).\n");
 		*prob = GMT->session.d_NaN;
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	if (t == 0.0) {
@@ -983,6 +984,10 @@ double gmt_plm (struct GMT_CTRL *GMT, int l, int m, double x) {
 	return (pll);
 }
 
+#ifndef M_SQRTPI
+#define M_SQRTPI	1.77245385090551602729	
+#endif
+
 double gmt_plm_bar (struct GMT_CTRL *GMT, int l, int m, double x, bool ortho) {
 	/* This function computes the normalized associated Legendre function of x for degree
 	 * l and order m. x must be in the range [-1;1] and 0 <= |m| <= l.
@@ -1056,9 +1061,9 @@ double gmt_plm_bar (struct GMT_CTRL *GMT, int l, int m, double x, bool ortho) {
 	   In case of geophysical conversion : multiply by sqrt(2-delta_0m) */
 
 	if (ortho)
-		pmm *= 1.0 / d_sqrt(M_PI);
+		pmm /= (M_SQRT2 * M_SQRTPI);
 	else if (m != 0)
-		pmm *= d_sqrt(2.0);
+		pmm *= M_SQRT2;
 
 	/* If C-S phase is requested, apply it now */
 
@@ -1167,9 +1172,9 @@ void gmt_plm_bar_all (struct GMT_CTRL *GMT, int lmax, double x, bool ortho, doub
 		In case of geophysical conversion : multiply by sqrt(2-delta_0m) */
 
 		if (ortho)
-			plm[mm] = pmm * 0.5 / d_sqrt(M_PI);
+			plm[mm] = pmm / (M_SQRT2 * M_SQRTPI);
 		else if (m != 0)
-			plm[mm] = pmm * d_sqrt(2.0);
+			plm[mm] = pmm * M_SQRT2;
 
 		/* If C-S phase is requested, apply it now */
 
@@ -1423,6 +1428,24 @@ double gmt_binom_cdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p) {
 			c += gmt_binom_pdf (GMT, j, n, p);
 	}
 	return (c);
+}
+
+double gmt_vonmises_pdf (struct GMT_CTRL *GMT, double x, double mu, double kappa) {
+	/* Von Mises 1-D probability density function */
+	double p;
+	gmt_M_unused(GMT);
+	/* Von Mises distribution, expects x and mu in degrees */
+	p = exp (kappa * cosd (x - mu)) / (TWO_PI * gmt_i0 (GMT, kappa));
+	return (p);
+}
+
+double gmt_fisher_pdf (struct GMT_CTRL *GMT, double plon, double plat, double lon, double lat, double kappa) {
+	/* Fisher 3-D probability density function centered on (plon, plat) evaluated at
+	 * another point (lon, lat), given kappa */
+	double p, cos_psi;
+	cos_psi = gmtlib_great_circle_dist_cos (GMT, plon, plat, lon, lat);
+	p = kappa * exp (kappa * cos_psi) / (2.0 * TWO_PI * sinh (kappa));
+	return (p);
 }
 
 double gmt_zdist (struct GMT_CTRL *GMT, double x) {
@@ -1806,7 +1829,7 @@ int gmt_median (struct GMT_CTRL *GMT, double *x, uint64_t n, double xmin, double
 		else {	/* If we get here, I made a mistake!  */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Internal goof in gmt_median; please report to developers!\n");
 			*med = GMT->session.d_NaN;
-			return -1;
+			return GMT_NOTSET;
 		}
 
 	} while (!finished);
@@ -1927,7 +1950,7 @@ int gmt_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort
 		length = x[i + j] - x[i];
 		if (length < 0.0) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_mode: Array not sorted in non-decreasing order.\n");
-			return (-1);
+			return (GMT_NOTSET);
 		}
 		else if (length == short_length) {	/* Possibly multiple mode */
 			switch (mode_selection) {
@@ -1983,7 +2006,7 @@ int gmt_mode_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, uint64_t n, uint64_t j, b
 		length = x[i + j] - x[i];
 		if (length < 0.0) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_mode_f: Array not sorted in non-decreasing order.\n");
-			return (-1);
+			return (GMT_NOTSET);
 		}
 		else if (length == short_length) {	/* Possibly multiple mode */
 			switch (mode_selection) {
@@ -2475,7 +2498,7 @@ void gmt_PvQv (struct GMT_CTRL *GMT, double x, double v_ri[], double pq[], unsig
 double gmt_grd_mean (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W) {
 	/* Compute the [weighted] mean of a grid.  Handle geographic grids with spherical weights W [NULL for cartesian] */
 	uint64_t node, n = 0;
-	unsigned int row, col;
+	openmp_int row, col;
 	double sum_zw = 0.0, sum_w = 0.0;
 	if (W) {	/* Weights provided */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
@@ -2499,7 +2522,7 @@ double gmt_grd_mean (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *
 double gmt_grd_std (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W) {
 	/* Compute the [weighted] std of a grid.  Handle geographic grids with spherical weights W [NULL for cartesian] */
 	uint64_t node, n = 0;
-	unsigned int row, col;
+	openmp_int row, col;
 	double std, mean = 0.0, delta, sumw = 0.0;
 	if (W) {	/* Weights provided */
 		double temp, R, M2 = 0.0;
@@ -2531,7 +2554,7 @@ double gmt_grd_std (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W
 double gmt_grd_rms (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W) {
 	/* Compute the [weighted] rms of a grid.  Handle geographic grids with spherical weights W [NULL for cartesian] */
 	uint64_t node, n = 0;
-	unsigned int row, col;
+	openmp_int row, col;
 	double rms, sum_z2w = 0.0, sum_w = 0.0;
 	if (W) {	/* Weights provided */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
@@ -2559,7 +2582,7 @@ double gmt_grd_median (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 	double wmed;
 
 	if (W) {	/* Weights provided */
-		unsigned int row, col;
+		openmp_int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
 		/* 1. Create array of value,weight pairs, skipping NaNs */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
@@ -2593,7 +2616,7 @@ double gmt_grd_mad (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W
 	uint64_t node, n = 0;
 	double wmed, wmad;
 	if (W) {	/* Weights provided */
-		unsigned int row, col;
+		openmp_int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
 		if (median) {	/* Already have the median */
 			wmed = *median;
@@ -2618,7 +2641,7 @@ double gmt_grd_mad (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W
 			/* 3. Compute the absolute deviations from this median */
 			for (node = 0; node < n; node++) pair[node].value = (gmt_grdfloat)fabs (pair[node].value - wmed);
 		}
-		/* 4. Find the weighted median absolue deviation */
+		/* 4. Find the weighted median absolute deviation */
 		wmad = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, n);
 		gmt_M_free (GMT, pair);
 	}
@@ -2650,7 +2673,7 @@ double gmt_grd_mode (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *
 	double wmode;
 
 	if (W) {	/* Weights provided */
-		unsigned int row, col;
+		openmp_int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
 		/* 1. Create array of value,weight pairs, skipping NaNs */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
@@ -2686,7 +2709,7 @@ double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 	uint64_t node, n = 0;
 	double wmode, lmsscl;
 	if (W) {	/* Weights provided */
-		unsigned int row, col;
+		openmp_int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
 		if (mode) {	/* Already got the mode */
 			wmode = *mode;
@@ -2711,7 +2734,7 @@ double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 			/* 3. Compute the absolute deviations from this mode */
 			for (node = 0; node < n; node++) pair[node].value = (gmt_grdfloat)fabs (pair[node].value - wmode);
 		}
-		/* 4. Find the weighted median absolue deviation and scale it */
+		/* 4. Find the weighted median absolute deviation and scale it */
 		lmsscl = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, n);
 		gmt_M_free (GMT, pair);
 	}
@@ -2750,7 +2773,8 @@ GMT_LOCAL void gmtstat_get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *
 	 * P.Wessel, July 2016.
 	 */
 	uint64_t node;
-	unsigned int row, col, j, first_row = 0, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1, ltype;
+	openmp_int row, col, first_row = 0, last_row = (openmp_int)G->header->n_rows - 1, last_col = (openmp_int)G->header->n_columns - 1;
+	unsigned int j, ltype;
 	double lat, area, f, row_weight, col_weight = 1.0, R2 = pow (0.001 * GMT->current.proj.mean_radius, 2.0);	/* squared mean radius in km */
 	char *aux[6] = {"geodetic", "authalic", "conformal", "meridional", "geocentric", "parametric"};
 	char *rad[5] = {"mean (R_1)", "authalic (R_2)", "volumetric (R_3)", "meridional", "quadratic"};
@@ -2793,7 +2817,7 @@ GMT_LOCAL void gmtstat_get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *
 GMT_LOCAL void gmtstat_get_cart_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	/* Calculate Cartesian cell areas in user units */
 	uint64_t node;
-	unsigned int row, col, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1;
+	openmp_int row, col, last_row = (openmp_int)G->header->n_rows - 1, last_col = (openmp_int)G->header->n_columns - 1;
 	double row_weight = 1.0, col_weight = 1.0, area = G->header->inc[GMT_X] * G->header->inc[GMT_Y];	/* All whole cells have same area */
 	gmt_M_unused(GMT);
 	gmt_M_row_loop (GMT, G, row) {	/* Loop over the rows */
@@ -2812,3 +2836,50 @@ void gmt_get_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	else
 		gmtstat_get_cart_cellarea (GMT, G);
 }
+
+double gmt_von_mises_mu_and_kappa (struct GMT_CTRL *GMT, double *data, double *w, uint64_t n, double *kappa) {
+	/* Return the mean and kappa for a von Mises fit to (possibly weighted) data.
+	 * It is assumed that data have been scaled to 0-360. Weights w is possibly NULL for no weights */
+	uint64_t k;
+	double mean = 0.0, x_r = 0.0, y_r = 0.0, s_w = 0.0, ww = 1.0;
+	double lo, hi, midval, range2, delta_R, s, c, R_bar;
+
+	for (k = 0; k < n; k++) {
+		if (gmt_M_is_dnan (data[k])) continue;
+		if (w) ww = w[k];	/* Otherwise it is a constant 1 */
+		sincosd (data[k], &s, &c);
+		x_r += c * ww;	y_r += s * ww;
+		s_w += ww;
+	}
+	if (s_w > 0.0) {	/* Can compute the statistics */
+		x_r /= s_w;	y_r /= s_w;
+		mean = atan2d (y_r, x_r);
+	}
+	else {	/* No data, basically */
+		*kappa = GMT->session.d_NaN;
+		return (GMT->session.d_NaN);
+	}
+	/* Here we have actual values */
+	R_bar = hypot (x_r, y_r);
+	if (R_bar >= 0.999) {	/* Just return a big kappa for R almost = 1 */
+		*kappa = 500.0;	/* kappa = 500 gives R_bar = 0.998999916722 so close enough */
+		return (mean);
+	}
+	/* Compute kappa by a dumb bisection search */
+	lo = 0.0;	hi = 500.0;
+	while (fabs (hi - lo) > GMT_CONV8_LIMIT) {
+		midval = 0.5 * (hi + lo);
+		range2 = 0.5 * (hi - lo);
+		delta_R = (gmt_i1 (GMT, midval) / gmt_i0 (GMT, midval)) - R_bar;
+		if (delta_R > GMT_CONV8_LIMIT)	/* Need a smaller R next time */
+			hi -= range2;
+		else if (delta_R < -GMT_CONV8_LIMIT)	/* Need a larger R next time */
+			lo += range2;
+		else 	/* Got it, set lo = hi to exit loop */
+			lo = hi;
+	}
+	*kappa = midval;
+
+	return (mean);
+}
+

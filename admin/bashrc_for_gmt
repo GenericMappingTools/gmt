@@ -1,0 +1,144 @@
+#
+# .bashrc include file for simplifying GMT building and testing
+# from the bash command line for debug compiler settings
+# (dbuild directory), a release build (rbuild directory),
+# and XCode debugging (xbuild directory).
+#
+# Include in your .bashrc via source <path>/bashrc_for_gmt
+#
+# Examples:
+# Type "bnd" to pull the latest main, configure with cmake, and build
+# with debug settings, or "bnx" for the Xcode setup
+# Type "crb" to run all tests with the release build
+# Type "gmtfind 'pattern'" to find all files where 'pattern' occurs
+# Type "dlog" to open the latest test log
+# Type "vgd" to open all the failed test PNGs for build
+#
+# You must set these parameter to reflect your setup
+builder=ninja	# If ninja is not installed (please do), set to make
+Bname="Ninja"	# If ninja is not installed (please do), set to "Unix Makefiles"
+pngview=open	# Program that can open and display PNG files
+pdfview=open	# Program that can open and display PDF files
+ncores=4	# Number of cores for running tests
+MATLAB=/Applications/MATLAB_R2019a.app	# Path to the Matlab app
+REPO_DIR=<path to the local GMT repository>
+DATA_DIR=<path to directory containing GSHHG and DCW>
+EDITOR=subl		# Program that can open and display text files
+#--------------------------------------------------------------
+
+# These are needed to run admin/build-gmt-release.sh
+export GMT_REPO_DIR=${REPO_DIR}
+export GMT_GSHHG_SOURCE=${DATA_DIR}/gshhg-gmt-2.3.7
+export GMT_DCW_SOURCE=${DATA_DIR}/dcw-gmt-2.0.0
+
+# To run matlab without the GUI:
+alias matlab='$MATLAB/bin/matlab -nojvm'
+
+# function for processing find output and return list of unique files.
+function unique {
+	awk -F: '{print $1}' | sort -u
+}
+
+# List source, docs, scripts and txt files where the argument to gmtfind appears as is in the file
+# e.g, gmtfind "Grid increment is"
+function gmtfind {
+	find . -name '*.[ch]' -exec egrep -H "$*" {} \; | unique ;
+	find . -name '*.in]'  -exec egrep -H "$*" {} \; | unique ;
+	find . -name '*.txt]' -exec egrep -H "$*" {} \; | unique ;
+	find . -name '*.rst*' -exec egrep -H "$*" {} \; | unique ;
+	find . -name '*.sh'   -exec egrep -H "$*" {} \; | unique ;
+	find . -name '*.bat'  -exec egrep -H "$*" {} \; | unique ;
+}
+
+# Various GMT building aliases
+
+# To run cmake for GMT for various setups
+alias cmakegmtd='cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug ..' # Configure cmake for debug
+alias cmakegmtr='cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release ..' # Configure cmake for release
+alias cmakegmtx='cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..' # Configure cmake for Xcode debug
+# To change folders, open logs, build docs
+alias gmt6='cd ${REPO_DIR}/src'	# Cd to the GMT source directory
+alias gtop='cd ${REPO_DIR}'	# Cd to the top of the dev tree
+alias dlog='pushd .; gtop; ${EDITOR} dbuild/Testing/Temporary/LastTest.log; popd' # Open the dbuild check error log
+alias rlog='pushd .; gtop; ${EDITOR} rbuild/Testing/Temporary/LastTest.log; popd' # Open the rbuild check error log
+alias bdoc='pushd .; gmt6; cd ../dbuild; ${builder} -j${ncores} docs_html install; popd'
+# To pull changes, rebuild existing build directories
+alias buildd='pushd .; gtop; git pull; cd dbuild; ${builder} -j${ncores} install; popd' # Pull changes and rebuild existing dbuild
+alias buildr='pushd .; gtop; git pull; cd rbuild; ${builder} -j${ncores} install; popd' # Pull changes and rebuild existing rbuild
+# To pull changes, delete and remake build directories
+alias buildnewd='pushd .; gtop; git pull; rm -rf dbuild; mkdir dbuild; cd dbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G ${Bname} ..; ${builder} -j${ncores} install; popd' # Pull changes; delete and recreate build directory (debug)
+alias buildnewr='pushd .; gtop; git pull; rm -rf rbuild; mkdir rbuild; cd rbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} ..; ${builder} -j${ncores} install; popd' # Pull changes; delete and recreate build directory (release)
+alias buildnewx='pushd .; gtop; git pull; rm -rf xbuild; mkdir xbuild; cd xbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..; xcodebuild; popd' # Pull changes; delete and recreate build directory (XCode)
+# To rebuild without pulling remote changes
+alias builddnopull='pushd .; gtop; cd dbuild; ${builder} -j${ncores} install; popd' # Rebuild existing dbuild
+alias buildnewdnopull='pushd .; gtop; rm -rf dbuild; mkdir dbuild; cd dbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G ${Bname} ..; ${builder} -j${ncores} install; popd' # Delete and recreate build directory (debug)
+alias buildnewxnopull='pushd .; gtop; rm -rf xbuild; mkdir xbuild; cd xbuild; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Debug -G Xcode ..; xcodebuild; popd' # Delete and recreate build directory (XCode)
+# To run tests
+alias checkdbuild='pushd .; gtop; cd dbuild; ${builder} -j${ncores} check; popd' # Run the tests for dbuild
+alias checkrbuild='pushd .; gtop; cd rbuild; ${builder} -j${ncores} check; popd' # Run the tests for rbuild
+# If gcc-mp is installed you can do OpenMP builds
+alias buildnewr-mp='pushd .; gtop; git pull; rm -rf rbuild-mp; mkdir rbuild-mp; cd rbuild-mp; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} -C ~/cache.cmake ..; ${builder} -j${ncores} install; popd'
+alias buildnewd-mp='pushd .; gtop; git pull; rm -rf dbuild-mp; mkdir dbuild-mp; cd dbuild-mp; cmake -DCMAKE_INSTALL_PREFIX=gmt6 -DCMAKE_BUILD_TYPE=Release -G ${Bname} -C ~/cache.cmake ..; ${builder} -j${ncores} install; popd'
+
+# Shorter aliases for the build aliases
+alias bd=buildd # Pull changes and rebuild existing dbuild
+alias br=buildr # Pull changes and rebuild existing rbuild
+alias bnd=buildnewd # Pull changes; delete and recreate dbuild
+alias bnr=buildnewr # Pull changes; delete and recreate rbuild
+alias bnx=buildnewx # Pull changes; delete and recreate xbuild
+alias bnd-mp=buildnewd-mp # Pull changes; delete and rebuild dbuild with OpenMP
+alias bnr-mp=buildnewr-mp # Pull changes; delete and rebuild rbuild with OpenMP
+alias cdb=checkdbuild # Run the tests for dbuild
+alias crb=checkrbuild # Run the tests for rbuild
+alias bmdc='buildnewd; checkdbuild' # build new master debug and run all tests
+alias bdnp=builddnopull # Rebuild existing dbuild
+alias bndnp=buildnewdnopull # delete and recreate dbuild
+alias bnxnp=buildnewxnopull # delete and recreate xbuild
+
+# See test results
+alias vpngdbuild='pushd .; gtop; cd dbuild; $pngview */*/*/*.png; $pngview */*/*/*/*.png; popd'
+alias vpdfdbuild='pushd .; gtop; cd dbuild; $pdfview */*/*/*.pdf; $pdfview */*/*/*/*.pdf; popd'
+alias vpngrbuild='pushd .; gtop; cd rbuild; $pngview */*/*/*.png; $pngview */*/*/*/*.png; popd'
+alias vpdfrbuild='pushd .; gtop; cd rbuild; $pdfview */*/*/*.pdf; $pdfview */*/*/*/*.pdf; popd'
+
+# Very short shortnamds for seeing test results
+alias vgd=vpngdbuild
+alias vpd=vpdfdbuild
+alias vgr=vpngrbuild
+alias vpr=vpdfrbuild
+
+# View large sets of failures one at the time with gap in time between launch:
+
+# View all release PNG failures one at the time with given sleep gap [3s]
+function view_png_failures_r {
+	if [ "X$1" == "X" ]; then
+		w=3
+	else
+		w=$1
+	fi
+	pushd .; gtop; cd rbuild;
+	ls */*/*/*.png */*/*/*/*.png > /tmp/vpf
+	while read png; do
+		$pngview $png
+		sleep $w
+	done < /tmp/vpf
+	rm -f /tmp/vpf
+	popd
+}
+
+# View all release PDF failures one at the time with given sleep gap [3s]
+function view_pdf_failures_r {
+	if [ "X$1" == "X" ]; then
+		w=3
+	else
+		w=$1
+	fi
+	pushd .; gtop; cd rbuild;
+	ls */*/*/*.pdf */*/*/*/*.pdf > /tmp/vpf
+	while read pdf; do
+		$pdfview $pdf
+		sleep $w
+	done < /tmp/vpf
+	rm -f /tmp/vpf
+	popd
+}

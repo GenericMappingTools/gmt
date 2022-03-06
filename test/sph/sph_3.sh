@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#
 
 ps=sph_3.ps
 

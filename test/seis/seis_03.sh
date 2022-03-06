@@ -29,7 +29,7 @@ plots () {
 y_offset=-2.5i
 for d in $1 $2 $3 ; do
     gmt pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN \
-        -Q -L -Sc0.4 -Aa128/11/130/11/$d/60/0/100f -Ggrey -Fa0.1i/cc $4 $5 \
+        -Q -L -Sc0.4 -Aa128/11/130/11/$d/60/0/100+f -Ggrey -Fa0.1i/cc $4 $5 \
         -Y$y_offset -X$x_offset -O -K << EOF
 # lon   lat  dep str dip rake str dip rake m ex nx ny
 129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10km

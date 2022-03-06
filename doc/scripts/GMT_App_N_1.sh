@@ -68,6 +68,7 @@ EOF
 		done
 	done
 	gmt begin GMT_App_N_$p
+	gmt set GMT_THEME cookbook
 	gmt plot -R0/$n_cols/0/$H -Jx${width}i tt.lines -Wthick -B0
 	gmt plot -S${width}i -W0.5p tt.symbols  -Ggray
 	gmt plot -Sri -Gblack tt.bars

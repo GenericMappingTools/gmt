@@ -73,6 +73,7 @@
 #---------------------------------------------------
 
 gmt begin GMT_App_J_1
+gmt set GMT_THEME cookbook
 RJ="-R-0.6/0.6/-0.1/1.1 -JX4i/2i"
 echo "-0.5	0" > tt.tmp
 gmt math -T-0.5/0.5/0.01 1 = >> tt.tmp

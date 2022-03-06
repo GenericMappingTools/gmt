@@ -51,6 +51,8 @@ Optional Arguments
     Give one or more comma-separated graphics extensions from the list of allowable
     :ref:`graphics formats <tbl-formats>`
     (default format is configurable via setting :term:`GMT_GRAPHICS_FORMAT` [pdf]).
+    Optionally, append **+m** for monochrome image (BMP, JPEG, PNG, and TIFF only)
+    and **+q**\ *quality* in 0-100 range to change JPEG quality [90].
 
 .. _begin-options:
 
@@ -58,7 +60,7 @@ Optional Arguments
     Sets one or more comma-separated options (and possibly arguments) that
     can be passed to :doc:`psconvert` when preparing a session figure [**A**].
     The valid subset of options are
-    **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **M**\ *args*,\ **Q**\ *args*,\ **S**.
+    **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **I**\ *args*,\ **M**\ *args*,\ **N**\ *args*,\ **Q**\ *args*,\ **S**.
     Note that the leading hyphens should not be given.
     See the :doc:`psconvert` documentation for details on these options.
 
@@ -68,10 +70,10 @@ Optional Arguments
     Start this session with a clean slate: Any gmt.conf files in the usual search path
     directories are ignored [Default starts session with the prevailing user settings].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_help_nopar.rst_
 
@@ -115,7 +117,7 @@ be called gmtsession.pdf (assuming :term:`GMT_GRAPHICS_FORMAT` is pdf).
 To set up proceedings for a jpg figure with 0.5c white margin, and strictly using
 the GMT default settings, we would run::
 
-    gmt begin 'My Figure4' jpg A+m0.5c -C
+    gmt begin 'My Figure4' jpg A,I+m0.5c -C
 
 .. include:: explain_postscript.rst_
 
@@ -139,7 +141,18 @@ or in C shell::
 
     setenv GMT_SESSION_NAME $$
 
-This setting is prescribed if you create a new script with ``gmt --new-script``.
+This setting is prescribed if you create a new script with ``gmt --new-script``, as is the **-e** option
+that will stop the script if any command returns an error.
+
+Because of this mode of communication you can also not run two separate modern mode scripts
+from the same terminal at the same time (e.g., job_1.sh &; job_2.sh &) since they would share the
+same GMT_SESSION_NAME (unless you reassigned it explicitly in the scripts).  Finally, if you
+Ctrl-C a modern mode command it will first try to remove the hidden gmt_session.###### directory.
+Should you try to terminate a script with a mix of GMT and UNIX commands then whatever
+process is running when you hit Ctrl-C will be the one that stops, and if that is not a GMT command
+then the hidden directory will be left behind.  You can clean this up via::
+
+    gmt clear sessions
 
 See Also
 --------

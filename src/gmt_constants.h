@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -88,7 +88,21 @@
 #define GMT_TOP_MODULE	1	/* func_level of top-level module being called */
 
 #define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode, in points (~11.6 meters) */
-#define GMT_PAPER_MARGIN	5	/* Default paper margin under modern mode, in inches (12.7 centimeter) */
+#define GMT_PAPER_MARGIN_AUTO	40	/* Default paper margin under modern mode, in inches (101.6 centimeter) for auto-size mode */
+#define GMT_PAPER_MARGIN_FIXED	1	/* Default paper margin under modern mode, in inches (2.54 centimeter) for fixed-size mode */
+
+#define GMT_JPEG_DEF_QUALITY	90	/* Default JPG quality value for psconvert -Tj */
+
+/*! Constants for use with calls to gmt_solve_svd (used in greenspline and geodesy/gpsgridder) */
+enum GMT_enum_svd {
+	GMT_SVD_EIGEN_RATIO_CUTOFF		= 0,	/* Only use eigenvalues whose ratio to the first exceeds a cutoff [0 = all] */
+	GMT_SVD_EIGEN_NUMBER_CUTOFF		= 1,	/* Only use the first N largest eigenvalues */
+	GMT_SVD_EIGEN_PERCENT_CUTOFF	= 2,	/* Only use a percentage of the (sorted) eigenvalues */
+	GMT_SVD_EIGEN_VARIANCE_CUTOFF	= 3,	/* Find N eigenvalues that equals given percentage of variance explained */
+	GMT_SVD_NO_HISTORY				= 0,	/* Only obtain final solution for selected eigenvalues */
+	GMT_SVD_INCREMENTAL				= 1,	/* Evaluate incremental solution due to next added eigenvalue */
+	GMT_SVD_CUMULATIVE				= 2		/* Evaluate cumulative solution due to next added eigenvalue */
+};
 
 /*! whether to ignore/read/write history file gmt.history */
 enum GMT_enum_history {
@@ -170,6 +184,17 @@ enum GMT_enum_basemap {
 	GMT_BASEMAP_ANNOT_BEFORE	= 0,
 	GMT_BASEMAP_ANNOT_AFTER		= 4};
 
+/*! Handling of periodic data */
+enum GMT_time_period {
+	GMT_CYCLE_SEC = 1,
+	GMT_CYCLE_MIN,
+	GMT_CYCLE_HOUR,
+	GMT_CYCLE_DAY,
+	GMT_CYCLE_WEEK,
+	GMT_CYCLE_YEAR,
+	GMT_CYCLE_ANNUAL,
+	GMT_CYCLE_CUSTOM};
+
 /* Since -I is not a global option but we almost use it as such, we define the long-option for it here.
  * Modules that need it in their module_kw[] array can just add it to their list. */
 #define GMT_INCREMENT_KW { '/', 'I', "increment", "", "", "e,n", "exact,number" }
@@ -178,13 +203,16 @@ enum GMT_enum_basemap {
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
 #define GMT_LEN_UNITS2	"efkMnu"	/* Distances in meter, foot, survey foot, km, Mile, nautical mile */
 #define GMT_LEN_UNITS	"dmsefkMnu"	/* Distances in arc-{degree,minute,second} or meter, foot, km, Mile, nautical mile, survey foot */
+#define GMT_ARC_UNITS	"dms"		/* Distances in arc-{degree,minute,second}t */
 #define GMT_TIME_UNITS	"yowdhms"	/* Time increments in year, month, week, day, hour, min, sec */
+#define GMT_TIME_FIX_UNITS	"wdhms"	/* Fixed time increment units */
 #define GMT_TIME_VAR_UNITS	"yo"	/* Variable time increments in year or month*/
 #define GMT_WESN_UNITS	"WESN"		/* Sign-letters for geographic coordinates */
 #define GMT_DIM_UNITS_DISPLAY	"c|i|p"			/* Same, used to display as options */
 #define GMT_LEN_UNITS_DISPLAY	"d|m|s|e|f|k|M|n|u"	/* Same, used to display as options */
 #define GMT_LEN_UNITS2_DISPLAY	"e|f|k|M|n|u"		/* Same, used to display as options */
 #define GMT_TIME_UNITS_DISPLAY	"y|o|w|d|h|m|s"		/* Same, used to display as options */
+#define GMT_TIME_FIX_UNITS_DISPLAY	"w|d|h|m|s"		/* Same, used to display as options */
 #define GMT_DEG2SEC_F	3600.0
 #define GMT_DEG2SEC_I	3600
 #define GMT_SEC2DEG	(1.0 / GMT_DEG2SEC_F)
@@ -197,6 +225,12 @@ enum GMT_enum_basemap {
 #define GMT_DAY2HR_F	24.0
 #define GMT_DAY2HR_I	24
 #define GMT_HR2DAY	(1.0 / GMT_DAY2HR_F)
+#define GMT_WEEK2DAY_F	7.0
+#define GMT_WEEK2DAY_I	7
+#define GMT_WEEK2SEC_F	604800.0
+#define GMT_WEEK2SEC_I	604800
+#define GMT_SEC2WEEK	(1.0 / GMT_WEEK2SEC_F)
+#define GMT_DAY2WEEK	(1.0 / GMT_WEEK2DAY_F)
 #define GMT_DAY2MIN_F	1440.0
 #define GMT_DAY2MIN_I	1440
 #define GMT_MIN2DAY	(1.0 / GMT_DAY2MIN_F)
@@ -239,16 +273,23 @@ enum GMT_enum_basemap {
 #define GMT_CPT_Z_REVERSE	2	/* Reverse CPT z-values */
 #define GMT_CPT_L_ANNOT		1	/* Annotate lower slice boundary */
 #define GMT_CPT_U_ANNOT		2	/* Annotate upper slice boundary */
+#define GMT_CPT_B_ANNOT		3	/* Annotate lower and upper slice boundary */
 #define GMT_CPT_CATEGORICAL_VAL		1	/* Categorical CPT with numerical value */
 #define GMT_CPT_CATEGORICAL_KEY		2	/* Categorical CPT with text key */
 #define GMT_COLOR_AUTO_TABLE		1	/* Flag in rgb for auto-color changing per table */
 #define GMT_COLOR_AUTO_SEGMENT		2	/* Flag in rgb for auto-color changing per segment */
+#define GMT_CPT_INDEX_LBL		0	/* Index into hidden alloc_mode_text[] for labels */
+#define GMT_CPT_INDEX_KEY		1	/* Index into hidden alloc_mode_text[] for keys */
+
+/* Ticked contour settings */
+#define GMT_TICKED_SPACING	15.0		/* Spacing between ticked contour ticks (in points) */
+#define GMT_TICKED_LENGTH	3.0		/* Length of ticked contour ticks (in points) */
 
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
 /* Default color list (or cpt) for automatic, sequential color choices */
 #define GMT_DEFAULT_COLOR_SET	"#0072BD,#D95319,#EDB120,#7E2F8E,#77AC30,#4DBEEE,#A2142F"
-	
+
 /* CPT extension is pretty fixed */
 #define GMT_CPT_EXTENSION	".cpt"
 #define GMT_CPT_EXTENSION_LEN	4U
@@ -276,16 +317,17 @@ enum GMT_enum_basemap {
 /* Valid modifiers for various input files */
 
 /* Valid modifiers for -Tmin/max/inc array creator */
-#define GMT_ARRAY_MODIFIERS "abeilnt"
+#define GMT_ARRAY_MODIFIERS "abeilntu"
 
 /* Modifiers for grid files:
+ * +d<divisor> divides all grid values by this divisor
  * +o<offset>  adds this offset to all grid values
  * +n<nodata> sets what the no-data value is
  * +s<scl> scales all grid values by this scale
  * +u<unit> converts Cartesian x/y coordinates from given unit to meters
  * +U<unit> converts Cartesian x/y coordinates from meter to given unit
  */
-#define GMT_GRIDFILE_MODIFIERS "onsuU"
+#define GMT_GRIDFILE_MODIFIERS "donsuU"
 
 /* Modifiers for CPT files:
  * +h[<hinge>] to override soft-hinge value in CPT
@@ -295,13 +337,28 @@ enum GMT_enum_basemap {
  */
 #define GMT_CPTFILE_MODIFIERS "hiuU"
 
+/* Valid options to psconvert from figure and begin */
+#define GMT_PSCONVERT_LIST "ACDEHIMNQS"
+
+/* Valid frame setting modifiers */
+#define GMT_FRAME_MODIFIERS "bginotwxyz"
+/* Valid axis setting modifiers */
+#define GMT_AXIS_MODIFIERS "aefLlpsSu"
+
+/* Settings for usage message indents and break/continue characters */
+
+#define GMT_LINE_BREAK	"\xe2\x8f\x8e"	/* Glyph for return symbol in UTF-8 */
+#define GMT_LINE_CONT	"\xe2\x80\xa6"	/* Ellipsis for continue symbol in UTF-8 */
+#define GMT_LINE_BULLET "\xe2\x80\xa2"	/* Bullet glyph */
+
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
 	GMT_LEFT_RIGHT = 1,
 	GMT_EW_SN = 2,
 	GMT_LEFT_ONLY = 4,
 	GMT_RIGHT_ONLY = 8,
-	GMT_ALTERNATE = 16};
+	GMT_ALTERNATE = 16,
+	GMT_FIXED_AZIM = 32};
 
 /*! Codes for first segment header */
 enum GMT_enum_firstseg {
@@ -368,15 +425,18 @@ enum GMT_enum_autolegend {
 	GMT_LEGEND_DRAW_D = 1, GMT_LEGEND_DRAW_V = 2, GMT_LEGEND_LABEL_FIXED = 0,
 	GMT_LEGEND_LABEL_FORMAT = 1, GMT_LEGEND_LABEL_LIST = 2, GMT_LEGEND_LABEL_HEADER = 3};
 
+/*! Various mode for label positioning */
+enum GMT_enum_maplabel {
+	GMT_LABEL_ANNOT = 0, GMT_LABEL_AXIS = 1};
+
 /*! Various mode for custom symbols */
 enum GMT_enum_customsymb {
 	GMT_CUSTOM_DEF  = 1,
 	GMT_CUSTOM_EPS  = 2};
 
-//#define GMT_LEGEND_DX1_MUL 1.0	/* Default offset from margin to center of symbol if given as '-' times max symbol size */
-//#define GMT_LEGEND_DX2_MUL 2.0	/* Default offset from margin to start of label if given as '-' times max symbol size */
 #define GMT_LEGEND_DX1_MUL 0.5	/* Default offset from margin to center of symbol if given as '-' times max symbol size */
 #define GMT_LEGEND_DX2_MUL 1.5	/* Default offset from margin to start of label if given as '-' times max symbol size */
+#define GMT_LEGEND_DXL_MUL 1.25	/* Same as GMT_LEGEND_DX2_MUL but for line or vector symbols that typically are longer tgat circles etc */
 
 /*! Various mode for axes */
 enum GMT_enum_oblique {
@@ -609,5 +669,13 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 	GMT_DATA_DIR   = 2,	/* Use the data directory */
 	GMT_LOCAL_DIR  = 3,	/* Use the local (current) directory */
 	GMT_REMOTE_DIR = 4}; /* File is on the remote server */
+
+/* Constants for controlling the written grid history via grdedit and grdconvert */
+enum GMT_grid_history {
+	GMT_GRDHISTORY_NONE	= 0,	/* No output history at all */
+	GMT_GRDHISTORY_OLD	= 1,	/* Only save the previous command history in the output [Default] */
+	GMT_GRDHISTORY_NEW	= 2,	/* Only save the current module command history in the output  */
+	GMT_GRDHISTORY_BOTH	= 3		/* Append current module history to previous history  */
+};
 
 #endif  /* GMT_CONSTANTS_H */

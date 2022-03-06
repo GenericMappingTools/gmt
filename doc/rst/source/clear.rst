@@ -59,10 +59,10 @@ Optional Arguments
 **settings**
     Delete the current default settings file (gmt.conf) used for the current modern session.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_help_nopar.rst_
 

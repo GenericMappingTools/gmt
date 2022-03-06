@@ -13,22 +13,16 @@ dz=0.25
 view=200/25
 method=r
 tens=0.85
-gmt greenspline -R$R3D -I$dz -G3D_%05.2lf.grd @Table_5_23.txt -S${method}${tens} -D5
-# Make a list of the grids
-ls 3D_?????.grd > t.lis
+# Write a single 3-D data cube
+gmt greenspline -R$R3D -I$dz -G3D_cube.grd @Table_5_23.txt -S${method}${tens} -Z5 -D+x"x-distance [km]"+y"y-distance [km]"+z"z-distance [km]"+d"Uranium Oxide [%]"+v"uoxide"
+# Make a list of the cube z-levels
+gmt math -T${Z}/${dz} -o0 T = t.lis
 gmt psbasemap -R$R2D/$Z -JX6i/3i -JZ2.5i -p$view -Bx5f1g1 -By1g1 -Bz2f1 -BWSneZ+b -P -K > $ps
-# Plot a small cube at the data points
+# Plot small cube symbols at the data points
 gmt psxyz -R -JX -JZ -p$view -O -K @Table_5_23.txt -Su0.05i -Gblack -Wfaint >> $ps
-# Loop over the sliced grids and draw the 10 % contour only
-z=5
-while read grid; do
-#	echo "Doing z = $z"
-	gmt grdcontour -JX $grid -C10 -L9/11 -S8 -Ddump
-	if [ -s dump ]; then
-		$AWK '{if ($1 == ">") {print $0} else {print $1, $2, '$z'}}' dump > tmp
-		gmt psxyz -R$R2D/$Z -JX -JZ -p$view -O -K tmp -Gp39+r300+fgray+b- -Wthin >> $ps
-	fi
-	z=$(gmt math -Q $z $dz ADD =)
+# Loop over the z-levels and draw the 10 % contour only
+while read z; do
+	gmt grdcontour -JX "3D_cube.grd?($z)" -C10 -L9/11 -S8 -D | gmt psxyz -R$R2D/$Z -JX -JZ -p$view -O -K -Gp39+r300+fgray+b- -Wthin -i0,1,2+s0+o${z} >> $ps
 done < t.lis
 echo "12 6 Volume exceeding 10% UO@-2@- concentration" | gmt pstext -R$R2D/$Z -JX -JZ -p$view -F+jLT+f16p -O -K -Z10 -Dj0.1i >> $ps
 gmt psxyz -R -JX -JZ -p$view -O -Wthin << EOF >> $ps

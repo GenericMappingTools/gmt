@@ -61,7 +61,7 @@ you need to be aware of at run-time.
    :width: 600 px
    :align: center
 
-   The GMT run-time environment.  The will initiate with a set of system defaults that
+   The GMT run-time environment.  The session will initiate with a set of system defaults that
    you can override with having your own gmt.conf file in the current directory, specifying
    GMT parameters via the *--PAR=value* technique, and supply module options.  Some GMT modules
    will read hidden data (like coastlines) but most will explicitly need to be given user data.
@@ -300,7 +300,7 @@ to the common switches we may need to use some of several coast-specific options
 ====== ================================================================================================
 Option Purpose
 ====== ================================================================================================
-**-A** Exclude small features or those of high hierarchical levels (see :doc:`GSHHG </datasets/gshhg>`)
+**-A** Exclude small features or those of high hierarchical levels (see `GSHHG <https://github.com/GenericMappingTools/gshhg-gmt#readme>`_.)
 **-D** Select data resolution (**f**\ ull, **h**\ igh, **i**\ ntermediate, **l**\ ow, or **c**\ rude)
 **-G** Set color of dry areas (default does not paint)
 **-I** Draw rivers (chose features from one or more hierarchical categories)

@@ -16,7 +16,7 @@ Synopsis
 [ |-C|\ *condition\_number* ]
 [ |-I|\ [*confidence\_level*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**+s**] ]
+[ |-W|\ [**+s**\|\ **w**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -24,6 +24,8 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -40,8 +42,10 @@ number of terms in f(x,y) which significantly reduce the variance in z.
 n\_model may be in [1,10] to fit a model of the following form (similar
 to grdtrend):
 
-  m1 + m2\*x + m3\*y + m4\*x\*y + m5\*x\*x + m6\*y\*y + m7\*x\*x\*x +
-  m8\*x\*x\*y + m9\*x\*y\*y + m10\*y\*y\*y.
+.. math::
+
+  z(x,y) = m_1 + m_{2}x + m_{3}y + m_{4}xy + m_{5}x^2 + m_{6}y^2 + m_{7}x^3 +
+  m_{8}x^{2}y + m_{9}xy^2 + m_{10}y^3.
 
 The user must specify **-N**\ *n\_model*, the number of model parameters
 to use; thus, **-N**\ *4* fits a bilinear trend, **-N**\ *6* a quadratic
@@ -98,18 +102,19 @@ Optional Arguments
     will be iterative with a default confidence level of 0.51. Or choose
     your own level between 0 and 1. See remarks section.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
-**-W**\ [**+s**]
+**-W**\ [**+s**\|\ **w**]
     Weights are supplied in input column 4. Do a weighted least squares
     fit [or start with these weights when doing the iterative robust
     fit]. Append **+s** to instead read data uncertainties (one sigma)
-    and create weights as 1/sigma^2 [Default reads only the first 3 columns.]
+    and create weights as 1/sigma^2, or use the weights as read (**+w**)
+    [Default reads only the first 2 columns].
 
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) input columns].
 .. include:: explain_-bi.rst_
@@ -132,6 +137,10 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-q.rst_
+
+.. include:: explain_-s.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 

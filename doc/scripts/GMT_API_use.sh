@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_API_use
+	gmt set GMT_THEME cookbook
 	gmt plot -R-4.5/4.5/-2/2 -Jx0.8i -W2p+ve0.2i+gblack+h0.5 -Xc << EOF
 >
 -2	0.75
@@ -34,7 +35,7 @@ EOF
 EOF
 	gmt text -F+f12p+jCM -Gwhite -W0.25p -C50% << EOF
 -2.8 0.75 FILES OR STDIN
-+2.8 0.75 FILES OR STDIN
++2.8 0.75 FILES OR STDOUT
 EOF
 	gmt text -F+f12p+jCM -Glightblue -W0.25p -C50% << EOF
 -2.8 0.0 STREAMS, FILE DESCRIPTORS

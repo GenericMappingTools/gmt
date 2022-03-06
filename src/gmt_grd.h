@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,23 @@
 
 #ifndef GMT_GRID_H
 #define GMT_GRID_H
+
+/* Because Windows, as of 2022, still do not support OpenMP beyond 2.0 (other than experimental) we have
+ * the problem that counters that are logically positive definite must nevertheless be signed integers
+ * in OpenMP 2.  Because we do not want a 2008 implementation to force changes to GMT structure I have
+ * now introduced a typedef for use with such loop variables.  This was particularly needed for our
+ * 4 macros, like gmt_M_grd_loop, which prior to this change reuslted in hundreds of warnings about
+ * sign/unsigned mismatches due to the forced signed int loop variables.  I have updated all places
+ * where these macros are used and where OpenMP is used and where it may be used in the near future,
+ * so that things are properly cast to openmp_int, whatever that may be set to be.  With this, the
+ * false warnings go away and we can better notice actual warnings due to new implementation changes.
+ * P. Wessel, Jan-17-2022. */
+
+#if _MSC_VER
+typedef int openmp_int;             /* Must force signed integers due to OpenMP 2.0 in MicroSoft VisualStudio */
+#else
+typedef unsigned int openmp_int;    /* This matches our actual variables in GMT, mostly */
+#endif
 
 /* netcdf convention */
 #define GMT_NC_CONVENTION "CF-1.7"
@@ -115,7 +132,7 @@ enum gmt_enum_wesnids {
 /*! These macros calculate the number of nodes in x or y for the increment dx, dy */
 
 #define gmt_M_get_n(C,min,max,inc,off) (urint ((((max) - (min)) / (inc)) + 1 - (off)) )
-#define gmt_M_get_inc(C,min,max,n,off) (((max) - (min)) / ((n) + (off) - 1))
+#define gmt_M_get_inc(C,min,max,n,off) (((n) + (off) - 1 == 0) ? ((max) - (min)) : ((max) - (min)) / ((n) + (off) - 1))
 
 /*! The follow macros simplify using the 2 above macros when all info is in the struct header */
 
@@ -160,11 +177,11 @@ enum gmt_enum_wesnids {
 /* Note: All arguments must be actual variables and not expressions.
  * Note: that input col, row _may_ be signed, hence we do the cast to (int) here. */
 
-#define gmt_M_row_loop(C,G,row) for (row = 0; row < (int)G->header->n_rows; row++)
-#define gmt_M_col_loop(C,G,row,col,ij) for (col = 0, ij = gmt_M_ijp (G->header, row, 0); col < (int)G->header->n_columns; col++, ij++)
-#define gmt_M_grd_loop(C,G,row,col,ij) gmt_M_row_loop(C,G,row) gmt_M_col_loop(C,G,row,col,ij)
+#define gmt_M_row_loop(C,G,row) for (row = 0; row < (openmp_int)G->header->n_rows; row++)
+#define gmt_M_col_loop(C,G,row,col,ij) for (col = 0, ij = gmt_M_ijp (G->header, row, 0); col < (openmp_int)G->header->n_columns; col++, ij++)
 /*! Just a loop over columns */
-#define gmt_M_col_loop2(C,G,col) for (col = 0; col < (int)G->header->n_columns; col++)
+#define gmt_M_col_loop2(C,G,col) for (col = 0; col < (openmp_int)G->header->n_columns; col++)
+#define gmt_M_grd_loop(C,G,row,col,ij) gmt_M_row_loop(C,G,row) gmt_M_col_loop(C,G,row,col,ij)
 
 /* The usage could be:
 	gmt_M_grd_loop (GMT, Grid, row, col, node) fprintf (stderr, "Value at row = %d and col = %d is %g\n", row, col, Grid->data[node]);

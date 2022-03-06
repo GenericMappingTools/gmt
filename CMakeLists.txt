@@ -1,5 +1,5 @@
 #
-#	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+#	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 #	See LICENSE.TXT file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -55,6 +55,7 @@ foreach (p
 		CMP0026 # CMake 3.0: Disallow use of the LOCATION target property
 		CMP0058 # CMake 3.3: Ninja requires custom command byproducts to be explicit
 		CMP0074	# CMake 3.12: find_package uses PackageName_ROOT variables
+		CMP0115 # CMake 3.20: Source file extensions must be explicit.
 		)
 	if (POLICY ${p})
 		cmake_policy (SET ${p} NEW)
@@ -107,13 +108,19 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 	add_custom_target (git_export_release
 		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/
 		# cmake<3.15 can't remove multiple directories using cmake -E remove_directory
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.dvc
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.git
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.github
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/admin
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/ci
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/test
-		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/.azure-pipelines.yml
 		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/.gitignore
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/package.json
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/vercel.json
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/examples/.gitignore
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/examples/images.dvc
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/scripts/.gitignore
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/scripts/images.dvc
 	)
 	add_depend_to_target (gmt_release git_export_release)
 	find_program (GNUTAR NAMES gnutar gtar tar)

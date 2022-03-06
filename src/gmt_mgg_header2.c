@@ -48,7 +48,7 @@ GMT_LOCAL int gmtmggheader2_swap_mgg_header (MGG_GRID_HEADER_2 *header) {
 	if (header->version == (GRD98_MAGIC_NUM + GRD98_VERSION)) return (0);	/* Version matches, No need to swap */
 	version = header->version;
 	gmtmggheader2_swap_long (&version);
-	if (version != (GRD98_MAGIC_NUM + GRD98_VERSION)) return (-1);		/* Cannot make sense of header */
+	if (version != (GRD98_MAGIC_NUM + GRD98_VERSION)) return (GMT_NOTSET);		/* Cannot make sense of header */
 	/* Here we come when we do need to swap */
 	gmtmggheader2_swap_long (&header->version);
 	gmtmggheader2_swap_long (&header->length);
@@ -201,13 +201,13 @@ int gmtlib_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
-	/* Swap header bytes if necessary; ok is 0|1 if successful and -1 if bad file */
+	/* Swap header bytes if necessary; ok is 0|1 if successful and GMT_NOTSET if bad file */
 	ok = gmtmggheader2_swap_mgg_header (&mggHeader);
 
 	/* Check the magic number and size of header */
-	if (ok == -1) {
+	if (ok == GMT_NOTSET) {
 		gmt_fclose (GMT, fp);
-		return (-1);	/* Not this kind of file */
+		return (GMT_NOTSET);	/* Not this kind of file */
 	}
 	header->type = GMT_GRID_IS_RF;
 	gmt_fclose (GMT, fp);
@@ -231,11 +231,11 @@ int gmt_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
-	/* Swap header bytes if necessary; ok is 0|1 if successful and -1 if bad file */
+	/* Swap header bytes if necessary; ok is 0|1 if successful and GMT_NOTSET if bad file */
 	ok = gmtmggheader2_swap_mgg_header (&mggHeader);
 
 	/* Check the magic number and size of header */
-	if (ok == -1) {
+	if (ok == GMT_NOTSET) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized header, expected 0x%04X saw 0x%04X\n",
 		            GRD98_MAGIC_NUM + GRD98_VERSION, mggHeader.version);
 		gmt_fclose (GMT, fp);
@@ -310,7 +310,7 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 			return (GMT_GRDIO_READ_FAILED);
 		}
 		swap_all = gmtmggheader2_swap_mgg_header (&mggHeader);
-		if (swap_all == -1) {
+		if (swap_all == GMT_NOTSET) {
 			gmt_fclose (GMT, fp);
 			return (GMT_GRDIO_GRD98_BADMAGIC);
 		}

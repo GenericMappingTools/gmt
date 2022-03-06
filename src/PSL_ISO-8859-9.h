@@ -19,8 +19,8 @@
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
-/space		/exclamdown	/cent		/sterling	/currency	/yen		/brokenbar	/section\n\
-/dieresis	/copyright	/ordfeminine	/guillemotleft	/logicalnot	/hyphen		/registered	/macron\n\
+/uni00A0	/exclamdown	/cent		/sterling	/currency	/yen		/brokenbar	/section\n\
+/dieresis	/copyright	/ordfeminine	/guillemotleft	/logicalnot	/uni00AD	/registered	/macron\n\
 /degree		/plusminus	/twosuperior	/threesuperior	/acute		/mu		/paragraph	/periodcentered\n\
 /cedilla	/onesuperior	/ordmasculine	/guillemotright	/onequarter	/onehalf	/threequarters	/questiondown\n\
 /Agrave		/Aacute		/Acircumflex	/Atilde		/Adieresis	/Aring		/AE		/Ccedilla\n\
@@ -28,7 +28,7 @@
 /Gbreve		/Ntilde		/Ograve		/Oacute		/Ocircumflex	/Otilde		/Odieresis	/multiply\n\
 /Oslash		/Ugrave		/Uacute		/Ucircumflex	/Udieresis	/Idotaccent	/Scedilla	/germandbls\n\
 /agrave		/aacute		/acircumflex	/atilde		/adieresis	/aring		/ae		/ccedilla\n\
-/egrave		/eacute		/eogonek	/edieresis	/edotaccent	/iacute		/icircumflex	/imacron\n\
+/egrave		/eacute		/ecircumflex	/edieresis	/igrave		/iacute		/icircumflex	/idieresis\n\
 /gbreve		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide\n\
 /oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/dotlessi	/scedilla	/ydieresis\n\
 ] def\n",

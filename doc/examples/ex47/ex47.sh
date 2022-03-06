@@ -22,7 +22,7 @@ gmt begin ex47
 	sed -e s/#//g $file > data.txt
 	# Identify the red giants (outliers)
 	grep '#' $file | sed -e s/#//g > giants.txt
-	gmt subplot begin 4x3 -M0p -Fs5c -R2.85/5.25/3.9/6.3 -JX-5c/5c -SRl+l"Log light intensity" -SCb+l"Log temperature"+tc -Bwesn -Bafg
+	gmt subplot begin 4x3 -M0p -Fs5c -R2.85/5.25/3.9/6.3 -JX-5c/5c -Srl+l"Log light intensity" -Scb+l"Log temperature"+tc -Bwesn -Bafg
 	# L1 regressions
 	plot_one -Ey -N1 -c0,0 +tL@-1@-
 	plot_one -Ex -N1 -c1,0

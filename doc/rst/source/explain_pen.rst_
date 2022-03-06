@@ -10,7 +10,7 @@ Specifying Pens
     (this is the default), **c**\ entimeters, or **i**\ nches) or as
     **faint**, **default**, **thin**\ [**ner**\|\ **nest**],
     **thick**\ [**er**\|\ **est**], **fat**\ [**ter**\|\ **test**],
-    or **obese**. *color* specifies a gray shade or color (see
+    or **wide**. *color* specifies a gray shade or color (see
     `Specifying Color`_ above). *style* can be any of 'solid', 'dashed'
     'dotted', 'dashdot', or 'dotdash', or a custom combination of dashes '-' and
     dots '.'. If any of the attributes is omitted their default or

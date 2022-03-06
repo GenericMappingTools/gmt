@@ -17,14 +17,14 @@ Synopsis
 |-E|\ [*Te*\ [**k**][/*Te2*\ [**k**]]]
 |-G|\ *outgrid*
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
-[ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
+[ |-C|\ **p**\|\ **y**\ *value* ]
 [ |-F|\ *nu_a*\ [/*h_a*\ [**k**]/*nu_m*] ]
 [ |-L|\ *list* ]
 [ |-M|\ *tm* ]
 [ |-N|\ *params* ]
 [ |-Q| ]
 [ |-S|\ *beta* ]
-[ |-T|\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**] ]
+[ |-T|\ *t0*\ [/*t1*/*dt*\ [**+l**]]\ \|\ *file* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *wd*]\ [**k**]
 [ |-Z|\ *zm*]\ [**k**]
@@ -61,16 +61,20 @@ Required Arguments
 
 *topogrd*
     2-D binary grid file with the topography of the load (in meters);
-    See GRID FILE FORMATS below.
+    (See :ref:`Grid File Formats <grd_inout_full>`).
     If **-T** is used, *topogrd* may be a filename template with a
     floating point format (C syntax) and a different load file name
     will be set and loaded for each time step.  The load times thus
     coincide with the times given via **-T** (but not all times need
     to have a corresponding file).  Alternatively, give *topogrd* as
     =\ *flist*, where *flist* is an ASCII table with one *topogrd* filename
-    and load time per record.  These load times can be different from
+    and load time per record (e.g., as produced by
+    :doc:`grdseamount </supplements/potential/grdseamount>` **-M**).
+    These load times can be different from
     the evaluation times given via **-T**.  For load time format, see
-    **-T**.
+    **-T**. **Note**: If *flist* has an optional third column it will be
+    interpreted as a load density and used for that layer instead of
+    the fixed *rl* setting in **-D**.
 
 .. _-D:
 
@@ -89,16 +93,18 @@ Required Arguments
     If just **-E** is given and **-F** is used it means no plate is given
     and we will return a purely viscous response with or without an asthenospheric layer.
     Select a general linear viscoelastic response by supplying both an initial and
-    final elastic thickness; this response also requires **-M**.
+    final elastic thickness *Te2*; this response also requires **-M**.
 
 .. _-G:
 
-**-G**\ *outfile*
-    If **-T** is set then *grdfile* must be a filename template that contains
+.. |Add_outgrid| replace:: If |-T| is set then *outgrid* must be a filename template that contains
     a floating point format (C syntax).  If the filename template also contains
     either %s (for unit name) or %c (for unit letter) then we use the corresponding time
-    (in units specified in **-T**) to generate the individual file names, otherwise
+    (in units specified in |-T|) to generate the individual file names, otherwise
     we use time in years with no unit.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -114,11 +120,9 @@ Optional Arguments
 
 .. _-C:
 
-**-Cp**\ *poisson*
-    Change the default value of Poisson's ratio [0.25].
-
-**-Cy**\ *Young*
-    Change the default value of Young's modulus [7.0e10 N/m^2].
+**-C**\ **p**\|\ **y**\ *value*
+    Append **p** or **y** to change the current value of Poisson's ratio [0.25]
+    or Young's modulus [7.0e10 N/m^2], respectively.
 
 .. _-F:
 
@@ -166,7 +170,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**]
+**-T**\ *t0*\ [/*t1*/*dt*\ [**+l**]]\ \|\ *file*
     Specify *t0*, *t1*, and time increment (*dt*) for a sequence of calculations
     [Default is one calculation, with no time dependency].  For a single specific time, just
     give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.
@@ -175,6 +179,11 @@ Optional Arguments
     may have individual units appended, otherwise we assume year).
     We then write a separate model grid file for each given time step; see *-G** for output
     file template format.
+
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -190,18 +199,11 @@ Optional Arguments
     Must be positive. [0].  We subtract this value from the flexed surface before
     writing the results.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
-
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
 .. include:: ../../explain_help.rst_
-
-.. include:: ../../explain_grd_inout_short.rst_
 
 Grid Distance Units
 -------------------
@@ -340,7 +342,6 @@ In the most common scenario, :math:`N_s` are all zero and the elastic response f
 
     \Phi_e(k_r) = \left [ 1 + \alpha_r^4 \right ]^{-1}.
 
-
 Firmoviscous response function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -421,16 +422,16 @@ Karner, G. D., 1982, Spectral representation of isostatic models, *BMR J. Austra
 
 Nakada, M., 1986, Holocene sea levels in oceanic islands: Implications for the rheological
 structure of the Earth's mantle, *Tectonophysics, 121*, 263–276,
-`http://dx.doi.org/10.1016/0040-1951(86)90047-8 <http://dx.doi.org/10.1016/0040-1951(86)90047-8>`_.
+`https://dx.doi.org/10.1016/0040-1951(86)90047-8 <https://dx.doi.org/10.1016/0040-1951(86)90047-8>`_.
 
 Watts, A. B., 2001, *Isostasy and Flexure of the Lithosphere*, 458 pp., Cambridge University Press.
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
-`http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/10.1029/2000JB000083>`_.
+`https://dx.doi.org/10.1029/2000JB000083 <https://dx.doi.org/10.1029/2000JB000083>`_.
 
 Wessel, P., 2016, Regional–residual separation of bathymetry and revised estimates of Hawaii plume flux,
-*Geophys. J. Int., 204(2)*, 932-947, `http://dx.doi.org/10.1093/gji/ggv472 <http://dx.doi.org/10.1093/gji/ggv472>`_.
+*Geophys. J. Int., 204(2)*, 932-947, `https://dx.doi.org/10.1093/gji/ggv472 <https://dx.doi.org/10.1093/gji/ggv472>`_.
 
 See Also
 --------

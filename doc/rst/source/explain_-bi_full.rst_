@@ -1,40 +1,52 @@
-.. _-bi_full:
+The **-bi** option
+^^^^^^^^^^^^^^^^^^
 
-**-bi**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
-    Select native binary format for primary input (secondary inputs are always ASCII).
-    Here, *ncols* is the number of data columns of
-    given *type*, which must be one of **c** (int8_t, aka char), **u**
-    (uint8_t, aka unsigned char), **h** (int16_t, 2-byte signed int),
-    **H** (uint16_t, 2-byte unsigned int), **i** (int32_t, 4-byte
-    signed int), **I** ((capital i) uint32_t, 4-byte unsigned int), **l**
-    ((lower case el) int64_t, 8-byte signed int), **L** (uint64_t, 8-byte unsigned
-    int), **f** (4-byte single-precision float), and **d** (8-byte
-    double-precision float). In addition, use **x** to skip *ncols*
-    bytes anywhere in the record.
-    For records with mixed types, simply append additional comma-separated
-    combinations of *ncols* *type* (no space). Append **w** to any item to force
-    byte-swapping. Alternatively, append **+l**\|\ **b** to indicate
-    that the entire data file should be read as little- or big-endian,
-    respectively. The cumulative number of *ncols* may exceed the columns
-    actually needed by the program. If *ncols* is not specified we assume
-    that *type* applies to all columns and that *ncols* is implied by
-    the expectation of the program. If the input file is netCDF, no
-    **-b** is needed; simply append **?**\ *var1*\ **/**\ *var2*\ **/**\ *...*
-    to the filename to specify the variables to be read. |example_-bio|
+**Syntax**
 
+**-bi**\ *record*\ [**+b**\|\ **l**]
+    Select native binary format for primary table input (secondary inputs are always ASCII).
 
-.. |example_-bio| raw:: html
+**Description**
 
-   <a href="#openModal">(Example)</a>
-   <div id="openModal" class="modalDialog">
-    <div>
-        <a href="#close" title="Close" class="close">X</a>
-        <h2>-bio example</h2>
-        <p>
-        # Write a binary file, and read it back, with 3 columns in which the first</br>
-        # is a 4 bytes float, second a 8 bytes long int and third a 8 bytes double.</br>
-        echo 1.5 2 2.5 | gmt convert -bo1f,1l,1d > lixo.bin</br>
-        gmt convert lixo.bin -bi1f,1l,1d</br>
-        </p>
-    </div>
-   </div>
+Select native binary record format for primary table input. The *record* is one or more groups with
+format [*ncols*][*type*][**w**], where *ncols* is the number of consecutive data columns of given
+*type* and *type* must be one of:
+
+.. _bi_types:
+
+    - **c** - int8_t (1-byte signed char)
+    - **u** - uint8_t (1-byte unsigned char)
+    - **h** - int16_t (2-byte signed int)
+    - **H** - uint16_t (2-byte unsigned int)
+    - **i** - int32_t (4-byte signed int)
+    - **I** - uint32_t (4-byte unsigned int)
+    - **l** - int64_t (8-byte signed int)
+    - **L** - uint64_t (8-byte unsigned int)
+    - **f** - 4-byte single-precision float
+    - **d** - 8-byte double-precision float [Default]
+    - **x** - use to skip *ncols* anywhere in the record
+
+Force byte-swapping of a group by appending **w** at the end of the group.
+For records with mixed types, append additional comma-separated groups (no space between groups).
+The following modifiers are supported:
+
+    - **+b**\|\ **l** to indicate that the entire data file should be read as big- or little-endian, respectively.
+
+The cumulative number of *ncols* may exceed the columns actually needed by the program. If *ncols* is not specified we
+assume that *type* applies to all columns and that *ncols* is implied by the expectation of the program. When using
+native binary data the user must be aware of the fact that GMT has no way of determining the actual number of columns
+in the file. Native binary files may have a header section, where the :ref:`-h option
+<cookbook/options:Header data records: The **-h** option>` can be used to skip the first *n* bytes. If the input file
+is netCDF, no **-b** is needed; simply append **?**\ *var1*\ **/**\ *var2*\ **/**\ *...* to the filename to specify the
+variables to be read (see :doc:`/cookbook/file-formats` and :ref:`Modifiers for COARDS-compliant netCDF files
+<modifiers-for-CF>` for more information).
+
+.. toggle::
+
+    Here is an example that writes a binary file and reads it back with the first column 4 byte float, the second
+    column 8 byte int, and the third column 8 byte double.
+
+    ::
+
+        echo 1.5 2 2.5 | gmt convert -bo1f,1l,1d > test.bin
+        gmt convert test.bin -bi1f,1l,1d

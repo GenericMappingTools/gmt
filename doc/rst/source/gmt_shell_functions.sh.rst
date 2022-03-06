@@ -181,5 +181,5 @@ so by adding a New Issue request on https://github.com/GenericMappingTools/gmt.
 See Also
 --------
 
-:doc:`gmt` , :doc:`gmt.conf` ,
-:doc:`gmtinfo` , :doc:`grdinfo`
+:doc:`gmt`, :doc:`gmt.conf`,
+:doc:`gmtinfo`, :doc:`grdinfo`

@@ -14,7 +14,7 @@ Synopsis
 
 **gmt psclip** [ *table* ] |-J|\ *parameters* |-C|\ [*n*]
 |SYN_OPT-Rz|
-[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**] ]
+[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
 [ |SYN_OPT-B| ]
 [ |-K| ] [ |-N| ] [ |-O| ]
 [ |-P| ] [ |-T| ]
@@ -36,7 +36,9 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: clip_common.rst_
+.. include:: clip.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 

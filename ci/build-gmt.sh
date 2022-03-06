@@ -31,7 +31,7 @@ fi
 
 # General settings
 GSHHG_VERSION="2.3.7"
-DCW_VERSION="1.1.4"
+DCW_VERSION="2.0.0"
 GSHHG="gshhg-gmt-${GSHHG_VERSION}"
 DCW="dcw-gmt-${DCW_VERSION}"
 EXT="tar.gz"
@@ -63,7 +63,11 @@ EOF
 # 5. Build and install GMT
 mkdir build
 cd build
-cmake ..
+if command -v ninja >/dev/null 2>&1 ; then
+	cmake .. -G Ninja
+else
+	cmake ..
+fi
 cmake --build .
 cmake --build . --target install
 

@@ -16,7 +16,7 @@ Synopsis
 [ |-C|\ *density* ]
 [ |-E|\ *thickness* ]
 [ |-F|\ *xy_file* ]
-[ |-G|\ *outputgrid* ]
+[ |-G|\ *outgrid* ]
 [ |-H|\ *f_dec*/*f_dip*/*m_int*/*m_dec*/*m_dip* ]
 [ |-L|\ *z_observation* ]
 [ |-S|\ *radius* ]
@@ -57,12 +57,14 @@ Required Arguments (not all)
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Output the gravity or magnetic anomaly at nodes of this grid file.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-M:
 
-**-M+s**\ *body,params* (An alaternative to **-Tr**\ /**-Ts**). Create geometric bodies and compute their grav/mag effect.
+**-M+s**\ *body,params* (An alternative to **-Tr**\ /**-Ts**). Create geometric bodies and compute their grav/mag effect.
     Select among one or more of the following bodies, where *x0* & *y0* represent the horizontal coordinates
     of the body center [default to 0,0 positive up], *npts* is the number of points that a circle is discretized
     and *n_slices* apply when bodies are made by a pile of slices. For example Spheres and Ellipsoids are made of
@@ -84,10 +86,10 @@ Required Arguments (not all)
 
       - *sphere,rad/z_center[/x0/y0/npts/n_slices]* Sphere of radius *rad* and center at depth *z_center*
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: ../../explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-T:
 
@@ -105,10 +107,10 @@ Required Arguments (not all)
 Optional Arguments
 ------------------
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-E:
 

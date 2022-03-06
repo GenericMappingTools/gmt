@@ -3,20 +3,22 @@
 Grid File Formats
 -----------------
 
-By default GMT writes out grids as single precision floats in a COARDS-complaint netCDF file format.
-However, GMT is able to produce and read grid files in many other commonly used grid file formats
-and also facilitates so called "packing" of grids, writing out floating point data as 1- or 2-byte
-integers. To specify the precision, scale and offset, the user should add the suffix
-[**=**\ *id*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*], where
-*id* is a two-letter identifier of the grid type and precision, and the
-*scale*, *offset* and *invalid* are the arguments of optional modifiers to be applied
+By default GMT writes out grids as single precision floats in a COARDS-complaint
+netCDF file format. However, GMT is able to produce and read grid files in many
+other commonly used grid file formats and also facilitates so called "packing"
+of grids, writing out floating point data as 1- or 2-byte integers. To specify
+the precision, scale and offset, the user should add the suffix
+[**=**\ *ID*][**+d**\ *divisor*][**+n**\ *invalid*][**+o**\ *offset*][**+s**\ *scale*], where
+*ID* is a two-letter identifier of the grid type and precision, and the
+*scale* (or *divisor*), *offset* and *invalid* are the arguments of optional modifiers to be applied
 to all grid values,  Here, *invalid* is the value used to indicate missing
-data. In case the *id* is not provided, as in **+s**\ *scale*
-than a *id*\ **=**\ *nf* is assumed.
-When reading grids, the format is generally automatically recognized from almost all of those formats
-that GMT and GDAL combined offer. If not, the same suffix can be added to input grid file names.
+data. In case the *ID* is not provided, as in **+s**\ *scale*, then a
+*ID*\ **=**\ *nf* is assumed. When reading grids, the format is generally
+automatically recognized from almost all of those formats that GMT and GDAL
+combined offer. If not, the same suffix can be added to input grid file names.
+If reading an image as a grid you can select the band via **+b**.
 See :doc:`grdconvert </grdconvert>` and Section :ref:`grid-file-format`
-of the GMT Technical Reference and Cookbook for more information.
+of the GMT Technical Reference and Cookbook for more information regarding GDAL settings.
 
 When reading a netCDF file that contains multiple grids, GMT will
 read, by default, the first 2-dimensional grid that it can find in that
@@ -27,6 +29,62 @@ special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
 double quotes. The **?**\ *varname* suffix can also be used for output
 grids to specify a variable name different from the default: "z". See
-:doc:`grdconvert </grdconvert>` and Sections :ref:`modifiers-for-CF` and :ref:`grid-file-format`
-of the GMT Technical Reference and Cookbook for more information, particularly on
-how to read slices of 3-, 4-, or 5-dimensional grids.
+:doc:`grdconvert </grdconvert>` and Sections :ref:`modifiers-for-CF` and
+:ref:`grid-file-format` of the GMT Technical Reference and Cookbook for more
+information, particularly on how to read slices of 3-, 4-, or 5-dimensional grids.
+
+When writing a netCDF file, the grid is stored by default with the
+variable name "z". To specify another variable name *varname*, append
+**?**\ *varname* to the file name. Note that you may need to escape the
+special meaning of **?** in your shell program by putting a backslash in
+front of it, or by placing the filename and suffix between quotes or
+double quotes.
+
+.. description-ends
+.. ingrid-syntax-begins
+
+*ingrid*\ [=\ *ID*\|\ ?\ *varname*][**+b**\ *band*][**+d**\ *divisor*][**+n**\ *invalid*]
+[**+o**\ *offset*][**+s**\ *scale*]
+
+    |Add_ingrid| Optionally, append =\ *ID* for reading a specific file
+    format [Default is =\ *nf*] or ?\ *varname* for a specific netCDF variable
+    [Default is the first 2-D grid found by GMT]
+    (:ref:`See full description <grd_inout_full>`). The following modifiers are
+    supported:
+
+       - **+b** - Select a *band* (for images only) [Default is 0].
+       - **+d** - Divide data values by the given *divisor* [Default is 1].
+       - **+n** - Replace data values matching *invalid* with NaN.
+       - **+o** - Offset data values by the given *offset* [Default is 0].
+       - **+s** - Scale data values by the given *scale* [Default is 1].
+
+    Note: Any offset is added after any scaling.
+
+.. ingrid-syntax-ends
+.. outgrid-syntax-begins
+
+**-G**\ *outgrid*\ [=\ *ID*][**+d**\ *divisor*][**+n**\ *invalid*]
+[**+o**\ *offset*\|\ **a**][**+s**\ *scale*\|\ **a**]
+[:*driver*\ [*dataType*][**+c**\ *options*]]
+
+    |Add_outgrid| Optionally, append =\ *ID* for writing a specific file format
+    (:ref:`See full description <grd_inout_full>`). The following modifiers are
+    supported:
+
+        - **+d** - Divide data values by given *divisor* [Default is 1].
+        - **+n** - Replace data values matching *invalid* with a NaN.
+        - **+o** - Offset data values by the given *offset*, or append **a** for
+          automatic range offset to preserve precision for integer grids
+          [Default is 0].
+        - **+s** - Scale data values by the given *scale*, or append **a** for
+          automatic scaling to preserve precision for integer grids [Default
+          is 1].
+
+    Note: Any offset is added before any scaling. **+sa** also sets **+oa**
+    (unless overridden). To write specific formats via GDAL, use = *gd*
+    and supply *driver* (and optionally *dataType*) and/or one or more
+    concatenated GDAL **-co** options using **+c**. See
+    the :ref:`"Writing grids and images" cookbook section <Write-grids-images>`
+    for more details.
+
+.. outgrid-syntax-ends

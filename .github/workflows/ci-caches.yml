@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.6.0
+        uses: styfle/cancel-workflow-action@0.9.1
         with:
           access_token: ${{ github.token }}
 
@@ -33,7 +33,7 @@ jobs:
       - name: Download remote data
         run: |
           # list of datasets used in tests
-          data="@earth_relief_01d \
+          data="@earth_relief_01d earth_relief_01d_g \
                 @earth_relief_30m \
                 @earth_relief_20m \
                 @earth_relief_15m \
@@ -46,6 +46,7 @@ jobs:
                 @earth_day_01d \
                 @earth_day_20m \
                 @earth_night_20m \
+                @earth_age_10m \
                 @earth_age_06m \
                 @earth_age_02m \
                 @earth_mask_05m \
@@ -79,7 +80,7 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.6.0
+        uses: styfle/cancel-workflow-action@0.9.1
         with:
           access_token: ${{ github.token }}
 

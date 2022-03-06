@@ -2,6 +2,7 @@
 #
 # Demonstrate vector details
 gmt begin GMT_vector ps
+gmt set GMT_THEME cookbook
 # Cartesian straight arrows
 	gmt plot -R0/5/0/5 -JX6i -Sv1i+s+e+a50+p0.25p,dashed -W5p <<- EOF
 	0.5	0.5	4.5	1.5

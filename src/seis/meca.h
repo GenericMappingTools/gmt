@@ -1,10 +1,23 @@
+/*--------------------------------------------------------------------
+ *
+ *  Copyright (c) 2013-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *  See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation; version 3 or any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  Contact info: www.generic-mapping-tools.org
+ *--------------------------------------------------------------------*/
 /*
- *    Copyright (c) 1996-2012 by G. Patau
- *    Copyright (c) 2013-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- *    Donated to the GMT project by G. Patau upon her retirement from IGPG
- *    Distributed under the Lesser GNU Public Licence
- *    See README file for copying and redistribution conditions.
- */
+ *  Copyright (c) 1996-2012 by G. Patau
+ *  Donated to the GMT project by G. Patau upon her retirement from IGPG
+ *--------------------------------------------------------------------*/
 
 /*!
  * \file meca.h
@@ -15,6 +28,10 @@
 #include <math.h>
 
 #define EPSIL 0.0001
+
+#define SEIS_MAG_REFERENCE 5.0			/* Reference magnitude for -S */
+#define SEIS_MOMENT_MANT_REFERENCE 4.0	/* Mantissa for reference moment for -S */
+#define SEIS_MOMENT_EXP_REFERENCE 23	/* Exponent for reference moment for -S */
 
 #define squared(x) ((x) * (x))
 

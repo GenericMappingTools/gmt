@@ -12,9 +12,10 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt x2sys_cross** *track(s)* |-T|\ *TAG* [ |-A|\ *combitable* ]
+**gmt x2sys_cross** *track(s)* |-T|\ *TAG* [ |-A|\ *pairs* ]
 [ |-C|\ [*runtimes*] ]
 [ |-D|\ [**S**\|\ **N**] ]
+[ |-E|\ *limit* ]
 [ |-I|\ **l**\|\ **a**\|\ **c** ]
 [ |-Q|\ **e**\|\ **i** ]
 [ |-S|\ **l**\|\ **u**\|\ **h**\ *speed* ]
@@ -50,10 +51,10 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *combitable*
-    Only process the pair-combinations found in the file *combitable*
+**-A**\ *pairs*
+    Only process the pair-combinations found in the file *pairs*
     [Default process all possible combinations among the specified
-    files]. The file *combitable* created by :doc:`x2sys_get` **-L** option
+    files]. The file *pairs* can be created by :doc:`x2sys_get` **-L** option
 
 .. _-C:
 
@@ -77,6 +78,12 @@ Optional Arguments
     for the south or north pole, respectively.  The conversion is used because the
     algorithm used to find crossovers are inherently a Cartesian algorithm that can
     run into trouble with data that has large longitudinal range at higher latitudes.
+
+.. _-E:
+
+**-E**\ *limit*
+    Exclude crossovers from acutely intersecting tracks where the difference in track
+    orientations is less than *limit* degrees [0].
 
 .. _-I:
 
@@ -112,10 +119,10 @@ Optional Arguments
     will not be computed (i.e., set to NaN) [Default calculates
     headings regardless of speed].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

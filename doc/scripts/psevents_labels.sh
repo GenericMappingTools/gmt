@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Make a figure illustrating transparency curve for an event label across time in psevents
 gmt begin psevents_labels
+	gmt set GMT_THEME cookbook
 	cat <<- EOF > B.txt
 	-0.5	afg	t@-r@-
 	0	afg	t@-b@-

@@ -40,7 +40,7 @@ Required Arguments
     :doc:`x2sys_list`. NOTE: If **-bi** is used
     then the first two columns are expected to hold the integer track
     IDs; otherwise we expect the trailing text to hold the text string names
-    of the two tracks. If no file is given we will read from *stdin*.
+    of the two tracks. If no file is given we will read from standard input.
 
 .. include:: explain_tag.rst_
 
@@ -87,10 +87,10 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

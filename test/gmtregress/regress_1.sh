@@ -12,7 +12,7 @@ function plot_one {	# 5 args are: -E -N axes -X -Y
 	# Use negative angle since we are plotting data in regress_2.sh against -x
 	gmt regress -A-90/90/0.1 $1 $2 data | awk '{if (NR > 1) print -$1, $2}' > tmp
 	gmt psxy -R -W0.5p,blue -J -Bxa45f15g45+u@. -Bya1pg1 -B$3 -O -K $4 $5 tmp
-	gmt math tmp -i0,1 DUP DUP LOWER EQ MUL = | awk '{if (NF == 2 && $2 > 0) printf "%s %s %s 0.001\n", $1, $2, $1}' | gmt psxy -R -J -O -K -Sv0.2i+s+b+h1 -Gred $4 $5
+	gmt math tmp -i0,1 DUP DUP LOWER EQ MUL = | awk '{if (NF == 2 && $2 > 0) printf "%s %s %s 0.001\n", $1, $2, $1}' | gmt psxy -R -J -O -K -Sv0.2i+n+s+b+h1 -Gred $4 $5
 }
 # Allow outliers to be included in the analysis:
 file=$(gmt which -G @hertzsprung-russell.txt)

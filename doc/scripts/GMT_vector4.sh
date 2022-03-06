@@ -2,6 +2,7 @@
 #
 # Demonstrate deprecated GMT4 vector
 gmt begin GMT_vector4 ps
+gmt set GMT_THEME cookbook
 # Cartesian straight arrows
 	a=$(gmt math -Q 1 4 DIV ATAN R2D =)
 	L=$(gmt math -Q 1 4 HYPOT =)

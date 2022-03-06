@@ -18,4 +18,5 @@ gmt psxy -R -J -O -K -W1p -Gred -Sf-1/0.1i+b -X0.6i t.txt >> $ps
 gmt psxy -R -J -O -K -W1p -Gred -Sf-1/0.1i+c -X0.6i t.txt >> $ps
 gmt psxy -R -J -O -K -W1p -Gred -Sf-1/0.1i+f -X0.6i t.txt >> $ps
 gmt psxy -R -J -O -K -W1p -Sf-1/0.4i+S+l -X0.6i t.txt >> $ps
-gmt psxy -R -J -O -W1p -Glightorange -Sf-1/0.1i+t -X0.6i t.txt >> $ps
+gmt psxy -R -J -O -K -W1p -Glightorange -Sf-1/0.1i+t -X0.6i t.txt >> $ps
+gmt psxy -R -J -O -W1p -Glightgreen -Sf-1/0.1i+v -X0.6i t.txt >> $ps

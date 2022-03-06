@@ -16,7 +16,7 @@ Synopsis
 |-A|\ *prog*\ [**+m**\ *method*\ **+c**\ *cpt*]
 |-G|\ *outfile* 
 [ |-F|\ "*gd opts*"]
-[ |-M|\ [**+r+w**]]
+[ |-M|\ [**+r**\ [**+w**]]]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -61,8 +61,11 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outfile*
-    Output file name. *outfile* is the name of the output grid (or image) file. When saving images, the GDAL machinery is picked by default.
+.. |Add_outgrid| replace:: Give the name of the output grid (or images) file. When saving images, the GDAL machinery is
+    picked by default.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -74,22 +77,21 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**+r+w**]
+**-M**\ [**+r**\ [**+w**]]
     Read and write files via GDAL. **-M** alone selects both reading and writing with GDAL.
     Option **-M+r** alone instructs the program to read with GDAL (and save with GMT). This option is needed when reading
     OGR vector data. **-M+w** indicates that the output will be saved with GDAL.
 
-.. _-R:
-
-.. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of the grid. If this subsection exceeds the
-    boundaries of the grid, only the common region will be output.
+.. |Add_-R| replace:: Using the **-R** option will select a subsection of the grid. If this subsection exceeds the
+    boundaries of the grid, only the common region will be output. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-..  include:: explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 3]. This option
     only applies to xyz input via GMT.

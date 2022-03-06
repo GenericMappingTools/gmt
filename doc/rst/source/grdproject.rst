@@ -49,18 +49,22 @@ than that implied by the extent of the grid file.
 Required Arguments
 ------------------
 
-*ingrid*
-    2-D binary grid file to be transformed. (See GRID FILE FORMATS below.)
+.. |Add_ingrid| replace:: 2-D gridded data set to be transformed.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Specify the name of the output grid file. (See GRID FILE FORMATS below.)
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -127,17 +131,16 @@ Optional Arguments
     should be the projected measure unit [Default is set by
     :term:`PROJ_LENGTH_UNIT` in :doc:`gmt.conf`]. Cannot be used with **-F**.
 
-.. _-R:
-
-.. |Add_-R| replace:: You may ask to project only
-    a subset of the grid by specifying a smaller input *w/e/s/n* region
-    [Default is the region given by the grid file].
+.. |Add_-R| replace:: You may ask to project only a subset of the grid by specifying a smaller input *w/e/s/n* region
+    [Default is the region given by the grid file]. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_-n.rst_
 
@@ -145,8 +148,6 @@ Optional Arguments
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

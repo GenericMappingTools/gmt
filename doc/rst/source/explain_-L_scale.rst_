@@ -1,36 +1,39 @@
-**-L**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *length*\ [**e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**]\ [**+a**\ *align*]\ [**+c**\ [[*slon*/]\ *slat*]]\ [**+f**]\ [**+j**\ *justify*]\ [**+l**\ [*label*]\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+u**][**+v**]
-    Draw a simple map scale centered on the reference point specified
-    using one of four coordinate systems:
+**-L**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *length*\ [**e**\|\ **f**\|\ **k**\|\
+**M**\|\ **n**\|\ **u**]\ [**+a**\ *align*]\ [**+c**\ [[*slon*/]\ *slat*]]\ [**+f**]\ [**+j**\ *justify*]\ [**+l**\
+[*label*]\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+u**][**+v**]
+
+    Draw a simple map scale at the location defined by the reference (*refpoint*) and anchor point (set by
+    **+o**\ *dx*\ [/*dy*] and/or **+j**\ *justify*). Give the reference point on the map for the rose using one of four
+    coordinate systems:
 
     .. include:: explain_refpoint.rst_
 
-    Use **+w** to set scale *length* in km, or append unit from
-    **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
-    The **+c** modifier is use to control where on a geographic map the scale applies.
-    Map scale is calculated for latitude *slat* (optionally supply longitude
-    *slon* for oblique projections [Default is central meridian]).
-    If **+c** is not given we default to the location of the *refpoint*.
-    If **+c** is given with no arguments then we select the scale origin
-    to be the middle of the map.
-    Change the label alignment with **+a**\ *align* (choose among
-    **l**\ (eft), **r**\ (ight), **t**\ (op), and **b**\ (ottom)).
-    Append **+f** to get a "fancy" scale [Default is plain].
-    By default, the anchor point on the map scale is assumed to be the center of the scale (MC), but this
-    can be changed by appending **+j** followed by a 2-char justification code *justify*
-    (see :doc:`text` for list and explanation of codes).
-    Append **+l** to select the default label, which equals the distance
-    unit (meter, foot, km, mile, nautical mile, US survey foot) and is
-    justified on top of the scale [t]. Change this by giving your own
-    label (append **+l**\ *label*).
-    Select **+u** to append the unit to all distance annotations along the
-    scale (for the plain scale, **+u** will instead select the unit to be
-    appended to the distance length). Cartesian projections: Modifiers **+c** and
-    **+f** are not allowed, and no units should be appended in **+w**.
-    You ca indicate any Cartesian data units via the label in **+l**.
-    For a vertical rather than horizontal Cartesian scale, append **+v**.
-    **Note**: Use :term:`FONT_LABEL` to change the label font and
-    :term:`FONT_ANNOT_PRIMARY`
-    to change the annotation font.  The height of the map scale is controlled
-    by :term:`MAP_SCALE_HEIGHT`, and the pen thickness is
-    set by :term:`MAP_TICK_PEN_PRIMARY`.
-    See **-F** on how to place a panel behind the scale.
+    The following modifiers can be appended to |-L| (**+w** is required), with additional explanation and
+    examples provided in the :ref:`placing-map-scales` cookbook section. For Cartesian projectsion, the modifiers
+    **+c** and **+f** are not allowed and no units should be appended in **+w**.
+
+    - **+w**\ *length* to set scale *length* in km, or append :ref:`unit <tbl-distunits>` from
+      **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**.
+    - **+a**\ *align* to change the label alignment (choose among **l**\ (eft), **r**\ (ight), **t**\ (op), and
+      **b**\ (ottom)) [default is **t**\ (op)].
+    - **+c**\ [[*slon*/]\ *slat*]] to control where on a geographic map the scale applies. Map scale is calculated for
+      latitude *slat* (optionally supply longitude *slon* for oblique projections [default is central meridian]). If
+      **+c** is not given we default to the location of the *refpoint*. If **+c** is given with no arguments then we
+      select the scale origin to be the middle of the map.
+    - **+f** to get a "fancy" scale [default is **plain**].
+    - **+j**\ *justify* to set the justification :ref:`anchor point <Anchor_Point_j>`, where *justify* is a 2-character
+      :ref:`justification code <Reference_Points>` that is a combination of a horizontal (**L**, **C**, or **R**) and a
+      vertical (**T**, **M**, or **B**) code. **Note**: If **j** is used to set the reference point
+      then *justify* defaults to the same as *refpoint*; if **J** is used then *justify* defaults to the mirror opposite
+      of *refpoint*; if **g**, **n**, or **x** is used to set the reference point then *justify* defaults to **MC**.
+    - **+l**\ [*label*] to add a scale label. If *label* is not provided, we use the distance unit provided in **+w**
+      [default is **k**\ (m)]. The label alignment is set by **+a** [default is **t**\ (op)]. Requires **+f**.
+    - **+o**\ *dx*\ [/*dy*] to offset the :ref:`anchor point <Anchor_Point_o>` by *dx* and optionally *dy* (if different
+      than *dx*).
+    - **+u** to append the :ref:`unit <tbl-distunits>` set by **+w** to all distance annotations along the scale (for
+      the plain scale, **+u** will instead select the unit to be appended to the distance length).
+    - **+v** to get a vertical rather than a horizontal Cartesian scale.
+
+    **Note**: Use :term:`FONT_LABEL` to change the label font and :term:`FONT_ANNOT_PRIMARY` to change the annotation
+    font. The height of the map scale is controlled by :term:`MAP_SCALE_HEIGHT`, and the pen thickness is set by
+    :term:`MAP_TICK_PEN_PRIMARY`. Optionally, use |-F| to place a panel behind the scale.

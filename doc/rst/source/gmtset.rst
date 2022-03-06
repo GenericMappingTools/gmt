@@ -13,8 +13,8 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt set** [ |-C| \| |-D|\ [**s**\|\ **u**] \|
-|-G|\ *defaultsfile* ] [ **-**\ [**BJRXYp**]\ *value* ]
-PARAMETER1 *value1* PARAMETER2 *value2* PARAMETER3  *value3*
+|-G|\ *defaultsfile* ] [ **-**\ **B**\|\ **J**\|\ **R**\|\ **X**\|\ **Y**\|\ **p**\ *value* ]
+PARAMETER1 *value1* PARAMETER2 *value2* PARAMETER3 *value3*
 ...
 
 |No-spaces|
@@ -65,8 +65,8 @@ Optional Arguments
     first in current directory, then in your home directory, then in
     ~/.gmt and finally in the system defaults].
 
-**-**\ [**BJRXYp**]\ *value*
-    Set the expansion of any of these shorthand options.
+**-**\ **B**\|\ **J**\|\ **R**\|\ **X**\|\ **Y**\|\ **p**\ *value*
+    Set the expansion of any of these shorthand options in the history.
 
 .. include:: explain_help.rst_
 

@@ -1,13 +1,22 @@
-.. _-bo_full:
+The **-bo** option
+^^^^^^^^^^^^^^^^^^
 
-**-bo**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
-    Select native binary output. Here, *ncols* is the actual number
-    of data columns of type *type*, which must be one of **c**, **u**, **h**,
-    **H**, **i**, **I** (capital i), **l** (lower case ell), **L**, **f**, and **d** (see **-bi**).
-    For a mixed-type output record, append additional comma-separated
-    combinations of *ncols* *type* (no space).
-    Append **w** to any item to force byte-swapping or **+l**\|\ **b**
-    for byte-swapping of the entire record. If *ncols* is not specified
-    we assume that *type* applies to all columns and that *ncols* is
-    implied by the default output of the program. **Note**: NetCDF file output is
-    not supported.
+**Syntax**
+
+**-bo**\ *record*\ [**+b**\|\ **l**]
+    Select native binary format for table output.
+
+**Description**
+
+Select native binary format for table output. The *record* must be one or more groups with format
+[*ncols*][*type*][**w**], where *ncols* is the number of consecutive data columns
+of given *type* and *type* must be one of **c**, **u**, **h**, **H**, **i**, **I**,
+**l**, **L**, **f**, or **d** [Default] (see :ref:`-bi types <bi_types>` for descriptions).
+Force byte-swapping of a group by appending **w** at the end of the group.
+For a mixed-type output record, append additional comma-separated groups (no space between groups)
+The following modifiers are supported:
+
+    - **+b**\|\ **l** to indicate that the entire data file should be written as big- or little-endian, respectively.
+
+If *ncols* is not specified we assume that *type* applies to all columns and that *ncols* is implied by the default
+output of the program. **Note**: NetCDF file output is not supported.

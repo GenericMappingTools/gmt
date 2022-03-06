@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Addresses issue #1205.  The bottom plot is all auto and
 # correct, while the top plot failed to flip the annotation
-# side whem +m was added, because it had already been flipped
+# side when +m was added, because it had already been flipped
 # for BC and RM (the cause of the issue).  I know check if
 # flipped and then +m implies the opposite flip.
 ps=scalings.ps

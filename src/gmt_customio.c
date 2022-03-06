@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1623,13 +1623,8 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	if (GMT->session.grdformat[header->type][1] == 'd') {
-#ifdef HAVE_GDAL
 		GMT_Report(GMT->parent, GMT_MSG_INFORMATION,
 			"Surfer 7 format in GMT is read-only but you can do it via GDAL by appending '=gd:GS7BG' to the file name\n");
-#else
-		GMT_Report(GMT->parent, GMT_MSG_INFORMATION,
-			"As mentioned in the manual, Surfer 7 format in GMT is read-only\n");
-#endif
 		return (GMT_NOERROR);
 	}
 
@@ -1719,7 +1714,6 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	return (GMT_NOERROR);
 }
 
-#ifdef HAVE_GDAL
 #include "gmt_gdalread.c"
 #include "gmt_gdalwrite.c"
 #include "gmt_ogrproj.c"		/* For coordinate conversions but can "enter" here too */
@@ -1909,7 +1903,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 			/* Here we assume that all pad[0] ... pad[3] are equal. Otherwise ... */
 			to_gdalread->mini_hdr.active = false;	/* Undo above setting */
 			to_gdalread->p.active = true;
-			to_gdalread->p.pad = (int)pad[XLO];
+			gmt_M_memcpy (to_gdalread->p.pad, pad, 4U, unsigned int);
 		}
 
 		/* OK, now test if we are under the condition of #403 (very small grids).
@@ -1917,7 +1911,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		if (to_gdalread->mini_hdr.active && (header->n_columns <= 4 || header->n_rows <= 4)) {
 			to_gdalread->mini_hdr.active = false;
 			to_gdalread->p.active = true;
-			to_gdalread->p.pad = (int)pad[XLO];
+			gmt_M_memcpy (to_gdalread->p.pad, pad, 4U, unsigned int);
 		}
 	}
 	if (HH->pocket) {	/* Have a band request. */
@@ -2172,8 +2166,6 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	gmt_M_free (GMT, to_GDALW);
 	return (GMT_NOERROR);
 }
-
-#endif
 
 /* Add custom code here */
 
@@ -2432,21 +2424,12 @@ void gmtlib_grdio_init (struct GMT_CTRL *GMT) {
 	/* FORMAT: Import via the GDAL interface */
 
 	id                        = GMT_GRID_IS_GD;
-#ifdef HAVE_GDAL
 	GMT->session.grdformat[id]  = "gd = Import/export through GDAL";
 	GMT->session.readinfo[id]   = &gmt_gdal_read_grd_info;
 	GMT->session.updateinfo[id] = &gmt_gdal_write_grd_info;
 	GMT->session.writeinfo[id]  = &gmt_gdal_write_grd_info;
 	GMT->session.readgrd[id]    = &gmt_gdal_read_grd;
 	GMT->session.writegrd[id]   = &gmt_gdal_write_grd;
-#else
-	GMT->session.grdformat[id]  = "gd = Import/export through GDAL (not supported)";
-	GMT->session.readinfo[id]   = &gmt_dummy_grd_info;
-	GMT->session.updateinfo[id] = &gmt_dummy_grd_info;
-	GMT->session.writeinfo[id]  = &gmt_dummy_grd_info;
-	GMT->session.readgrd[id]    = &gmt_dummy_grd_read;
-	GMT->session.writegrd[id]   = &gmt_dummy_grd_read;
-#endif
 
 	/* ----------------------------------------------
 	 * ADD CUSTOM FORMATS BELOW AS THEY ARE NEEDED */

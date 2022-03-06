@@ -71,10 +71,10 @@ Optional Arguments
     or **u** for the user data directory instead (i.e., ignoring any subdirectory
     structure).
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_help.rst_
 

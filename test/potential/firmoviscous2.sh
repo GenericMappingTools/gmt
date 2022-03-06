@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Testing firmoviscous flexure code for asthenospheric layer A = 100km
 # and viscosity 2e20, with deep mantle viscosity of 1e22.
+
 ps=firmoviscous2.ps
 gmt set GMT_FFT kiss
 # Set densities

@@ -66,7 +66,7 @@ Optional Arguments
 
     **a** Append filename of a single column table to add. File must
     have the same number of rows as the MGD77+ file. If no file is given
-    we read from stdin instead.
+    we read from standard input instead.
 
     **c** Create a new column that derives from existing data or
     formulas for corrections and reference fields. Append **c** for the
@@ -82,7 +82,7 @@ Optional Arguments
 
     **d** Append filename of a two-column table with the first column
     holding distances along track and the second column holding data
-    values. If no file is given we read from stdin instead. Records with
+    values. If no file is given we read from standard input instead. Records with
     matching distances in the MGD77+ file will be assigned the new
     values; at other distances we set them to NaN. Alternatively, give
     upper case **D** instead and we will interpolate the column at all
@@ -135,13 +135,13 @@ Optional Arguments
 
     **n** Append filename of a two-column table with the first column
     holding the record number (0 to nrows - 1) and the second column
-    holding data values. If no file is given we read from stdin instead.
+    holding data values. If no file is given we read from standard input instead.
     Records with matching record numbers in the MGD77+ file will be
     assigned the new values; at other records we set them to NaN.
 
     **t** Append filename of a two-column table with the first column
     holding absolute times along track and the second column holding
-    data values. If no file is given we read from stdin instead. Records
+    data values. If no file is given we read from standard input instead. Records
     with matching times in the MGD77+ file will be assigned the new
     values; at other times we set them to NaN. Alternatively, give upper
     case **T** instead and we will interpolate the column at all record
@@ -196,15 +196,15 @@ Optional Arguments
     Append the distance unit (see `Units`_). [Default is **-Nk** (km)].
     Only relevant when **-Ag**\|\ **i** is selected.
 
-.. _-R:
-
-.. |Add_-R| replace:: Only relevant when **-Ag**\|\ **i** is selected.
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: ../../explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace::
     This applies to the input 1- or 2-column data files specified under some

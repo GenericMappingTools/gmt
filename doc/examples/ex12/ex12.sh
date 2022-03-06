@@ -10,7 +10,7 @@ gmt begin ex12
 	# color palette (.cpt) file
 	T=$(gmt info -T25+c2 @Table_5_11.txt)
 	gmt makecpt -Cjet $T
-	gmt subplot begin 2x2 -M0.1c -Fs8c/0 -SCb -SRl -R0/6.5/-0.2/6.5 -JX8c -BWSne -T"Delaunay Triangulation"
+	gmt subplot begin 2x2 -M0.1c -Fs8c/0 -Scb -Srl -R0/6.5/-0.2/6.5 -JX8c -BWSne -T"Delaunay Triangulation"
 	# First draw network and label the nodes
 	gmt triangulate @Table_5_11.txt -M > net.xy
 	gmt plot net.xy -Wthinner -c0,0

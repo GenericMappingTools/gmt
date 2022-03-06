@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_tut_14
+	gmt set GMT_THEME cookbook
 	gmt makecpt -H -Crainbow -T-20/60/10 > disc.cpt
 	gmt makecpt -H -Crainbow -T-20/60 > cont.cpt
 	gmt basemap -R0/6/0/9 -Jx1i -B0 -Xc

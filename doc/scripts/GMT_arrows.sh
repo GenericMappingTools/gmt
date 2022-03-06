@@ -2,6 +2,7 @@
 #
 # Demonstrate how arrows look like
 gmt begin GMT_arrows
+gmt set GMT_THEME cookbook
 # Cartesian straight arrows
 	gmt plot -R0/5/0/5 -JX1.75i -S -W1.5p -Gred -B0 --MAP_VECTOR_SHAPE=0.5 << EOF
 0.5	0.5	4.5	0.5	v0.2i+s

@@ -14,9 +14,11 @@ Synopsis
 
 **gmt math** [ |-A|\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\|\ **w**] ]
 [ |-C|\ *cols* ]
-[ |-E|\ *eigen* ] [ |-I| ]
+[ |-E|\ *eigen* ]
+[ |-I| ]
 [ |-N|\ *n\_col*\ [/*t_col*] ]
-[ |-Q| ] [ |-S|\ [**f**\|\ **l**] ]
+[ |-Q|\ [**c**\|\ **i**\|\ **p**\|\ **n**] ]
+[ |-S|\ [**f**\|\ **l**] ]
 [ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **i**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
@@ -29,6 +31,7 @@ Synopsis
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
 [ |SYN_OPT-s| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT--| ]
 *operand* [ *operand* ] **OPERATOR** [ *operand* ] **OPERATOR** ...
 **=** [ *outfile* ]
@@ -61,12 +64,12 @@ Required Arguments
     If *operand* can be opened as a file it will be read as an ASCII (or
     binary, see **-bi**) table data file. If not
     a file, it is interpreted as a numerical constant or a special
-    symbol (see below). The special argument STDIN means that *stdin*
+    symbol (see below). The special argument STDIN means that standard input
     will be read and placed on the stack; STDIN can appear more than
     once if necessary.
 *outfile*
     The name of a table data file that will hold the final result. If
-    not given then the output is sent to stdout.
+    not given then the output is sent to standard output.
 
 Optional Arguments
 ------------------
@@ -122,10 +125,14 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**
+**-Q**\ [**c**\|\ **i**\|\ **p**\|\ **n**]
     Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0  **-T**\ 0/0/1.
-    In this mode, constants may have plot units (i.e., c, i, p) and if so the final
-    answer will be reported in the unit set by :term:`PROJ_LENGTH_UNIT`.
+    In this mode, constants may have dimensional units (i.e., **c**, **i**, or **p**),
+    and will be converted to internal *inches* before computing. If one or more constants
+    with units are encountered then the final answer will be reported in the unit set by
+    :term:`PROJ_LENGTH_UNIT`, unless overridden by appending another unit. Alternatively,
+    append **n** for a non-dimensional result, meaning no unit conversion during output.
+    To avoid any unit conversion on input, just do not use units.
 
 .. _-S:
 
@@ -145,10 +152,10 @@ Optional Arguments
     no arguments; this also implies **-Ca**.
     For details on array creation, see `Generate 1D Array`_.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bi.rst_
@@ -179,6 +186,8 @@ Optional Arguments
 
 .. include:: explain_-s.rst_
 
+.. include:: explain_-w.rst_
+
 .. include:: explain_help.rst_
 
 .. include:: explain_array.rst_
@@ -186,7 +195,7 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following 185 operators. Here, "args" are the number of input
+Choose among the following operators. Here, "args" are the number of input
 and output arguments.
 
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -222,9 +231,9 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **BPDF**        | 3 1    | Binomial probability density function for p = A, n = B, and x = C                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **BEI**         | 1 1    | bei (A)                                                                                    |
+| **BEI**         | 1 1    | Kelvin function bei (A)                                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **BER**         | 1 1    | ber (A)                                                                                    |
+| **BER**         | 1 1    | Kelvin function ber (A)                                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **BITAND**      | 2 1    | A & B (bitwise AND operator)                                                               |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -272,7 +281,9 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **D2DT2**       | 1 1    | d^2(A)/dt^2 2nd derivative                                                                 |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **D2R**         | 1 1    | Converts Degrees to Radians                                                                |
+| **D2R**         | 1 1    | Converts degrees to radians                                                                |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **DEG2KM**      | 1 1    | Converts spherical degrees to kilometers                                                   |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **DENAN**       | 2 1    | Replace NaNs in A with values from B                                                       |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -356,11 +367,13 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **K1**          | 1 1    | Modified Bessel function of A (2nd kind, order 1)                                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **KM2DEG**      | 1 1    | Converts kilometers to spherical degrees                                                   |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **KN**          | 2 1    | Modified Bessel function of A (2nd kind, order B)                                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **KEI**         | 1 1    | kei (A)                                                                                    |
+| **KEI**         | 1 1    | Kelvin function kei (A)                                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **KER**         | 1 1    | ker (A)                                                                                    |
+| **KER**         | 1 1    | Kelvin function ker (A)                                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **KURT**        | 1 1    | Kurtosis of A                                                                              |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -542,6 +555,8 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **VARW**        | 2 1    | Weighted variance of A for weights in B                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **VPDF**        | 3 1    | Von Mises density distribution V(x,mu,kappa), with angles = A, mu = B, and kappa = C       |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **WCDF**        | 3 1    | Weibull cumulative distribution function for x = A, scale = B, and shape = C               |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **WCRIT**       | 3 1    | Weibull distribution critical value for alpha = A, scale = B, and shape = C                |
@@ -650,7 +665,7 @@ Notes On Operators
    to 54 bits.  All bitwise operators return NaN if given NaN arguments or
    bit-settings <= 0.
 
-#. TAPER will interpret its argument to be a width in the same units as
+#. **TAPER** will interpret its argument to be a width in the same units as
    the time-axis, but if no time is provided (i.e., plain data tables) then
    the width is taken to be given in number of rows.
 
@@ -659,10 +674,11 @@ Notes On Operators
    sRGB (x, y, z) conversions between all four color spaces.  These functions
    behave differently whether **-Q** is used or not.  With **-Q** we expect
    three input constants and we place three output results on the stack.  Since
-   only the top stack item is printed, you must use operators such as POP and
-   ROLL to get to the item of interest.  Without **-Q**, these operators work
+   only the top stack item is printed, you must use operators such as **POP** and
+   **ROLL** to get to the item of interest.  Without **-Q**, these operators work
    across the three columns and modify the three column entries, returning their
    result as a single three-column item on the stack.
+#. The **VPDF** operator expects angles in degrees.
 
 Macros
 ------
@@ -677,7 +693,7 @@ listed argument list. No macro may call another macro. As an example,
 the following macro expects that the time-column contains seafloor ages
 in Myr and computes the predicted half-space bathymetry:
 
-**DEPTH** = **SQRT 350 MUL 2500 ADD NEG** : *usage: DEPTH to return
+**DEPTH** = **SQRT** 350 **MUL** 2500 **ADD NEG** : *usage: DEPTH to return
 half-space seafloor depths*
 
 **Note**: Because geographic or time constants may be present in a macro, it
@@ -685,17 +701,44 @@ is required that the optional comment flag (:) must be followed by a space.
 As another example, we show a macro **GPSWEEK** which determines which GPS week
 a timestamp belongs to:
 
-**GPSWEEK** = **1980-01-06T00:00:00 SUB 86400 DIV 7 DIV FLOOR** : *usage: GPS week without rollover*
+**GPSWEEK** = 1980-01-06T00:00:00 **SUB** 86400 **DIV** 7 **DIV FLOOR** : *usage: GPS week without rollover*
 
 Active Column Selection
 -----------------------
 
 When **-C**\ *cols* is set then any operation, including loading of data from files, will
 restrict which columns are affected.
-To avoid unexpected results, note that if you issue a **-C**\ *cols* option before you load
+To avoid unexpected results, note that if you issue a **-C**\ *cols* option *before* you load
 in the data then only those columns will be updated, hence the unspecified columns will be zero.
-On the other hand, if you load the file first and then issue **-C**\ *cols* then the unspecified
+On the other hand, if you load the file *first* and then issue **-C**\ *cols* then the unspecified
 columns will have been loaded but are then ignored until you undo the effect of **-C**.
+
+Absolute Time Column(s)
+-----------------------
+
+If input data have more than one column and the "time" column (set via **-N** [0])
+contains absolute time, then the default output format for any *other* columns containing
+absolute time will be reset to relative time.  Likewise, in scalar mode (**-Q**) the
+time column will be operated on and hence it also will be formatted as relative
+time.  Finally, if **-C** is used to include "time" in the columns operated on then
+we likewise will reset that column's format to relative time. The user can override this behavior with a
+suitable **-f** or **-fo** setting.  **Note**: We cannot guess what your operations on the
+time column will do, hence this default behavior.  As examples, if you are computing time differences
+then clearly relative time formatting is required, while if you are computing new absolute times
+by, say, adding an interval to absolute times then you will need to use **-fo** to set
+the output format for such columns to absolute time.
+
+Scalar math with units
+----------------------
+
+If you use **-Q** to do simple calculations, please note that the support for dimensional units is
+limited to converting a number ending in **c**, **i**, or **p** to internal *inches*.  Thus, while you can run
+"gmt -Qc 1c 1c MUL =", you may be surprised that the output area is not 1 cm squared.  The reason is
+that **gmt math** cannot keep track of what unit any particular item on the stack might be so it will
+assume it is internally in inches and then scale the final output to cm.  In this particular case,
+the unit is in inches squared and scaling by 2.54 once will give 0.3937 inch times cm as the unit.
+Thus, conversions only work for linear unit calculations, such as gmt math -Qp 1c 0.5i ADD =, which
+will return the result as 64.34 points.
 
 Examples
 --------
@@ -707,6 +750,12 @@ To add two plot dimensions of different units, we can run
    ::
 
     length=`gmt math -Q 15c 2i SUB =`
+
+To compute the ratio of two plot dimensions of different units, we select *non-dimensional* output and run
+
+   ::
+
+    ratio=`gmt math -Qn 15c 2i DIV =`
 
 To take the square root of the content of the second data column being
 piped through **gmtmath** by process1 and pipe it through a 3rd process, use

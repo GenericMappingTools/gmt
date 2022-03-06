@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,7 @@
  *--------------------------------------------------------------------*/
 
 struct GMT_XINGS {
+        double lon[2], lat[2];    /* Geographic coordinates of intersection with map boundary */
         double xx[2], yy[2];    /* Cartesian coordinates of intersection with map boundary */
         double angle[2];        /* Angles of intersection */
         unsigned int sides[2];	/* Side id of intersection */
@@ -52,16 +53,21 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC void gmtlib_terminate_session ();
+EXTERN_MSC unsigned int gmtlib_pick_in_col_number (struct GMT_CTRL *GMT, unsigned int col, unsigned int *col_pos_in);
+EXTERN_MSC bool gmtlib_set_do_seconds (struct GMT_CTRL *GMT, double inc);
+EXTERN_MSC int gmtlib_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P);
+EXTERN_MSC bool gmtlib_data_is_geographic (struct GMTAPI_CTRL *API, const char *file);
+EXTERN_MSC void gmtlib_set_case_and_kind (struct GMT_CTRL *GMT, char *format, bool *upper_case, unsigned int *flavor);
+EXTERN_MSC bool gmtlib_fixed_paper_size (struct GMTAPI_CTRL *API);
 EXTERN_MSC struct GMT_CUBE *gmtlib_create_cube (struct GMT_CTRL *GMT);
 EXTERN_MSC struct GMT_CUBE *gmtlib_duplicate_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *U, unsigned int mode);
 EXTERN_MSC void gmt_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube);
 EXTERN_MSC unsigned int gmtlib_free_cube_ptr (struct GMT_CTRL *GMT, struct GMT_CUBE *U, bool free_cube);
 EXTERN_MSC void gmtlib_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, bool free_cube);
-EXTERN_MSC uint64_t gmtlib_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array);
 EXTERN_MSC bool gmtlib_var_inc (double *x, uint64_t n);
 EXTERN_MSC char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, const char *mods);
 EXTERN_MSC char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT);
-EXTERN_MSC int gmtlib_delete_virtualfile  (void *API, const char *string);
 EXTERN_MSC bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd);
 EXTERN_MSC bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd);
 EXTERN_MSC int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file);
@@ -112,7 +118,7 @@ EXTERN_MSC const char * gmtlib_get_active_name (struct GMTAPI_CTRL *API, const c
 EXTERN_MSC double gmtlib_cartesian_dist (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
 EXTERN_MSC double gmtlib_cartesian_dist_proj (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 EXTERN_MSC void gmtlib_finalize_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
-EXTERN_MSC bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt, bool *no_T);
+EXTERN_MSC bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt);
 EXTERN_MSC void gmtlib_update_outcol_type (struct GMT_CTRL *GMT, uint64_t n);
 EXTERN_MSC void gmtlib_reset_input (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmtlib_remote_file_is_tiled (struct GMTAPI_CTRL *API, const char *file, unsigned int *mode);
@@ -128,7 +134,7 @@ EXTERN_MSC char * gmtlib_putcmyk (struct GMT_CTRL *GMT, double *cmyk);
 EXTERN_MSC char * gmtlib_puthsv (struct GMT_CTRL *GMT, double *hsv);
 EXTERN_MSC enum gmt_enum_units gmtlib_get_unit_number (struct GMT_CTRL *GMT, char unit);
 EXTERN_MSC void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options);
-EXTERN_MSC char * gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword);
+EXTERN_MSC char * gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword);
 EXTERN_MSC unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value, bool core);
 EXTERN_MSC int gmtlib_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *source_line, const char *format, ...);
 EXTERN_MSC int gmtlib_get_num_processors ();
@@ -157,9 +163,11 @@ EXTERN_MSC int gmtlib_plot_C_format (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *S, unsigned int mode);
 EXTERN_MSC int gmtlib_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO *S, unsigned int mode);
 EXTERN_MSC void * gmtlib_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *ncol, int *status);
-EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
+EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, unsigned int type, struct GMT_PLOT_AXIS_ITEM *T);
 EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 EXTERN_MSC int gmtlib_nc_get_att_text (struct GMT_CTRL *GMT, int ncid, int varid, char *name, char *text, size_t textlen);
+EXTERN_MSC int gmtlib_nc_get_att_vtext (struct GMT_CTRL *GMT, int ncid, int varid, char *name, struct GMT_GRID_HEADER *h, char *text, size_t textlen);
+EXTERN_MSC int gmtlib_nc_put_att_vtext (struct GMT_CTRL *GMT, int ncid, char *name, struct GMT_GRID_HEADER *h);
 EXTERN_MSC int gmtlib_akima (struct GMT_CTRL *GMT, double *x, double *y, uint64_t nx, double *c);
 EXTERN_MSC int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c);
 EXTERN_MSC bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double coord[], double *pos);
@@ -168,7 +176,7 @@ EXTERN_MSC void gmtlib_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, gmt
 EXTERN_MSC struct GMT_CUSTOM_SYMBOL * gmtlib_get_custom_symbol (struct GMT_CTRL *GMT, char *name);
 EXTERN_MSC void gmtlib_free_custom_symbols (struct GMT_CTRL *GMT);
 EXTERN_MSC bool gmtlib_geo_to_dms (double val, int n_items, double fact, int *d, int *m,  int *s,  int *ix);
-EXTERN_MSC int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
+EXTERN_MSC int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord, double delta);
 EXTERN_MSC void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t);
 EXTERN_MSC int gmtlib_getrgb_index (struct GMT_CTRL *GMT, double *rgb);
 EXTERN_MSC char * gmtlib_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path);	/* Look for user file */
@@ -201,7 +209,9 @@ EXTERN_MSC void gmtlib_init_rot_matrix (double R[3][3], double E[]);
 EXTERN_MSC void gmtlib_load_rot_matrix (double w, double R[3][3], double E[]);
 EXTERN_MSC int gmtlib_io_banner (struct GMT_CTRL *GMT, unsigned int direction);
 EXTERN_MSC double gmtlib_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
+EXTERN_MSC double gmtlib_great_circle_dist_cos (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 EXTERN_MSC int gmtlib_gmonth_length (int year, int month);
+EXTERN_MSC void gmtlib_modulo_time_calculator (struct GMT_CTRL *GMT, double *val);
 EXTERN_MSC int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist);
 EXTERN_MSC void gmtlib_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
 EXTERN_MSC bool gmtlib_found_url_for_gdal (char *fname);
@@ -210,6 +220,7 @@ EXTERN_MSC bool gmtlib_is_gleap (int gyear);
 EXTERN_MSC char * gmtlib_cptfile_unitscale (struct GMTAPI_CTRL *API, char *name);
 EXTERN_MSC void gmtlib_set_oblique_pole_and_origin (struct GMT_CTRL *GMT, double plon, double plat, double olon, double olat);
 EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *h);
+EXTERN_MSC int gmtlib_get_matrixtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_MATRIX *M);
 EXTERN_MSC void gmtlib_grd_real_interleave (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *data);
 EXTERN_MSC void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
@@ -223,6 +234,7 @@ EXTERN_MSC struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *s
 EXTERN_MSC int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_POSTSCRIPT *P);
 EXTERN_MSC void gmtlib_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct GMT_POSTSCRIPT *P_obj);
 EXTERN_MSC void gmtlib_inplace_transpose (gmt_grdfloat *A, unsigned int n_rows, unsigned int n_cols);
+EXTERN_MSC void gmtlib_free_dataset_misc (struct GMT_CTRL *GMT, struct GMT_DATASET *data);
 EXTERN_MSC void gmtlib_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data);
 EXTERN_MSC void gmtlib_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 EXTERN_MSC void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P);
@@ -266,11 +278,9 @@ EXTERN_MSC unsigned int gmtlib_get_arc (struct GMT_CTRL *GMT, double x0, double 
 EXTERN_MSC struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned int source_type, unsigned int cpt_flags);
 EXTERN_MSC int gmtlib_alloc_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u, unsigned int type, uint64_t n_rows);
 EXTERN_MSC unsigned int gmtlib_get_arc (struct GMT_CTRL *GMT, double x0, double y0, double r, double dir1, double dir2, double **x, double **y);
-EXTERN_MSC unsigned int gmtlib_expand_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *new_wesn, unsigned int *orig_pad, double *orig_wesn);
-EXTERN_MSC void gmtlib_contract_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int *orig_pad, double *orig_wesn);
 EXTERN_MSC void gmtlib_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsigned int *orig_pad, double *orig_wesn);
 EXTERN_MSC uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern, char ***list);
-EXTERN_MSC void gmtlib_change_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
+EXTERN_MSC void gmtlib_change_out_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
 EXTERN_MSC void gmtlib_ellipsoid_name_convert (char *inname, char outname[]);
 
 EXTERN_MSC void gmtlib_module_show_all (void *V_API, struct GMT_MODULEINFO M[], const char *title);
@@ -279,12 +289,13 @@ EXTERN_MSC void gmtlib_module_classic_all (void *V_API, struct GMT_MODULEINFO M[
 EXTERN_MSC const char *gmtlib_module_keys (void *API, struct GMT_MODULEINFO M[], char *candidate);
 EXTERN_MSC const char *gmtlib_module_group (void *API, struct GMT_MODULEINFO M[], char *candidate);
 
-#ifdef HAVE_GDAL
+EXTERN_MSC int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in);
+
 EXTERN_MSC int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn,
 			unsigned int *pad, unsigned int complex_mode);		/* Function to read true images via GDAL */
 int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image, struct GMT_IMAGE *I);
 EXTERN_MSC int gmtlib_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
-#endif
+EXTERN_MSC void gmtlib_GDALDestroyDriverManager (struct GMTAPI_CTRL *API);
 
 /* LOCAL MACROS USED BY GMT_*.C ONLY - NOT PART OF GMT_DEV.H DISTRIBUTION */
 
@@ -306,10 +317,10 @@ EXTERN_MSC int gmtlib_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 #define gmt_M_0_255_truncate(s) ((s < 0) ? 0 : ((s > 255) ? 255 : s))	/* Truncate to allowable 0-255 range */
 
 #define gmt_M_axis_is_geo(C,axis) (C->current.io.col_type[GMT_IN][axis] & GMT_IS_GEO)
-#define gmt_M_axis_is_time(C,axis) (C->current.io.col_type[GMT_IN][axis] & GMT_IS_ABSTIME)
+#define gmt_M_axis_is_time(C,axis) (C->current.io.col_type[GMT_IN][axis] & GMT_IS_RATIME && GMT->current.io.cycle_col != axis)
 
 #define gmt_M_is_perspective(C) (C->current.proj.projection == GMT_ORTHO || C->current.proj.projection == GMT_GENPER)
-#define gmt_M_pole_is_point(C) ((C->current.proj.projection == GMT_OBLIQUE_MERC || C->current.proj.projection == GMT_OBLIQUE_MERC_POLE) || (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN && C->current.proj.projection != GMT_POLAR))
+#define gmt_M_pole_is_point(C) ((C->current.proj.projection == GMT_OBLIQUE_MERC || C->current.proj.projection == GMT_OBLIQUE_MERC_POLE || C->current.proj.projection == GMT_TM || C->current.proj.projection == GMT_UTM) || (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN && C->current.proj.projection != GMT_POLAR))
 #define gmt_M_is_grdmapproject(C) (!strncmp (C->init.module_name, "grdproject", 10U) || !strncmp (C->init.module_name, "mapproject", 10U))
 
 #endif /* GMT_INTERNALS_H */

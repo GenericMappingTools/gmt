@@ -17,12 +17,12 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *fields* ]
 [ |-C| ]
-[ |-E|\ [**b**] ] [ |-E|\ **r**\|\ **s**\ [**+l**\|\ **h**] ]
+[ |-E|\ [**b**\|\ **r**\|\ **s**\ [**+l**\|\ **h**]] ]
 [ |-G|\ [*grdfile*] ]
 [ |-Q| ]
 [ |-T|\ *quantile* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**i**\|\ **o**][**+s**] ]
+[ |-W|\ [**i**\|\ **o**][**+s**\|\ **w**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -33,6 +33,7 @@ Synopsis
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -68,8 +69,10 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -103,6 +106,7 @@ Optional Arguments
     *x*,\ *y*,\ *z*,\ *l*,\ *q25*,\ *q75*,\ *h*\ [,\ *w*], where *q25* and
     *q75* are the 25% and 75% quantiles, respectively. See **-W** for
     *w* output.
+
 **-E**\ **r**\|\ **s**\ [**+l**\|\ **h**]
     Provide source id **s** or record number **r** output, i.e., append
     the source id or record number associated with the median value. If
@@ -120,7 +124,8 @@ Optional Arguments
     Write one or more fields directly to grids; no table data are written to
     standard output.  If more than one fields are specified via **-A** then
     *grdfile* must contain the format flag %s so that we can embed the field
-    code in the file names.
+    code in the file names.  **Note**: Options **-C** and **-Q** are irrelevant
+    and not allowed.
 
 .. _-Q:
 
@@ -134,14 +139,14 @@ Optional Arguments
     Sets the *quantile* of the distribution to be returned [Default is
     0.5 which returns the median *z*]. Here, 0 < *quantile* < 1.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
-**-W**\ [**i**\|\ **o**][**+s**]
+**-W**\ [**i**\|\ **o**][**+s**\|\ **w**]
     Weighted modifier[s]. Unweighted input and output have 3 columns
     *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
     Weights can be used in input to construct weighted median values for each
@@ -149,7 +154,8 @@ Optional Arguments
     several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
     input only, and **-Wo** for weighted output only. [Default uses
     unweighted i/o]. If your weights are actually uncertainties (one sigma)
-    then append **+s** and we compute weight = 1/sigma.
+    then append **+s** and we compute weight = 1/sigma.  Otherwise (or via **+w**
+    we use the weights directly).
 
 .. include:: explain_-aspatial.rst_
 
@@ -182,6 +188,8 @@ Optional Arguments
     (*x*,\ *y*) < 11 is one of 25 blocks; otherwise 9.5 <= (*x*,\ *y*)
     < 10.5 is one of 36 blocks.
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 .. include:: explain_help.rst_

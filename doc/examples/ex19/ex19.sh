@@ -16,9 +16,9 @@ gmt begin ex19
 		gmt grdimage lon.nc -Clon.cpt -nl
 		gmt coast -Q
 		gmt coast -Dc -A5000 -Wthinnest
-		echo "0 20 16TH INTERNATIONAL" | gmt text -F+f32p,Helvetica-Bold,red=thinner
+		echo "0 20 17TH INTERNATIONAL" | gmt text -F+f32p,Helvetica-Bold,red=thinner
 		echo "0 -10 GMT CONFERENCE" | gmt text -F+f32p,Helvetica-Bold,red=thinner
-		echo "0 -30 Honolulu, Hawaii, April 1, 2020" | gmt text -F+f18p,Helvetica-Bold,green=thinnest
+		echo "0 -30 Honolulu, Hawaii, April 1, 2021" | gmt text -F+f18p,Helvetica-Bold,green=thinnest
 		#   Then show example of color patterns and placing a PostScript image
 		gmt coast -Dc -A5000 -Gp86+fred+byellow+r100 -Sp@circuit.png+r100 -c1,0
 		echo "0 30 SILLY USES OF" | gmt text -F+f32p,Helvetica-Bold,lightgreen=thinner
@@ -30,9 +30,9 @@ gmt begin ex19
 		gmt grdimage lat.nc -Clat.cpt -nl
 		gmt coast -Q
 		gmt coast -Dc -A5000 -Wthinnest
-		echo "0 20 16TH INTERNATIONAL" | gmt text -F+f32p,Helvetica-Bold,red=thinner
+		echo "0 20 17TH INTERNATIONAL" | gmt text -F+f32p,Helvetica-Bold,red=thinner
 		echo "0 -10 GMT CONFERENCE" | gmt text -F+f32p,Helvetica-Bold,red=thinner
-		echo "0 -30 Honolulu, Hawaii, April 1, 2020" | gmt text -F+f18p,Helvetica-Bold,green=thinnest
+		echo "0 -30 Honolulu, Hawaii, April 1, 2021" | gmt text -F+f18p,Helvetica-Bold,green=thinnest
 	gmt subplot end
 gmt end show
 rm -f lat.nc lon.nc lat.cpt lon.cpt

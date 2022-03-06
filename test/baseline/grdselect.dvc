@@ -1,0 +1,5 @@
+outs:
+- md5: eea2d1abf7e04bcd1088c6ef425742ad.dir
+  size: 106992
+  nfiles: 2
+  path: grdselect

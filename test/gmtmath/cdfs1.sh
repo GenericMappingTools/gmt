@@ -16,7 +16,7 @@ cat << EOF > ML.txt
 7	0.999984741210938
 8	1.000000000000000
 EOF
-gmt psxy -R-0.6/8.6/0/1.2 -JX6i/1.2i -P -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Xc -Y0.75i --MAP_FRAME_TYPE=graph > $ps
+gmt psxy -R-0.6/8.6/0/1.2 -JX6i/1.2i -P -K -Glightgreen p.d -Sb0.8q -W0.5p -BWS -Bxa1 -Byaf -Xc -Y0.75i --MAP_FRAME_TYPE=graph > $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
 gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL+t"Binomial C@-8,0.25@-" -Dj0.1i/0 >> $ps
 # Plot Poisson cumulative distribution
@@ -32,7 +32,7 @@ cat << EOF > ML.txt
 8	0.999762552671739
 EOF
 gmt math -T0/8/1 T 2 PCDF = p.d
-gmt psxy -R-0.6/8.6/0/1.2 -J -O -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Y1.65i --MAP_FRAME_TYPE=graph >> $ps
+gmt psxy -R-0.6/8.6/0/1.2 -J -O -K -Glightgreen p.d -Sb0.8q -W0.5p -BWS -Bxa1 -Byaf -Y1.65i --MAP_FRAME_TYPE=graph >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
 gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL+t"Poisson C(@~l=2@~)" -Dj0.1i/0 >> $ps
 # Plot normal cumulative distribution

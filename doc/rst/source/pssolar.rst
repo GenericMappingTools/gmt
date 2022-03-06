@@ -35,7 +35,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: solar_common.rst_
+.. include:: solar.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
@@ -44,9 +46,9 @@ Examples
 
 .. include:: explain_example.rst_
 
-Print current Sun position and Sunrise, Sunset times at::
+Print current Sun position and Sunrise, Sunset times at given date, time and time zone::
 
-    gmt pssolar -I-7.93/37.079+d2016-02-04T10:01:00
+    gmt pssolar -I-7.93/37.079+d2016-02-04T10:01:00+z02:00
 
 Plot the day-night and civil twilight::
 
@@ -57,7 +59,9 @@ Set up a clip path overlay based on the day/night terminator::
 
     gmt pssolar -R -J -G -Tc -O -K >> someplot.ps
 
-.. include:: solar_notes.rst_
+.. include:: solar.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------

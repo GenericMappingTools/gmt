@@ -10,8 +10,7 @@ gmt begin ex32
 	REM Here we get and convert the flag of Europe directly from the web through grdconvert using
 	REM GDAL support. We take into account the dimension of the flag (1000x667 pixels)
 	REM for a ratio of 3x2.
-	REM Because GDAL support will not be standard for most users, we have stored
-	REM the result, @euflag.nc in this directory.
+	REM To simplify the example, we have stored the result, @euflag.nc in this directory.
 
 	set Rflag=-R3/9/50/54
 	REM gmt grdconvert \

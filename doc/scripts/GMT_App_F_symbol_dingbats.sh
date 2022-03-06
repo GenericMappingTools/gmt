@@ -6,6 +6,7 @@
 # plot it with gmt pstext, including the header row and left column
 
 gmt begin GMT_App_F_symbol_dingbats
+gmt set GMT_THEME cookbook
 gmt set MAP_FRAME_PEN thick FONT_TITLE 14p
 
 # Chart for Symbols font

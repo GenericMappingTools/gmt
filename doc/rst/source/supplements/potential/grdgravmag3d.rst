@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt grdgravmag3d** *grdfile_top* [*grdfile_bot*] [ |-C|\ *density* ]
-[ |-E|\ *thick* ]
+[ |-E|\ *thickness* ]
 [ |-F|\ *xy_file* ]
 [ |-G|\ *outgrid* ]
 [ |-H|\ *args* ]
@@ -58,8 +58,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Output the gravity anomaly at nodes of this grid file.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -94,7 +96,9 @@ Optional Arguments
 
       **t**\|\ **T**\|\ **f**\|\ **F**  to compute the total field.
 
-      For a variable inclination and declination use IGRF. Set any of **-H+i**\|\ **g**\|\ **r**\|\ **f**\|\ **n** to do that
+    If we want to compute the magnetic anomalies over a large region where the ambient magnetic field
+    can no longer be assumed to be constant we can set variable inclinations and declinations via IGRF.
+    Set any of **-H+i**\|\ **g**\|\ **r**\|\ **f**\|\ **n** to do that
 
 .. _-I:
 
@@ -117,10 +121,10 @@ Optional Arguments
 
       **-Q**\ *region* Same syntax as **-R**.
 
-.. _-R:
-
-.. |Add_-R| replace:: **Note**: This overrides the source grid region (Default: use same region as input)
+.. |Add_-R| replace:: **Note**: This overrides the source grid region (Default: use same region as input) |Add_-R_links|
 .. include:: ../../explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -129,10 +133,10 @@ Optional Arguments
     This option serves to speed up the computation by not computing the effect of prisms that
     are further away than *radius* from the current node.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

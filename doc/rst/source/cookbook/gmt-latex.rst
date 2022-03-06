@@ -18,6 +18,12 @@ location instead of the regular text.
 
    Example of using a LaTeX equation in the x-axis label via -Bxaf+l"@[\\nabla^4 \\psi - \\Delta \\sigma_{xx}^2@[ (MPa)".
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_latex.txt
+
 .. _gmt-latex-fonts:
 
 GMT fonts and LaTeX

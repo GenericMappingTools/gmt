@@ -12,12 +12,17 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt filter1d** [ *table* ] |-F|\ *type<width>*\ [*modifier*]
-[ |-D|\ *increment* ] [ |-E| ]
-[ |-L|\ *lack\_width* ] [ |-N|\ *t\_col* ] [ |-Q|\ *q\_factor* ]
+**gmt filter1d** [ *table* ]
+|-F|\ *type<width>*\ [**+l**\|\ **u**]
+[ |-D|\ *increment* ]
+[ |-E| ]
+[ |-L|\ *lack\_width* ]
+[ |-N|\ *t\_col* ]
+[ |-Q|\ *q\_factor* ]
 [ |-S|\ *symmetry\_factor* ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+e**\|\ **i**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -53,7 +58,7 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ **type**\ *width*\ [*modifier*]
+**-F**\ **type**\ *width*\ [**+l**\|\ **u**]
     Sets the filter **type**. Choose among convolution and non-convolution
     filters. Append the filter code followed by the full filter
     *width* in same units as time column. By default we
@@ -128,7 +133,7 @@ Optional Arguments
 
 **-N**\ *t_col*
     Indicates which column contains the independent variable (time). The
-    left-most column is # 0, the right-most is # (*n_cols* - 1).  [Default is 0].
+    left-most column is 0, while the right-most is (*n_cols* - 1) [Default is 0].
 
 .. _-Q:
 
@@ -151,10 +156,12 @@ Optional Arguments
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     For details on array creation, see `Generate 1D Array`_.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bi.rst_
@@ -210,11 +217,11 @@ with a 5 year Gaussian filter, try
 Data along track often have uneven sampling and gaps which we do not
 want to interpolate using :doc:`sample1d`. To find the median depth in a 50
 km window every 25 km along the track of cruise v3312, stored in
-v3312.dt, checking for gaps of 10km and asymmetry of 0.3:
+v3312.txt, checking for gaps of 10km and asymmetry of 0.3:
 
    ::
 
-    gmt filter1d v3312.dt -FM50 -T0/100000/25 -L10 -S0.3 > v3312_filt.dt
+    gmt filter1d v3312.txt -FM50 -T0/100000/25 -L10 -S0.3 > v3312_filt.txt
 
 To smooth a noisy geospatial track using a Gaussian filter of full-width 100 km
 and not shorten the track, and add the distances to the file, use
@@ -226,6 +233,6 @@ and not shorten the track, and add the distances to the file, use
 See Also
 --------
 
-:doc:`gmt` ,
-:doc:`sample1d` ,
-:doc:`splitxyz`
+:doc:`gmt`,
+:doc:`sample1d`,
+:doc:`gmtsplit`

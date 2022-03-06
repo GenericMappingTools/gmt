@@ -159,7 +159,7 @@ if (NOT GMT_INCLUDEDIR)
 endif(NOT GMT_INCLUDEDIR)
 
 if (GMT_DATA_URL) # Backwards compatibility with old ConfigUser.cmake files
-	message (WARNING "CMake variable GMT_DATA_URL is deprecated and will be removed in the futhure releases. Use GMT_DATA_SERVER instead.")
+	message (WARNING "CMake variable GMT_DATA_URL is deprecated and will be removed in the future releases. Use GMT_DATA_SERVER instead.")
 	set (GMT_DATA_SERVER ${GMT_DATA_URL})
 endif (GMT_DATA_URL)
 

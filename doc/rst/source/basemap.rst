@@ -30,7 +30,96 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: basemap_common.rst_
+.. module_common_begins
+
+Description
+-----------
+
+Creates a basic or fancy basemap with axes, fill, and titles. Several map projections are available, and the user may
+specify separate tick-mark intervals for boundary annotation, ticking, and (optionally) gridlines. A simple map scale
+(|-L|) or directional rose (|-T|) may also be plotted. At least one of the options |-B|, |-L|, or |-T| must be
+specified.
+
+Required Arguments
+------------------
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-R| replace:: |Add_-R_links|
+.. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-Rz.rst_
+
+Optional Arguments
+------------------
+
+.. _-A:
+
+**-A**\ [*file*]
+    No plotting is performed.  Instead, we determine the geographical coordinates of the polygon outline for the
+    (possibly oblique) rectangular map domain.  The plot domain must be given via |-R| and |-J|, with no other options
+    allowed. The sampling interval is controlled via :term:`MAP_LINE_STEP` parameter. The coordinates are written to
+    *file* or to standard output if no file is specified.
+
+.. |Add_-B| replace:: |Add_-B_links|
+.. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. _-F:
+
+**-F**\ [**d**\|\ **l**\|\ **t**][**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]]\
+[**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
+
+    Without further options, draws a rectangular border around any map inset (|-D|; classic mode only), map scale (|-L|)
+    or map rose (|-T|) using :term:`MAP_FRAME_PEN`. Used in combination with |-D|, |-L| or |-T|.  Append **d** for map
+    inset, **l** for map scale, or **t** for map rose to specify which plot embellisment the |-F| parameters should be
+    applied to [default uses the same panel parameters for all selected map embellishments]. The following modifiers can
+    be appended to |-F|, with additional explanation and examples provided in the
+    :ref:`cookbook/features:The background panel` cookbook section:
+
+    .. include:: explain_-F_box.rst_
+
+.. _-L:
+
+.. include:: explain_-L_scale.rst_
+
+.. _-T:
+
+.. include:: explain_-T_rose.rst_
+
+.. |Add_-U| replace:: |Add_-U_links|
+.. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-XY| replace:: |Add_-XY_links|
+.. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-f| replace:: This applies only to the coordinates specified in the |-R| option.
+.. include:: explain_-f.rst_
+
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
+.. include:: explain_perspective.rst_
+
+.. include:: explain_-t.rst_
+
+.. include:: explain_help.rst_
+
+.. module_common_ends
 
 Examples
 --------
@@ -203,8 +292,8 @@ Another basemap for middle Europe may be created by
 
     gmt basemap -R0/90/25/55 -Jl45/20/32/45/0.1i -Bafg -B+t"Lambert Conformal Conic" -pdf lambertc
 
-Equidistant
-~~~~~~~~~~~
+Conic Equidistant
+~~~~~~~~~~~~~~~~~
 
 Yet another basemap of width 6 inch for middle Europe may be created by
 
@@ -236,10 +325,10 @@ will give the following basemap:
 
 Follow the instructions for stereographic projection if you want to
 impose rectangular boundaries on the azimuthal equal-area map but
-substitute **-Ja** for **-Js**.
+substitute |-J|\ **a** for |-J|\ **s**.
 
-Equidistant
-~~~~~~~~~~~
+Azimuthal Equidistant
+~~~~~~~~~~~~~~~~~~~~~
 
 A 15-cm-wide global map in which distances from the center (here 125/10)
 to any point is true can be obtained by:
@@ -271,7 +360,7 @@ vantage point 125/10 will give the following 6-inch-wide basemap:
 General Perspective
 ~~~~~~~~~~~~~~~~~~~
 
-The **-JG** option can be used in a more generalized form, specifying
+The |-J|\ **G** option can be used in a more generalized form, specifying
 altitude above the surface, width and height of the view point, and
 twist and tilt. A view from 160 km above -74/41.5 with a tilt of 55 and
 azimuth of 210 degrees, and limiting the viewpoint to 30 degrees width
@@ -279,7 +368,7 @@ and height will product a 6-inch-wide basemap:
 
    ::
 
-    gmt basemap -Rg -JG-74/41.5/160/210/55/30/30/6i -Bafg -B+t"General Perspective" -pdf genper
+    gmt basemap -Rg -JG-74/41.5/6i+z160+a210+t55+v30 -Bafg -B+t"General Perspective" -pdf genper
 
 Stereographic [conformal]
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -294,7 +383,7 @@ degrees annotation/tick interval and 1 degree gridlines, run
 
 To make a 12-cm-wide stereographic basemap for Australia from an
 arbitrary view point (not the poles), and use a rectangular boundary, we
-must give the pole for the new projection and use the **-R** option to
+must give the pole for the new projection and use the |-R| option to
 indicate the lower left and upper right corners (in lon/lat) that will
 define our rectangle. We choose a pole at 130/-30 and use 100/-45 and
 160/-5 as our corners. The command becomes
@@ -388,7 +477,7 @@ the Dateline:
 
    ::
 
-    basemap -Rg -JW180/25c -Bafg -B+tMollweide -pdf mollweide
+    gmt basemap -Rg -JW180/25c -Bafg -B+tMollweide -pdf mollweide
 
 Van der Grinten
 ~~~~~~~~~~~~~~~
@@ -404,14 +493,46 @@ Arbitrary rotation
 ~~~~~~~~~~~~~~~~~~
 
 If you need to plot a map but have it rotated about a vertical axis then
-use the **-p** option.  For instance, to rotate the basemap below 90
+use the |-p| option.  For instance, to rotate the basemap below 90
 degrees about an axis centered on the map, try
 
    ::
 
     gmt basemap -R10/40/10/40 -JM10c -Bafg -B+t"I am rotated" -p90+w25/25 -Xc -pdf rotated
 
-.. include:: basemap_notes.rst_
+.. module_note_begins
+
+Custom Labels or Intervals
+--------------------------
+
+The |-B| option sets up a regular annotation interval and the
+annotations derive from the corresponding *x*, *y*, or *z* coordinates.
+However, some applications requires special control on which annotations
+to plot and even replace the annotation with other labels. This is
+achieved by using **c**\ *intfile* in the |-B| option, where *intfile*
+contains all the information about annotations, ticks, and even
+gridlines. Each record is of the form *coord* *type* [*label*], where
+*coord* is the coordinate for this annotation (or tick or gridline),
+*type* is one or more letters from **a** (annotation), **i** interval
+annotation, **f** tickmark, and **g** gridline. Note that **a** and
+**i** are mutually exclusive and cannot both appear in the same
+*intfile*. Both **a** and **i** requires you to supply a *label* which
+is used as the plot annotation. If not given then a regular formatted
+annotation based on the coordinate will occur.
+
+Restrictions
+------------
+
+For some projections, a spherical earth is implicitly assumed. A warning
+will notify the user if |-V| is set.
+
+Bugs
+----
+
+The |-B| option is somewhat complicated to explain and comprehend.
+However, it is fairly simple for most applications (see examples).
+
+.. module_note_ends
 
 See Also
 --------

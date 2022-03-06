@@ -41,7 +41,7 @@ GMT allows several ways to represent a color:
 
 **C/M/Y/K**
     Specify **C**\ yan, **M**\ agenta, **Y**\ ellow, and blac\ **K**\ . Each
-    number is in the range from 0 (no paint) to 1 (maximum paint). This
+    number is in the range from 0 (no paint) to 100 (maximum paint). This
     representation is used by most color printers.
 
 List Of Colors

@@ -5,9 +5,9 @@
 #
 # We have four sets of CPT figures to make:
 # 1a) Our regular, traditional GMT CPTs [44]
-# 1b) The regular Scientific Color Maps* [24]
+# 1b) The regular Scientific Color Maps* [30]
 # 1c) Categorical CPTs (ours and SCM*)  [18]
-# 1d) Cyclic CPTs form SCM* [4]
+# 1d) Cyclic CPTs from SCM* [5]
 #
 # *from Fabio [www.fabiocrameri.ch/visualisation]
 
@@ -16,15 +16,20 @@ GMT_SHAREDIR=$(gmt --show-sharedir)
 # Make a skip list - note we don't need to add those with an O or S added since the will be grepped out as well
 cat << EOF > skip.lis
 acton
+bam
 bamako
 batlow
+batlowK
+batlowW
 berlin
 bilbao
 broc
 buda
+bukavu
 cork
 davos
 devon
+fes
 grayC
 hawaii
 imola
@@ -38,6 +43,7 @@ roma
 tofino
 tokyo
 turku
+vanimo
 vik
 srtm
 categorical
@@ -53,6 +59,7 @@ dy=0.6
 y0=$(gmt math -Q $n2 $dy MUL 0.1 ADD =)
 
 gmt begin GMT_App_M_1a
+gmt set GMT_THEME cookbook
 gmt set MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
 gmt basemap -R0/6.1/0/$y0 -Jx1i -B0
 

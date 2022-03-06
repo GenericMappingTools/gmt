@@ -22,7 +22,7 @@ cat << EOF > p.txt
 4 5
 EOF
 gmt begin autolegendcolor ps
-  gmt subplot begin 2x2 -R-1/6/-1/6 -Fs8c -SRl -SCb -Blrtb -A -T"Test auto-color polygon legends"
+  gmt subplot begin 2x2 -R-1/6/-1/6 -Fs8c -Srl -Scb -Blrtb -A -T"Test auto-color polygon legends"
     gmt plot p.txt -R-1/6/-1/6 -Gauto@50 -l"Poly #"+jBR -c
     gmt plot p.txt -R-1/6/-1/6 -Gauto@50 -l"Poly X-%2.2d"+jBR -c
     gmt plot p.txt -R-1/6/-1/6 -Gauto@50 -l"Poly A,Poly B,Poly C,N/A"+jBR -c

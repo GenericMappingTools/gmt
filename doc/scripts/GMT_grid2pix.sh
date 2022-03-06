@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Illustrate the problem with grdsample -T
 gmt begin GMT_grid2pix ps
+	gmt set GMT_THEME cookbook
 	gmt subplot begin 2x1 -F6i/2.5i -M3p -A+jTR+o-0.2i/0
 		gmt subplot set 0
 		gmt math -T0/7/0.02 T PI MUL COS = | gmt plot -R0/6.7/-1.5/1.7 -W2p -Bx1 -By0g10 -BWS --MAP_FRAME_TYPE=graph --MAP_GRID_PEN_PRIMARY=0.25p,-

@@ -1,18 +1,19 @@
 /*--------------------------------------------------------------------
-*
-*	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
-*	See LICENSE.TXT file for copying and redistribution conditions.
-*	This program is free software; you can redistribute it and/or modify
-*	it under the terms of the GNU Lesser General Public License as published by
-*	the Free Software Foundation; version 3 or any later version.
-*
-*	This program is distributed in the hope that it will be useful,
-*	but WITHOUT ANY WARRANTY; without even the implied warranty of
-*	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*	GNU Lesser General Public License for more details.
-*
-*	Contact info: www.generic-mapping-tools.org
-*--------------------------------------------------------------------*/
+ *
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
+ *--------------------------------------------------------------------*/
 /*
  * gmtspatial performs miscellaneous geospatial operations on polygons, such
  * as truncating them against a clipping polygon, calculate areas, find
@@ -21,6 +22,9 @@
  * Author:	Paul Wessel
  * Date:	10-Jun-2009
  * Version:	6 API
+ *
+ * Note on KEYS: DD(=f mean -D takes an optional input Dataset as argument via the +f modifier.
+ *               ND(= means -N takes a input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -44,7 +48,6 @@
 #define POL_BUFFER		7
 #define POL_CENTROID	8
 
-#define PW_TESTING
 #define MIN_AREA_DIFF		0.01;	/* If two polygons have areas that differ more than 1 % of each other then they are not the same feature */
 #define MIN_SEPARATION		0	/* If the two closest points for two features are > 0 units apart then they are not the same feature */
 #define MIN_CLOSENESS		0.01	/* If two close segments has an mean separation exceeding 1% of segment length, then they are not the same feature */
@@ -127,7 +130,7 @@ struct GMTSPATIAL_CTRL {
 		unsigned int ID;	/* If 1 we use running numbers */
 		char *file;
 	} N;
-	struct GMTSPATIAL_Q {	/* -Q[+c<min>/<max>][+h][+l][+p][+s[a|d]] */
+	struct GMTSPATIAL_Q {	/* -Q[<unit>][+c<min>/<max>][+h][+l][+p][+s[a|d]] */
 		bool active;
 		bool header;	/* Place dimension and centroid in segment headers */
 		bool area;		/* Apply range test on dimension */
@@ -147,6 +150,13 @@ struct GMTSPATIAL_CTRL {
 		bool active;
 		char *file;
 	} T;
+	struct GMTSPATIAL_W {	/* -W<length>[unit][+f|l] */
+		bool active;
+		bool extend[2];
+		unsigned int smode[2];
+		double length[2];
+		char unit[2];
+	} W;
 };
 
 struct GMTSPATIAL_PAIR {
@@ -178,7 +188,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->D.I.c_threshold = MIN_CLOSENESS;
 	C->D.I.s_threshold = MIN_SUBSET;
 	C->Q.mode = GMT_IS_POINT;	/* Undecided on line vs poly */
-	C->Q.dmode = 2;			/* Great-circle distance if not specified */
+	C->Q.dmode = GMT_GREATCIRCLE;	/* Great-circle distance if not specified */
 	return (C);
 }
 
@@ -757,76 +767,97 @@ GMT_LOCAL struct NN_INFO *gmtspatial_NNA_update_info (struct GMT_CTRL *GMT, stru
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-#ifdef PW_TESTING
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sb<width>|h|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_DIST_OPT, GMT_Rgeo_OPT);
-#else
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sb<width>|h|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT);
-#endif
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<cpol>]] [%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A[a<min_dist>]] [-C] [-D[+a<amax>][+c|C<cmax>][+d<dmax>][+f<file>][+p][+s<sfact>]] [-E+n|p] "
+		"[-F[l]] [-I[i|e]] [-L%s/<noise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]] [-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] "
+		"[-Sb<width>|h|i|j|s|u] [-T[<cpol>]] [-W<dist>[<unit>][+f|l]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT,
+		GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Nearest Neighbor (NN) Analysis. Compute minimum distances between NN point pairs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit used for NN distance calculation.  Returns minimum distances and point IDs for pairs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Aa to replace close neighbor pairs with their weighted average location until\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   no point pair has a NN distance less than the specified <min_dist> distance [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Considers 3rd column as z (if present) and 4th as w, if present [weight = 1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Clip polygons to the given region box (requires -R), possibly yielding new closed polygons.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For truncation instead (possibly yielding open polygons, i.e., lines), see -T.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Look for (near-)duplicates in <table>, or append +f to compare <table> against <file>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Near-duplicates have a minimum point separation less than <dmax> [0] and a closeness\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   ratio (mean separation/length) less than <cmax> [0.01].  Use +d and +c to change these.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +C to use median separation instead [+c uses mean separation].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If near-duplicates have lengths that differ by <sfact> or more then they are subsets or supersets [2].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To flag duplicate polygons, the fractional difference in areas must be less than <amax> [0.01].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   By default we consider all points when comparing two lines.  Use +p to limit\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the comparison to points that project perpendicularly on to the other line.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Orient all polygons to have the same handedness.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p for counter-clockwise (positive) or +n for clockwise (negative) handedness.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Force all input segments to become closed polygons on output by adding repeated point if needed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Fl instead to ensure input lines are not treated as polygons.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Compute Intersection locations between input polygon(s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append e or i for external or internal crossings only [Default is both].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use uppercase E or I to consider all segments within the same table as one entity [separate].\n");
-#ifdef PW_TESTING
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Remove tile Lines.  These are superfluous lines along the -R border.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append <gap_dist> (in m) [0], coordinate noise [1e-10], and max offset from gridline [1e-10].\n");
-#endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Determine ID of polygon (in <pfile>) enclosing each input feature.  The ID is set as follows:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     a) If OGR/GMT polygons, get polygon ID via -a for Z column, else\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     b) Interpret segment labels (-Z<value>) as polygon IDs, else\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c) Interpret segment labels (-L<label>) as polygon IDs, else\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     d) Append +p<ID> to set origin for auto-incrementing polygon IDs [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Modifier +a means all points of a feature (line, polygon) must be inside the ID polygon [mid point].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Modifier +z means append the ID as a new output data column [Default adds -Z<ID> to segment header].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Modifier +r means no table output; just reports which polygon a feature is inside.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Measure area and handedness of polygon(s) or length of line segments.  If -fg is used\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   you may append unit %s [k]; otherwise it will be based on the input Cartesian data unit.\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   We also compute polygon centroid or line mid-point.  See documentation for more information.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to limit output segments to those with area or length within specified range [output all segments].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     if <max> is not given then it defaults to infinity.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h to place the (area, handedness) or length result in the segment header on output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to consider all input as polygons and close them if necessary\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [only closed polygons are considered polygons].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to consider all input as lines even if closed [closed polygons are considered polygons].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to sort segments based on area or length; append a for ascending or d for descending [ascending].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default only reports results to stdout].\n");
+	GMT_Usage (API, 1, "\n-A[a<min_dist>]");
+	GMT_Usage (API, -2, "Nearest Neighbor (NN) Analysis. Compute minimum distances between NN point pairs. "
+		"Append unit used for NN distance calculation.  Returns minimum distances and point IDs for pairs. "
+		"Use -Aa to replace close neighbor pairs with their weighted average location until "
+		"no point pair has a NN distance less than the specified <min_dist> distance [0]. "
+		"Considers 3rd column as z (if present) and 4th as w, if present [weight = 1].");
+	GMT_Usage (API, 1, "\n-C Clip polygons to the given region box (requires -R), possibly yielding new closed polygons. "
+		"For truncation instead (possibly yielding open polygons, i.e., lines), see -T.");
+	GMT_Usage (API, 1, "\n-D[+a<amax>][+c|C<cmax>][+d<dmax>][+f<file>][+p][+s<sfact>]");
+	GMT_Usage (API, -2, "Look for (near-)duplicate lines or polygons. Duplicate lines have a minimum point separation less than <dmax> and a closeness "
+		"ratio (mean separation/length) less than <cmax>.  "
+		"If near-duplicates have lengths that differ by <sfact> or more then they are subsets or supersets. "
+		"To flag duplicate polygons, the fractional difference in areas must be less than <amax>. "
+		"By default, we consider all points when comparing two lines. Change these settings via modifiers:");
+	GMT_Usage (API, 3, "+a Set limit of fractional difference of polygon areas [0.01].");
+	GMT_Usage (API, 3, "+c Set closeness ratio (mean separation/length) [0.01]. "
+		"Use +C to use median separation instead.");
+	GMT_Usage (API, 3, "+d Set minimum mean point separation [0].");
+	GMT_Usage (API, 3, "+f Compare <table> against <file> instead of itself.");
+	GMT_Usage (API, 3, "+p limit comparison to points that project perpendicularly on to the other line [all points].");
+	GMT_Usage (API, 3, "+s Set length ratio difference threshold [2].");
+	GMT_Usage (API, 1, "\n-E+n|p");
+	GMT_Usage (API, -2, "Orient all polygons to have the same handedness:");
+	GMT_Usage (API, 3, "+n Impose clockwise (negative) handedness.");
+	GMT_Usage (API, 3, "+p Impose counter-clockwise (positive) handedness.");
+	GMT_Usage (API, 1, "\n-F[l]");
+	GMT_Usage (API, -2, "Force all input segments to become closed polygons on output by adding repeated point if needed. "
+		"Use -Fl instead to ensure input lines are not treated as polygons.");
+	GMT_Usage (API, 1, "\n-I[i|e]");
+	GMT_Usage (API, -2, "Compute Intersection locations between input polygon(s). Optionally append a directive:");
+	GMT_Usage (API, 3, "e: Compute external crossings only [Default is both].");
+	GMT_Usage (API, 3, "i: Compute internal crossings only [Default is both].");
+	GMT_Usage (API, -2, "Use uppercase E or I to consider all segments within the same table as one entity [separate].");
+	GMT_Usage (API, 1, "\n-L%s/<noise>/<offset>", GMT_DIST_OPT);
+	GMT_Usage (API, -2, "Remove tile Lines.  These are superfluous lines along the -R border. "
+		"Append <dist> (in m) [0], coordinate noise [1e-10], and max offset from gridline [1e-10].");
+	GMT_Usage (API, 1, "\n-N<pfile>[+a][+p<ID>][+r][+z]");
+	GMT_Usage (API, -2, "Determine ID of polygon (in <pfile>) enclosing each input feature.  The ID is set as follows:");
+	GMT_Usage (API, 3, "%s If OGR/GMT polygons, get polygon ID via -a for Z column, else", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Interpret segment labels (-Z<value>) as polygon IDs, else", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Interpret segment labels (-L<label>) as polygon IDs, else", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Append +p<ID> to set origin for auto-incrementing polygon IDs [0].", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Additional modifiers are available:");
+	GMT_Usage (API, 3, "+a All points of a feature (line, polygon) must be inside the ID polygon [mid point].");
+	GMT_Usage (API, 3, "+r No table output; just reports which polygon a feature is inside.");
+	GMT_Usage (API, 3, "+z Append the ID as a new output data column [Default adds -Z<ID> to segment header].");
+	GMT_Usage (API, 1, "\n-Q[<unit>][+c<min>[/<max>]][+h][+l][+p][+s[a|d]]");
+	GMT_Usage (API, -2, "Measure area and handedness of polygon(s) or length of line segments.  If -fg is used "
+		"you may append a <unit> from %s [k]; otherwise it will be based on the input Cartesian data unit. "
+		"We also compute polygon centroid or line mid-point.  See documentation for more information. Optional modifiers:", GMT_LEN_UNITS_DISPLAY);
+	GMT_Usage (API, 3, "+c Limit output segments to those with area or length within specified range [output all segments]. "
+		"If <max> is not given then it defaults to infinity.");
+	GMT_Usage (API, 3, "+h Place the (area, handedness) or length result in the segment header on output.");
+	GMT_Usage (API, 3, "+p Consider all input as polygons and close them if necessary "
+		"[only closed polygons are considered polygons].");
+	GMT_Usage (API, 3, "+l Consider all input as lines even if closed [closed polygons are considered polygons].");
+	GMT_Usage (API, 3, "+s Sort segments based on area or length; append a for ascending or d for descending [ascending].");
+	GMT_Usage (API, -2, "[Default only reports results to standard output].\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Spatial manipulation of polygons; choose among:\n");
+	GMT_Usage (API, 1, "\n-Sb<width>|h|i|j|s|u");
+	GMT_Usage (API, -2, "Spatial manipulation of polygons; choose a directive:");
 #ifdef HAVE_GEOS
-	GMT_Message (API, GMT_TIME_NONE, "\t     b<width> for computing buffer polygon around line/polygon. Append width of buffer zone\n");
+	GMT_Usage (API, 3, "b: Compute buffer polygon around line/polygon. Append <width> of buffer zone. "
+		"Note: this is a purely Cartesian operation so <width> must be in data units.");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t     h for detecting holes and reversing them relative to perimeters.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     i for intersection [Not implemented yet].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     j for joining polygons that were split by the Dateline [Not implemented yet].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     s for splitting polygons that straddle the Dateline.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     u for union [Not implemented yet].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Truncate polygons against the clip polygon <cpol>; if <cpol> is not given we require -R\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and clip against a polygon derived from the region border.\n");
-	GMT_Option (API, "V,bi2,bo,d,e,f,g,h,i,j,o,q,s,:,.");
+	GMT_Usage (API, 3, "h: Detect holes and reverse them relative to perimeters.");
+	GMT_Usage (API, 3, "i: Find intersection [Not implemented yet].");
+	GMT_Usage (API, 3, "j: Join polygons that were split by the Dateline [Not implemented yet].");
+	GMT_Usage (API, 3, "s: Split polygons that straddle the Dateline.");
+	GMT_Usage (API, 3, "u: Find union [Not implemented yet].");
+	GMT_Usage (API, 1, "\n-T[<cpol>]");
+	GMT_Usage (API, -2, "Truncate polygons against the clip polygon <cpol>; if <cpol> is not given we require -R "
+		"and clip against a polygon derived from the region border.");
+	GMT_Option (API, "V");
+	GMT_Usage (API, 1, "\n-W<dist>[<unit>][+f|l]");
+	GMT_Usage (API, -2, "Extend all segments with extra first and last points that are <dist> units away from the "
+		"original end points in the directions implied by the line ends.  For geographic data append a unit from %s [k]. "
+		" To extend the two ends by different amounts, give <distf>[<unit>]/<distl>[<unit>] instead. "
+		"By default we extend both ends of the segments.  Choose one modifier to change this:", GMT_LEN_UNITS_DISPLAY);
+	GMT_Usage (API, 3, "+f Only extend the start of the segments.");
+	GMT_Usage (API, 3, "+l Only extend the end of the segments.");
+	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,j,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -841,7 +872,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 
 	unsigned int n_files[2] = {0, 0}, pos, n_errors = 0;
 	int n;
-	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *s = NULL;
+	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *s = NULL, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -851,7 +882,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				n_files[GMT_IN]++;
 				break;
 			case '>':	/* Got named output file */
@@ -861,6 +892,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Do nearest neighbor analysis */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0] == 'a' || opt->arg[0] == 'A') {	/* Spatially average points until minimum NN distance is less than given distance */
 					Ctrl->A.mode = (opt->arg[0] == 'A') ? 2 : 1;	/* Slow mode is an undocumented test mode */
@@ -886,9 +918,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'C':	/* Clip to given region */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
 			case 'D':	/* Look for duplications */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				pos = 0;
 				while (gmt_strtok (opt->arg, "+", &pos, p)) {
@@ -914,12 +948,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 							break;
 						case 'f':	/* Gave a file name */
 							Ctrl->D.file = strdup (&p[1]);
-							if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->D.file))) n_errors++;
+							if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->D.file))) n_errors++;
 							break;
 					}
 				}
 				break;
 			case 'E':	/* Orient polygons -E+n|p  (old -E-|+) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 			 	Ctrl->E.active = true;
 				if (opt->arg[0] == '-' || strstr (opt->arg, "+n"))
 					Ctrl->E.mode = GMT_POL_IS_CW;
@@ -929,26 +964,28 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 					n_errors++;
 				break;
 			case 'F':	/* Force polygon or line mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.geometry = (opt->arg[0] == 'l') ? GMT_IS_LINE : GMT_IS_POLY;
 				break;
 			case 'I':	/* Compute intersections between polygons */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (opt->arg[0] == 'i') Ctrl->I.mode = 1;
 				if (opt->arg[0] == 'I') Ctrl->I.mode = 2;
 				if (opt->arg[0] == 'e') Ctrl->I.mode = 4;
 				if (opt->arg[0] == 'E') Ctrl->I.mode = 8;
 				break;
-#ifdef PW_TESTING
 			case 'L':	/* Remove tile lines */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 				if (n >= 1) Ctrl->L.s_cutoff = atof (txt_a);
 				if (n >= 2) Ctrl->L.path_noise = atof (txt_b);
 				if (n == 3) Ctrl->L.box_offset = atof (txt_c);
 				break;
-#endif
 			case 'N':	/* Determine containing polygons for features */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if ((s = strchr (opt->arg, '+')) == NULL) {	/* No modifiers */
 					Ctrl->N.file = strdup (opt->arg);
@@ -974,6 +1011,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'Q':	/* Measure area/length and handedness of polygons */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				s = opt->arg;
 				/* Handle +sa|d versus +s for deprecated ellipsoidal arc seconds */
@@ -990,16 +1028,16 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 
 				}
 				if (s[0] == '-' && strchr (GMT_LEN_UNITS, s[1])) {	/* Flat earth distances [deprecated; use -j instead] */
-					Ctrl->Q.dmode = 1;	Ctrl->Q.unit = s[1];	s += 2;
+					Ctrl->Q.dmode = GMT_FLATEARTH;	Ctrl->Q.unit = s[1];	s += 2;
 				}
 				else if (s[0] == '+' && s[1] == 's' && (s[2] == '\0' || !strchr ("ad", s[2]))) {	/* Geodesic distances using arc sec [deprecated; use -j instead] */
-					Ctrl->Q.dmode = 3;	Ctrl->Q.unit = s[1];	s += 2;
+					Ctrl->Q.dmode = GMT_GEODESIC;	Ctrl->Q.unit = s[1];	s += 2;
 				}
 				else if (s[0] == '+' && strchr ("dmefkMnu", s[1])) {	/* Geodesic distances (except arc second) [deprecated; use -j instead] */
-					Ctrl->Q.dmode = 3;	Ctrl->Q.unit = s[1];	s += 2;
+					Ctrl->Q.dmode = GMT_GEODESIC;	Ctrl->Q.unit = s[1];	s += 2;
 				}
-				else if (s[0] && strchr (GMT_LEN_UNITS, s[0])) {	/* Great circle distances */
-					Ctrl->Q.dmode = 2;	Ctrl->Q.unit = s[0];	s++;
+				else if (s[0] && strchr (GMT_LEN_UNITS, s[0])) {	/* Great circle distances, set unit */
+					Ctrl->Q.dmode = GMT_GREATCIRCLE;	Ctrl->Q.unit = s[0];	s++;
 				}
 				pos = 0;
 				while (gmt_strtok (s, "+", &pos, p)) {
@@ -1016,7 +1054,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 						case 'l':	/* Consider input as lines, even if closed */
 							Ctrl->Q.mode = GMT_IS_LINE;
 							break;
-						case 'p':		/* Consider input as polygones, close if necessary */
+						case 'p':		/* Consider input as polygons, close if necessary */
 							Ctrl->Q.mode = GMT_IS_POLY;
 							break;
 						case 'h':	/* Place result in output header */
@@ -1045,6 +1083,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'S':	/* Spatial polygon operations */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				if (opt->arg[0] == 'u') {
 					Ctrl->S.mode = POL_UNION;
@@ -1078,13 +1117,38 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 					n_errors++;
 				break;
 			case 'T':	/* Truncate against polygon */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->C.active = Ctrl->S.active = true;
 				Ctrl->S.mode = POL_CLIP;
 				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
 				break;
+			case 'W':	/* Widen the line */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				Ctrl->W.active = true;
+				if ((s = strstr (opt->arg, "+f")))
+					Ctrl->W.extend[0] = true;	/* Only first point */
+				else if ((s = strstr (opt->arg, "+l")))
+					Ctrl->W.extend[1] = true;	/* Only last point */
+				else
+					Ctrl->W.extend[0] = Ctrl->W.extend[1] = true;	/* Both points */
+				if (s) s[0] = '\0';	/* Temporarily chop off modifier */
+				if ((c = strchr (opt->arg, '/')))
+					c[0] = '\0';	/* Hide the second distance */
+				Ctrl->W.smode[0] = gmt_get_distance (GMT, opt->arg, &(Ctrl->W.length[0]), &(Ctrl->W.unit[0]));
+				if (c) {	/* Got two separate distances possibly in different units too */
+					Ctrl->W.smode[1] = gmt_get_distance (GMT, &c[1], &(Ctrl->W.length[1]), &(Ctrl->W.unit[1]));
+					c[0] = '/';	/* Restore slash */
+				}
+				else {	/* Same distance (and mode and unit for geographic) */
+					Ctrl->W.smode[1]  = Ctrl->W.smode[0];
+					Ctrl->W.length[1] = Ctrl->W.length[0];
+					Ctrl->W.unit[1]   = Ctrl->W.unit[0];
+				}
+				if (s) s[0] = '+';	/* Restore modifier */
+				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -1104,13 +1168,26 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+GMT_LOCAL double gmtspatial_dist_to_degree (struct GMT_CTRL *GMT, double d_in) {
+	double d_out = d_in / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in degrees or meters */
+	if (!GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Got unit distance measure */
+		d_out /= GMT->current.proj.DIST_M_PR_DEG;	/* Now in degrees */
+	return (d_out);
+}
+
+GMT_LOCAL double gmtspatial_dist_to_meter (struct GMT_CTRL *GMT, double d_in) {
+	double d_out = d_in / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in degrees or meters */
+	if (GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Got arc measure */
+		d_out *= GMT->current.proj.DIST_M_PR_DEG;	/* Now in degrees */
+	return (d_out);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int geometry = GMT_IS_POLY, internal = 0, external = 0, smode = GMT_NO_STRINGS;
-	bool mseg = false;
 
 	static char *kind[2] = {"CCW", "CW"};
 
@@ -1168,6 +1245,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	else if (Ctrl->A.active) geometry = GMT_IS_POINT;	/* NN analysis involves points */
 	else if (Ctrl->F.active) geometry = Ctrl->F.geometry;	/* Forcing polygon or line mode */
 	else if (Ctrl->S.active) geometry = GMT_IS_POLY;	/* Forcing polygon mode */
+	else if (Ctrl->W.active) geometry = GMT_IS_LINE;	/* Forcing polygon mode */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
@@ -1406,6 +1484,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
 		double out[3];
 		static char *type[2] = {"length", "area"}, upper[GMT_LEN32] = {"infinity"};
+		char a_unit[GMT_LEN8] = {""}, l_unit[GMT_LEN8] = {""};
 		bool new_data = (Ctrl->Q.header || Ctrl->Q.sort || Ctrl->E.active);
 		uint64_t seg, row_f, row_l, tbl, col, n_seg = 0, n_alloc_seg = 0;
 		unsigned int handedness = 0;
@@ -1423,6 +1502,8 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (geo) {
 			if (gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Default is m using great-circle distances */
 				Return (GMT_NOT_A_VALID_TYPE);
+			sprintf (l_unit, " [%c]",   Ctrl->Q.unit);	/* Length unit */
+			sprintf (a_unit, " [%c^2]", Ctrl->Q.unit);	/* Area unit */
 		}
 
 		if (Ctrl->Q.header) {	/* Add line length or polygon area stuff to segment header */
@@ -1482,15 +1563,15 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				if (Ctrl->Q.header) {	/* Add the information to the segment header */
 					if (S->header) {
 						if (poly)
-							snprintf (line, GMT_LEN128, "%s -Z%.12g (area) %.12g/%.12g (centroid) %s", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
+							snprintf (line, GMT_LEN128, "%s -Z%.12g (area%s) %.12g/%.12g (centroid) %s", S->header, out[GMT_Z], a_unit, out[GMT_X], out[GMT_Y], kind[handedness]);
 						else
-							snprintf (line, GMT_LEN128, "%s -Z%.12g (length) %.12g/%.12g (midpoint)", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y]);
+							snprintf (line, GMT_LEN128, "%s -Z%.12g (length%s) %.12g/%.12g (midpoint)", S->header, out[GMT_Z], l_unit, out[GMT_X], out[GMT_Y]);
 					}
 					else {
 						if (poly)
-							snprintf (line, GMT_LEN128, "-Z%.12g (area) %.12g/%.12g (centroid) %s", out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
+							snprintf (line, GMT_LEN128, "-Z%.12g (area%s) %.12g/%.12g (centroid) %s", out[GMT_Z], a_unit, out[GMT_X], out[GMT_Y], kind[handedness]);
 						else
-							snprintf (line, GMT_LEN128, "-Z%.12g (length) %.12g/%.12g (midpoint)", out[GMT_Z], out[GMT_X], out[GMT_Y]);
+							snprintf (line, GMT_LEN128, "-Z%.12g (length%s) %.12g/%.12g (midpoint)", out[GMT_Z], l_unit, out[GMT_X], out[GMT_Y]);
 					}
 				}
 				if (new_data) {	/* Must create the output segment and duplicate */
@@ -1555,7 +1636,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 		if (Ctrl->S.mode == POL_CLIP) {	/* Need to set up a separate table with the clip polygon */
 			if (Ctrl->T.file) {
-				gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
+				gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -C,-F,-L files */
 				if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 					Return (API->error);
 				}
@@ -1563,7 +1644,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
 					Return (GMT_DIM_TOO_SMALL);
 				}
-				gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+				gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
 				uint64_t dim[GMT_DIM_SIZE] = {1, 1, 5, 2};
@@ -1614,7 +1695,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							if (!external && !same_feature) continue;	/* Do not do external crossings */
 						}
 						gmt_init_track (GMT, S2->data[GMT_Y], S2->n_rows, &ylist2);
-						nx = gmt_crossover (GMT, S1->data[GMT_X], S1->data[GMT_Y], NULL, ylist1, S1->n_rows, S2->data[GMT_X], S2->data[GMT_Y], NULL, ylist2, S2->n_rows, false, gmt_M_is_geographic (GMT, GMT_IN), &XC);
+						nx = gmt_crossover (GMT, S1->data[GMT_X], S1->data[GMT_Y], NULL, ylist1, S1->n_rows, S2->data[GMT_X], S2->data[GMT_Y], NULL, ylist2, S2->n_rows, (internal > 0), gmt_M_is_geographic (GMT, GMT_IN), &XC);
 						if (nx) {	/* Polygon pair generated crossings */
 							uint64_t px;
 							if (Ctrl->S.active) {	/* Do the spatial clip operation */
@@ -1691,10 +1772,10 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							}
 							else {	/* Just report */
 								struct GMT_DATATABLE_HIDDEN *TH1 = gmt_get_DT_hidden (C->table[tbl1]), *TH2 = gmt_get_DT_hidden (C->table[tbl2]);
-								if (mseg)
-									sprintf (record, "%s-%" PRIu64 "%s%s-%" PRIu64, TH1->file[GMT_IN], seg1, GMT->current.setting.io_col_separator, TH2->file[GMT_IN], seg2);
-								else
-									sprintf (record, "%s%s%s", TH1->file[GMT_IN], GMT->current.setting.io_col_separator, TH2->file[GMT_IN]);
+								char F1[PATH_MAX] = {""}, F2[PATH_MAX] = {""};
+								if (TH1->file[GMT_IN] == NULL) snprintf (F1, PATH_MAX, "%" PRIu64 "-%" PRIu64, tbl1, seg1); else snprintf (F1, PATH_MAX, "%s-%" PRIu64, TH1->file[GMT_IN], seg1);
+								if (TH2->file[GMT_IN] == NULL) snprintf (F2, PATH_MAX, "%" PRIu64 "-%" PRIu64, tbl2, seg2); else snprintf (F2, PATH_MAX, "%s-%" PRIu64, TH2->file[GMT_IN], seg2);
+								sprintf (record, "%s%s%s", F1, GMT->current.setting.io_col_separator, F2);
 								Out.text = record;
 								for (px = 0; px < nx; px++) {	/* Write these to output */
 									out[GMT_X] = XC.x[px];  out[GMT_Y] = XC.y[px];
@@ -1705,7 +1786,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							gmt_x_free (GMT, &XC);
 						}
 						else if (Ctrl->S.mode == POL_CLIP) {	/* No crossings; see if it is inside or outside C */
-							if ((in = gmt_non_zero_winding (GMT, S2->data[GMT_X][0], S2->data[GMT_Y][0], S1->data[GMT_X], S1->data[GMT_Y], S1->n_rows)) != 0) {
+							if ((in = gmt_non_zero_winding (GMT, S2->data[GMT_X][0], S2->data[GMT_Y][0], S1->data[GMT_X], S1->data[GMT_Y], S1->n_rows)) != GMT_OUTSIDE) {
 								/* Inside, copy out the entire polygon */
 								if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 									if (S2->header)
@@ -1758,7 +1839,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct DUP_INFO **Info = NULL, *I = NULL;
 
 		if (Ctrl->D.file) {	/* Get trial features via a file */
-			gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -D files */
+			gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -D files */
 			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE|GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL) {
 				Return (API->error);
 			}
@@ -1766,7 +1847,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
-			gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+			gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 			from = Ctrl->D.file;
 		}
 		else {
@@ -1776,7 +1857,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			smode = (C->table[0]->segment[0]->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 			S2 = GMT_Alloc_Segment (GMT->parent, smode, 0, C->n_columns, NULL, NULL);
 		}
-		if (GMT_Init_IO (API, C->geometry, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+		if (GMT_Init_IO (API, GMT_IS_DATASET, C->geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 			gmt_free_segment (GMT, &S2);
 			Return (API->error);	/* Registers default output destination, unless already set */
 		}
@@ -1910,7 +1991,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct GMT_DATASEGMENT *S = NULL, *S2 = NULL;
 		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -CN files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -CN files */
 		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -1918,7 +1999,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		nmode = (Ctrl->N.mode == 1) ? GMT_IS_NONE : GMT_IS_LINE;
 		if (GMT_Init_IO (API, GMT_IS_DATASET, nmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
@@ -2196,6 +2277,86 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			Return (error);
 	}
 #endif
+
+	if (Ctrl->W.active) {	/* Extend all segments by specified amount in one or both directions */
+		bool geo;
+		uint64_t seg, tbl, col, n_new = 0, n_old;
+		double par[2], in[2], out[2], dist[2];
+
+		if (gmt_M_is_cartesian (GMT, GMT_IN) && ((Ctrl->W.unit[0] && strchr (GMT_LEN_UNITS, Ctrl->W.unit[0])) || (Ctrl->W.unit[1] && strchr (GMT_LEN_UNITS, Ctrl->W.unit[1])))) {
+			gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg if -W uses unit */
+		}
+		geo = gmt_M_is_geographic (GMT, GMT_IN);
+		if (Ctrl->W.extend[0]) n_new++;	/* Count number of new points in this segment */
+		if (Ctrl->W.extend[1]) n_new++;
+
+		if (geo) {
+			int def_mode = (GMT->common.j.active) ? GMT->common.j.mode : GMT_GREATCIRCLE;
+			if (GMT->common.j.active) Ctrl->W.smode[0] = Ctrl->W.smode[1] = def_mode;	/* Override any setting in -W */
+			if (Ctrl->W.unit[0] == '\0' && Ctrl->W.unit[0] == '\0') Ctrl->W.unit[0] = Ctrl->W.unit[1] = 'k';	/* Default for geographic distance is km */
+			else if (Ctrl->W.unit[0] == '\0')	/* Use same unit as for end extension */
+				Ctrl->W.unit[0] = Ctrl->W.unit[1];
+			else if (Ctrl->W.unit[1] == '\0')	/* Use same unit as for start extension */
+				Ctrl->W.unit[1] = Ctrl->W.unit[0];
+		}
+		else {	/* Just get Cartesian length(s) */
+			dist[0] = Ctrl->W.length[0];
+			dist[1] = Ctrl->W.length[1];
+		}
+
+		for (tbl = 0; tbl < D->n_tables; tbl++) {
+			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+				S = D->table[tbl]->segment[seg];
+				if (S->n_rows < 2) continue;	/* Need at least 2 points to extend line */
+				n_old = S->n_rows;
+				S->n_rows += n_new;
+				if (gmt_alloc_segment (GMT, S, S->n_rows, S->n_columns, (S->text) ? GMT_WITH_STRINGS : 0, false)) continue;
+				if (Ctrl->W.extend[0]) {
+					if (geo) {
+						error = gmt_init_distaz (GMT, Ctrl->W.unit[0], Ctrl->W.smode[0], GMT_MAP_DIST);
+						if (Ctrl->W.smode[0] == GMT_GREATCIRCLE)
+							dist[0] = gmtspatial_dist_to_degree (GMT, Ctrl->W.length[0]);	/* Make sure we have degrees from whatever -W set */
+						else	/* Get meters */
+							dist[0] = gmtspatial_dist_to_meter (GMT, Ctrl->W.length[0]);	/* Make sure we have degrees from whatever -W set */
+					}
+					/* Get outward azimuth at first point and widen profile */
+					for (col = 0; col < S->n_columns; col++) {	/* First move all rows one down */
+						memmove (&S->data[col][1], S->data[col], n_old * sizeof (double));
+						S->data[col][0] = 0;	/* Wipe all row 0 entries */
+					}
+					if (S->text) {
+						memmove (&S->text[1], S->text, n_old * sizeof (char *));
+						S->text[0] = strdup ("");
+					}
+					/* Make sure we evaluate the outgoing azimuth at the first point */
+					par[0] = gmt_az_backaz (GMT, S->data[GMT_X][1], S->data[GMT_Y][1], S->data[GMT_X][2], S->data[GMT_Y][2], false) + 180.0;
+					par[1] = dist[0];
+					in[GMT_X] = S->data[GMT_X][1];	in[GMT_Y] = S->data[GMT_Y][1];
+					gmt_translate_point (GMT, in, out, par, geo);
+					S->data[GMT_X][0] = out[GMT_X];	S->data[GMT_Y][0] = out[GMT_Y];
+				}
+				if (Ctrl->W.extend[1]) {
+					if (geo) {
+						error = gmt_init_distaz (GMT, Ctrl->W.unit[1], Ctrl->W.smode[1], GMT_MAP_DIST);
+						if (Ctrl->W.smode[1] == GMT_GREATCIRCLE)
+							dist[1] = gmtspatial_dist_to_degree (GMT, Ctrl->W.length[1]);	/* Make sure we have degrees from whatever -W set */
+						else	/* Get meters */
+							dist[1] = gmtspatial_dist_to_meter (GMT, Ctrl->W.length[1]);	/* Make sure we have degrees from whatever -W set */
+					}
+					if (S->text) S->text[S->n_rows-1] = strdup ("");
+					/* Make sure we evaluate the outgoing azimuth at the last point */
+					par[0] = gmt_az_backaz (GMT, S->data[GMT_X][S->n_rows-3], S->data[GMT_Y][S->n_rows-3], S->data[GMT_X][S->n_rows-2], S->data[GMT_Y][S->n_rows-2], true) + 180.0;
+					par[1] = dist[1];
+					in[GMT_X] = S->data[GMT_X][S->n_rows-2];	in[GMT_Y] = S->data[GMT_Y][S->n_rows-2];
+					gmt_translate_point (GMT, in, out, par, geo);
+					S->data[GMT_X][S->n_rows-1] = out[GMT_X];	S->data[GMT_Y][S->n_rows-1] = out[GMT_Y];
+				}
+			}
+		}
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
+			Return (API->error);
+		}
+	}
 
 	if (Ctrl->F.active) {	/* We read as polygons to force closure, now write out revised data */
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -107,6 +107,7 @@ struct GMT_COMMON {
 	struct R {	/* -Rw/e/s/n[/z_min/z_max][r] or -Rgridfile */
 		bool active[4];	/* RSET = 0: -R, ISET = 1: inc, GSET = 2: -r, FSET = 3: read grid */
 		bool oblique;	/* true when -R...r was given (oblique map, probably), else false (map borders are meridians/parallels) */
+		bool via_polygon;	/* Got -R<countrycode> so w/e/s/n may not perfectly fit a grid spacing, for instance */
 		uint32_t registration;	/* Registration mode of a grid given via -r or -Rgrid */
 		int row_order;	/* Order of rows in NetCDF output: 0 (not set) or k_nc_start_north or k_nc_start_south */
 		unsigned int mode;	/* For modern mode only: 0 = get exact region from data, 1 = rounded region from data */
@@ -161,6 +162,7 @@ struct GMT_COMMON {
 	struct d {	/* -d[i][o]<nan_proxy> */
 		bool active[2];
 		bool is_zero[2];
+		unsigned int first_col[2];	/* Only apply from this column onward */
 		double nan_proxy[2];
 		char string[GMT_LEN64];
 	} d;
@@ -211,9 +213,10 @@ struct GMT_COMMON {
 		bool active;
 		struct GMT_LEGEND_ITEM item;
 	} l;
-	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] */
+	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] (and +A for debugging) */
 		bool active;
 		bool antialias;		/* Defaults to true, if supported */
+		bool save_debug;	/* Write antialias counters to tmp grid */
 		bool truncate;		/* Defaults to false */
 		unsigned int interpolant;	/* Defaults to BCR_BICUBIC */
 		bool bc_set;		/* true if +b was parsed */
@@ -233,7 +236,7 @@ struct GMT_COMMON {
 		bool do_z_rotation;	/* true if rotating plot about a vertical axis */
 		double z_rotation;	/* Rotation of <angle> about vertical axis */
 	} p;
-	struct q {	/* -q[i|o]<rows>,...[+c<col>][+a|f|s] */
+	struct q {	/* -q[i|o]<rows>,...[+c<col>][+a|t|s] */
 		bool active[2];
 		bool inverse[2];
 		char string[2][GMT_LEN64];
@@ -252,6 +255,10 @@ struct GMT_COMMON {
 		unsigned int n_transparencies;	/* How many to read from file if no values given */
 		double value[2];
 	} t;
+	struct w {	/* -w[<col>]y|m|w|d|p<period>[/<phase>] */
+		bool active;
+		char string[GMT_LEN64];
+	} w;
 	struct x {	/* -x[[-]<n>] */
 		bool active;
 		int n_threads;

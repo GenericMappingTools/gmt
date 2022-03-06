@@ -6,7 +6,7 @@
 Our next and perhaps most business-like example presents a
 three-dimensional bar graph plot showing the geographic distribution of
 all the languages of the world. The input data
-was taken from `Ethnologue <http://www.ethnologue.com/>`_. We decide to plot a 3-D multi-band column
+was taken from `Ethnologue <https://www.ethnologue.com/>`_. We decide to plot a 3-D multi-band column
 centered on each continent with a height that is proportional to the
 languages used. We choose a plain
 linear projection for the basemap and add the multi-band columns and text on top.

@@ -12,6 +12,11 @@ usually Courier). The following is a list of the GMT fonts:
 
    The standard 35 PostScript fonts recognized by GMT.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_App_G.txt
 
 For the special fonts Symbol (12) and ZapfDingbats (34), see the octal
 charts in Chapter :doc:`octal-codes`. When specifying fonts in GMT, you can

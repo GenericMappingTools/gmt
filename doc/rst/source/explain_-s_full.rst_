@@ -1,11 +1,18 @@
-.. _-s_full:
+The **-s** option
+^^^^^^^^^^^^^^^^^
+
+**Syntax**
 
 **-s**\ [*cols*][**+a**][**+r**]
-    Suppress output of data records whose *z*-value(s) equal NaN [Default
-    outputs all records]. By default, we only consider the third data column
-    (*cols = 2*).  However, you can append a comma-separated list of all columns
-    or column ranges to include in the NaN test (column ranges must be given
-    in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if
-    not specified).  All the selected data columns must be NaN to skip the record.
-    Append **+a** to skip the record if just one or more of the columns equal NaN.
-    Append **+r** to reverse the decision, i.e., only output records that failed the test. 
+    Suppress output of data records whose *z*-value(s) equal NaN.
+
+**Description**
+
+The **-s** option can be used to suppress output for records whose *z*-value equals NaN [default outputs all records].
+Optionally, supply a comma-separated list of all columns or column ranges to consider for this NaN test [default only
+considers the third data column (i.e., *cols = 2*)]. Column ranges must be given in the format
+*start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if not specified. The following modifiers are supported:
+
+- **+r** to reverse the suppression, i.e., only output the records whose *z*-value equals NaN.
+- **+a** to suppress the output of the record if just one or more of the columns equal NaN [default skips record only
+  if values in all specified *cols* equal NaN]

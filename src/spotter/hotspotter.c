@@ -1,17 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Lesser General Public License as published by
- *   the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
- *   Contact info: www.generic-mapping-tools.org
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * HOTSPOTTER will (1) read ASCII file(s) with records for each seamount
@@ -131,7 +132,7 @@
 #define THIS_MODULE_PURPOSE	"Create CVA grid from seamount locations"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:>RVbdeghiqrs" GMT_OPT("FHMm")
+#define THIS_MODULE_OPTIONS "-:>RVbdeghiqr" GMT_OPT("FHMm")
 
 struct HOTSPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -148,6 +149,9 @@ struct HOTSPOTTER_CTRL {	/* All control options for this program (except common 
 		bool active;
 		char *file;
 	} G;
+	struct HOTSPOTTER_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct HOTSPOTTER_N {	/* -N */
 		bool active;
 		double t_upper;
@@ -185,24 +189,28 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -E[+]<rottable> -G<CVAgrid> %s\n", name, GMT_Id_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-D<factor>] [-N<upper_age>] [-S] [-T] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] %s -G%s %s %s [-D<factor>] [-N<upper_age>] "
+		"[-S] [-T] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, SPOTTER_E_OPT, GMT_OUTGRID, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT,
+		GMT_qi_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	spotter_rot_usage (API, 'E');
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output CVA grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given, "
+		"standard input is read. Expects (x,y,z,r,t) records, with t in Ma.");
+	spotter_rot_usage (API);
+	gmt_outgrid_syntax (API, 'G', "Specify file name for output CVA grid");
+	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
+	GMT_Usage (API, -2, "Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].");
 	GMT_Option (API, "Rg");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   standard input is read.  Expects (x,y,z,r,t) records, with t in Ma.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Scale affecting distance between points along flowline [0.5].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set upper age in m.y. for seamounts whose plate age is NaN [180].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Normalize CVA grid to percentages of the CVA maximum.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Truncate all ages to max age in stage pole model [Default extrapolates].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D<factor>");
+	GMT_Usage (API, -2, "Scale affecting distance between points along flowline [0.5].");
+	GMT_Usage (API, 1, "\n-N<upper_age>");
+	GMT_Usage (API, -2, "Set upper age in m.y. for seamounts whose plate age is NaN [180].");
+	GMT_Usage (API, 1, "\n-S Normalize CVA grid to percentages of the CVA maximum.");
+	GMT_Usage (API, 1, "\n-T Truncate all ages to max age in stage pole model [Default extrapolates].");
 	GMT_Option (API, "V,bi5,di,e,h,i,qi,r,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -223,7 +231,7 @@ static int parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Supplemental parameters */
@@ -231,39 +239,47 @@ static int parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct GMT
 				if (gmt_M_compat_check (GMT, 4))
 					GMT_Report (API, GMT_MSG_COMPAT, "-C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.value = atof (opt->arg);
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;	k = 0;
 				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}
 				if (opt->arg[k]) Ctrl->E.file = strdup (&opt->arg[k]);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->E.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->E.file))) n_errors++;
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.t_upper = atof (opt->arg);
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -288,7 +304,8 @@ EXTERN_MSC int GMT_hotspotter (void *V_API, int mode, void *args) {
 	uint64_t node, node_0;		/* Grid indices */
 	uint64_t n_expected_fields;
 	unsigned int n_stages;	/* Number of stage rotations (poles) */
-	unsigned int row, col, kx, ky, m;
+	unsigned int kx, ky, m;
+	openmp_int row, col;
 	int node_x_width;		/* Number of x-nodes covered by the seamount in question (y-dependent) */
 	int node_y_width;		/* Number of y-nodes covered by the seamount */
 	int d_col, d_row, col_0, row_0, n_columns, n_rows;
@@ -401,7 +418,7 @@ EXTERN_MSC int GMT_hotspotter (void *V_API, int mode, void *args) {
 	latfactor  = gmt_M_memory (GMT, NULL, G->header->n_rows, double);
 	ilatfactor = gmt_M_memory (GMT, NULL, G->header->n_rows, double);
 
-	for (row = 0; row < G->header->n_rows; row++) {
+	for (row = 0; row < (openmp_int)G->header->n_rows; row++) {
 		latfactor[row] = G_rad->header->inc[GMT_X] * cos (ypos[row]);
 		ilatfactor[row] = 1.0 / latfactor[row];
 	}
@@ -496,9 +513,9 @@ EXTERN_MSC int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 			/* OK, this point is within our region, get node index */
 
-			col = (unsigned int)gmt_M_grd_x_to_col (GMT, c[kx], G_rad->header);
+			col = (openmp_int)gmt_M_grd_x_to_col (GMT, c[kx], G_rad->header);
 			yg = gmt_lat_swap (GMT, R2D * c[ky], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-			row = (unsigned int)gmt_M_grd_y_to_row (GMT, yg, G->header);
+			row = (openmp_int)gmt_M_grd_y_to_row (GMT, yg, G->header);
 			node = gmt_M_ijp (G->header, row, col);
 
 			if (!processed_node[node]) {	/* Have not added to the CVA at this node yet */

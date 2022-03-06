@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt pstext** [ *textfiles* ] |-J|\ *parameters*
+**gmt pstext** [ *textfiles* ]
+|-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A| ]
 |SYN_OPT-B|
@@ -24,6 +25,7 @@ Synopsis
 [ |-L| ] [ |-M| ] [ |-N| ]
 [ |-O| ] [ |-P| ]
 [ |-Q|\ **l**\|\ **u** ]
+[ |-S|\ [*dx*/*dy*/][*shade*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -38,10 +40,13 @@ Synopsis
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-tv| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: text_common.rst_
+.. include:: text.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
@@ -62,10 +67,6 @@ To plot a text at the upper left corner of a 10 cm map::
 To add a typeset figure caption for a 3-inch wide illustration, use::
 
     gmt pstext -R0/3/0/5 -JX3i -O -h1 -M -N -F+f12,Times-Roman+jLT << EOF >> figure.ps
-
-
-   ::
-
     This is an unmarked header record not starting with #
     > 0 -0.5 13p 3i j
     @%5%Figure 1.@%% This illustration shows nothing useful, but it still needs
@@ -81,6 +82,10 @@ To add a text without using input data but only the fixed text option::
 To place a line containing a Latex equation, try::
 
     echo 3 3 'Use @[\Delta g = 2\pi\rho Gh@[' | gmt pstext -R0/6/0/6 -JX15c -Baf -F+f32p+a30 -P > map.ps
+
+To place text with a surrounding box and an underlying, shifted shade, both using a rounded rectangle, try::
+
+    gmt pstext -R0/10/0/5 -Jx1c -F+f32p+cCM+tWELCOME -Baf -Gyellow -Wfaint -S -C+tO -P > map.ps
 
 .. include:: text_notes.rst_
 

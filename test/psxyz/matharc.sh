@@ -35,7 +35,7 @@ gmt psxyz -R -J -O -K -W1p -S -p155/35 << EOF >> $ps
 EOF
 # Normalized by angle below
 gmt psbasemap -R0/4/0/4 -J -O -B1g1 -BWSne -K -X1i -Y4i -p155/35 >> $ps
-gmt psxyz -R -J -O -W1p -Gblack -Sm0.3i+b+e+n90 << EOF -p155/35 >> $ps
+gmt psxyz -R -J -O -W1p -Gblack -Sm0.3i+b+e+n90/0 << EOF -p155/35 >> $ps
 0	0	0	4.0i	0	90
 0	0	0	3.6i	0	80
 0	0	0	3.2i	0	70

@@ -49,17 +49,17 @@ for az in 30 135 200 290 ; do
 		gmt psxy -R -J -O -K -W1p,red -Xa$xpos -Ya$ypos tt.a >> $ps
 		echo "$cx $cy $az 0.75" | gmt psxy -R -J -O -K -SV0.15i+e+a60 -W0.5p -Gred -Xa$xpos -Ya$ypos >> $ps
 		echo "$cx $cy $az90 0.75" | gmt psxy -R -J -O -K -SV0.15i+e+a60 -W0.5p -Gred -Xa$xpos -Ya$ypos >> $ps
-		makeproj -$az 1.75 0 > tt.x
-		makeproj -$az 0 1.75 > tt.y
-		$AWK '{printf "%s %s P", $1, $2}' tt.x | gmt pstext -R -J -F+f7p+a$az -O -K -A -Xa$xpos -Ya$ypos >> $ps
-		$AWK '{printf "%s %s Q", $1, $2}' tt.y | gmt pstext -R -J -F+f7p+a$az90 -O -K -A -Xa$xpos -Ya$ypos >> $ps
+		gmt project -A$az90 -C$cx/$cy -N -G1 -L1.75/1.755 > tt.x
+		gmt project -A$az -C$cx/$cy -N -G1 -L1.75/1.755  > tt.y
+		(head -n 1 tt.x) | $AWK '{printf "%s %s P", $1, $2}' | gmt pstext -R -J -F+f7p+a$az -O -K -A -Xa$xpos -Ya$ypos >> $ps
+		(head -n 1 tt.y) | $AWK '{printf "%s %s Q", $1, $2}' | gmt pstext -R -J -F+f7p+a$az90 -O -K -A -Xa$xpos -Ya$ypos >> $ps
 		echo "$cx $cy 0 0.75" | gmt psxy -R -J -O -K -SV0.15i+e+a60 -W0.5p -Gblack -Xa$xpos -Ya$ypos >> $ps
 		echo "$cx $cy 90 0.75" | gmt psxy -R -J -O -K -SV0.15i+e+a60 -W0.5p -Gblack -Xa$xpos -Ya$ypos >> $ps
 		gmt pstext -R -J -O -K -F+f7p,white -Xa$xpos -Ya$ypos >> $ps <<< "1.75 0 x"
 		gmt pstext -R -J -O -K -F+f7p,white -Xa$xpos -Ya$ypos >> $ps <<< "0 1.8 y"
 		(echo "$x $y"; cut -f3,4 tt.d) | gmt psxy -R -J -O -K -W0.5p,- -Xa$xpos -Ya$ypos >> $ps
 		echo "$x $y" | gmt psxy -R -J -O -K -Xa$xpos -Ya$ypos -Sc0.075i -Gblack >> $ps
-		cut -f3,4 tt.d | gmt psxy -R -J -O -K -Xa$xpos -Ya$ypos -Sc0.075i -Gred >> $ps
+		cut -f3,4 tt.d | gmt psxy -R -J -O -K -Xa$xpos -Ya$ypos -Sc0.075i -W0.5p,black -Gred >> $ps
 		printf "0 2 [%s,%s] (%.2f,%.2f) (%.2f,%.2f)\n" $x $y `cat tt.d` | \
 			gmt pstext -R -J -F+f8p+jCB -O -K -Xa$xpos -Ya$ypos -N -D0/0.2i >> $ps
 		gmt pstext -R -J -O -K -Xa$xpos -Ya$ypos -N -D-0.05i/0.05i -Gwhite -W -F+f8p+jBR >> $ps <<< "2 -2 @~a@~ = $az@."

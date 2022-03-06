@@ -19,7 +19,7 @@ Synopsis
 [ |-E| ]
 [ |-G|\ **a**\ *startrec* ]
 [ |-G|\ **b**\ *stoprec* ]
-[ |-I|\ *ignore* ]
+[ |-I|\ **a\|c\|m\|t** ]
 [ |-L|\ [*corrtable*] ]
 [ |-N|\ **d**\|\ **s**\ *unit* ]
 [ |-Q|\ **a**\|\ **c**\|\ **v**\ *min*/*max* ]
@@ -345,6 +345,9 @@ Optional Arguments
     for feet, **k** for km, **M** for miles, **n** for nautical miles,
     or **u** for survey feet [Default is **e** (meters)].
 
+**-At**
+    Compute fake times for cruises with known duration but lacking individual record times.
+
 .. _-D:
 
 **-Da**\ *startdate*
@@ -375,7 +378,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ *ignore*
+**-I**\ **a\|c\|m\|t**
     Ignore certain data file formats from consideration. Append
     **a\|c\|m\|t** to ignore MGD77 ASCII, MGD77+ netCDF, MGD77T ASCII, or plain
     tab-separated ASCII table files, respectively. The option may be
@@ -394,7 +397,7 @@ Optional Arguments
 **-Nd**\|\ **s**\ *unit*
     Append **d** for distance or **s** for speed, then give the desired
     *unit* as **e** (meter or m/s), **f** (feet or feet/s), **k** (km or
-    km/hr), **m** (miles or miles/hr), **n** (nautical miles or knots),
+    km/hr), **M** (miles or miles/hr), **n** (nautical miles or knots),
     or **u** (survey feet or sfeet/s). [Default is **-Ndk** **-Nse** (km
     and m/s)].
 
@@ -423,12 +426,12 @@ Optional Arguments
 **-Sa**\ *startdist*
     Do not list data that are less than *startdist* meter along track
     from port of departure. Append **e** for meter, **f** for feet,
-    **k** for km, **m** for miles, **n** for nautical miles, or **u**
+    **k** for km, **M** for miles, **n** for nautical miles, or **u**
     for survey feet [Default is 0e (meters)].
 **-Sb**\ *stopdist*
     Do not list data that are *stopdist* or more meters along track from
     port of departure. Append **e** for meter, **f** for feet, **k** for
-    km, **m** for miles, **n** for nautical miles, or **u** for survey
+    km, **M** for miles, **n** for nautical miles, or **u** for survey
     feet [Default is end of track].
 
 .. _-T:
@@ -445,10 +448,10 @@ Optional Arguments
     Instead, the application of these bit-flags can be controlled via
     the : (colon) modifier to OPT(F).
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -628,4 +631,4 @@ References
 The Marine Geophysical Data Exchange Format - MGD77, see
 `<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
 
-IGRF, see `<http://www.ngdc.noaa.gov/IAGA/vmod/igrf/>`_
+IGRF, see `<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_

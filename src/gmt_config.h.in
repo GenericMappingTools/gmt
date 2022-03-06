@@ -1,18 +1,18 @@
-/*
+/*--------------------------------------------------------------------
  *
- *  Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- * See LICENSE.TXT file for copying and redistribution conditions.
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
- * Contact info: www.generic-mapping-tools.org
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------
  *
  * This include file contains ifdefs that tell us if this system has
@@ -43,9 +43,6 @@
 #cmakedefine HAVE_PCRE
 #cmakedefine HAVE_PCRE2
 #cmakedefine HAVE_POSIX_ERE
-
-/* compile with GDAL support <gdal.h> */
-#cmakedefine HAVE_GDAL
 
 /* compile with GEOS support <geos_c.h> */
 #cmakedefine HAVE_GEOS
@@ -110,6 +107,7 @@
 #cmakedefine HAVE___FUNC__
 #cmakedefine HAVE___FUNCTION__
 #cmakedefine HAVE__GETCWD
+#cmakedefine HAVE__RMDIR
 #cmakedefine HAVE_GETPID
 #cmakedefine HAVE__GETPID
 #cmakedefine HAVE_GETPWUID
@@ -327,10 +325,12 @@
 #	define _FILE_OFFSET_BITS 64
 #endif
 
-/* Check whether conditions for sighandler are met */
-#if !(defined(HAVE_SIGNAL_H_) && defined(HAVE_SYS_RESOURCE_H_) && \
+/* Check whether conditions for sighandler are met under *nix */
+#ifndef WIN32
+#   if !(defined(HAVE_SIGNAL_H_) && defined(HAVE_SYS_RESOURCE_H_) && \
 			defined(HAVE_SYS_TIME_H_) && defined(HAVE_SYS_UCONTEXT_H_))
-#	define NO_SIGHANDLER
+#	  define NO_SIGHANDLER
+#   endif
 #endif
 
 #endif /* !GMT_CONFIG_H */
