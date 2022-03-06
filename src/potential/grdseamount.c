@@ -1289,7 +1289,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								rho_z = rho * dz;
 								Ave->data[ij]  += (gmt_grdfloat)rho_z;	/* Must add up these since seamounts may overlap */
 								rho_weight[ij] += (gmt_grdfloat)dz;
-								prev_z[ij] = amplitude * orig_add;
+								if (exact_increments) prev_z[ij] = amplitude * orig_add;
 							}
 							if (first) {	/* May have to copy over to repeated column in global gridline-registered grids */
 								if (col == 0) {	/* Must copy from x_min to repeated column at x_max */
