@@ -187,6 +187,8 @@ Optional Arguments
     Write the times and names of all grids that were created to the text file *list*.
     Requires **-T**.  If not *list* file is given then we write to standard output.
     The output listing is suitable to be used as input to :doc:`grdflexure </supplements/potential/grdflexure>`.
+    **Note**: If **-W** is used the we write the shape grid name first followd by the density grid name.  The
+    output records are *time shapegrid *\ [ *densitygrid* ] *timetag*.
 
 .. _-N:
 
@@ -305,4 +307,4 @@ See Also
 
 :doc:`gmt.conf </gmt.conf>`, :doc:`gmt </gmt>`,
 :doc:`grdmath </grdmath>`, :doc:`gravfft </supplements/potential/gravfft>`,
-:doc:`gmtflexure </supplements/potential/gmtflexure>`
+:doc:`grdflexure </supplements/potential/grdflexure>`
