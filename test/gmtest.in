@@ -105,7 +105,7 @@ function psldemo()
 
 # Must have wrappers for all test programs not part of GMT distro:
 # assuming that all test programs start with test*.
-for apiprog in $(ls "@GMT_BINARY_DIR@/src/test*"); do
+for apiprog in $(ls @GMT_BINARY_DIR@/src/test*); do
     apiprog=$(basename $apiprog)
     eval "${apiprog}() { valgrind_wrapper \"@GMT_BINARY_DIR@/src/${apiprog}\" \"\$@\"; }"
 done
