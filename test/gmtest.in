@@ -121,6 +121,7 @@ for apiprog in \
     testgrdio \
     testapi_imageshading \
     testapi_matrix_as_grid \
+    testapi_matrix_grdfill \
     testapi_vector_strings \
     testapi_vector_plot \
     testapi_vector_io \
