@@ -439,6 +439,6 @@ See Also
 :doc:`gmt </gmt>`,
 :doc:`gmtflexure </supplements/potential/gmtflexure>`,
 :doc:`grdfft </grdfft>`,
-:doc:`gravfft </supplements/potential/gravfft>`
+:doc:`gravfft </supplements/potential/gravfft>`,
 :doc:`grdmath </grdmath>`, :doc:`grdproject </grdproject>`,
 :doc:`grdseamount </supplements/potential/grdseamount>`
