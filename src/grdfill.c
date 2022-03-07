@@ -599,8 +599,8 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 	ID = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, char);
 	/* Set the top and bottom boundary rows to UINT_MAX */
 	offset = (uint64_t)(Grid->header->pad[YHI] + Grid->header->n_rows) * Grid->header->mx;
-	for (node = 0; node < (uint64_t)Grid->header->pad[YHI]*Grid->header->mx; node++) ID[node] = ID[node+offset] = 1;
-	/* Set the left and right boundary columnss to UINT_MAX */
+	for (node = 0; node < (openmp_int)Grid->header->mx; node++) ID[node] = ID[node+offset] = 1;
+	/* Set the left and right boundary columns to UINT_MAX */
 	offset = Grid->header->pad[XLO] + Grid->header->n_columns;
 	for (row = 0; row < (openmp_int)Grid->header->my; row++) {
 		for (col = 0; col < (openmp_int)Grid->header->pad[XLO]; col++)
