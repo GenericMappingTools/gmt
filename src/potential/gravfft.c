@@ -634,6 +634,7 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Surface and density grids have different intervals\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
+		for (m = 0; m < Rho->header->size; m++) if (gmt_M_is_fnan (Rho->data[m])) Rho->data[m] = 0.0;	/* Replace any NaNs with zeros */
 	}
 
 	/* Grids are compatible. Initialize FFT structs, grid headers, read data, and check for NaNs */
