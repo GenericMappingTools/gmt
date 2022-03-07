@@ -747,7 +747,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM = 0.0, v_curr, v_prev, *V = NULL;
 	double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch, prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf;
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL, g_noise = exp (-4.5), g_scl = 1.0 / (1.0 - g_noise), phi_prev, phi_curr;
-	double orig_add, dz, h_orig, scale_prev = 0.0, rho_z;
+	double orig_add, dz, h_orig, scale_prev = 0.0, rho_z, sum_rz, sum_z;
 	void (*shape_func[N_SHAPES]) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
 	double (*phi_solver[N_SHAPES]) (double in[], double f, double v, bool elliptical);
 
@@ -1070,6 +1070,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					/* Ok, we are inside the region - process data */
 					GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate seamount # %6d [%c]\n", n_smts, code);
 
+					sum_rz = sum_z = 0.0;	/* Reset counters for this seamount */
 					if (Ctrl->T.active) {	/* Must compute volume fractions v_curr, v_prev of an evolving seamount */
 						life_span = in[t0_col] - in[t1_col];	/* Total life span of this seamount */
 						if (Ctrl->Q.fmode == FLUX_GAUSSIAN) {	/* Gaussian volume flux */
@@ -1289,6 +1290,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								rho_z = rho * dz;
 								Ave->data[ij]  += (gmt_grdfloat)rho_z;	/* Must add up these since seamounts may overlap */
 								rho_weight[ij] += (gmt_grdfloat)dz;
+								sum_rz += rho_z;
+								sum_z += dz;
 								if (exact_increments) prev_z[ij] = amplitude * orig_add;
 							}
 							if (first) {	/* May have to copy over to repeated column in global gridline-registered grids */
@@ -1311,6 +1314,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							}
 							empty = false;	/* We have made a change to this grid */
 						}
+					}
+					if (sum_z > 0.0) {
+						double mean_rho = sum_rz / sum_z;
+						GMT_Report (API, GMT_MSG_NOTICE, "Seamount # %d has mean density of %g\n", n_smts, mean_rho);
 					}
 				}
 			}
