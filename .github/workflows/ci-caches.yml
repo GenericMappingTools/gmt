@@ -85,7 +85,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install vcpkg libraries
         run: bash ci/install-dependencies-windows.sh

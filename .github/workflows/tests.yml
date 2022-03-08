@@ -55,7 +55,7 @@ jobs:
         uses: styfle/cancel-workflow-action@0.9.1
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup vcpkg (Windows)
         uses: dawidd6/action-download-artifact@v2.17.0
