@@ -18062,7 +18062,7 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 		return GMT_RUNTIME_ERROR;
 	}
 
-	sprintf (our_glue, "%s_glue.c", library);	/* Name of the output allthough not under our control */
+	sprintf (our_glue, "%s_glue.c", library);	/* Name of the output although not under our control */
 
 	while (C[k]) {	/* A NULL marks the end of files */
 		if (!strcmp (C[k], our_glue)) {	/* Silently skip any file with that name */

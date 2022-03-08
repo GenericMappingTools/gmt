@@ -550,7 +550,7 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 
 	lbl[0] = (I->txt[0]) ? I->txt[0] : def[0];
 	lbl[1] = (I->txt[1]) ? I->txt[1] : def[1];
-	/* The x/y coordinates in SAVE in original cooordinates */
+	/* The x/y coordinates in SAVE in original coordinates */
 
 	for (pol = 0; pol < n; pol++) {	/* Set y min/max for polar caps */
 		if (abs (save[pol].kind) < 3) continue;	/* Skip all but polar caps */
