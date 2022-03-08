@@ -145,17 +145,19 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *href*/*rho_lo*/*rho_hi*\ [**+d**\ *densify*][**+p**\ *power*]
+**-H**\ *href*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
     Set reference seamount parameters for an *ad-hoc* variable radial density function. Give
-    the low and high seamount densities in km/m^3 or g/cm^3 and the reference height in meters.
+    the low and high seamount densities in km/m^3 or g/cm^3 and the fixed reference height in meters.
     Use modifers **+d** and **+p** to change the water-pressure-driven flank density increase
     over the full reference height [0] and the variable density profile power [1, i.e., a linear change].
     Here, *h* is the peak height of any seamount and *z(r)* is its shape.  If the seamount is
-    truncated (vai **-F**) then *h* refers to the untruncated height.
+    truncated (via **-F**) then *h* refers to the untruncated height.  **Note**: If **-V** is used
+    the we report the mean density for each seamount processed.  The radial density function is thus defined
+    by :math:`\Delta \rho_s = \rho_h - \rho_l` and the *densify* setting :math:`\Delta \rho_f`:
 
 .. math::
 
-    \rho(r,z) = \rho_l + \left ( \rho_h - \rho_l \right ) \left ( \frac{h-z(r)}{h_r} \right )^p + \Delta \rho \left (\frac{h_r-z(r)}{h_r} \right )
+    \rho(r,z) = \rho_l + Delta \rho_s \left ( \frac{h-z(r)}{h_r} \right )^p + \Delta \rho_f \left (\frac{h_r-z(r)}{h_r} \right )
 
 .. figure:: /_images/GMT_seamount_density.*
    :width: 500 px
