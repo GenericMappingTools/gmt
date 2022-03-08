@@ -1315,9 +1315,9 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							empty = false;	/* We have made a change to this grid */
 						}
 					}
-					if (sum_z > 0.0) {
+					if (sum_z > 0.0) {	/* This is only true when -H -W are used */
 						double mean_rho = sum_rz / sum_z;
-						GMT_Report (API, GMT_MSG_NOTICE, "Seamount # %d has mean density of %g\n", n_smts, mean_rho);
+						GMT_Report (API, GMT_MSG_NOTICE, "Seamount # %d mean density: %g\n", n_smts, mean_rho);
 					}
 				}
 			}
