@@ -37,7 +37,7 @@
  * 	   @earth_relief_<res>.grd	Various global relief grids
  * We may add more data later but this is our start.
  * 2. Data sets only used to run an example or a test script
- * and these are all called @*, i.e., a '@' is pre-pended to the name.
+ * and these are all called @*, i.e., a '@' is prepended to the name.
  * They live in a cache subdirectory under the GMT_DATA_SERVER
  * and will be placed in a cache directory in the users ~/.gmt directory.
  * 3. Generic URLs starting with http:, https:, or ftp:  These will be

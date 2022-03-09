@@ -14687,7 +14687,7 @@ GMT_LOCAL bool gmtinit_replace_missing_with_questionmark (struct GMTAPI_CTRL *AP
 	/* Category 1 projections: Always has slashes and need to end in /? */
 	if ((strchr ("cC", arg[0]) && !strncmp (&arg[1], "yl_stere", 8U)) || strchr ("aAbBcCdDeEfFgGlLoOsStT", arg[0])) {	/* These projection all must end in / and if no ? then append it */
 		char *c = NULL;
-		if (strchr ("oO", arg[0]) && (c = strstr (arg, "+v"))) {	/* Got a -Jo with modifier +v - temporarily remove modifer to check for missing ? */
+		if (strchr ("oO", arg[0]) && (c = strstr (arg, "+v"))) {	/* Got a -Jo with modifier +v - temporarily remove modifier to check for missing ? */
 			c[0] = '\0';	/* Chop you go */
 			L = strlen (arg) - 1;	/* Recompute position of last char */
 		}

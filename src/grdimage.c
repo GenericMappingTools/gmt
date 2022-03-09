@@ -1136,7 +1136,7 @@ GMT_LOCAL bool grdimage_adjust_R_consideration (struct GMT_CTRL *GMT, struct GMT
 
 void grdimage_reset_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *zmin, double *zmax) {
 	/* grdimage via gmt_grd_setregion may extend the grid outward to ensure we have enough nodes to
-	 * fill the map.  However, some of these nodes are actally outside the w/e/s/n requested. Here,
+	 * fill the map.  However, some of these nodes are actually outside the w/e/s/n requested. Here,
 	 * we check for simple cases where we can shrink the w/e/s/n back temporarily to recompute the grid
 	 * zmin/zmax which are often used for scaling of a CPT.  This can be done in these situations:
 	 * 	1. Not an oblique projection
