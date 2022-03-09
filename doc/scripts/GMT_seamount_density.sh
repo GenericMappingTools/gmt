@@ -2,11 +2,11 @@
 # Show the seamount density model offered in grdseamount
 gmt begin GMT_seamount_density
 	echo 0 0 50 6000 | gmt grdseamount -H6000/2500/3000+p1+d0 -Kmodel.grd -Cc -F0.2
-	gmt makecpt -Chot -I -T2500/3000 --COLOR_NAN=white
+	gmt makecpt -Cbilbao -T2500/3000 --COLOR_NAN=white
 	# Plot density reference model above
 	gmt grdimage model.grd -R0/1.1/0/1.3 -JX15c/4c -Bxaf+l"Normalized radial distance, @%6%r@%%" -Byafg1+l"Normalized height, @%6%h(r)@%%"
 	printf "0 1.25\n1 0\n" | gmt plot -W0.25p,-
-	printf "0 1\n 0.2 1\n1 0\n" | gmt plot -W0.75p
+	printf "0 1\n 0.2 1\n1 0\n" | gmt plot -W1p
 	z=0.5
 	y=$(gmt math -Q 1.25 $z ADD 2 DIV =)
 	echo 0.6 0.15 | gmt plot -Sc4p -Gwhite -W0.25p
