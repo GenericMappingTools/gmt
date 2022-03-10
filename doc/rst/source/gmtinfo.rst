@@ -21,7 +21,7 @@ Synopsis
 [ |-I|\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**] ]
 [ |-L| ]
 [ |-S|\ [**x**][**y**] ]
-[ |-T|\ *dz*\ [**+c**\ *col*] ]
+[ |-T|\ *dz*\ [**w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**][**+c**\ *col*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
@@ -106,7 +106,7 @@ Optional Arguments
     information for each segment in the virtual data set: *tbl_number, seg_number,
     n_rows, start_rec, stop_rec*. Mode **t** does the same but honors the input
     table organization and thus resets *seg_number, start_rec, stop_rec* at the
-    start of each new table.
+    start of each new table [Default is **i**].
 
 .. _-I:
 
@@ -130,6 +130,7 @@ Optional Arguments
     as a closed polygon segment. **Note**: For oblique projections you should
     use the **-Ap** option in :doc:`plot` to draw the box properly.
     If **-Ie** is given then the exact min/max of the input is given in the **-R** string.
+    If you only want either the x-* or *y-* range to be exact and the other range rounded, give one of the increments as zero.
     Append **+r** to modify the min/max of the first *n* columns further:
     Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
     region to be a multiple of these steps [no adjustment]. Alternatively, use **+R** to extend the region
@@ -156,9 +157,11 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *dz*\ [**+c**\ *col*]
+**-T**\ *dz*\ [**w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**][**+c**\ *col*]
     Report the min/max of the first (0'th) column to the nearest multiple of *dz* and output this as the
     string **-T**\ *zmin/zmax/dz*. To use another column, append **+c**\ *col*. Cannot be used together with **-I**.
+    **Note**: If your column has absolute time then you may append a valid fixed time unit to *dz*, or rely
+    on the current setting of :term:`TIME_UNIT` [**s**].
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -126,28 +126,32 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 	unsigned int k, n_errors = 0, n_files = 0;
 	int n;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {		/* Process all the options given */
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->Out.active = true;
 				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			case 'A':	/* Specify z-axis is positive up [Default is down] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.rho = atof (opt->arg);
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'v': Ctrl->F.mode = TALWANI2D_VGG;		break;
@@ -161,25 +165,34 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 				k = 0;
 				while (opt->arg[k]) {
 					switch (opt->arg[k]) {
-						case 'h': Ctrl->M.active[TALWANI2D_HOR] = true; break;
-						case 'z': Ctrl->M.active[TALWANI2D_VER] = true; break;
+						case 'h':
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI2D_HOR]);
+							Ctrl->M.active[TALWANI2D_HOR] = true;
+							break;
+						case 'z':
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI2D_VER]);
+							Ctrl->M.active[TALWANI2D_VER] = true;
+							break;
 						default:
 							n_errors++;
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
 							break;
 					}
 					k++;
 				}
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.file = strdup (opt->arg);
 				break;
 			case 'T':	/* Either get a file with time coordinate or a min/max/dt setting */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_DIST | GMT_ARRAY_UNIQUE, 0);
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				k = (opt->arg[0] == '/') ? 1 : 0;	/* In case someone gives -Z/ymin/ymax */
 				n = sscanf (&opt->arg[k], "%lf/%lf/%lf", &Ctrl->Z.level, &Ctrl->Z.ymin, &Ctrl->Z.ymax);
@@ -188,7 +201,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 				else if (n == 1) Ctrl->Z.mode = 1;
 				break;
 			default:
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -526,7 +539,8 @@ GMT_LOCAL double talwani2d_get_one_output (struct GMT_CTRL *GMT, double x_obs, d
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
-	int srow, error = 0, ns;
+	int error = 0, ns;
+	int64_t srow;
 	unsigned int k, tbl, seg, n = 0, geometry, n_bodies, dup_node = 0, n_duplicate = 0;
 	size_t n_alloc = 0, n_alloc1 = 0;
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 2}, row;
@@ -578,7 +592,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 	}
 	else {	/* Got a dataset with output locations */
 		geometry = GMT_IS_PLP;	/* We don't really know */
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -C,-F,-L files */
 		if ((Out = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -586,7 +600,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 			gmt_adjust_dataset (GMT, Out, 2U);
 			geometry = GMT_IS_LINE;	/* Since we are making from scratch */
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 	}
 
 	/* Specify input expected columns to be at least 2 */
@@ -735,7 +749,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 			/* Spread calculation over selected cores */
 #pragma omp parallel for private(srow,z_level,answer) shared(GMT,Ctrl,S,scl,body,n_bodies, G0)
 #endif
-			for (srow = 0; srow < (int)S->n_rows; srow++) {	/* Calculate attraction at all output locations for this segment. OpenMP requires sign int srow */
+			for (srow = 0; srow < (int64_t)S->n_rows; srow++) {	/* Calculate attraction at all output locations for this segment. OpenMP requires sign int srow */
 				z_level = (S->n_columns == 2 && !(Ctrl->Z.mode & 1)) ? S->data[GMT_Y][srow] : Ctrl->Z.level;
 				answer = talwani2d_get_one_output (GMT, S->data[GMT_X][srow] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax, G0);
 				S->data[GMT_Y][srow] = answer;

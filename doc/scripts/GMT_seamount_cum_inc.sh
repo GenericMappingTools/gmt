@@ -16,7 +16,7 @@ gmt begin GMT_seamount_cum_inc ps
 		gmt grdtrack -Gsmtc_00.40.nc -E40000/75000/160000/75000 -o0,2 | gmt plot -W1p -i0+s0.001,1+s0.001 -L+y0 -Gblack
 		gmt subplot set 3,0 -A"t = 1"
 		gmt grdtrack -Gsmtc_00.60.nc -E40000/75000/160000/75000 -o0,2 | gmt plot -W1p -i0+s0.001,1+s0.001 -L+y0 -Gblack
-		gmt subplot set 4,0 -A"t = 1"
+		gmt subplot set 4,0 -A"t = 0"
 		gmt grdtrack -Gsmtc_00.80.nc -E40000/75000/160000/75000 -o0,2 | gmt plot -W1p -i0+s0.001,1+s0.001 -L+y0 -Gblack
 		#
 		gmt subplot set 0,1 -A"t = 4"

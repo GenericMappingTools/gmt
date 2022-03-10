@@ -48,18 +48,22 @@ rotated region is not the entire globe.
 Required Arguments
 ------------------
 
-*ingrid*
-    Name of a grid file in geographical (lon, lat) coordinates.
+.. |Add_ingrid| replace:: Name of a grid file in geographical (lon, lat) coordinates.
+.. include:: /explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. include:: explain_rots.rst_
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Name of output grid. This is the grid with the data reconstructed
+.. |Add_outgrid| replace:: Name of output grid. This is the grid with the data reconstructed
     according to the specified rotation. If more than one reconstruction
     time is implied then *outgrid* must contain a C-format specifier
     to format a floating point number (reconstruction time) to text.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -80,7 +84,7 @@ Optional Arguments
     time is implied then *rotoutline* must contain a C-format specifier
     to format a floating point number (reconstruction time) to text.
     If only one time is implied and **-D** is not set then we write the
-    polygon to stdout (but see **-N**).
+    polygon to standard output (but see **-N**).
 
 .. _-F:
 
@@ -92,7 +96,7 @@ Optional Arguments
 
 **-N**
     Do Not output the rotated polygon outline [Default will write it to
-    stdout, or to a file via **-D**].
+    standard output, or to a file via **-D**].
 
 .. _-R:
 

@@ -1,13 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2005-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- * mgd77manage is used to (1) remove data columns from mgd77+ files
- * or (2) add a new data column to mgd77+ files.  Data can be added
- * from data tables, created from reference field formulas, or by
- * sampling grids along track.  Data from tables may be numbers or
- * text strings.
+ *	Copyright (c) 2005-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    See README file for copying and redistribution conditions.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  *
@@ -139,7 +144,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"The code letters are:");
 	GMT_Usage (API, 3, "a: Give filename with a new column to add.  We expect a single-column file "
 		"with the same number of records as the MGD77 file. Only one cruise can be set. "
-		"If filename is - we read from stdin.");
+		"If filename is - we read from standard input.");
 	GMT_Usage (API, 3, "c: Create a new column to be calculated from existing columns.  Add a code:");
 	GMT_Usage (API, 4, "m: IGRF total field.");
 	GMT_Usage (API, 4, "c: Carter correction.");
@@ -153,7 +158,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Append x for which mtfx field to use (1 or 2) [1].");
 	GMT_Usage (API, 3, "d: Give filename with (dist [see -N], data) for a new column.  We expect a two-column file "
 		"with distances (in km) in first column and data values in 2nd.  Only one cruise can be set. "
-		"If filename is - we read from stdin.  Only records with matching distance will have data assigned.");
+		"If filename is - we read from standard input.  Only records with matching distance will have data assigned.");
 	GMT_Usage (API, 3, "D: Same as d but we interpolate between the dist,data pairs to fill in all data records.");
 	GMT_Usage (API, 3, "e: Ingest MGD77 error/correction information (e77) produced by mgd77sniffer.  We will look "
 		"for the <cruise>.e77 file in the current directory or in $MGD77_HOME/E77. "
@@ -172,10 +177,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_img_syntax (API->GMT, 4);
 	GMT_Usage (API, 3, "n: Give filename with (rec_no, data) for a new column.  We expect a two-column file "
 		"with record numbers (0 means 1st row) in first column and data values in 2nd.  Only one cruise can be set. "
-		"If filename is - we read from stdin.  Only records with matching record numbers will have data assigned.");
+		"If filename is - we read from standard input.  Only records with matching record numbers will have data assigned.");
 	GMT_Usage (API, 3, "t: Give filename with (abstime, data) for a new column.  We expect a two-column file "
 		"with dateTclock strings in first column and data values in 2nd.  Only one cruise can be set. "
-		"If filename is - we read from stdin.  Only records with matching times will have data assigned.");
+		"If filename is - we read from standard input.  Only records with matching times will have data assigned.");
 	GMT_Usage (API, 3, "T: Same as t but we interpolate between the time, data pairs to fill in all data records.");
 	GMT_Usage (API, 1, "\n-D<name1>,<name2>,...");
 	GMT_Usage (API, -2, "Delete the columns listed from all the cruise data files. "
@@ -345,6 +350,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Adding a new column */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				k = 0;
 				if (opt->arg[k] == '+') {	/* Deprecated way of doing _f */
@@ -447,26 +453,31 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'D':	/* Columns to delete */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.file = strdup (opt->arg);
 				break;
 
 			case 'E':	/* character to generate no-string value */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				Ctrl->E.value = opt->arg[0];
 				break;
 
 			case 'F':	/* Force mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				break;
 
 			case 'I':	/* Column attribute information */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				n_errors += mgd77manage_decode_I_options (GMT, opt->arg, Ctrl->I.c_abbrev, Ctrl->I.c_name, Ctrl->I.c_units,
 				                              &Ctrl->I.c_size, Ctrl->I.c_comment, Ctrl->A.parameters);
 				break;
 
 			case 'N':	/* Set distance units */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.code[0] = opt->arg[0];
 				if (Ctrl->N.code[0] == 'm' && gmt_M_compat_check (GMT, 4)) {
@@ -480,7 +491,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct GM
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

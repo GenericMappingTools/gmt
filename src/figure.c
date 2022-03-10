@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <prefix> [<formats>] [<psconvertoptions>] [%s]\n\n", name, GMT_V_OPT);
+	GMT_Usage (API, 0, "usage: %s <prefix> [<formats>] [<psconvertoptions>] [%s]\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -58,6 +58,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "ppm:	Portable Pixel Map.");
 	GMT_Usage (API, 3, "ps:	PostScript.");
 	GMT_Usage (API, 3, "tif:	Tagged Image Format File.");
+	GMT_Usage (API, -2, "Two raster modifiers may be appended:");
+	GMT_Usage (API, 3, "+m For bmp, png, jpg, and tif, make a monochrome (grayscale) image [color].");
+	GMT_Usage (API, 3, "+q Append quality in 0-100 for jpg only [%d].", GMT_JPEG_DEF_QUALITY);
 	GMT_Usage (API, 1, "\n<psconvertoptions>");
 	GMT_Usage (API, -2,	"Contains one or more comma-separated options that"
 		" will be passed to psconvert when preparing this figure [%s].", GMT_SESSION_CONVERT);
@@ -84,10 +87,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	int arg_category = GMT_NOTSET;
 	char p[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	if ((opt = options) == NULL) {	/* Gave no arguments */
 		if (GMT->parent->external) return GMT_NOERROR;
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Required figure name not specified!\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Required figure name not specified!\n");
 		return GMT_PARSE_ERROR;
 	}
 	gmt_filename_set (opt->arg);
@@ -107,13 +111,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 			if (arg_category == GMT_IS_FMT) {	/* Got format specifications, check if OK */
 				int k = gmt_get_graphics_id (GMT, p);
 				if (k == GMT_NOTSET) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized graphics format %s\n", p);
+					GMT_Report (API, GMT_MSG_ERROR, "Unrecognized graphics format %s\n", p);
 					n_errors++;
 				}
 			}
 			else {	/* Check if valid psconvert options */
-				if (!strchr ("ACDEHMQS", p[0])) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized psconvert option  -%s\n", p);
+				if (!strchr (GMT_PSCONVERT_LIST, p[0])) {
+					GMT_Report (API, GMT_MSG_ERROR, "Unrecognized psconvert option  -%s\n", p);
 					n_errors++;
 				}
 			}

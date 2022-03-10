@@ -1,22 +1,26 @@
-**-I**\ *xinc*\ [**+e**\|\ **n**][/\ *yinc*\ [**+e**\|\ **n**]]
-    *x_inc* [and optionally *y_inc*] is the grid spacing. **Geographical
-    (degrees) coordinates**: Optionally, append an increment unit. Choose among
-    **m** to indicate arc minutes or **s** to indicate arc seconds. If one
-    of the units **e**, **f**, **k**, **M**, **n** or **u** is appended
-    instead, the increment is assumed to be given in meter, foot, km, Mile,
-    nautical mile or US survey foot, respectively, and will be converted to
-    the equivalent degrees longitude at the middle latitude of the region
-    (the conversion depends on :term:`PROJ_ELLIPSOID`). If *y_inc* is given
-    but set to 0 it will be reset equal to *x_inc*; otherwise it will be
-    converted to degrees latitude. **All coordinates**: If **+e** is appended
-    then the corresponding max *x* (*east*) or *y* (*north*) may be slightly
-    adjusted to fit exactly the given increment [by default the increment
-    may be adjusted slightly to fit the given domain]. Finally, instead of
-    giving an increment you may specify the *number of nodes* desired by
-    appending **+n** to the supplied integer argument; the increment is then
-    recalculated from the number of nodes, the *registration*, and the domain.
-    The resulting increment value depends on whether you have selected a
-    gridline-registered or pixel-registered grid; see :ref:`GMT File Formats` for
-    details. **Note**: If **-R**\ *grdfile* is used then the grid spacing and
-    the registration have already been initialized; use **-I** and **-r**
-    to override these values.
+**-I**\ *x_inc*\ [**+e**\|\ **n**][/\ *y_inc*\ [**+e**\|\ **n**]]
+    Set the grid spacing as *x_inc* [and optionally *y_inc*].
+    
+    **Geographical (degrees) coordinates**: Optionally, append an increment unit.
+    Choose among:
+
+        - **m** to indicate arc minutes
+        - **s** to indicate arc seconds
+        - **e** (meter), **f** (foot), **k** (km), **M** (mile), **n** (nautical
+          mile) or **u** (US survey foot), in which case the increment will be
+          converted to the equivalent degrees longitude at the middle latitude
+          of the region  (the conversion depends on :term:`PROJ_ELLIPSOID`). If
+          *y_inc* is given but set to 0 it will be reset equal to *x_inc*;
+          otherwise it will be converted to degrees latitude.
+    
+    **All coordinates**: The following modifiers are supported:
+    
+        - **+e** to slightly adjust the max *x* (*east*) or *y* (*north*) to fit
+          exactly the given increment if needed [Default is to slightly adjust
+          the increment to fit the given domain].
+        - **+n** to define the *number of nodes* rather than the increment, in
+          which case the increment is recalculated from the number of nodes,
+          the *registration* (see :ref:`GMT File Formats`), and the domain.
+          **Note**: If **-R**\ *grdfile* is used then the grid spacing and
+          the registration have already been initialized; use |-I| and |-r|
+          to override these values.

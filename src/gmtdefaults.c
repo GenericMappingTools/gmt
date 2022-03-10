@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -82,6 +82,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct GM
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -93,19 +94,20 @@ static int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'D':	/* Get GMT system-wide defaults settings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.mode = opt->arg[0];
 				break;
 			case 'L':	/* List the user's current GMT defaults settings */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -L is deprecated; it is now the default behavior.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -L is deprecated; it is now the default behavior.\n");
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

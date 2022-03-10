@@ -18,6 +18,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-D|\ [*east*] ]
 [ |-Q|\ *mode*\ [*options*] ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
 [ |SYN_OPT-bi| ]
@@ -27,6 +28,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -51,8 +53,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *grdfile*
-    Name of the output grid to hold the interpolation.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -127,12 +131,16 @@ Optional Arguments
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
-.. include:: explain_-qi.rst_
+.. include:: explain_-icols.rst_
 
-.. include:: explain_colon.rst_
+.. include:: explain_-qi.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-s.rst_
+
+.. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
 

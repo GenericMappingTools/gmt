@@ -136,6 +136,9 @@ Optional Arguments
 .. |Add_-bi| replace:: [Default is 2 or 3 input columns].
 .. include:: explain_-bi.rst_
 
+.. |Add_-bo| replace:: [Default is same as input].
+.. include:: explain_-bo.rst_
+
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-d.rst_
 

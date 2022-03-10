@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -110,6 +110,12 @@ struct GMT_RANGE {
 	double west;
 	double east;
 	double center;	/* Forced to be 0-360 */
+};
+
+/*! For accessing singular values in sorted order */
+struct GMT_SINGULAR_VALUE {
+	double value;
+	unsigned int order;
 };
 
 /*! For information on 1-D array */
@@ -377,11 +383,9 @@ struct GMT_CURRENT {
 	struct GMT_PSL ps;		/* Hold parameters related to PSL setup */
 	struct GMT_OPTION *options;	/* Pointer to current program's options */
 	struct GMT_FFT_HIDDEN fft;	/* Structure with info that must survive between FFT calls */
-#ifdef HAVE_GDAL
 	struct GMT_GDALREAD_IN_CTRL  gdal_read_in;  /* Hold parameters related to options transmitted to gdalread */
 	struct GMT_GDALREAD_OUT_CTRL gdal_read_out; /* Hold parameters related to options transmitted from gdalread */
 	struct GMT_GDALWRITE_CTRL    gdal_write;    /* Hold parameters related to options transmitted to gdalwrite */
-#endif
 };
 
 struct GMT_INTERNAL {
@@ -390,6 +394,7 @@ struct GMT_INTERNAL {
 	 * modified directly by user interaction. */
 	unsigned int func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  GMT_CONTROLLER (0) is initiating process (e.g. gmt.c) */
 	bool mem_set;			/* true when we have initialized the tmp memory already */
+	bool sample_along_arc;		/* true when sample1d need exact sampling along the arc */
 	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */
 	size_t mem_txt_alloc;

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 #define THIS_MODULE_PURPOSE	"Bin spatial data and determine statistics per bin"
 #define THIS_MODULE_KEYS	"<D{,>?}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVabdefghiqrsw"
+#define THIS_MODULE_OPTIONS "-:RVabdefghiqrw"
 
 enum gmtbinstats_types {
 	GMTBINSTATS_LOWER = 1,
@@ -82,6 +82,9 @@ struct GMTBINSTATS_CTRL {	/* All control options for this program (except common
 		bool active;
 		char *file;
 	} G;
+	struct GMTBINSTATS_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GMTBINSTATS_N {	/* -N */
 		bool active;
 	} N;
@@ -124,8 +127,10 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -Ca|d|g|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z -G<outgrid> %s %s -S%s [-E<empty>] [-N] [-T[h|r]] [%s] [-W[+s|w]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-			 name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -Ca|d|g|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z -G%s %s %s -S%s [-E<empty>] [-N] "
+		"[-T[h|r]] [%s] [-W[+s|w]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT,
+		GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -148,7 +153,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -3, "u: The maximum (upper)");
 	GMT_Usage (API, -3, "U: The maximum of all negative values");
 	GMT_Usage (API, -3, "z: The sum");
-	GMT_Usage (API, 1, "\n-G Name of output grid.");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
 	GMT_Option (API, "I");
 	GMT_Option (API, "R");
 	gmt_dist_syntax (API->GMT, "S" GMT_RADIUS_OPT, "Compute statistics using points inside this search radius.");
@@ -167,7 +172,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "a,bi");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.");
 	GMT_Option (API, "di,e,f,h,i");
-	GMT_Option (API, "qi,r,s,w,:,.");
+	GMT_Option (API, "qi,r,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -187,12 +192,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'E':	/* NaN value */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (opt->arg[0])
 					Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
@@ -202,14 +208,18 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'G':	/* Output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'C':	/* -Ca|d|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->C.mode = GMTBINSTATS_MEAN;	break;
@@ -236,14 +246,17 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 						break;
 				}
 				break;
-			case 'M':	/* Normalize by area */
+			case 'N':	/* Normalize by area */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Search radius */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				break;
 			case 'T':	/* Select hexagonal or rectangular tiling */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 'h': Ctrl->T.mode = GMTBINSTATS_HEXAGONAL; break;
@@ -255,12 +268,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'W':	/* Use weights */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "sw", GMT_MSG_ERROR)) n_errors++;
 				Ctrl->W.sigma = (strstr (opt->arg, "+s")) ? true : false;
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -273,6 +287,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 			n_errors += gmt_M_check_condition (GMT, gmt_M_is_geographic (GMT, GMT_IN), "Option -Th: Hexagonal tiling is a Cartesian operation\n");
 			n_errors += gmt_M_check_condition (GMT, !doubleAlmostEqual (GMT->common.R.inc[GMT_X], GMT->common.R.inc[GMT_Y]), "Option -Th: Give a single argument reflecting desired y-increment\n");
 			n_errors += gmt_M_check_condition (GMT, Ctrl->E.active, "Option -Th: The -E option is not allowed for hexagonal tiling\n");
+		}
+		else {
+			n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active, "Option -Tr: -G is a required argument when -Tr is used\n");
 		}
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.active, "Option -T: No search radius -S can be set for tiling\n");
 	}
@@ -432,9 +449,11 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 
 	bool wrap_180, replicate_x, replicate_y, hex_tiling, rect_tiling, geographic;
 
-	int col_0, row_0, row, col, row_end, col_stop, col_start, ii, jj, error = 0;
-	unsigned int n_cols, k, rowu, colu, d_row, y_wrap_kk, y_wrap_ij, max_d_col, x_wrap;
-	unsigned int *d_col = NULL, *n_in_circle = NULL, *n_alloc = NULL;
+	openmp_int rowu, colu, max_d_col, d_row, *d_col = NULL;
+	int row, col, col_0, row_0, row_end, col_stop, col_start;
+	int ii, jj, error = 0;
+	unsigned int n_cols, k, y_wrap_kk, y_wrap_ij, x_wrap;
+	unsigned int *n_in_circle = NULL, *n_alloc = NULL;
 	unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0, col_inc = 1;
 
 	uint64_t ij, kk, n = 0, n_read = 0;
@@ -511,7 +530,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	HH = gmt_get_H_hidden (Grid->header);
 
-	gmt_M_grd_loop (GMT, Grid, row, col, ij)	/* Initialize grid to NaN which is our flag for an unused grid node */
+	gmt_M_grd_loop (GMT, Grid, rowu, colu, ij)	/* Initialize grid to NaN which is our flag for an unused grid node */
 		Grid->data[ij] = GMT->session.d_NaN;
 
 	/* Initialize the input since we are doing record-by-record reading */
@@ -631,8 +650,8 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 
 		/* Loop over all nodes within radius of this node */
 
-		row_end = row_0 + d_row;
-		for (row = row_0 - d_row; row <= row_end; row++) {
+		row_end = row_0 + (int)d_row;
+		for (row = row_0 - (int)d_row; row <= row_end; row++) {
 
 			jj = row;
 			if (gmt_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range.  This call must happen BEFORE gmt_x_out_of_bounds as it sets wrap_180 */
@@ -642,8 +661,8 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 				dy = in[GMT_Y] - y0[rowu];
 				if (fabs (dy) > dy2) continue;	/* Outside regardless of x-coordinate */
 			}
-			col_stop  = col_0 + d_col[jj];
-			col_start = col_0 - d_col[jj];
+			col_stop  = col_0 + (int)d_col[jj];
+			col_start = col_0 - (int)d_col[jj];
 			if (hex_tiling) {	/* Make sure we start and stop on valid pseudo-columns so both col,row are even or odd */
 				if (skip_column (row,col_start)) col_start++;
 				if (skip_column (row,col_stop))  col_stop--;
@@ -699,13 +718,13 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 				if (replicate_x) {	/* Must check if we have to replicate a column */
 					if (colu == 0) 	/* Must replicate left to right column */
 						gmtbinstats_assign_node (GMT, Grid, visited, w, s, zp, zw_pair, n_in_circle, n_alloc, ij+x_wrap, kk+x_wrap, Ctrl->C.mode, in, weight);
-					else if (colu == HH->nxp)	/* Must replicate right to left column */
+					else if (colu == (openmp_int)HH->nxp)	/* Must replicate right to left column */
 						gmtbinstats_assign_node (GMT, Grid, visited, w, s, zp, zw_pair, n_in_circle, n_alloc, ij-x_wrap, kk-x_wrap, Ctrl->C.mode, in, weight);
 				}
 				if (replicate_y) {	/* Must check if we have to replicate a row */
 					if (rowu == 0)	/* Must replicate top to bottom row */
 						gmtbinstats_assign_node (GMT, Grid, visited, w, s, zp, zw_pair, n_in_circle, n_alloc, ij+y_wrap_ij, kk+y_wrap_kk, Ctrl->C.mode, in, weight);
-					else if (rowu == HH->nyp)	/* Must replicate bottom to top row */
+					else if (rowu == (openmp_int)HH->nyp)	/* Must replicate bottom to top row */
 						gmtbinstats_assign_node (GMT, Grid, visited, w, s, zp, zw_pair, n_in_circle, n_alloc, ij-y_wrap_ij, kk-y_wrap_kk, Ctrl->C.mode, in, weight);
 				}
 			}
@@ -722,16 +741,16 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 	kk = 0;
 	switch (Ctrl->C.mode) {
 		case GMTBINSTATS_MEAN: case GMTBINSTATS_MEANW:	/* Compute [weighted] mean */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if (w[kk] > 0.0) Grid->data[ij] /= w[kk], n++;
 				kk++;
 			}
 			break;
 		case GMTBINSTATS_MEDIAN:	/* Compute plain medians */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if ((k = n_in_circle[kk])) {
 					gmt_sort_array (GMT, zp[kk], k, GMT_FLOAT);
-					Grid->data[ij] = (k%2) ? zp[kk][k/2] : 0.5 * (zp[kk][(k-1)/2] + zp[kk][row/2]);
+					Grid->data[ij] = (k%2) ? zp[kk][k/2] : 0.5 * (zp[kk][(k-1)/2] + zp[kk][rowu/2]);
 					gmt_M_free (GMT, zp[kk]);
 					n++;
 				}
@@ -739,7 +758,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_MEDIANW:	/* Compute weighted medians */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if (n_in_circle[kk]) {
 					Grid->data[ij] = (gmt_grdfloat)gmt_median_weighted (GMT, zw_pair[kk], n_in_circle[kk]);
 					gmt_M_free (GMT, zw_pair[kk]);
@@ -749,7 +768,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_MODE:	/* Compute plain modes */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if ((k = n_in_circle[kk])) {
 					gmt_mode_f (GMT, zp[kk], k, k/2, true, gmt_mode_selection, &GMT_n_multiples, &zmode);
 					Grid->data[ij] = (gmt_grdfloat)zmode;
@@ -760,7 +779,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_MODEW:	/* Compute weighted modes */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if (n_in_circle[kk]) {
 					Grid->data[ij] = (gmt_grdfloat)gmt_mode_weighted (GMT, zw_pair[kk], n_in_circle[kk]);
 					gmt_M_free (GMT, zw_pair[kk]);
@@ -770,7 +789,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_QUANT:	/* Compute plain quantile */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if ((k = n_in_circle[kk])) {
 					Grid->data[ij] = (gmt_grdfloat) gmt_quantile_f (GMT, zp[kk], Ctrl->C.quant, k);
 					gmt_M_free (GMT, zp[kk]);
@@ -780,7 +799,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_QUANTW:	/* Compute weighted quantile */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if (n_in_circle[kk]) {
 					Grid->data[ij] = (gmt_grdfloat)gmt_quantile_weighted (GMT, zw_pair[kk], n_in_circle[kk], 0.01 * Ctrl->C.quant);
 					gmt_M_free (GMT, zw_pair[kk]);
@@ -790,7 +809,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_IRANGE:	/* Compute plain inter quartile range */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if ((k = n_in_circle[kk])) {
 					Grid->data[ij] = (gmt_grdfloat) (gmt_quantile_f (GMT, zp[kk], 75.0, k) - gmt_quantile_f (GMT, zp[kk], 25.0, k));
 					gmt_M_free (GMT, zp[kk]);
@@ -800,7 +819,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_IRANGEW:	/* Compute weighted quantile */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if ((k = n_in_circle[kk])) {
 					Grid->data[ij] = (gmt_grdfloat) (gmt_quantile_weighted (GMT, zw_pair[kk], k, 0.75) - gmt_quantile_weighted (GMT, zw_pair[kk], k, 0.25));
 					gmt_M_free (GMT, zw_pair[kk]);
@@ -810,12 +829,12 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_COUNT: case GMTBINSTATS_COUNTW: case GMTBINSTATS_SUM:	/* Compute count or sum */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if (!gmt_M_is_fnan (Grid->data[ij]) && Grid->data[ij] > 0.0) n++;
 			}
 			break;
 		case GMTBINSTATS_ZRANGE:	/* Compute full data range */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if (visited[kk]) {
 					Grid->data[ij] -= s[kk];
 					n++;
@@ -824,7 +843,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_STD:	/* Compute plain standard deviation */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if (n_in_circle[kk] > 1) {
 					Grid->data[ij] = sqrt ((n_in_circle[kk] * s[kk] - Grid->data[ij] * Grid->data[ij]) / (n_in_circle[kk] * (n_in_circle[kk] - 1)));
 					n++;
@@ -835,7 +854,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_STDW:	/* Compute weighted standard deviation */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if (n_in_circle[kk] > 1) {
 					Grid->data[ij] = sqrt ((w[kk] * s[kk] - Grid->data[ij] * Grid->data[ij]) / ((n_in_circle[kk] - 1) * w[kk] * w[kk] /n_in_circle[kk]));
 					n++;
@@ -846,7 +865,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_RMS:	/* Compute plain rms */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if (n_in_circle[kk]) {
 					Grid->data[ij] = sqrt (Grid->data[ij] / n_in_circle[kk]);
 					n++;
@@ -855,7 +874,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_RMSW:	/* Compute weighted rms */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if (w[kk] > 0.0) {
 					Grid->data[ij] = sqrt (Grid->data[ij] / w[kk]);
 					n++;
@@ -864,10 +883,10 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_MAD:	/* Compute plain MAD */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if ((k = n_in_circle[kk])) {
 					gmt_sort_array (GMT, zp[kk], k, GMT_FLOAT);
-					median = (k%2) ? zp[kk][k/2] : 0.5 * (zp[kk][(k-1)/2] + zp[kk][row/2]);
+					median = (k%2) ? zp[kk][k/2] : 0.5 * (zp[kk][(k-1)/2] + zp[kk][rowu/2]);
 					gmt_getmad_f (GMT, zp[kk], k, median, &mad);
 					Grid->data[ij] = mad;
 					gmt_M_free (GMT, zp[kk]);
@@ -877,7 +896,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_MADW:	/* Compute weighted MAD */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if (n_in_circle[kk]) {
 					median = gmt_median_weighted (GMT, zw_pair[kk], n_in_circle[kk]);
 					/* Compute the absolute deviations from this median */
@@ -891,7 +910,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_LMSSCL:	/* Compute plain mode lmsscale */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if ((k = n_in_circle[kk])) {
 					gmt_mode_f (GMT, zp[kk], k, k/2, true, gmt_mode_selection, &GMT_n_multiples, &zmode);
 					gmt_getmad_f (GMT, zp[kk], k, zmode, &mad);
@@ -903,7 +922,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMTBINSTATS_LMSSCLW:	/* Compute weighted modes */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij) {
 				if (n_in_circle[kk]) {
 					zmode = gmt_mode_weighted (GMT, zw_pair[kk], n_in_circle[kk]);
 					for (k = 0; k < n_in_circle[kk]; k++) zw_pair[kk][k].value = (gmt_grdfloat)fabs (zw_pair[kk][k].value - zmode);
@@ -922,7 +941,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 
 	if (Ctrl->N.active) {	/* Area normalization */
 		double scale = 1.0 / Ctrl->S.area;
-		gmt_M_grd_loop (GMT, Grid, row, col, ij)
+		gmt_M_grd_loop (GMT, Grid, rowu, colu, ij)
 			Grid->data[ij] *= scale;
 	}
 
@@ -947,12 +966,12 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		S = D->table[0]->segment[0];	/* Only a single segment will be written */
-		gmt_M_row_loop (GMT, Grid, row) {
-			gmt_M_col_loop (GMT, Grid, row, col, ij) {
-				if (skip_column(row,col)) continue;	/* Unused pseudo=grid node */
+		gmt_M_row_loop (GMT, Grid, rowu) {
+			gmt_M_col_loop (GMT, Grid, rowu, colu, ij) {
+				if (skip_column(rowu,colu)) continue;	/* Unused pseudo=grid node */
 				if (gmt_M_is_fnan (Grid->data[ij])) continue;	/* Unvisited node */
-				S->data[GMT_X][k] = x0[col];
-				S->data[GMT_Y][k] = y0[row];
+				S->data[GMT_X][k] = x0[colu];
+				S->data[GMT_Y][k] = y0[rowu];
 				S->data[GMT_Z][k] = Grid->data[ij];
 				k++;
 			}
@@ -963,7 +982,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 	}
 	else {	/* Write a grid */
 		if (!gmt_M_is_fnan (Ctrl->E.value)) {	/* Replace NaNs with the -E value */
-			gmt_M_grd_loop (GMT, Grid, row, col, ij)
+			gmt_M_grd_loop (GMT, Grid, rowu, colu, ij)
 				if (gmt_M_is_fnan (Grid->data[ij])) Grid->data[ij] = Ctrl->E.value;
 		}
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {

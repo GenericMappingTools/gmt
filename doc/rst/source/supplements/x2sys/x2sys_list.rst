@@ -33,7 +33,7 @@ Description
 -----------
 
 **x2sys_list** will read the crossover ASCII data base *coedbase.txt*
-(or *stdin*) and extract a subset of the crossovers based on the other
+(or standard input) and extract a subset of the crossovers based on the other
 arguments. The output may be ASCII or binary.
 
 Required Arguments

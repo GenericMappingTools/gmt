@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdspotter** [*grdfile*]
+**gmt grdspotter** *ingrid*
 |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*\ [**+i**]
 |-G|\ *outgrid*
 |SYN_OPT-I|
@@ -45,15 +45,20 @@ give a Cumulative Volcano Amplitude grid (CVA).
 Required Arguments
 ------------------
 
-*grdfile*
-    Data grid to be processed, typically residual bathymetry or free-air anomalies.
+.. |Add_ingrid| replace:: Data grid to be processed, typically residual
+    bathymetry or free-air anomalies.
+.. include:: /explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. include:: explain_rots.rst_
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Specify name for output CVA grid file.
+.. |Add_outgrid| replace::  Specify name for output CVA grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -140,7 +145,7 @@ Optional Arguments
 
 **-W**\ *n\_try*
     Get *n\_try* bootstrap estimates of the maximum CVA location; the
-    longitude and latitude results are written to stdout [Default is no
+    longitude and latitude results are written to standard output [Default is no
     bootstrapping]. Cannot be used with **-M**.
 
 .. _-Z:

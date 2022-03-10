@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,7 @@ struct GMTFLEXURE_CTRL {
 		char *file;
 	} Out;
 	struct GMTFLEXURE_A {	/* -A[l|r]<bc>[<args>] */
-		bool active;
+		bool active[2];
 		unsigned int bc[2];	/* Left and Right BC code */
 		double deflection[2], moment[2], force[2];	/* Left and Right arguments */
 	} A;
@@ -166,16 +166,17 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
 				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 			case 'A':	/* Boundary conditions -A[l|r]<bc>[/<w>|<m>/<f>]*/
-				Ctrl->A.active = true;
 				both = false;	side = 0;
 				switch (opt->arg[0]) {
 					case 'l': case 'L':	side = LEFT; break;
 					case 'r': case 'R':	side = RIGHT; break;
 					default:		both = true; break;
 				}
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active[side]);
+				Ctrl->A.active[side] = true;
 				k = (both) ? 0 : 1;	/* Offset to <bc> argument */
 				n = atoi (&opt->arg[k]);
 				if (n < BC_INFINITY || n > BC_FREE) {
@@ -191,6 +192,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 						sscanf (&opt->arg[k+2], "%lf/%lf", &Ctrl->A.moment[side], &Ctrl->A.force[side]);
 				}
 				if (both) {	/* Copy values over from left to right */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active[RIGHT]);
+					Ctrl->A.active[RIGHT] = true;
 					Ctrl->A.bc[RIGHT] = Ctrl->A.bc[LEFT];
 					Ctrl->A.deflection[RIGHT] = Ctrl->A.deflection[LEFT];
 					Ctrl->A.moment[RIGHT] = Ctrl->A.moment[LEFT];
@@ -198,9 +201,18 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'C':	/* Rheology constants E and nu */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				switch (opt->arg[0]) {
-					case 'p': Ctrl->C.nu = atof (&opt->arg[1]); break;
-					case 'y': Ctrl->C.E = atof (&opt->arg[1]); break;
+					case 'p':
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[0]);
+						Ctrl->C.active[0] = true;
+						Ctrl->C.nu = atof (&opt->arg[1]);
+						break;
+					case 'y':
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[1]);
+						Ctrl->C.active[1] = true;
+						Ctrl->C.E = atof (&opt->arg[1]);
+						break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Unrecognized modifier %c\n", opt->arg[0]);
 						n_errors++;
@@ -208,6 +220,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'D':	/* Set densities */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				n = sscanf (opt->arg, "%lf/%lf/%lf/%lf", &Ctrl->D.rhom, &Ctrl->D.rhol, &Ctrl->D.rhoi, &Ctrl->D.rhow);
 				if (!(n == 4 || n == 3)) {
@@ -220,6 +233,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'E':	/* Set elastic thickness or rigidities */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (!gmt_access (GMT, opt->arg, F_OK))	/* file exists */
 					Ctrl->E.file = strdup (opt->arg);
@@ -231,10 +245,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'F':	/* Horizontal end load */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.force = atof (opt->arg);
 				break;
 			case 'L':	/* Variable restoring force */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				break;
 			case 'M':	/* Length units */
@@ -244,17 +260,24 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 					case 'z': side = 1; break;
 					default:  both = true; break;
 				}
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[side]);
 				Ctrl->M.active[side] = true;
-				if (both) Ctrl->M.active[1] = Ctrl->M.active[0];
+				if (both) {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[1]);
+					Ctrl->M.active[1] = Ctrl->M.active[0];
+				}
 				break;
 			case 'S':	/* Compute curvatures also */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 			case 'T':	/* Preexisting deformation */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.file = strdup (opt->arg);
 				break;
 			case 'Q':	/* Load setting -Qn|q|t[/args] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
 					case 'n':	Ctrl->Q.mode = NO_LOAD;
@@ -273,15 +296,17 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				if (Ctrl->Q.mode != NO_LOAD && opt->arg[1]) Ctrl->Q.file = strdup (&opt->arg[1]);
 				break;
 			case 'W':	/* Water depth */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				GMT_Get_Values (API, opt->arg, &Ctrl->W.water_depth, 1);	/* This yields water depth in meters if k was added */
 				break;
 			case 'Z':	/* Moho depth */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				GMT_Get_Values (API, opt->arg, &Ctrl->Z.zm, 1);	/* This yields Moho depth in meters if k was added */
 				break;
 			default:
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -315,8 +340,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "n: There is no load (only -A and -L contribute to deformation). "
 		"If no file is given via -E<file> then append <min>/<max>/<inc> to set an equidistant profile.");
 	GMT_Usage (API, 4, "+n Indicate that <inc> is the number of points instead.");
-	GMT_Usage (API, 3, "q: Append pressure <load> file (or we read stdin) with (x,load in Pa) for all points.");
-	GMT_Usage (API, 3, "t: Append relief <load> file (or we read stdin) with (x,load in m or km) for all points (see -M).");
+	GMT_Usage (API, 3, "q: Append pressure <load> file (or we read standard input) with (x,load in Pa) for all points.");
+	GMT_Usage (API, 3, "t: Append relief <load> file (or we read standard input) with (x,load in m or km) for all points (see -M).");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A[l|r]<bc>[/<args>]");
 	GMT_Usage (API, -2, "Specify boundary conditions at the ends of the profile. "
@@ -1310,7 +1335,7 @@ EXTERN_MSC int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		double scale = (Ctrl->M.active[1]) ? 1000.0 : 1.0;	/* Either got Te in km or m */
 		double d_min = DBL_MAX, d_max = 0.0;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing input Te or Rigidity table data\n");
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -C,-F,-L files */
 		if ((E = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->E.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -1318,7 +1343,7 @@ EXTERN_MSC int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->E.file, (int)E->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		for (tbl = 0; tbl < E->n_tables; tbl++) {
 			for (seg = 0; seg < E->table[tbl]->n_segments; seg++) {
 				S = E->table[tbl]->segment[seg];	/* Current segment */
@@ -1379,7 +1404,7 @@ EXTERN_MSC int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->T.active && Ctrl->T.file)	{	/* Read pre-existing deflections */
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -C,-F,-L files */
 		if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -1387,7 +1412,7 @@ EXTERN_MSC int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->T.file, (int)T->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		if (T->n_tables != E->n_tables || T->n_segments != E->n_segments || T->n_records != E->n_records) {
 			GMT_Report (API, GMT_MSG_ERROR, "Number of pre-existing deflection records is not correct!\n");
 			Return (API->error);

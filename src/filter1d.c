@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -187,8 +187,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -F<type><width>[+l|u] [-D<increment>] [-E] "
 		"[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>|<file>|<list>[+a][+e|i|n]] "
-		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -248,7 +248,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+a Add internal geospatial distances as a final output column [no distances added].");
 	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
 	GMT_Usage (API, 3, "+n Indicate <inc> is the number of t-values to produce instead.");
-	GMT_Option (API, "V,bi,bo,d,e,f,g,h,i,j,o,q,:,.");
+	GMT_Option (API, "V,a,bi,bo,d,e,f,g,h,i,j,o,q,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -280,19 +280,22 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'D':	/* Get fixed increment */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.inc = atof (opt->arg);
 				Ctrl->D.active = true;
 				break;
 			case 'E':	/* Include ends of series */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				break;
 			case 'F':	/* Filter selection  */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (opt->arg[0] && strchr ("BbCcGgMmPpLlUuFf", opt->arg[0])) {	/* OK filter code */
 					Ctrl->F.filter = opt->arg[0];
@@ -339,10 +342,12 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 				n_errors += gmt_parse_d_option (GMT, txt);
 				break;
 			case 'L':	/* Check for lack of data */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.value = atof (opt->arg);
 				break;
 			case 'N':	/* Select column with independent coordinate [0] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 LEVEL */
 					if (strchr (opt->arg, '/')) { /* Gave obsolete format */
@@ -384,20 +389,23 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			case 'Q':	/* Assess quality of output */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.value = atof (opt->arg);
 				Ctrl->Q.active = true;
 				break;
 			case 'S':	/* Activate symmetry test */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.value = atof (opt->arg);
 				break;
 			case 'T':	/* Set output knots */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				t_arg = opt->arg;
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -991,13 +999,13 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 		case 'f':
 			F.filter_type = FILTER1D_CUSTOM;
 			if ((error = GMT_Set_Columns (API, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
-			save_col[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
+			save_col[GMT_X] = gmt_get_column_type (GMT, GMT_IN, GMT_X);	/* Save col type in case it is a time column */
 			gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Always read the weights as floats */
-			gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
+			gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -F files */
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 				Return (API->error, "Error Reading input\n");
 			}
-			gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+			gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 			gmt_set_column_type (GMT, GMT_IN, GMT_X, save_col[GMT_X]);	/* Reset this col type to whatever it actually is */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;
@@ -1005,15 +1013,15 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 	if (F.filter_type > FILTER1D_CONVOLVE) F.robust = false;
 	if (F.variable) {
 		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
-		save_col[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
-		save_col[GMT_Y] = GMT->current.io.col_type[GMT_IN][GMT_Y];	/* Save col type in case it is a time column */
-		gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT->current.io.col_type[GMT_IN][F.t_col]);	/* Same units as time-series "t"*/
+		save_col[GMT_X] = gmt_get_column_type (GMT, GMT_IN, GMT_X);	/* Save col type in case it is a time column */
+		save_col[GMT_Y] = gmt_get_column_type (GMT, GMT_IN, GMT_Y);	/* Save col type in case it is a time column */
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, gmt_get_column_type (GMT, GMT_IN, F.t_col));	/* Same units as time-series "t"*/
 		gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);	/* Always read the widths as floats */
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -F files */
 		if ((F.W = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error, "Error Reading input\n");
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		gmt_set_column_type (GMT, GMT_IN, GMT_X, save_col[GMT_X]);	/* Reset this col type to whatever it actually is */
 		gmt_set_column_type (GMT, GMT_IN, GMT_Y, save_col[GMT_Y]);	/* Reset this col type to whatever it actually is */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " filter weights from file %s.\n", F.W->n_records, Ctrl->F.file);

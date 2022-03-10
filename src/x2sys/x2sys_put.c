@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -85,7 +85,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<info.tbf> is one track bin file from x2sys_binlist [Default reads stdin].");
+	GMT_Usage (API, 1, "\n<info.tbf> is one track bin file from x2sys_binlist [Default reads standard input].");
 	GMT_Usage (API, 1, "\n-T<TAG>");
 	GMT_Usage (API, -2, "Set the system tag for this compilation.");
 
@@ -108,6 +108,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct GMT_
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -123,21 +124,25 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct GMT_
 			/* Processes program-specific parameters */
 
 			case 'D':	/* Remove all traces of these tracks from the database */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 			case 'F':	/* Force update of existing tracks if new data are found */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;	/* Swap option for index.b reading [Obsolete but left for backwardness] */
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

@@ -62,7 +62,7 @@ instead.  To have exactly 5 equidistant values from 3.44 and 7.82, run::
     6.725
     7.82
 
-Alternatively, give a *file* with output coordinates in the first column,
+Alternatively, let *inc* be a *file* with output coordinates in the first column,
 or provide a comma-separated *list* of specific coordinates, such as the first 6
 Fibonacci numbers::
 
@@ -74,8 +74,11 @@ Fibonacci numbers::
     3
     5
 
+**Note**: Should you need to ensure that the coordinates are unique and sorted (in case the
+*file* or *list* are not sorted or have duplicates) then supply the **+u** modifier.
+
 If you only want a *single* value
-then you must append a comma to distinguish the list from the setting of *inc*.
+then you must append a comma to distinguish the list from the setting of an increment.
 
 If the module allows you to set up an absolute time series, append a valid time unit from the list
 **y**\ ear, m\ **o**\ nth, **d**\ ay, **h**\ our, **m**\ inute, and **s**\ econd

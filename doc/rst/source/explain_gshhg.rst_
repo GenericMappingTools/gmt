@@ -19,4 +19,4 @@ also limit the highest hierarchical level of polygons to be included (4
 is the maximum). The 4 lower-resolution databases were derived from the
 full resolution database using the Douglas-Peucker line-simplification
 algorithm. The classification of rivers and borders follow that of the
-WDBII. See :doc:`/datasets/gshhg` for further details.
+WDBII. See `The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG) <https://github.com/GenericMappingTools/gshhg-gmt#readme>`_ for further details.

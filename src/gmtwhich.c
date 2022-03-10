@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -98,6 +98,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -109,15 +110,19 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Only consider readable files */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 			case 'C':	/* Print Y or N instead of names */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
 			case 'D':	/* Want directory instead */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 			case 'G':	/* Download file first, if required */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->G.mode = GMT_AUTO_DIR;		break;
@@ -125,14 +130,14 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 					case 'u': Ctrl->G.mode = GMT_DATA_DIR;		break;
 					case '\0': case 'l': Ctrl->G.mode = GMT_LOCAL_DIR;	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Download mode %s not recognized\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Download mode %s not recognized\n", opt->arg);
 						n_errors++;
 						break;
 				}
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

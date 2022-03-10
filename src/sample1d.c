@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@
 #define THIS_MODULE_PURPOSE	"Resample 1-D table data using splines"
 #define THIS_MODULE_KEYS	"<D{,ND(,TD(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "->Vbdefghioqsw" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "->Vbdefghijoqsw" GMT_OPT("HMm")
 
 #define INT_1D_CART	0	/* Regular 1-D interpolation */
 #define INT_2D_CART	1	/* Cartesian 2-D path interpolation */
@@ -50,6 +50,9 @@ struct SAMPLE1D_CTRL {
 		bool active, loxo, delete;
 		enum GMT_enum_track mode;
 	} A;
+	struct SAMPLE1D_E {	/* -E */
+		bool active;
+	} E;
 	struct SAMPLE1D_F {	/* -Fl|a|c|n|s<p>[+d1|2] */
 		bool active;
 		unsigned int mode;
@@ -98,8 +101,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] [-A[f|m|p|r|R][+d][+l]] [-Fl|a|c|n|s<p>[+d1|2]] [-N<time_col>] "
-		"[-T[<min>/<max>/]<inc>[+i|n][+a][+t]] [%s] [-W<w_col>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A[f|m|p|r|R][+d][+l]] [-E] [-Fl|a|c|n|s<p>[+d1|2]] [-N<time_col>] "
+		"[-T[<min>/<max>/]<inc>[+i|n][+a][+t][+u]] [%s] [-W<w_col>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT,
 		GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_PAR_OPT);
 
@@ -120,6 +123,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+d Skip records that has no increase in <time_col> value [no skipping].");
 	GMT_Usage (API, 3, "+l Compute distances along rhumblines (loxodromes) [no].");
 	GMT_Usage (API, -2, "Note: +l uses spherical calculations - cannot be combined with -je.");
+	GMT_Usage (API, 1, "\n-E Add input data trailing text to output records when possible [Ignore trailing text].");
 	GMT_Usage (API, 1, "\n-Fl|a|c|n|s<p>[+d1|2]");
 	GMT_Usage (API, -2, "Set the interpolation mode.  Choose from:");
 	GMT_Usage (API, 3, "l: Linear interpolation.");
@@ -132,7 +136,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "[Default is -F%c].", type[API->GMT->current.setting.interpolant]);
 	GMT_Usage (API, 1, "\n-N<time_col>");
 	GMT_Usage (API, -2, "Give column number of the independent variable (time) [Default is 0 (first)].");
-	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[+i|n][+a][+t]");
+	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[+i|n][+a][+t][+u]");
 	GMT_Usage (API, -2, "Make evenly spaced output time steps from <min> to <max> by <inc>. "
 		"For absolute time resampling, append a valid time unit (%s) to the increment and add +t. "
 		"For spatial resampling with distance computed from the first two columns, specify increment as "
@@ -141,7 +145,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+a Add any internally computed distances as a final output column [no distances added].");
 	GMT_Usage (API, 3, "+n Indicate <inc> is the number of t-values to produce over the range instead.");
 	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
-	GMT_Usage (API, -2, "Alternatively, give a file with output times in the first column, or a comma-separated list.");
+	GMT_Usage (API, -2, "Alternatively, <inc> is a file with output times in the first column, or a comma-separated list.");
+	GMT_Usage (API, 3, "+u Ensure unique and sorted entries in the array, eliminating duplicates.");
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-W<w_col>");
 	GMT_Usage (API, -2, "Give column number of weights for smoothing spline (requires -Fs) [no weights].");
@@ -189,18 +194,19 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
 				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change track resampling mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0] != '+') {	/* Gave a mode */
 					switch (opt->arg[0]) {
@@ -215,7 +221,13 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 				if (strstr (opt->arg, "+d")) Ctrl->A.delete = true;
 				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;		/* Note: spherical only */
 				break;
+			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				Ctrl->E.active = true;
+				break;
+
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'l':
@@ -261,7 +273,7 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 						t_arg = opt->arg;
 					}
 					else
-						n_errors += gmt_default_error (GMT, opt->option);
+						n_errors += gmt_default_option_error (GMT, opt);
 				}
 				else if (opt->arg[0]) {
 					col = atoi (opt->arg);
@@ -282,7 +294,7 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 					s_arg = string;
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 
 				break;
 			case 'T':
@@ -293,11 +305,13 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 					Ctrl->N.col = col;
 				}
 				else {	/* Set output knots */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 					Ctrl->T.active = true;
 					t_arg = opt->arg;
 				}
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				if (opt->arg[0]) {
 					col = atoi (opt->arg);
 					n_errors += gmt_M_check_condition (GMT, col < 0, "Option -W: Column number cannot be negative\n");
@@ -309,7 +323,7 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -325,7 +339,7 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 		Ctrl->T.active = true;
 	}
 	if (Ctrl->T.active) {	/* Do this one here since we need Ctrl->N.col to be set first, if selected */
-		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_NOMINMAX | GMT_ARRAY_UNIQUE, Ctrl->N.col);
+		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_NOMINMAX, Ctrl->N.col);
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.loxo && GMT->common.j.mode == GMT_GEODESIC,
@@ -387,7 +401,7 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 	GMT->current.setting.interpolant = Ctrl->F.mode % 10;
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling for (x,y) which is not the case here */
 	GMT->current.io.skip_if_NaN[Ctrl->N.col] = true;				/* ... But disallow NaN in "time" column */
-	int_mode = gmt_set_interpolate_mode (GMT, Ctrl->F.mode, Ctrl->F.type);	/* What mode we pass to the interpolator */
+	int_mode = gmt_set_interpolate_mode (GMT, Ctrl->F.mode, Ctrl->F.type);	/* What mode we pass to the interpolater */
 
 	if (Ctrl->T.T.spatial) {
 		if (gmt_M_is_cartesian (GMT, GMT_IN) && Ctrl->A.loxo) {
@@ -395,6 +409,7 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 			Ctrl->A.loxo = false;
 		}
 		if (Ctrl->A.loxo) GMT->current.map.loxodrome = true;
+		GMT->hidden.sample_along_arc = true;	/* Ensure equidistant sampling along arc, not cord */
 	}
 
 	geometry = (Ctrl->T.T.spatial) ? GMT_IS_LINE : GMT_IS_NONE;
@@ -411,12 +426,12 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (Din->n_columns < 2) {
-		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)Din->n_columns);
+	if (Din->n_columns < 1) {
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have no data column(s) but at least 1 is needed\n");
 		Return (GMT_DIM_TOO_SMALL);
 	}
-	if (Din->n_columns < 3 && Ctrl->W.active) {
-		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 3 are needed since -W is used\n", (int)Din->n_columns);
+	if (Din->n_columns < 2 && Ctrl->W.active) {
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed since -W is used\n", (int)Din->n_columns);
 		Return (GMT_DIM_TOO_SMALL);
 	}
 	if (Ctrl->N.active && Ctrl->N.col >= Din->n_columns) {	/*  */
@@ -488,8 +503,16 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 			}
 			else {	/* Generate evenly spaced output */
 				double min, max;
-				min = (Ctrl->T.T.delay[GMT_X]) ? ceil (S->data[Ctrl->N.col][0] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.min;
-				max = (Ctrl->T.T.delay[GMT_Y]) ? floor (S->data[Ctrl->N.col][S->n_rows-1] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.max;
+				if (S->data[Ctrl->N.col][0] > S->data[Ctrl->N.col][S->n_rows-1]) {	/* t-column is monotonically decreasing */
+					min = (Ctrl->T.T.delay[GMT_X]) ? floor (S->data[Ctrl->N.col][0] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.min;
+					max = (Ctrl->T.T.delay[GMT_Y]) ? ceil (S->data[Ctrl->N.col][S->n_rows-1] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.max;
+					Ctrl->T.T.reverse = true;	/* Flag we are monotonically decreasing in time for this segment */
+				}
+				else {
+					min = (Ctrl->T.T.delay[GMT_X]) ? ceil (S->data[Ctrl->N.col][0] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.min;
+					max = (Ctrl->T.T.delay[GMT_Y]) ? floor (S->data[Ctrl->N.col][S->n_rows-1] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.max;
+					Ctrl->T.T.reverse = false;	/* Flag we are monotonically increasing in time for this segment */
+				}
 				if (gmt_create_array(GMT, 'T', &(Ctrl->T.T), &min, &max) != GMT_NOERROR) {
 					GMT_Report(API, GMT_MSG_WARNING, "Segment %" PRIu64 " in table %" PRIu64 " had troubles.\n", seg, tbl);
 					continue;
@@ -543,6 +566,21 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 					return (result);
 				}
 			}
+			if (Ctrl->E.active && S->text) {	/* Copy over any trailing text if input times are matched exactly in output */
+				for (k = row = 0; k < m; k++) {	/* For all output times */
+					while (row < S->n_rows && S->data[Ctrl->N.col][row] < Sout->data[Ctrl->N.col][k]) row++;	/* Wind to next potential matching input time */
+					if (row < S->n_rows && doubleAlmostEqualZero (S->data[Ctrl->N.col][row], Sout->data[Ctrl->N.col][k]) && S->text[row]) {	/* Matching time and we have text */
+						if (Sout->text == NULL) {	/* Must allocate text array the first time */
+							if ((Sout->text = gmt_M_memory (GMT, NULL, m, char *)) == NULL) {
+								GMT_Report(API, GMT_MSG_ERROR, "Unable to allocate trailing text for egment %" PRIu64 " in table %" PRIu64 ".\n", seg, tbl);
+								Return (GMT_MEMORY_ERROR);
+							}
+						}
+						Sout->text[k] = strdup (S->text[row++]);	/* Duplicate trailing text on output */
+					}
+				}
+			}
+
 			if (Ctrl->T.T.spatial) {	/* Free up memory used */
 				gmt_M_free (GMT, dist_in);	gmt_M_free (GMT, t_out);
 				gmt_M_free (GMT, lon);		gmt_M_free (GMT, lat);
@@ -557,6 +595,8 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 	}
 
 	gmt_M_free (GMT, nan_flag);
+
+	GMT->hidden.sample_along_arc = false;	/* Reset */
 
 	Return (GMT_NOERROR);
 }

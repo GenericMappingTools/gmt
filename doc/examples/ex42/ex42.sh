@@ -26,7 +26,7 @@ gmt begin ex42
 	S 0.4c s 0.3c lightbrown 0.25p 0.75c Grounding line
 	EOF
 	# Fancy line
-	gmt plot -R0/19/0/25 -Jx1c -B0 -W2p -X-6c -Y-13.5c <<- EOF
+	gmt plot -R0/19/0/26 -Jx1c -B0 -W2p -X-6c -Y-13.5c <<- EOF
 	0	14
 	6.5	14
 	13	11.5

@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -123,7 +123,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<COEdbase> File with crossover error data base [stdin].");
+	GMT_Usage (API, 1, "\n<COEdbase> File with crossover error data base [standard input].");
 	GMT_Usage (API, 1, "\n-C<column> ");
 	GMT_Usage (API, -2, "Name of the data column whose crossovers we want.");
 	GMT_Usage (API, 1, "\n-T<TAG>");
@@ -161,6 +161,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -176,41 +177,49 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struct G
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				Ctrl->C.col = strdup (opt->arg);
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				Ctrl->I.file = strdup (opt->arg);
 				break;
 			case 'L':	/* Crossover correction table */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.min = atoi (opt->arg);
 				break;
 			case 'Q':	/* Specify internal or external only [Default is both] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e') Ctrl->Q.mode = 1;
 				else if (opt->arg[0] == 'i') Ctrl->Q.mode = 2;
 				else Ctrl->Q.mode = 3;
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.file = strdup (opt->arg);
 				Ctrl->S.active = true;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

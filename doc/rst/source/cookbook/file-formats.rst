@@ -8,8 +8,9 @@ Table data
 
 These files have *N* records which have *M* fields each. All programs
 that handle tables can read multicolumn files. GMT can read both
-ASCII, native binary, netCDF table data, and ESRI shapefiles (which
-we convert to GMT/OGR format via GDAL's ogr2ogr tool under the hood).
+ASCII, native binary, netCDF table data, and ESRI shapefiles
+(which we convert to :ref:`GMT/OGR format <OGR_compat>` via
+`GDAL's <https://gdal.org/>`_ *ogr2ogr* tool under the hood).
 
 ASCII tables
 ~~~~~~~~~~~~
@@ -96,9 +97,9 @@ reads, but does not write, netCDF tabular data.
 Shapefiles
 ~~~~~~~~~~
 
-GMT programs that read tables also support ESRI shapefiles, provided GMT was compiled
-with GDAL support.  By default, only the geographic coordinates are read.  To select
-some or all aspatial fields, see the :ref:`-a option <-aspatial_full>`.
+GMT programs that read tables also support ESRI shapefiles.  By default,
+only the geographic coordinates are read.  To select some or all aspatial
+fields, see the :ref:`-a option <-aspatial_full>`.
 
 Grid files
 ----------
@@ -248,7 +249,9 @@ convert from one format to the other;
 :doc:`/grdedit` can make changes to the grid
 header and convert a pixel- to a gridline-registered grid, or *vice
 versa*. The grid registration is determined by the common GMT **-r**
-option (see Section :ref:`option_nodereg`).
+option (see Section :ref:`option_nodereg`). **Note**: The smallest
+pixel-registered grid can be 1x1 (storing a single value), while a
+gridline-registered grid cannot be smaller than 2x2.
 
 Boundary Conditions for operations on grids
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

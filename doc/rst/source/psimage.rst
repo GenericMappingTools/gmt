@@ -32,7 +32,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: image_common.rst_
+.. include:: image.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 

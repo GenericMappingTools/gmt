@@ -15,7 +15,7 @@ Synopsis
 **gmt greenspline** [ *table* ]
 |-G|\ *grdfile*
 [ |-A|\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
-[ |-C|\ [**n**]\ *value*\ [%][**+f**\ *file*][**+m**\|\ **M**] ]
+[ |-C|\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**] ]
 [ |SYN_OPT-D3| ]
 [ |-E|\ [*misfitfile*] ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
@@ -101,14 +101,14 @@ Required Arguments
 **-G**\ *grdfile*
     Name of resulting output file. (1) If options **-R**, **-I**, and
     possibly **-r** are set we produce an equidistant output table. This
-    will be written to stdout unless **-G** is specified. **Note**: For 2-D
+    will be written to standard output unless **-G** is specified. **Note**: For 2-D
     grids the **-G** option is required. (2) If option **-T** is
     selected then **-G** is required and the output file is a 2-D binary
     grid file. Applies to 2-D interpolation only. (3) For 3-D cubes
     the **-G** option is optional.  If set, it can be the name of a 3-D
     cube file or a filename template with a floating-point C-format identifier
     in it so that each layer is written to a 2-D grid file; otherwise
-    we write (*x, y, z, w*) records to stdout. (4) If **-N** is
+    we write (*x, y, z, w*) records to standard output. (4) If **-N** is
     selected then the output is an ASCII (or binary; see
     **-bo**) table; if **-G** is not given then
     this table is written to standard output. Ignored if **-C** or
@@ -142,23 +142,28 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**]\ *value*\ [%][**+f**\ *file*][**+m**\|\ **M**]
+**-C**\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**]
     Find an approximate surface fit: Solve the linear system for the
-    spline coefficients by SVD and eliminate the contribution from all
-    eigenvalues whose ratio to the largest eigenvalue is less than *value*
-    [Default uses Gauss-Jordan elimination to solve the linear system
-    and fit the data exactly]. Optionally, append **+f**\ *file* to save the
-    eigenvalues to the specified file for further analysis.
-    If a negative *value* is given then **+f**\ *file* is required and
-    execution will stop after saving the eigenvalues, i.e., no surface
-    output is produced.  Specify **-Cn** to retain only the *value* largest
-    eigenvalues; append % if *value* is the percentage of eigenvalues
-    to use instead.  The two last modifiers (**+m**\|\ **M**) are only
-    available for 2-D gridding and can be used to write intermediate grids,
-    one per eigenvalue, and thus require a file name template with a C-format
-    integer specification to be given via **-G**.  The **+m** modifier will
-    write the contributions to the grid for each eigenvalue, while **+M**
-    will instead produce the cumulative sum of these contributions.
+    spline coefficients by SVD and eliminate the contribution from smaller
+    eigenvalues [Default uses Gauss-Jordan elimination to solve the linear system
+    and fit the data exactly (unless **-W** is used)]. Append a directive and *value*
+    to determine which eigenvalues to keep: **n** will retain only the *value* largest
+    eigenvalues [all], **r** [Default] will retain those eigenvalues whose ratio
+    to the largest eigenvalue is less than *value* [0], while **v** will retain
+    the eigenvalues needed to ensure the model prediction variance fraction is at
+    least *value*. For **n** and **v** you may append % if *value* is given as a
+    *percentage* of the total instead.  Several optional modifiers are available:
+    Append **+f**\ *file* to save the eigenvalues to the specified file for further
+    analysis. If **+n** is given then **+f**\ *file* is required and execution will
+    stop after saving the eigenvalues, i.e., no surface output is produced.  The
+    two other modifiers (**+c** and **+i**) are only available for 2-D gridding and
+    can be used to write intermediate grids, one per added eigenvalue, and thus require
+    a file name with a suitable extension to be given via **-G** (we automatically
+    insert "_cum_###" or "_inc_###" before the extension, using a fixed integer
+    format for the eigenvalue number starting at 0).  The **+i** modifier will
+    write the **i**\ ncremental contributions to the grid for each eigenvalue added,
+    while **+c** will instead produce the **c**\ umulative sum of these contributions.
+    Use both modifiers to write both types of intermediate grids.
 
 .. _-D:
 
@@ -170,7 +175,11 @@ Optional Arguments
     Evaluate the spline exactly at the input data locations and report
     statistics of the misfit (mean, standard deviation, and rms).  Optionally,
     append a filename and we will write the data table, augmented by
-    two extra columns holding the spline estimate and the misfit.
+    two extra columns holding the spline estimate and the misfit. Alternatively,
+    if **-C** is used and history is computed (via one or more of modifiers **+c**
+    and **+i**), then we will instead write a table with eigenvalue number,
+    eigenvalue, percent of model variance explained, and rms misfit.  If **-W**
+    is used we also append :math:`\chi^2`.
 
 .. _-I:
 
@@ -192,7 +201,7 @@ Optional Arguments
 **-N**\ *nodefile*
     ASCII file with coordinates of desired output locations **x** in the
     first column(s). The resulting *w* values are appended to each
-    record and written to the file given in **-G** [or stdout if not
+    record and written to the file given in **-G** [or standard output if not
     specified]; see **-bo** for binary output
     instead. This option eliminates the need to specify options **-R**,
     **-I**, and **-r**.
@@ -369,9 +378,9 @@ of the surface slope in the NW direction, try::
     gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Sr0.95 -V -Z1 -Q-45 -Gslopes.nc
 
 To use Cartesian cubic splines and evaluate the cumulative solution as a function of eigenvalue,
-using the output template with three digits for the eigenvalue, try::
+using output file based on the main grid name (such as contribution_cum_033.nc), try::
 
-    gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Gcontribution_%3.3d.nc -Sc -Z1 -C+M
+    gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Gcontribution.nc -Sc -Z1 -C+c
 
 Finally, to use Cartesian minimum curvature splines in recovering a
 surface where the input data is a single surface value (pt.txt) and the
@@ -433,7 +442,7 @@ Considerations
 
 #. The inversion for coefficients can become numerically unstable when
    data neighbors are very close compared to the overall span of the data.
-   You can remedy this by pre-processing the data, e.g., by averaging
+   You can remedy this by preprocessing the data, e.g., by averaging
    closely spaced neighbors. Alternatively, you can improve stability by
    using the SVD solution and discard information associated with the
    smallest eigenvalues (see **-C**).
@@ -449,6 +458,14 @@ Considerations
    to zero).  In contrast, **greenspline**\ 's 1-D spline, as is explained in
    note 1, does *not* specify boundary conditions at the end of the data domain.
 
+#. It may be difficult to know how many eigenvalues are needed for a suitable
+   approximate fit.  The **-C** modifiers allow you to explore this further
+   by creating solutions for all cutoff selections and estimate model variance
+   and data misfit as a function of how many eigenvalues are used.  The large
+   set of such solutions can be animated so it is easier to explore the changes
+   between solutions and to make a good selection for the **-C** directive values.
+   See the animations for one or more examples of this exploration.
+
 Tension
 -------
 
@@ -463,6 +480,12 @@ your final result. **Note**: The regularized spline in tension is only
 stable for a finite range of *scale* values; you must experiment to find
 the valid range and a useful setting. For more information on tension
 see the references below.
+
+Deprecations
+------------
+
+- 6.3.0: Replace **+m** and **+M** modifiers for **-C**. `#5714 <https://github.com/GenericMappingTools/gmt/pull/5714>`_
+- 6.3.0: Use **+n** instead of negative value for **-C** to set dry-run. `#5725 <https://github.com/GenericMappingTools/gmt/pull/5725/>`_
 
 References
 ----------

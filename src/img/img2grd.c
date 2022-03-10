@@ -1,9 +1,20 @@
+/*--------------------------------------------------------------------
+ *
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
+ *--------------------------------------------------------------------*/
 /*
- * Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- * See LICENSE.TXT file for copying and redistribution conditions.
- *
- * img2grd.c
- *
  * img2grd reads an "img" format file (used by Sandwell and Smith
  * in their estimates of gravity and depth from satellite altimetry),
  * extracts a Region [with optional N by N averaging], and writes out
@@ -54,7 +65,6 @@
  */
 
 #include "gmt_dev.h"
-#include "gmt_common_byteswap.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"img2grd"
 #define THIS_MODULE_MODERN_NAME	"img2grd"
@@ -175,15 +185,14 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <world_image_filename> -G<outgrid> %s [-D[<minlat>/<maxlat>]] [-E] [-F] "
-		"[-I<min>[m|s]] [-M] [-N<navg>] [-S[<scale>]] [-T<type>] [%s] [-W<maxlon>] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <world_image_filename> -G%s %s [-D[<minlat>/<maxlat>]] [-E] [-F] "
+		"[-I<min>[m|s]] [-M] [-N<navg>] [-S[<scale>]] [-T<type>] [%s] [-W<maxlon>] [%s] [%s]\n", name, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<world_image_filename> gives name of img file.");
-	GMT_Usage (API, 1, "\n-G<grdfile>");
-	GMT_Usage (API, -2, "Set filename for the output grid file.");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
 	GMT_Usage (API, 1, "\n%s", GMT_Rgeo_OPT);
 	GMT_Usage (API, -2, "Specify the region in decimal degrees or degrees:minutes.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
@@ -241,15 +250,17 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 				if (n_files++ > 0) break;
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'F':	/* Backwards helper for old non-C behavior */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				if (opt->arg[0] && (sscanf (opt->arg, "%lf/%lf", &Ctrl->D.min, &Ctrl->D.max)) != 2) {
 					n_errors++;
@@ -261,22 +272,25 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'm':
 				if (gmt_M_compat_check (GMT, 4))	/* Warn and fall through to 'I' on purpose */
 					GMT_Report (API, GMT_MSG_COMPAT, "-m<inc> is deprecated; use -I<inc> instead.\n");
 				else {
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 					break;
 				}
 				/* Intentionally fall through */
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				L = strlen (opt->arg);
 				if (strchr ("ms", opt->arg[L])) {	/* Valid minute or second unit */
@@ -296,17 +310,21 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 					opt->arg[L] = 'm';
 				break;
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.value = atoi (opt->arg);
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				if (sscanf (opt->arg, "%lf", &Ctrl->S.value) != 1) Ctrl->S.mode = 1;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if ((sscanf (opt->arg, "%d", &Ctrl->T.value)) != 1) {
 					n_errors++;
@@ -314,6 +332,7 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if ((sscanf (opt->arg, "%lf", &Ctrl->W.value)) != 1) {
 					n_errors++;
@@ -321,7 +340,7 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

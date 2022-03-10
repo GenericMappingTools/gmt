@@ -63,16 +63,17 @@ accomplished.
    Corel Draw will allow you to edit the BoundingBox graphically.
 
 -  A command-line alternative is to use freely-available program
-   **epstool** from the makers of Aladdin ghostscript. Running
+   *epstool* from the makers of `Aladdin ghostscript <https://www.ghostscript.com/>`_.
+   Running
 
       ::
 
        epstool -c -b myplot.ps
 
-   should give a tight BoundingBox; **epstool** assumes the plot is
+   should give a tight BoundingBox; *epstool* assumes the plot is
    page size and not a huge poster.
 
--  Another option is to use **ps2epsi** which also comes with the
+-  Another option is to use *ps2epsi* which also comes with the
    ghostscript package. Running
 
       ::
@@ -116,8 +117,8 @@ formats (i.e., they basically describe all objects, text and graphics as
 lines and curves), such conversion sounds awfully straightforward and
 not worth a full section in this document. But experience has shown
 differently, since most converters cut corners by using the same tool
-(Aladdin's ghostscript) with basic default options that are not
-devised to produce the best quality PDF files.
+(`Aladdin ghostscript <https://www.ghostscript.com/>`_) with basic
+default options that are not devised to produce the best quality PDF files.
 
 For some applications it is practical or even essential that you convert
 your PostScript file into a raster format, such as GIF (Graphics
@@ -131,12 +132,15 @@ by-pass PowerPoint's rendering engine in case you want to embed
 the image into a presentation.
 
 The are a number of programs that will convert PostScript files to PDF
-or raster formats, like Aladdin's **pstopdf**, pbmplus' **pstoimg**,
-or GraphicsMagick's and ImageMagick's **convert**, most of which run ghostscript
-behind the scenes. The same is true for viewers like **ghostview** and
-Apple's **Preview**. So a lot of the times when people report that
-their PostScript plot does not look right but prints fine, it is the
-way ghostscript is used with its most basic settings that is to blame.
+or raster formats, like Aladdin's *pstopdf*,
+`pbmplus <https://acme.com/software/pbmplus/>`_' *pstoimg*,
+or `GraphicsMagick's <http://www.graphicsmagick.org/>`_
+and `ImageMagick's <https://www.imagemagick.org/>`_ *convert*,
+most of which run ghostscript behind the scenes.
+The same is true for viewers like *ghostview* and Apple's *Preview*.
+So a lot of the times when people report that their PostScript plot
+does not look right but prints fine, it is the way ghostscript is used
+with its most basic settings that is to blame.
 
 When converting or viewing PostScript goes awry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -171,7 +175,7 @@ Embedded image compression.
     converting them to PDF objects. This can be avoided, however, by
     inhibiting the compression altogether, or using the non-lossy
     *flate* compression, similar to the one used in the old
-    **compress** program. This compression is fully reversible, so
+    *compress* program. This compression is fully reversible, so
     that your image does not suffer any loss.
 
 Auto-rotation.
@@ -335,7 +339,7 @@ On the central column of Figure :ref:`Rendered images <Rendering>` we have
 included PNG
 versions of a portion of the same example. This shows the workings of
 anti-aliasing and different resolutions. All samples were obtained with
-**convert**. The one on the top uses all default settings, resulting
+*convert*. The one on the top uses all default settings, resulting
 in an anti-aliased image at 72 dpi resolution (very much like the PDF
 included directly into PowerPoint).
 

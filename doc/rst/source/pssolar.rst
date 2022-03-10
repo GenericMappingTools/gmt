@@ -35,7 +35,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: solar_common.rst_
+.. include:: solar.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
@@ -57,7 +59,9 @@ Set up a clip path overlay based on the day/night terminator::
 
     gmt pssolar -R -J -G -Tc -O -K >> someplot.ps
 
-.. include:: solar_notes.rst_
+.. include:: solar.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------

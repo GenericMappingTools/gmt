@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@
 #define THIS_MODULE_PURPOSE	"Plot a polar histogram (rose, sector, windrose diagrams)"
 #define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X},>D),>DI,ID)"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipqstwxy" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehiopqstwxy" GMT_OPT("c")
 
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -163,9 +163,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s [<table>] [-A<sector_angle>[+r]] [%s] [-C<cpt>] [-D] [-E[m|[+w]<modefile>]] [-F] [-G<fill>] "
 		"[-I] [-JX<diameter>] %s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N<mode>[+p<pen>]] %s%s[-Q<alpha>] "
 		"[-R<r0>/<r1>/<theta0>/<theta1>] [-S[+a]] [-T] [%s] [%s] [-W[v]<pen>] [%s] [%s] [-Zu|<scale>] [%s] %s[%s] [%s] [%s] "
-		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT,
-		GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -224,7 +224,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-Zu|<scale>");
 	GMT_Usage (API, -2, "Multiply the radii by <scale> before plotting; or use -Zu to set input radii to 1.");
 	GMT_Usage (API, 1, "\n-: Expect (azimuth,radius) input rather than (radius,azimuth) [%s].", choice[API->GMT->current.setting.io_lonlat_toggle[GMT_IN]]);
-	GMT_Option (API, "bi2,c,di,e,h,i,p,qi,s,t,w,.");
+	GMT_Option (API, "bi2,c,di,e,h,i,o,p,qi,s,t,w,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -249,12 +249,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Get Sector angle in degrees -A<inc>[+r]*/
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				k = 0;
 				if ((c = strstr (opt->arg, "+r"))) {
@@ -269,6 +270,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				if (gmt_M_compat_check (GMT, 5)) {	/* Need to check for deprecated -Cm|[+w]<modefile> option */
 					if (((c = strstr (opt->arg, "+w")) || (opt->arg[0] == 'm' && opt->arg[1] == '\0') || opt->arg[0] == '\0') && strstr (opt->arg, GMT_CPT_EXTENSION) == NULL) {
 						GMT_Report (API, GMT_MSG_COMPAT, "Option -C for mode-vector(s) is deprecated; use -E instead.\n");
@@ -293,9 +295,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Center the bins */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 			case 'E':	/* Read mode file and plot mean directions */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if ((c = strstr (opt->arg, "+w"))) {	/* Wants to write out mean direction */
 					gmt_M_str_free (Ctrl->E.file);
@@ -311,9 +315,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'F':	/* Disable scalebar plotting */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				break;
 			case 'G':	/* Set Gray shade */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
@@ -321,9 +327,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'I':	/* Compute statistics only - no plot */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Override default labeling */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
 					unsigned int n_comma = 0;
@@ -341,6 +349,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'M':	/* Get arrow parameters */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
@@ -400,20 +409,24 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'Q':	/* Set critical value [0.05] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (opt->arg[0]) Ctrl->Q.value = atof (opt->arg);
 				break;
 			case 'S':	/* Normalization */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.normalize = true;
 				if (strstr (opt->arg, "+a"))
 					Ctrl->S.area_normalize = true;
 				break;
 			case 'T':	/* Oriented instead of directed data */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				break;
 			case 'W':	/* Get pen width for outline */
 				n = (opt->arg[0] == 'v') ? 1 : 0;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active[n]);
 				Ctrl->W.active[n] = true;
 				if (gmt_getpen (GMT, &opt->arg[n], &Ctrl->W.pen[n])) {
 					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
@@ -421,6 +434,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'Z':	/* Scale radii before using data */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				if (opt->arg[0] == 'u')
 					Ctrl->Z.mode = 1;
@@ -429,7 +443,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -809,14 +823,14 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 		if (GMT->current.map.frame.axis[k].item[GMT_ANNOT_UPPER].generated) GMT->current.map.frame.axis[k].item[GMT_ANNOT_UPPER].interval = 0.0;
 		if (GMT->current.map.frame.axis[k].item[GMT_GRID_UPPER].generated)  GMT->current.map.frame.axis[k].item[GMT_GRID_UPPER].interval  = 0.0;
 	}
-	save = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	save = gmt_get_column_type (GMT, GMT_IN, GMT_Y);
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_GEO;	/* Let y be geographic to get division fo 90 etc */
 	/* Update, if generated previously */
 	gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 	gmt_auto_frame_interval (GMT, GMT_Y, GMT_ANNOT_UPPER);
 	/* Reset to what it was, i.e. Cartesian square box */
 	gmt_M_memcpy (GMT->common.R.wesn, wesn, 4U, double);
-	GMT->current.io.col_type[GMT_IN][GMT_Y] = save;	/* Reset */
+	gmt_set_column_type (GMT, GMT_IN, GMT_Y, save);	/* Reset */
 
 	if (GMT->current.map.frame.draw && !GMT->current.map.frame.no_frame && gmt_M_is_zero (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval) && gmt_M_is_zero (GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval)) do_labels = false;
 
@@ -882,6 +896,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 				dim[PSL_VEC_XTIP] = radius * c;
 				dim[PSL_VEC_YTIP] = radius * s;
 				f = (radius < Ctrl->M.S.v.v_norm) ? radius / Ctrl->M.S.v.v_norm : 1.0;
+				if (f < Ctrl->M.S.v.v_norm_limit) f = Ctrl->M.S.v.v_norm_limit;
 				dim[PSL_VEC_TAIL_WIDTH]  = f * Ctrl->M.S.v.v_width;
 				dim[PSL_VEC_HEAD_LENGTH] = f * Ctrl->M.S.v.h_length;
 				dim[PSL_VEC_HEAD_WIDTH]  = f * Ctrl->M.S.v.h_width;

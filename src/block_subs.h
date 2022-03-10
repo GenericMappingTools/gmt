@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -61,6 +61,9 @@ struct BLOCK_CTRL {
 		unsigned int n;			/* Number of output grids specified via -G */
 		char *file[BLK_N_FIELDS];	/* Only first is used for commandline but API may need many */
 	} G;
+	struct I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct N {	/* -N<empty> */
 		bool active;
 		double no_data;

@@ -122,12 +122,13 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *x/y*\|\ *pointfile*\ [**+h**\ *header*]
-    Rather that compute gridded output, create tile/spatial series through the stacked
+    Rather that compute gridded output, create time or spatial series through the stacked
     grids at the given point (*x/y*) or the list of points in *pointfile*.  If you need
     a series of points defined by an origin and an end point or similar, you can make
     such a file first with :doc:`project`.  By default we simply sample the cube at
     each level.  Use **-T** to interpolate the series.  The grid level (e.g., depth or time)
-    will be appended as the last numerical value in the series records.  Use the optional
+    will be inserted as the third numerical value in the series records, with optional input
+    columns appended, ending with the sampled cube value.  Use the optional
     **+h** modifier to append *header* to the trailing text of these input points.
     On output the trailing text will become the segment header for the series that originate
     from each point.  By default, the table output is written to standard output.  Use **-G**
@@ -141,7 +142,9 @@ Optional Arguments
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     For details on array creation, see `Generate 1D Array`_.  **Note**: If **-Z** is set
     and no output times are set with **-T** we simply rewrite the grid-produced cube as
-    a 3-D data cube file and exit.
+    a 3-D data cube file and exit. Also, for **-E** and **-S** you may also just give
+    a range via -T**\ *min/max* to limit the layers considered, with no interpolation
+    between the selected layers.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -242,7 +245,7 @@ using a linear spline, try::
 
     gmt grdinterpolate layers_*.nc -Zz.txt -T3400 -Fl -Gtemp_3400.nc
 
-To resample the the temperature.nc 3-D cube for all levels from
+To resample the temperature.nc 3-D cube for all levels from
 1500 to 2500 in steps of 50, using an Akima spline, try::
 
     gmt grdinterpolate temperature.nc -T1500/2500/50 -Gtemperature_1500_2500.nc -Fa

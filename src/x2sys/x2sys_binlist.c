@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -103,6 +103,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, struct 
 
 	unsigned int n_errors = 0, n_files[2] = {0, 0};
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -119,17 +120,20 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, struct 
 			/* Processes program-specific parameters */
 
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -367,7 +371,7 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 		last_bin_index = UINT_MAX;
 		last_not_set = true;
-		last_bin_col = last_bin_row = -1;
+		last_bin_col = last_bin_row = GMT_NOTSET;
 		for (row = 0; row < p.n_rows; row++) {
 			if (x2sysbinlist_outside (data[s->x_col][row], data[s->y_col][row], &B, s->geographic)) continue;
 			if (x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, data[s->x_col][row], data[s->y_col][row], &this_bin_col,

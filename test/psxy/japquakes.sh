@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Plot data reusing a columm
+# Plot data reusing a column
 ps=japquakes.ps
 
 # Plot seismicity map on top, specify a 500 km scalebar kinda in the lower-right corner where there are no quakes

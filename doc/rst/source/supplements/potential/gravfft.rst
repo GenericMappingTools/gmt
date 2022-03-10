@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt gravfft** *ingrid* [ *ingrid2* ]
-|-G|\ *outfile*
+|-G|\ *outgrid*
 [ |-C|\ *n/wavelength/mean\_depth*/**t**\|\ **b**\|\ **w** ]
 [ |-D|\ *density*\|\ *rhogrid* ]
 [ |-E|\ *n_terms* ]
@@ -62,16 +62,19 @@ are doing; see the examples for further guidance.
 Required Arguments
 ------------------
 
-*ingrid*
-    2-D binary grid file to be operated on. (See :ref:`Grid File Formats
-    <grd_inout_full>`).
-    For cross-spectral operations, also give the second grid file *ingrid2*.
+.. |Add_ingrid| replace:: 2-D binary grid file to be operated on. For
+    cross-spectral operations, also give the second grid file *ingrid2*.
+.. include:: /explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 
-**-G**\ *outfile*
-    Specify the name of the output grid file or the 1-D spectrum table
-    (see **-E**). (See :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_outgrid| replace:: Specify the name of the output grid file or the 1-D spectrum table
+    (see |-E|)
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -125,7 +128,7 @@ Optional Arguments
 
 **-I**\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k**
     Use *ingrid2* and *ingrid1* (a grid with topography/bathymetry) to estimate admittance\|coherence and
-    write it to stdout (**-G** ignored if set). This grid should contain
+    write it to standard output (**-G** ignored if set). This grid should contain
     gravity or geoid for the same region of *ingrid1*. Default
     computes admittance. Output contains 3 or 4 columns. Frequency
     (wavelength), admittance (coherence) one sigma error bar and,
@@ -171,7 +174,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *wd*\ [**k**]
-    Set water depth (or observation height) relative to topography [0].  Append **k** to indicate km.
+    Set water depth (or observation height) relative to topography in meters [0].  Append **k** to indicate km.
 
 .. _-Z:
 
@@ -332,13 +335,13 @@ References
 Luis, J.F. and M.C. Neves. 2006, The isostatic compensation of the
 Azores Plateau: a 3D admittance and coherence analysis. J. Geothermal
 Volc. Res. Volume 156, Issues 1-2, Pages 10–22,
-`http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010 <http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010>`_
+`https://dx.doi.org/10.1016/j.jvolgeores.2006.03.010 <https://dx.doi.org/10.1016/j.jvolgeores.2006.03.010>`_
 
 Parker, R. L., 1972, The rapid calculation of potential anomalies, Geophys. J., 31, 447–455.
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431–19,441,
-`http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/10.1029/2000JB000083>`_
+`https://dx.doi.org/10.1029/2000JB000083 <https://dx.doi.org/10.1029/2000JB000083>`_
 
 See Also
 --------

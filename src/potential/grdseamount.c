@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -91,6 +91,9 @@ struct GRDSEAMOUNT_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct GRDSEAMOUNT_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDSEAMOUNT_L {	/* -L[<hcut>] */
 		bool active;
 		unsigned int mode;
@@ -159,10 +162,10 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -G<outgrid> %s %s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s] "
 		"[-E] [-F[<flattening>]] [-L[<hcut>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<r_scale>] "
 		"[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -174,8 +177,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"With -E we expect lon, lat, azimuth, semi-major, semi-minor, height instead. "
 		"If -F (with no argument) is given then an extra column with flattening (0-1) is expected. "
 		"If -T is given then two extra columns with start and stop times are expected.");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Filename for output grid with constructed surface. If -T is set then <outgrid> "
+	gmt_outgrid_syntax (API, 'G', "Filename for output grid with constructed surface. If -T is set then <outgrid> "
 		"must be a filename template that contains a floating point format (C syntax) and "
 		"we use the corresponding time (in units specified in -T) to generate the file names.");
 	GMT_Option (API, "I,R");
@@ -243,17 +245,19 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 	int n;
 	char T1[GMT_LEN32] = {""}, T2[GMT_LEN32] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Mask option */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0]) {
 					if ((n = sscanf (opt->arg, "%[^/]/%s", T1, T2)) == 2) {
@@ -261,12 +265,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 						Ctrl->A.value[GMT_IN]  = (T2[0] == 'N') ? GMT->session.f_NaN : (gmt_grdfloat)atof (T2);
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -A: Must specify two values\n");
+						GMT_Report (API, GMT_MSG_WARNING, "Option -A: Must specify two values\n");
 						n_errors++;
 					}
 				}
 				break;
 			case 'C':	/* Shape option */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				Ctrl->C.code = opt->arg[0];
 				switch (opt->arg[0]) {
@@ -277,7 +282,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 					case 'p': Ctrl->C.mode = SHAPE_PARA; break;
 					default:
 						if (opt->arg[0]) {
-							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -G: Unrecognized shape %s\n", opt->arg);
+							GMT_Report (API, GMT_MSG_WARNING, "Option -G: Unrecognized shape %s\n", opt->arg);
 							n_errors++;
 						}
 						else	/* Read from trailing text instead */
@@ -286,13 +291,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'D':	/* Cartesian unit option */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.unit = opt->arg[0];
 				break;
 			case 'E':	/* Elliptical shapes */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				break;
 			case 'F':	/* Truncation fraction */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.mode = TRUNC_FILE;
 				if (opt->arg[0]) {
@@ -301,14 +309,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'G':	/* Output file name or name template */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacing */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':	/* List area, volume and mean height only, then exit */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
 					Ctrl->L.mode = 1;
@@ -316,14 +328,17 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'M':	/* Output file name with list of generated grids */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				if (opt->arg[0]) Ctrl->M.file = strdup (opt->arg);
 				break;
 			case 'N':	/* Normalization to max height */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.value = atof (opt->arg);
 				break;
 			case 'Q':	/* Set two modes: build mode and flux mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if ((c = strstr (opt->arg, "+d"))) {
 					Ctrl->Q.disc = true;
@@ -336,28 +351,31 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 						Ctrl->Q.fmode = (f == 'c') ? FLUX_LINEAR : FLUX_GAUSSIAN;
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -Q: Unable to parse the two modes\n");
+						GMT_Report (API, GMT_MSG_WARNING, "Option -Q: Unable to parse the two modes\n");
 						n_errors++;
 					}
 				}
 				if (c) c[0] = '+';
 				break;
 			case 'S':	/* Ad hoc radial scale */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.value = atof (opt->arg);
 				break;
 			case 'T':	/* Time grid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if ((Ctrl->T.n_times = gmt_modeltime_array (GMT, opt->arg, &Ctrl->T.log, &Ctrl->T.time)) == 0)
 					n_errors++;
 				break;
 			case 'Z':	/* Background relief level */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				Ctrl->Z.value = atof (opt->arg);
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -592,10 +610,12 @@ GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAM
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
-	int error, scol, srow, scol_0, srow_0;
+	int scol, srow, scol_0, srow_0, error;
 
-	unsigned int n_out, nx1, d_mode, row, col, row_0, col_0, rmode, inc_mode;
-	unsigned int max_d_col, d_row, *d_col = NULL, t, t_use, build_mode, t0_col = 0, t1_col = 0;
+	openmp_int row, col, max_d_col, d_row, nx1, *d_col = NULL;
+
+	unsigned int n_out, d_mode, rmode, inc_mode;
+	unsigned int t, t_use, build_mode, t0_col = 0, t1_col = 0;
 
 	uint64_t n_expected_fields, n_smts = 0, tbl, seg, rec, ij;
 
@@ -742,7 +762,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (rec = 0; rec < S->n_rows; rec++, n_smts++) {
 				if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in, &code)) continue;
-				for (col = 0; col < n_expected_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
+				for (col = 0; col < (openmp_int)n_expected_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
 				if (Ctrl->C.input) {
 					noise = 0.0;
 					switch (code) {
@@ -811,7 +831,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
-	nx1 = Grid->header->n_columns + Grid->header->registration - 1;
+	nx1 = (openmp_int)Grid->header->n_columns + Grid->header->registration - 1;
 	if (map && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) periodic = true;
 	replicate = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);
 	if (Ctrl->A.active) for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->A.value[GMT_OUT];
@@ -938,10 +958,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 					scol_0 = (int)gmt_M_grd_x_to_col (GMT, in[GMT_X], Grid->header);	/* Center column */
 					if (scol_0 < 0) continue;	/* Still outside x-range */
-					if ((col_0 = scol_0) >= Grid->header->n_columns) continue;	/* Still outside x-range */
+					if (scol_0 >= (int)Grid->header->n_columns) continue;	/* Still outside x-range */
 					srow_0 = (int)gmt_M_grd_y_to_row (GMT, in[GMT_Y], Grid->header);	/* Center row */
 					if (srow_0 < 0) continue;	/* Still outside y-range */
-					if ((row_0 = srow_0) >= Grid->header->n_rows) continue;	/* Still outside y-range */
+					if (srow_0 >= (int)Grid->header->n_rows) continue;	/* Still outside y-range */
 
 					c = (map) ? cosd (in[GMT_Y]) : 1.0;	/* Flat Earth area correction */
 
@@ -992,17 +1012,17 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 					for (srow = srow_0 - (int)d_row; srow <= (srow_0 + (int)d_row); srow++) {
 						if (srow < 0) continue;
-						if ((row = srow) >= Grid->header->n_rows) continue;
+						if ((row = (openmp_int)srow) >= (openmp_int)Grid->header->n_rows) continue;
 						y = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 						first = replicate;	/* Used to help us deal with duplicate columns for grid-line registered global grids */
 						for (scol = scol_0 - (int)d_col[row]; scol <= (scol_0 + (int)d_col[row]); scol++) {
 							if (!periodic) {
 								if (scol < 0) continue;
-								if ((col = scol) >= Grid->header->n_columns) continue;
+								if ((col = (openmp_int)scol) >= (openmp_int)Grid->header->n_columns) continue;
 							}
 							if (scol < 0)	/* Periodic grid: Break on through to other side! */
 								col = scol + nx1;
-							else if ((col = scol) >= Grid->header->n_columns) 	/* Periodic grid: Wrap around to other side */
+							else if ((col = (openmp_int)scol) >= (openmp_int)Grid->header->n_columns) 	/* Periodic grid: Wrap around to other side */
 								col -= nx1;
 							/* "silent" else we are inside w/e */
 							x = gmt_M_grd_col_to_x (GMT, col, Grid->header);

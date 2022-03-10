@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -148,6 +148,8 @@ struct GMTAPI_CTRL {
 	bool is_file;					/* True if current rec-by-rec i/o is from a physical file */
 	bool cache;					/* true if we want to read a cache file via GDAL */
 	bool no_history;					/* true if we want to disable the gmt.history mechanism */
+	bool got_remote_wesn;				/* true if we obtained w/e/sn via a remote grid/image with no resolution given */
+	bool use_gridline_registration;	/* true if default remote grid registration should be gridline, not pixel */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */
@@ -155,6 +157,8 @@ struct GMTAPI_CTRL {
 	unsigned int log_level;			/* 0 = stderr, 1 = just this module, 2 = set until unset */
 	unsigned int io_mode[2];		/* 1 if access as set, 0 if record-by-record */
 	double tile_wesn[GMTAPI_N_GRID_ARGS];	/* Original region used when getting tiles (perhaps result of -Roblique -J) */
+	double tile_inc;	/* Remote grid increment in degrees */
+	char tile_reg;		/* Remote grid registration */
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */
@@ -206,6 +210,7 @@ struct GMTAPI_CTRL {
 	char *O_OPT, *K_OPT, *P_OPT, *c_OPT;
 	/* structure array of remote file information (sorted alphabetically) */
 	int n_remote_info;	/* How many remote server files we know of */
+	int remote_id;	/* Currently used remote ID or -1 */
 	struct GMT_DATA_INFO *remote_info;
 	bool server_announced;	/* Set to true after we have announced which GMT data server we are using */
 	struct GMT_COMMON *common_snapshot;	/* Holds the latest GMT common option settings after a module completes. */

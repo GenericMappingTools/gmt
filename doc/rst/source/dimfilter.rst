@@ -24,6 +24,7 @@ Synopsis
 [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -51,28 +52,29 @@ DiM-filtered data is generally recommended.
 Required Arguments
 ------------------
 
-*ingrid*
-    The input grid to be filtered (see :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: The input grid to be filtered.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-D:
 
-**-D**\ *0-4*
-    Distance *flag* determines how grid (x,y) relates to filter *width*, as follows:
+**-D**\ *flag*
+    Distance *flag* (0-4) determines how grid (x,y) relates to filter *width*, as follows:
 
-    *flag* = 0: grid (x,y) in same units as *width*, Cartesian distances.
-    *flag* = 1: grid (x,y) in degrees, *width* in kilometers, Cartesian distances.
-    *flag* = 2: grid (x,y) in degrees, *width* in km, dx scaled by
-    cos(middle y), Cartesian distances.
+    - *flag* = 0: grid (x,y) in same units as *width*, Cartesian distances.
+    - *flag* = 1: grid (x,y) in degrees, *width* in kilometers, Cartesian distances.
+    - *flag* = 2: grid (x,y) in degrees, *width* in km, dx scaled by
+      cos(middle y), Cartesian distances.
 
     The above options are fastest because they allow weight matrix to be
-    computed only once. The next three options are slower because they
+    computed only once. The next two options are slower because they
     recompute weights for each latitude.
 
-    *flag* = 3: grid (x,y) in degrees, *width* in km, dx scaled by
-    cosine(y), Cartesian distance calculation.
-
-    *flag* = 4: grid (x,y) in degrees, *width* in km, Spherical distance
-    calculation.
+    - *flag* = 3: grid (x,y) in degrees, *width* in km, dx scaled by
+      cosine(y), Cartesian distance calculation.
+    - *flag* = 4: grid (x,y) in degrees, *width* in km, Spherical distance
+      calculation.
 
 .. _-F:
 
@@ -81,20 +83,17 @@ Required Arguments
     non-convolution filters. Append the filter code **x** followed by the full
     diameter *width*. Available convolution filters are:
 
-    (**b**) Boxcar: All weights are equal.
-
-    (**c**) Cosine Arch: Weights follow a cosine arch curve.
-
-    (**g**) Gaussian: Weights are given by the Gaussian function.
-
+    - (**b**) Boxcar: All weights are equal.
+    - (**c**) Cosine Arch: Weights follow a cosine arch curve.
+    - (**g**) Gaussian: Weights are given by the Gaussian function.
+    
     Non-convolution filters are:
 
-    (**m**) Median: Returns median value.
-
-    (**p**) Maximum likelihood probability (a mode estimator): Return
-    modal value. If more than one mode is found we return their average
-    value. Append **+l** or **+h** to the filter width if you rather want to
-    return the smallest or largest of each sector's modal values.
+    - (**m**) Median: Returns median value.
+    - (**p**) Maximum likelihood probability (a mode estimator): Return modal
+      value. If more than one mode is found we return their average value.
+      Append **+l** or **+h** to the filter width if you rather want to return
+      the smallest or largest of each sector's modal values.
 
 .. _-N:
 
@@ -104,24 +103,21 @@ Required Arguments
     set to 1, the secondary filter is not effective. Available secondary
     filters **x** are:
 
-    (**l**) Lower: Return the minimum of all filtered values.
-
-    (**u**) Upper: Return the maximum of all filtered values.
-
-    (**a**) Average: Return the mean of all filtered values.
-
-    (**m**) Median: Return the median of all filtered values.
-
-    (**p**) Mode: Return the mode of all filtered values:
-    If more than one mode is found we return their average
-    value. Append **+l** or **+h** to the sectors if you rather want to
-    return the smallest or largest of the modal values.
+    - (**l**) Lower: Return the minimum of all filtered values.
+    - (**u**) Upper: Return the maximum of all filtered values.
+    - (**a**) Average: Return the mean of all filtered values.
+    - (**m**) Median: Return the median of all filtered values.
+    - (**p**) Mode: Return the mode of all filtered values: If more than one
+      mode is found we return their average value. Append **+l** or **+h** to
+      the sectors if you rather want to return the smallest or largest of the
+      modal values.
 
 .. _-G:
 
-**-G**\ *outgrid*
-    *outgrid* is the name of the binary output grid file. (See
-    :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -171,6 +167,9 @@ Optional Arguments
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
 
 .. include:: explain_help.rst_
 

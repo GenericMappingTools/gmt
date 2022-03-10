@@ -1,5 +1,6 @@
 /*--------------------------------------------------------------------
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,14 +38,14 @@
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<prefix>] [<format(s)>] [<psconvertoptions] [-C] [%s]\n\n", name, GMT_V_OPT);
+	GMT_Usage (API, 0, "usage: %s [<prefix>] [<formats>] [<psconvertoptions] [-C] [%s]\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<prefix>");
 	GMT_Usage (API, -2, "The prefix used for unnamed figures [%s].", GMT_SESSION_NAME);
-	GMT_Usage (API, 1, "\n<format(s)>");
+	GMT_Usage (API, 1, "\n<formats>");
 	GMT_Usage (API, -2, "Sets the default plot format(s) [%s].", gmt_session_format[API->GMT->current.setting.graphics_format]);
 	GMT_Usage (API, -2, "\nChoose one or more of these valid extensions separated by commas:");
 	GMT_Usage (API, 3, "bmp:	MicroSoft BitMap.");
@@ -56,6 +57,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "ppm:	Portable Pixel Map.");
 	GMT_Usage (API, 3, "ps:	PostScript.");
 	GMT_Usage (API, 3, "tif:	Tagged Image Format File.");
+	GMT_Usage (API, -2, "Two raster modifiers may be appended:");
+	GMT_Usage (API, 3, "+m For bmp, png, jpg, and tif, make a monochrome (grayscale) image [color].");
+	GMT_Usage (API, 3, "+q Append quality in 0-100 for jpg only [%d].", GMT_JPEG_DEF_QUALITY);
 	GMT_Usage (API, 1, "\n<psconvertoptions>");
 	GMT_Usage (API, -2,	"contains one or more comma-separated options that"
 		" will be passed to psconvert when preparing figures [%s].", GMT_SESSION_CONVERT);

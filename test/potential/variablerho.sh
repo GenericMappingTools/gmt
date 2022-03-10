@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Compute FAA and VGG for case of variable density
+
 ps=variablerho.ps
 gmt set GMT_FFT kiss
 order=4

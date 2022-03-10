@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -184,7 +184,10 @@ GMT_LOCAL void pstext_output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		gmt_setpen (GMT, &(T->vecpen));
 		PSL_plotsegment (PSL, x, y, x + T->x_offset, y + T->y_offset);
 	}
-	x += T->x_offset;	y += T->y_offset;	/* Move to the actual reference point */
+	if (Ctrl->D.justify)	/* Smart offset according to justification (from Dave Huang) */
+		gmt_smart_justify (GMT, T->block_justify, T->paragraph_angle, T->x_offset, T->y_offset, &x, &y, Ctrl->D.justify);
+	else
+		x += T->x_offset,	y += T->y_offset;	/* Move to the actual reference point */
 	if (T->boxflag) {	/* Need to lay down the box first, then place text */
 		int mode = 0;
 		struct GMT_FILL *fill = NULL;
@@ -294,7 +297,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_X_OPT, GMT_Y_OPT,
 		GMT_V_OPT, GMT_a_OPT, API->c_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT,
 		GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
-	GMT_Usage (API, -2, "Note: Reads <x,y[,fontinfo,angle,justify],text> records from <table> [or stdin], "
+	GMT_Usage (API, -2, "Note: Reads <x,y[,fontinfo,angle,justify],text> records from <table> [or standard input], "
 		"OR (with -M) one or more text paragraphs with formatting info in the segment headers. "
 		"Built-in escape sequences:");
 	GMT_Usage (API, 3, "%s @~ toggles between current font and Symbol font.", GMT_LINE_BULLET);
@@ -347,7 +350,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D[j|J]<dx>[/<dy>][+v[<pen>]]");
 	GMT_Usage (API, -2, "Add <dx>,<dy> to the text origin AFTER projecting with -J. If <dy> is not given it equals <dx> [0/0]. "
 		"Use -Dj to move text origin away from point (direction determined by text's justification). "
-		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). Optional modifier:");
+		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). Cannot be used with -M. Optional modifier:");
 	GMT_Usage (API, 3, "+v: Draw line from text to original point; optionally append a <pen> [%s].", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Usage (API, 1, "\n-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]");
 	GMT_Usage (API, -2, "Specify values for text attributes that apply to all text records:");
@@ -420,15 +423,17 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Getting azimuths rather than directions, must convert via map projection */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				c = strstr (opt->arg, "+t");
 				if ((c = strstr (opt->arg, "+t"))) {
@@ -447,6 +452,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				k = 0;
 				if (opt->arg[k] == 'j') { Ctrl->D.justify = 1, k++; }
@@ -465,6 +471,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->D.dy = (j == 2) ? gmt_M_to_inch (GMT, txt_b) : Ctrl->D.dx;
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				pos = 0;
 				Ctrl->F.no_input = gmt_no_pstext_input (API, opt->arg);
@@ -573,6 +580,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 					gmt_strrepc (opt->arg, 1, '+');
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (!strcmp (opt->arg, "+n") || (opt->arg[0] == 'C' && !opt->arg[1]))	/* Accept -GC or -G+n */
 					Ctrl->G.mode = PSTEXT_CLIPONLY;
@@ -584,21 +592,25 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'L':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				break;
 			case 'm':
 				if (gmt_M_compat_check (GMT, 4)) /* Warn and pass through */
 					GMT_Report (API, GMT_MSG_COMPAT, "-m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				/* Intentionally fall through */
 			case 'M':	/* Paragraph mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Do not clip at border */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				if (opt->arg[0] == '\0' || (k = gmt_count_char (GMT, opt->arg, '/')) > 0 || gmt_is_fill (GMT, opt->arg)) {
 					/* -S[<dx>/<dy>/][>shade>]; requires -G */
 					Ctrl->S.active = true;
@@ -627,9 +639,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'l') Ctrl->Q.mode = -1;
 				if (opt->arg[0] == 'u') Ctrl->Q.mode = +1;
@@ -641,9 +654,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 					n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->C.mode), "Option -T: must add o, O, c, or C\n");
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, "draws a box around the text with the specified pen [Default pen is %s]", NULL, 0);
@@ -651,6 +665,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				/* For backward compatibility we will see -Z+ as the current -Z
 				 * and -Z<level> as an alternative to -p<az>/<el>/<level> */
 				if (opt->arg[0] == '+' && !opt->arg[1])	/* Deprecated -Z+ option */
@@ -679,7 +694,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -1417,10 +1432,8 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 				c_font[m] = T.font;
 				m++;
 			}
-			else {
+			else
 				gmt_map_text (GMT, plot_x, plot_y, &T.font, curr_txt, T.paragraph_angle, T.block_justify, fmode);
-				//PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
-			}
 			if (Ctrl->A.active) T.paragraph_angle = save_angle;	/* Restore original angle */
 			gmt_M_str_free (use_text);
 		}

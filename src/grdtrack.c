@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,8 @@
  * Author:	Paul Wessel and Walter H F Smith
  * Date:	1-JAN-2010
  * Version:	6 API
+ *
+ * Note on KEYS: SD)=s means -S takes an optional output Dataset as argument via the +s modifier.
  */
 
 #include "gmt_dev.h"
@@ -79,12 +81,12 @@ struct GRDTRACK_CTRL {
 		bool active, loxo;
 		enum GMT_enum_track mode;
 	} A;
-	struct GRDTRACK_C {	/* -C<length>/<ds>[/<spacing>][+a][+v] */
+	struct GRDTRACK_C {	/* -C<length>/<ds>[/<spacing>][+a|v][+d<deviation>][+l|r] */
 		bool active;
 		unsigned int mode;
 		int dist_mode;	/* May be negative */
 		char unit;
-		double ds, spacing, length;
+		double ds, spacing, length, deviation;
 	} C;
 	struct GRDTRACK_D {	/* -Dresampfile */
 		bool active;
@@ -164,21 +166,20 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+l|r]] "
+	GMT_Usage (API, 0, "usage: %s -G%s -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+d|f<value>][+l|r]] "
 		"[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]] "
 		"[-F[+b][+n][+r][+z<z0>]] [-N] [%s] [-S[a|l|L|m|p|u|U][+a][+c][+d][+r][+s[<file>]]] [-T<radius>>[+e|p]] [%s] [-Z] [%s] [%s] [%s] "
-		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] %s] [%s] [%s] [%s]\n",
-		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] %s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 
-	GMT_Usage (API, 1, "\n-G<grid>");
-	GMT_Usage (API, -2, "Set the name of a 2-D binary data set to sample. "
-		"Repeat -G for as many grids as you wish to sample, or "
+	gmt_ingrid_syntax (API, 'G', "Name of grid to sample");
+	GMT_Usage (API, -2, "Note: Repeat -G for as many grids as you wish to sample, or "
 		"use -G+l<list> to pass a list of grid file names. "
-		"Note: If the file is a Sandwell/Smith Mercator grid (IMG format) then more information is required:");
+		"If the file is a Sandwell/Smith Mercator grid (IMG format) then more information is required: <imgfile>,<scale>,<mode>[,<maxlat>].");
 	gmt_img_syntax (API->GMT, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 
@@ -191,7 +192,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "r: Resample at equidistant locations; input points not necessarily included.");
 	GMT_Usage (API, 3, "R: Same, but adjust given spacing to fit the track length exactly.");
 	GMT_Usage (API, -2, "Append +l to compute distances along rhumblines (loxodromes) [no].");
-	GMT_Usage (API, 1, "\n-C<length>/<ds>[/<spacing>][+a|v][+l|r]");
+	GMT_Usage (API, 1, "\n-C<length>/<ds>[/<spacing>][+a|v][+d|f<value>][+l|r]");
 	GMT_Usage (API, -2, "Create equidistant cross-profiles from input line segments. Append 2-3 parameters:");
 	GMT_Usage (API, 3, "1. <length>: The full-length of each cross profile. "
 		"Append distance unit u (%s); this unit also applies to <ds> and <spacing>. "
@@ -200,6 +201,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "3. Optionally, append /<spacing> to set the spacing between cross-profiles, in units of u [Default erects cross-profiles at input locations].");
 	GMT_Usage (API, -2, "Several modifiers controls the creation of the profiles:");
 	GMT_Usage (API, 3, "+a Alternate the direction of cross-profiles [Default orients all the same way].");
+	GMT_Usage (API, 3, "+d Set deviation (-90/+90 range) from orthogonal cross-profiles [0 (no deviation)].");
+	GMT_Usage (API, 3, "+f Set fixed azimuth for all cross-profiles.");
 	GMT_Usage (API, 3, "+l Only use the left half of the profiles [entire profile].");
 	GMT_Usage (API, 3, "+r Only use the right half of the profiles [entire profile].");
 	GMT_Usage (API, 3, "+v Adjust direction of cross-profiles for E-W or S-N viewing [Default orients all the same way].");
@@ -257,7 +260,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: -T can only be used with a single non-IMG grid and is incompatible with -A, -C, -D, -E, -S.");
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-Z Only output z-values [Default gives all columns].");
-	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,j,n,o,q,s,w,:,.");
+	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,j,n,o,q,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -311,18 +314,19 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Specified output file */
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->Out.active = true;
 				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change track resampling mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'f': Ctrl->A.mode = GMT_TRACK_FILL;   break;
@@ -335,12 +339,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;
 				break;
 			case 'C':	/* Create cross profiles */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "alrv"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "adflrv"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'C', c, "alrv", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'C', c, "adflrv", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'a': Ctrl->C.mode |= GMT_ALTERNATE; break;		/* Select alternating direction of cross-profiles */
+							case 'f': Ctrl->C.mode |= GMT_FIXED_AZIM;	/* Deliberatily fall through to get fixed azimuth */
+							case 'd': Ctrl->C.deviation = atof (&p[1]); break;		/* Less than orthogonal vy given deviation */
 							case 'l': Ctrl->C.mode |= GMT_LEFT_ONLY; break;		/* cross-profile starts at line and go to left side only */
 							case 'r': Ctrl->C.mode |= GMT_RIGHT_ONLY; break;	/* cross-profile starts at line and go to right side only */
 							case 'v': Ctrl->C.mode |= GMT_EW_SN; break;		/* Select preferred E-W, S-N direction of cross-profiles */
@@ -372,14 +379,17 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			case 'D':	/* Dump resampled lines */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Create input tracks instead of reading tracks */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				Ctrl->E.lines = strdup (opt->arg);
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "bnrz"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
@@ -448,9 +458,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'S':
@@ -461,6 +472,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 					GMT->common.s.active = true;
 					break;
 				}
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->S.mode = STACK_MEAN;   break;
@@ -493,6 +505,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.unit = 'X';	/* Cartesian units unless override later */
 				if ((c = strstr (opt->arg, "+p"))) {	/* Gave +p modifier */
@@ -506,11 +519,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				if (opt->arg[0]) Ctrl->T.dmode = gmt_get_distance (GMT, opt->arg, &(Ctrl->T.radius), &(Ctrl->T.unit));
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -703,7 +717,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	int status, error, ks;
 	uint64_t n_points = 0, n_read = 0;
-	unsigned int g, k, xy_mode, dtype;
+	unsigned int g, k, xy_mode, dtype, pad_mode = 0;
 	bool img_conv_needed = false, some_outside = false;
 
 	char line[GMT_BUFSIZ] = {""}, run_cmd[BUFSIZ] = {""}, *cmd = NULL;
@@ -739,8 +753,6 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdtrack main code ----------------------------*/
 
-	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
-
 	cmd = GMT_Create_Cmd (API, options);
 	sprintf (run_cmd, "# %s %s", GMT->init.module_name, cmd);	/* Build command line argument string */
 	gmt_M_free (GMT, cmd);
@@ -749,14 +761,23 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (wesn, 4, double);
 	if (GMT->common.R.active[RSET]) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Specified a subset */
-	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+
+	pad_mode = (GMT->common.n.interpolant > BCR_BILINEAR) ? GMT_GRID_NEEDS_PAD2 : 0;
+	if (pad_mode) {
+		gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+		gmt_set_pad (GMT, 2U);	/* Ensure space for BCR BCs in case an API passed pad == 0 */
+	}
+	else {
+		gmt_grd_set_datapadding (GMT, false);	/* Turn off gridpadding when reading a subset */
+		gmt_set_pad (GMT, 0);	/* Pads not needed since bicubic or b-spline not selected */
+	}
 
 	GC = gmt_M_memory (GMT, NULL, Ctrl->G.n_grids, struct GRD_CONTAINER);
 
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
 		GC[g].type = Ctrl->G.type[g];
 		if (Ctrl->G.type[g] == 0) {	/* Regular GMT grids */
-			if ((GC[g].G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->G.file[g], NULL)) == NULL) {	/* Get header only */
+			if ((GC[g].G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|pad_mode, NULL, Ctrl->G.file[g], NULL)) == NULL) {	/* Get header only */
 				gmt_M_free (GMT, GC);
 				Return (API->error);
 			}
@@ -773,7 +794,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Return (GMT_NOERROR);
 			}
 
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->G.file[g], GC[g].G) == NULL) {	/* Get subset */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY|pad_mode, wesn, Ctrl->G.file[g], GC[g].G) == NULL) {	/* Get subset */
 				gmt_M_free (GMT, GC);
 				Return (API->error);
 			}
@@ -786,12 +807,6 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 			img_conv_needed = true;
 		}
 		GC[g].HH = gmt_get_H_hidden (GC[g].G->header);
-		/* Temporary fix for external grids with no pad; see discussion at https://github.com/GenericMappingTools/pygmt/issues/1309 */
-		if (GC[g].G->header->pad[XLO] < 2 || GC[g].G->header->pad[XHI] < 2 || GC[g].G->header->pad[YLO] < 2 || GC[g].G->header->pad[YHI] < 2) {
-			GMT->common.n.interpolant = MIN (GMT->common.n.interpolant, BCR_BILINEAR);	/* Can only do near-neighbor or bilinear without 2 pad */
-			GC[g].HH->bcr_interpolant = GMT->common.n.interpolant;
-			GC[g].HH->bcr_n = (GC[g].HH->bcr_interpolant == BCR_NEARNEIGHBOR) ? 1 : 2;
-		}
 	}
 
 	if (Ctrl->E.active) {	/* Create profiles rather than read them */
@@ -898,7 +913,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (Ctrl->S.selected[STACK_ADD_DEV]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked deviations(s) in each profile */
 			if (Ctrl->S.selected[STACK_ADD_RES]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked residuals(s) in each profile */
 		}
-		if ((Dout = gmt_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols, Ctrl->C.mode, Ctrl->C.unit)) == NULL) Return (API->error);
+		if ((Dout = gmt_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, Ctrl->C.deviation, n_cols, Ctrl->C.mode, Ctrl->C.unit)) == NULL) Return (API->error);
 
 		if (Ctrl->F.active) {	/* Keep a record of the along-track distances produced in -C */
 			dist = gmt_M_memory (GMT, NULL, Dtmp->n_records, double);
@@ -962,14 +977,15 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				T = Dout->table[tbl];
 				M = Stack->table[0]->segment[tbl];	/* Current stack */
 				M->n_rows = n_rows;
-				for (k = 0; k < Ctrl->G.n_grids; k++) {	/* Reset arrays and extremes */
+				for (k = 0; k < Ctrl->G.n_grids; k++)	/* Allocate arrays for stack */
 					stack[k] = gmt_M_memory (GMT, NULL, T->n_segments, double);
-					stacked_hi[k] = -DBL_MAX;
-					stacked_lo[k] = +DBL_MAX;
-				}
 				if (Ctrl->S.mode == STACK_MEDIAN || Ctrl->S.mode == STACK_MODE) dev = gmt_M_memory (GMT, NULL, Dout->table[tbl]->n_segments, double);	/* Ned temp array for these methods */
 				for (row = 0; row < n_rows; row++) {	/* For each row to stack across all segments, per data grid */
 					gmt_M_memset (stacked_n, Ctrl->G.n_grids, uint64_t);	/* Reset counts for new stack */
+					for (k = 0; k < Ctrl->G.n_grids; k++) {	/* Reset extremes upon starting new stack */
+						stacked_hi[k] = -DBL_MAX;
+						stacked_lo[k] = +DBL_MAX;
+					}
 					for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
 						for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) {	/* Collect sampled values across all profiles for same row into temp array */
 							if (gmt_M_is_dnan (T->segment[seg]->data[col][row])) continue;	/* Must skip any NaN entries in any profile */

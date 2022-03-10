@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -126,7 +126,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<COEdbase> File with crossover error data base [stdin].");
+	GMT_Usage (API, 1, "\n<COEdbase> File with crossover error data base [standard input].");
 	GMT_Usage (API, 1, "\n-C<column>");
 	GMT_Usage (API, -2, "The name of the data column whose crossovers we want.");
 	GMT_Usage (API, 1, "\n-T<TAG>");
@@ -203,7 +203,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct GMT
 			case '<':	/* Skip input files */
 				if (n_files[GMT_IN]++ > 0) break;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
 					n_errors++;
 				else
 					Ctrl->In.active = true;
@@ -215,33 +215,40 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				Ctrl->A.value = atof (opt->arg);
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				Ctrl->C.col = strdup (opt->arg);
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (opt->arg[0]) Ctrl->I.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file))) n_errors++;
 				break;
 			case 'L':	/* Crossover correction table */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
 					Ctrl->L.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
 				}
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if ((c = strstr (opt->arg, "+p"))) {
 					c[0] = '\0';	/* Chop off modifier */
@@ -251,12 +258,14 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct GMT
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'Q':	/* Specify internal or external only */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e') Ctrl->Q.mode = 1;
 				else if (opt->arg[0] == 'i') Ctrl->Q.mode = 2;
 				else Ctrl->Q.mode = 3;
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				if (opt->arg[0] == '+' && opt->arg[1]) {
 					Ctrl->S.both = true;
@@ -276,20 +285,22 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct GMT
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				Ctrl->W.file = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 1, "Only one COEdatabase can be given (or stdin)\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 1, "Only one COEdatabase can be given (or standard input)\n");
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "More than one output file given\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Only one of -Qe -Qi can be specified!\n");

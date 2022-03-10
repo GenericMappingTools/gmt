@@ -75,14 +75,16 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Name of output grid. This is the grid with the model predictions
+.. |Add_outgrid| replace:: Name of output grid. This is the grid with the model predictions
     given the specified rotations. **Note**: If you specified more than one
     model prediction in **-S** then the filename *must* be a template
     that contains the format %s; this will be replaced with the corresponding
     tags az, dist, stage, vel, omega, dlon, dlat, lon, lat.
     If the **-G** option is not used then we create no grids and instead
     write *lon, lat, age, predictions* records to standard output.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 

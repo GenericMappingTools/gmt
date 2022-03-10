@@ -1,17 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 2016-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2016-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Lesser General Public License as published by
- *   the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
- *   Contact info: www.generic-mapping-tools.org
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Program for averaging finite rotations, resulting in mean rotations
@@ -149,28 +150,33 @@ static int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Supplemental parameters */
 
 			case 'A':	/* Output only an age-limited segment of the track */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
 
 			case 'N':	/* Ensure all poles reported are in northern hemisphere */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 
 			case 'S':	/* Ensure all poles reported are in southern hemisphere */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 
 			case 'T':	/* New: -Tage, -Tmin/max/inc, -Tmin/max/n+, -Tfile */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a file with times in first column */
 					uint64_t seg, row;
@@ -219,14 +225,16 @@ static int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct GM
 				break;
 
 			case 'W':	/* Use weights */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				break;
 			case 'Z':	/* Report negative opening angles */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -434,7 +442,7 @@ EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Found %d rots for the time interval %g <= t < %g\n", n_use, t_lo, t_hi);
 		if (n_use < n_minimum) continue;	/* Need at least 1 or 2 poles to do anything useful */
 
-		/* Now extimate the average rotation */
+		/* Now estimate the average rotation */
 
 		gmt_M_memset (xyz_mean_pole, 3, double);	/* Reset sum of mean components and weight sums */
 		gmt_M_memset (xyz_mean_quat, 4, double);	/* Reset sum of mean components and weight sums */

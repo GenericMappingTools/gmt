@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt spatial** [ *table* ] [ |-A|\ [**a**\ *min_dist*][*unit*]]
+**gmt spatial** [ *table* ]
+[ |-A|\ [**a**\ *min_dist*][*unit*]]
 [ |-C| ]
 [ |-D|\ [**+a**\ *amax*][**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *fact*] ]
 [ |-E|\ **+p**\|\ **n** ]
@@ -25,6 +26,8 @@ Synopsis
 [ |-S|\ **b**\ *width*\|\ **h**\|\ **i**\|\ **u**\|\ **s**\|\ **j** ]
 [ |-T|\ [*clippolygon*] ]
 [ |SYN_OPT-V| ]
+[ |-W|\ *dist*\[*unit*][**+f**\|\ **l**] ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -35,6 +38,7 @@ Synopsis
 [ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -111,7 +115,7 @@ Optional Arguments
 
 **-E**\ **+p**\|\ **n**
     Reset the handedness of all polygons to match the given **+p**
-    (counter-clockwise; positive) or **+n** (clockwise; negative). Implies **-Q+**.
+    (counter-clockwise; positive) or **+n** (clockwise; negative).
 
 .. _-F:
 
@@ -125,7 +129,10 @@ Optional Arguments
     Determine the intersection locations between all pairs of polygons.
     Append **i** to only compute internal (i.e., self-intersecting
     polygons) crossovers or **e** to only compute external (i.e.,
-    between pairs of polygons) crossovers [Default is both].
+    between pairs of polygons) crossovers [Default is both].  Output
+    records will list the coordinates of the crossing, the relative times
+    along the two segments (i.e., floating point record numbers at the
+    crossing), and the names of the two segments (as trailing text).
 
 .. _-L:
 
@@ -144,7 +151,7 @@ Optional Arguments
     (first **-Z**, then **-L** are scanned), or it is assigned the
     running number that is initialized to *start* [0]. By default the
     input segment that are found to be inside a polygon are written to
-    stdout with the polygon ID encoded in the segment header as
+    standard output with the polygon ID encoded in the segment header as
     **-Z**\ *ID*. Alternatively, append **+r** to just report which
     polygon contains a feature or **+z** to have the IDs added as an
     extra data column on output. Segments that fail to be inside a
@@ -156,11 +163,11 @@ Optional Arguments
 **-Q**\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]]
     Measure the area of all polygons or length of line segments. Use
     **-Q+h** to append the area to each polygons segment header [Default
-    simply writes the area to stdout]. For polygons we also compute the
+    simply writes the area to standard output]. For polygons we also compute the
     centroid location while for line data we compute the mid-point
-    (half-length) position. Append a distance unit to select the unit
-    used (see `Units`_). Note that the area will depend on the current
-    setting of :term:`PROJ_ELLIPSOID`; this should be a
+    (half-length) position. For geographical data, optionally append a
+    distance unit to select the unit used (see `Units`_) [k]. Note that
+    the area will depend on the current setting of :term:`PROJ_ELLIPSOID`; this should be a
     recent ellipsoid to get accurate results. The centroid is computed
     using the mean of the 3-D Cartesian vectors making up the polygon
     vertices, while the area is obtained via an equal-area projection.
@@ -209,6 +216,18 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+.. --W:
+
+**-W**\ *dist*\[*unit*][**+f**\|\ **l**]
+    Extend all segments with a new first and last point such that these points are *dist* away
+    from their neighbor point in the direction implied by the two points at each end of the
+    segment.  For geographic data you may append a *unit* (see `Units`_). To give separate
+    distances for the two ends, give distf*\[*unit*]/distl*\[*unit*] instead.  Optionally,
+    append either **+f** or **+l** to only extend the first or last point this way [both].
+    The mode of geographical calculations depends on **-j**.
+
+.. include:: explain_-aspatial.rst_
+
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
@@ -238,6 +257,8 @@ Optional Arguments
 
 .. include:: explain_-q.rst_
 
+.. include:: explain_-s.rst_
+
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
@@ -257,45 +278,39 @@ as well as the land area in km squared, try::
     gmt spatial @GSHHS_h_Australia.txt -fg -Qk
 
 To turn all lines in the multisegment file lines.txt into closed polygons,
-run
-
-   ::
+run::
 
     gmt spatial lines.txt -F > polygons.txt
 
 To compute the area of all geographic polygons in the multisegment file
-polygons.txt, run
-
-   ::
+polygons.txt, run::
 
     gmt spatial polygons.txt -Q > areas.txt
 
 Same data, but now orient all polygons to go counter-clockwise and write
-their areas to the segment headers, run
-
-   ::
+their areas to the segment headers, run::
 
     gmt spatial polygons.txt -Q+h -E+p > areas.txt
 
 To determine the areas of all the polygon segments in the file janmayen_land_full.txt,
 add this information to the segment headers, sort the segments from largest
-to smallest in area but only keep polygons with area larger than 1000 sq. meters, run
-
-   ::
+to smallest in area but only keep polygons with area larger than 1000 sq. meters, run::
 
     gmt spatial -Qe+h+p+c1000+sd -V janmayen_land_full.txt > largest_pols.txt
 
-To determine the intersections between the polygons A.txt and B.txt, run
-
-   ::
+To determine the intersections between the polygons A.txt and B.txt, run::
 
     gmt spatial A.txt B.txt -Ie > crossovers.txt
 
-To truncate polygons A.txt against polygon B.txt, resulting in an open line segment, run
-
-   ::
+To truncate polygons A.txt against polygon B.txt, resulting in an open line segment, run::
 
     gmt spatial A.txt -TB.txt > line.txt
+
+If you want to plot a polygon with holes (donut polygon) from a multiple segment file
+which contains both perimeters and holes, it could be necessary first to reorganize the file
+so it can plotted with plot. To do this, run::
+
+    gmt spatial file.txt -Sh > organized_file.txt
 
 Notes
 -----

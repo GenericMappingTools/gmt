@@ -18,7 +18,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy* ]
-[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*] ]
+[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*] ]
 [ |-F|\ [**c**\|\ **n**\|\ **r**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
 [ |-G|\ *fill* ]
 [ |-H|\ [*scale*] ]
@@ -50,7 +50,9 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: plot_common.rst_
+.. include:: plot.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 

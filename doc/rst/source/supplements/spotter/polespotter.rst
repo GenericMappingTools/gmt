@@ -46,7 +46,7 @@ fracture zones and the great circle extensions of abyssal hills
 are expected to intersect at potential rotation poles.  The assumption
 is that abyssal hill lines are meridians and fracture zones are parallels
 with respect to the rotation pole.  Line density may be computed and returned
-via a grid, the great circle lines may be returned via stdout, and the
+via a grid, the great circle lines may be returned via standard output, and the
 intersections of the great circles may be saved to file.  In line mode
 it will determine which line segments are compatible with a given trial
 pole, while in pole mode it will compute chi-squared misfits for all the
@@ -86,14 +86,16 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Specify name for output grid.  For spot mode we will accumulate
+.. |Add_outgrid| replace::  Specify name for output grid.  For spot mode we will accumulate
     great circle line density for the grid.  Each bin that is crossed
     by a great circle is incremented by 1, multiplied by cos(latitude),
     the length of the fracture zone or abyssal line segment used to
-    define the great circle, and any overall weight set via **-E**.
+    define the great circle, and any overall weight set via |-E|.
     In pole mode we return the chi-squared misfit surface.  Not used
     in line mode.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -161,7 +161,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"to match the bottom/top values in the input CPT instead.");
 	GMT_Usage (API, 1, "\n-E[<nlevels>]");
 	GMT_Usage (API, -2, "Use <nlevels> equidistant color levels from zmin to zmax. "
-		"This option implies we read data from given command-line files [or stdin] to "
+		"This option implies we read data from given command-line files [or standard input] to "
 		"determine data range (use -i to select a data column, else last column is used). "
 		"If <nlevels> is not set we use the number of color slices in the chosen CPT.");
 	GMT_Usage (API, 1, "\n-F[R|r|h|c][+c[<label>]][+k<keys>]");
@@ -235,10 +235,11 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	int n;
+	bool q_active = false;
 	unsigned int n_errors = 0, n_files[2] = {0, 0}, n_categorical = 0;
 	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL, *keys = NULL;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) if (opt->option == 'Q') Ctrl->Q.active = true;;	/* If -T given before -Q we need to flag -T+l */
 
@@ -255,6 +256,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Sets transparency [-A<transp>[+a]] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0] == '+') {	/* Old syntax */
 					Ctrl->A.mode = 1;
@@ -270,22 +272,26 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 					Ctrl->A.value = 0.01 * atof (opt->arg);
 				break;
 			case 'C':	/* CTP table */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Set BNF to match cpt ends */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.mode = 1;
 				if (opt->arg[0] == 'i') Ctrl->D.mode = 2;
 				break;
 			case 'E':	/* Use n levels */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (opt->arg[0] && sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Cannot decode value\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -E: Cannot decode value\n");
 					n_errors++;
 				}
 				break;
 			case 'F':	/* Sets format for color reporting */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "ck", GMT_MSG_ERROR)) n_errors++;
 				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
@@ -304,29 +310,30 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'G':	/* truncate incoming CPT */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
-				n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
-				n_errors += gmt_M_check_condition (GMT, n < 2, "Option -G: Must specify z_low/z_high\n");
-				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
-				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
-				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high),
-				                                   "Option -G: Both of z_low/z_high cannot be NaN\n");
+				n_errors += gmt_get_limits (GMT, 'G', opt->arg, 0, &Ctrl->G.z_low, &Ctrl->G.z_high);
 				break;
 			case 'H':	/* Modern mode only: write CPT to stdout */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				Ctrl->H.active = true;
 				break;
 			case 'I':	/* Invert table */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if ((Ctrl->I.mode = gmt_parse_inv_cpt (GMT, opt->arg)) == UINT_MAX)
 					n_errors++;
 				break;
 			case 'M':	/* Use GMT defaults for BNF colors */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Do not output BNF colors */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Derive -T arguments from input data */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'a':
@@ -356,6 +363,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'T':	/* Sets up color z values */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = Ctrl->T.interpolate = true;
 				n_categorical = makecpt_is_categories (GMT, opt->arg);
 				if (n_categorical == 0)
@@ -365,33 +373,36 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				if (Ctrl->T.T.set == 2) Ctrl->T.interpolate = false;	/* Did not give increment, just min/max */
 				break;
 			case 'Q':	/* Logarithmic scale */
-				Ctrl->Q.active = true;
+				n_errors += gmt_M_repeated_module_option (API, q_active);
+				q_active = true;
 				if (opt->arg[0] != '\0' && gmt_M_compat_check (GMT, 5))
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -Qi or -Qo are deprecated; Use -T+l for old -Qo and -Q for old -Qi.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -Qi or -Qo are deprecated; Use -T+l for old -Qo and -Q for old -Qi.\n");
 				if (opt->arg[0] == 'o')	/* Input data is z, but take log10(z) before interpolation colors */
 					Ctrl->Q.mode = 2;
 				else			/* Input is log10(z) */
 					Ctrl->Q.mode = 1;
 				break;
 			case 'W':	/* Do not interpolate colors */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				if (opt->arg[0] == 'w')
 					Ctrl->W.wrap = true;
 				else
 					Ctrl->W.active = true;
 				break;
 			case 'Z':	/* Continuous colors */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
 	if (n_categorical) {	/* Must do some shuffling */
 		if (Ctrl->F.key) {
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -T: Cannot set categorical keys with both -T and -F+k.\n");
+			GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Cannot set categorical keys with both -T and -F+k.\n");
 			n_errors++;
 		}
 		else {
@@ -406,7 +417,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 	else if (Ctrl->T.T.logarithmic) Ctrl->Q.active = true, Ctrl->Q.mode = 2;
 
 	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -H: Only available in modern mode - ignored in classic mode\n");
+		GMT_Report (API, GMT_MSG_WARNING, "Option -H: Only available in modern mode - ignored in classic mode\n");
 		Ctrl->H.active = false;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file == NULL,
@@ -420,7 +431,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 
 	if (!Ctrl->S.active) {
 		if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && (Ctrl->C.file == NULL || strchr (Ctrl->C.file, ',') == NULL)) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Without inc in -T option, -Z has no effect (ignored)\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Without inc in -T option, -Z has no effect (ignored)\n");
 			Ctrl->Z.active = false;
 		}
 	}
@@ -659,10 +670,12 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 	if (Ctrl->F.cat) {	/* Flag as a categorical CPT */
+		bool got_key_file= (Ctrl->F.key && !gmt_access (GMT, Ctrl->F.key, R_OK));	/* Want categorical labels read from file */
+		unsigned int ns = 0;
 		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
-		if (Ctrl->F.label || Ctrl->F.key) {	/* Want categorical labels appended to each CPT record */
-			char **label = gmt_cat_cpt_strings (GMT, (Ctrl->F.label) ? Ctrl->F.label : Ctrl->F.key, Pout->n_colors);
-			for (unsigned int k = 0; k < Pout->n_colors; k++) {
+		if (Ctrl->F.label || (Ctrl->F.key && !got_key_file)) {	/* Want auto-categorical labels appended to each CPT record */
+			char **label = gmt_cat_cpt_strings (GMT, (Ctrl->F.label) ? Ctrl->F.label : Ctrl->F.key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
 				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
 				if (label[k]) Pout->data[k].label = label[k];	/* Now the job of the CPT to free these strings */
 			}
@@ -670,17 +683,24 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->F.key) {	/* Want categorical labels */
 			char **keys = NULL;
-			if (!gmt_access (GMT, Ctrl->F.key, R_OK)) {	/* Got a file with category keys */
-				unsigned int ns = gmt_read_list (GMT, Ctrl->F.key, &keys);
+			if (got_key_file) {	/* Got a file with category keys */
+				ns = gmt_read_list (GMT, Ctrl->F.key, &keys);
 				if (ns < Pout->n_colors) {
-					GMT_Report (API, GMT_MSG_WARNING, "The categorical keys file %s had %d entries but %d were expected\n", Ctrl->F.key, ns, Pout->n_colors);
+					GMT_Report (API, GMT_MSG_ERROR, "The categorical keys file %s had %d entries but CPT has %d categories\n", Ctrl->F.key, ns, Pout->n_colors);
+					Return (GMT_RUNTIME_ERROR);
 				}
+				else if (ns > Pout->n_colors)
+					GMT_Report (API, GMT_MSG_WARNING, "The categorical keys file %s had %d entries but only %d are needed - skipping the extra keys\n", Ctrl->F.key, ns, Pout->n_colors);
 			}
 			else	/* Got comma-separated keys */
-				keys = gmt_cat_cpt_strings (GMT, Ctrl->F.key, Pout->n_colors);
-			for (unsigned int k = 0; k < Pout->n_colors; k++) {
+				keys = gmt_cat_cpt_strings (GMT, Ctrl->F.key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
 				if (Pout->data[k].key) gmt_M_str_free (Pout->data[k].key);
-				if (keys[k]) Pout->data[k].key = keys[k];	/* Now the job of the CPT to free these strings */
+				if (k < ns && keys[k]) {
+					Pout->data[k].key = keys[k];	/* Now the job of the CPT to free these strings */
+					if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
+					Pout->data[k].label = strdup (keys[k]);
+				}
 			}
 			gmt_M_free (GMT, keys);	/* But the master array can go */
 			Pout->categorical = GMT_CPT_CATEGORICAL_KEY;

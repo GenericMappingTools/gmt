@@ -58,8 +58,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Output the gravity anomaly at nodes of this grid file.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------

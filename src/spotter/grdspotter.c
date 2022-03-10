@@ -1,17 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Lesser General Public License as published by
- *   the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
- *   Contact info: www.generic-mapping-tools.org
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * GRDSPOTTER will (1) read a grid with topo/grav/whatever of seamounts,
@@ -140,6 +141,9 @@ struct GRDSPOTTER_CTRL {	/* All control options for this program (except common 
 		bool active;	/* Pixel registration */
 		char *file;
 	} G;
+	struct GRDSPOTTER_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDSPOTTER_L {	/* -Lfile */
 		bool active;
 		char *file;
@@ -210,17 +214,16 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <ingrid> %s -G<outgrid> %s %s [-A<agegrid>] [-D[i|p]<grdfile>] "
+	GMT_Usage (API, 0, "usage: %s %s %s -G%s %s %s [-A<agegrid>] [-D[i|p]<grdfile>] "
 		"[-L<IDgrid>] [-M] [-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|u<age>] [%s] [-W<n_try>] [-Z<z_min>[/<z_max>[/<z_inc>]]] "
-		"[%s] [%s] [%s]\n", name, SPOTTER_E_OPT, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_r_OPT, GMT_PAR_OPT);
+		"[%s] [%s] [%s]\n", name, GMT_INGRID, SPOTTER_E_OPT, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<ingrid> is the grid with topo or gravity.");
+	gmt_ingrid_syntax (API, 0, "Name of input grid with topo or gravity");
 	spotter_rot_usage (API);
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Specify file name for output CVA convolution grid.");
+	gmt_outgrid_syntax (API, 'G', "Specify file name for output CVA convolution grid");
 	GMT_Option (API, "I,Rg");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A<agegrid>");
@@ -273,44 +276,48 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct GMT
 				if (n_files++ > 0) break;
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Supplemental parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
 				break;
 			case 'C':	/* Now done automatically in spotter_init */
 				if (gmt_M_compat_check (GMT, 4))
 					GMT_Report (API, GMT_MSG_COMPAT, "-C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;	k = 0;
 				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}
 				if (opt->arg[k]) Ctrl->E.file = strdup (&opt->arg[k]);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->E.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->E.file))) n_errors++;
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				switch (opt->arg[0]) {
 					case 'i':
 						Ctrl->D.active = true;
 						if (opt->arg[1]) Ctrl->D.file = strdup (&opt->arg[1]);
-						if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.file))) n_errors++;
+						if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.file))) n_errors++;
 						break;
 					case 'p':
 						Ctrl->PA.active = true;
 						if (opt->arg[1]) Ctrl->PA.file = strdup (&opt->arg[1]);
-						if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->PA.file))) n_errors++;
+						if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->PA.file))) n_errors++;
 						break;
 					default:
 						n_errors++;
@@ -318,25 +325,31 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (opt->arg[0]) Ctrl->L.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
 				break;
 			case 's':	/* Sampling interval */
 				Ctrl->S2.active = true;
 				Ctrl->S2.dist = atof (opt->arg);
 				break;
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.t_upper = atof (opt->arg);
 				break;
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (!access (opt->arg, R_OK)) {	/* The file exists */
 					Ctrl->Q.mode = 2;
@@ -352,13 +365,17 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 			case 'T':
-				if (opt->arg[0] == 't')
+				if (opt->arg[0] == 't') {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[TRUNC]);
 					Ctrl->T.active[TRUNC] = true;
+				}
 				else if (opt->arg[0] == 'u') {
 					Ctrl->T.t_fix = atof (&opt->arg[1]);
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[UPPER]);
 					Ctrl->T.active[UPPER] = true;
 				}
 				else {
@@ -367,17 +384,19 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.n_try = atoi (opt->arg);
 				Ctrl->W.active = true;
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				m = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Z.min, &Ctrl->Z.max, &Ctrl->Z.inc);
 				if (m == 1) Ctrl->Z.max = 1.0e300;	/* Max not specified */
 				if (m == 3) Ctrl->Z.mode = true;	/* Want several slices */
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -406,7 +425,7 @@ GMT_LOCAL int64_t grdspotter_get_flowline (struct GMT_CTRL *GMT, double xx, doub
 
 	/* Find the first point on the flowline inside the desired CVA region */
 
-	for (m = 0, ky = 2, first = -1; m < n_track && first == -1; m++, ky += step) {	/* For each point along flowline */
+	for (m = 0, ky = 2, first = GMT_NOTSET; m < n_track && first == GMT_NOTSET; m++, ky += step) {	/* For each point along flowline */
 		if (c[ky] < wesn[YLO] || c[ky] > wesn[YHI]) continue;	/* Latitude outside region */
 		kx = ky - 1;						/* Index for the x-coordinate */
 		while (c[kx] > wesn[XHI]) c[kx] -= TWO_PI;		/* Elaborate W/E test because of 360 periodicity */
@@ -422,7 +441,7 @@ GMT_LOCAL int64_t grdspotter_get_flowline (struct GMT_CTRL *GMT, double xx, doub
 
 	/* Here we know searching from the end will land inside the grid eventually so last can never exit as -1 */
 
-	for (m = n_track - 1, ky = step * m + 2, last = -1; m >= 0 && last == -1; m--, ky -= step) {	/* For each point along flowline */
+	for (m = n_track - 1, ky = step * m + 2, last = GMT_NOTSET; m >= 0 && last == GMT_NOTSET; m--, ky -= step) {	/* For each point along flowline */
 		if (c[ky] < wesn[YLO] || c[ky] > wesn[YHI]) continue;	/* Latitude outside region */
 		kx = ky - 1;						/* Index for the x-coordinate */
 		while (c[kx] > wesn[XHI]) c[kx] -= TWO_PI;		/* Elaborate W/E test because of 360 periodicity */
@@ -469,7 +488,7 @@ GMT_LOCAL bool grdspotter_set_age (struct GMT_CTRL *GMT, double *t_smt, struct G
 GMT_LOCAL void grdspotter_normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, gmt_grdfloat *data) {
 	/* Determines the grid's min/max z-values and normalizes the grid
 	 * so that zmax is 100% */
-	unsigned int row, col;
+	openmp_int row, col;
 	uint64_t node;
 	double CVA_scale;	/* Used to normalize CVAs to percent */
 
@@ -492,9 +511,10 @@ GMT_LOCAL void grdspotter_normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID 
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdspotter (void *V_API, int mode, void *args) {
+	openmp_int row, col;
 	unsigned int n_stages;	/* Number of stage rotations (poles) */
 	unsigned int try;		/* Number of current bootstrap estimate */
-	unsigned int row, row2, col, col2, k_step;
+	unsigned int row2, col2, k_step;
 	unsigned int forth_flag;	/* Holds the do_time + 10 flag passed to forthtrack */
 	bool keep_flowlines = false;	/* true if Ctrl->D.active, Ctrl->PA.active, or bootstrap is true */
 	int error = GMT_NOERROR;			/* nonzero when arguments are wrong */
@@ -623,12 +643,12 @@ EXTERN_MSC int GMT_grdspotter (void *V_API, int mode, void *args) {
 	}
 	area = 111.195 * Z->header->inc[GMT_Y] * 111.195 * Z->header->inc[GMT_X];	/* In km^2 at Equator */
 	x_smt = gmt_M_memory (GMT, NULL, Z->header->n_columns, double);
-	for (col = 0; col < Z->header->n_columns; col++) x_smt[col] = D2R * gmt_M_grd_col_to_x (GMT, col, Z->header);
+	for (col = 0; col < (openmp_int)Z->header->n_columns; col++) x_smt[col] = D2R * gmt_M_grd_col_to_x (GMT, col, Z->header);
 	y_smt = gmt_M_memory (GMT, NULL, Z->header->n_rows, double);
-	for (row = 0; row < Z->header->n_rows; row++) y_smt[row] = D2R * gmt_lat_swap (GMT, gmt_M_grd_row_to_y (GMT, row, Z->header), GMT_LATSWAP_G2O);	/* Convert to geocentric */
+	for (row = 0; row < (openmp_int)Z->header->n_rows; row++) y_smt[row] = D2R * gmt_lat_swap (GMT, gmt_M_grd_row_to_y (GMT, row, Z->header), GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	lat_area = gmt_M_memory (GMT, NULL, Z->header->n_rows, double);
 
-	for (row = 0; row < Z->header->n_rows; row++) lat_area[row] = area * cos (y_smt[row]);
+	for (row = 0; row < (openmp_int)Z->header->n_rows; row++) lat_area[row] = area * cos (y_smt[row]);
 
 #ifdef DEBUG2
 	x_cva = G->x;
@@ -940,10 +960,10 @@ EXTERN_MSC int GMT_grdspotter (void *V_API, int mode, void *args) {
 				this_pa = GMT->session.d_NaN;
 				for (m = 0, k = 1; m < np; m++) {	/* Store nearest node indices only */
 					i = (int)gmt_M_grd_x_to_col (GMT, c[k++], G_rad->header);
-					if (i < 0 || (col = i) >= G->header->n_columns) { k += 2; continue;}	/* Outside the CVA box, flag as outside */
+					if (i < 0 || (col = (openmp_int)i) >= (openmp_int)G->header->n_columns) { k += 2; continue;}	/* Outside the CVA box, flag as outside */
 					yg = gmt_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 					j = (int)gmt_M_grd_y_to_row (GMT, yg, G->header);
-					if (j < 0 || (row = j) >= G->header->n_rows) { k++; continue;}	/* Outside the CVA box, flag as outside */
+					if (j < 0 || (row = (openmp_int)j) >= (openmp_int)G->header->n_rows) { k++; continue;}	/* Outside the CVA box, flag as outside */
 					if (Ctrl->PA.active) pa_val = c[k++];
 					node = gmt_M_ijp (G->header, row, col);
 					if (G->data[node] <= CVA_max) continue;	/* Already seen higher CVA values */

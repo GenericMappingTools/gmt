@@ -26,11 +26,13 @@ Synopsis
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT--| ]
 
@@ -39,7 +41,7 @@ Synopsis
 Description
 -----------
 
-**regress** reads one or more data tables [or *stdin*]
+**regress** reads one or more data tables [or standard input]
 and determines the best linear [weighted] regression model :math:`y(x) = a + b x` for each segment using the chosen parameters.
 The user may specify which data and model components should be reported.  By default, the model will be evaluated at the
 input points, but alternatively you can specify an equidistant range over which to evaluate
@@ -183,6 +185,9 @@ Optional Arguments
 .. |Add_-e| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-e.rst_
 
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
+
 .. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
@@ -194,6 +199,8 @@ Optional Arguments
 .. include:: explain_-ocols.rst_
 
 .. include:: explain_-q.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_-w.rst_
 

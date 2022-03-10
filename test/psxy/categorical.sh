@@ -2,9 +2,9 @@
 # Test a categorical CPT with text keys on a shapefile using
 # the aspatial field NAME via the CPT to yield pen color
 ps=categorical.ps
-# Get an OGR file from test cache and convert to shapefile
-test_data=`gmt which -Gl @RidgeTest.gmt`
-ogr2ogr -f "ESRI Shapefile" RidgeTest.shp $test_data
+# get shapefile from cache
+test_data=`gmt which -Gl @RidgeTest.shp`
+gmt which -Gl @RidgeTest.shx @RidgeTest.dbf @RidgeTest.prj
 # Make a text-based categorical cpt file
 cat << EOF > ridge.cpt
 Reykjanes	red

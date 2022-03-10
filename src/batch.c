@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -219,7 +219,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	/* Number of threads (re-purposed from -x in GMT_Option since this local option is always available and we are not using OpenMP) */
 	GMT_Usage (API, 1, "\n-x[[-]<n>]");
 	GMT_Usage (API, -2, "Limit the number of cores used in job generation [Default uses all %d cores]. "
-		"If <n> is negative then we select (%d - <n>) cores (or at least 1).", API->n_cores, API->n_cores);
+		"If <n> is negative then we select (%d - <n>) cores (or at least 1). Note: 1 core is used by batch itself.", API->n_cores, API->n_cores);
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
@@ -234,6 +234,7 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 	unsigned int n_errors = 0, n_files = 0, k, pos;
 	char p[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -241,29 +242,33 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 			case '<':	/* Input file */
 				if (n_files++ > 0) break;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
 					n_errors++;
 				else
 					Ctrl->In.active = true;
 				break;
 
 			case 'I':	/* Include file with settings used by all scripts */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				Ctrl->I.file = strdup (opt->arg);
 				break;
 
 			case 'M':	/* Create a single job as well as batch (unless -Q is active) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				if (opt->arg[0])	/* Gave a job number */
 					Ctrl->M.job = atoi (opt->arg);
 				break;
 
 			case 'N':	/* Movie prefix and directory name */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.prefix = strdup (opt->arg);
 				break;
 
 			case 'Q':	/* Debug - leave temp files and directories behind; Use -Qs to only write scripts */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 's') Ctrl->Q.scripts = true;
 				break;
@@ -275,19 +280,21 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 					k = BATCH_POSTFLIGHT;	/* preflight */
 				else {	/* Bad option */
 					n_errors++;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Select -Sb or -Sf\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Select -Sb or -Sf\n");
 					break;
 				}
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S[k].active);
 				/* Got a valid f or b */
 				Ctrl->S[k].active = true;
 				Ctrl->S[k].file = strdup (&opt->arg[1]);
 				if ((Ctrl->S[k].fp = fopen (Ctrl->S[k].file, "r")) == NULL) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S%c: Unable to open file %s\n", opt->arg[0], Ctrl->S[k].file);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S%c: Unable to open file %s\n", opt->arg[0], Ctrl->S[k].file);
 					n_errors++;
 				}
 				break;
 
 			case 'T':	/* Number of jobs or the name of file with job information (note: file may not exist yet) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "psw"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
@@ -322,11 +329,13 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'W':	/* Work dir where data files may be found. If not given we make one up later */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (opt->arg[0]) Ctrl->W.dir = strdup (opt->arg);
 				break;
 
 			case 'Z':	/* Delete input scripts */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				break;
 
@@ -336,7 +345,7 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -367,8 +376,8 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 		else if (strstr (Ctrl->In.file, ".bat"))
 			Ctrl->In.mode = GMT_DOS_MODE;
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to determine script language from the extension of your script %s\n", Ctrl->In.file);
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Allowable extensions are: *.sh, *.bash, *.csh, and *.bat\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to determine script language from the extension of your script %s\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Allowable extensions are: *.sh, *.bash, *.csh, and *.bat\n");
 			n_errors++;
 		}
 		/* Armed with script language we check that any back/fore-ground scripts are of the same kind */
@@ -379,17 +388,17 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 		if (!n_errors && Ctrl->I.active) {	/* Must also check the include file, and open it for reading */
 			n_errors += gmt_check_language (GMT, Ctrl->In.mode, Ctrl->I.file, 3, NULL);
 			if (n_errors == 0 && ((Ctrl->I.fp = fopen (Ctrl->I.file, "r")) == NULL)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open include script file %s\n", Ctrl->I.file);
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to open include script file %s\n", Ctrl->I.file);
 				n_errors++;
 			}
 		}
 		/* Open the main script for reading here */
 		if (n_errors == 0 && ((Ctrl->In.fp = fopen (Ctrl->In.file, "r")) == NULL)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open main script file %s\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to open main script file %s\n", Ctrl->In.file);
 			n_errors++;
 		}
 		if (n_errors == 0 && gmt_script_is_classic (GMT, Ctrl->In.fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your main script file %s is not in GMT modern mode\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Your main script file %s is not in GMT modern mode\n", Ctrl->In.file);
 			n_errors++;
 		}
 		/* Make sure all BATCH_* variables are used with leading token ($, %) */
@@ -411,7 +420,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	unsigned int n_values = 0, n_jobs = 0, job, i_job, col, k, n_cores_unused, n_to_run;
 	unsigned int n_jobs_not_started = 0, n_jobs_completed = 0, first_job = 0, data_job;
 
-	bool done = false, n_written = false, has_text = false, is_classic = false, has_conf = false;
+	bool done = false, n_written = false, has_text = false, is_classic = false, has_conf = false, issue_col0_par = false;
 
 	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, var_token[4] = "$$%";
 	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
@@ -567,7 +576,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 			fprintf (fp, "%s", line);				/* Just copy the line as is */
 		}
-		fclose (Ctrl->I.fp);	/* Done reading the include script */
+		/* Not closing the include script as we may need to recreate init_file after njobs has been determined */
 	}
 	fclose (fp);	/* Done writing the init script */
 
@@ -668,8 +677,10 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			if (strchr (Ctrl->T.file, 'T'))	/* Check here since gmtmath does not pass that info back */
 				gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_ABSTIME);	/* Set first input column type as absolute time */
 		}
-		else	/* Just gave the number of jobs (we hope, or we got a bad filename and atoi should return 0) */
+		else {	/* Just gave the number of jobs (we hope, or we got a bad filename and atoi should return 0) */
 			n_jobs = atoi (Ctrl->T.file);
+			issue_col0_par = true;
+		}
 	}
 	if (n_jobs == 0) {	/* So not good... */
 		GMT_Report (API, GMT_MSG_ERROR, "No jobs specified! - exiting.\n");
@@ -691,6 +702,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		gmt_set_tvalue (fp, Ctrl->In.mode, true, "BATCH_PREFIX", Ctrl->N.prefix);
 		gmt_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_NJOBS", n_jobs);	/* Total jobs (write to init since known) */
 		if (Ctrl->I.active) {	/* Append contents of an include file */
+			rewind (Ctrl->I.fp);	/* Reposition to start of this open file */
 			gmt_set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
 			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->I.fp)) {	/* Read the include file and copy to init script with some exceptions */
 				if (gmt_is_gmtmodule (line, "begin")) continue;		/* Skip gmt begin */
@@ -699,10 +711,10 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 				fprintf (fp, "%s", line);				/* Just copy the line as is */
 			}
-			fclose (Ctrl->I.fp);	/* Done reading the include script */
 		}
 		fclose (fp);	/* Done writing the init script */
 	}
+	if (Ctrl->I.active) fclose (Ctrl->I.fp);	/* Done reading the include script */
 	if (Ctrl->In.mode == GMT_DOS_MODE)
 		gmt_strrepc (topdir, '/', '\\');	/* Temporarily make DOS compatible */
 	n_to_run = (Ctrl->M.active) ? 1 : n_jobs;
@@ -776,6 +788,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			sprintf (string, "BATCH_COL%u", col);
 			gmt_set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][data_job]);
 		}
+		if (issue_col0_par) gmt_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_COL0", data_job);	/* Same as current job number */
 		if (has_text) {	/* Also place any string parameter as a single string variable */
 			gmt_set_tvalue (fp, Ctrl->In.mode, false, "BATCH_TEXT", D->table[0]->segment[0]->text[data_job]);
 			if (Ctrl->T.split) {	/* Also split the string into individual words BATCH_WORD1, BATCH_WORD2, etc. */

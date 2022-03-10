@@ -61,8 +61,11 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outfile*
-    Output file name. *outfile* is the name of the output grid (or image) file. When saving images, the GDAL machinery is picked by default.
+.. |Add_outgrid| replace:: Give the name of the output grid (or images) file. When saving images, the GDAL machinery is
+    picked by default.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------

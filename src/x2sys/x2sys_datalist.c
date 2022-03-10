@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -130,6 +130,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, struct
 
 	unsigned int n_errors = 0, n_files[2] = {0, 0};
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -146,36 +147,43 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, struct
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (opt->arg[0]) Ctrl->I.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file))) n_errors++;
 				break;
 			case 'L':	/* Crossover correction table */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
 					Ctrl->L.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
 				}
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -227,7 +235,7 @@ EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, **ignore = NULL;
 	char fmt_record[GMT_BUFSIZ] = {""};
 
-	int error = 0, this_col, xpos = -1, ypos = -1, tpos = -1;
+	int error = 0, this_col, xpos = GMT_NOTSET, ypos = GMT_NOTSET, tpos = GMT_NOTSET;
 	bool cmdline_files, gmt_formatting = false, skip, *adj_col = NULL;
 	unsigned int ocol, bad, n_data_col_out = 0, k, n_ignore = 0, cmode;
 	uint64_t row, trk_no, n_tracks;

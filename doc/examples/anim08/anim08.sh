@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Animation of all simplicity in the Pacific basin during 2018 that exceeded
+# Animation of all seismicity in the Pacific basin during 2018 that exceeded
 # a threshold of magnitude 5.  We then plot the earthquakes as they occurred on
 # a map that moves in longitude from west to east, with a deliberate pause near
 # Longitude 200 so we can watch the near-daily magnitude 5.2 quakes that hit the

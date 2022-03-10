@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -67,6 +67,9 @@ struct TRIANGULATE_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct TRIANGULATE_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct TRIANGULATE_M {	/* -M */
 		bool active;
 	} M;
@@ -132,13 +135,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef NNN_MODE
-	GMT_Usage (API, 0, "usage: %s [<table>] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G<outgrid>] [%s] [%s] [-M] [-N] "
-		"[-Q[n]] [%s] [-S] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_I_OPT, 
+	GMT_Usage (API, 0, "usage: %s [<table>] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G%s] [%s] [%s] [-M] [-N] "
+		"[-Q[n]] [%s] [-S] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, 
 		GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 #else
-	GMT_Usage (API, 0, "usage: %s [<table>] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G<outgrid>] [%s] [%s] [-M] [-N] "
-		"[-Q] [%s] [-S] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_I_OPT, 
+	GMT_Usage (API, 0, "usage: %s [<table>] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G%s] [%s] [%s] [-M] [-N] "
+		"[-Q] [%s] [-S] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, 
 		GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 #endif
@@ -156,8 +159,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Take derivative in the x- or y-direction (only with -G) [Default is z value].");
 	GMT_Usage (API, 1, "\n-E<empty>");
 	GMT_Usage (API, -2, "Value to use for empty nodes [Default is NaN].");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Grid data. Give name of output grid file and specify -R -I [-r]. If -C is used then output "
+	gmt_outgrid_syntax (API, 'G', "Grid data. Give name of output grid file and specify -R -I [-r]. If -C is used then output "
 		"grids will hold propagated uncertainties and no -R -I [-r] is required. Cannot be combined with -N.");
 #ifdef NNN_MODE
 	GMT_Usage (API, -2, "Use -Qn for natural nearest neighbors [Default is linear triangulation]");
@@ -199,23 +201,25 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
 				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* CURVE input slope grid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->C.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->C.file))) n_errors++;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
 					case 'x': case 'X':
@@ -228,15 +232,17 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				break;
 			case 'F':	/* Previous grid input values used */
 				if (gmt_M_compat_check (GMT, 4) && opt->arg[0] == 0) {	/* Old -F instead of -r */
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -F is deprecated. Use -r instead.\n" );
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -F is deprecated. Use -r instead.\n" );
 					n_errors += gmt_parse_common_options (GMT, "r", 'r', "");
 					break;
 				}
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				GMT_Report (API, GMT_MSG_WARNING, "-F is experimental and unstable.\n");
 				if ((c = strstr (opt->arg, "+d"))) {	/* Got modifier to also use input data */
 					c[0] = '\0';	/* Temporarily chop off modifier */
@@ -244,50 +250,59 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 				}
 				Ctrl->F.active = true;
 				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				if (c) c[0] = '+';	/* Restore chopped off modifier */
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'm':
 				if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through on purpose */
 					GMT_Report (API, GMT_MSG_COMPAT, "-m option is deprecated and reverted back to -M.\n");
 				else {
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 					break;
 				}
 				/* Intentionally fall through */
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (strchr (opt->arg, 'n')) {
-					GMT_Report (API, GMT_MSG_WARNING, "-Qn is experimental and unstable.\n");
+					GMT_Report (API, GMT_MSG_INFORMATION, "-Qn is experimental and may be unstable.\n");
 					Ctrl->Q.mode |= 1;
 				}
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -329,7 +344,8 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 
 	uint64_t ij, ij1, ij2, ij3, np = 0, i, j, k, n_edge, p, node = 0, seg, n = 0;
 	unsigned int n_input, n_output, side;
-	int row, col, col_min, col_max, row_min, row_max, error = 0;
+	int error = 0, col_min, col_max, row_min, row_max;
+	openmp_int row, col;
 	bool triplets[2] = {false, false}, map_them = false, do_output = true, get_input = false;
 
 	size_t n_alloc;
@@ -616,12 +632,12 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (Ctrl->F.active && F->data) {	/* Not the same area, must copy over pregrid node values */
-			unsigned int frow, fcol;
+			openmp_int frow, fcol;
 			gmt_M_grd_loop (GMT, F, frow, fcol, ij) {
 				row = gmt_M_grd_y_to_row (GMT, yf[frow], Grid->header);
-				if (row < 0 || row >= (int)Grid->header->n_columns) continue;
+				if (row < 0 || row >= (openmp_int)Grid->header->n_columns) continue;
 				col = gmt_M_grd_x_to_col (GMT, xf[fcol], Grid->header);
-				if (col < 0 || col >= (int)Grid->header->n_rows) continue;
+				if (col < 0 || col >= (openmp_int)Grid->header->n_rows) continue;
 				p = gmt_M_ijp (Grid->header, row, col);
 				Grid->data[p] = F->data[ij];	/* This also copies the NaNs from F to Grid */
 			}
@@ -751,10 +767,10 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 			if (row_min < 0) row_min = 0;
 			if (row_max >= n_rows) row_max = Grid->header->n_rows - 1;
 
-			for (row = row_min; row <= row_max; row++) {
+			for (row = (openmp_int)row_min; row <= (openmp_int)row_max; row++) {
 				yp = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 				p = gmt_M_ijp (Grid->header, row, col_min);
-				for (col = col_min; col <= col_max; col++, p++) {
+				for (col = (openmp_int)col_min; col <= (openmp_int)col_max; col++, p++) {
 					if (Ctrl->F.active && !gmt_M_is_fnan (Grid->data[p])) continue;	/* Only do interpolation at this point if grid == NaN so check before doing gmt_non_zero_winding */
 
 					xp = gmt_M_grd_col_to_x (GMT, col, Grid->header);

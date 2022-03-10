@@ -47,9 +47,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *grdfile*
-    *grdfile* is the name of the binary output grid file. (See
-    :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -96,6 +97,11 @@ Optional Arguments
     **g** Geodesy normalization - inner products summed over surface
     equal 4pi. **s**: Schmidt normalization - as used in geomagnetism.
 
+.. _-Q:
+
+**-Q**
+    Coefficients have phase convention from physics, i.e., the :math:`(-1)^m` factor.
+
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
@@ -124,11 +130,11 @@ Examples
 --------
 
 To create a 1 x 1 degree global grid file from the ASCII
-coefficients in the remote file EGM96_to_360.txt, use
+coefficients in the remote file EGM96_to_36.txt, use
 
    ::
 
-    gmt sph2grd @EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
+    gmt sph2grd @EGM96_to_36.txt -GEGM96_to_36.nc -Rg -I1 -V
 
 Reference
 ---------

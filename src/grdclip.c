@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -93,15 +93,14 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <ingrid> -G<outgrid> [%s] [-Sa<high>/<above>] "
-		"[-Sb<low>/<below>] [-Si<low>/<high>/<between>] [-Sr<old>/<new>] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s -G%s [%s] [-Sa<high>/<above>] "
+		"[-Sb<low>/<below>] [-Si<low>/<high>/<between>] [-Sr<old>/<new>] [%s] [%s]\n", name, GMT_INGRID, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<ingrid> is a single grid file.");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Set name of output grid.");
+	gmt_ingrid_syntax (API, 0, "Name of input grid");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-Sa|b|i|r<args>");
@@ -148,15 +147,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OP
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'G':	/* Output filename */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'S':	/* Set limits */
 				Ctrl->S.active = true;
@@ -240,7 +240,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -284,7 +284,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OP
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdclip (void *V_API, int mode, void *args) {
-	unsigned int row, col, k;
+	openmp_int row, col;
+	unsigned int k;
 	int error = 0;
 	bool new_grid, go = false;
 

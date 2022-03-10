@@ -22,6 +22,7 @@ Synopsis
 [ |-S|\ *symmetry\_factor* ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+e**\|\ **i**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -159,6 +160,8 @@ Optional Arguments
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bi.rst_

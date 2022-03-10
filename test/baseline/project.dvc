@@ -1,0 +1,5 @@
+outs:
+- md5: 2ce42fc8d158793edb1b1f1cae20a0c1.dir
+  size: 514432
+  nfiles: 6
+  path: project

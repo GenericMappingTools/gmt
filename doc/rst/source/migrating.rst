@@ -57,6 +57,8 @@ If your script is particularly old (GMT 3) it may also use a deprecated syntax t
 GMT no longer recognizes.  If that is the case then you should consult the documentation for
 the old version (if you have access to it) and compare with the new documentation to
 determine the required changes.  Error messages issued by GMT may help in that regard.
-Also note that GMT may issue compatibility warnings when it detects deprecated
-syntax.  In those instances the obsolete syntax will be correctly parsed, but you
+Also note that GMT may issue compatibility warnings or errors when it detects deprecated
+syntax, provided :term:`GMT_COMPATIBILITY` is set to the later major version number and
+:term:`GMT_VERBOSE` is set to **c**\ ompatibility. If the compatibility level is low
+enough (e.g., 4) then the obsolete syntax will be correctly parsed, but you
 may wish to take the opportunity and update the syntax when these issues are reported.

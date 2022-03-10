@@ -19,7 +19,7 @@ PACKAGE="${PACKAGE:-false}"
 WIN_PLATFORM=x64-windows
 
 # install libraries
-vcpkg install netcdf-c gdal pcre2 fftw3[core,threads] clapack openblas glib --triplet ${WIN_PLATFORM}
+vcpkg install netcdf-c gdal[core,tools] pcre2 fftw3[core,threads] clapack openblas glib --triplet ${WIN_PLATFORM}
 # Executable files search for DLL files in the directories listed in the PATH environment variable.
 echo "${VCPKG_INSTALLATION_ROOT}/installed/${WIN_PLATFORM}/bin" >> $GITHUB_PATH
 # Tools like gdal_translate, ogr2ogr are located in tools/gdal
@@ -33,24 +33,20 @@ choco install ninja
 choco install ghostscript --version 9.50
 
 if [ "$BUILD_DOCS" = "true" ]; then
-    pip install --user docutils==0.16 sphinx==3.5.4
+    pip install --user sphinx dvc
     # Add sphinx to PATH
     echo "$(python -m site --user-site)\..\Scripts" >> $GITHUB_PATH
 
     choco install pngquant
-    choco install graphicsmagick
-    # Add GraphicsMagick to PATH
-    echo 'C:\Program Files\GraphicsMagick-1.3.32-Q8' >> $GITHUB_PATH
-
-    choco install ffmpeg
-    # Add ffmpeg to PATH
-    echo 'C:\ProgramData\chocolatey\lib\ffmpeg\tools' >> $GITHUB_PATH
 fi
 
 if [ "$RUN_TESTS" = "true" ]; then
-    choco install graphicsmagick
+    choco install graphicsmagick --version 1.3.32
+    pip install --user dvc
     # Add GraphicsMagick to PATH
     echo 'C:\Program Files\GraphicsMagick-1.3.32-Q8' >> $GITHUB_PATH
+    # Add dvc to PATH
+    echo "$(python -m site --user-site)\..\Scripts" >> $GITHUB_PATH
 fi
 
 # we need the GNU tar for packaging

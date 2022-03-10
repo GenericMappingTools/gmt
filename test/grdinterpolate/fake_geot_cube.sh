@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Create 8 layers of geographic data with abs time z, faking it
 # The original PS was made with the commented out lines so that we
 # can be sure the stacking into a cube and pulling out layers work
@@ -17,7 +17,7 @@ gmt begin fake_geot_cube ps
 			n=$(gmt math -Q -fi0T -fo0t $t 2020-01-01T SUB 1 ADD =)
 			gmt subplot set -A$t
 			#gmt grdimage "tmp_${n}.grd"
-			gmt grdimage "fake_geot_cube.nc?(${z})" 
+			gmt grdimage "fake_geot_cube.nc?(${z})"
 		done < t.txt
 	gmt subplot end
 	gmt colorbar -DJBC -B

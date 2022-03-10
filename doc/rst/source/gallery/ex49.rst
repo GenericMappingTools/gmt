@@ -5,8 +5,6 @@
 
 In this example we show an example of data analysis using grids
 of seafloor depth and age for a region in the south Atlantic.
-We use module :doc:`grdsample </grdsample>` to convert the age
-grid to the same pixel registration used by the depth grid.
 Dumping separate x,y,z triplets with :doc:`grd2xyz </grd2xyz>`
 lets us paste the output back via :doc:`gmtconvert </gmtconvert>`
 to make binary tables of age,depth,depth.  Here, depth is repeated in

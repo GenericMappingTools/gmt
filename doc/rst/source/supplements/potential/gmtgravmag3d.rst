@@ -16,7 +16,7 @@ Synopsis
 [ |-C|\ *density* ]
 [ |-E|\ *thickness* ]
 [ |-F|\ *xy_file* ]
-[ |-G|\ *outputgrid* ]
+[ |-G|\ *outgrid* ]
 [ |-H|\ *f_dec*/*f_dip*/*m_int*/*m_dec*/*m_dip* ]
 [ |-L|\ *z_observation* ]
 [ |-S|\ *radius* ]
@@ -57,8 +57,10 @@ Required Arguments (not all)
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Output the gravity or magnetic anomaly at nodes of this grid file.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-M:
 

@@ -41,7 +41,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: coast_common.rst_
+.. include:: coast.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
@@ -94,7 +96,9 @@ The desired file is then sought for in the alternate directories.
 
 .. include:: explain_gshhg.rst_
 
-.. include:: coast_notes.rst_
+.. include:: coast.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------

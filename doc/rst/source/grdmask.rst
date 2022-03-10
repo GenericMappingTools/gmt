@@ -12,12 +12,14 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdmask** *table* |-G|\ *mask_grd_file*
+**gmt grdmask** *table* |-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
+[ |-C|\ **f**\|\ **l**\|\ **o**\|\ **u** ]
 [ |-N|\ [**z**\|\ **Z**\|\ **p**\|\ **P**]\ *values* ]
 [ |-S|\ *search\_radius*\|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -43,7 +45,9 @@ Description
 *pathfiles* that each define a closed polygon. The nodes defined by the
 specified region and lattice spacing will be set equal to one of three
 possible values depending on whether the node is outside, on the polygon
-perimeter, or inside the polygon. The resulting mask may be used in
+perimeter, or inside the polygon, with the assigned  *z* value selected
+via **-N**.  If multiple polygons overlap the same nodes then the polygon
+selected depends on the **-C** selection.  The resulting mask may be used in
 subsequent operations involving :doc:`grdmath` to mask out data from
 polygonal areas. 2. The *pathfiles* simply represent data point locations
 and the mask is set to the inside or outside value depending on whether
@@ -60,9 +64,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *mask_grd_file*
-    Name of resulting output mask grid file. (See :ref:`Grid File Formats
-    <grd_inout_full>`).
+.. |Add_outgrid| replace:: Give the name of the output mask grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -89,6 +94,16 @@ Optional Arguments
     *x* or *y*, respectively.  If your Cartesian data are polar (*theta*, *r*), append
     **t** or **r** to construct stair-case paths whose first move is along
     *theta* or *r*, respectively.
+
+.. _-C:
+
+**-C**\ **f**\|\ **l**\|\ **o**\|\ **u**
+    Clobber mode: Selects the polygon whose *z*-value will determine the
+    grid nodes. Choose from the following modes: **f** for the first polygon
+    to overlap a node; **o** for the last polygon to overlap a node; **l**
+    for the polygon with the lowest *z*-value, and **u** for the polygon with
+    the uppermost *z*-value [Default is **o**]. **Note**: Does not apply to **-S**.
+    For polygon *z*-values, see **-N**.
 
 .. _-N:
 
@@ -130,6 +145,8 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+.. include:: explain_-aspatial.rst_
+
 .. |Add_-bi| replace:: [Default is 2 input columns (3 with **-Sz**)].
 .. include:: explain_-bi.rst_
 
@@ -152,14 +169,14 @@ Optional Arguments
 
 .. include:: explain_distcalc.rst_
 
-.. include:: explain_-qi.rst_
-
 **-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*][**+t**\ *threshold*]
    Append **+b**\ *BC* to set any boundary conditions to be used,
    adding **g** for geographic, **p** for periodic, or **n** for
    natural boundary conditions. For the latter two you may append **x**
    or **y** to specify just one direction, otherwise both are assumed.
    [Default is geographic if grid is geographic].
+
+.. include:: explain_-qi.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_

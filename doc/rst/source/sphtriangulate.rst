@@ -29,6 +29,8 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-j| ]
 [ |SYN_OPT-qi| ]
+[ |SYN_OPT-r| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -82,7 +84,7 @@ Optional Arguments
 
 **-L**\ *unit*
     Specify the unit used for distance and area calculations. Choose
-    among **e** (m), **f** (foot), **k** (km), **m** (mile), **n**
+    among **e** (m), **f** (foot), **k** (km), **M** (mile), **n**
     (nautical mile), **u** (survey foot), or **d** (spherical degree). A
     spherical approximation is used unless **-je** is set,
     in which case we convert latitudes to authalic
@@ -135,6 +137,8 @@ Optional Arguments
 .. include:: explain_distcalc.rst_
 
 .. include:: explain_-qi.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
 

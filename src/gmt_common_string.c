@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -873,3 +873,15 @@ char *basename(char *path) {
 	 assert(strlen(newstr) == newstr_len);
 	 return newstr;
 }
+
+#ifndef HAVE_CHARCAT	/* Do not think this is a standard function but just in case */
+char *chrcat (char *dest, const char add) {
+	/* Simple function to add a single character to a string. No check if there is room
+	 * only that it is not NULL, and we explicitly terminate the updated string */
+	if (dest) {
+		dest[strlen(dest)] = add;
+		dest[strlen(dest)] = '\0';
+	}
+	return (dest);
+}
+#endif

@@ -1,7 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2004-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- *    See README file for copying and redistribution conditions.
+ *	Copyright (c) 2004-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * mgd77info reads one or more MGD77 or MGD77+ files and report on the
@@ -147,6 +158,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct GMT_
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Get the short list [Default] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				switch (opt->arg[0]) {
 					case 'm':
@@ -164,6 +176,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 'f') {
 					Ctrl->M.mode = FORMATTED_HEADER;
@@ -187,6 +200,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (Ctrl->I.n < 3) {
 					if (strchr ("acmt", (int)opt->arg[0]))
@@ -203,6 +217,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'E':	/* Get the short list [Default] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				switch (opt->arg[0]) {
 					case 'm':
 					case 'M':
@@ -223,6 +238,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'L':	/* Get the list of institutions and vessels  */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case 'a':
@@ -239,7 +255,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

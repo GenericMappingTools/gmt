@@ -1,17 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Lesser General Public License as published by
- *   the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
- *   Contact info: www.soest.hawaii.edu/wessel
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * SPOTTER: functions for moving points along small circles on a sphere.
@@ -1416,9 +1417,9 @@ bool spotter_conf_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double 
 
 	/* Find the unique rotation in question */
 
-	for (i = 0, k = -1; k < 0 && i < np; ++i) if (doubleAlmostEqualZero (p[i].t_start, t))
+	for (i = 0, k = GMT_NOTSET; k < 0 && i < np; ++i) if (doubleAlmostEqualZero (p[i].t_start, t))
 		k = i;
-	if (k == -1) return (true);	/* Did not match finite rotation time */
+	if (k == GMT_NOTSET) return (true);	/* Did not match finite rotation time */
 
 	/* Make M(x), the skew-symmetric matrix needed to compute cov of rotated point */
 

@@ -1,7 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2004-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- *    See README file for copying and redistribution conditions.
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * mgd77path accepts MGD77 cruise names and returns the full system
@@ -107,20 +118,23 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct GMT_
 					/* Purposfully falling through to catch 'A' instead */
 				}
 				else {
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 					break;
 				}
 				/* Intentionally fall through */
 			case 'A':	/* Show list of paths to MGD77 files */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0] == 'c' || opt->arg[0] == '-') Ctrl->A.mode = true;
 				break;
 
 			case 'D':	/* Show list of directories with MGD77 files */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (Ctrl->I.n < 3) {
 					if (strchr ("acmt", (int)opt->arg[0]))
@@ -137,7 +151,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct GMT_
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

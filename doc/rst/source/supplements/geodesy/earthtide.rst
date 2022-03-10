@@ -14,7 +14,7 @@ Synopsis
 
 **gmt earthtide**
 |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
-|-G|\ *grdfile*
+|-G|\ *outgrid*
 [ |-C|\ *x|e,y|n,z|v* ]
 [ |SYN_OPT-I| ]
 [ |-L|\ *lon/lat* ]
@@ -30,24 +30,26 @@ Description
 -----------
 
 Compute the three components of solid Earth tides as time-series or grids. Optionally compute also Sun and Moon position in lon,lat.
-The output can be either in the form of a grid or as a table printed to stdout. The format of the table data is:
+The output can be either in the form of a grid or as a table printed to standard output. The format of the table data is:
 *time north east vertical* in units of meters.
 
 
 Required Arguments
 ------------------
 
-Either **-G**, **-S** or **-L**
+Either |-G|, |-S| or |-L| must be provided.
 
 .. _-G:
 
-**-G**\ *grdfile*
-    Write one or more tide component directly to grids; no table data are written to standard output.
-    If more than one component are specified via **-C** then *grdfile* must contain the format flag %s
-    so that we can embed the component code in the file names (*n* for north; *e* for east and *v* for vertical).
-    If only one component is selected with **-C** than no code is appended to grid name (an no need to
+.. |Add_outgrid| replace:: Write one or more tide component directly to grids; no table data are written to standard
+    output. If more than one component are specified via **-C** then *outgrid* must contain the format flag %s so that
+    we can embed the component code in the file names (*n* for north; *e* for east and *v* for vertical).
+    If only one component is selected with **-C** than no code is appended to grid name (and no need to
     set the format flag %s). The grid(s) are computed at the time set by **-T**, if that option is used, or
     at the *now* time calculated in UTC from the computer clock.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-S:
 

@@ -317,6 +317,7 @@ are known. The **auto** flag is supported for the following parameters:
 :term:`MAP_ANNOT_MIN_SPACING`      Minimum space between annotations [11.00p]
 :term:`MAP_ANNOT_OFFSET_PRIMARY`   Primary annotation offset from axis [3.30p]
 :term:`MAP_ANNOT_OFFSET_SECONDARY` Secondary annotation offset from axis [3.30p]
+:term:`MAP_EMBELLISHMENT_MODE`     Scales attributes relative to feature size
 :term:`MAP_FRAME_AXES`             Axes that are drawn and annotated
 :term:`MAP_FRAME_PEN`              Pen width of plain frame [1.65p]
 :term:`MAP_FRAME_WIDTH`            Width of fancy frame [3.30p]
@@ -366,6 +367,11 @@ non-polar plots using **MAP_FRAME_AXES**\ =\ **auto** is **WrStZ**.
 For **MAP_LABEL_OFFSET, **auto** will scale the offset based on figure size if
 **MAP_LABEL_MODE** is set to **annot**, but will default to **32p** if
 **MAP_LABEL_MODE** is set to **axis**.
+
+For **MAP_EMBELLISHMENT_MODE**, **auto** means we uses the given size of the
+embellishment to set relative sizes of ticks, texts and labels, and offsets.
+These are otherwise controlled by numerous default settings; see discussion
+under :ref:`Embellishments <GMT_Embellishments>`.
 
 Changing GMT defaults
 ~~~~~~~~~~~~~~~~~~~~~
@@ -440,7 +446,13 @@ do not need to repeat the region and projection information, as shown here::
      gmt end show
 
 Thus, the chosen options remain in effect until you provide new option
-arguments on the command line.
+arguments on the command line.  **Note**: We keep track of two types of regions,
+One is the domain used for a map and one is the domain used for processing,
+which often are the same.  When a plot is specified without providing
+a region then we look for a previous plot region in the history first, and
+if it is not found then we look for the processing domain to use instead.  However,
+if a data-processing module is not given a region then we only look
+for a previous processing domain; we never substitute a plot domain in that case.
 
 Usage messages, syntax- and general error messages
 --------------------------------------------------
@@ -465,7 +477,7 @@ Standard input or file, header records
 
 Most of the programs which expect table data input can read either
 standard input or input in one or several files. These programs will try
-to read *stdin* unless you type the filename(s) on the command line
+to read standard input unless you type the filename(s) on the command line
 without the above hyphens. (If the program sees a hyphen, it reads the
 next character as an instruction; if an argument begins without a
 hyphen, it tries to open this argument as a filename).  This feature
@@ -586,19 +598,13 @@ iterative solutions, and the like. Since these messages are written to
 may optionally choose among six models of *verbosity*; each mode adds
 more messages with an increasing level of details. The modes are
 
-  **q** Complete silence, not even fatal error messages.
-
-  **e** Errors messages only.
-
-  **w** Warnings [Default].
-
-  **t** Timings (for time-intensive algorithms only).
-
-  **i** Informational messages.
-
-  **c** Compatibility warnings about deprecated usage (if compiled for compatibility).
-
-  **d** Debugging messages (mostly of interest to developers).
+  - **q** - Quiet, not even fatal error messages are produced.
+  - **e** - Error messages only.
+  - **w** - Warnings (same as running without **-V**)
+  - **t** - Timings (report runtimes for time-intensive algorithms).
+  - **i** - Informational messages (same as **-V** only).
+  - **c** - Compatibility warnings (if compiled with backward-compatibility).
+  - **d** - Debugging messages (mostly of interest to developers).
 
 The verbosity is cumulative, i.e., mode **w** means all messages of mode
 **e** as well will be reported.
@@ -698,9 +704,9 @@ binary metafile plot systems since such files cannot easily be modified
 after they have been created. GMT programs also write many comments to
 the plot file which make it easier for users to orient themselves should
 they need to edit the file (e.g., % Start of x-axis) [16]_. All
-GMT programs create PostScript code by calling the :doc:`PSL </postscriptlight>` plot
+GMT programs create PostScript code by calling the :doc:`PSL </devdocs/postscriptlight>` plot
 library (The user may call these functions from his/her own C or FORTRAN
-plot programs. See the manual pages for :doc:`PSL </postscriptlight>` syntax). Although
+plot programs. See the manual pages for :doc:`PSL </devdocs/postscriptlight>` syntax). Although
 GMT programs can create very individualized plot code, there will
 always be cases not covered by these programs. Some knowledge of
 PostScript will enable the user to add such features directly into the
@@ -1028,8 +1034,8 @@ use **-G** for this task and some have several options specifying different fill
 Due to PostScript implementation limitations the raster images used
 with **-G** must be less than 146 x 146 pixels in size; for larger
 images see :doc:`/image`. The format of Sun raster files [18]_ is
-outlined in Chapter :doc:`file-formats`. However, if you built GMT
-with GDAL then other image formats can be used as well. Note that under
+outlined in Chapter :doc:`file-formats`; other image formats can be
+used as well. Note that under
 PostScript Level 1 the patterns are filled by using the polygon as a
 *clip path*. Complex clip paths may require more memory than the
 PostScript interpreter has been assigned. There is therefore the
@@ -1541,8 +1547,8 @@ Automatic CPTs
 
 A few modules (:doc:`/grdimage`, :doc:`/grdview`) that expects a CPT option will
 provide a default CPT if none is provided.  By default, the default CPT is the
-"turbo" color table, but this is overridden if the user uses the @eart_relief
-(we select "geo") or @srtm_relief (we select "srtm") data sets.  After selection,
+*turbo* color table, but this is overridden if the user uses the @earth_relief
+(we select *geo*) or @srtm_relief (we select *srtm*) data sets.  After selection,
 these CPTs are read and scaled to match the range of the grid values. You may append
 **+i**\ *dz* to the CPT to have the exact range rounded to nearest multiple of *dz*.
 This is helpful if you plan to place a colorbar and prefer start and stop *z*-values
@@ -2104,7 +2110,7 @@ supply suitable required and optional modifiers:
 
    Color bar placed beneath a map (here truncated).  We extended the bar to show background and foreground
    colors, and used the frame-annotation machinery to add labels.  The bar was placed with
-   **-D**\ *JBC*\ **+o**\ 0/0.35i\ **+w**\ 4.5i/0.1i\ **+h**.
+   **-D**\ *JBC*\ **+e**.
 
 .. toggle::
 
@@ -2324,13 +2330,13 @@ by other programs that conform to those conventions. Three such programs are
 <https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_ ; others can be found on the
 `netCDF website <http://www.unidata.ucar.edu/software/netcdf/software.html>`_.
 Note that although many additional programs can read netCDF files, some are unable
-to read netcdf 4 files (if data compression has been applied).
+to read netCDF 4 files (if data compression has been applied).
 
 In addition, users with some C-programming experience may add their own
 read/write functions and link them with the GMT library to extend the
 number of predefined formats. Technical information on this topic can be
-found in the source file ``gmt_customio.c``. Users who are considering this approach
-should contact the GMT team.
+found in the source file ``gmt_customio.c``. Users who are considering this
+approach should contact the GMT team for guidance.
 
 .. _tbl-grdformats:
 
@@ -2391,7 +2397,7 @@ should contact the GMT team.
 +----------+---------------------------------------------------------------+
 | ef       | ESRI Arc/Info ASCII Grid Interchange format (ASCII float)     |
 +----------+---------------------------------------------------------------+
-| gd       | Import/export via GDAL [19]_                                  |
+| gd       | Import/export via GDAL                                        |
 +----------+---------------------------------------------------------------+
 
 Because some formats have limitations on the range of values they can
@@ -2402,17 +2408,18 @@ the data may need translation and scaling prior to use. Therefore, all
 GMT programs that read or write grid files will decode the given
 filename as follows:
 
-name[=\ *ID*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]
+name[=\ *ID*][**+d**\ *divisor*][**+n**\ *invalid*][**+o**\ *offset*][**+s**\ *scale*]
 
 where anything in brackets is optional. If you are reading a grid then
-no options are needed: just continue to pass the name of the grid file.
-However, if you write another format you must append the =\ *ID* string,
-where *ID* is the format code listed above. In addition, should you want
-to (1) multiply the data by a scale factor, and (2) add a constant
-offset you must append the **+s**\ *scale* and **+o**\ *offset* modifiers. Finally, if you
-need to indicate that a certain data value should be interpreted as a
-NaN (not-a-number) you must append **+n**\ *invalid* modifier to file name.
-You may the scale as *a* for auto-adjusting the scale and/or offset of
+no *ID* is needed: just continue to pass the name of the grid file.
+However, if you write another format than the default netCDF you must append
+the =\ *ID* string, where *ID* is the format code listed above. In addition,
+should you want to (1) multiply the data by a *scale* factor (or alternatively
+divide the data by a *divisor*), and (2) add a constant offset you must append
+the **+s**\ *scale* (or **+d**\ *divisor*) and **+o**\ *offset* modifiers.
+Finally, if you need to indicate that a certain data value should be interpreted
+as a NaN (not-a-number) you must append **+n**\ *invalid* modifier to file name.
+For output, you may specify scale as *a* for auto-adjusting the scale and/or offset of
 packed integer grids (=\ *ID*\ **+s**\ *a* is a shorthand for
 =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).
 
@@ -2578,7 +2585,7 @@ indicate the second layer of the 3-D variable "slp" use as file name: ``file.nc?
 
 When you supply the numerical value for the third variable using
 "(*level*)", GMT will pick the layer closest to that value. No
-interpolation is performed.
+interpolation is performed (for such interpolations, see :doc:`/grdinterpolate`).
 
 Note that the question mark, brackets and parentheses have special
 meanings on Unix-based platforms. Therefore, you will need to either
@@ -2684,8 +2691,7 @@ unit of the z-coordinate. The default is simply "z".
 Modifiers to read and write grids and images via GDAL
 -----------------------------------------------------
 
-If the support has been configured during installation, then GMT can
-read and write a variety of grid and image formats via GDAL. This
+GMT can read and write a variety of grid and image formats via GDAL. This
 extends the capability of GMT to handle data sets from a variety of
 sources.
 
@@ -2733,7 +2739,7 @@ Reading more complex multi-band IMAGES or GRIDS
 It is also possible to access to sub-datasets in a multi-band grid. The
 next example shows how we can extract the SST from the MODIS file ``A20030012003365.L3m_YR_NSST_9``
 that is stored in the HDF "format". We need to run the GDAL program
-**gdalinfo** on the file because we first
+*gdalinfo* on the file because we first
 must extract the necessary metadata from the file:
 
 .. code-block:: none
@@ -2769,7 +2775,7 @@ simple example using :doc:`/grdinfo` would be
 
    ::
 
-    gmt grdinfo A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0"
+    gmt grdinfo A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9":0
 
     HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Title: Grid imported via GDAL
     HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Command:
@@ -2790,7 +2796,7 @@ via :doc:`/grdmath` first, i.e.,
 
    ::
 
-    gmt grdmath A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0" \
+    gmt grdmath A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9":0 \
                 0.000717185 MUL -2 ADD = sst.nc
 
 then plot the ``sst.nc`` directly.
@@ -2803,7 +2809,7 @@ Writing grids and images
 Saving images in the common raster formats is possible but, for the time being, only from :doc:`/grdimage` and even
 that is restricted to raster type information. That is, vector data (for instance, coast lines) or text will not
 be saved. To save an image with :doc:`/grdimage` use the **-A**\ *outimg=driver* mechanism, where *driver*
-is the driver code name used by GDAL (e.g. GTiff).
+is the driver code name used by GDAL (e.g. GTiff) (run *gdal_translate --formats* for the full list.)
 
 For all other programs that create grids, it is also possible to save them using GDAL. To do it one need to use
 the =gd appended with the necessary information regarding the driver and the data type to use. Generically,
@@ -2815,6 +2821,10 @@ number of GDAL *-co* options. For example, to write a lossless JPG2000 grid one 
 **+c**\ QUALITY=100\ **+c**\ REVERSIBLE=YES\ **+c**\ YCBCR420=NO
 **Note**: You will have to specify a *nan* value for integer data types unless you wish that all NaN data values
 should be replaced by zero.
+
+Consider setting :term:`IO_NC4_DEFLATION_LEVEL` to reduce file size and to further increase read/write performance.
+Especially when working with subsets of global grids, masks, and grids with repeating grid values, the improvement is
+usually significant.
 
 The NaN data value
 ------------------
@@ -2953,6 +2963,3 @@ Footnotes
 
 .. [18]
    Convert other graphics formats to Sun ras format using GraphicsMagick's or ImageMagick's **convert** program.
-
-.. [19]
-   Requires building GMT with GDAL.

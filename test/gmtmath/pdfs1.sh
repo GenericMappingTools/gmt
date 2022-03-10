@@ -16,7 +16,7 @@ cat << EOF > ML.txt
 7	0.000366210937500
 8	0.000015258789063
 EOF
-gmt psxy -R-0.6/8.6/0/0.35 -JX6i/1.2i -P -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Xc -Y0.75i --MAP_FRAME_TYPE=graph > $ps
+gmt psxy -R-0.6/8.6/0/0.35 -JX6i/1.2i -P -K -Glightgreen p.d -Sb0.8q -W0.5p -BWS -Bxa1 -Byaf -Xc -Y0.75i --MAP_FRAME_TYPE=graph > $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
 gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"Binomial P@-8,0.25@-" >> $ps
 # Plot POISSON distribution
@@ -32,7 +32,7 @@ cat << EOF > ML.txt
 8	0.000859271639598
 EOF
 gmt math -T0/8/1 T 2 PPDF = p.d
-gmt psxy -R-0.6/8.6/0/0.3 -J -O -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Y1.65i --MAP_FRAME_TYPE=graph >> $ps
+gmt psxy -R-0.6/8.6/0/0.3 -J -O -K -Glightgreen p.d -Sb0.8q -W0.5p -BWS -Bxa1 -Byaf -Y1.65i --MAP_FRAME_TYPE=graph >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
 gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"Poisson P(@~l=2@~)" >> $ps
 # Plot normal distribution

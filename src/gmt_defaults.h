@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -109,6 +109,8 @@ struct GMT_DEFAULTS {
 	unsigned int history;     /* mode to pass information via history file gmt.history (GMT_HISTORY_OFF, GMT_HISTORY_READ, GMT_HISTORY_WRITE) */
 	unsigned int history_orig;     /* Copy of history */
 	unsigned int export_type;     /* What data type to export to external APIs [GMT_DOUBLE] */
+	double graphics_dpu;	/* The default target image dpu when not specifying grid resolution [GMT_IMAGE_DPU_VALUE] */
+	char graphics_dpu_unit;	/* The unit we selected [GMT_IMAGE_DPU_UNIT] */
 	unsigned graphics_format;	/* The default graphics format in modern mode [GMT_SESSION_FORMAT] */
 	int max_cores;		/* The maximum number of cores for a multi-threaded module [GMT_MAX_CORES] */
 	char theme[GMT_LEN64];	/* User-selected defaults theme */
@@ -155,6 +157,7 @@ struct GMT_DEFAULTS {
 	unsigned int map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
 	unsigned int map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
 	unsigned int map_graph_extension_unit;	/* If map_frame_type is graph, the unit is GMT_CM, GMT_INCH, GMT_PT [%] */
+	unsigned int map_embellishment_mode;	/* Manual or auto-scaling for map roses and scales [manual] */
 	double map_label_mode[2];		/* If label is relative to annotation (0) or axis (1) for x/t [0/0] */
 	bool map_annot_oblique_set;		/* true if user changed map_annot_oblique via a gmt.conf or --par=val */
 	bool map_logo;			/* Plot time and map projection on map [false] */
@@ -185,7 +188,7 @@ struct GMT_DEFAULTS {
 	unsigned int ps_color_mode;		/* Postscript encoding of color [PSL_RGB | PSL_CMYK | PSL_HSV | PSL_GRAY] */
 	unsigned int ps_copies;		/* How man copies of each plot [>=1] [GMT4 COMPATIBILITY ONLY] */
 	int ps_media;			/* Default paper media [25(Letter)]; negative if custom size */
-	bool ps_orientation;			/* Orientation of page [false = Landscape, true = Portrait] */
+	unsigned int ps_orientation;			/* Orientation of page [PSL_LANDSCAPE (0)] or PSL_PORTRAIT (1) */
 	bool ps_comments;			/* true if we write comments in the PS file */
 	char ps_transpmode[GMT_LEN16];		/* Transparency mode for PDF only */
 	char ps_convert[GMT_LEN256];		/* Arguments for implicit psconvert calls under modern mode [""] */

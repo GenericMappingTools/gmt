@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@
 #define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by mode estimation"
 #define THIS_MODULE_KEYS	"<D{,>D},GG),A->"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:>RVabdefghioqrw" GMT_OPT("FH")
+#define THIS_MODULE_OPTIONS "-:>RVabdefhioqrw" GMT_OPT("FH")
 
 #include "block_subs.h"
 
@@ -105,7 +105,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (!API->external) {
 		GMT_Usage (API, 1, "\n-G<grdfile>");
 		GMT_Usage (API, -2, "Specify output grid file name; no table results will be written to standard output. "
-			"If more than one field is set via -A then <grdfile> must contain %%s to format field code.");
+			"If more than one field is set via -A then <grdfile> must contain %%s to format field code. Options -C and -Q are not allowed.");
 	}
 	GMT_Usage (API, 1, "\n-Q Quicker; get mode z and mean x,y [Default gets mode x, mode y, mode z].");
 	GMT_Option (API, "V");
@@ -134,12 +134,13 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 	bool sigma;
 	char arg[GMT_LEN16] = {""}, p[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -155,22 +156,24 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 						case 'h':	Ctrl->A.selected[3] = true;	break;
 						case 'w':	Ctrl->A.selected[4] = true;	break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", arg[k]);
+							GMT_Report (API, GMT_MSG_ERROR, "Unrecognized field argument %s in -A!\n", arg[k]);
 							n_errors++;
 							break;
 					}
 					Ctrl->A.n_selected++;
 				}
 				if (Ctrl->A.n_selected == 0) {	/* Let -Az be the default */
-					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "-A interpreted to mean -Az.\n");
+					GMT_Report (API, GMT_MSG_DEBUG, "-A interpreted to mean -Az.\n");
 					Ctrl->A.selected[0] = true;
 					Ctrl->A.n_selected = 1;
 				}
 				break;
 			case 'C':	/* Report center of block instead */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
 			case 'D':	/* Histogram mode estimate */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.width = atof (opt->arg);
 				pos = 0;
@@ -182,7 +185,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 							case 'l': Ctrl->D.mode = BLOCKMODE_LOW;  break;	/* Pick low mode */
 							case 'h': Ctrl->D.mode = BLOCKMODE_HIGH; break;	/* Pick high mode */
 							default:	/* Bad modifier */
-								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized modifier +%c.\n", p[0]);
+								GMT_Report (API, GMT_MSG_ERROR, "Unrecognized modifier +%c.\n", p[0]);
 								n_errors++;
 								break;
 						}
@@ -190,6 +193,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;		/* Extended report with standard deviation, min, and max in cols 4-6 */
 				if (opt->arg[0] == 'r' || opt->arg[0] == 's') {	/* Report row number or sid of median */
 					switch (opt->arg[1]) {	/* Look for modifiers */
@@ -199,7 +203,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 							else if (opt->arg[2] == 'h' || opt->arg[2] == '\0')	/* E.g., let Er+ be thought of as -Er+h */
 								Ctrl->E.mode = BLK_DO_INDEX_HI;
 							else {	/* Neither +l, +h, or just + is bad */
-								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized argument -E%s!\n", opt->arg);
+								GMT_Report (API, GMT_MSG_ERROR, "Unrecognized argument -E%s!\n", opt->arg);
 								n_errors++;
 							}
 							break;
@@ -219,24 +223,29 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 					n_errors++;
 				break;
 			case 'G':	/* Write output grid(s) */
+				if (!API->external) n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G can only be set once!\n");
+					GMT_Report (API, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
 				}
 				else {
 					Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
 					Ctrl->G.n++;
 				}
 				break;
 			case 'I':	/* Get block dimensions */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'Q':	/* Quick mode for modal z */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				break;
 			case 'W':	/* Use in|out weights */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s", GMT_MSG_ERROR)) n_errors++;
 				sigma = (gmt_get_modifier (opt->arg, 's', arg)) ? true : false;
@@ -260,7 +269,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -284,21 +293,26 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->E.mode == BLK_DO_INDEX_LO || Ctrl->E.mode == BLK_DO_INDEX_HI), "-Es|r are incompatible with -G\n");
 	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
 		if (Ctrl->A.active && Ctrl->A.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[0], "%s")) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G file format must contain a %%s for field type substitution.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "-G file format must contain a %%s for field type substitution.\n");
 			n_errors++;
 		}
 		else if (!Ctrl->A.active)	/* Set default z output grid */
 			Ctrl->A.selected[0] = true, Ctrl->A.n_selected = 1;
 		else {	/* Make sure -A choices are valid and that -E is set if extended fields are selected */
 			if (!Ctrl->E.active && (Ctrl->A.selected[1] || Ctrl->A.selected[2] || Ctrl->A.selected[3])) {
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "-E is required if -A specifies s, l, or h.  -E was added.\n");
+				GMT_Report (API, GMT_MSG_WARNING, "-E is required if -A specifies s, l, or h.  -E was added.\n");
 				Ctrl->E.active = true;
 			}
 			if (Ctrl->A.selected[4] && !Ctrl->W.weighted[GMT_OUT]) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "-W or -Wo is required if -A specifies w.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "-W or -Wo is required if -A specifies w.\n");
 				n_errors++;
 			}
 		}
+		n_errors += gmt_M_check_condition (GMT, Ctrl->C.active,
+			"Option -C: Cannot be combined with -G\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active,
+			"Option -Q: Cannot be combined with -G\n");
+		Ctrl->C.active = true;	/* But we set it under the hood to avoid computing modes of x and y */
 	}
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
@@ -506,7 +520,8 @@ EXTERN_MSC int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	int way, error = 0;
 
-	unsigned int row, col, emode = 0, n_input, n_output;
+	openmp_int row, col;
+	unsigned int emode = 0, n_input, n_output;
 	unsigned int k, kk, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,7,0,0}, field[BLK_N_FIELDS];
 
 	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;
@@ -550,7 +565,7 @@ EXTERN_MSC int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
-	if (Ctrl->C.active && Ctrl->Q.active) {
+	if (!Ctrl->G.active && Ctrl->C.active && Ctrl->Q.active) {
 		GMT_Report (API, GMT_MSG_WARNING, "-C overrides -Q\n");
 		Ctrl->Q.active = false;
 	}
@@ -708,8 +723,8 @@ EXTERN_MSC int GMT_blockmode (void *V_API, int mode, void *args) {
 			if (!Ctrl->A.selected[k]) continue;
 			field[NF] = fcol[k];	/* Just keep record of which fields we are actually using */
 			code[NF]  = fcode[k];
-			if ((GridOut[NF] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
-				GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+			if ((GridOut[NF] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Grid->header->wesn, Grid->header->inc, \
+				Grid->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_TITLE, "Grid produced by blockmode", GridOut[NF]) != GMT_NOERROR) Return (API->error);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, GridOut[NF]) != GMT_NOERROR) Return (API->error);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remarks[k], GridOut[NF])) Return (API->error);
@@ -893,7 +908,7 @@ EXTERN_MSC int GMT_blockmode (void *V_API, int mode, void *args) {
 				GridOut[k]->data[node] = (gmt_grdfloat)out[field[k]];
 		}
 		else
-		GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 
 		n_cells_filled++;
 		first_in_cell = first_in_new_cell;

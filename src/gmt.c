@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,17 +28,6 @@
 
 #include "gmt_dev.h"
 
-#if !(defined(WIN32) || defined(NO_SIGHANDLER))
-#ifdef	__APPLE__
-	/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
-#ifndef _Nullable
-#	define _Nullable
-#	endif
-#	endif
-#	include <signal.h>
-#	include "gmt_common_sighandler.h"
-#endif
-
 #define PROGRAM_NAME	"gmt"
 
 /* Determine the system environmental parameter that leads to shared libraries */
@@ -60,21 +49,25 @@ int main (int argc, char *argv[]) {
 	char *progname = NULL;			/* Last component from the pathname */
 	char *module = NULL;			/* Module name */
 
-#if !(defined(WIN32) || defined(NO_SIGHANDLER))
-	/* Install signal handler */
+#ifndef NO_SIGHANDLER
+	/* Install a signal handler */
+#ifdef WIN32	/* Only handle Ctrl-C under Windows */
+    if (!SetConsoleCtrlHandler ((PHANDLER_ROUTINE)sig_handler_win32, TRUE)) {
+        fprintf (stderr, "Unable to install Windows signal handler!\n");
+        return EXIT_FAILURE;
+    }
+#else	/* Unix/Linux/macOS */
 	struct sigaction act;
 	sigemptyset(&act.sa_mask); /* Empty mask of signals to be blocked during execution of the signal handler */
-	act.sa_sigaction = sig_handler;
-#if 0 /* summit 2016 decision: disable CTRL-C interrupt feature */
-	act.sa_flags = SA_SIGINFO | SA_NODEFER; /* Do not prevent the signal from being received from within its own signal handler. */
-	sigaction (SIGINT,  &act, NULL);
-#endif
+	act.sa_sigaction = sig_handler_unix;
 	act.sa_flags = SA_SIGINFO;
-	sigaction (SIGILL,  &act, NULL);
+	sigaction (SIGINT,  &act, NULL);	/* Catching Ctrl-C will also wipe a session work directory and destroy GMT session */
+	sigaction (SIGILL,  &act, NULL);	/* The other signals will exit with a full backtrace */
 	sigaction (SIGFPE,  &act, NULL);
 	sigaction (SIGBUS,  &act, NULL);
 	sigaction (SIGSEGV, &act, NULL);
-#endif /* !(defined(WIN32) || defined(NO_SIGHANDLER)) */
+#endif	/* Unix/Linux/macOS */
+#endif	/* !defined(NO_SIGHANDLER) */
 
 	/* Look for and process any -V[flag] so we may use GMT_Report_Error early on for debugging.
 	 * Note: Because first 16 bits of mode may be used for other things we must left-shift by 16 */
@@ -197,6 +190,14 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 
+			/* Show DCW version of the current release */
+			else if (!strncmp (argv[arg_n], "--show-dcw", 10U)) {
+				char version[16] = {"unknown"};
+				gmt_DCW_version (api_ctrl, version);
+				fprintf(stdout, "%s\n", version);
+				status = GMT_NOERROR;
+			}
+
 			/* Show DOI of the current release */
 			else if (!strncmp (argv[arg_n], "--show-doi", 10U)) {
 				fprintf(stdout, "%s\n", GMT_VERSION_DOI);
@@ -206,6 +207,14 @@ int main (int argc, char *argv[]) {
 			/* Show the directory that contains the 'gmt' executable */
 			else if (!strncmp (argv[arg_n], "--show-bindir", 10U)) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->init.runtime_bindir);
+				status = GMT_NOERROR;
+			}
+
+			/* Show GSHHG version of the current release */
+			else if (!strncmp (argv[arg_n], "--show-gshhg", 10U)) {
+				char version[16] = {"unknown"};
+				gmt_shore_version (api_ctrl, version);
+				fprintf(stdout, "%s\n", version);
 				status = GMT_NOERROR;
 			}
 
@@ -265,6 +274,9 @@ int main (int argc, char *argv[]) {
 					type = 1;	/* Select csh */
 				if (type < 2) {	/* Start the shell via env and pass -e to exit script upon error */
 					printf ("#!/usr/bin/env -S %s -e\n", shell[type]);
+#ifdef __APPLE__
+					if (type == 0) printf ("set -e\n");	/* Explicitly needed for bash under macOS */
+#endif
 					printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
 				}
 				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], name, comment[type]);
@@ -314,10 +326,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "Shared libraries must be in standard system paths or set via environmental parameter %s.\n\n", LIB_PATH);
 		}
 		else {
-			char libraries[GMT_LEN128] = {"netCDF"};	/* Always linked with netCDF */
-#ifdef HAVE_GDAL
-			strcat (libraries, ", GDAL");
-#endif
+			char libraries[GMT_LEN128] = {"netCDF, GDAL"};	/* Always linked with netCDF and GDAL */
 #ifdef HAVE_PCRE
 			strcat (libraries, ", PCRE");
 #endif
@@ -351,7 +360,9 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --show-cores        Show number of available cores.\n");
 			fprintf (stderr, "  --show-datadir      Show directory/ies with user data.\n");
 			fprintf (stderr, "  --show-dataserver   Show URL of the remote GMT data server.\n");
+			fprintf (stderr, "  --show-dcw          Show the DCW data version used.\n");
 			fprintf (stderr, "  --show-doi          Show the DOI for the current release.\n");
+			fprintf (stderr, "  --show-gshhg        Show the GSHHG data version used.\n");
 			fprintf (stderr, "  --show-library      Show path of the shared GMT library.\n");
 			fprintf (stderr, "  --show-modules      Show all modern module names.\n");
 			fprintf (stderr, "  --show-modules-core Show all modern module names (core only).\n");

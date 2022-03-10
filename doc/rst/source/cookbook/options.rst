@@ -38,7 +38,7 @@ importance (some are used a lot more than others).
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-e <option_-e>`          | Only process data records that match a *pattern*                   |
 +--------------------------------+--------------------------------------------------------------------+
-| :ref:`-f <option_-f>`          | Specify the data format on a per column basis                      |
+| :ref:`-f <option_-f>`          | Specify the data content on a per column basis                     |
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-g <option_-g>`          | Identify data gaps based on supplied criteria                      |
 +--------------------------------+--------------------------------------------------------------------+
@@ -1110,4 +1110,4 @@ Footnotes
 
 .. [14]
    Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity, Geophys. Res. Lett., 34 (L03307),
-   http://doi.org/10.1029/2006GL028857.
+   https://doi.org/10.1029/2006GL028857.

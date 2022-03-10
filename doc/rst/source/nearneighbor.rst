@@ -76,8 +76,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Give the name of the output grid file.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -142,7 +144,7 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| replace:: 0x20 .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code

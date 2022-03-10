@@ -55,8 +55,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Specify name for output grid file.
+.. |Add_outgrid| replace::  Specify name for output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 

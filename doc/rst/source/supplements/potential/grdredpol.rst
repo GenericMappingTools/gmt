@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdredpol** *anom_grd*
+**gmt grdredpol** *ingrid*
 |-G|\ *rtp_grd*
 [ |-C|\ *dec/dip* ]
 [ |-E|\ **i**\ *inc_grd* ]
@@ -53,8 +53,10 @@ order Taylor series expansion.
 Required Arguments
 ------------------
 
-*anom_grd*
-    The anomaly grid to be converted.
+.. |Add_ingrid| replace:: The anomaly grid to be converted.
+.. include:: /explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 

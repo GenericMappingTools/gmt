@@ -21,7 +21,7 @@ jobs:
       - name: Check the latest release
         id: scm
         run: |
-          scm_version_in_gmt=7.0.0
+          scm_version_in_gmt=7.0.1
 
           # Get version string and date from Zenodo API
           # https://doi.org/10.5281/zenodo.1243862
