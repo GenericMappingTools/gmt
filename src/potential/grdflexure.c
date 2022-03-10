@@ -891,6 +891,10 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 	}
 	/* Note: If input grid is read-only then we must duplicate it; otherwise Grid points to Orig */
 	(void) gmt_set_outgrid (API->GMT, file, false, 0, Orig, &Grid);
+	/* Ensure any NaNs are set to 0 here. This can happen with data from grdseamount, for instance. We cannot have NaNs when doing FFTs */
+	for (node = 0; node < Grid->header->size; node++) {
+		if (gmt_M_is_fnan (Grid->data[node])) Grid->data[node] = 0.0;	/* Outside seamounts, probably */
+	}
 	if (Ctrl->W.active) {	/* See if any part of the load sticks above water, and if so scale this amount as if it was submerged */
 		uint64_t n_subaerial = 0;
 		double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);
@@ -904,12 +908,13 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 	}
 	if (Ctrl->D.var_rhol) {	/* Must load variable density grid, get mean load density, and scale height accordingly */
 		if ((Rho = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, rho, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the header of file %s - file skipped\n", file);
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the header of file %s - file skipped\n", rho);
 			return NULL;
 		}
-		if (strstr (Rho->header->remark, "Mean Load Density:")) {
-			char *c = strchr (Rho->header->remark, ':');
+		if (strstr (Rho->header->remark, "Mean Load Density:")) {	/* Got the remark about density */
+			char *c = strchr (Rho->header->remark, ':');	/* Get to start of comma */
 			mean_rho_l = atof (&c[1]);	/* Get the mean load density */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Extracted mean load density of %lg from file %s\n", mean_rho_l, rho);
 		}
 		else {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure to extract mean load density from %s - file skipped\n", rho);
@@ -1129,7 +1134,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 				rho = rfile;
 			}
 			Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, zfile, rho, &Ctrl->T.time[t_load]);
-			Load[t_load]->rho_load = Ctrl->D.rhol;
+			if (!Ctrl->D.var_rhol) Load[t_load]->rho_load = Ctrl->D.rhol;
 		}
 	}
 	else if (Ctrl->In.list) {	/* Must read a list of files and their load times (format: filename [rhofile] loadtime) */
@@ -1171,7 +1176,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		n_load_times = 1;
 		Load = gmt_M_memory (GMT, NULL, n_load_times, struct GRDFLEXURE_GRID *);	/* Allocate grid array structure with one entry */
 		Load[0] = grdflexure_prepare_load (GMT, options, Ctrl, Ctrl->In.file, Ctrl->H.file, NULL);	/* The single load [and rho] grid (no time info) */
-		Load[0]->rho_load = Ctrl->D.rhol;
+		if (!Ctrl->D.var_rhol) Load[0]->rho_load = Ctrl->D.rhol;
 	}
 
 	if (n_load_times > 1) {	/* Sort to ensure load array goes from old to young loads */

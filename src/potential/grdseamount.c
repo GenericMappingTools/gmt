@@ -1382,19 +1382,18 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			goto wrap_up;
 		gmt_M_memcpy (Grid->data, data, Grid->header->size, gmt_grdfloat);
 		if (Ctrl->W.active) {	/* Must average in case multiple seamounts overprint on the same node */
-			uint64_t ns = 0;
-			double rs = 0.0;
+			double rs = 0.0, ws = 0.0;
 			char remark[GMT_GRID_REMARK_LEN160] = {""};
 			for (ij = 0; ij < Ave->header->size; ij++) {
 				if (rho_weight[ij] > 0.0) {
-					Ave->data[ij] /= rho_weight[ij];
 					rs += Ave->data[ij];
-					ns++;
+					ws += rho_weight[ij];
+					Ave->data[ij] /= rho_weight[ij];
 				}
 				else
 					Ave->data[ij] = GMT->session.f_NaN;
 			}
-			if (ns) rs /= ns;	/* Mean load density for this feature */
+			if (ws > 0.0) rs /= ws;	/* Mean load density for this feature */
 			sprintf (remark, "Mean Load Density: %lg", rs);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remark, Ave)) Return (API->error);
 			if (Ctrl->W.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_WRITE_NORMAL, NULL, wfile, Ave) != GMT_NOERROR) {
