@@ -2,7 +2,6 @@
 #
 # Testing gmt pslegend autosizing of symbols when nothing is specified
 # other than the primary annotation font size.
-# DVC_TEST
 
 gmt begin autosize
 	gmt set FONT_ANNOT_PRIMARY 18p

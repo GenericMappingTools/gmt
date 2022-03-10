@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Test grdmask with search radius around some points
 # Made because of http://gmt.soest.hawaii.edu/boards/1/topics/5379
-# DVC_TEST
 ps=geoholes.ps
 # 20 degree radii for all, gridline-registered
 gmt grdmask -Gmask.grd -I1 -R0/360/-90/90 -N1/1/NaN -S20d << EOF

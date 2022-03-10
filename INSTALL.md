@@ -82,9 +82,8 @@ version requires a computer with the M1 Apple Silicon chip.
 |-------------|-------------|
 | 6.3         | macOS 10.15 |
 | 6.2         | macOS 10.15 |
-| 6.1.1       | macOS 10.15 |
-| 6.1.0       | macOS 10.15 |
-| 6.0.0       | macOS 10.13 |
+| 6.1         | macOS 10.15 |
+| 6.0         | macOS 10.13 |
 | 5.4         | macOS 10.12 |
 
 ### Install via Homebrew
@@ -155,12 +154,12 @@ in the wiki.
 
 Install GMT via:
 
-    dnf install GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high ghostscript
+    sudo dnf install GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high ghostscript
 
 You may also install other optional dependencies for more capabilities within GMT:
 
-    dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
-    dnf install ffmpeg
+    sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
+    sudo dnf install ffmpeg
 
 ### RHEL/CentOS
 
@@ -173,13 +172,13 @@ in the wiki.
 
 Install GMT via:
 
-    yum install epel-release
-    yum install GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high ghostscript
+    sudo yum install epel-release
+    sudo yum install GMT dcw-gmt gshhg-gmt-nc4 gshhg-gmt-nc4-full gshhg-gmt-nc4-high ghostscript
 
 You may also install other optional dependencies for more capabilities within GMT:
 
-    yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-`rpm -E %rhel`.noarch.rpm
-    yum install ffmpeg
+    sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-`rpm -E %rhel`.noarch.rpm
+    sudo yum install ffmpeg
 
 ### Ubuntu/Debian
 
@@ -225,7 +224,7 @@ Install GMT via:
 You can use the [conda package manager](https://conda.io/) that comes with the
 [Anaconda Python Distribution](https://www.anaconda.com/distribution/) to install GMT.
 
-1. Download and install the [Python **3.8** **64-bit** version of Miniconda](https://conda.io/en/latest/miniconda.html).
+1. Download and install the [latest Miniconda](https://conda.io/en/latest/miniconda.html).
    This will give you access to the conda package manager. **Make sure you select to
    have conda added to your `PATH` when asked by the installer**. If you have
    the Anaconda Python distribution installed, you won't need to do this step.

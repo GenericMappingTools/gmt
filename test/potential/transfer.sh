@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Testing firmoviscous flexure code by dumping all the various transfer functions
-# DVC_TEST
 
 gmt set GMT_FFT kiss FONT_TAG 7p FONT_ANNOT_PRIMARY 10p
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Test highpass-filter with or without coarse grid low-pass option
 # Doing a 10x10 degree patch near Nigeria
-# DVC_TEST
 ps=highpass.ps
 gmt grdcut @earth_relief_02m -R0/10/0/10 -GAFR.nc
 gmt grdfilter AFR.nc -Fg100+h -D2 -GHc.nc -I15m

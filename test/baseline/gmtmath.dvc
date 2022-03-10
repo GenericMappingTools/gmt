@@ -1,0 +1,5 @@
+outs:
+- md5: a909681cc5b43acbcf155499ca8e1e9e.dir
+  size: 197218
+  nfiles: 5
+  path: gmtmath

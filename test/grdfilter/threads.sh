@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Testing gmt grdfilter if openmp is used.
-# DVC_TEST
 ps=openmp.ps # same as test: openmp.sh
 
 if [[ ${HAVE_GLIB_GTHREAD} =~ TRUE|ON ]]; then

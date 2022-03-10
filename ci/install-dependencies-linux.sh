@@ -26,7 +26,7 @@ fi
 
 # packages for building documentation
 if [ "$BUILD_DOCS" = "true" ]; then
-    packages+=" python3-pip python3-setuptools python3-wheel graphicsmagick ffmpeg"
+    packages+=" python3-pip python3-setuptools python3-wheel"
 fi
 
 # packages for running GMT tests
@@ -42,7 +42,7 @@ sudo apt-get install -y --no-install-recommends --no-install-suggests $packages
 # Install more packages for building documentation
 if [ "$BUILD_DOCS" = "true" ]; then
     sudo snap install pngquant
-    pip3 install --user docutils==0.17 sphinx dvc
+    pip3 install --user sphinx dvc
     # Add sphinx to PATH
     echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
 fi

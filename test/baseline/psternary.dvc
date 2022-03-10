@@ -1,0 +1,5 @@
+outs:
+- md5: 6bbd7f1084d5757e528551a19cb8f448.dir
+  size: 131171
+  nfiles: 3
+  path: psternary

@@ -4553,6 +4553,8 @@ void MGD77_Set_Unit (struct GMT_CTRL *GMT, char *dist, double *scale, int way) {
 				break;
 			case 'u':	/* survey feet */
 				*scale = METERS_IN_A_SURVEY_FOOT;
+			case 'c':	/* Cartesian, scale is 1 */
+				*scale = 1.0;
 				break;
 			default:	/* Meter assumed */
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Not a valid unit: %c [meter assumed]\n", c);

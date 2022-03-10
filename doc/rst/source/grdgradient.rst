@@ -28,8 +28,8 @@ Description
 -----------
 
 **grdgradient** may be used to compute the directional derivative in a
-given direction (|-A|), or to find the direction (|-S|) [and the magnitude
-(|-D|)] of the vector gradient of the data.
+given direction (|-A|), or to find the direction (|-D|) [and the magnitude
+(|-S|)] of the vector gradient of the data.
 
 Estimated values in the first/last row/column of output depend on
 boundary conditions (see **-n**).
@@ -59,12 +59,12 @@ Optional Arguments
     angle in the x,y plane measured in degrees positive clockwise from
     north (the +y direction) toward east (the +x direction). The
     negative of the directional derivative, 
-    :math:`-(\frac{dz}{dx}\sin(\mbox{azim}) + \frac{dz}{dy}\cos(\mbox{azim}))`
-    , is found; negation yields positive values
-    when the slope of :math:`z(x,y)` is downhill in the *azim* direction, the
+    :math:`-(\frac{dz}{dx}\sin(a) + \frac{dz}{dy}\cos(a))`
+    , is found where :math:`a` is the *azimuth*; negation yields positive values
+    when the slope of :math:`z(x,y)` is downhill in the :math:`a` direction, the
     correct sense for shading the illumination of an image (see
     :doc:`grdimage` and :doc:`grdview`) by a light source above the x,y plane
-    shining from the *azim* direction. Optionally, supply two azimuths,
+    shining from the :math:`a` direction. Optionally, supply two azimuths,
     **-A**\ *azim*/*azim2*, in which case the gradients in each of these
     directions are calculated and the one larger in magnitude is
     retained; this is useful for illuminating data with two directions
@@ -77,7 +77,8 @@ Optional Arguments
 .. _-D:
 
 **-D**\ [**a**][**c**][**o**][**n**]
-    Find the direction of the positive (up-slope) gradient of the data. The
+    Instead of finding the gradient in a given direction (|-A|), find the
+    direction of the positive (up-slope) gradient of the data. The
     following modifiers are supported:
 
     - **a** - Find the aspect (i.e., the down-slope direction).
@@ -113,19 +114,20 @@ Optional Arguments
     are offset and scaled to produce normalized gradients :math:`g_n` with a
     maximum output magnitude of *amp*. If *amp* is not given, default
     *amp* = 1. If *offset* is not given, it is set to the average of
-    :math:`g`. The following forms are supported:
+    :math:`g`. The following forms are supported, where :math:`o` is the offset
+    and :math:`a` is the *amp*:
     
-    - **-N** - Normalize using :math:`g_n = \mbox{amp}(\frac{g - \mbox{offset}}{max(|g - \mbox{offset}|)})`
+    - **-N** - Normalize using :math:`g_n = a(\frac{g - o}{max(|g - o|)})`
     - **-Ne** - Normalize using a cumulative Laplace distribution yielding:
-      :math:`g_n = \mbox{amp}(1 - \exp{(\sqrt{2}\frac{g - \mbox{offset}}{\sigma}))}`, where
-      :math:`\sigma` is estimated using the L1 norm of :math:`(g - \mbox{offset})` if it is
+      :math:`g_n = a(1 - \exp{(\sqrt{2}\frac{g - o}{\sigma}))}`, where
+      :math:`\sigma` is estimated using the L1 norm of :math:`(g - o)` if it is
       not given.
     - **-Nt** - Normalize using a cumulative Cauchy distribution yielding:
-      :math:`g_n = \frac{2(\mbox{amp})}{\pi}(\tan^{-1}(\frac{g - \mbox{offset}}{\sigma}))` where
-      :math:`\sigma` is estimated using the L2 norm of :math:`(g - \mbox{offset})` if it
+      :math:`g_n = \frac{2a}{\pi}(\tan^{-1}(\frac{g - o}{\sigma}))` where
+      :math:`\sigma` is estimated using the L2 norm of :math:`(g -o)` if it
       is not given.
       
-    To use *offset* and/or :math:`\sigma` from a previous calculation,
+    To use :math:`o` and/or :math:`\sigma` from a previous calculation,
     leave out the argument to the modifier(s) and see |-Q| for usage.  As a final
     option, you may add **+a**\ *ambient* to add *ambient* to all nodes after
     gradient calculations are completed.

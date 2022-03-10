@@ -69,6 +69,10 @@ struct X2SYS_CROSS_CTRL {
 		bool active;	/* Force selection if true, else examine */
 		int mode;	/* -1 for S pole, +1 for N pole */
 	} D;
+	struct X2SYS_CROSS_E {	/* -E<limit> */
+		bool active;
+		double limit;
+	} E;
 	struct X2SYS_CROSS_I {	/* -I */
 		bool active;
 		int mode;
@@ -121,7 +125,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <files> -T<TAG> [-A<pairs>] [-C[<fname>]] [-D[S|N]] [-Il|a|c] [-Qe|i] "
+	GMT_Usage (API, 0, "usage: %s <files> -T<TAG> [-A<pairs>] [-C[<fname>]] [-D[S|N]] [-E<limit>] [-Il|a|c] [-Qe|i] "
 		"[%s] [-Sl|h|u<speed>] [%s] [-W<size>] [-Z] [%s] [%s] [%s]\n",
 		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
 
@@ -143,7 +147,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Control geographic coordinate conversions. By default we automatically convert "
 		"lon,lat to polar coordinates if contained within one hemisphere. -D turns this off, while "
 		"-DS or -DN forces the conversion using the specified hemisphere [auto-selected].");
-	GMT_Usage (API, 1, "\n-Il|a|c");
+	GMT_Usage (API, 1, "\n-E<limit>");
+	GMT_Usage (API, -2, "Exclude crossovers from lines with orientation differences less than <limit> [0].");
 	GMT_Usage (API, -2, "Select an interpolation mode:");
 	GMT_Usage (API, 3, "l: Linear interpolation [Default].");
 	GMT_Usage (API, 3, "a: Akima spline interpolation.");
@@ -212,6 +217,16 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 					case 'S':	Ctrl->D.mode = -1; break;	/* Force projection using S pole */
 					case 'N':	Ctrl->D.mode = +1; break;	/* Force projection using N pole */
 					case '\0':	Ctrl->D.mode =  0; break;	/* No projection  */
+				}
+				break;
+			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				Ctrl->E.active = true;
+				if (opt->arg[0])
+					Ctrl->E.limit = atof (opt->arg);
+				else {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -E: Argument to set limit is required\n");
+					n_errors++;
 				}
 				break;
 			case 'I':
@@ -418,6 +433,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	double t_scale;				/* Scale to give time in seconds */
 	double plat[2] = {0.0, 0.0};		/* Pole latitude for polar reprojections */
 	double ymin[2] = {0.0, 0.0}, ymax[2] = {0.0, 0.0};	/* Latitude range of each file */
+	double delta_orientation;	/* Angle bewteen to intersecting tracks */
 
 	clock_t tic = 0, toc = 0;
 
@@ -779,9 +795,37 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			nx = gmt_crossover (GMT, data[SET_A][s->x_col], data[SET_A][s->y_col], data_set[SET_A].ms_rec, ylist[SET_A], n_rec[SET_A], data[SET_B][s->x_col], data[SET_B][s->y_col], data_set[SET_B].ms_rec, ylist[SET_B], n_rec[SET_B], (A == B), is_geographic, &XC);
 
 			if (nx && xover_locations_only) {	/* Report crossover locations only */
-				sprintf (line, "%s - %s", trk_name[A], trk_name[B]);
-				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, line);
+				double az[2];
+				first_crossover = true;
 				for (i = 0; i < nx; i++) {
+					if (Ctrl->E.active) {
+						for (k = 0; k < 2; k++) {	/* For each of the two data sets involved */
+							/* Get node number to each side of crossover location */
+							/*	--o----------o--------o----X---------o-------o----------o-- ----> time
+							                          ^    ^       ^
+							                        left xover   right			*/
+
+							left[k]  = lrint (floor (XC.xnode[k][i]));
+							right[k] = lrint (ceil  (XC.xnode[k][i]));
+
+							if (left[k] == right[k]) {	/* Crosses exactly on a node; move left or right so interpolation will work */
+								if (left[k] > 0)
+									left[k]--;	/* Move back so cross occurs at right[k] */
+								else
+									right[k]++;	/* Move forward so cross occurs at left[k] */
+							}
+							az[k] = (*GMT->current.map.azimuth_func) (GMT, data[k][s->x_col][right[k]], data[k][s->y_col][right[k]], data[k][s->x_col][left[k]], data[k][s->y_col][left[k]], false);
+						}
+						/* Ensure azimuths are positive (adding 360) then double to get orientations and then delete by 2 and subtract to get final absolute difference */
+						delta_orientation = fabs (fmod (2.0 * (az[0] + 360.0), 360.0) / 2.0 - fmod (2.0 * (az[1] + 360.0), 360.0) / 2.0);
+						if (delta_orientation < Ctrl->E.limit)
+							continue;	/* Skip this crossover */
+					}
+					if (first_crossover) {
+						sprintf (line, "%s - %s", trk_name[A], trk_name[B]);
+						GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, line);
+						first_crossover = false;
+					}
 					out[GMT_X] = XC.x[i];
 					out[GMT_Y] = XC.y[i];
 					if (do_project)
@@ -814,8 +858,8 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 						/* Get node number to each side of crossover location */
 
 				/*	--o----------o--------o----X---------o-------o----------o-- ----> time
-							      ^    ^       ^
-							    left xover   right			*/
+				                          ^    ^       ^
+				                        left xover   right			*/
 
 						left[k]  = lrint (floor (XC.xnode[k][i]));
 						right[k] = lrint (ceil  (XC.xnode[k][i]));
@@ -929,6 +973,13 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 						j = k + 8;
 						out[j] = (has_time[k]) ? speed[k] : X2SYS_NaN;
+					}
+
+					if (Ctrl->E.active) {	/* Avoid grazing crossovers */
+						/* Ensure azimuths are positive (adding 360) then double to get orientations and then delete by 2 and subtract to get final absolute difference */
+						double delta_orientation = fabs (fmod (2.0 * (out[6] + 360.0), 360.0) / 2.0 - fmod (2.0 * (out[7] + 360.0), 360.0) / 2.0);
+						if (delta_orientation < Ctrl->E.limit)
+							continue;	/* Skip this crossover */
 					}
 
 					/* Calculate crossover and mean value */

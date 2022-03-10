@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Test new implementation of -JP modifiers
-# DVC_TEST
 gmt begin polarcases ps
 	gmt set FONT_ANNOT_PRIMARY 7p MAP_TICK_LENGTH_PRIMARY 2p MAP_ANNOT_OFFSET_PRIMARY 2p FONT_TITLE 12p
 	gmt subplot begin 4x3 -Fs2i -BWSNE -Bafg -M3p

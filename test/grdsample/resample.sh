@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Test to ensure https://forum.generic-mapping-tools.org/t/grdsample-problem-in-gmt-6-0/552/14 is fixed
-# DVC_TEST
 ps=resample.ps
 gmt grdmath -R0/360/-90/90 -I0.25 X = t.grd
 gmt grdsample -R-50/50/25/50 -fg t.grd -Gsample1.grd

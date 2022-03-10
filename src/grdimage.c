@@ -1136,7 +1136,7 @@ GMT_LOCAL bool grdimage_adjust_R_consideration (struct GMT_CTRL *GMT, struct GMT
 
 void grdimage_reset_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *zmin, double *zmax) {
 	/* grdimage via gmt_grd_setregion may extend the grid outward to ensure we have enough nodes to
-	 * fill the map.  However, some of these nodes are actally outside the w/e/s/n requested. Here,
+	 * fill the map.  However, some of these nodes are actually outside the w/e/s/n requested. Here,
 	 * we check for simple cases where we can shrink the w/e/s/n back temporarily to recompute the grid
 	 * zmin/zmax which are often used for scaling of a CPT.  This can be done in these situations:
 	 * 	1. Not an oblique projection
@@ -1153,10 +1153,10 @@ void grdimage_reset_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *G, double
 	gmt_M_memcpy (old_wesn, G->header->wesn, 4, double);	/* Save a copy of what we have */
 	gmt_M_memcpy (new_wesn, G->header->wesn, 4, double);	/* Save a copy of what we have */
 	old_z_min = G->header->z_min;	old_z_max = G->header->z_max;
-	pad[XLO] = (G->header->wesn[XLO] < GMT->common.R.wesn[XLO]) ? irint (floor ((GMT->common.R.wesn[XLO] - G->header->wesn[XLO]) / G->header->inc[GMT_X])) : 0;
-	pad[XHI] = (G->header->wesn[XHI] > GMT->common.R.wesn[XHI]) ? irint (floor ((G->header->wesn[XHI] - GMT->common.R.wesn[XHI]) / G->header->inc[GMT_X])) : 0;
-	pad[YLO] = (G->header->wesn[YLO] < GMT->common.R.wesn[YLO]) ? irint (floor ((GMT->common.R.wesn[YLO] - G->header->wesn[YLO]) / G->header->inc[GMT_Y])) : 0;
-	pad[YHI] = (G->header->wesn[YHI] > GMT->common.R.wesn[YHI]) ? irint (floor ((G->header->wesn[YHI] - GMT->common.R.wesn[YHI]) / G->header->inc[GMT_Y])) : 0;
+	pad[XLO] = (G->header->wesn[XLO] < GMT->common.R.wesn[XLO]) ? irint (floor ((GMT->common.R.wesn[XLO] - G->header->wesn[XLO] + GMT_CONV12_LIMIT) / G->header->inc[GMT_X])) : 0;
+	pad[XHI] = (G->header->wesn[XHI] > GMT->common.R.wesn[XHI]) ? irint (floor ((G->header->wesn[XHI] - GMT->common.R.wesn[XHI] + GMT_CONV12_LIMIT) / G->header->inc[GMT_X])) : 0;
+	pad[YLO] = (G->header->wesn[YLO] < GMT->common.R.wesn[YLO]) ? irint (floor ((GMT->common.R.wesn[YLO] - G->header->wesn[YLO] + GMT_CONV12_LIMIT) / G->header->inc[GMT_Y])) : 0;
+	pad[YHI] = (G->header->wesn[YHI] > GMT->common.R.wesn[YHI]) ? irint (floor ((G->header->wesn[YHI] - GMT->common.R.wesn[YHI] + GMT_CONV12_LIMIT) / G->header->inc[GMT_Y])) : 0;
 	for (k = 0; k < 4; k++) if (pad[k]) {
 		new_wesn[k] = GMT->common.R.wesn[k];	/* Snap back to -R */
 		n_pad++;	/* Number of nonzero pads */

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Check clipping of grids on a global conic plot
-# DVC_TEST
 
 ps=grdclip.ps
 

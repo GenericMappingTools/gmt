@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 ps=F.ps
 gmt grdmath -R1/10/1/15 -I1 0.95 X Y FCRIT = F.nc
 gmt psbasemap -R0.5/10.5/0.5/15.5 -JX6i/-9i -Bg1+0.5 -P -K -X1.5i -Y0.5i > $ps

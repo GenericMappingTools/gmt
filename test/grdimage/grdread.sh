@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Demonstrate netcdf and binary native grid reading
-# DVC_TEST
 
 ps=grdread.ps
 $AWK 'BEGIN{n=12;m=0;for (j=0;j<6*n;j++) {if (j%n==0) m--;print sin(m*3.14159265/6);m++}}' | \

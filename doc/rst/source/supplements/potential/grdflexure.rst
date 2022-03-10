@@ -68,7 +68,9 @@ Required Arguments
     coincide with the times given via **-T** (but not all times need
     to have a corresponding file).  Alternatively, give *topogrd* as
     =\ *flist*, where *flist* is an ASCII table with one *topogrd* filename
-    and load time per record.  These load times can be different from
+    and load time per record (e.g., as produced by
+    :doc:`grdseamount </supplements/potential/grdseamount>` **-M**).
+    These load times can be different from
     the evaluation times given via **-T**.  For load time format, see
     **-T**. **Note**: If *flist* has an optional third column it will be
     interpreted as a load density and used for that layer instead of
@@ -91,7 +93,7 @@ Required Arguments
     If just **-E** is given and **-F** is used it means no plate is given
     and we will return a purely viscous response with or without an asthenospheric layer.
     Select a general linear viscoelastic response by supplying both an initial and
-    final elastic thickness; this response also requires **-M**.
+    final elastic thickness *Te2*; this response also requires **-M**.
 
 .. _-G:
 

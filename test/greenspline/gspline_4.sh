@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 # Updated version to handle direct writing of sliced grids
 
 ps=gspline_4.ps

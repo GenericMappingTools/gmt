@@ -3481,16 +3481,23 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 	 * for every edge that has input vertex 1 as an endpoint.  The corresponding dual
 	 * edges in the output .v.edge file form the boundary of Voronoi cell 1." */
 
+#ifdef DEBUG	/* Developers need to see more here with -V */
+	unsigned int verbose = GMT_MSG_INFORMATION;
+#else
+	unsigned int verbose = GMT_MSG_DEBUG;
+#endif
+
 	uint64_t dim[GMT_DIM_SIZE] = {1, 0, 2, 2};
-	int i, j, k, n, km1, j2, i2, seg, n_int_edges, n_edges, first_edge = 0, n_extra = 0;
-	int n_to_clip = 0, n_int_vertex = 0, p = 0, corners = 0, n_vertex, change, n_edges_2;
+	int i, j, k, n, km1, j2, i2, seg, n_int_edges, n_edges, first_edge = 0, n_extra = 0, np_alloc;
+	int n_outside_wesn = 0, n_int_vertex = 0, p = 0, corners = 0, n_vertex, n_edges_2;
 	unsigned int geometry, side, corner;
+	bool move[4] = {false, false, false, false};
 	char header[GMT_LEN64] = {""};
 	unsigned char *point_type = NULL;
 	struct triangulateio In, Out, vorOut;
 	struct GMT_DATASET *P = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
-	double dy, new_x, xe, ye, xp, yp, x0, y0;
+	double dx, dy, new_x, xe, ye, xp, yp, v_wesn[4], orig_wesn[4];
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Voronoi partitioning calculated by Jonathan Shewchuk's Triangle [http://www.cs.cmu.edu/~quake/triangle.html]\n");
 
@@ -3527,28 +3534,46 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 
 	/* Determine output size for all edges */
 
-	n_int_edges = vorOut.numberofedges;
-	/* Count Voronoi vertices and number of infinite rays */
-	for (i = 0, k = 0; i < n_int_edges; i++, k += 2) {
+	n_int_edges = vorOut.numberofedges;		/* Number of edges found; some are from point i to j while others are infinite rays */
+	n_int_vertex = vorOut.numberofpoints;	/* Number of voronoi points found */
+	/* Count number of infinite rays */
+	for (i = 0, k = 0; i < n_int_edges; i++, k += 2)
 		if (vorOut.edgelist[k+1] == -1) n_extra++;	/* Infinite rays */
-		if (vorOut.edgelist[k] > n_int_vertex) n_int_vertex = vorOut.edgelist[k];
-		if (vorOut.edgelist[k+1] > n_int_vertex) n_int_vertex = vorOut.edgelist[k+1];
-	}
-	/* Count Voronoi vertices outside w/e/s/n region */
-	for (i = k = 0; i < n_int_vertex; i++, k += 2)
+	/* Count Voronoi vertices outside specified w/e/s/n region and update v_wesn region to ensure we enclose them all */
+	gmt_M_memcpy (orig_wesn, wesn, 4, double);	gmt_M_memcpy (v_wesn, wesn, 4, double);
+	for (i = k = 0; i < n_int_vertex; i++, k += 2) {
+		if (vorOut.pointlist[k] < wesn[XLO])   v_wesn[XLO] = vorOut.pointlist[k], move[XLO] = true;
+		if (vorOut.pointlist[k] > wesn[XHI])   v_wesn[XHI] = vorOut.pointlist[k], move[XHI] = true;
+		if (vorOut.pointlist[k+1] < wesn[YLO]) v_wesn[YLO] = vorOut.pointlist[k+1], move[YLO] = true;
+		if (vorOut.pointlist[k+1] > wesn[YHI]) v_wesn[YHI] = vorOut.pointlist[k+1], move[YHI] = true;
 		if (vorOut.pointlist[k] < wesn[XLO] || vorOut.pointlist[k] > wesn[XHI] || vorOut.pointlist[k+1] < wesn[YLO] || vorOut.pointlist[k+1] > wesn[YHI])
-			n_to_clip++;
-
+			n_outside_wesn++;
+	}
+	if (n_outside_wesn) {	/* Extend v_wesn by a tiny bit to avoid any point exactly on wesn boundary */
+		dx = 1e-4 * (v_wesn[XHI] - v_wesn[XLO]);
+		if (move[XLO]) v_wesn[XLO] -= dx;	if (move[XHI]) v_wesn[XHI] += dx;
+		dy = 1e-4 * (v_wesn[YHI] - v_wesn[YLO]);
+		if (move[YLO]) v_wesn[YLO] -= dy;	if (move[YHI]) v_wesn[YHI] += dy;
 #ifdef DEBUG
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Output from triangulate:\n");
-	for (i = k = 0; i < n_int_edges; i++, k += 2)
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8d to %8d normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
-	for (i = k = 0; i < n_int_vertex; i++, k += 2)
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Point %8" PRIu64 " at %g\t%g\n", i, vorOut.pointlist[k], vorOut.pointlist[k+1]);
+		GMT_Report (GMT->parent, verbose, "Given w/e/s/n:    %lg/%lg/%lg/%lg\n",  wesn[XLO],  wesn[XHI],  wesn[YLO], wesn[YHI]);
+		GMT_Report (GMT->parent, verbose, "Adjusted w/e/s/n: %lg/%lg/%lg/%lg\n",  v_wesn[XLO],  v_wesn[XHI],  v_wesn[YLO], v_wesn[YHI]);
 #endif
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "n_vertex = %d n_edge = %d n_inf_rays = %d n_outside = %d\n", n_int_vertex, n_int_edges, n_extra, n_to_clip);
-
-	n_int_vertex++;				/* The next edge number */
+		gmt_M_memcpy (wesn, v_wesn, 4, double);	/* Use these limits instead */
+	}
+	/* Here, wesn is such that all Voronoi points are inside, hence it is only infinite rays that will intersect wesn box */
+#ifdef DEBUG
+	GMT_Report (GMT->parent, verbose, "Output from triangulate:\n");
+	for (i = k = 0; i < n_int_edges; i++, k += 2) {
+		if (vorOut.edgelist[k+1] == -1)
+			GMT_Report (GMT->parent, verbose, "Edge %8" PRIu64 " Point %8d to infinity normlist = %8g\t%8g slp = %8g\n", i, vorOut.edgelist[k], vorOut.normlist[k], vorOut.normlist[k+1], (vorOut.normlist[k] / vorOut.normlist[k+1]));
+		else
+			GMT_Report (GMT->parent, verbose, "Edge %8" PRIu64 " Point %8d to %8d\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1]);
+	}
+	for (i = k = 0; i < n_int_vertex; i++, k += 2)
+		GMT_Report (GMT->parent, verbose, "Point %8" PRIu64 " at %g\t%g\n", i, vorOut.pointlist[k], vorOut.pointlist[k+1]);
+#endif
+	GMT_Report (GMT->parent, verbose, "n_vertex = %d n_edge = %d n_inf_rays = %d n_outside = %d\n", n_int_vertex, n_int_edges, n_extra, n_outside_wesn);
+ 
 	p = 2 * n_int_vertex;		/* Index into vorOut.pointlist for next point to be added along boundary */
 	n_vertex = n_int_vertex;	/* Number of all vertices so far */
 
@@ -3559,7 +3584,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 		geometry = GMT_IS_POLY;	/* Since we will be making closed polygons */
 		/* Allocate array for point type.  This holds which side we exited.  Normally 0-3, here we add 1 to use 1-4
 		 * instead since here, 0 means interior point.  1 is south and then we go CCW to 2 (east), 3 (north) and 4 (west) */
-		point_type = gmt_M_memory (GMT, NULL, n_int_edges + n_extra + corners + n_to_clip, char);
+		point_type = gmt_M_memory (GMT, NULL, n_int_edges + n_int_vertex + corners, char);
 	}
 	else {	/* Want line edges only, all dimensions are already known */
 		dim[GMT_SEG] = n_int_edges;	/* All dimensions are known since we issue just 1 line per segment */
@@ -3574,8 +3599,8 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 	}
 
 	/* Reallocate the triangle arrays to hold the extra vertices we will need to add */
-	vorOut.pointlist = realloc (vorOut.pointlist, 2 * (n_vertex + n_extra + corners + 2*n_to_clip) * sizeof (double));
-	vorOut.edgelist  = realloc (vorOut.edgelist,  2 * (n_int_edges  + n_extra + corners + n_to_clip) * sizeof (int));
+	vorOut.pointlist = realloc (vorOut.pointlist, 2 * (n_int_vertex + n_extra + corners) * sizeof (double));
+	vorOut.edgelist  = realloc (vorOut.edgelist,  2 * (n_int_edges  + n_extra + corners) * sizeof (int));
 
 	/* First replace infinite rays with finite points where they intersect the border (i.e., we clip the rays to w/e/s/n) */
 
@@ -3587,27 +3612,23 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 		yp = vorOut.pointlist[j2];
 		if (vorOut.edgelist[k] == -1) {	/* Infinite ray; calculate intersection with region boundary */
 			/* Each edgelist always has a Voronoi vertex as the first point so j2 is never 2 * (-1) */
-			if (xp < wesn[XLO] || xp > wesn[XHI] || yp < wesn[YLO] || yp > wesn[YHI]) {	/* Infinite ray outside boundary - skip edge */
-				vorOut.edgelist[km1] = -1;	/* Mark as a skipped edge */
-				continue;
-			}
 			/* Determine (xe, ye), the intersection of the ray and the bounding box */
-			if (vorOut.normlist[km1] < 0.0) {	/* Ray will intersect x = xmin, called side = 4 */
+			if (vorOut.normlist[km1] < 0.0) {	/* Slope pointing to the left; Ray will intersect x = xmin, called side = 4 */
 				xe = wesn[XLO];	side = 4;
 			}
-			else {	/* Ray will intersect x = xmax, called side = 2 */
+			else {	/* Slope pointing to the right; Ray will intersect x = xmax, called side = 2 */
 				xe = wesn[XHI];	side = 2;
 			}
-			/* Compute y-value at the intersection or ray and border */
+			/* Compute y-value at the intersection of ray with border */
 			dy = fabs ((vorOut.normlist[k] / vorOut.normlist[km1]) * (xe - xp));
 			ye = yp + dy * copysign (1.0, vorOut.normlist[k]);
-			if (ye < wesn[YLO]) {	/* Recompute the x-crossing along y = ymin instead and set ye to ymin */
+			if (ye < wesn[YLO]) {	/* Crossed south before west or east: Recompute the x-crossing along y = ymin instead and set ye to ymin */
 				side = 1;	/* South */
 				new_x = xp + (wesn[YLO] - yp) * (xe - xp) / (ye - yp);
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", xe, ye, new_x, wesn[YLO]);
 				xe = new_x;	ye = wesn[YLO];
 			}
-			else if (ye > wesn[YHI]) {	/* Recompute the x-crossing along y = ymax instead  and set ye to ymax */
+			else if (ye > wesn[YHI]) {	/* Crossed north before west or east: Recompute the x-crossing along y = ymax instead  and set ye to ymax */
 				side = 3;	/* North */
 				new_x = xp + (wesn[YHI] - yp) * (xe - xp) / (ye - yp);
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Voronoi infinite ray truncated from %g %g to %g %g\n", xe, ye, new_x, wesn[YHI]);
@@ -3615,62 +3636,8 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 			}
 			/* Update the truncated ray (-1) in the edge list with a new vertex and add the vertex coordinates to pointlist */
 			if (mode) point_type[n_vertex] = (unsigned char)side;	/* Mark as a border point 1-4 */
-			vorOut.edgelist[k] = n_vertex++;		/* Replace the -1 with the actual point on the boundary */
-			vorOut.pointlist[p++] = xe;				/* Add the ray intersection point to the pointlist */
-			vorOut.pointlist[p++] = ye;
-		}
-		else {	/* A regular edge specified by two points */
-			i2 = 2 * vorOut.edgelist[k];	/* 2nd index into pointlist with x-coordinate */
-			/* Get the coordinates of the second Voronoi vertex */
-			x0 = vorOut.pointlist[i2++];
-			y0 = vorOut.pointlist[i2];
-			/* Must check if one of the two points (xp,yp) and (x0,y0) lies outside the region; if so compute intersection with side */
-			if (xp < wesn[XLO]) {	/* Crossing at xmin */
-				xe = wesn[XLO];
-				ye = y0 - (y0 - yp) * (x0 - xe) / (x0 - xp);
-				change = k - 1;	side = 4;
-			}
-			else if (xp > wesn[XHI]) {	/* Crossing at xmax */
-				xe = wesn[XHI];
-				ye = y0 - (y0 - yp) * (x0 - xe) / (x0 - xp);
-				change = k - 1;	side = 2;
-			}
-			else if (yp < wesn[YLO]) {	/* Crossing at ymin */
-				ye = wesn[YLO];
-				xe = x0 - (x0 - xp) * (y0 - ye) / (y0 - yp);
-				change = k - 1;	side = 1;
-			}
-			else if (yp > wesn[YHI]) {	/* Crossing at ymax */
-				ye = wesn[YHI];
-				xe = x0 - (x0 - xp) * (y0 - ye) / (y0 - yp);
-				change = k - 1;	side = 3;
-			}
-			else if (x0 < wesn[XLO]) {	/* Crossing at xmin */
-				xe = wesn[XLO];
-				ye = yp - (yp - y0) * (xp - xe) / (xp - x0);
-				change = k;	side = 4;
-			}
-			else if (x0 > wesn[XHI]) {	/* Crossing at xmax */
-				xe = wesn[XHI];
-				ye = yp - (yp - y0) * (xp - xe) / (xp - x0);
-				change = k;	side = 2;
-			}
-			else if (y0 < wesn[YLO]) {	/* Crossing at ymin */
-				ye = wesn[YLO];
-				xe = xp - (xp - x0) * (yp - ye) / (yp - y0);
-				change = k;	side = 1;
-			}
-			else if (y0 > wesn[YHI]) {	/* Crossing at ymax */
-				ye = wesn[YHI];
-				xe = xp - (xp - x0) * (yp - ye) / (yp - y0);
-				change = k;	side = 3;
-			}
-			else	/* Normal edge - nothing to do for now */
-				continue;
-			/* Here we replace the edge vertex point with the intersection point and add that point as a new point */
-			if (mode) point_type[n_vertex] = (unsigned char)side;	/* Mark new point as a border point 1-4 */
-			vorOut.edgelist[change] = n_vertex++;	/* Update edgelist with new point on the border, then increase point count */
-			vorOut.pointlist[p++] = xe;		/* Place the new coordinates into the pointlist array */
+			vorOut.edgelist[k] = n_vertex++;		/* Replace the -1 with the new point on the boundary */
+			vorOut.pointlist[p++] = xe;				/* Add the ray intersection coordinates to the pointlist */
 			vorOut.pointlist[p++] = ye;
 		}
 	}
@@ -3678,11 +3645,15 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 	/* Now edgelist only contains actual point IDs and pointlist has been updated to hold all added border points */
 
 #ifdef DEBUG
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After infinite ray and exterior vertex crossing replacements:\n");
-		for (i = k = 0; i < n_int_edges; i++, k += 2)
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8d to %8d normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
+		GMT_Report (GMT->parent, verbose, "After infinite ray and exterior vertex crossing replacements:\n");
+		for (i = k = 0; i < n_int_edges; i++, k += 2) {
+			if (vorOut.edgelist[k+1] == -1)
+				GMT_Report (GMT->parent, verbose, "Edge %8" PRIu64 " Point %8d to infinity normlist = %8g\t%8g slp = %8g\n", i, vorOut.edgelist[k], vorOut.normlist[k], vorOut.normlist[k+1], (vorOut.normlist[k]/ vorOut.normlist[k+1]));
+			else
+				GMT_Report (GMT->parent, verbose, "Edge %8" PRIu64 " Point %8d to %8d\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1]);
+		}
 		for (i = k = 0; i < n_vertex; i++, k += 2)
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Point %8" PRIu64 " at %g\t%g\n", i, vorOut.pointlist[k], vorOut.pointlist[k+1]);
+			GMT_Report (GMT->parent, verbose, "Point %8" PRIu64 " at %g\t%g\n", i, vorOut.pointlist[k], vorOut.pointlist[k+1]);
 #endif
 
 	if (mode) {	/* Need to make closed polygons from edges */
@@ -3700,11 +3671,11 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 		vorOut.pointlist[p++] = wesn[XLO];	vorOut.pointlist[p++] = wesn[YLO];	point_type[n_vertex++] = 8;
 
 #ifdef DEBUG
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Before border edges are added:\n");
+		GMT_Report (GMT->parent, verbose, "Before border edges are added:\n");
 		for (i = k = 0; i < n_int_edges; i++, k += 2)
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8d to %8d normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
+			GMT_Report (GMT->parent, verbose, "Edge %8" PRIu64 " Point %8d to %8d normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
 		for (i = k = 0; i < n_vertex; i++, k += 2)
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Point %8" PRIu64 " [%d] at %g\t%g\n", i, point_type[i], vorOut.pointlist[k], vorOut.pointlist[k+1]);
+			GMT_Report (GMT->parent, verbose, "Point %8" PRIu64 " [%d] at %g\t%g\n", i, point_type[i], vorOut.pointlist[k], vorOut.pointlist[k+1]);
 #endif
 		/* Finally add the new edges between new points along the border and with the corners */
 		/* Do the y = ymin and y = ymax sides first (i.e., side 1 and 3) */
@@ -3750,15 +3721,15 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 		}
 		n_edges = (int)edge;	/* Total number of all edges times 2 */
 #ifdef DEBUG
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "\nAfter border edges are added:\n");
+		GMT_Report (GMT->parent, verbose, "\nAfter border edges are added:\n");
 		for (i = k = 0; k < n_edges; i++, k += 2) {
 			if (i < n_int_edges)
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8d to %8d normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
+				GMT_Report (GMT->parent, verbose, "Edge %8" PRIu64 " Point %8d to %8d normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8d to %8d\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1]);
+				GMT_Report (GMT->parent, verbose, "Edge %8" PRIu64 " Point %8d to %8d\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1]);
 		}
 		for (i = k = 0; i < n_vertex; i++, k += 2)
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Point %8" PRIu64 " [%d] at %g\t%g\n", i, point_type[i], vorOut.pointlist[k], vorOut.pointlist[k+1]);
+			GMT_Report (GMT->parent, verbose, "Point %8" PRIu64 " [%d] at %g\t%g\n", i, point_type[i], vorOut.pointlist[k], vorOut.pointlist[k+1]);
 #endif
 		gmt_M_free (GMT, point_type);
 
@@ -3777,12 +3748,12 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 		n_edges -= (j2 - i2);
 		n_int_edges -= ((j2 - i2)/2);
 #ifdef DEBUG
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "\nAfter removing unused edges:\n");
+		GMT_Report (GMT->parent, verbose, "\nAfter removing unused edges:\n");
 		for (i = k = 0; k < n_edges; i++, k += 2) {
 			if (i < n_int_edges)
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8d to %8d normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
+				GMT_Report (GMT->parent, verbose, "Edge %8" PRIu64 " Point %8d to %8d normlist = %8g\t%8g\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1], vorOut.normlist[k], vorOut.normlist[k+1]);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Edge %8" PRIu64 " Point %8d to %8d\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1]);
+				GMT_Report (GMT->parent, verbose, "Edge %8" PRIu64 " Point %8d to %8d\n", i, vorOut.edgelist[k], vorOut.edgelist[k+1]);
 		}
 #endif
 
@@ -3800,8 +3771,9 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 			if (i >= n_int_edges) edge_use[i] = 1;	/* These edges will only be used once (sign is not important here) */
 		}
 		/* Need temp array to hold the coordinates of a single polygon [I hope this is large enough - don't know yet] */
-		xcoord = gmt_M_memory (GMT, NULL, n_int_edges/2, double);
-		ycoord = gmt_M_memory (GMT, NULL, n_int_edges/2, double);
+		np_alloc = 2 * n_int_edges;
+		xcoord = gmt_M_memory (GMT, NULL, np_alloc, double);
+		ycoord = gmt_M_memory (GMT, NULL, np_alloc, double);
 
 		/* Now stitch together the closed polygons */
 		seg = 0;
@@ -3865,6 +3837,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 						prev_sign = next_sign;
 						i2 = j2;
 						/* Add next_point to our polygon */
+						assert (np < np_alloc);	/* Otherwise we want to know */
 						xcoord[np] = x_pos[2*next_point];
 						ycoord[np] = y_pos[2*next_point];
 						if (edge_use[j])	/* Now used twice */
@@ -3904,6 +3877,9 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 			S->header = strdup (header);
 		}
 	}
+
+	if (n_outside_wesn)	/* Reset region */
+		gmt_M_memcpy (wesn, orig_wesn, 4, double);
 
 	gmt_set_dataset_minmax (GMT, P);	/* Determine min/max for each column */
 
@@ -16467,8 +16443,18 @@ void gmt_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION **
 	gmt_M_free (GMT, *S);
 }
 
+GMT_LOCAL bool gmtsupport_match (char *txt1, char *txt2, bool exact) {
+	/* Helper function to do the comparison */
+	bool match;
+	if (exact)
+		match = (strcmp (txt1, txt2) == 0);
+	else
+		match = (strstr (txt1, txt2) != NULL);
+	return (match);
+}
+
 /*! . */
-bool gmt_get_segtext_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION *S, struct GMT_DATASEGMENT *T, bool last_match) {
+bool gmt_get_segtext_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION *S, struct GMT_DATASEGMENT *T, bool exact, bool last_match) {
 	/* Return true if the pattern was found; see at end for what to check for in calling program */
 	bool match;
 	struct GMT_DATASEGMENT_HIDDEN *TH = gmt_get_DS_hidden (T);
@@ -16476,7 +16462,7 @@ bool gmt_get_segtext_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION 
 	if (last_match && gmt_polygon_is_hole (GMT, T))	/* Check if current polygon is a hole */
 		match = true;	/* Extend a true match on a perimeter to its trailing holes */
 	else if (S->ogr_match)	/* Compare to single aspatial value */
-		match = (TH->ogr && strstr (TH->ogr->tvalue[S->ogr_item], S->pattern[0]) != NULL);		/* true if we matched */
+		match = (TH->ogr && gmtsupport_match (TH->ogr->tvalue[S->ogr_item], S->pattern[0], exact));		/* true if we matched */
 	else if (T->header) {	/* Could be one or n patterns to check */
 		uint64_t k = 0;
 		match = false;
@@ -16486,7 +16472,7 @@ bool gmt_get_segtext_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION 
 			 	match = gmtlib_regexp_match (GMT, T->header, S->pattern[k], S->caseless[k]);	/* true if we matched */
 			else
 #endif
-				match = (strstr (T->header, S->pattern[k]) != NULL);
+				match = gmtsupport_match (T->header, S->pattern[k], exact);
 			k++;
 		}
 	}
@@ -16676,7 +16662,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 	enum GMT_enum_refpoint mode = GMT_REFPOINT_NOTSET;
 	char txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""}, the_rest[GMT_LEN256] = {""};
 	static char *kind = GMT_REFPOINT_CODES;	/* The five types of refpoint specifications */
-	char *arg = strdup (arg_in);	/* SInce it may be a constant */
+	char *arg = strdup (arg_in);	/* Since it may be a constant */
 	struct GMT_REFPOINT *A = NULL;
 
 	switch (arg[0]) {
@@ -16729,6 +16715,16 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Parsing of arguments (%s )failed \n", option, &arg[k]);
 				gmt_M_str_free (arg);
 				return NULL;	/* Not so good */
+			}
+			if (n == 3 && gmt_count_char (GMT, arg, '/') == 3) {	/* GMT4-style -D<x>/<y>/<w>/<h> setting */
+				if (gmt_M_compat_check (GMT, 4)) {
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Your -%c option arguments %s were given in an deprecated format, see documentation\n", option, arg_in);
+					mode = GMT_REFPOINT_PLOT;	/* The only way in GMT 4 */
+				}
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your -%c option arguments %s were given in an obsolete format, see documentation\n", option, arg_in);
+					return NULL;
+				}
 			}
 		}
 	}
@@ -18055,7 +18051,7 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 	 */
 
 	char **C = NULL, *lib_purpose = NULL;
-	char line[BUFSIZ] = {""}, argument[GMT_LEN256] = {""};
+	char line[BUFSIZ] = {""}, argument[GMT_LEN256] = {""}, our_glue[GMT_LEN256] = {""};
 	bool first, first_purpose = true;
 	int error = GMT_NOERROR, k = 0, n_alloc = 0, n = -1;	/* Advance to 0 for first item */
 	FILE *fp = NULL;
@@ -18065,7 +18061,14 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 		GMT_Report (API, GMT_MSG_ERROR, "No C files found in current directory\n");
 		return GMT_RUNTIME_ERROR;
 	}
+
+	sprintf (our_glue, "%s_glue.c", library);	/* Name of the output although not under our control */
+
 	while (C[k]) {	/* A NULL marks the end of files */
+		if (!strcmp (C[k], our_glue)) {	/* Silently skip any file with that name */
+			k++;
+			continue;
+		}
 		if ((fp = fopen (C[k], "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to open file %s for reading - permission problem?\n", C[k]);
 			error = GMT_RUNTIME_ERROR;
@@ -18091,22 +18094,24 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 				M[n].mname = strdup (argument);
 				M[n].cname = strdup (argument);
 			}
+			else if (!strncmp (line, "#define THIS_MODULE_LIB_PURPOSE", 31U)) {
+				if (first_purpose) lib_purpose = strdup (argument);
+				first_purpose = false;
+			}
 			else if (!strncmp (line, "#define THIS_MODULE_LIB", 23U))
 				M[n].component = strdup (argument);
 			else if (!strncmp (line, "#define THIS_MODULE_PURPOSE", 27U))
 				M[n].purpose = strdup (argument);
 			else if (!strncmp (line, "#define THIS_MODULE_KEYS", 24U))
 				M[n].keys = strdup (argument);
-			else if (!strncmp (line, "#define THIS_MODULE_LIB_PURPOSE", 31U) && first_purpose) {
-				lib_purpose = strdup (argument);
-				first_purpose = false;
-			}
 		}
-		if (M[n].mname == NULL && M[n].cname == NULL && M[n].component == NULL && M[n].purpose == NULL && M[n].keys == NULL) { /* Not a module file */
+		fclose (fp);
+		if (first)
+			GMT_Report (API, GMT_MSG_NOTICE, "File %s is not a module file - skipped\n", C[k]);
+		else if (M[n].mname == NULL && M[n].cname == NULL && M[n].component == NULL && M[n].purpose == NULL && M[n].keys == NULL) { /* Not a module file */
 			n--;	/* Counteract the n++ that will happen in the next file */
 			GMT_Report (API, GMT_MSG_WARNING, "File %s had incomplete set of #define THIS_MODULE_* parameters; file skipped.\n", C[k]);
 		}
-		fclose (fp);
 		k++;	/* Go to next file */
 	}
 
@@ -18121,7 +18126,7 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 
 	if (first_purpose) {
 		GMT_Report (API, GMT_MSG_WARNING, "No #define THIS_MODULE_LIB_PURPOSE setting found in any module.  Please edit argument in gmtlib_%s_show_all\n", library);
-		sprintf (line, "GMT %s: The third-party supplements to the Generic Mapping Tools", library);
+		sprintf (line, "\"GMT %s: The third-party supplements to the Generic Mapping Tools\"", library);
 		lib_purpose = strdup (line);
 		GMT_Report (API, GMT_MSG_WARNING, "Default purpose assigned: %s\n", lib_purpose);
 	}
@@ -18154,7 +18159,7 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 	printf ("};\n\n");
 	printf ("/* Pretty print all shared module names and their purposes for gmt --help */\n");
 	printf ("EXTERN_MSC int %s_module_show_all (void *API) {\n", library);
-	printf ("\treturn (GMT_Show_ModuleInfo (API, modules, \"%s\", GMT_MODULE_HELP));\n}\n\n", lib_purpose);
+	printf ("\treturn (GMT_Show_ModuleInfo (API, modules, %s, GMT_MODULE_HELP));\n}\n\n", lib_purpose);
 	printf ("/* Produce single list on stdout of all shared module names for gmt --show-modules */\n");
 	printf ("EXTERN_MSC int %s_module_list_all (void *API) {\n", library);
 	printf ("\treturn (GMT_Show_ModuleInfo (API, modules, NULL, GMT_MODULE_SHOW_MODERN));\n}\n\n");

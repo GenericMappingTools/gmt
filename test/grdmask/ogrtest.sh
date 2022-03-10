@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Test gmt grdmask for proper handling of perimeter and holes [OGR].
-# DVC_TEST
 
 ps=ogrtest.ps
 

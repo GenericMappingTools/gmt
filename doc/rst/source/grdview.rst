@@ -251,6 +251,8 @@ this produces huge PostScript files. The alternative is to use the
 **-Qi** option, which computes bilinear or bicubic continuous color
 variations within polygons by using scanline conversion to image the polygons.
 
+.. include:: macos_preview_issue.rst_
+
 .. module_note_ends
 
 See Also

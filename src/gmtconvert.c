@@ -92,6 +92,7 @@ struct GMTCONVERT_CTRL {
 	} Q;
 	struct GMTCONVERT_S {	/* -S[~]\"search string\" */
 		bool active;
+		bool exact;
 		struct GMT_TEXT_SELECTION *select;
 	} S;
 	struct GMTCONVERT_T {	/* -T[h][d[[~]selection]] */
@@ -134,7 +135,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] "
-		"[-E[f|l|m|M<stride>]] [-F%s] [-I[tsr]] [-L] [-N<col>[+a|d]] [-Q[~]<selection>] [-S[~]\"search string\"] "
+		"[-E[f|l|m|M<stride>]] [-F%s] [-I[tsr]] [-L] [-N<col>[+a|d]] [-Q[~]<selection>] [-S[~]\"search string\"|+f<file>[+e] | -S[~]/<regexp>/[i][+e]]"
 		"[-T[h][d[[~]<selection>]]] [%s] [-W[+n]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_SEGMENTIZE4, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
 		GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -186,14 +187,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"either a single number, start-stop (for range), start:step:stop (for stepped range), "
 		"or +f<file> for a file list with one <range> selection per line. "
 		"A leading ~ will invert the selection and write all segments but the ones listed.");
-	GMT_Usage (API, 1, "\n-S[~]\"search string\"");
-	GMT_Usage (API, -2, "Only output segments whose headers contain the pattern \"string\". "
-		"Use -S~\"string\" to output segment that DO NOT contain this pattern. "
+	GMT_Usage (API, 1, "\n-S[~]\"search string\"|+f<file>[+e] | -S[~]/<regexp>/[i][+e]");
+	GMT_Usage (API, -2, "Only output segments whose headers contain the pattern \"search string\". "
+		"Use -S~\"search string\" to output segment that DO NOT contain this pattern. "
 		"If your pattern begins with ~, escape it with \\~. "
 		"To match OGR aspatial values, use name=value, and to match headers against "
 		"extended regular expressions use -S[~]/regexp/[i] (i for case-insensitive). "
-		"Give +f<file> for a file list with such patterns, one per line. "
-		"To give a single pattern starting with +f, escape it with \\+f.");
+		"Instead of \"search string\", give +f<file> for a file with such patterns, one per line. "
+		"To give a single pattern starting with +f, escape it with \\+f. "
+		"Any of these three forms accept an optional +e to require an exact match [Default will match sub-strings]. ");
 	GMT_Usage (API, 1, "\n-T[h][d[[~]<selection>]]");
 	GMT_Usage (API, -2, "Skip certain types of records.  Append one or both of these directives:");
 	GMT_Usage (API, 3, "h: Prevent the writing of segment headers [Default].");
@@ -358,7 +360,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 			case 'S':	/* Segment header pattern search */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
+				if ((c = strstr (opt->arg, "+e"))) {	/* exact match */
+					Ctrl->S.exact = true;
+					c[0] = '\0';	/* Temporarily hide this string */
+				}
 				Ctrl->S.select = gmt_set_text_selection (GMT, opt->arg);
+				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'T':	/* -T[h]: Do not write segment headers, -Td: Skip duplicate records */
 				strncpy (p, opt->arg, GMT_BUFSIZ-1);
@@ -685,7 +692,7 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		if ((Ctrl->S.select->ogr_item = gmt_get_ogr_id (GMT->current.io.OGR, Ctrl->S.select->pattern[0])) != GMT_NOTSET) {
 			Ctrl->S.select->ogr_match = true;
 			p++;
-			strcpy (Ctrl->S.select->pattern[0], p);	/* Move the value over to the start */
+			strcpy (Ctrl->S.select->pattern[0], p);	/* Shift over the string after skipping name= */
 		}
 	}
 
@@ -710,7 +717,7 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			SHo = gmt_get_DS_hidden (So);
 			if (Ctrl->L.active) SHo->mode = GMT_WRITE_HEADER;	/* Only write segment header */
 			if (Ctrl->S.active) {		/* See if the combined segment header has text matching our search string */
-				match = gmt_get_segtext_selection (GMT, Ctrl->S.select, S, match);
+				match = gmt_get_segtext_selection (GMT, Ctrl->S.select, S, Ctrl->S.exact, match);
 				if (Ctrl->S.select->invert == match) SHo->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			}
 			if (Ctrl->Q.active && !gmt_get_int_selection (GMT, Ctrl->Q.select, seg)) SHo->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */

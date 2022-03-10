@@ -368,7 +368,7 @@ set :term:`PS_CHAR_ENCODING` to ISOLatin1 in your :doc:`/gmt.conf` file.
 
 We will demonstrate `text <https://www.generic-mapping-tools.org/GMT.jl/dev/text/>`_ with the following script:
 
-   ::
+.. code-block:: julia
 
     T = text_record(
        1  1  It's P@al, not Pal!

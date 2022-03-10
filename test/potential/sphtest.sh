@@ -2,7 +2,6 @@
 #
 # Computes the gravity and VGG anomaly over a sphere and compares
 # with theory a
-# DVC_TEST
 
 ps=sphtest.ps
 # sphere_mod.txt was made thus:

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 #
-# DVC_TEST
 # GMT_KNOWN_FAILURE_WINDOWS
 #
 

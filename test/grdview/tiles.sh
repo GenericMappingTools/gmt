@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Test -Ts with a categorical CPT
-# DVC_TEST
 ps=tiles.ps
 echo "0 P35+r200" > pattern.cpt
 echo "1 p5+r200" >> pattern.cpt

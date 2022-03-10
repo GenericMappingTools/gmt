@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# DVC_TEST
 ps=pacific_map_1.ps
 
 EARTH_MODEL=e
