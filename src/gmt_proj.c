@@ -200,7 +200,7 @@ GMT_LOCAL void gmtproj_genper_toxy (struct GMT_CTRL *P, double lat, double lon, 
 
 	cphi1 = P->current.proj.g_cphi1;
 	sphi1 = P->current.proj.g_sphi1;
-	h *= 1e3;
+	h *= METERS_IN_A_KM;
 
 	sincosd (lat, &sphi, &cphi);
 
@@ -282,7 +282,7 @@ GMT_LOCAL int gmtproj_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y
 	int niter;
 	int set_exit = 0;
 
-	h *= 1e3;
+	h *= METERS_IN_A_KM;
 
 	H = GMT->current.proj.g_H;
 	P = GMT->current.proj.g_P;
@@ -429,7 +429,7 @@ GMT_LOCAL void gmtproj_genper_setup (struct GMT_CTRL *GMT, double h0, double alt
 	a = GMT->current.proj.EQ_RAD;
 	e2 = GMT->current.proj.ECC2;
 
-	h0 *= 1e3;
+	h0 *= METERS_IN_A_KM;
 
 	sincosd (lat, &sphi1, &cphi1);
 	sphig = sphi1; cphig = cphi1;
@@ -442,7 +442,7 @@ GMT_LOCAL void gmtproj_genper_setup (struct GMT_CTRL *GMT, double h0, double alt
 		P = H/a + 1.0;
 		phig = lat;
 	}
-	else if (GMT->current.proj.g_geosync) {/* Select implicit altitude of geosynchronous viewpoint */
+	else if (GMT->current.proj.g_geosync) {	/* Select implicit altitude of geosynchronous viewpoint */
 		double temp = 86164.1/TWO_PI;	/* Siderial day rotation rate */
 		H = pow (3.98603e14*temp*temp, 0.3333) - a;	/* Standard gravitational parameter GM for Earth */
 		P = H/a + 1.0;
@@ -465,7 +465,7 @@ GMT_LOCAL void gmtproj_genper_setup (struct GMT_CTRL *GMT, double h0, double alt
 	}
 	else {	/* Altitude given as normal (in km) */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: altitude %f\n", altitude);
-		H = altitude*1e3;
+		H = altitude * METERS_IN_A_KM;
 		/* need to setup P from iterating phig */
 		phig = lat;
 		do {
@@ -1542,12 +1542,11 @@ GMT_LOCAL void gmtproj_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, 
 		GMT->current.proj.pole = lat0;
 
 		if (GMT->current.proj.g_radius || (altitude < -10.0)) {
-			/* use altitude as the radial distance from the center of the earth*/
-			H = fabs(altitude*1e3) - R;
+			/* Use altitude as the radial distance from the center of the earth */
+			H = fabs (altitude * METERS_IN_A_KM) - R;
 			P = H/R + 1.0;
 		}
-		else if (altitude <= 0.0) {
-			/* compute altitude of geosynchronous viewpoint n*/
+		else if (altitude <= 0.0) {	/* Compute altitude of geosynchronous viewpoint n */
 			double temp = 86164.1/TWO_PI;
 			H = pow(3.98603e14*temp*temp, 0.3333) - R;
 			P = H/R + 1.0;
@@ -1557,7 +1556,7 @@ GMT_LOCAL void gmtproj_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, 
 			H = R * (P - 1.0);
 		}
 		else {
-			H = altitude*1e3;
+			H = altitude * METERS_IN_A_KM;
 			P = H/R + 1.0;
 		}
 		GMT->current.proj.g_R = R;
