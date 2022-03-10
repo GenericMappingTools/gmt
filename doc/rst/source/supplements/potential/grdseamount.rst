@@ -21,7 +21,7 @@ Synopsis
 [ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
-[ |-H|\ *href*/*rho_lo*/*rho_hi*\ [**+d**\|\ *densify*][**+p**\|\ *power*] ]
+[ |-H|\ *href*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
 [ |-K|\ [*densitymodel*] ]
 [ |-L|\ [*cut*] ]
 [ |-M|\ [*list*] ]
@@ -145,34 +145,34 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *href*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
-    Set reference seamount parameters for an *ad-hoc* variable radial density function. Give
-    the low and high seamount densities in km/m^3 or g/cm^3 and the fixed reference height in meters.
+**-H**\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
+    Set reference seamount parameters for an *ad-hoc* variable radial density function with depth. Give
+    the low and high seamount densities in kg/m^3 or g/cm^3 and the fixed reference height *H* in meters.
     Use modifers **+d** and **+p** to change the water-pressure-driven flank density increase
-    over the full reference height [0] and the variable density profile power [1, i.e., a linear change].
-    Here, *h* is the peak height of any seamount and *z(r)* is its shape.  If the seamount is
-    truncated (via **-F**) then *h* refers to the untruncated height.  **Note**: If **-V** is used
+    over the full reference height [0] and the variable density profile exponent *power* [1, i.e., a linear change].
+    Below, *h(r)* is the final height of any seamount and *z(r)* is a point inside the seamount.  If the seamount is
+    truncated (via **-F**) then *h(r)* refers to the untruncated height.  **Note**: If **-V** is used
     the we report the mean density for each seamount processed.  The radial density function is thus defined
     by :math:`\Delta \rho_s = \rho_h - \rho_l` and the *densify* setting :math:`\Delta \rho_f`:
 
 .. math::
 
-    \rho(r,z) = \rho_l + Delta \rho_s \left ( \frac{h-z(r)}{h_r} \right )^p + \Delta \rho_f \left (\frac{h_r-z(r)}{h_r} \right )
+    \rho(r,z) = \rho_l + \Delta \rho_f \left (\frac{H-h(r)}{H} \right ) + \Delta \rho_s \left ( \frac{h(r)-z(r)}{H} \right )^p
 
 .. figure:: /_images/GMT_seamount_density.*
    :width: 500 px
    :align: center
 
    A linear density distribution selected via option **-H**.  Flank density can be affected by water
-   pressure if :math:`\Delta \rho > 0` while the normalized internal density gradient is raised to
-   power *p* to allow for nonlinear gradients.  **Note**: The reference height refers to a very tall
+   pressure if :math:`\Delta \rho_f > 0` while the normalized internal density gradient is raised to
+   power *p* to allow for nonlinear gradients.  **Note**: The reference height *H* refers to a very tall
    seamount for which the supplied densities are suitable.  Smaller samounts will thus see lower core
    densities by virtue of being smaller.
 
 .. _-K:
 
 **-K**\ *densitymodel*
-    Append a file name to hold a crossection grid with the densities of the reference model.
+    Append a file name to hold a crossection grid with the predicted densities of the reference model.
     We use normalized coordinates (*x* goes from -1 to +1) and *z* from 0 to 1, both in increments
     of 0.005, yielding a 401 x 201 grid. **Note**: This option can be used without creating the
     seamount grid, hence **-R**, **-I**, **-G**, and **-D** are not required.
@@ -189,8 +189,8 @@ Optional Arguments
     Write the times and names of all grids that were created to the text file *list*.
     Requires **-T**.  If not *list* file is given then we write to standard output.
     The output listing is suitable to be used as input to :doc:`grdflexure </supplements/potential/grdflexure>`.
-    **Note**: If **-W** is used the we write the shape grid name first followd by the density grid name.  The
-    output records are *time shapegrid *\ [ *densitygrid* ] *timetag*.
+    **Note**: If **-W** is used the we write the relief grid name first followd by the density grid name.  Thus,
+    the output records contain *time reliefgrid *\ [ *densitygrid* ] *timetag*.
 
 .. _-N:
 
@@ -247,13 +247,11 @@ Optional Arguments
 
 .. _-W:
 
-.. |Add_outgrid| replace:: Give the name of the vertically averaged density grid file. If |-T| is set then *outgrid* must be a filename
+**-W**\ *avedensity*
+    Give the name of the vertically averaged density grid file. If |-T| is set then *avedensity* must be a filename
     template that contains a floating point format (C syntax).  If the filename template also contains
     either %s (for unit name) or %c (for unit letter) then we use the corresponding time (in units specified in |-T|)
     to generate the individual file names, otherwise we use time in years with no unit.
-.. include:: /explain_grd_inout.rst_
-    :start-after: outgrid-syntax-begins
-    :end-before: outgrid-syntax-ends
 
 .. _-Z:
 
