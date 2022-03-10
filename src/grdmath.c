@@ -199,7 +199,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     ACOTD      1 1  ");	GMT_Usage (API, -21, "acotd (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ACOTH      1 1  ");	GMT_Usage (API, -21, "acoth (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ACSC       1 1  ");	GMT_Usage (API, -21, "acsc (A)");
-	GMT_Message (API, GMT_TIME_NONE, "     ACSCD      1 1  ");	GMT_Usage (API, -21, "acsc (A)");
+	GMT_Message (API, GMT_TIME_NONE, "     ACSCD      1 1  ");	GMT_Usage (API, -21, "acscd (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ACSCH      1 1  ");	GMT_Usage (API, -21, "acsch (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ADD        2 1  ");	GMT_Usage (API, -21, "A + B");
 	GMT_Message (API, GMT_TIME_NONE, "     AND        2 1  ");	GMT_Usage (API, -21, "B if A == NaN, else A");
