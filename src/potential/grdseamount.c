@@ -484,9 +484,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.densify < 0.0, "Option -H: Densify value must be positive or zero\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.rho_lo > Ctrl->H.rho_hi, "Option -H: Low density cannot exceed the high density\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.h_ref <= 0.0, "Option -H: Reference seamount height must be positive\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->C.input, "Option -C: Cannot read from trailing text if binary input is selected\n");
+		if (GMT->common.b.active[GMT_IN] && Ctrl->T.active)
+			GMT_Report (API, GMT_MSG_WARNING, "Option -T: Seamount start end times via binary input area assumed to be in years\n");
+
 	}
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
-	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
+	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time would be numerical if binary input */
 	n_errors += gmt_check_binary_io (GMT, n_expected_fields);
 	if (Ctrl->C.mode == SHAPE_DISC && Ctrl->F.active) {Ctrl->F.active = false; Ctrl->F.mode = 0; Ctrl->F.value = 0.0;}
 
@@ -701,8 +705,8 @@ GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAM
 		if (n == 1)	/* Only shape code given as trailing text */
 			*code = txt_x[0];
 		else if (n >= 2) {	/* Model time given, and possibly shape code */
-			in[n_expected-2] = gmt_get_modeltime (txt_x, &s_unit, &s_scale);
-			in[n_expected-1] = gmt_get_modeltime (txt_y, &s_unit, &s_scale);
+			in[n_expected]   = gmt_get_modeltime (txt_x, &s_unit, &s_scale);
+			in[n_expected+1] = gmt_get_modeltime (txt_y, &s_unit, &s_scale);
 			if (n == 3) *code = m[0];	/* Also gave shape code */
 		}
 	}
@@ -718,8 +722,8 @@ GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAM
 			in[2] *= inv_scale;
 	}
 
-	if (Ctrl->T.active && in[n_expected-2] < in[n_expected-1])
-		gmt_M_double_swap (in[n_expected-2], in[n_expected-1]);	/* Ensure start time is always larger */
+	if (Ctrl->T.active && in[n_expected] < in[n_expected+1])
+		gmt_M_double_swap (in[n_expected], in[n_expected+1]);	/* Ensure start time is always larger */
 	return 0;	/* OK */
 }
 
@@ -734,7 +738,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	unsigned int n_out, d_mode, rmode, inc_mode;
 	unsigned int t, t_use, build_mode, t0_col = 0, t1_col = 0;
 
-	uint64_t n_expected_fields, n_smts = 0, tbl, seg, rec, ij;
+	uint64_t n_expected_fields, n_numerical_fields, n_smts = 0, tbl, seg, rec, ij;
 
 	bool map = false, periodic = false, replicate, first, empty, exact, exact_increments, cone_increments;
 
@@ -831,8 +835,9 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	code = Ctrl->C.code;
 	/* Specify expected columns */
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
-	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
-	rmode = (Ctrl->C.input) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT;
+	n_numerical_fields = (Ctrl->T.active) ? n_expected_fields + 2 : n_expected_fields;
+	/* The optional two cols with start and stop time and/or shape are part of the trialing text */
+	rmode = (Ctrl->C.input || Ctrl->T.active) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT;
 	if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_expected_fields, rmode)) != GMT_NOERROR) {
 		Return (error);
 	}
@@ -890,7 +895,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		noise = g_noise;		/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
 
 	if (Ctrl->L.active) {	/* Just list area, volume, etc. for each seamount; no grid needed */
-		n_out = (unsigned int)n_expected_fields + 3;
+		n_out = (unsigned int)n_numerical_fields + 3;
 		if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 			goto wrap_up;
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)	/* Registers default output destination, unless already set */
@@ -902,8 +907,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	/* 0. DETERMINE THE NUMBER OF TIME STEPS */
 
 	if (Ctrl->T.active) {	/* Have requested a time series of bathymetry */
-		t0_col = (unsigned int)(n_expected_fields - 2);
-		t1_col = (unsigned int)(n_expected_fields - 1);
+		t0_col = (unsigned int)n_expected_fields;
+		t1_col = t0_col + 1;
 	}
 
 	if (Ctrl->M.active) {	/* Must create dataset to hold names of all output grids */
@@ -930,7 +935,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (rec = 0; rec < S->n_rows; rec++, n_smts++) {
 				if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in, &code)) continue;
-				for (col = 0; col < (openmp_int)n_expected_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
+				for (col = 0; col < (openmp_int)n_numerical_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
 				if (Ctrl->C.input) {
 					noise = 0.0;
 					switch (code) {
@@ -974,7 +979,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					volume *= 1.0e-3;	/* Use km^3 as unit for volume */
 				}
 				if (Ctrl->L.active) {	/* Only want to add back out area, volume */
-					col = (unsigned int)n_expected_fields;
+					col = (unsigned int)n_numerical_fields;
 					out[col++] = area;
 					out[col++] = volume;
 					out[col++] = height;
