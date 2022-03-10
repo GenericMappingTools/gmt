@@ -21,7 +21,7 @@ Synopsis
 [ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
-[ |-H|\ *href*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
+[ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
 [ |-K|\ [*densitymodel*] ]
 [ |-L|\ [*cut*] ]
 [ |-M|\ [*list*] ]
