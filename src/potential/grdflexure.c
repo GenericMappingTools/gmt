@@ -92,6 +92,10 @@ struct GRDFLEXURE_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct GRDFLEXURE_H {	/* -H<rhofile> */
+		bool active, many;
+		char *file;
+	} H;
 	struct GRDFLEXURE_L {	/* -L<outlist> */
 		bool active;
 		char *file;
@@ -637,7 +641,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 			case 'D':	/* Set densities */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
-				n = sscanf (opt->arg, "%lf/%s/%lf/%lf", &Ctrl->D.rhom, A, &Ctrl->D.rhoi, &Ctrl->D.rhow);
+				n = sscanf (opt->arg, "%lf/%[^/]/%lf/%lf", &Ctrl->D.rhom, A, &Ctrl->D.rhoi, &Ctrl->D.rhow);
 				if (!(n == 4 || n == 3)) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: must give 3-4 density values\n");
 					n_errors++;
@@ -695,6 +699,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				break;
+			case 'H':	/* Input density grid name or template */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
+				Ctrl->H.active = true;
+				if (opt->arg[0]) Ctrl->H.file = strdup (opt->arg);
+				if (strchr (opt->arg, '%'))
+					Ctrl->H.many = true;
+				else if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_LOCAL, &(Ctrl->H.file))) n_errors++;
 				break;
 			case 'L':	/* Output file name with list of generated grids */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
@@ -763,9 +775,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'),
 	                                 "Option -G: Filename template must contain format specified\n");
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && Ctrl->In.many, "Load template given but -T not specified\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && !Ctrl->D.var_rhol, "Option -H: Requires rho_l = - in -D\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.many != Ctrl->In.many, "Option -H: Rho grid must be similar to <topogrid>\n");
 	}
 
-	
 	if (Ctrl->A.active) {
 		if (Ctrl->F.active)
 			GMT_Report (API, GMT_MSG_WARNING, "Option -A: Unknown if -A will work correctly with -F\n");
@@ -780,7 +793,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E[<te>[k][/<te2>[k]]] -G%s [-A<Nx/Ny/Nxy>] [-Cp|y<value] [-F<nu_a>[/<h_a>[k]/<nu_m>]] "
-		"[-L<list>] [-M<tm>[k|M]] [-N%s] [-Q] [-S<beta>] [-T<t0>[/<t1>/<dt>[+l]]|<file>] [%s] [-W<wd>[k]] [-Z<zm>[k]] [-fg] [%s]\n",
+		"[-H<rhogrid>] [-L<list>] [-M<tm>[k|M]] [-N%s] [-Q] [-S<beta>] [-T<t0>[/<t1>/<dt>[+l]]|<file>] [%s] [-W<wd>[k]] [-Z<zm>[k]] [-fg] [%s]\n",
 		name, GMT_OUTGRID, GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -815,6 +828,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-F<nu_a>[/<h_a>[k]/<nu_m>]");
 	GMT_Usage (API, -2, "Set upper mantle viscosity, and optionally its thickness and lower mantle viscosity. "
 		"Viscosity units in Pa s; thickness in meter (append k for km).");
+	GMT_Usage (API, 1, "\n-H<rhogrid>");
+	GMT_Usage (API, -2, "Give filename for optional variable density grid. Requires rho_l = - in -D. If <topogrid> "
+		"Was given as a filename template then <roghrid> must be similar.");
 	GMT_Usage (API, 1, "\n-L<list>");
 	GMT_Usage (API, -2, "Give filename for output table with names of all grids (and model times) produced. "
 		"If no filename is given then we write the list to standard output.");
@@ -1060,7 +1076,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	bool retain_original;
 	gmt_grdfloat *orig_load = NULL;
 	double fixed_rho_load;
-	char file[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
+	char zfile[PATH_MAX] = {""}, rfile[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
 
 	struct GMT_FFT_WAVENUMBER *K = NULL;
 	struct GRDFLEXURE_RHEOLOGY *R = NULL;
@@ -1103,15 +1119,20 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	/* 2. READ ALL INPUT LOAD GRIDS, DETREND, AND TAKE FFT */
 
 	if (Ctrl->In.many) {	/* Must read in load grids, possibly one for each time increment set by -T */
+		char *rho = NULL;	/* Pointer to variable load density grid [or NULL] */
 		n_load_times = Ctrl->T.n_eval_times;	/* This (or fewer) loads and times will be used */
 		Load = gmt_M_memory (GMT, NULL, n_load_times, struct GRDFLEXURE_GRID *);	/* Allocate load array structure */
 		for (t_load = 0; t_load < n_load_times; t_load++) {	/* For each time step there may be a load file */
-			gmt_modeltime_name (GMT, file, Ctrl->In.file, &Ctrl->T.time[t_load]);	/* Load time equal eval time */
-			Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, file, NULL, &Ctrl->T.time[t_load]);
+			gmt_modeltime_name (GMT, zfile, Ctrl->In.file, &Ctrl->T.time[t_load]);	/* Load time equal eval time */
+			if (Ctrl->D.var_rhol) {	/* Also form the density grid name from template */
+				gmt_modeltime_name (GMT, rfile, Ctrl->H.file, &Ctrl->T.time[t_load]);
+				rho = rfile;
+			}
+			Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, zfile, rho, &Ctrl->T.time[t_load]);
 			Load[t_load]->rho_load = Ctrl->D.rhol;
 		}
 	}
-	else if (Ctrl->In.list) {	/* Must read a list of files and their load times (format: filename loadtime) */
+	else if (Ctrl->In.list) {	/* Must read a list of files and their load times (format: filename [rhofile] loadtime) */
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_MODELTIME this_time = {0.0, 0.0, 0, 0};
 		int ns;
@@ -1128,15 +1149,15 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		for (seg = 0, t_load = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
 			for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++, t_load++) {
 				if (Ctrl->D.var_rhol)
-					ns = sscanf (Tin->table[0]->segment[seg]->text[row], "%s %s %s", file, r_arg, t_arg);
+					ns = sscanf (Tin->table[0]->segment[seg]->text[row], "%s %s %s", zfile, r_arg, t_arg);
 				else
-					ns = sscanf (Tin->table[0]->segment[seg]->text[row], "%s %s %s", file, t_arg, r_arg);
+					ns = sscanf (Tin->table[0]->segment[seg]->text[row], "%s %s %s", zfile, t_arg, r_arg);
 				s_time = gmt_get_modeltime (t_arg, &s_unit, &s_scale);
 				this_time.value = s_time;
 				this_time.scale = s_scale;
 				this_time.unit  = s_unit;
 				this_time.u = (s_unit == 'M') ? 2 : ((s_unit == 'k') ? 1 : 0);
-				Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, file, r_arg, &this_time);
+				Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, zfile, r_arg, &this_time);
 				if (!Ctrl->D.var_rhol) 
 					Load[t_load]->rho_load = (ns == 3) ? atof (r_arg) : Ctrl->D.rhol;
 			}
@@ -1146,10 +1167,10 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else {	/* Just read the single load grid */
+	else {	/* Just read the single load grid (and optionally rho grid) */
 		n_load_times = 1;
-		Load = gmt_M_memory (GMT, NULL, n_load_times, struct GRDFLEXURE_GRID *);		/* Allocate grid array structure with one entry */
-		Load[0] = grdflexure_prepare_load (GMT, options, Ctrl, Ctrl->In.file, NULL, NULL);	/* The single load grid (no time info) */
+		Load = gmt_M_memory (GMT, NULL, n_load_times, struct GRDFLEXURE_GRID *);	/* Allocate grid array structure with one entry */
+		Load[0] = grdflexure_prepare_load (GMT, options, Ctrl, Ctrl->In.file, Ctrl->H.file, NULL);	/* The single load [and rho] grid (no time info) */
 		Load[0]->rho_load = Ctrl->D.rhol;
 	}
 
@@ -1251,7 +1272,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		/* 4d. WRITE OUTPUT GRID */
 		if (Ctrl->T.active) { /* Separate output grid since there are many time steps */
 			char remark[GMT_GRID_REMARK_LEN160] = {""};
-			gmt_modeltime_name (GMT, file, Ctrl->G.file, &Ctrl->T.time[t_eval]);
+			gmt_modeltime_name (GMT, zfile, Ctrl->G.file, &Ctrl->T.time[t_eval]);
 			sprintf (remark, "Solution for t = %g %s", Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale,
 				gmt_modeltime_unit (Ctrl->T.time[t_eval].u));
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK|GMT_COMMENT_IS_RESET, remark, Out)) {
@@ -1260,14 +1281,14 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 			}
 		}
 		else	/* Single output grid */
-			strcpy (file, Ctrl->G.file);
+			strcpy (zfile, Ctrl->G.file);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) {
 			if (retain_original) gmt_M_free (GMT, orig_load);
 			Return (API->error);
 		}
 
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY |
-			GMT_GRID_IS_COMPLEX_REAL, NULL, file, Out) != GMT_NOERROR) {	/* This demuxes the grid before writing! */
+			GMT_GRID_IS_COMPLEX_REAL, NULL, zfile, Out) != GMT_NOERROR) {	/* This demuxes the grid before writing! */
 				if (retain_original) gmt_M_free (GMT, orig_load);
 				Return (API->error);
 		}
@@ -1279,12 +1300,12 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		if (Ctrl->L.active) {	/* Add filename and evaluation time to list */
 			char record[GMT_BUFSIZ] = {""}, tmp[GMT_LEN64] = {""};
 			if (Ctrl->T.active) {
-				sprintf (record, "%s\t", file);
+				sprintf (record, "%s\t", zfile);
 				sprintf (tmp, time_fmt, Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, Ctrl->T.time[t_eval].unit);
 				strcat (record, tmp);
 			}
 			else
-				sprintf (record, "%s", file);
+				sprintf (record, "%s", zfile);
 			L->table[0]->segment[0]->text[t_eval] = strdup (record);
 		}
 	}

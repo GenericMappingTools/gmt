@@ -19,6 +19,7 @@ Synopsis
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
 [ |-C|\ **p**\|\ **y**\ *value* ]
 [ |-F|\ *nu_a*\ [/*h_a*\ [**k**]/*nu_m*] ]
+[ |-H|\ *rhogrid*
 [ |-L|\ *list* ]
 [ |-M|\ *tm* ]
 [ |-N|\ *params* ]
@@ -135,6 +136,15 @@ Optional Arguments
     the asthenosphere. Give viscosities in Pa·s. If used, give the
     thickness of the asthenosphere in meter; append **k** for km.
     Cannot be used in conjunctions with **-M**.
+
+.. _-H:
+
+**-H**\ *rhogrid*
+    Supply optional variable load density grid.  It can be a single
+    grid or a grid name template, i.e., same as for *topogrd*. Requires
+    *rho_l* be set to - in **-D**.  **Note**: If *topogrd* is given as
+    a list file then the optional density grids must be given as part of
+    the list and not via **-H**.
 
 .. _-L:
 
