@@ -15829,6 +15829,12 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		char *setting = getenv ("GMT_END_SHOW");
 		char *show = (setting && !strcmp (setting, "off")) ? "" : "show";
 		GMT->current.ps.oneliner = false;
+		if (gmt_get_current_item (GMT, "cpt", false)) {	/* One-liner with a current CPT, place it on top */
+			if ((i = GMT_Call_Module (GMT->parent, "colorbar", GMT_MODULE_CMD, "-DJTC -Baf"))) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to call module colorbar for a one-liner plot.\n");
+				return;
+			}
+		}
 		if ((i = GMT_Call_Module (GMT->parent, "end", GMT_MODULE_CMD, show))) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to call module end for a one-liner plot.\n");
 			return;
