@@ -1409,7 +1409,6 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			if (Ctrl->T.active) {	/* Reset density arrays for next model time */
 				gmt_M_memset (Ave->data, Ave->header->size, gmt_grdfloat);
 				gmt_M_memset (rho_weight, Ave->header->size, gmt_grdfloat);
-				if (exact_increments) gmt_M_memset (prev_z, Ave->header->size, gmt_grdfloat);
 			}
 		}
 	}
