@@ -97,7 +97,8 @@ Optional Arguments
     with the free-air anomaly to get the Bouguer anomaly. In this case
     do not use **-T**. It also implicitly sets **-N+h**.  Alternatively,
     specify a co-registered grid with density contrasts if a variable
-    density contrast is required.
+    density contrast is required.  **Note**: Any NaNs found in the density
+    grid will be replaced with the minimum density found.
 
 .. _-E:
 
