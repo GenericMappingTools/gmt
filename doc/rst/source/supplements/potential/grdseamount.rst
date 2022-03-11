@@ -31,7 +31,7 @@ Synopsis
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ [**+l**] ]
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [*avedensity*] ]
+[ |-W|\ *avedensity* ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]

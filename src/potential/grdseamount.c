@@ -252,7 +252,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Note: This option implies two extra input columns with <start> and <stop> time for each seamount's life span. "
 		"Use -Q to select cumulative versus incremental construction.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W<meandensity>");
 	gmt_outgrid_syntax (API, 'W', "Filename for output grid with vertically averaged seamount densities. If -T is set then <outgrid> "
 		"must be a filename template that contains a floating point format (C syntax) and "
 		"we use the corresponding time (in units specified in -T) to generate the file names.");
