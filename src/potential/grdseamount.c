@@ -20,13 +20,15 @@
  *
  *
  * grdseamount.c will create a grid made up from elliptical or circular
- * seamounts that can be Gaussian, Conical, Parabolic or Disc, with or without truncated
- * tops (not for discs, obviously, as already truncated). If time information
+ * seamounts that can be Gaussian, Conical, Parabolic, Polynomial or Disc, with
+ * or without truncated tops (not for discs, obviously, as already truncated).
+ * Optional variable density grid can be written as well.  If time information
  * is provided we can also produce grids for each time step that shows either
  * the cumulative relief up until this time or just the incremental relief
  * for each time step, such as needed for time-dependent flexure. These estimates
  * can be either exact or approximated via constant-thickness discs. Seamounts
  * can use different models so you can mix and match cones and Gaussians, for example.
+ * The density option allows output of vertically-averaged density grids.
  *
  * */
 
@@ -54,7 +56,7 @@
 #define SMT_INCREMENTAL	1
 #define FLUX_GAUSSIAN	0
 #define FLUX_LINEAR	1
-#define ONETHIRD 0.333333333333333333333333333333333333333333333333333333333333
+#define ONE_THIRD 0.333333333333333333333333333333333333333333333333333333333333
 
 struct GMT_MODELTIME {	/* Hold info about modeling time */
 	double value;	/* Time in year */
@@ -91,12 +93,12 @@ struct GRDSEAMOUNT_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct GRDSEAMOUNT_H {	/* -H<hr>/<rho_low>/<rho_high>[+d<densify>][+p<pvalue>] */
+	struct GRDSEAMOUNT_H {	/* -H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>] */
 		bool active;
-		double h_ref, rho_lo, rho_hi;
+		double H, rho_l, rho_h;
 		double p, densify;
-		double del_rho;	/* rho_hi - rho_lo */
-		double p1;	/* p + 1 */
+		double del_rho;	/* Computed as rho_h - rho_l */
+		double p1;	/* Will be p + 1 to avoid addition in loops */
 	} H;
 	struct GRDSEAMOUNT_I {	/* -I (for checking only) */
 		bool active;
@@ -182,7 +184,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s] "
-		"[-E] [-F[<flattening>]] [-H<href>/<rho_lo>/<rho_hi>[+d<densify>][+p<p>]] [-K<densmodel>] "
+		"[-E] [-F[<flattening>]] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] [-K<densmodel>] "
 		"[-L[<hcut>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<r_scale>] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] "
 		"[%s] [-W%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_OUTGRID, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
@@ -220,11 +222,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Read lon, lat, azimuth, major, minor, height (m) for each seamount.");
 	GMT_Usage (API, 1, "\n-F[<flattening>]");
 	GMT_Usage (API, -2, "Seamounts are truncated. Append flattening or expect it in an extra input column [no truncation]. ");
-	GMT_Usage (API, 1, "\n-H<href>/<rho_lo>/<rho_hi>[+d<densify>][+p<p>]");
+	GMT_Usage (API, 1, "\n-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]");
 	GMT_Usage (API, -2, "Set parameters for the reference seamount height (in m), flank and deep core densities (kg/m^3 or g/cm^3). "
 		"Control the density function by these modifiers:");
-	GMT_Usage (API, 3, "+d Density increase (kg/m^3 or g/cm^3) due to water pressure over full depth implied by <h_ref> [0].");
-	GMT_Usage (API, 3, "+p Exponential power coefficient (> 0) for density change with burial depth [1 (linear)].");
+	GMT_Usage (API, 3, "+d Density increase (kg/m^3 or g/cm^3) due to water pressure over full depth implied by <H> [0].");
+	GMT_Usage (API, 3, "+p Exponential <power> coefficient (> 0) for density change with burial depth [1 (linear)].");
 	GMT_Usage (API, 1, "\n-K<densmodel>");
 	GMT_Usage (API, -2, "Write a 2-D crossection showing variable seamount densities [no grid written].");
 	GMT_Usage (API, 1, "\n-L[<hcut>]");
@@ -353,7 +355,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 					char txt[GMT_LEN256] = {""};
 					while (gmt_getmodopt (GMT, 'H', c, "dp", &pos, txt, &n_errors) && n_errors == 0) {
 						switch (txt[0]) {
-							case 'd':	/* Get densify rate over reference water depth */
+							case 'd':	/* Get densify rate over reference water depth H */
 								Ctrl->H.densify = atof (&txt[1]);
 								if (Ctrl->H.densify < 10.0) Ctrl->H.densify *= 1000;	/* Gave units of g/cm^3 */
 								break;
@@ -367,13 +369,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 					}
 					c[0] = '\0';	/* Chop off all modifiers so range can be determined */
 				}
-				if (sscanf (opt->arg, "%lg/%lg/%lg", &Ctrl->H.h_ref, &Ctrl->H.rho_lo, &Ctrl->H.rho_hi) != 3) {
+				if (sscanf (opt->arg, "%lg/%lg/%lg", &Ctrl->H.H, &Ctrl->H.rho_l, &Ctrl->H.rho_h) != 3) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -H: Unable to parse the three values\n");
 					n_errors++;
 				}
-				if (Ctrl->H.rho_lo < 10.0) Ctrl->H.rho_lo *= 1000;	/* Gave units of g/cm^3 */
-				if (Ctrl->H.rho_hi < 10.0) Ctrl->H.rho_hi *= 1000;	/* Gave units of g/cm^3 */
-				Ctrl->H.del_rho = Ctrl->H.rho_hi - Ctrl->H.rho_lo;
+				if (Ctrl->H.rho_l < 10.0) Ctrl->H.rho_l *= 1000;	/* Gave units of g/cm^3 */
+				if (Ctrl->H.rho_h < 10.0) Ctrl->H.rho_h *= 1000;	/* Gave units of g/cm^3 */
+				Ctrl->H.del_rho = Ctrl->H.rho_h - Ctrl->H.rho_l;
 				Ctrl->H.p1 = Ctrl->H.p + 1;
 				break;
 			case 'I':	/* Grid spacing */
@@ -482,8 +484,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && !Ctrl->H.active, "Option -W: Requires density model function via -H\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.p <= 0.0, "Option -H: Exponent must be positive\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.densify < 0.0, "Option -H: Densify value must be positive or zero\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.rho_lo > Ctrl->H.rho_hi, "Option -H: Low density cannot exceed the high density\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.h_ref <= 0.0, "Option -H: Reference seamount height must be positive\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.rho_l > Ctrl->H.rho_h, "Option -H: Low density cannot exceed the high density\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.H <= 0.0, "Option -H: Reference seamount height must be positive\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->C.input, "Option -C: Cannot read from trailing text if binary input is selected\n");
 		if (GMT->common.b.active[GMT_IN] && Ctrl->T.active)
 			GMT_Report (API, GMT_MSG_WARNING, "Option -T: Seamount start end times via binary input area assumed to be in years\n");
@@ -608,7 +610,7 @@ GMT_LOCAL double grdseamount_cone_solver (double in[], double f, double v, bool 
 	h0  = (elliptical) ? in[5] : in[3];
 	A = M_PI * r02 * h0 / (3.0 * (1 - f));
 	V0 = M_PI * r02 * h0  * (1 + f + f*f) / 3.0;
-	phi = pow (1.0 - V0 * (1.0 - v) / A, ONETHIRD);
+	phi = pow (1.0 - V0 * (1.0 - v) / A, ONE_THIRD);
 	return (phi);
 }
 
@@ -666,25 +668,25 @@ GMT_LOCAL double grdseamount_poly_solver (double in[], double f, double v, bool 
 }
 
 GMT_LOCAL double grdseamount_density (struct GRDSEAMOUNT_CTRL *Ctrl, double z, double h) {
-	/* Passing in the current seamounts normalized height, h(r)) and the current normalized radial point z(r).
+	/* Passing in the current seamount's normalized height, h(r) and the current normalized radial point z(r).
 	 * We return the density at this point inside the seamount with reference height 1 */
-	double u = (h - z);	/* Note: h and z are both in the 0-1 range here */
-	double q = (1.0 - z);
+	double u = (h - z);	/* Depth into seamount. Note: h and z are both in the 0-1 range here */
+	double q = (1.0 - z);	/* Water depth to flank point */
 
-	double rho = Ctrl->H.rho_lo + Ctrl->H.densify * q + Ctrl->H.del_rho * pow (u, Ctrl->H.p);
+	double rho = Ctrl->H.rho_l + Ctrl->H.densify * q + Ctrl->H.del_rho * pow (u, Ctrl->H.p);
 	return (rho);
 }
 
 GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double h, double z1, double z2) {
-	/* Passing in the current seamounts height h(r) and the two depths z1(r) and z2(r) for a layer.
+	/* Passing in the current seamounts height h(r) and the two depths z1(r) and z2(r) defining a layer.
 	 * When doing the whole seamount we pass z2 = 0 and z1 = h(r).
-	 * The vertically averaged density for this r is returned */
-	double u1 = (h - z1) / Ctrl->H.h_ref;
-	double u2 = (h - z2) / Ctrl->H.h_ref;
-	double q = (Ctrl->H.h_ref - h) / Ctrl->H.h_ref;
+	 * The vertically averaged density for this radial position is returned */
+	double u1 = (h - z1) / Ctrl->H.H;
+	double u2 = (h - z2) / Ctrl->H.H;
+	double q = (Ctrl->H.H - h) / Ctrl->H.H;
 	double dz = z2 - z1;
 
-	double rho = Ctrl->H.rho_lo + Ctrl->H.densify * q + Ctrl->H.del_rho * Ctrl->H.h_ref * (pow (u1, Ctrl->H.p1) - pow (u2, Ctrl->H.p1)) / (dz * (Ctrl->H.p1));
+	double rho = Ctrl->H.rho_l + Ctrl->H.densify * q + Ctrl->H.del_rho * Ctrl->H.H * (pow (u1, Ctrl->H.p1) - pow (u2, Ctrl->H.p1)) / (dz * (Ctrl->H.p1));
 	return (rho);
 }
 
@@ -1138,8 +1140,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							scale_curr = 1.0;
 						}
 						else {	/* Here we want the exact surface at the reduced radius and height given by the scale related to the volume fraction */
-							scale_curr = pow (v_curr, ONETHIRD);
-							scale_prev = pow (v_prev, ONETHIRD);
+							scale_curr = pow (v_curr, ONE_THIRD);
+							scale_prev = pow (v_prev, ONE_THIRD);
 						}
 					}
 
@@ -1216,7 +1218,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							x = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 							this_r = gmt_distance (GMT, in[GMT_X], in[GMT_Y], x, y);	/* In Cartesian units or km (if map is true) */
 							if (this_r > r_km) continue;	/* Beyond the base of the seamount */
-#if 1
+#if 0
 							if (doubleAlmostEqualZero (this_r, 0.0)) {
 								dx = 0.0;	/* Break point here if debugging peak of seamount location */
 							}
@@ -1285,7 +1287,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
 								/* When -T is not active then we build the complete seamount as is.  In that case
 								 * we want to use z1 = 0 and z2 = h(r) in the mean density solution.  However, if
-								 * -T is active and this is just an incremental layer or cumulative surface, then we
+								 * -T is active and this is just an incremental layer (or cumulative surface), then we
 								 * must know the final h(r) as well as the two z-values for the previous and current height at r */
 								double h_at_r = h_orig * orig_add;	/* This is fully-built height at this radius */
 								double z1_at_r = (exact_increments) ? prev_z[ij] : 0.0;	/* Should be previous height or 0.0 */

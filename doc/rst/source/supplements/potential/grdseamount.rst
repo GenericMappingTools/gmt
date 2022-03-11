@@ -305,6 +305,8 @@ The file l.lis will contain records with numerical time, gridfile, and unit time
 See Also
 --------
 
-:doc:`gmt.conf </gmt.conf>`, :doc:`gmt </gmt>`,
-:doc:`grdmath </grdmath>`, :doc:`gravfft </supplements/potential/gravfft>`,
+:doc:`gmt.conf </gmt.conf>`,
+:doc:`gmt </gmt>`,
+:doc:`grdmath </grdmath>`,
+:doc:`gravfft </supplements/potential/gravfft>`,
 :doc:`grdflexure </supplements/potential/grdflexure>`
