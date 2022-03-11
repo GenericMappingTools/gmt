@@ -4887,7 +4887,13 @@ GMT_LOCAL int gmtinit_parse_genper_modern (struct GMT_CTRL *GMT, char *args, boo
 							GMT->current.proj.g_earth_radius = true;	txt[nlen-1] = 0;break;
 						default:	break; /* Probably just an altitude with numbers */
 					}
-					if (!GMT->current.proj.g_geosync) n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, &txt[1], GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &txt[1]);
+					if (!GMT->current.proj.g_geosync) {
+						n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, &txt[1], GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &txt[1]);
+						if (GMT->current.proj.g_radius && (METERS_IN_A_KM * GMT->current.proj.pars[4]) < GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius) {
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Jg|G: Cannot give a distance from the center of the Earth that is less than Earth radius\n");
+							n_errors++;
+						}
+					}
 					break;
 				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 			}
@@ -4895,6 +4901,8 @@ GMT_LOCAL int gmtinit_parse_genper_modern (struct GMT_CTRL *GMT, char *args, boo
 		c[0] = '\0';	/* Chop off the modifiers */
 		error += n_errors;
 	}
+
+	if (error) return (error);	/* Might as well bail here since already screwed */
 
 	if (d) d[0] = '\0';	/* Chop off the optional +d modifier for map width */
 
