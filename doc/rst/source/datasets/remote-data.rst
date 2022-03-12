@@ -22,6 +22,12 @@ GMT will do the following when you request a remote file in a GMT command:
 #. When the catalog is refreshed, we determine the publication date for each dataset on the server,
    and if any local copies you may have are now obsolete we will remove them to force a re-download from the server.
 
+Currently Available Remote Data Sets
+-------------------------------------
+
+Documentation for the individual remote datasets available through the GMT server and its
+mirrors can be found at `Remote Datasets <https://www.generic-mapping-tools.org/remote-datasets/>`_.
+
 Usage
 -----
 
@@ -145,9 +151,3 @@ given a region and projection, you can inquire about this information by passing
 or obtain the required subset grid directly via::
 
     gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -Gsubset.grd -V
-
-Currently Available Remote Data Sets
--------------------------------------
-
-Documentation for the individual remote datasets available through the GMT server and its
-mirrors can be found at `Remote Datasets <https://www.generic-mapping-tools.org/remote-datasets/>`_.
