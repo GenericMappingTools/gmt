@@ -151,25 +151,29 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
-			case 'C':
+			case 'C':	/* Create prisms from layer between two surfaces */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
-				nc = sscanf (opt->arg, "%[^,],%[^,],%[^,]%lg", A, B, C, &Ctrl->C.dz);
+				nc = sscanf (opt->arg, "%[^,],%[^,],%[^,],%lg", A, B, C, &Ctrl->C.dz);
 				if (A[0] != '-') Ctrl->C.base   = strdup (A);
 				if (B[0] != '-') Ctrl->C.top    = strdup (B);
 				if (C[0] != '-') Ctrl->C.height = strdup (C);
+				if (nc < 3) {
+					GMT_Report (API, GMT_MSG_WARNING, "Option -C: Not enough arguments supplied (only %d detected but 3 or 4 are needed\n", nc);
+					n_errors++;
+				}
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.rho = atof (opt->arg);
 				break;
-			case 'E':
+			case 'E':	/* Set fixed prism parameters instead of reading from prismfile */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				sscanf (opt->arg, "%lg/%lg/%lg", &Ctrl->E.dx, &Ctrl->E.dy, &Ctrl->E.dz);
 				break;
-			case 'F':
+			case 'F':	/* Seldct geopotential type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
@@ -184,12 +188,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 						break;
 				}
 				break;
-			case 'G':
+			case 'G':	/* Output file given */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
-			case 'H':	/* Reference seamount density parameters */
+			case 'H':	/* Reference seamount density parameters for rho(z) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				Ctrl->H.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "dp"))) {
@@ -220,12 +224,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 				Ctrl->H.del_rho = Ctrl->H.rho_h - Ctrl->H.rho_l;
 				Ctrl->H.p1 = Ctrl->H.p + 1;
 				break;
-			case 'I':
+			case 'I':	/* Grid iincrements */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
-			case 'M':	/* Length units */
+			case 'M':	/* Horizontal and vertical length units */
 				k = 0;
 				while (opt->arg[k]) {
 					switch (opt->arg[k]) {
@@ -245,19 +249,19 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 					k++;
 				}
 				break;
-			case 'N':
+			case 'N':	/* Got profile for output locations */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.file = strdup (opt->arg);
 				break;
-			case 'Z':
+			case 'Z':	/* Observation level(s) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
-				if (!gmt_access (GMT, opt->arg, F_OK)) {	/* file exists */
+				if (!gmt_access (GMT, opt->arg, F_OK)) {	/* File with z-levels exists */
 					Ctrl->Z.file = strdup (opt->arg);
 					Ctrl->Z.mode = 1;
 				}
-				else {
+				else {	/* Got a constant z-level */
 					Ctrl->Z.mode = 0;
 					Ctrl->Z.level = atof (opt->arg);
 				}
@@ -267,12 +271,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 				break;
 		}
 	}
+
 	if (GMT->common.R.active[RSET]) {
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[ISET],
 		                                 "Option -R: Must specify both -R and -I (and optionally -r)\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[RSET] && GMT->common.R.active[ISET]) && Ctrl->Z.mode == 1,
-	                                 "Option -Z: Cannot also specify -R -I\n");
+	                                 "Option -Z: Cannot also specify -R -I if a level grid has been supplied\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Z.mode == 1,
+	                                 "Option -Z: Cannot also specify -N if a level grid has been supplied\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && !Ctrl->G.active,
 	                                 "Option -G: Must specify output gridfile name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file,
@@ -281,8 +288,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 	                                 "Option -N: Must specify output gridfile name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->H.active,
 	                                 "Option -H: Cannot be used with -D.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->D.active && !Ctrl->H.active,
+	                                 "option -C: Need to select either -D or -H.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->H.active && nc < 4,
-	                                 "Option -C: Requires <dz> when -H is used\n");
+	                                 "Option -C: Requires <dz> when -H is selected\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -305,9 +314,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-A The z-axis is positive upwards [Default is positive down].");
 	GMT_Usage (API, 1, "\n-C<base>,<top>,<height>,<dz>");
 	GMT_Usage (API, -2, "Create prisms from the <base> level to <top> level for full seamount <height>, where arguments are grids or constants. "
-		"If -H is used then <dz> is required for the discretization of rho(r,z).  Give <height> = - if <top> is the full height.");
+		"If -H is used then <dz> is required for the discretization of rho(r,z).  Give <height> = - if <top> is the full height. No <prismfile> will be read.");
 	GMT_Usage (API, 1, "\n-D<density>");
-	GMT_Usage (API, -2, "Set fixed density contrast (in kg/m^3) [Default reads it from last numerical column.");
+	GMT_Usage (API, -2, "Set fixed density contrast (in kg/m^3) [Default reads it from last numerical column or computes it via -H].");
 	GMT_Usage (API, 1, "\n-Ff|n[<lat>]|v]");
 	GMT_Usage (API, -2, "Specify desired geopotential field component:");
 	GMT_Usage (API, 3, "f: Free-air anomalies (mGal) [Default].");
@@ -323,16 +332,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+p Exponential <power> coefficient (> 0) for density change with burial depth [1 (linear)].");
 	GMT_Option (API, "I");
 	GMT_Usage (API, 1, "\n-M[hz]");
-	GMT_Usage (API, -2, "Change units used, via one or two directives:");
+	GMT_Usage (API, -2, "Change distance units used, via one or two directives:");
 	GMT_Usage (API, 3, "h: All x- and y-distances are given in km [meters].");
 	GMT_Usage (API, 3, "z: All z-distances are given in km [meters].");
 	GMT_Usage (API, 1, "\n-N<trktable>");
-	GMT_Usage (API, -2, "File with output locations where a calculation is requested.  No grid "
+	GMT_Usage (API, -2, "File with output locations (x,y) where a calculation is requested.  Optionally z may be read as well. No grid "
 		"is produced and output (x,y,z,g) is written to standard output (see -bo for binary output).");
 	GMT_Option (API, "R,V");
 	GMT_Usage (API, 1, "\n-Z<level>");
 	GMT_Usage (API, -2, "Set observation level for output locations [0]. "
-		"Append either a constant or the name of grid file with variable levels. "
+		"Append either a constant or the name of a grid file with variable levels. "
 		"If given a grid then it also defines the output grid.");
 	GMT_Usage (API, -2, "Note: Cannot use both -Z<grid> and -R -I [-r].");
 	GMT_Option (API, "bo,d,e");
@@ -490,14 +499,12 @@ GMT_LOCAL double gravprisms_rho (struct GRAVPRISMS_CTRL *Ctrl, double z, double 
 
 EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 	int error = 0;
-	unsigned int n_expected = 7;
 	uint64_t tbl, seg, row, col, k, node, n_prisms = 0;
 
 	bool flat_earth = false;
 
 	char *uname[2] = {"meter", "km"}, *kind[3] = {"FAA", "VGG", "GEOID"}, remark[GMT_LEN64] = {""};
-	double z_level, rho, dx, dy, dz, lat, G0;
-	double *prism[7];
+	double z_level, rho, dx, dy, dz, lat, G0, *prism[7];
 	double (*eval) (double, double, double, uint64_t, double **, double);
 
 	struct GRAVPRISMS_CTRL *Ctrl = NULL;
@@ -528,7 +535,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 
-	if (Ctrl->C.active) {	/* Need to create prisms first */
+	if (Ctrl->C.active) {	/* Need to create prisms from two surfaces first */
 		struct GMT_GRID *B = NULL, *T = NULL, *H = NULL, *G = NULL;
 		double base = 0.0, top = 0.0, z1, z2, z_prev, z_next, z_mid;
 		size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
@@ -547,21 +554,27 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 			Return (API->error);
 		G = (B) ? B : T;
 		dx = 0.5 * G->header->inc[GMT_X];	dy = 0.5 * G->header->inc[GMT_Y];
+		rho = Ctrl->D.rho;	/* Only helpful if -D is set */
 		for (k = 0; k < 7; k++)
 			prism[k] = gmt_M_memory (GMT, NULL, n_alloc, double);
 
 		gmt_M_grd_loop (GMT, G, row, col, node) {
-			z2 = (T) ? top  : T->data[node];
-			z1 = (B) ? base : B->data[node];
-			if (z2 <= z1) continue;	/* No layer here */
-			z_prev = z1;
-			do {
-				z_next = (floor (z_prev / Ctrl->C.dz) + 1.0) * Ctrl->C.dz;	/* Presumably next regular z-spacing */
-				if (z_next <= z_prev) z_next += Ctrl->C.dz;	/* Can happen if z1 is a multiple of dz */
-				else if (z_next > z2) z_next = z2;	/* At the top, clip to limit */
-				z_mid = 0.5 * (z_prev + z_next);
-				rho = gravprisms_rho (Ctrl, z_mid, H->data[node]);
-				if (n_prisms == n_alloc) {	/* Need more memory */
+			z2 = (T) ? T->data[node] : top;
+			z1 = (B) ? B->data[node] : base;
+			if (z2 <= z1) continue;	/* No layer thickness detected */
+			z_prev = z1;	/* We start exactly at z = z1 */
+			do {	/* Will at least be one prism */
+				if (Ctrl->H.active) {	/* Variable density means stacked prisms, most of thickness dz, at same point */
+					/* First and last prisms in the stack are adjusted to have the height needed to match the surface boundaries */
+					z_next = (floor (z_prev / Ctrl->C.dz) + 1.0) * Ctrl->C.dz;	/* Presumably next regular z-spacing */
+					if (z_next <= z_prev) z_next += Ctrl->C.dz;	/* Can happen if z1 is a multiple of dz */
+					else if (z_next > z2) z_next = z2;	/* At the top, clip to limit */
+					z_mid = 0.5 * (z_prev + z_next);	/* Middle of prism - used to look up density */
+					rho = gravprisms_rho (Ctrl, z_mid, H->data[node]);
+				}
+				else	/* Constant density rho (set above), just need a single prism per location */
+					z_next = z2;
+				if (n_prisms == n_alloc) {	/* Need to allocate more memory for the prisms */
 					n_alloc <<= 1;	/* Double it */
 					for (k = 0; k < 7; k++)
 						prism[k] = gmt_M_memory (GMT, prism[k], n_alloc, double);
@@ -571,7 +584,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 				prism[4][n_prisms] = z_prev;			prism[5][n_prisms] = z_next;
 				prism[6][n_prisms] = rho;
 				n_prisms++;
-				z_prev = z_next;
+				z_prev = z_next;	/* The the top of this prism be the bottom of the next */
 			} while (z_prev < z2);	/* Until we run out of this stack */
 		}
 		/* Finalize allocation */
@@ -588,10 +601,11 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 			Return (GMT_MEMORY_ERROR);
 		}
 	}
-	else {	/* Read from input */
+	else {	/* Read prisms from stdin or input file(s) */
+		unsigned int n_expected = 7;	/* Max number of columns */
 		/* Specify input expected columns to be at least 3 */
-		if (Ctrl->D.active) n_expected--;		/* Not reading density */
-		if (Ctrl->E.active) n_expected -= 3;	/* Not reading dx dy dz */
+		if (Ctrl->D.active) n_expected--;		/* Not reading density from records */
+		if (Ctrl->E.active) n_expected -= 3;	/* Not reading dx dy dz from records */
 		if ((error = GMT_Set_Columns (API, GMT_IN, n_expected, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
@@ -599,53 +613,61 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 			Return (API->error);
 		}
+		/* Read the entire prism file(s) */
 		if ((P = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
-
+		/* To avoid the need to loop over tables and segments, we extrac the data into a separate array and comptute prism edges instead */
 		for (k = 0; k < 7; k++)
 			prism[k] = gmt_M_memory (GMT, NULL, P->n_records, double);
 
-		/* Fill in prism arrays from data set, including optional choices for fixed or variable dimension and density, then free */
-		dx = Ctrl->E.dx;	dy = Ctrl->E.dy;	dz = Ctrl->E.dz;	rho = Ctrl->D.rho;
-		col = (Ctrl->E.active) ? 3 : 6;	/* Input column for density, if present */
+		/* Fill in prism arrays from data set, including optional choices for fixed or variable dimension and density, then free the dataset */
+		dx = 0.5 * Ctrl->E.dx;	dy = 0.5 * Ctrl->E.dy;	dz = 0.5 * Ctrl->E.dz;	/* Distances from prism center to respective edges */
+		rho = Ctrl->D.rho;
+		col = (Ctrl->E.active) ? 3 : 6;	/* Input column for density, if -D is not set */
 		for (tbl = k = 0; tbl < P->n_tables; tbl++) {
 			for (seg = 0; seg < P->table[tbl]->n_segments; seg++) {
 				S = P->table[tbl]->segment[seg];
 				for (row = 0; row < S->n_rows; row++, k++) {
-					if (!Ctrl->E.active) {
-						dx = S->data[3][row];
-						dy = S->data[4][row];
-						dz = S->data[5][row];
+					if (!Ctrl->E.active) {	/* Update the half-dimensions of the sides */
+						dx = 0.5 * S->data[3][row];
+						dy = 0.5 * S->data[4][row];
+						dz = 0.5 * S->data[5][row];
 					}
 					if (!Ctrl->D.active) rho = S->data[col][row];
-					prism[0][k] = S->data[GMT_X][row] - dx;	/* Set the x-coordinates of the x-edges of prism */
+					prism[0][k] = S->data[GMT_X][row] - dx;	/* Store the x-coordinates of the x-edges of prism */
 					prism[1][k] = S->data[GMT_X][row] + dx;
-					prism[2][k] = S->data[GMT_Y][row] - dy;	/* Set the y-coordinates of the y-edges of prism */
+					prism[2][k] = S->data[GMT_Y][row] - dy;	/* Store the y-coordinates of the y-edges of prism */
 					prism[3][k] = S->data[GMT_Y][row] + dy;
-					prism[4][k] = S->data[GMT_Z][row] - dz;	/* Set the z-coordinates of the z-edges of prism */
+					prism[4][k] = S->data[GMT_Z][row] - dz;	/* Store the z-coordinates of the z-edges of prism */
 					prism[5][k] = S->data[GMT_Z][row] + dz;
-					prism[6][k] = rho;
+					prism[6][k] = rho;	/* Store the fixed or variable density of prism */
 				}
 			}
 		}
 		n_prisms = k;
+		/* Free the data set */
 		if (GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
 			Return (GMT_MEMORY_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "# of prisms read: %" PRIu64 "\n", n_prisms);
 	}
 
+	if (n_prisms == 0) {
+		GMT_Report (API, GMT_MSG_WARNING, "No prisms found - exiting\n");
+		Return (GMT_NOERROR);
+	}
+
 	if (Ctrl->Z.mode == 1) {	/* Got grid with observation levels which also sets output locations; it could also set -fg so do this first */
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->Z.file, NULL)) == NULL)
 			Return (API->error);
-		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);
+		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);	/* Mid-latitude needed if geoid is selected */
 	}
 	else if (GMT->common.R.active[RSET]) {	/* Gave -R -I [-r] and possibly -fg indirectly via geographic coordinates in -R */
 		if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL)
 			Return (API->error);
-		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);
+		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);	/* Mid-latitude needed if geoid is selected */
 	}
 	else {	/* Got a dataset with output locations via -N */
 		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from the -N file */
@@ -656,7 +678,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
-		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (D->min[GMT_Y] + D->max[GMT_Y]);
+		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (D->min[GMT_Y] + D->max[GMT_Y]);	/* Mid-latitude needed if geoid is selected */
 	}
 
 	flat_earth = gmt_M_is_geographic (GMT, GMT_IN);		/* If true then input is in degrees and we must convert to km later on */
@@ -676,14 +698,14 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Start calculating %s\n", kind[Ctrl->F.mode]);
 
-	switch (Ctrl->F.mode) {		/* Set pointer to chosen evaluation function */
+	switch (Ctrl->F.mode) {		/* Set pointer to chosen geopotential evaluation function */
 		case GRAVPRISMS_VGG:
 			eval = &gravprisms_get_one_v_output;
 		 	break;
 		case GRAVPRISMS_GEOID:
 			eval = &gravprisms_get_one_n_output;
 			G0 = (Ctrl->F.lset) ? g_normal (Ctrl->F.lat) : g_normal (lat);
-			G0 = 1.0 / G0;	/* Since we will be dividing */
+			G0 = 1.0 / G0;	/* To avoid dividing in the loop */
 			break;
 		case GRAVPRISMS_FAA:
 			eval = &gravprisms_get_one_g_output;
@@ -727,7 +749,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 				gmt_prep_tmp_arrays (GMT, GMT_OUT, S->n_rows, 1);	/* Init or reallocate tmp vector */
 #ifdef _OPENMP
 				/* Spread calculation over selected cores */
-#pragma omp parallel for private(row,z_level) shared(GMT,Ctrl,S,eval,scl,n_prisms,prism,flat_earth, G0)
+#pragma omp parallel for private(row,z_level) shared(S,Ctrl,GMT,eval,scl,n_prisms,prism,flat_earth,G0)
 #endif
 				/* Separate the calculation from the output in two separate row-loops since cannot do rec-by-rec output
 				 * with OpenMP due to race condiations that would mess up the output order */
@@ -760,7 +782,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		}
 #ifdef _OPENMP
 		/* Spread calculation over selected cores */
-#pragma omp parallel for private(row,col,node,y_obs,z_level) shared(API,GMT,Ctrl,G,eval,x_obs,n_prisms,prism,flat_earth, G0)
+#pragma omp parallel for private(row,y_obs,col,node,z_level) shared(n_rows,GMT,G,flat_earth,Ctrl,n_columns,eval,x_obs,n_prisms,prism,G0)
 #endif
 		for (row = 0; row < n_rows; row++) {	/* Do row-by-row and report on progress if -V */
 			y_obs = gmt_M_grd_row_to_y (GMT, row, G->header);
@@ -768,10 +790,10 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 #ifndef _OPENMP
 			GMT_Report (API, GMT_MSG_INFORMATION, "Finished row %5d\n", row);
 #endif
-			for (col = 0; col < (openmp_int)G->header->n_columns; col++) {
+			for (col = 0; col < n_columns; col++) {
 				/* Loop over cols; always save the next level before we update the array at that col */
 				node = gmt_M_ijp (G->header, row, col);
-				z_level = (Ctrl->A.active) ? -G->data[node] : G->data[node];	/* Get observation z level and possibly flip direction */
+				z_level = (Ctrl->Z.mode == 1) ? G->data[node] : Ctrl->Z.level;	/* Default observation z level unless provided in input grid */
 				G->data[node] = (gmt_grdfloat) eval (x_obs[col], y_obs, z_level, n_prisms, prism, G0);
 			}
 		}
@@ -788,7 +810,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-
+	/* Free the prism information */
 	for (k = 0; k < 7; k++)
 		gmt_M_free (GMT, prism[k]);
 
