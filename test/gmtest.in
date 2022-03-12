@@ -104,34 +104,12 @@ function psldemo()
 }
 
 # Must have wrappers for all test programs not part of GMT distro:
-
-for apiprog in \
-	testapi_columns \
-    testapi_cube \
-    testapi_makecpt \
-    testapi_matrix \
-    testapi_matrix_pad \
-    testapi_matrix_plot \
-    testapi_mixmatrix \
-    testapi_userdataset \
-    testapi_usergrid \
-    testapi_uservectors \
-    testapi_vector \
-    testapiconv \
-    testgrdio \
-    testapi_imageshading \
-    testapi_matrix_as_grid \
-    testapi_vector_strings \
-    testapi_vector_plot \
-    testapi_vector_io \
-    testapi_matrix_io \
-    testapi_matrix_360 \
-    testapi_matrix_360_ref \
-    testapi_grid2matrix \
-    testapi_putvector \
-    testapi_spatial
-do
+# assuming that all test programs start with test*.
+for apiprog in $(ls @GMT_BINARY_DIR@/src/test*); do
+    apiprog=$(basename $apiprog)
     eval "${apiprog}() { valgrind_wrapper \"@GMT_BINARY_DIR@/src/${apiprog}\" \"\$@\"; }"
+	# export function definitions to subshells
+    export -f ${apiprog}
 done
 
 # export function definitions to subshells
