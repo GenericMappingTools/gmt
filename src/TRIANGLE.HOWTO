@@ -1,9 +1,9 @@
 
 GMT contains two programs (triangulate and pscontour) that
 directly or indirectly will do a Delaunay optimal triangulation
-of arbitrarily spaced (x,y,z) data.  By default, GMT uses
+of arbitrarily spaced (x,y,z) data.  In the early days, GMT used
 a public domain (published) algorithm by Dave Watson [1982] to
-to this.  Now, a new and much faster algorithm has been released
+to this.  The default now though, is a new and much faster algorithm
 by Jonathan Shewchuk [1996].  Because Shewchuk holds the copyright
 (i.e., it is not in the public domain nor distributed under the GNU
 Public License or the equivalent) you are advised to read it (see
@@ -15,12 +15,12 @@ If you later need to change the behavior w.r.t. triangulation,
 follow these guidelines:
 
 In makegmt.macro there are two parameters that can be defined:
-TRIANGLE_D and TRIANGLE_O.  By default they are commented out.
+TRIANGLE_D and TRIANGLE_O.  By default these lines are commented out.
 To use Shewchuk's [1996] routine, remove the # from the
 beginning of the lines and then 'make clean' and 'make install'.
-To revert to the default GMT usage of Watson's [1982] algorithm,
+To revert to using Watson's [1982] algorithm,
 simply place a # in the first column at these two lines.
-Then, say 'make clean' and 'make install' again.
+Then, run 'make clean' and 'make install' again.
 
 Paul Wessel, 16-AUG-1999
 
