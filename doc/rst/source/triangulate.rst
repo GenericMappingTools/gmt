@@ -57,8 +57,8 @@ input file. As an option, you may choose to create a multiple segment
 file that can be piped through :doc:`plot` to draw the triangulation
 network. If **-G** **-I** are set a grid will be calculated based on the
 surface defined by the planar triangles. The actual algorithm used in
-the triangulations is either that of Watson [1982] [Default] or Shewchuk
-[1996] (if installed; type **triangulate -** to see which method is
+the triangulations is either that of Watson [1982] or Shewchuk [1996] [Default]
+(if installed; type **gmt get GMT_TRIANGULATE** to see which method is
 selected). This choice is made during the GMT installation.  Furthermore,
 if the Shewchuk algorithm is installed then you can also perform the
 calculation of Voronoi polygons and optionally grid your data via the

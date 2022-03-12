@@ -507,7 +507,7 @@ GMT Miscellaneous Parameters
         Determines if we use the **Watson** or **Shewchuk**
         algorithm (if configured during installation) for triangulation.
         Note that Shewchuk is required for operations involving Voronoi
-        constructions [default is **Watson**].
+        constructions [default is **Shewchuk**].
 
     **GMT_VERBOSE**
         (**-V**) Determines the level of verbosity used by GMT
