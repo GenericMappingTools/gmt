@@ -244,7 +244,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "n: Geoid anomalies (meter).  Optionally append latitude for evaluation of normal gravity [45].");
 	GMT_Usage (API, 3, "v: Vertical Gravity Gradient anomalies (Eotvos = 0.1 mGal/km).");
 	GMT_Usage (API, 1, "\n-M[hz]");
-	GMT_Usage (API, -2, "Change units used, via one or two directives:");
+	GMT_Usage (API, -2, "Change distance units used, via one or two directives:");
 	GMT_Usage (API, 3, "h: All x-distances are given in km [meters].");
 	GMT_Usage (API, 3, "z: All z-distances are given in km [meters].");
 	GMT_Usage (API, 1, "\n-N<trktable>");
@@ -273,9 +273,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
  */
 
 GMT_LOCAL double talwani2d_integralI1 (double xa, double xb, double za, double zb, double y) {
-	/* This function performs the integral I1 (i,Y) from
-	 * Rasmussen & Pedersen's paper
-	 */
+	/* This function performs the integral I1 (i,Y) from Rasmussen & Pedersen's paper */
 
 	double yy, xdiff, zdiff, side, cosfi, sinfi, ui, uii, wi, ri, rii, rri, rrii;
 	double part1, part2, part3, fact;
@@ -303,14 +301,14 @@ GMT_LOCAL double talwani2d_integralI1 (double xa, double xb, double za, double z
 }
 
 GMT_LOCAL double talwani2d_grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0, double rho, double ymin, double ymax) {
-/*  x0;		X-coordinate of observation point */
-/*  z0;		Z-coordinate of observation point */
-/*  x[];	Array of xpositions */
-/*  z[];	Array of zpositions */
-/*  n;		Number of corners */
-/*  rho;	Density contrast */
-/*  ymin;	Extent of body in y-direction */
-/*  ymax; */
+	/*  x0;		X-coordinate of observation point */
+	/*  z0;		Z-coordinate of observation point */
+	/*  x[];	Array of xpositions */
+	/*  z[];	Array of zpositions */
+	/*  n;		Number of corners */
+	/*  rho;	Density contrast */
+	/*  ymin;	Extent of body in y-direction */
+	/*  ymax; */
 
 	double xx0, zz0, xx1, zz1, part_1, part_2, sum;
 	int i, i1;
@@ -540,13 +538,12 @@ GMT_LOCAL double talwani2d_get_one_output (struct GMT_CTRL *GMT, double x_obs, d
 
 EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 	int error = 0, ns;
-	int64_t srow;
 	unsigned int k, tbl, seg, n = 0, geometry, n_bodies, dup_node = 0, n_duplicate = 0;
 	size_t n_alloc = 0, n_alloc1 = 0;
+	int64_t srow;
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 2}, row;
 	double scl, rho = 0.0, G0, z_level, answer, min_answer = DBL_MAX, max_answer = -DBL_MAX;
 	bool first = true;
-
 	char *uname[2] = {"meter", "km"}, *kind[4] = {"FAA", "VGG", "GEOID", "FAA(2.5-D)"};
 	double *x = NULL, *z = NULL, *in = NULL;
 
