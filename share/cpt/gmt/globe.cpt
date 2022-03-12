@@ -1,4 +1,5 @@
 #
+# gmt/globe : Colors for global bathymetry/topography relief [R=-10000/10000, H, C=RGB]
 # Color table using in global relief maps
 # Bathymetry colours manually redefined for blue-shade effect and
 # new topography colour scheme for use with Generic Mapping Tools.

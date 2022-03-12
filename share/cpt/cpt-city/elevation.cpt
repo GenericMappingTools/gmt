@@ -1,4 +1,5 @@
 #
+# cpt-city/elevation : Washed-out colors for topography [R=0/7000, C=RGB]
 # Washed out color table for topography, via cpt-city
 # Designed by: Tom Patterson
 # Modified by P Wessel to avoid discontinuities

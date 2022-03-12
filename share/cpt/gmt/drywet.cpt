@@ -1,4 +1,5 @@
 #
+# gmt/drywet : Goes from dry to wet colors [C=RGB]
 # Dry to Wet color table
 # Created by Ed Maurer, University of Washington
 #

@@ -1,4 +1,5 @@
 #
+# cpy-city/dem1 : Digital Elevation Model (DEM) scale by Thomas Dewez [R=0/800, C=RGB]
 # Color table for topography, via cpt-city
 # Designed by: Thomas Dewez for printing
 # Modified by P Wessel to avoid discontinuities

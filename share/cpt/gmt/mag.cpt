@@ -1,4 +1,5 @@
 #
+# gmt/mag : Colors for magnetic anomaly maps [R=-2000/2000, H, C=RGB]
 # IPGP Color table for magnetic anomaly maps
 #------------------------------------------------
 # COLOR_MODEL = RGB

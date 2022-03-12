@@ -1,4 +1,5 @@
 #
+# gmt/paired : Qualitative color map with 6 pairs of colors [C=RGB]
 # Qualitative palette with 6 pairs of colors
 #
 # This color table is based on the specifications and designs
