@@ -34,7 +34,7 @@
 #define THIS_MODULE_MODERN_NAME	"gravprisms"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute gravity anomalies over 3-D vertical prisms"
-#define THIS_MODULE_KEYS	"<D{,ND(,ZG(,G?},GDN"
+#define THIS_MODULE_KEYS	"<D{,CG(,ND(,ZG(,G?},GDN"
 #define THIS_MODULE_NEEDS	"r"
 #define THIS_MODULE_OPTIONS "-VRbdefhior" GMT_ADD_x_OPT
 
@@ -66,7 +66,7 @@ struct GRAVPRISMS_CTRL {
 		bool active;
 		double rho;
 	} D;
-	struct GRAVPRISMS_C {	/* -C<base>/<top>/<height[/dz>] creates prisms between surfaces */
+	struct GRAVPRISMS_C {	/* -C[<base>/<top>/]<height[/dz>] creates prisms between surfaces */
 		bool active;
 		char *base, *top, *height;
 		double dz;
@@ -154,12 +154,26 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 			case 'C':	/* Create prisms from layer between two surfaces */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
-				nc = sscanf (opt->arg, "%[^,],%[^,],%[^,],%lg", A, B, C, &Ctrl->C.dz);
-				if (A[0] != '-') Ctrl->C.base   = strdup (A);
-				if (B[0] != '-') Ctrl->C.top    = strdup (B);
-				if (C[0] != '-') Ctrl->C.height = strdup (C);
-				if (nc < 3) {
-					GMT_Report (API, GMT_MSG_WARNING, "Option -C: Not enough arguments supplied (only %d detected but 3 or 4 are needed\n", nc);
+				if ((c = strstr (opt->arg, "+z"))) {
+					Ctrl->C.dz = atof (&c[2]);
+					c[0] = '\0';	/* Hide odifier */
+				}
+				nc = sscanf (opt->arg, "%[^,],%[^,],%[^,]", A, B, C);
+				if (nc == 1) {	/* -C<height>[+z<dz>] */
+					if (A[0] != '-')
+						Ctrl->C.height = strdup (A);
+					else {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Must give full seamount height\n");
+						n_errors++;
+					}
+				}
+				else if (nc == 3) {	/* -C<base>,<top>,<height>[+z<dz>] */
+					if (A[0] != '-') Ctrl->C.base   = strdup (A);
+					if (B[0] != '-') Ctrl->C.top    = strdup (B);
+					if (C[0] != '-') Ctrl->C.height = strdup (C);
+				}
+				else {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Incorrect number of arguments: %d\n", nc);
 					n_errors++;
 				}
 				break;
@@ -290,8 +304,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 	                                 "Option -H: Cannot be used with -D.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->D.active && !Ctrl->H.active,
 	                                 "option -C: Need to select either -D or -H.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->H.active && nc < 4,
-	                                 "Option -C: Requires <dz> when -H is selected\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->H.active && Ctrl->C.dz == 0.0,
+	                                 "Option -C: Requires +z<dz> when -H is selected\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -299,7 +313,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <prismfile> [-A] [-C<base>,<top>,<height>,<dz>] [-D<density>] [-Ff|n[<lat>]|v] [-G<outfile>] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] [%s] "
+	GMT_Usage (API, 0, "usage: %s <prismfile> [-A] [-C[<base>,<top>,]<height>[+z<dz>]] [-D<density>] [-Ff|n[<lat>]|v] [-G<outfile>] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] [%s] "
 		"[-M[hz]] [-N<trktable>] [%s] [%s] [-Z<level>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
 		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
@@ -312,9 +326,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"input is read. Contains (x,y,z) center coordinates of prisms with optional [ dx dy dz] [rho] if not set via -D and .");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A The z-axis is positive upwards [Default is positive down].");
-	GMT_Usage (API, 1, "\n-C<base>,<top>,<height>,<dz>");
+	GMT_Usage (API, 1, "\n-C[<base>,<top>,]<height>[+z<dz>]");
 	GMT_Usage (API, -2, "Create prisms from the <base> level to <top> level for full seamount <height>, where arguments are grids or constants. "
-		"If -H is used then <dz> is required for the discretization of rho(r,z).  Give <height> = - if <top> is the full height. No <prismfile> will be read.");
+		"If only <height> grid is given then we assume <base> = 0. Other wise, give all three but set <height> = - if <top> is the full height. "
+		"If -H is used then <dz> is required for the discretization of rho(r,z).  No <prismfile> will be read.");
 	GMT_Usage (API, 1, "\n-D<density>");
 	GMT_Usage (API, -2, "Set fixed density contrast (in kg/m^3) [Default reads it from last numerical column or computes it via -H].");
 	GMT_Usage (API, 1, "\n-Ff|n[<lat>]|v]");
