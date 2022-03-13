@@ -22,8 +22,12 @@
  * Calculates geopotential anomalies due to any number of individual
  * vertical prisms that may have their own unique dimensions (or all
  * are constant) and individual density contrasts (or all the same).
- * For vertically varying density we break prisms into a stack of
- * short sub-prisms with constant density.
+ * Instead of reading in prisms we can create prisms based on grid
+ * limits (e.g., top and base surfaces) and then use these prisms to
+ * compute the geopotential anomalies.
+ * For vertically varying density we break the prisms into a stack of
+ * short sub-prisms with constant density that approximates the actual
+ * continuously-varying densities.
  *
  * Accelerated with OpenMP; see -x.
  */
@@ -375,13 +379,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<prismfile>");
 	GMT_Usage (API, -2, "One or more multiple-segment ASCII data files. If no files are given, standard "
-		"input is read. Contains (x,y,z) center coordinates of prisms with optional [ dx dy dz] [rho] if not set via -D and .");
+		"input is read. Contains (x,y,z_lo,z_hi), i.e., center coordinates of prisms and z-range, with optional [ dx dy] [rho] if not set via -E and -D.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A The z-axis is positive upwards [Default is positive down].");
 	GMT_Usage (API, 1, "\n-C[+q][+w<file>][+z<dz>]");
 	GMT_Usage (API, -2, "Create prisms from the <base> (-L) level to <top> (-T) level, or for the full seamount <height> (-S).  No <prismfile> will be read. Modifiers are:");
 	GMT_Usage (API, 3, "+q Quit execution once prism file has been written (see +w).  No geopotential calculations are preformed.");
-	GMT_Usage (API, 3, "+w Write the created prisms to <file>");
+	GMT_Usage (API, 3, "+w Write the created prisms to <file>.");
 	GMT_Usage (API, 3, "+z Set increment <dz> for discretization of rho(r,z) when -H is used.");
 	GMT_Usage (API, 1, "\n-D<density>");
 	GMT_Usage (API, -2, "Set fixed density contrast (in kg/m^3) [Default reads it from last numerical column or computes it via -H].");
@@ -402,7 +406,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+p Exponential <power> coefficient (> 0) for density change with burial depth [1 (linear)].");
 	GMT_Option (API, "I");
 	GMT_Usage (API, 1, "\n-L<base>");
-	GMT_Usage (API, -2, "Set the lower (base) surface grid or constant of a layer to create prisms for; requires -C, -S, and -T [0]");
+	GMT_Usage (API, -2, "Set the lower (base) surface grid or constant of a layer to create prisms for; requires -C and -T [0]");
 	GMT_Usage (API, 1, "\n-M[hz]");
 	GMT_Usage (API, -2, "Change distance units used, via one or two directives:");
 	GMT_Usage (API, 3, "h: All x- and y-distances are given in km [meters].");
@@ -416,7 +420,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set the full surface grid height for making prisms of the entire feature (or if -H is set) (or use -L and -T to select a layer); requires -C");
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-T<top>");
-	GMT_Usage (API, -2, "Set the top surface grid or constant of a layer to create prisms for; requires -C, -L and -T");
+	GMT_Usage (API, -2, "Set the top surface grid or constant of a layer to create prisms for; requires -C and -L");
 	GMT_Usage (API, 1, "\n-W<avedens>");
 	GMT_Usage (API, -2, "Give grid with vertically-averaged spatially varying densities; requires co-registered grids with -C.");
 	GMT_Usage (API, 1, "\n-Z<level>");
@@ -469,7 +473,7 @@ GMT_LOCAL double geoidprism (double dx1, double dx2, double dy1, double dy2, dou
 }
 
 GMT_LOCAL double gravprism (double dx1, double dx2, double dy1, double dy2, double dz1, double dz2, double rho) {
-	/* Gravity anomaly from a single prism */
+	/* Gravity anomaly from a single prism [Grant & West, 1965] */
 	double g, dx1_sq, dx2_sq, dy1_sq, dy2_sq, dz1_sq, dz2_sq;
 	double R111, R112, R121, R122, R211, R212, R221, R222;
 	double g111, g112, g121, g122, g211, g212, g221, g222;
@@ -504,7 +508,7 @@ GMT_LOCAL double gravprism (double dx1, double dx2, double dy1, double dy2, doub
 }
 
 GMT_LOCAL double vggprism (double dx1, double dx2, double dy1, double dy2, double dz1, double dz2, double rho) {
-	/* Vertical gravity gradient from a single prism [Kim & Wessel, 2016] */
+	/* Vertical gravity gradient anomaly from a single prism [Kim & Wessel, 2016] */
 	double v, dx1_sq, dx2_sq, dy1_sq, dy2_sq, dz1_sq, dz2_sq;
 	double R111, R112, R121, R122, R211, R212, R221, R222;
 	double v111, v112, v121, v122, v211, v212, v221, v222;

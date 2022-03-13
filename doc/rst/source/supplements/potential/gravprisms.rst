@@ -248,7 +248,7 @@ References
 ----------
 
 
-Grant, F. S. and West, G. F., 1965, *Interpretation theory in applied geophysics*,
+Grant, F. S. and West, G. F., 1965, *Interpretation Theory in Applied Geophysics*,
 583 pp., McGraw-Hill.
 
 Kim, S.-S., and P. Wessel, 2016, New analytic solutions for modeling vertical
