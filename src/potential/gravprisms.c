@@ -335,7 +335,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 	                                 "Option -Z: Cannot also specify -R -I if a level grid has been supplied\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Z.mode == 1,
 	                                 "Option -Z: Cannot also specify -N if a level grid has been supplied\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && !Ctrl->G.active,
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && !Ctrl->G.active && !Ctrl->C.quit,
 	                                 "Option -G: Must specify output gridfile name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file,
 	                                 "Option -G: Must specify output gridfile name.\n");
@@ -678,6 +678,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		for (k = 0; k < 7; k++)
 			prism[k] = gmt_M_memory (GMT, prism[k], n_prisms, double);
 		GMT_Report (API, GMT_MSG_INFORMATION, "# of prisms constructed: %" PRIu64 "\n", n_prisms);
+		if (!Ctrl->T.active && T) T = NULL;	/* Undo what we set earlier */
 		if (B && GMT_Destroy_Data (API, &B) != GMT_NOERROR) {
 			Return (GMT_MEMORY_ERROR);
 		}
