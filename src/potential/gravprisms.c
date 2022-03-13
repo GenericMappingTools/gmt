@@ -693,8 +693,15 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 			if ((P = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 				Return (API->error);
 			S = P->table[0]->segment[0];	/* The only segment in the table */
-			for (k = 0; k < 7; k++)	/* Copy over each column */
-				gmt_M_memcpy (S->data[k], prism[k], n_prisms, double);
+			for (k = 0; k < n_prisms; k++)	{ /* Unscramble edges to coordinates and dimensions */
+				S->data[0][k] = 0.5 * (prism[1][k] + prism[0][k]);	/* Get x */
+				S->data[1][k] = 0.5 * (prism[3][k] + prism[2][k]);	/* Get y */
+				S->data[2][k] = 0.5 * (prism[5][k] + prism[4][k]);	/* Get z */
+				S->data[3][k] = prism[1][k] - prism[0][k];	/* Get dx */
+				S->data[4][k] = prism[3][k] - prism[2][k];	/* Get dy */
+				S->data[5][k] = prism[5][k] - prism[4][k];	/* Get dz */
+			}
+			gmt_M_memcpy (S->data[6], prism[6], n_prisms, double);	/* Copy over densities */
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->C.file, P) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to write prisms to file %s\n", Ctrl->C.file);
 				Return (GMT_RUNTIME_ERROR);
@@ -718,8 +725,8 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		if ((P = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
-		/* To avoid the need to loop over tables and segments, we extrac the data into a separate array and comptute prism edges instead */
-		for (k = 0; k < 7; k++)
+		/* To avoid the need to loop over tables and segments, we extrac the data into a separate array and compute prism edges instead */
+		for (k = 0; k < n_prisms; k++) 
 			prism[k] = gmt_M_memory (GMT, NULL, P->n_records, double);
 
 		/* Fill in prism arrays from data set, including optional choices for fixed or variable dimension and density, then free the dataset */
