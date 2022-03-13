@@ -86,7 +86,8 @@ Optional Arguments
 .. _-A:
 
 **-A**
-    The *z*-axis should be positive upwards [Default is down].
+    The *z*-axis should be positive upwards [Default is down]. All internal *z*-values will have their sign
+    changed. **Note**: Output *z*-values are not affected.
 
 .. _-C:
 
@@ -139,13 +140,15 @@ Optional Arguments
 .. _-L:
 
 **-L**\ *base*
-    Set the base grid surface for a layer we wish to make prisms for, or give a constant level [0].
+    Give name of the base grid surface for a layer we wish to fill with prisms, or give a constant *z*-level [0].
 
 .. _-M:
 
 **-M**\ [**h**]\ [**v**]
     Sets distance units used.  Append **h** to indicate that both horizontal distances are in km [m],
-    and append **z** to indicate vertical distances are in km [m].
+    and append **z** to indicate vertical distances are in km [m].  If selected, we will internally
+    convert any affected distance provided by data input or command line options to meters. **Note**:
+    Any output will retain the original units.
 
 .. _-N:
 
@@ -157,12 +160,12 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *height*
-    Set the grid with the full seamount height, either to make prisms from or as required by **-H**.
+    Give name of grid with the full seamount heights, either for making prisms or as required by **-H**.
 
 .. _-T:
 
 **-T**\ *top*
-    Set the top grid surface for a layer we wish to make prisms for, or give a constant level.
+    Give name of the top surface grid for a layer we wish to fill with prisms, or give a constant *z*-level.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
@@ -172,8 +175,8 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *avedens*
-    Give the name of a grid with spatially varying, vertically-averaged prism densities (see :ref:`Grid File Formats
-    <grd_inout_full>`). Requires **-C** and must be co-registered with such grids.
+    Give name of a grid with spatially varying, vertically-averaged prism densities. Requires **-C** and
+    the grid must be co-registered with the grid provided by **-S**.
 
 .. _-Z:
 
