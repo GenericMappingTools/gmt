@@ -69,8 +69,10 @@ struct GRAVPRISMS_CTRL {
 		bool active;
 		double rho;
 	} D;
-	struct GRAVPRISMS_C {	/* -C[+w<file>][+z<dz>] creates prisms between surfaces set in -L -S -T */
+	struct GRAVPRISMS_C {	/* -C[+q][+w<file>][+z<dz>] creates prisms between surfaces set in -L -S -T */
 		bool active;
+		bool quit;
+		bool dump;
 		char *file;
 		double dz;
 	} C;
@@ -154,9 +156,8 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *C) {	/* Dea
 }
 
 static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT_OPTION *options) {
-	int nc = 0;
 	unsigned int k, n_errors = 0;
-	char *c = NULL, A[GMT_LEN256] = {""}, B[GMT_LEN256] = {""}, C[GMT_LEN256] = {""};
+	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -174,13 +175,17 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 			case 'C':	/* Create prisms from layer between two surfaces */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "wz"))) {
+				if ((c = gmt_first_modifier (GMT, opt->arg, "qwz"))) {
 					unsigned int pos = 0;
 					char txt[GMT_LEN256] = {""};
-					while (gmt_getmodopt (GMT, 'C', c, "wz", &pos, txt, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'C', c, "qwz", &pos, txt, &n_errors) && n_errors == 0) {
 						switch (txt[0]) {
+							case 'q':	/* Quit once prism file has been written */
+								Ctrl->C.quit = true;
+								break;
 							case 'w':	/* Write created prisms to given file */
-								Ctrl->C.file = strdup (&txt[1]);
+								Ctrl->C.dump = true;
+								if (txt[1]) Ctrl->C.file = strdup (&txt[1]);
 								break;
 							case 'z':	/* Set vertical increment*/
 								Ctrl->C.dz = atof (&txt[1]);
@@ -348,6 +353,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 	                                 "Option -C: Requires -S when -H is set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->L.active && !Ctrl->T.active,
 	                                 "Option -L: Requires -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.quit && !Ctrl->C.dump,
+	                                 "Option -C: Modifer +q requires +w\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -355,7 +362,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <prismfile> [-A] [-C[+w<file>][+z<dz>]] [-D<density>] [-Ff|n[<lat>]|v] [-G<outfile>] "
+	GMT_Usage (API, 0, "usage: %s <prismfile> [-A] [-C[+q][+w<file>][+z<dz>]] [-D<density>] [-Ff|n[<lat>]|v] [-G<outfile>] "
 		"[-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] [-L<base>] [%s] [-M[hz]] [-N<trktable>] [%s] [-S<shapegrd>] "
 		"[-T<top>] [%s] [-W<avedens>] [-Z<level>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
 		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
@@ -369,10 +376,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"input is read. Contains (x,y,z) center coordinates of prisms with optional [ dx dy dz] [rho] if not set via -D and .");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A The z-axis is positive upwards [Default is positive down].");
-	GMT_Usage (API, 1, "\n-C[<base>,<top>,]<height>[+z<dz>]");
-	GMT_Usage (API, -2, "Create prisms from the <base> level to <top> level for full seamount <height>, where arguments are grids or constants. "
-		"If only <height> grid is given then we assume <base> = 0. Other wise, give all three but set <height> = - if <top> is the full height. "
-		"If -H is used then <dz> is required for the discretization of rho(r,z).  No <prismfile> will be read.");
+	GMT_Usage (API, 1, "\n-C[+q][+w<file>][+z<dz>]");
+	GMT_Usage (API, -2, "Create prisms from the <base> (-L) level to <top> (-T) level, or for the full seamount <height> (-S).  No <prismfile> will be read. Modifiers are:");
+	GMT_Usage (API, 3, "+q Quit execution once prism file has been written (see +w).  No geopotential calculations are preformed.");
+	GMT_Usage (API, 3, "+w Write the created prisms to <file>");
+	GMT_Usage (API, 3, "+z Set increment <dz> for discretization of rho(r,z) when -H is used.");
 	GMT_Usage (API, 1, "\n-D<density>");
 	GMT_Usage (API, -2, "Set fixed density contrast (in kg/m^3) [Default reads it from last numerical column or computes it via -H].");
 	GMT_Usage (API, 1, "\n-Ff|n[<lat>]|v]");
@@ -690,6 +698,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to write prisms to file %s\n", Ctrl->C.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
+			if (Ctrl->C.quit) goto end_it_all;
 		}
 	}
 	else {	/* Read prisms from stdin or input file(s) */
@@ -901,6 +910,9 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
+
+end_it_all:
+
 	/* Free the prism information */
 	for (k = 0; k < 7; k++)
 		gmt_M_free (GMT, prism[k]);

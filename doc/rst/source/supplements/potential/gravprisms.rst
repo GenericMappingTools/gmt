@@ -14,7 +14,7 @@ Synopsis
 
 **gmt gravprisms** [ *table* ]
 [ |-A| ]
-[ |-C|\ [**+w**\ *file*][**+z**\ *dz*] ]
+[ |-C|\ [**+q**][**+w**\ *file*][**+z**\ *dz*] ]
 [ |-D|\ *density* ] ]
 [ |-E|\ *dx*\ /*dy*\ /*dz* ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
@@ -90,7 +90,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**+w**\ *file*][**+z**\ *dz*] ]
+**-C**\ [**+q**][**+w**\ *file*][**+z**\ *dz*] ]
     Create prisms for the entire feature given by **-S**\ *height*, or just for the layer between the two surfaces
     specified via **-L**\ *base* and **-T**\ *top*. For layers, either *base* or *top* may be a constant rather
     than a grid.  If only *height* is given then we assume we will approximate the entire feature from *base* = 0
@@ -98,7 +98,8 @@ Optional Arguments
     of sub-prisms with individual densities; thus *dz* needs to be set for the heights of these sub-prisms (the first
     and last sub-prisms in the stack may have their heights adjusted to match the limits of the surfaces).  Without
     **-H** we only create a single uniform-density prism, but those prisms may have spatially varying densities via
-    **-W**.  Append **+w**\ *file* to save the prisms to a table.
+    **-W**.  Append **+w**\ *file* to save the prisms to a table, and optionally use **+q** to quit execution once
+    the file has been saved, i.e., no geopotential calculations will take place.
 
 .. _-D:
 
