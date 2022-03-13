@@ -14,18 +14,22 @@ Synopsis
 
 **gmt gravprisms** [ *table* ]
 [ |-A| ]
-[ |-C|\ [*base*\ /*top*]\ *height*\ [**+z**\ *dz*] ]
+[ |-C|\ [**+w**\ *file*][**+z**\ *dz*] ]
 [ |-D|\ *density* ] ]
 [ |-E|\ *dx*\ /*dy*\ /*dz* ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-G|\ *outfile* ]
 [ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
 [ |SYN_OPT-I| ]
+[ |-L|\ *base* ]
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
 [ |SYN_OPT-R| ]
-[ |-Z|\ *level*\|\ *obsgrid* ]
+[ |-S|\ *shapegrid* ]
+[ |-T|\ *top* ]
 [ |SYN_OPT-V| ]
+[ |-W|\ *avedens* ]
+[ |-Z|\ *level*\|\ *obsgrid* ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -46,10 +50,12 @@ We either read the multi-segment *table* from file (or standard input), which ma
 7 colums: The first three are the center *x, y, z* coordinates of the prism, while the next
 three are the dimensions *dx dy dz* of each prism (see **-E** if all prisms have the same dimesions.
 Last column may contain individual prism densities (may be overridden by a fixed density contrast
-given via **-D**).  Alternatively, we can use **-C** to create the prisms needed to approximate the space between
-two surfaces (one of which may be a constant).  If a variable density model (**-H**) is selected
+given via **-D**).  Alternatively, we can use **-C** to create the prisms needed to approximate
+the entire feature (**-S**) or just the volume between two surfaces (one of which may be a constant)
+that define a layer (set via **-L** and **-T**).  If a variable density model (**-H**) is selected
 then each vertical prism will be broken into constant-density, stacked sub-prisms using a prescribed
-vertical increment *dz*.
+vertical increment *dz*, otherwise single tall prisms are created with constant (**-D**) or spatially
+varying (**-W**) densities.
 We can compute anomalies on an equidistant grid (by specifying a new grid with
 **-R** and **-I** or provide an observation grid with desired elevations) or at arbitrary
 output points specified via **-N**.  Choose between free-air anomalies, vertical
@@ -84,14 +90,15 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*base*\ /*top*]\ *height*\ [**+z**\ *dz*] ]
-    Create prisms for the layer between the two surfaces *base* and *top*, with *height* describing the full height of the
-    feature. Either *base* or *top* may be a constant rather than grid.  If *top* equals *height* then
-    give *height* as -.  If only *height* is given then we assume we will approximate the entire feature
-    from *base* = 0 to *height*.  If **-H** is used to compute variable density contrasts then we must
-    split each prism into a stack of sub-prisms with individual densities; thus *dz* needs to be set for the heights
-    of these sub-prisms (the first and last sub-prisms in the stack may have their heights adjusted to match the
-    limits of the surfaces).  Without **-H** we only create a single uniform-density prism.
+**-C**\ [**+w**\ *file*][**+z**\ *dz*] ]
+    Create prisms for the entire feature given by **-S**\ *height*, or just for the layer between the two surfaces
+    specified via **-L**\ *base* and **-T**\ *top*. For layers, either *base* or *top* may be a constant rather
+    than a grid.  If only *height* is given then we assume we will approximate the entire feature from *base* = 0
+    to *height*.  If **-H** is used to compute variable density contrasts then we must split each prism into a stack
+    of sub-prisms with individual densities; thus *dz* needs to be set for the heights of these sub-prisms (the first
+    and last sub-prisms in the stack may have their heights adjusted to match the limits of the surfaces).  Without
+    **-H** we only create a single uniform-density prism, but those prisms may have spatially varying densities via
+    **-W**.  Append **+w**\ *file* to save the prisms to a table.
 
 .. _-D:
 
@@ -123,9 +130,15 @@ Optional Arguments
 **-H**\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
     Set reference seamount parameters for an *ad-hoc* variable radial density function with depth. Give
     the low and high seamount densities in kg/m^3 or g/cm^3 and the fixed reference height *H* in meters.
-    Use modifers **+d** and **+p** to change the water-pressure-driven flank density increase
-    over the full reference height [0] and the variable density profile exponent *power* [1, i.e., a linear change].
+    Use modifers **+d** and **+p** to change the water-pressure-driven flank density increase over the
+    full reference height [0] and the variable density profile exponent *power* [1, i.e., a linear change].
+    Requires **-S** to know the full height of the seamount.
     See :doc:`grdseamount </supplements/potential/grdseamount>` for more details.
+
+.. _-L:
+
+**-L**\ *base*
+    Set the base grid surface for a layer we wish to make prisms for, or give a constant level [0].
 
 .. _-M:
 
@@ -140,10 +153,26 @@ Optional Arguments
     is used there are no grids and the output data records are written to standard output (see **-bo** for binary output).
     If *trackfile* has 3 columns we take the *z* value as our observation level; this level may be overridden via **-Z**.
 
+.. _-S:
+
+**-S**\ *height*
+    Set the grid with the full seamount height, either to make prisms from or as required by **-H**.
+
+.. _-T:
+
+**-T**\ *top*
+    Set the top grid surface for a layer we wish to make prisms for, or give a constant level.
+
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. _-W:
+
+**-W**\ *avedens*
+    Give the name of a grid with spatially varying, vertically-averaged prism densities (see :ref:`Grid File Formats
+    <grd_inout_full>`). Requires **-C** and must be co-registered with such grids.
 
 .. _-Z:
 
