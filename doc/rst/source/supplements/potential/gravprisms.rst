@@ -16,7 +16,7 @@ Synopsis
 [ |-A| ]
 [ |-C|\ [**+q**][**+w**\ *file*][**+z**\ *dz*] ]
 [ |-D|\ *density* ] ]
-[ |-E|\ *dx*\ /*dy*\ /*dz* ]
+[ |-E|\ *dx*\ /*dy* ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-G|\ *outfile* ]
 [ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
@@ -47,8 +47,9 @@ Description
 
 **gravprisms** will compute the geopotential field over vertically oriented, rectangular prisms.
 We either read the multi-segment *table* from file (or standard input), which may contain up to
-7 colums: The first three are the center *x, y, z* coordinates of the prism, while the next
-three are the dimensions *dx dy dz* of each prism (see **-E** if all prisms have the same dimesions.
+7 columns: The first four are *x y z_low z_high*, i.e., the center *x, y* coordinates and the
+vertical range of the prism from *zlow* to *z_high*, while the next two columns hold the dimensions
+*dx dy* of each prism (see **-E** if all prisms have the same *x*- and *y*-dimensions.
 Last column may contain individual prism densities (may be overridden by a fixed density contrast
 given via **-D**).  Alternatively, we can use **-C** to create the prisms needed to approximate
 the entire feature (**-S**) or just the volume between two surfaces (one of which may be a constant)
@@ -67,7 +68,7 @@ Required Arguments
 ------------------
 
 *table*
-    The file describing the prisms with record format *x y z* [ *dx dy dz* ] [ *rho* ],
+    The file describing the prisms with record format *x y z_lo z_hi* [ *dx dy* ] [ *rho* ],
     where the optional items are controlled by options **-E** and **-D**, respectively.
     Any density contrast can be given in kg/m^3 of g/cm^3.
 
