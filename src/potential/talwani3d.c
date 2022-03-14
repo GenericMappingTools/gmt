@@ -760,10 +760,6 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the talwani3d main code ----------------------------*/
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
-	/* Specify input expected columns to be at least 2 */
-	if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-		Return (error);
-	}
 	/* Register likely model files unless the caller has already done so */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLYGON, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 		Return (API->error);
@@ -793,8 +789,8 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 		}
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL)
 			Return (API->error);
-		if (D->n_columns < n_expected) {
-			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but %d are needed\n", Ctrl->N.file, (int)D->n_columns, n_expected);
+		if (D->n_columns < 2) {
+			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)D->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
@@ -819,7 +815,10 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 	n_alloc1 = GMT_CHUNK;
 	cake = gmt_M_memory (GMT, NULL, n_alloc1, struct TALWANI3D_CAKE);
 
-	/* Read the sliced model */
+	/* Read the sliced model; expecting 2 coordinates per record */
+	if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+		Return (API->error);
+	}
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
