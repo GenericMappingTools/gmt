@@ -309,13 +309,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 			case 'Z':	/* Observation level(s) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
-				if (!gmt_access (GMT, opt->arg, F_OK)) {	/* File with z-levels exists */
+				if (opt->arg[0] && !gmt_access (GMT, opt->arg, F_OK)) {	/* File with z-levels exists */
 					Ctrl->Z.file = strdup (opt->arg);
 					Ctrl->Z.mode = 1;
 				}
 				else {	/* Got a constant z-level */
 					Ctrl->Z.mode = 0;
-					Ctrl->Z.level = atof (opt->arg);
+					Ctrl->Z.level = (opt->arg[0]) ? atof (opt->arg) : 0.0;
 				}
 				break;
 			default:
