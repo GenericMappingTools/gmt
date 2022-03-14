@@ -240,6 +240,8 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 	                                 "Option -G: Must specify output gridfile name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file,
 	                                 "Option -N: Must specify output gridfile name.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Z.mode == 1,
+	                                 "Option -N: Cannot give a grid of zlevels via -Z if -N is used.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -272,7 +274,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set name of output file. Grid file name is requires unless -N is used.");
 	GMT_Option (API, "I");
 	GMT_Usage (API, 1, "\n-M[hz]");
-	GMT_Usage (API, -2, "Change units used, via one or two directives:");
+	GMT_Usage (API, -2, "Change distance units used, via one or two directives:");
 	GMT_Usage (API, 3, "h: All x- and y-distances are given in km [meters].");
 	GMT_Usage (API, 3, "z: All z-distances are given in km [meters].");
 	GMT_Usage (API, 1, "\n-N<trktable>");
@@ -283,7 +285,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set observation level for output locations [0]. "
 		"Append either a constant or the name of grid file with variable levels. "
 		"If given a grid then it also defines the output grid.");
-	GMT_Usage (API, -2, "Note: Cannot use both -Z<grid> and -R -I [-r].");
+	GMT_Usage (API, -2, "Note: Cannot use -Z<grid> with -R -I [-r] or -N.");
 	GMT_Option (API, "bo,d,e");
 	GMT_Usage (API, 1, "\n-fg Map units (lon, lat in degree, else in m [but see -Mh]).");
 	GMT_Option (API, "h,i,o,r,x,.");
@@ -988,7 +990,7 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 				gmt_prep_tmp_arrays (GMT, GMT_OUT, S->n_rows, 1);	/* Init or reallocate tmp vector */
 #ifdef _OPENMP
 				/* Spread calculation over selected cores */
-#pragma omp parallel for private(row,z_level) shared(GMT,Ctrl,S,scl,cake,depths,ndepths,flat_earth, G0)
+#pragma omp parallel for private(row,z_level) shared(S,Ctrl,GMT,scl,cake,depths,ndepths,flat_earth,G0)
 #endif
 				/* Separate the calculation from the output in two separate row-loops since cannot do rec-by-rec output
 				 * with OpenMP due to race condiations that would mess up the output order */
@@ -1022,7 +1024,7 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 		}
 #ifdef _OPENMP
 		/* Spread calculation over selected cores */
-#pragma omp parallel for private(row,col,node,y_obs,z_level) shared(API,GMT,Ctrl,G,x_obs,cake,depths,ndepths,flat_earth, G0)
+#pragma omp parallel for private(row,y_obs,col,node,z_level) shared(n_rows,GMT,G,flat_earth,Ctrl,n_columns,x_obs,cake,depths,ndepths,G0)
 #endif
 		for (row = 0; row < n_rows; row++) {	/* Do row-by-row and report on progress if -V */
 			y_obs = gmt_M_grd_row_to_y (GMT, row, G->header);
@@ -1030,7 +1032,7 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 #ifndef _OPENMP
 			GMT_Report (API, GMT_MSG_INFORMATION, "Finished row %5d\n", row);
 #endif
-			for (col = 0; col < (openmp_int)G->header->n_columns; col++) {
+			for (col = 0; col < n_columns; col++) {
 				/* Loop over cols; always save the next level before we update the array at that col */
 				node = gmt_M_ijp (G->header, row, col);
 				z_level = (Ctrl->A.active) ? -G->data[node] : G->data[node];	/* Get observation z level and possibly flip direction */
