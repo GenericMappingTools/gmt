@@ -63,6 +63,13 @@ output points specified via **-N**.  Choose between free-air anomalies, vertical
 gravity gradient anomalies, or geoid anomalies.  Options are available to control
 axes units and direction.
 
+.. figure:: /_images/GMT_seamount_prisms.*
+   :width: 500 px
+   :align: center
+
+   Three density models explored for a truncated Gaussian seamount via **-C**: (left) Constant
+   density (**-D**), (middle) Vertically-averaged density varying radially (**-W**), and
+   (right) density varies with *r* and *z* (**-H**).
 
 Required Arguments
 ------------------
@@ -70,7 +77,7 @@ Required Arguments
 *table*
     The file describing the prisms with record format *x y z_lo z_hi* [ *dx dy* ] [ *rho* ],
     where the optional items are controlled by options **-E** and **-D**, respectively.
-    Any density contrast can be given in kg/m^3 of g/cm^3.
+    Density contrasts can be given in kg/m^3 of g/cm^3.
 
 .. _-I:
 
