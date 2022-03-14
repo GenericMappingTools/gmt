@@ -27,7 +27,7 @@
  * sphere) and gave the correct answer.  It expects all distances
  * to be in meters (you can override with the -M option) or to be
  * in degrees lon/lat (will scale for a flat earth) and densities
- * is expected to be in kg/m^3.
+ * is expected to be in kg/m^3 or g/cm^3.
  *
  * Based on methods by
  *
@@ -160,6 +160,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.rho = atof (opt->arg);
+				if (fabs (Ctrl->D.rho) < 10.0) Ctrl->D.rho *= 1000;	/* Gave units of g/cm^3 */
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
@@ -169,7 +170,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 					case 'n': Ctrl->F.mode = TALWANI3D_GEOID;
 						if (opt->arg[1]) Ctrl->F.lat = atof (&opt->arg[1]), Ctrl->F.lset = true;
 						break;
-					case 'g':  Ctrl->F.mode = TALWANI3D_FAA; 	break;
+					case 'f': case '\0': Ctrl->F.mode = TALWANI3D_FAA; 	break;
 					default:
 						GMT_Report (API, GMT_MSG_WARNING, "Option -F: Unrecognized field %c\n", opt->arg[0]);
 						n_errors++;
@@ -263,7 +264,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A The z-axis is positive upwards [Default is positive down].");
 	GMT_Usage (API, 1, "\n-D<density>");
-	GMT_Usage (API, -2, "Set fixed density contrast that overrides settings in model file (in kg/m^3).");
+	GMT_Usage (API, -2, "Set fixed density contrast that overrides settings in model file (in kg/m^3 or g/cm^3).");
 	GMT_Usage (API, 1, "\n-Ff|n[<lat>]|v]");
 	GMT_Usage (API, -2, "Specify desired geopotential field component:");
 	GMT_Usage (API, 3, "f: Free-air anomalies (mGal) [Default].");
@@ -862,7 +863,12 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 				/* Process the next segment header */
-				ns = sscanf (GMT->current.io.segment_header, "%lf %lf", &depth, &rho);
+				if (strstr (GMT->current.io.segment_header, "contour -Z"))	/* Got plain grdcontour output - no density present */
+					ns = sscanf (GMT->current.io.segment_header, "%lf", &depth);
+				else {	/* By the book */
+					ns = sscanf (GMT->current.io.segment_header, "%lf %lf", &depth, &rho);
+					if (fabs (rho) < 10.0) rho *= 1000;	/* Gave units of g/cm^3 */
+				}
 				if (ns == 1 && !Ctrl->D.active) {
 					GMT_Report (API, GMT_MSG_ERROR, "Neither segment header nor -D specified density - must quit\n");
 					gmt_M_free (GMT, cake);
