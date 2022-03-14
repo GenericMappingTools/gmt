@@ -784,12 +784,17 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 			Return (API->error);
 		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);
 	}
-	else {	/* Got a dataset with output locations via -N */
+	else {	/* Got a dataset with output locations (x,y,z) via -N */
+		unsigned int n_expected = 3;
+		if (Ctrl->Z.active) n_expected--;	/* Only read x,y from file */
 		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from the -N file */
+		if ((error = GMT_Set_Columns (API, GMT_IN, n_expected, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			Return (API->error);
+		}
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL)
 			Return (API->error);
-		if (D->n_columns < 2) {
-			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)D->n_columns);
+		if (D->n_columns < n_expected) {
+			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but %d are needed\n", Ctrl->N.file, (int)D->n_columns, n_expected);
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
@@ -863,7 +868,7 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 				/* Process the next segment header */
-				if (strstr (GMT->current.io.segment_header, "contour -Z"))	/* Got plain grdcontour output - no density present */
+				if (strstr (GMT->current.io.segment_header, "contour -Z"))	/* Got plain grdcontour output - no density is present */
 					ns = sscanf (GMT->current.io.segment_header, "%lf", &depth);
 				else {	/* By the book */
 					ns = sscanf (GMT->current.io.segment_header, "%lf %lf", &depth, &rho);
@@ -1002,6 +1007,7 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 				 * with OpenMP due to race condiations that would mess up the output order */
 				for (row = 0; row < (int64_t)S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
 					z_level = (S->n_columns == 3 && !Ctrl->Z.active) ? S->data[GMT_Z][row] : Ctrl->Z.level;	/* Default observation z level unless provided in input file */
+					if (!Ctrl->M.active[TALWANI3D_VER]) z_level /= METERS_IN_A_KM;	/* Change level to km */
 					GMT->hidden.mem_coord[GMT_X][row] = talwani3d_get_one_output (S->data[GMT_X][row] * scl, S->data[GMT_Y][row] * scl, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth, G0);
 				}
 				/* This loop is not under OpenMP */
