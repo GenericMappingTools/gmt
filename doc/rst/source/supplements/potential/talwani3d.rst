@@ -84,7 +84,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ **f**\|\ **n**\|\ **v**
+**-F**\ **f**\|\ **n**\ [*lat*]\|\ **v**
     Specify desired gravitational field component.  Choose between **f** (free-air anomaly) [Default],
     **n** (geoid; optionally append average latitude for normal gravity reference value [Default is
     mid-grid (or mid-profile if **-N**)]) or **v** (vertical gravity gradient).
