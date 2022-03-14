@@ -15,7 +15,7 @@ Synopsis
 **gmt gravprisms** [ *table* ]
 [ |-A| ]
 [ |-C|\ [**+q**][**+w**\ *file*][**+z**\ *dz*] ]
-[ |-D|\ *density* ] ]
+[ |-D|\ *density* ]
 [ |-E|\ *dx*\ /*dy* ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-G|\ *outfile* ]
@@ -48,10 +48,10 @@ Description
 **gravprisms** will compute the geopotential field over vertically oriented, rectangular prisms.
 We either read the multi-segment *table* from file (or standard input), which may contain up to
 7 columns: The first four are *x y z_low z_high*, i.e., the center *x, y* coordinates and the
-vertical range of the prism from *zlow* to *z_high*, while the next two columns hold the dimensions
-*dx dy* of each prism (see **-E** if all prisms have the same *x*- and *y*-dimensions.
-Last column may contain individual prism densities (may be overridden by a fixed density contrast
-given via **-D**).  Alternatively, we can use **-C** to create the prisms needed to approximate
+vertical range of the prism from *z_low* to *z_high*, while the next two columns hold the dimensions
+*dx dy* of each prism (see **-E** if all prisms have the same *x*- and *y*-dimensions).
+Last column may contain individual prism densities (but will be overridden by a fixed density contrast
+if given via **-D**).  Alternatively, we can use **-C** to create the prisms needed to approximate
 the entire feature (**-S**) or just the volume between two surfaces (one of which may be a constant)
 that define a layer (set via **-L** and **-T**).  If a variable density model (**-H**) is selected
 then each vertical prism will be broken into constant-density, stacked sub-prisms using a prescribed
@@ -67,9 +67,9 @@ axes units and direction.
    :width: 500 px
    :align: center
 
-   Three density models explored for a truncated Gaussian seamount via **-C**: (left) Constant
-   density (**-D**), (middle) Vertically-averaged density varying radially (**-W**), and
-   (right) density varies with *r* and *z* (**-H**).
+   Three density models modeled by prisms for a truncated Gaussian seamount via **-C**: (left) Constant
+   density (**-D**), (middle) vertically-averaged density varying radially (**-W**), and
+   (right) density varies with *r* and *z* (**-H**), requiring a stack of prisms.
 
 Required Arguments
 ------------------
@@ -94,8 +94,7 @@ Optional Arguments
 .. _-A:
 
 **-A**
-    The *z*-axis should be positive upwards [Default is down]. All internal *z*-values will have their sign
-    changed. **Note**: Output *z*-values are not affected.
+    The *z*-axis should be positive upwards [Default is down].
 
 .. _-C:
 
@@ -117,13 +116,13 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *dx*\ /*dy*\ /*dz*
-    If all prisms in *table* have constant dimensions then they can be set here.  In that case *table*
-    only contains the centers of each prism (and optionally *density*; see **-D**).
+**-E**\ *dx*\ /*dy*
+    If all prisms in *table* have constant x/y-dimensions then they can be set here.  In that case *table*
+    only contains the centers of each prism and the *z* range (and optionally *density*; see **-D**).
 
 .. _-F:
 
-**-F**\ **f**\|\ **n**\|\ **v**
+**-F**\ **f**\|\ **n**\ [*lat*]\|\ **v**
     Specify desired gravitational field component.  Choose between **f** (free-air anomaly) [Default],
     **n** (geoid; optionally append average latitude for normal gravity reference value [Default is
     mid-grid (or mid-profile if **-N**)]) or **v** (vertical gravity gradient).
@@ -133,7 +132,8 @@ Optional Arguments
 **-G**\ *outfile*
     Specify the name of the output data (for grids, see :ref:`Grid File Formats
     <grd_inout_full>`). Required when an equidistant grid is implied for output.
-    If **-N** is used then output is written to standard output unless **-G** specifies an output file.
+    If **-N** is used then output is written to standard output unless **-G**
+    specifies an output file.
 
 .. _-H:
 
@@ -148,7 +148,8 @@ Optional Arguments
 .. _-L:
 
 **-L**\ *base*
-    Give name of the base grid surface for a layer we wish to fill with prisms, or give a constant *z*-level [0].
+    Give name of the base surface grid for a layer we wish to approximate with prisms, or give
+    a constant *z*-level [0].
 
 .. _-M:
 
@@ -163,7 +164,7 @@ Optional Arguments
 **-N**\ *trackfile*
     Specifies individual (x, y[, z]) locations where we wish to compute the predicted value.  When this option
     is used there are no grids involved and the output data records are written to standard output (see **-bo** for binary output).
-    If *trackfile* has 3 columns we take the *z* value as our observation level; this level may be overridden via **-Z**.
+    If **-Z** is not set then *trackfile* must have 3 columns and we take the *z* value as our observation level; otherwise the level must be set via **-Z**.
     **Note**: If **-G** is used to set an output file we will write the output table to that file instead of standard output.
 
 .. _-S:
@@ -174,7 +175,7 @@ Optional Arguments
 .. _-T:
 
 **-T**\ *top*
-    Give name of the top surface grid for a layer we wish to fill with prisms, or give a constant *z*-level.
+    Give name of the top surface grid for a layer we wish to approximate with prisms, or give a constant *z*-level.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
@@ -184,8 +185,8 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *avedens*
-    Give name of a grid with spatially varying, vertically-averaged prism densities. Requires **-C** and
-    the grid must be co-registered with the grid provided by **-S**.
+    Give name of an input grid with spatially varying, vertically-averaged prism densities. Requires **-C** and
+    the grid must be co-registered with the grid provided by **-S** (or **L** and **-T**).
 
 .. _-Z:
 
