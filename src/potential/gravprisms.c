@@ -805,7 +805,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);	/* Mid-latitude needed if geoid is selected */
 	}
 	else {	/* Got a dataset with output locations via -N */
-		unsigned int n_expected = 4;	/* Max number of columns */
+		unsigned int n_expected = 3;	/* Max number of columns is 3 (x, y, z) but if -Z is set then just (x, y) */
 		if (Ctrl->Z.active) n_expected--;
 		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from the -N file */
 		if ((error = GMT_Set_Columns (API, GMT_IN, n_expected, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
@@ -816,8 +816,8 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 			error = API->error;
 			goto end_it_all;
 		}
-		if (D->n_columns < 2) {
-			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)D->n_columns);
+		if (D->n_columns < n_expected) {
+			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but %d are needed\n", Ctrl->N.file, (int)D->n_columns, n_expected);
 			error = GMT_DIM_TOO_SMALL;
 			goto end_it_all;
 		}

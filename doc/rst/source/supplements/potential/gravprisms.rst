@@ -162,8 +162,9 @@ Optional Arguments
 
 **-N**\ *trackfile*
     Specifies individual (x, y[, z]) locations where we wish to compute the predicted value.  When this option
-    is used there are no grids and the output data records are written to standard output (see **-bo** for binary output).
+    is used there are no grids involved and the output data records are written to standard output (see **-bo** for binary output).
     If *trackfile* has 3 columns we take the *z* value as our observation level; this level may be overridden via **-Z**.
+    **Note**: If **-G** is used to set an output file we will write the output table to that file instead of standard output.
 
 .. _-S:
 
