@@ -43,19 +43,10 @@
 #define THIS_MODULE_NEEDS	"r"
 #define THIS_MODULE_OPTIONS "-VRbdefhior" GMT_ADD_x_OPT
 
-/* Geographic coordinates not implemented yet */
+/* Note: All calculations assume distances in meters so degrees -> meters and km -> meters first */
 
-#define DX_FROM_DLON(x1, x2, y1, y2) (((x1) - (x2)) * DEG_TO_KM * cos (0.5 * ((y1) + (y2)) * D2R))
-#define DY_FROM_DLAT(y1, y2) (((y1) - (y2)) * DEG_TO_KM)
-#define gmt_M_is_zero2(x) (fabs (x) < 2e-5)	/* Check for near-zero angles [used in geoid integral()]*/
-
-#define GMT_GRAVPRISMS_N_DEPTHS GMT_BUFSIZ	/* Max depths allowed due to OpenMP needing stack array */
-
-#if 0
-/* this is for various debug purposes and will eventually be purged */
-bool dump = false;
-FILE *fp = NULL;
-#endif
+#define DX_FROM_DLON(x1, x2, y1, y2) (((x1) - (x2)) * DEG_TO_M * cos (0.5 * ((y1) + (y2)) * D2R))
+#define DY_FROM_DLAT(y1, y2) (((y1) - (y2)) * DEG_TO_M)
 
 enum gravprisms_fields {
 	GRAVPRISMS_FAA	= 0,
@@ -89,7 +80,7 @@ struct GRAVPRISMS_CTRL {
 		unsigned int mode;
 		double lat;
 	} F;
-	struct GRAVPRISMS_G {	/* Output file */
+	struct GRAVPRISMS_G {	/* Output grid or profile */
 		bool active;
 		char *file;
 	} G;
@@ -551,11 +542,44 @@ GMT_LOCAL double gravprisms_get_one_g_output (double x, double y, double z, uint
 	return (g);
 }
 
+GMT_LOCAL double gravprisms_get_one_g_output_geo (double x, double y, double z, uint64_t n_prisms, double **P, double unused) {
+	/* (x, y, z) is the observation point */
+	double g = 0.0;
+	double dx1, dx2, dy1, dy2, ym;
+	gmt_M_unused (unused);
+	for (uint64_t k = 0; k < n_prisms; k++) {
+		/* Got lon, lat and must convert to Flat-Earth km */
+		ym = 0.5 * (P[2][k] + P[3][k]);	/* Prism mid-y-value */
+		dx1 = DX_FROM_DLON (P[0][k], x, ym, y);
+		dx2 = DX_FROM_DLON (P[1][k], x, ym, y);
+		dy1 = DY_FROM_DLAT (P[2][k], y);
+		dy2 = DY_FROM_DLAT (P[3][k], y);
+		g += gravprism (dx1, dx2, dy1, dy2, P[4][k]-z, P[5][k]-z, P[6][k]);
+	}
+	return (g);
+}
+
 GMT_LOCAL double gravprisms_get_one_n_output (double x, double y, double z, uint64_t n_prisms, double **P, double constant) {
 	/* (x, y, z) is the observation point */
 	double n = 0.0;
 	for (uint64_t k = 0; k < n_prisms; k++)
 		n += geoidprism (P[0][k]-x, P[1][k]-x, P[2][k]-y, P[3][k]-y, P[4][k]-z, P[5][k]-z, P[6][k]);
+	return (n * constant * 0.01);	/* To get geoid in meter */
+}
+
+GMT_LOCAL double gravprisms_get_one_n_output_geo (double x, double y, double z, uint64_t n_prisms, double **P, double constant) {
+	/* (x, y, z) is the observation point */
+	double n = 0.0;
+	double dx1, dx2, dy1, dy2, ym;
+	for (uint64_t k = 0; k < n_prisms; k++) {
+		/* Got lon, lat and must convert to Flat-Earth km */
+		ym = 0.5 * (P[2][k] + P[3][k]);	/* Prism mid-y-value */
+		dx1 = DX_FROM_DLON (P[0][k], x, ym, y);
+		dx2 = DX_FROM_DLON (P[1][k], x, ym, y);
+		dy1 = DY_FROM_DLAT (P[2][k], y);
+		dy2 = DY_FROM_DLAT (P[3][k], y);
+		n += geoidprism (dx1, dx2, dy1, dy2, P[4][k]-z, P[5][k]-z, P[6][k]);
+	}
 	return (n * constant * 0.01);	/* To get geoid in meter */
 }
 
@@ -565,6 +589,23 @@ GMT_LOCAL double gravprisms_get_one_v_output (double x, double y, double z, uint
 	gmt_M_unused (unused);
 	for (uint64_t k = 0; k < n_prisms; k++)
 		v += vggprism (P[0][k]-x, P[1][k]-x, P[2][k]-y, P[3][k]-y, P[4][k]-z, P[5][k]-z, P[6][k]);
+	return (v * 0.0001);	/* From mGal/m to Eotvos = 0.1 mGal/km */
+}
+
+GMT_LOCAL double gravprisms_get_one_v_output_geo (double x, double y, double z, uint64_t n_prisms, double **P, double unused) {
+	/* (x, y, z) is the observation point */
+	double v = 0.0;
+	double dx1, dx2, dy1, dy2, ym;
+	gmt_M_unused (unused);
+	for (uint64_t k = 0; k < n_prisms; k++) {
+		/* Got lon, lat and must convert to Flat-Earth km */
+		ym = 0.5 * (P[2][k] + P[3][k]);	/* Prism mid-y-value */
+		dx1 = DX_FROM_DLON (P[0][k], x, ym, y);
+		dx2 = DX_FROM_DLON (P[1][k], x, ym, y);
+		dy1 = DY_FROM_DLAT (P[2][k], y);
+		dy2 = DY_FROM_DLAT (P[3][k], y);
+		v += vggprism (dx1, dx2, dy1, dy2, P[4][k]-z, P[5][k]-z, P[6][k]);
+	}
 	return (v * 0.0001);	/* From mGal/m to Eotvos = 0.1 mGal/km */
 }
 
@@ -845,15 +886,15 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 
 	switch (Ctrl->F.mode) {		/* Set pointer to chosen geopotential evaluation function */
 		case GRAVPRISMS_VGG:
-			eval = &gravprisms_get_one_v_output;
+			eval = (flat_earth) ? &gravprisms_get_one_v_output_geo : &gravprisms_get_one_v_output;
 		 	break;
 		case GRAVPRISMS_GEOID:
-			eval = &gravprisms_get_one_n_output;
+			eval = (flat_earth) ? &gravprisms_get_one_n_output_geo : &gravprisms_get_one_n_output;
 			G0 = (Ctrl->F.lset) ? g_normal (Ctrl->F.lat) : g_normal (lat);
 			G0 = 1.0 / G0;	/* To avoid dividing in the loop */
 			break;
 		case GRAVPRISMS_FAA:
-			eval = &gravprisms_get_one_g_output;
+			eval = (flat_earth) ? &gravprisms_get_one_g_output_geo : &gravprisms_get_one_g_output;
 		 	break;
 		default:
 			/* Just for Coverity */
@@ -897,7 +938,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 				gmt_prep_tmp_arrays (GMT, GMT_OUT, S->n_rows, 1);	/* Init or reallocate tmp vector */
 #ifdef _OPENMP
 				/* Spread calculation over selected cores */
-#pragma omp parallel for private(row,z_level) shared(S,Ctrl,GMT,eval,scl_xy,scl_z,n_prisms,prism,flat_earth,G0)
+#pragma omp parallel for private(row,z_level) shared(S,Ctrl,GMT,eval,scl_xy,scl_z,n_prisms,prism,G0)
 #endif
 				/* Separate the calculation from the output in two separate row-loops since cannot do rec-by-rec output
 				 * with OpenMP due to race condiations that would mess up the output order */
@@ -930,7 +971,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		}
 #ifdef _OPENMP
 		/* Spread calculation over selected cores */
-#pragma omp parallel for private(row,y_obs,col,node,z_level) shared(n_rows,scl_xy,GMT,G,flat_earth,Ctrl,n_columns,eval,x_obs,scl_z,n_prisms,prism,G0)
+#pragma omp parallel for private(row,y_obs,col,node,z_level) shared(n_rows,scl_xy,GMT,G,Ctrl,n_columns,eval,x_obs,scl_z,n_prisms,prism,G0)
 #endif
 		for (row = 0; row < n_rows; row++) {	/* Do row-by-row and report on progress if -V */
 			y_obs = scl_xy * gmt_M_grd_row_to_y (GMT, row, G->header);
