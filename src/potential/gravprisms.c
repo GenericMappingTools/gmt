@@ -221,7 +221,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 					case 'n': Ctrl->F.mode = GRAVPRISMS_GEOID;
 						if (opt->arg[1]) Ctrl->F.lat = atof (&opt->arg[1]), Ctrl->F.lset = true;
 						break;
-					case 'g':  Ctrl->F.mode = GRAVPRISMS_FAA; 	break;
+					case 'f':  Ctrl->F.mode = GRAVPRISMS_FAA; 	break;
 					default:
 						GMT_Report (API, GMT_MSG_WARNING, "Option -F: Unrecognized field %c\n", opt->arg[0]);
 						n_errors++;
