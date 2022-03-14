@@ -3,54 +3,19 @@
 #	Makes the insets for Appendix M(cpt)
 #	[skip srtm which is just a special version of dem2]
 #
-# We have four sets of CPT figures to make:
+# We have five sets of CPT figures to make:
 # 1a) Our regular, traditional GMT CPTs [44]
 # 1b) The regular Scientific Color Maps* [30]
-# 1c) Categorical CPTs (ours and SCM*)  [18]
-# 1d) Cyclic CPTs from SCM* [5]
+# 1c) Categorical CPTs [18]
+# 1d) Cyclic CPTs [7]
+# 1e) Colormaps from cmocean [22]
 #
 # *from Fabio [www.fabiocrameri.ch/visualisation]
 
 GMT_SHAREDIR=$(gmt --show-sharedir)
 
-# Make a skip list - note we don't need to add those with an O or S added since the will be grepped out as well
-cat << EOF > skip.lis
-acton
-bam
-bamako
-batlow
-batlowK
-batlowW
-berlin
-bilbao
-broc
-buda
-bukavu
-cork
-davos
-devon
-fes
-grayC
-hawaii
-imola
-lajolla
-lapaz
-lisbon
-nuuk
-oleron
-oslo
-roma
-tofino
-tokyo
-turku
-vanimo
-vik
-srtm
-categorical
-paired
-EOF
-# Get the list of CPTs for this figure
-sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | fgrep -v -f skip.lis | awk '{print $1}' | sort -r > tt.lis
+# Here we list all cpt, except cyclic, categorical, cmocean, crameri, srtm
+sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | egrep -v "cyclic|categorical|cmocean|crameri|srtm" | awk '{print $1}' | sort -r > tt.lis
 
 n=$(cat tt.lis | wc -l)
 let n2=n/2
@@ -103,5 +68,5 @@ do
 	y=$(gmt math -Q $y $dy ADD =)
 	y2=$(gmt math -Q $y2 $dy ADD =)
 done
-rm -f tt.* skip.lis
+rm -f tt.*
 gmt end show
