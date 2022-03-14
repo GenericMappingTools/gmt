@@ -8387,17 +8387,17 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file, struct G
 }
 
 char *gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
-	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
+	/* If cpt is the name of a GMT CPT master table, return that name, otherwise NULL */
 	char *c = NULL, *f = NULL, *master = NULL;
-	if (gmt_M_file_is_memory (cpt)) return NULL;	/* A CPT was given via memory location so cannot be a master reference */
 	if (!cpt || !cpt[0]) return gmtsupport_cpt_master_index (GMT, GMT->current.setting.cpt);	/* No cpt given means use GMT->current.setting.cpt master */
+	if (gmt_M_file_is_memory (cpt)) return NULL;	/* A CPT was given via memory location so cannot be a master reference */
 	if ((f = gmt_strrstr (cpt, GMT_CPT_EXTENSION)))	/* Only examine modifiers from there onwards */
 		c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
 	else	/* Must examine the entire file name for modifiers */
 		c = gmtlib_last_valid_file_modifier (GMT->parent, cpt, GMT_CPTFILE_MODIFIERS);
 	if (c && (f = gmt_first_modifier (GMT, c, GMT_CPTFILE_MODIFIERS)))
 		f[0] = '\0';	/* Must chop off modifiers for further checks to work */
-	master = gmtsupport_cpt_master_index (GMT, cpt);
+	if (gmt_access (GMT, cpt, R_OK)) master = gmtsupport_cpt_master_index (GMT, cpt);
 	if (c && f) f[0] = '+';	/* Restore modifier before we return */
 	return master;
 }
