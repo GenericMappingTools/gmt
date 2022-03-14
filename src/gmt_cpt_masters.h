@@ -17,7 +17,7 @@
 "gmt/nighttime      : Colors for DMSP-OLS Nighttime Lights Time Series [C=HSV]",
 "gmt/no_green       : For those who hate green [S, C=RGB]",
 "gmt/ocean          : White-green-blue bathymetry scale [R=-8000/0, C=RGB]",
-"gmt/paired         : Qualitative color map with 6 pairs of colors [C=RGB]",
+"gmt/paired         : Categorical color map with 6 pairs of colors [C=RGB]",
 "gmt/rainbow        : Rainbow, magenta-blue-cyan-green-yellow-red [C=HSV]",
 "gmt/red2green      : Polar scale from red to green via white [S, C=RGB]",
 "gmt/relief         : Wessel/Martinez colors for topography [R=-8000/+8000, H, C=RGB]",

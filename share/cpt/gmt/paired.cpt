@@ -1,6 +1,5 @@
 #
-# gmt/paired : Qualitative color map with 6 pairs of colors [C=RGB]
-# Qualitative palette with 6 pairs of colors
+# gmt/paired : Categorical color map with 6 pairs of colors [C=RGB]
 #
 # This color table is based on the specifications and designs
 # developed by Cynthia Brewer (http://colorbrewer.org/)
