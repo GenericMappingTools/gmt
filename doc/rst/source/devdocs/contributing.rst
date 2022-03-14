@@ -71,7 +71,7 @@ where you can submit general comments and/or questions:
 * For general comments, select *New Topic* from the
   `Lounge Page <https://forum.generic-mapping-tools.org/c/lounge/>`_.
 * To share your work, select *New Topic* from the
-  `Showcase Page <https://forum.generic-mapping-tools.org/c/Sow-your-nice-example-script/>`_.
+  `Showcase Page <https://forum.generic-mapping-tools.org/c/Show-your-nice-example-script/>`_.
 
 General Guidelines
 ------------------
