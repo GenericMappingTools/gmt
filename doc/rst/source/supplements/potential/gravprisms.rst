@@ -119,8 +119,9 @@ Optional Arguments
 **-E**\ *dx*\ [/*dy*]
     If all prisms in *table* have constant x/y-dimensions then they can be set here.  In that case *table*
     only contains the centers of each prism and the *z* range (and optionally *density*; see **-D**).
-    If only *dx* is given then we set *dy = dx*. **Note**: For geographic coordinates the *dx* dimension is
-    in geographic delta longitude and hence the physical width of the prism will decrease with latitude if *dx* stays the same.
+    If only *dx* is given then we set *dy = dx*. **Note**: For geographic coordinates the *dx* dimension
+    is in geographic delta longitude and hence the physical width of the prism will decrease with latitude
+    if *dx* stays the same.
 
 .. _-F:
 
@@ -164,10 +165,12 @@ Optional Arguments
 .. _-N:
 
 **-N**\ *trackfile*
-    Specifies individual (x, y[, z]) locations where we wish to compute the predicted value.  When this option
-    is used there are no grids involved and the output data records are written to standard output (see **-bo** for binary output).
-    If **-Z** is not set then *trackfile* must have 3 columns and we take the *z* value as our observation level; otherwise the level must be set via **-Z**.
-    **Note**: If **-G** is used to set an output file we will write the output table to that file instead of standard output.
+    Specifies individual (x, y[, z]) locations where we wish to compute the predicted value.
+    When this option is used there are no grids involved and the output data records are written
+    to standard output (see **-bo** for binary output). If **-Z** is not set then *trackfile* must
+    have 3 columns and we take the *z* value as our observation level; otherwise the level must be
+    set via **-Z**. **Note**: If **-G** is used to set an output file we will write the output table
+    to that file instead of standard output.
 
 .. _-S:
 
@@ -177,7 +180,8 @@ Optional Arguments
 .. _-T:
 
 **-T**\ *top*
-    Give name of the top surface grid for a layer we wish to approximate with prisms, or give a constant *z*-level.
+    Give name of the top surface grid for a layer we wish to approximate with prisms, or give a
+    constant *z*-level.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
@@ -187,8 +191,8 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *avedens*
-    Give name of an input grid with spatially varying, vertically-averaged prism densities. Requires **-C** and
-    the grid must be co-registered with the grid provided by **-S** (or **L** and **-T**).
+    Give name of an input grid with spatially varying, vertically-averaged prism densities. Requires
+    **-C** and the grid must be co-registered with the grid provided by **-S** (or **L** and **-T**).
 
 .. _-Z:
 

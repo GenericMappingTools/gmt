@@ -206,7 +206,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 				ns = sscanf (opt->arg, "%lg/%lg", &Ctrl->E.dx, &Ctrl->E.dy);
 				if (ns == 1) Ctrl->E.dy = Ctrl->E.dx;
 				break;
-			case 'F':	/* Seldct geopotential type */
+			case 'F':	/* Select geopotential type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
@@ -258,7 +258,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 				Ctrl->H.p1 = Ctrl->H.p + 1;
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
-			case 'I':	/* Grid iincrements */
+			case 'I':	/* Grid increments */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
@@ -404,7 +404,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Change distance units used, via one or two directives:");
 	GMT_Usage (API, 3, "h: All x- and y-distances are given in km [meters].");
 	GMT_Usage (API, 3, "z: All z-distances are given in km [meters].");
-	GMT_Usage (API, -2, "Note: All horixontal and/or vertical quantities will be affected by a factor of 1000");
+	GMT_Usage (API, -2, "Note: All horizontal and/or vertical quantities will be affected by a factor of 1000");
 	GMT_Usage (API, 1, "\n-N<trktable>");
 	GMT_Usage (API, -2, "File with output locations (x,y) where a calculation is requested.  Optionally z may be read as well. No grid "
 		"is produced and output (x,y,z,g) is written to standard output (see -bo for binary output).");
@@ -432,7 +432,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 #define GRAVITATIONAL_CONST_VGG   6.674e-2	/* To convert mGal/m to 0.1 mGal/km requires 1e4 */
 
 GMT_LOCAL double geoidprism (double dx1, double dx2, double dy1, double dy2, double dz1, double dz2, double rho) {
-	/* Geoid anomaly from a single prism [Nagy et al, 2000] */
+	/* Geoid anomaly from a single vertical prism [Nagy et al, 2000] */
 	double n, dx1_sq, dx2_sq, dy1_sq, dy2_sq, dz1_sq, dz2_sq;
 	double R111, R112, R121, R122, R211, R212, R221, R222;
 	double n111, n112, n121, n122, n211, n212, n221, n222;
@@ -467,7 +467,7 @@ GMT_LOCAL double geoidprism (double dx1, double dx2, double dy1, double dy2, dou
 }
 
 GMT_LOCAL double gravprism (double dx1, double dx2, double dy1, double dy2, double dz1, double dz2, double rho) {
-	/* Gravity anomaly from a single prism [Grant & West, 1965] */
+	/* Gravity anomaly from a single vertical prism [Grant & West, 1965] */
 	double g, dx1_sq, dx2_sq, dy1_sq, dy2_sq, dz1_sq, dz2_sq;
 	double R111, R112, R121, R122, R211, R212, R221, R222;
 	double g111, g112, g121, g122, g211, g212, g221, g222;
@@ -502,7 +502,7 @@ GMT_LOCAL double gravprism (double dx1, double dx2, double dy1, double dy2, doub
 }
 
 GMT_LOCAL double vggprism (double dx1, double dx2, double dy1, double dy2, double dz1, double dz2, double rho) {
-	/* Vertical gravity gradient anomaly from a single prism [Kim & Wessel, 2016] */
+	/* Vertical gravity gradient anomaly from a single vertical prism [Kim & Wessel, 2016] */
 	double v, dx1_sq, dx2_sq, dy1_sq, dy2_sq, dz1_sq, dz2_sq;
 	double R111, R112, R121, R122, R211, R212, R221, R222;
 	double v111, v112, v121, v122, v211, v212, v221, v222;
@@ -675,7 +675,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		double base = 0.0, top = 0.0, z1, z2, z_prev, z_next, z_mid;
 		size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 
-		if (Ctrl->L.active) {	/* Specifed layer base */
+		if (Ctrl->L.active) {	/* Specified layer base */
 			if (access (Ctrl->L.file, F_OK))	/* No file, just a constant */
 				base = atof (Ctrl->L.file);
 			else if ((B = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->L.file, NULL)) == NULL)
@@ -944,7 +944,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 #pragma omp parallel for private(row,z_level) shared(S,Ctrl,GMT,eval,scl_xy,scl_z,n_prisms,prism,G0)
 #endif
 				/* Separate the calculation from the output in two separate row-loops since cannot do rec-by-rec output
-				 * with OpenMP due to race condiations that would mess up the output order */
+				 * with OpenMP due to race conditions that would mess up the output order */
 				for (row = 0; row < (int64_t)S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
 					z_level = (S->n_columns == 3 && !Ctrl->Z.active) ? S->data[GMT_Z][row] : Ctrl->Z.level;	/* Default observation z level unless provided in input file */
 					GMT->hidden.mem_coord[GMT_X][row] = eval (S->data[GMT_X][row] * scl_xy, S->data[GMT_Y][row] * scl_xy, z_level * scl_z, n_prisms, prism, G0);
