@@ -16,7 +16,7 @@ Synopsis
 [ |-A| ]
 [ |-C|\ [**+q**][**+w**\ *file*][**+z**\ *dz*] ]
 [ |-D|\ *density* ]
-[ |-E|\ *dx*\ /*dy* ]
+[ |-E|\ *dx*\ [/*dy*] ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-G|\ *outfile* ]
 [ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
@@ -116,9 +116,11 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *dx*\ /*dy*
+**-E**\ *dx*\ [/*dy*]
     If all prisms in *table* have constant x/y-dimensions then they can be set here.  In that case *table*
     only contains the centers of each prism and the *z* range (and optionally *density*; see **-D**).
+    If only *dx* is given then we set *dy = dx*. **Note**: For geographic coordinates the *dx* dimension is
+    in geographic delta longitude and hence the physical width of the prism will decrease with latitude if *dx* stays the same.
 
 .. _-F:
 

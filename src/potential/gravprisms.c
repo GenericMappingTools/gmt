@@ -71,7 +71,7 @@ struct GRAVPRISMS_CTRL {
 		char *file;
 		double dz;
 	} C;
-	struct GRAVPRISMS_E {	/* -E<dx><dy> fixed prism x/y dimensions [read from file] */
+	struct GRAVPRISMS_E {	/* -E<dx>[/<dy>] fixed prism x/y dimensions [read from file] */
 		bool active;
 		double dx, dy;
 	} E;
@@ -154,6 +154,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *C) {	/* Dea
 
 static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT_OPTION *options) {
 	unsigned int k, n_errors = 0;
+	int ns;
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -202,7 +203,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 			case 'E':	/* Set fixed prism dx, dy parameters instead of reading from prismfile */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
-				sscanf (opt->arg, "%lg/%lg", &Ctrl->E.dx, &Ctrl->E.dy);
+				ns = sscanf (opt->arg, "%lg/%lg", &Ctrl->E.dx, &Ctrl->E.dy);
+				if (ns == 1) Ctrl->E.dy = Ctrl->E.dx;
 				break;
 			case 'F':	/* Seldct geopotential type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
@@ -359,7 +361,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <prismfile> [-A] [-C[+q][+w<file>][+z<dz>]] [-D<density>] [-D<dx>/<dy> [-Ff|n[<lat>]|v] "
+	GMT_Usage (API, 0, "usage: %s <prismfile> [-A] [-C[+q][+w<file>][+z<dz>]] [-D<density>] [-E<dx>[/<dy>]] [-Ff|n[<lat>]|v] "
 		"[-G<outfile>] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] [-L<base>] [%s] [-M[hz]] [-N<trktable>] [%s] "
 		"[-S<shapegrd>] [-T<top>] [%s] [-W<avedens>] [-Z<level>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
 		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
@@ -775,7 +777,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		unsigned int n_expected = 7;	/* Max number of columns */
 		/* Specify input expected columns to be at least 3 */
 		if (Ctrl->D.active) n_expected--;		/* Not reading density from records */
-		if (Ctrl->E.active) n_expected -= 3;	/* Not reading dx dy dz from records */
+		if (Ctrl->E.active) n_expected -= 2;	/* Not reading dx dy from records */
 		if ((error = GMT_Set_Columns (API, GMT_IN, n_expected, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
