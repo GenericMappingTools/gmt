@@ -436,6 +436,9 @@ GMT_LOCAL double geoidprism (double dx1, double dx2, double dy1, double dy2, dou
 	double n, dx1_sq, dx2_sq, dy1_sq, dy2_sq, dz1_sq, dz2_sq;
 	double R111, R112, R121, R122, R211, R212, R221, R222;
 	double n111, n112, n121, n122, n211, n212, n221, n222;
+	double dx1dy1, dx2dy1, dx1dy2, dx2dy2;
+	double dx1dz1, dx2dz1, dx1dz2, dx2dz2;
+	double dy1dz1, dy2dz1, dy1dz2, dy2dz2;
 
 	/* Square distances */
 	dx1_sq = dx1 * dx1;	dx2_sq = dx2 * dx2;
@@ -450,16 +453,30 @@ GMT_LOCAL double geoidprism (double dx1, double dx2, double dy1, double dy2, dou
 	R212 = sqrt (dx2_sq + dy1_sq + dz2_sq);
 	R221 = sqrt (dx1_sq + dy2_sq + dz2_sq);
 	R222 = sqrt (dx2_sq + dy2_sq + dz2_sq);
+	/* Get cross-terms */
+	dx1dy1 = dx1 * dy1;	dx2dy1 = dx2 * dy1;	dx1dy2 = dx1 * dy2;	dx2dy2 = dx2 * dy2;
+	dx1dz1 = dx1 * dz1;	dx2dz1 = dx2 * dz1;	dx1dz2 = dx1 * dz2;	dx2dz2 = dx2 * dz2;
+	dy1dz1 = dy1 * dz1;	dy2dz1 = dy2 * dz1;	dy1dz2 = dy1 * dz2;	dy2dz2 = dy2 * dz2;
 	/* Evaluate at dz1 */
-	n111 = -(0.5 * (dx1_sq * atan ((dy1 * dz1) / (dz1 * R111)) + dy1_sq * atan ((dx1 * dz1) / (dz1 * R111)) + dz1_sq * atan ((dx1 * dy1) / (dz1 * R111))) - dx1 * dz1 * log (R111 + dy1) - dy1 * dz1 * log (R111 + dx1) - dx1 * dy1 * log (R111 + dz1));
-	n112 = +(0.5 * (dx2_sq * atan ((dy1 * dz1) / (dz1 * R112)) + dy1_sq * atan ((dx2 * dz1) / (dz1 * R112)) + dz1_sq * atan ((dx2 * dy1) / (dz1 * R112))) - dx2 * dz1 * log (R112 + dy1) - dy1 * dz1 * log (R112 + dx2) - dx2 * dy1 * log (R112 + dz1));
-	n121 = +(0.5 * (dx1_sq * atan ((dy2 * dz1) / (dz1 * R121)) + dy2_sq * atan ((dx1 * dz1) / (dz1 * R121)) + dz1_sq * atan ((dx1 * dy2) / (dz1 * R121))) - dx1 * dz1 * log (R121 + dy2) - dy2 * dz1 * log (R121 + dx1) - dx1 * dy2 * log (R121 + dz1));
-	n122 = -(0.5 * (dx2_sq * atan ((dy2 * dz1) / (dz1 * R122)) + dy2_sq * atan ((dx2 * dz1) / (dz1 * R122)) + dz1_sq * atan ((dx2 * dy2) / (dz1 * R122))) - dx2 * dz1 * log (R122 + dy2) - dy2 * dz1 * log (R122 + dx2) - dx2 * dy2 * log (R122 + dz1));
+	n111 = -(0.5 * (dx1_sq * atan (dy1dz1 / (dx1 * R111)) + dy1_sq * atan (dx1dz1 / (dy1 * R111)) + dz1_sq * atan (dx1dy1 / (dz1 * R111))) - dx1dz1 * log (R111 + dy1) - dy1dz1 * log (R111 + dx1) - dx1dy1 * log (R111 + dz1));
+	n112 = +(0.5 * (dx2_sq * atan (dy1dz1 / (dx2 * R112)) + dy1_sq * atan (dx2dz1 / (dy1 * R112)) + dz1_sq * atan (dx2dy1 / (dz1 * R112))) - dx2dz1 * log (R112 + dy1) - dy1dz1 * log (R112 + dx2) - dx2dy1 * log (R112 + dz1));
+	n121 = +(0.5 * (dx1_sq * atan (dy2dz1 / (dx1 * R121)) + dy2_sq * atan (dx1dz1 / (dy2 * R121)) + dz1_sq * atan (dx1dy2 / (dz1 * R121))) - dx1dz1 * log (R121 + dy2) - dy2dz1 * log (R121 + dx1) - dx1dy2 * log (R121 + dz1));
+	n122 = -(0.5 * (dx2_sq * atan (dy2dz1 / (dx2 * R122)) + dy2_sq * atan (dx2dz1 / (dy2 * R122)) + dz1_sq * atan (dx2dy2 / (dz1 * R122))) - dx2dz1 * log (R122 + dy2) - dy2dz1 * log (R122 + dx2) - dx2dy2 * log (R122 + dz1));
 	/* Evaluate at dz2 */
-	n211 = +(0.5 * (dx1_sq * atan ((dy1 * dz2) / (dz2 * R211)) + dy1_sq * atan ((dx1 * dz2) / (dz2 * R211)) + dz2_sq * atan ((dx1 * dy1) / (dz2 * R211))) - dx1 * dz2 * log (R211 + dy1) - dy1 * dz2 * log (R211 + dx1) - dx1 * dy1 * log (R211 + dz2));
-	n212 = -(0.5 * (dx2_sq * atan ((dy1 * dz2) / (dz2 * R212)) + dy1_sq * atan ((dx2 * dz2) / (dz2 * R212)) + dz2_sq * atan ((dx2 * dy1) / (dz2 * R212))) - dx2 * dz2 * log (R212 + dy1) - dy1 * dz2 * log (R212 + dx2) - dx2 * dy1 * log (R212 + dz2));
-	n221 = -(0.5 * (dx1_sq * atan ((dy2 * dz2) / (dz2 * R221)) + dy2_sq * atan ((dx1 * dz2) / (dz2 * R221)) + dz2_sq * atan ((dx1 * dy2) / (dz2 * R221))) - dx1 * dz2 * log (R221 + dy2) - dy2 * dz2 * log (R221 + dx1) - dx1 * dy2 * log (R221 + dz2));
-	n222 = +(0.5 * (dx2_sq * atan ((dy2 * dz2) / (dz2 * R222)) + dy2_sq * atan ((dx2 * dz2) / (dz2 * R222)) + dz2_sq * atan ((dx2 * dy2) / (dz2 * R222))) - dx2 * dz2 * log (R222 + dy2) - dy2 * dz2 * log (R222 + dx2) - dx2 * dy2 * log (R222 + dz2));
+	n211 = +(0.5 * (dx1_sq * atan (dy1dz2 / (dx1 * R211)) + dy1_sq * atan (dx1dz2 / (dy1 * R211)) + dz2_sq * atan (dx1dy1 / (dz2 * R211))) - dx1dz2 * log (R211 + dy1) - dy1dz2 * log (R211 + dx1) - dx1dy1 * log (R211 + dz2));
+	n212 = -(0.5 * (dx2_sq * atan (dy1dz2 / (dx2 * R212)) + dy1_sq * atan (dx2dz2 / (dy1 * R212)) + dz2_sq * atan (dx2dy1 / (dz2 * R212))) - dx2dz2 * log (R212 + dy1) - dy1dz2 * log (R212 + dx2) - dx2dy1 * log (R212 + dz2));
+	n221 = -(0.5 * (dx1_sq * atan (dy2dz2 / (dx1 * R221)) + dy2_sq * atan (dx1dz2 / (dy2 * R221)) + dz2_sq * atan (dx1dy2 / (dz2 * R221))) - dx1dz2 * log (R221 + dy2) - dy2dz2 * log (R221 + dx1) - dx1dy2 * log (R221 + dz2));
+	n222 = +(0.5 * (dx2_sq * atan (dy2dz2 / (dx2 * R222)) + dy2_sq * atan (dx2dz2 / (dy2 * R222)) + dz2_sq * atan (dx2dy2 / (dz2 * R222))) - dx2dz2 * log (R222 + dy2) - dy2dz2 * log (R222 + dx2) - dx2dy2 * log (R222 + dz2));
+
+	/* As implemented this function is subject to cancellations and round-off.  The n??? terms print the same each time but n differs in the 3rd decimal. */
+//fprintf (stderr, "n111 = %.20lg\n", n111);
+//fprintf (stderr, "n112 = %.20lg\n", n112);
+//fprintf (stderr, "n121 = %.20lg\n", n121);
+//fprintf (stderr, "n122 = %.20lg\n", n122);
+//fprintf (stderr, "n211 = %.20lg\n", n211);
+//fprintf (stderr, "n212 = %.20lg\n", n212);
+//fprintf (stderr, "n221 = %.20lg\n", n221);
+//fprintf (stderr, "n222 = %.20lg\n", n222);
 
 	n = -rho * GRAVITATIONAL_CONST_GEOID * (n111 + n112 + n121 + n122 + n211 + n212 + n221 + n222);
 
@@ -471,6 +488,7 @@ GMT_LOCAL double gravprism (double dx1, double dx2, double dy1, double dy2, doub
 	double g, dx1_sq, dx2_sq, dy1_sq, dy2_sq, dz1_sq, dz2_sq;
 	double R111, R112, R121, R122, R211, R212, R221, R222;
 	double g111, g112, g121, g122, g211, g212, g221, g222;
+	double dx1dy1, dx2dy1, dx1dy2, dx2dy2;
 
 	/* Square distances */
 	dx1_sq = dx1 * dx1;	dx2_sq = dx2 * dx2;
@@ -485,16 +503,18 @@ GMT_LOCAL double gravprism (double dx1, double dx2, double dy1, double dy2, doub
 	R212 = sqrt (dx2_sq + dy1_sq + dz2_sq);
 	R221 = sqrt (dx1_sq + dy2_sq + dz2_sq);
 	R222 = sqrt (dx2_sq + dy2_sq + dz2_sq);
+	/* Get cross-terms */
+	dx1dy1 = dx1 * dy1;	dx2dy1 = dx2 * dy1;	dx1dy2 = dx1 * dy2;	dx2dy2 = dx2 * dy2;
 	/* Evaluate at dz1 */
-	g111 = -(dz1 * atan ((dx1 * dy1) / (dz1 * R111)) - dx1 * log(R111 + dy1) - dy1 * log (R111 + dx1));
-	g112 = +(dz1 * atan ((dx2 * dy1) / (dz1 * R112)) - dx2 * log(R112 + dy1) - dy1 * log (R112 + dx2));
-	g121 = +(dz1 * atan ((dx1 * dy2) / (dz1 * R121)) - dx1 * log(R121 + dy2) - dy2 * log (R121 + dx1));
-	g122 = -(dz1 * atan ((dx2 * dy2) / (dz1 * R122)) - dx2 * log(R122 + dy2) - dy2 * log (R122 + dx2));
+	g111 = -(dz1 * atan (dx1dy1 / (dz1 * R111)) - dx1 * log (R111 + dy1) - dy1 * log (R111 + dx1));
+	g112 = +(dz1 * atan (dx2dy1 / (dz1 * R112)) - dx2 * log (R112 + dy1) - dy1 * log (R112 + dx2));
+	g121 = +(dz1 * atan (dx1dy2 / (dz1 * R121)) - dx1 * log (R121 + dy2) - dy2 * log (R121 + dx1));
+	g122 = -(dz1 * atan (dx2dy2 / (dz1 * R122)) - dx2 * log (R122 + dy2) - dy2 * log (R122 + dx2));
 	/* Evaluate at dz2 */
-	g211 = +(dz2 * atan ((dx1 * dy1) / (dz2 * R211)) - dx1 * log (R211 + dy1) - dy1 * log (R211 + dx1));
-	g212 = -(dz2 * atan ((dx2 * dy1) / (dz2 * R212)) - dx2 * log (R212 + dy1) - dy1 * log (R212 + dx2));
-	g221 = -(dz2 * atan ((dx1 * dy2) / (dz2 * R221)) - dx1 * log (R221 + dy2) - dy2 * log (R221 + dx1));
-	g222 = +(dz2 * atan ((dx2 * dy2) / (dz2 * R222)) - dx2 * log (R222 + dy2) - dy2 * log (R222 + dx2));
+	g211 = +(dz2 * atan (dx1dy1 / (dz2 * R211)) - dx1 * log (R211 + dy1) - dy1 * log (R211 + dx1));
+	g212 = -(dz2 * atan (dx2dy1 / (dz2 * R212)) - dx2 * log (R212 + dy1) - dy1 * log (R212 + dx2));
+	g221 = -(dz2 * atan (dx1dy2 / (dz2 * R221)) - dx1 * log (R221 + dy2) - dy2 * log (R221 + dx1));
+	g222 = +(dz2 * atan (dx2dy2 / (dz2 * R222)) - dx2 * log (R222 + dy2) - dy2 * log (R222 + dx2));
 
 	g = -rho * GRAVITATIONAL_CONST_FAA * (g111 + g112 + g121 + g122 + g211 + g212 + g221 + g222);
 
@@ -506,6 +526,7 @@ GMT_LOCAL double vggprism (double dx1, double dx2, double dy1, double dy2, doubl
 	double v, dx1_sq, dx2_sq, dy1_sq, dy2_sq, dz1_sq, dz2_sq;
 	double R111, R112, R121, R122, R211, R212, R221, R222;
 	double v111, v112, v121, v122, v211, v212, v221, v222;
+	double dx1dy1, dx2dy1, dx1dy2, dx2dy2;
 
 	/* Square distances */
 	dx1_sq = dx1 * dx1;	dx2_sq = dx2 * dx2;
@@ -520,16 +541,18 @@ GMT_LOCAL double vggprism (double dx1, double dx2, double dy1, double dy2, doubl
 	R212 = sqrt (dx2_sq + dy1_sq + dz2_sq);
 	R221 = sqrt (dx1_sq + dy2_sq + dz2_sq);
 	R222 = sqrt (dx2_sq + dy2_sq + dz2_sq);
+	/* Get cross-terms */
+	dx1dy1 = dx1 * dy1;	dx2dy1 = dx2 * dy1;	dx1dy2 = dx1 * dy2;	dx2dy2 = dx2 * dy2;
 	/* Evaluate at dz1 */
-	v111 = -atan ((dx1 * dy1) / (dz1 * R111));
-	v112 = +atan ((dx2 * dy1) / (dz1 * R112));
-	v121 = +atan ((dx1 * dy2) / (dz1 * R121));
-	v122 = -atan ((dx2 * dy2) / (dz1 * R122));
+	v111 = -atan (dx1dy1 / (dz1 * R111));
+	v112 = +atan (dx2dy1 / (dz1 * R112));
+	v121 = +atan (dx1dy2 / (dz1 * R121));
+	v122 = -atan (dx2dy2 / (dz1 * R122));
 	/* Evaluate at dz2 */
-	v211 = +atan ((dx1 * dy1) / (dz2 * R211));
-	v212 = -atan ((dx2 * dy1) / (dz2 * R212));
-	v221 = -atan ((dx1 * dy2) / (dz2 * R221));
-	v222 = +atan ((dx2 * dy2) / (dz2 * R222));
+	v211 = +atan (dx1dy1 / (dz2 * R211));
+	v212 = -atan (dx2dy1 / (dz2 * R212));
+	v221 = -atan (dx1dy2 / (dz2 * R221));
+	v222 = +atan (dx2dy2 / (dz2 * R222));
 
 	v = -rho * GRAVITATIONAL_CONST_VGG * (v111 + v112 + v121 + v122 + v211 + v212 + v221 + v222);
 
