@@ -635,13 +635,16 @@ GMT_LOCAL double gravprisms_get_one_v_output_geo (double x, double y, double z, 
 	return (v);	/* Converted units from mGal/m to Eotvos = 0.1 mGal/km */
 }
 
-GMT_LOCAL double gravprisms_rho (struct GRAVPRISMS_CTRL *Ctrl, double z, double h) {
-	/* Passing in the current seamount's normalized height, h(r) and the current normalized radial point z(r).
-	 * We return the density at this point inside the seamount with reference height 1 */
-	double u = (h - z) / Ctrl->H.H;	/* Normalized depth into seamount. */
-	double q = (Ctrl->H.H - h) / Ctrl->H.H;	/* Water depth to flank point */
+GMT_LOCAL double gravprisms_mean_density (struct GRAVPRISMS_CTRL *Ctrl, double h, double z1, double z2) {
+	/* Passing in the current seamounts height h(r) and the two depths z1(r) and z2(r) defining a prism.
+	 * When doing the whole seamount we pass z2 = 0 and z1 = h(r).
+	 * The vertically averaged density for this radial position and range of z is returned */
+	double u1 = (h - z1) / Ctrl->H.H;
+	double u2 = (h - z2) / Ctrl->H.H;
+	double q = (Ctrl->H.H - h) / Ctrl->H.H;
+	double dz = z2 - z1;	/* Prism height */
 
-	double rho = Ctrl->H.rho_l + Ctrl->H.densify * q + Ctrl->H.del_rho * pow (u, Ctrl->H.p);
+	double rho = Ctrl->H.rho_l + Ctrl->H.densify * q + Ctrl->H.del_rho * Ctrl->H.H * (pow (u1, Ctrl->H.p1) - pow (u2, Ctrl->H.p1)) / (dz * (Ctrl->H.p1));
 	return (rho);
 }
 
@@ -738,7 +741,8 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 					if (z_next <= z_prev) z_next += Ctrl->C.dz;	/* Can happen if z1 is a multiple of dz */
 					else if (z_next > z2) z_next = z2;	/* At the top, clip to limit */
 					z_mid = 0.5 * (z_prev + z_next);	/* Middle of prism - used to look up density */
-					rho = gravprisms_rho (Ctrl, z_mid, H->data[node]);
+					//rho = gravprisms_rho (Ctrl, z_mid, H->data[node]);
+					rho = gravprisms_mean_density (Ctrl, H->data[node], z_prev, z_next);
 				}
 				else {	/* Constant density rho (set above via -D) or by Rho (via -W), just need a single prism per location */
 					z_next = z2;
