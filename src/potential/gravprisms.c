@@ -427,8 +427,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-#define GRAVITATIONAL_CONST 6.674e-11
-#define GRAVITATIONAL_CONST_MGAL 6.674e-6
+#define GRAVITATIONAL_CONST_FAA   6.674e-6	/* To convert m/s^2 to mGal requires 1e5 */
+#define GRAVITATIONAL_CONST_GEOID 6.674e-11	/* This gives geoid in meter once we divide by g0 */
+#define GRAVITATIONAL_CONST_VGG   6.674e-2	/* To convert mGal/m to 0.1 mGal/km requires 1e4 */
 
 GMT_LOCAL double geoidprism (double dx1, double dx2, double dy1, double dy2, double dz1, double dz2, double rho) {
 	/* Geoid anomaly from a single prism [Nagy et al, 2000] */
@@ -450,17 +451,17 @@ GMT_LOCAL double geoidprism (double dx1, double dx2, double dy1, double dy2, dou
 	R221 = sqrt (dx1_sq + dy2_sq + dz2_sq);
 	R222 = sqrt (dx2_sq + dy2_sq + dz2_sq);
 	/* Evaluate at dz1 */
-	n111 = -(0.5 * (dx1_sq * atan ((dy1 * dz1) / (dz1 * R111)) + dy1_sq * atan ((dx1 * dz1) / (dz1 * R111)) + dz1_sq * atan ((dx1 * dy1) / (dz1 * R111))) - dx1 * dz1 * log(R111 + dy1) - dy1 * dz1 * log (R111 + dx1) - dx1 * dy1 * log (R111 + dz1));
-	n112 = +(0.5 * (dx2_sq * atan ((dy1 * dz1) / (dz1 * R112)) + dy1_sq * atan ((dx2 * dz1) / (dz1 * R112)) + dz1_sq * atan ((dx2 * dy1) / (dz1 * R112))) - dx2 * dz1 * log(R112 + dy1) - dy1 * dz1 * log (R112 + dx2) - dx2 * dy1 * log (R112 + dz1));
-	n121 = +(0.5 * (dx1_sq * atan ((dy2 * dz1) / (dz1 * R121)) + dy2_sq * atan ((dx1 * dz1) / (dz1 * R121)) + dz1_sq * atan ((dx1 * dy2) / (dz1 * R121))) - dx1 * dz1 * log(R121 + dy2) - dy2 * dz1 * log (R121 + dx1) - dx1 * dy2 * log (R121 + dz1));
-	n122 = -(0.5 * (dx2_sq * atan ((dy2 * dz1) / (dz1 * R122)) + dy2_sq * atan ((dx2 * dz1) / (dz1 * R122)) + dz1_sq * atan ((dx2 * dy2) / (dz1 * R122))) - dx2 * dz1 * log(R122 + dy2) - dy2 * dz1 * log (R122 + dx2) - dx2 * dy2 * log (R122 + dz1));
+	n111 = -(0.5 * (dx1_sq * atan ((dy1 * dz1) / (dz1 * R111)) + dy1_sq * atan ((dx1 * dz1) / (dz1 * R111)) + dz1_sq * atan ((dx1 * dy1) / (dz1 * R111))) - dx1 * dz1 * log (R111 + dy1) - dy1 * dz1 * log (R111 + dx1) - dx1 * dy1 * log (R111 + dz1));
+	n112 = +(0.5 * (dx2_sq * atan ((dy1 * dz1) / (dz1 * R112)) + dy1_sq * atan ((dx2 * dz1) / (dz1 * R112)) + dz1_sq * atan ((dx2 * dy1) / (dz1 * R112))) - dx2 * dz1 * log (R112 + dy1) - dy1 * dz1 * log (R112 + dx2) - dx2 * dy1 * log (R112 + dz1));
+	n121 = +(0.5 * (dx1_sq * atan ((dy2 * dz1) / (dz1 * R121)) + dy2_sq * atan ((dx1 * dz1) / (dz1 * R121)) + dz1_sq * atan ((dx1 * dy2) / (dz1 * R121))) - dx1 * dz1 * log (R121 + dy2) - dy2 * dz1 * log (R121 + dx1) - dx1 * dy2 * log (R121 + dz1));
+	n122 = -(0.5 * (dx2_sq * atan ((dy2 * dz1) / (dz1 * R122)) + dy2_sq * atan ((dx2 * dz1) / (dz1 * R122)) + dz1_sq * atan ((dx2 * dy2) / (dz1 * R122))) - dx2 * dz1 * log (R122 + dy2) - dy2 * dz1 * log (R122 + dx2) - dx2 * dy2 * log (R122 + dz1));
 	/* Evaluate at dz2 */
-	n211 = +(0.5 * (dx1_sq * atan ((dy1 * dz2) / (dz2 * R211)) + dy1_sq * atan ((dx1 * dz2) / (dz2 * R211)) + dz2_sq * atan ((dx1 * dy1) / (dz2 * R211))) - dx1 * dz2 * log (R211 + dy1) - dy1 * dz2 * log (R211 + dx1) - dx1 * dy1 * log (R111 + dz2));
-	n212 = -(0.5 * (dx2_sq * atan ((dy1 * dz2) / (dz2 * R212)) + dy1_sq * atan ((dx2 * dz2) / (dz2 * R212)) + dz2_sq * atan ((dx2 * dy1) / (dz2 * R212))) - dx2 * dz2 * log (R212 + dy1) - dy1 * dz2 * log (R212 + dx2) - dx2 * dy1 * log (R112 + dz2));
-	n221 = -(0.5 * (dx1_sq * atan ((dy2 * dz2) / (dz2 * R221)) + dy2_sq * atan ((dx1 * dz2) / (dz2 * R221)) + dz2_sq * atan ((dx1 * dy2) / (dz2 * R221))) - dx1 * dz2 * log (R221 + dy2) - dy2 * dz2 * log (R221 + dx1) - dx1 * dy2 * log (R121 + dz2));
-	n222 = +(0.5 * (dx2_sq * atan ((dy2 * dz2) / (dz2 * R222)) + dy2_sq * atan ((dx2 * dz2) / (dz2 * R222)) + dz2_sq * atan ((dx2 * dy2) / (dz2 * R222))) - dx2 * dz2 * log (R222 + dy2) - dy2 * dz2 * log (R222 + dx2) - dx2 * dy2 * log (R122 + dz2));
+	n211 = +(0.5 * (dx1_sq * atan ((dy1 * dz2) / (dz2 * R211)) + dy1_sq * atan ((dx1 * dz2) / (dz2 * R211)) + dz2_sq * atan ((dx1 * dy1) / (dz2 * R211))) - dx1 * dz2 * log (R211 + dy1) - dy1 * dz2 * log (R211 + dx1) - dx1 * dy1 * log (R211 + dz2));
+	n212 = -(0.5 * (dx2_sq * atan ((dy1 * dz2) / (dz2 * R212)) + dy1_sq * atan ((dx2 * dz2) / (dz2 * R212)) + dz2_sq * atan ((dx2 * dy1) / (dz2 * R212))) - dx2 * dz2 * log (R212 + dy1) - dy1 * dz2 * log (R212 + dx2) - dx2 * dy1 * log (R212 + dz2));
+	n221 = -(0.5 * (dx1_sq * atan ((dy2 * dz2) / (dz2 * R221)) + dy2_sq * atan ((dx1 * dz2) / (dz2 * R221)) + dz2_sq * atan ((dx1 * dy2) / (dz2 * R221))) - dx1 * dz2 * log (R221 + dy2) - dy2 * dz2 * log (R221 + dx1) - dx1 * dy2 * log (R221 + dz2));
+	n222 = +(0.5 * (dx2_sq * atan ((dy2 * dz2) / (dz2 * R222)) + dy2_sq * atan ((dx2 * dz2) / (dz2 * R222)) + dz2_sq * atan ((dx2 * dy2) / (dz2 * R222))) - dx2 * dz2 * log (R222 + dy2) - dy2 * dz2 * log (R222 + dx2) - dx2 * dy2 * log (R222 + dz2));
 
-	n = rho * GRAVITATIONAL_CONST_MGAL * (n111 + n112 + n121 + n122 + n211 + n212 + n221 + n222);
+	n = -rho * GRAVITATIONAL_CONST_GEOID * (n111 + n112 + n121 + n122 + n211 + n212 + n221 + n222);
 
 	return (n);
 }
@@ -495,7 +496,7 @@ GMT_LOCAL double gravprism (double dx1, double dx2, double dy1, double dy2, doub
 	g221 = -(dz2 * atan ((dx1 * dy2) / (dz2 * R221)) - dx1 * log (R221 + dy2) - dy2 * log (R221 + dx1));
 	g222 = +(dz2 * atan ((dx2 * dy2) / (dz2 * R222)) - dx2 * log (R222 + dy2) - dy2 * log (R222 + dx2));
 
-	g = -rho * GRAVITATIONAL_CONST_MGAL * (g111 + g112 + g121 + g122 + g211 + g212 + g221 + g222);
+	g = -rho * GRAVITATIONAL_CONST_FAA * (g111 + g112 + g121 + g122 + g211 + g212 + g221 + g222);
 
 	return (g);
 }
@@ -530,7 +531,7 @@ GMT_LOCAL double vggprism (double dx1, double dx2, double dy1, double dy2, doubl
 	v221 = -atan ((dx1 * dy2) / (dz2 * R221));
 	v222 = +atan ((dx2 * dy2) / (dz2 * R222));
 
-	v = rho * GRAVITATIONAL_CONST_MGAL * (v111 + v112 + v121 + v122 + v211 + v212 + v221 + v222);
+	v = -rho * GRAVITATIONAL_CONST_VGG * (v111 + v112 + v121 + v122 + v211 + v212 + v221 + v222);
 
 	return (v);
 }
@@ -566,7 +567,7 @@ GMT_LOCAL double gravprisms_get_one_n_output (double x, double y, double z, uint
 	double n = 0.0;
 	for (uint64_t k = 0; k < n_prisms; k++)
 		n += geoidprism (P[0][k]-x, P[1][k]-x, P[2][k]-y, P[3][k]-y, P[4][k]-z, P[5][k]-z, P[6][k]);
-	return (n * constant * 0.01);	/* To get geoid in meter */
+	return (n * constant);	/* To get geoid in meter */
 }
 
 GMT_LOCAL double gravprisms_get_one_n_output_geo (double x, double y, double z, uint64_t n_prisms, double **P, double constant) {
@@ -582,7 +583,7 @@ GMT_LOCAL double gravprisms_get_one_n_output_geo (double x, double y, double z, 
 		dy2 = DY_FROM_DLAT (P[3][k], y);
 		n += geoidprism (dx1, dx2, dy1, dy2, P[4][k]-z, P[5][k]-z, P[6][k]);
 	}
-	return (n * constant * 0.01);	/* To get geoid in meter */
+	return (n * constant);	/* To get geoid in meter */
 }
 
 GMT_LOCAL double gravprisms_get_one_v_output (double x, double y, double z, uint64_t n_prisms, double **P, double unused) {
@@ -591,7 +592,7 @@ GMT_LOCAL double gravprisms_get_one_v_output (double x, double y, double z, uint
 	gmt_M_unused (unused);
 	for (uint64_t k = 0; k < n_prisms; k++)
 		v += vggprism (P[0][k]-x, P[1][k]-x, P[2][k]-y, P[3][k]-y, P[4][k]-z, P[5][k]-z, P[6][k]);
-	return (v * 0.0001);	/* From mGal/m to Eotvos = 0.1 mGal/km */
+	return (v);	/* Converted units from mGal/m to Eotvos = 0.1 mGal/km */
 }
 
 GMT_LOCAL double gravprisms_get_one_v_output_geo (double x, double y, double z, uint64_t n_prisms, double **P, double unused) {
@@ -608,7 +609,7 @@ GMT_LOCAL double gravprisms_get_one_v_output_geo (double x, double y, double z, 
 		dy2 = DY_FROM_DLAT (P[3][k], y);
 		v += vggprism (dx1, dx2, dy1, dy2, P[4][k]-z, P[5][k]-z, P[6][k]);
 	}
-	return (v * 0.0001);	/* From mGal/m to Eotvos = 0.1 mGal/km */
+	return (v);	/* Converted units from mGal/m to Eotvos = 0.1 mGal/km */
 }
 
 GMT_LOCAL double gravprisms_rho (struct GRAVPRISMS_CTRL *Ctrl, double z, double h) {
