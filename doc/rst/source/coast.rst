@@ -238,7 +238,6 @@ Optional Arguments
 
 **-Q**
     Mark end of existing clip path. No projection information is needed.
-    Also supply **-X** and **-Y** settings if you have moved since the clip started.
 
 .. _-S:
 
