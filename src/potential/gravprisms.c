@@ -769,7 +769,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 			error = GMT_MEMORY_ERROR;
 			goto end_it_all;
 		}
-		if (H && GMT_Destroy_Data (API, &H) != GMT_NOERROR) {
+		if (Ctrl->S.active && GMT_Destroy_Data (API, &H) != GMT_NOERROR) {
 			error = GMT_MEMORY_ERROR;
 			goto end_it_all;
 		}
