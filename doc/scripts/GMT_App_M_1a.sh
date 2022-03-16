@@ -14,8 +14,8 @@
 
 GMT_SHAREDIR=$(gmt --show-sharedir)
 
-# Here we list all cpt, except cyclic, categorical, cmocean, SCM7, srtm
-sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | egrep -v "cyclic|categorical|cmocean|SCM7|srtm" | awk '{print $1}' | sort -r > tt.lis
+# Here we list all cpt, except cyclic, categorical, cmocean, SCM, srtm
+sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | egrep -v "cyclic|categorical|cmocean|SCM|srtm" | awk '{print $1}' | sort -r > tt.lis
 
 n=$(cat tt.lis | wc -l)
 let n2=n/2

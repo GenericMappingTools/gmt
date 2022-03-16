@@ -20,6 +20,22 @@ Black and white triangles indicate which tables have hard or soft hinges,
 respectively. Some CPTs have a default *z*-range while others are dynamic.
 Default ranges, if available, are indicated on the top-right of the scales.
 
+The color maps are subdivided into a number of sections relating to their source. This avoids name clashes and improves recognision of the color maps as well as their
+authors:
+
+* **gmt**: color maps originally produced by the GMT authors and available in GMT for a long time;
+* **SCM**: Scientific Colour Maps by Fabio Crameri;
+* **cmocean**: ocean color maps by Kirsten Thyng;
+* **cpt-city**: color maps ported from the cpt-city archive;
+* **google**: color maps promoted by Google;
+* **matlab**: a selection of color maps supported by Matlab;
+* **matplotlib**: popular color maps from the matplotlib selection;
+* **panoply**: color maps from the Panoply application.
+
+Color maps can be selected in various of the GMT tools using **-C**\ [*section*/] *cpt*, where *cpt* is the color map name (without the **.cpt** extension) and
+*section* is one of the color map sections mentioned above. If *section* is omitted, the first matching *cpt* in those sections is used. Thus **-Cglobe** and
+**-Cgmt/globe** are equivalent.
+
 .. _CPT_files_a:
 
 .. figure:: /_images/GMT_App_M_1a.*

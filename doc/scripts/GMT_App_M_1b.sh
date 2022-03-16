@@ -15,7 +15,7 @@
 GMT_SHAREDIR=$(gmt --show-sharedir)
 
 # Here we list all the non-categorical/cyclic cpts from the SCM:
-sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | egrep SCM7 | egrep -v "categorical|cyclic" | awk '{print $1}' | sort -r > tt.lis
+sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | egrep SCM | egrep -v "categorical|cyclic" | awk '{print $1}' | sort -r > tt.lis
 
 n=$(cat tt.lis | wc -l)
 let n2=n/2
