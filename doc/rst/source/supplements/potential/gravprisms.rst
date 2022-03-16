@@ -235,28 +235,32 @@ Optional Arguments
 Examples
 --------
 
-To compute the free-air anomalies on a grid over a set of prisms given in prisms.txt,
-using 1700 kg/m^3 as the fixed density contrast, with
-horizontal distances in km and vertical distances in meters, try
+We have prepared a set of 2828 prisms that represent a truncated Gaussian seamount of
+height 6000 m, radius 30 km, with the base at z = 0 m, available in the file prisms.txt.
+A quick view of the 3-D model can be made via::
 
-::
+    gmt plot3d -R-30/30/-30/30/0/7000 -JX12c -JZ3c -Glightgray -So1q+b @prisms.txt -B -p200/20 -pdf smt
 
-    gmt gravprisms -R-200/200/-200/200 -I2 -Mh -G3dgrav.nc prisms.txt -D1700 -Ff
+To compute the free-air anomalies on a grid over the set of prisms given in @prisms.txt,
+using 1700 kg/m^3 as a fixed density contrast, with horizontal distances in km and
+vertical distances in meters, observed at 7000 m, try::
 
-To obtain the vertical gravity gradient anomaly along the track in crossing.txt
-for the same model, try
+    gmt gravprisms -R-40/40/-40/40 -I1 -Mh -G3dgrav.nc @prisms.txt -D1700 -Ff -Z7000
+    gmt grdimage 3dgrav.nc -B -pdf 3dgrav
 
-::
+To obtain the vertical gravity gradient anomaly along the track given in crossing.txt
+for the same model, try::
 
-    gmt gravprisms -Ncrossing.txt -Mh prisms.txt -D1700 -Fv > vgg_crossing.txt
+    gmt math -T-30/30/0.1 T 0 MUL = crossing.txt
+    gmt gravprisms -Ncrossing.txt -Mh @prisms.txt -D1700 -Fv -Z7000 > vgg_crossing.txt
+    gmt plot vgg_crossing.txt -R-30/30/-50/400 -i0,3 -W1p -B -pdf vgg_crossing
 
 
-Finally, the geoid anomaly along the same track in crossing.txt
-for the same model (at 30S) is written to n_crossing.txt by
+Finally, redo the gravity calculation but now use the individual prism densities in the
+prism file and restrict calculations to the same crossing profile, i.e.,::
 
-::
-
-    gmt gravprisms -Ncrossing.txt -Mh prisms.txt -D1700 -Fn-30 -Gn_crossing.txt
+    gmt gravprisms -Ncrossing.txt -Mh @prisms.txt -Ff -Z7000 > faa_crossing.txt
+    gmt plot faa_crossing.txt -R-30/30/0/350 -i0,3 -W1p -B -pdf faa_crossing
 
 
 Note
