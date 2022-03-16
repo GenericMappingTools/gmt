@@ -259,6 +259,15 @@ for the same model (at 30S) is written to n_crossing.txt by
     gmt gravprisms -Ncrossing.txt -Mh prisms.txt -D1700 -Fn-30 -Gn_crossing.txt
 
 
+Note
+----
+
+The analytical expression for the geoid over a vertical prism (Nagy et al., 2000) is
+fairly involved and contains 48 terms.  Due to various cancellations the end result
+is more unstable than similar expressions for gravity and VGG.  Be aware that the
+result may have less significant digits that you may expect.
+
+
 References
 ----------
 
