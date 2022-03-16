@@ -13138,6 +13138,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			deactivate_output = true;   /* Turn off implicit output since none is in effect, only secondary -D output */
 		type = (GMT_Find_Option (API, 'I', *head)) ? 'I' : 'G'; /* Giving -I means we are reading an image */
    }
+	/* 1y. Check if this is the gravprisms module, where primary dataset input should be turned off if -C is used */
+	else if (!strncmp (module, "gravprisms", 10U) && (opt = GMT_Find_Option (API, 'C', *head))) {
+		deactivate_input = true;    /* Turn off implicit input since none is in effect */
+    }
 
 	/* 2a. Get the option key array for this module */
 	key = gmtapi_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
