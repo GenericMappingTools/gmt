@@ -15,24 +15,52 @@
 #-------------------------------------------------------------------------------
 
 if (SPHINX_FOUND)
-	# Convert figures to PNG
-	file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/images/*.ps")
-	set (_examples_png)
-	foreach (_ps ${_examples})
-		get_filename_component (_fig ${_ps} NAME)
-		string (REPLACE ".ps" ".png" _png_fig ${_fig})
-		list (APPEND _examples_png ${RST_BINARY_DIR}/_images/${_png_fig})
-		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
-			COMMAND ${CMAKE_COMMAND} -E env
-			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
-			-A -P -E150 -Tg -Qg4 -Qt4
-			-C-sFONTPATH="${GMT_SOURCE_DIR}/doc/examples/ex31/fonts"
-			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
-	endforeach (_ps ${_examples})
+	if (NO_DVC)
+		configure_file (example.in example @ONLY)
+		set (_psexamples)
+		set (_examples_png)
+		# Generate PS files and convert to PNG
+		foreach (_num 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 52)
+			add_custom_command (
+				OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ex${_num}/ex${_num}.ps
+				COMMAND ${BASH} example ex${_num}/ex${_num}.sh
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/ex${_num}/ex${_num}.sh)
+			list (APPEND _psexamples ${CMAKE_CURRENT_BINARY_DIR}/ex${_num}/ex${_num}.ps)
+
+			list (APPEND _examples_png ${RST_BINARY_DIR}/_images/ex${_num}.ps)
+			add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/ex${_num}.ps
+				COMMAND ${CMAKE_COMMAND} -E env
+				GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+				${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
+				-A -P -E150 -Tg -Qg4 -Qt4
+				-C-sFONTPATH="${GMT_SOURCE_DIR}/doc/examples/ex31/fonts"
+				-D${RST_BINARY_DIR}/_images
+				${CMAKE_CURRENT_BINARY_DIR}/ex${_num}/ex${_num}.ps
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_BINARY_DIR}/ex${_num}/ex${_num}.ps)
+		endforeach (_num)
+		add_custom_target (examples DEPENDS ${_psexamples})
+	else (NO_DVC)
+		# Convert figures to PNG
+		file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/images/*.ps")
+		set (_examples_png)
+		foreach (_ps ${_examples})
+			get_filename_component (_fig ${_ps} NAME)
+			string (REPLACE ".ps" ".png" _png_fig ${_fig})
+			list (APPEND _examples_png ${RST_BINARY_DIR}/_images/${_png_fig})
+			add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
+				COMMAND ${CMAKE_COMMAND} -E env
+				GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+				${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
+				-A -P -E150 -Tg -Qg4 -Qt4
+				-C-sFONTPATH="${GMT_SOURCE_DIR}/doc/examples/ex31/fonts"
+				-D${RST_BINARY_DIR}/_images
+				${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
+		endforeach (_ps ${_examples})
+	endif (NO_DVC)
 
 	# Convert scripts to verbatim
 	file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*/*.sh")
