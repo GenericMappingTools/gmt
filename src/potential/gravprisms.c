@@ -758,7 +758,6 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 					if (z_next <= z_prev) z_next += Ctrl->C.dz;	/* Can happen if z1 is a multiple of dz */
 					else if (z_next > z2) z_next = z2;	/* At the top, clip to limit */
 					z_mid = 0.5 * (z_prev + z_next);	/* Middle of prism - used to look up density */
-					//rho = gravprisms_rho (Ctrl, z_mid, H->data[node]);
 					rho = gravprisms_mean_density (Ctrl, H->data[node], z_prev, z_next);
 				}
 				else {	/* Constant density rho (set above via -D) or by Rho (via -W), just need a single prism per location */
