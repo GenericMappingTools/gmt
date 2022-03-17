@@ -21,7 +21,6 @@ Synopsis
 [ |-G|\ *outfile* ]
 [ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
 [ |SYN_OPT-I| ]
-[ |-K|\ *outavedens* ]
 [ |-L|\ *base* ]
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
@@ -29,7 +28,7 @@ Synopsis
 [ |-S|\ *shapegrid* ]
 [ |-T|\ *top* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ *inavedens* ]
+[ |-W|\ *avedens* ]
 [ |-Z|\ *level*\|\ *obsgrid* ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
@@ -56,8 +55,7 @@ if given via **-D**).  Alternatively, we can use **-C** to create the prisms nee
 the entire feature (**-S**) or just the volume between two surfaces (one of which may be a constant)
 that define a layer (set via **-L** and **-T**).  If a variable density model (**-H**) is selected
 then each vertical prism will be broken into constant-density, stacked sub-prisms using a prescribed
-vertical increment *dz*, otherwise single tall prisms are created with constant (**-D**) or spatially
-varying (**-W**) densities.
+vertical increment *dz*, otherwise single tall prisms are created with constant or spatially variable densities (**-D**).
 We can compute anomalies on an equidistant grid (by specifying a new grid with
 **-R** and **-I** or provide an observation grid with desired elevations) or at arbitrary
 output points specified via **-N**.  Choose between free-air anomalies, vertical
@@ -113,7 +111,9 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *density*
-    Sets a fixed density contrast that overrides any individual prism settings in the prisms file, in kg/m^3 of g/cm^3.
+    Sets a fixed density contrast that overrides any individual prism settings in the prisms file, in kg/m^3 of g/cm^3. Alternatively, give name of an input grid with spatially varying, vertically-averaged
+    prism densities. Requires **-C** and the grid must be co-registered with the grid provided by **-S**
+    (or **L** and **-T**).
 
 .. _-E:
 
@@ -148,12 +148,6 @@ Optional Arguments
     full reference height [0] and the variable density profile exponent *power* [1, i.e., a linear change].
     Requires **-S** to know the full height of the seamount.
     See :doc:`grdseamount </supplements/potential/grdseamount>` for more details.
-
-.. _-K:
-
-**-K**\ *outavedens*
-    Give name of an output grid with spatially varying, vertically-averaged prism densities created
-    by **-C** and **-H**.
 
 .. _-L:
 
@@ -197,9 +191,9 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ *inavedens*
-    Give name of an input grid with spatially varying, vertically-averaged prism densities. Requires
-    **-C** and the grid must be co-registered with the grid provided by **-S** (or **L** and **-T**).
+**-W**\ *avedens*
+    Give name of an output grid with spatially varying, vertically-averaged prism densities created
+    by **-C** and **-H**.
 
 .. _-Z:
 

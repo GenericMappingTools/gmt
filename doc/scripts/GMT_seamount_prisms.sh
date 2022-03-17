@@ -11,7 +11,7 @@ rho_l=$(gmt grdinfo gaussaverho.grd | grep Remark | awk '{print $NF}')
 # 2. Make the constant density prisms
 gmt gravprisms -Sgausssmt.grd -D${rho_l} -C+wgaussprisms1.txt+q
 # 3. Make variable constant prism densities
-gmt gravprisms -Sgausssmt.grd -Wgaussaverho.grd -C+wgaussprisms2.txt+q
+gmt gravprisms -Sgausssmt.grd -Dgaussaverho.grd -C+wgaussprisms2.txt+q
 # 4. Make variable prism densities
 gmt gravprisms -Sgausssmt.grd -H7/2400/3030+p0.8 -C+wgaussprisms3.txt+q+z0.2
 # Make plots
