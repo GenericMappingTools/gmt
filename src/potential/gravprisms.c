@@ -781,7 +781,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 			if (Ctrl->K.active) {	/* Get vertical average density and keep track of means */
 				Rho->data[node] = gravprisms_mean_density (Ctrl, H->data[node], z1, z2);
 				rs += Rho->data[node];
-				ws += (z1 - z1);
+				ws += (z2 - z1);
 			}
 		}
 		/* Finalize allocation */
