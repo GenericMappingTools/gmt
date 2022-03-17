@@ -1788,7 +1788,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								SH = gmt_get_DS_hidden (S[SYM]);
 								if (S[SYM]->n_rows == SH->n_alloc) S[SYM]->data = gmt_M_memory (GMT, S[SYM]->data, SH->n_alloc += GMT_SMALL_CHUNK, char *);
 								n_symbols++;
-								D[SYM]->n_segments++;
+								D[SYM]->n_segments++;	D[SYM]->n_records++;
 								pslegend_maybe_realloc_table (GMT, D[SYM]->table[0], n_symbols, 1U);
 							}
 							/* Finally, print text; skip when empty */
@@ -1988,6 +1988,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	if (D[TXT]) {
 		pslegend_free_unused_rows (GMT, D[TXT]->table[0]->segment[0], krow[TXT]);
 		D[TXT]->n_records = krow[TXT];
+		D[TXT]->n_segments = 1;
 #ifdef DEBUG
 		if (Ctrl->DBG.active) {
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, "dump_txt.txt", D[TXT]) != GMT_NOERROR) {
@@ -2009,11 +2010,13 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		}
 	}
 	if (D[PAR]) {
+		n_para++;
 		if (n_para >= 0) {	/* End of last paragraph for sure */
 			S[PAR]->n_rows = krow[PAR];
+			D[PAR]->table[0]->n_segments = D[PAR]->n_segments = n_para;
 			D[PAR]->table[0]->n_records += S[PAR]->n_rows;
 			D[PAR]->n_records = D[PAR]->table[0]->n_records;
-			S[PAR] = D[PAR]->table[0]->segment[n_para] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, krow[PAR], 0U, NULL, S[PAR]);
+			S[PAR] = D[PAR]->table[0]->segment[n_para-1] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, krow[PAR], 0U, NULL, S[PAR]);
 		}
 
 		/* Create option list, register D[PAR] as input source */

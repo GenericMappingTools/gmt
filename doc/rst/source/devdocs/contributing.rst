@@ -71,7 +71,7 @@ where you can submit general comments and/or questions:
 * For general comments, select *New Topic* from the
   `Lounge Page <https://forum.generic-mapping-tools.org/c/lounge/>`_.
 * To share your work, select *New Topic* from the
-  `Showcase Page <https://forum.generic-mapping-tools.org/c/Sow-your-nice-example-script/>`_.
+  `Showcase Page <https://forum.generic-mapping-tools.org/c/Show-your-nice-example-script/>`_.
 
 General Guidelines
 ------------------
@@ -312,14 +312,55 @@ Testing GMT
 ~~~~~~~~~~~
 
 GMT ships with more than 1000 tests to make sure that any changes won't break its functionality. In addition to the
-tests located in the ``/test`` directory, GMT tests all the plots included in its documentation. The
-documentation tests are located in the ``/doc/scripts`` directory. The majority of GMT tests are plot-based,
-with each test requiring a bash script for generating the plot and a reference PostScript file. These tests pass if the
-difference between a new plot generated using the test script and the reference PostScript file is less than a defined
-threshold. Other tests compute grids, tables, or other output, with the test passing if a suitable comparison is made
-against a reference case.
+tests located in the ``test/`` directory, GMT tests all the plots included in its documentation. The
+documentation tests are located in the ``doc/scripts/`` and ``doc/examples/`` directories. The majority of GMT tests
+are plot-based, with each test requiring a bash script for generating the plot and a reference PostScript file. These
+tests pass if the difference between a new plot generated using the test script and the reference PostScript file is
+less than a defined threshold. Other tests compute grids, tables, or other output, with the test passing if a suitable
+comparison is made against a reference case.
 
-Tests that are known to fail are excluded by adding ``# GMT_KNOWN_FAILURE`` anywhere in the test script.
+Tests that are known to fail are excluded by adding ``# GMT_KNOWN_FAILURE`` anywhere in the test script. Tests that
+require a larger tolerance than the default RMS threshold are managed using ``GRAPHICSMAGICK_RMS = <RMS>`` in the
+test script. These tests are tracked in `GitHub issue #2458 <https://github.com/GenericMappingTools/gmt/issues/2458>`_.
+
+
+Managing Test Images Using Data Version Control (dvc)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As the baseline images are large blob files that can change often, it is not ideal to store them in ``git``. Instead,
+we use `data version control (dvc) <https://dvc.org/>`_ to track the test images, which is like ``git`` but for data.
+``dvc`` stores the hash (md5sum) of a file or an md5sum that describes the contents of a directory. For each test
+``test/<module>/*.sh`` that generates a .PS file, there is a baseline image file in ``test/baseline/<module>/``
+that is compared to the test result using `GraphicsMagick <www.graphicsmagick.org>`_. Each of the
+directories ``test/baseline/<module>`` are tracked by ``dvc`` using the file ``test/baseline/<module>.dvc``. This file
+contains the hash of a JSON .dir file stored in the .dvc cache. The .dir file contains information about each tracked
+file in the directory, which is used to push/pull the files to/from remote storage. The ``test/baseline/<module>.dvc``
+files are stored as usual on GitHub, while the .PS files are stored separately on the ``dvc`` remote at
+https://dagshub.com/GenericMappingTools/gmt.
+
+Setting up your local environment for dvc
+*****************************************
+
+#. `Install dvc <https://dvc.org/doc/install>`_
+#. If you will need to push baseline images to the remote, ask a GMT maintainer to add you as a collaborator on
+   `DAGsHub <https://dagshub.com/GenericMappingTools/gmt>`_.
+#. If you will need to push baseline imaged to the remote, set up
+   `authentication for the DVC remote <https://dagshub.com/docs/reference/dagshub_storage/#pushing-files-or-using-a-private-repo>`_.
+
+Pulling files from the remote for testing
+*****************************************
+
+To pull or sync files from the ``dvc`` remote to your local repository, the commands are similar to ``git``:
+
+::
+
+    dvc status  # should report any files 'not_in_cache'
+    dvc pull    # pull down files from DVC remote cache (fetch + checkout)
+
+
+Once the sync is complete, you should notice that there are images stored in the ``test/baseline/<module>``
+directories (e.g., ``test/baseline/api/api_matrix_as_grid.ps``). These images are technically reflinks/symlinks/copies
+of the files under the ``.dvc/cache`` directory. You can now run the test suite as usual.
 
 Running tests
 ^^^^^^^^^^^^^
@@ -358,26 +399,39 @@ instructions provided in the :ref:`Running tests <devdocs/contributing:Running t
 expect all tests to pass unless something new is broken.
 
 Information about failing tests is produced in ``test/fail_count.txt`` inside the build directory. For plot-based tests,
-the subdirectories ``test/`` and ``doc/scripts/`` inside the build directory contain folders for each failing test. For
-plot-based tests, the directory associated with each failing tests contains a ``gmtest.sh`` script, a ``gmt.conf`` file,
-an alias to the test script, a PostScript file and PDF document generated by the test script, and a PNG image that shows
-differences between the reference plot and new plot in magenta. In addition to these files, running the failing tests
-with verbose output can be helpful for evaluating failures::
+the subdirectories ``test/``, ``doc/scripts/``, and ``doc/examples/`` inside the build directory contain folders for
+each failing test. For plot-based tests, the directory associated with each failing tests contains a ``gmtest.sh``
+script, a ``gmt.conf`` file, an alias to the test script, a PostScript file and PDF document generated by the test
+script, and a PNG image that shows differences between the reference plot and new plot in magenta. In addition to these
+files, running the failing tests with verbose output can be helpful for evaluating failures::
 
   ctest --rerun-failed --verbose
 
 Updating reference plots for tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Pull requests should avoid needing to change PostScript files in the ``/test`` and ``doc/scripts/``
-directories. However, if this is unavoidable, new PostScript reference files can be generated by running
-``ctest -R <test-script-name>`` in the build directory after following the
-`building guide <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_, the
-:ref:`setting up your environment <devdocs/contributing:setting up your environment>` instructions, and the
-:ref:`running tests <devdocs/contributing:Running tests>` instructions. The new PostScript file can then be copied from
-the appropriate subdirectory within ``build/test/`` or ``build/doc/scripts/`` to ``/test`` or ``/doc/scripts``
-respectively.
+Pull requests should avoid needing to change PostScript files in the ``test/baseline/``, ``doc/scripts/images/``, and
+``doc/examples/images/`` directories. However, if this is unavoidable, new PostScript reference files can be generated
+using the following steps:
 
+- Run ``dvc pull`` to ensure that you have the latest versions of the images.
+- Run ``ctest -R <test-script-name>`` in the build directory after following the
+  `building guide <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_, the
+  :ref:`setting up your environment <devdocs/contributing:setting up your environment>` instructions, and the
+  :ref:`running tests <devdocs/contributing:Running tests>` instructions.
+- Copy the modified PostScript file from the appropriate subdirectory within ``build/test/``, ``build/doc/scripts/``, or
+  ``build/doc/examples/`` to ``test/baseline/<module>``, ``doc/scripts/images/``, or ``doc/examples/images/`` respectively.
+- Run the tests to ensure that the failing tests now pass.
+- Run ``dvc diff`` to check that modified files are in the correct directory.
+- Add the modified images to dvc using ``dvc add test/baseline/<module>``, ``dvc add doc/scripts/images``, or ``dvc add doc/scripts/examples``
+  depending on the type of test modified.
+- Check that the .dvc file was updated by running ``git status``.
+- Stage the modified .dvc file in git using ``git add test/baseline/<module>.dvc``, ``dvc add doc/scripts/images.dvc``, or
+  ``dvc add doc/examples/images.dvc``.
+- Commit the changes using ``git commit``.
+- Open a pull request on GitHub with your changes.
+- Push the new images to the DAGsHub repository using ``dvc push``. Optionally, use ``dvc status --remote origin`` first
+  to query the diff between your local environment and the remote repository.
 
 Adding new tests
 ^^^^^^^^^^^^^^^^
@@ -400,9 +454,19 @@ To add a PostScript based test (e.g., `box.sh <https://github.com/GenericMapping
   - Minimize the size of the resultant PostScript file as much as possible.
 - Run the tests using the instructions in the :ref:`running tests <devdocs/contributing:Running tests>` section.
 - Check that the new PostScript file in ``build/test/<module>`` or ``build/doc/scripts/`` is as-expected.
-- Copy the new PostScript file from the appropriate subdirectory within ``build/test/`` or ``build/doc/scripts/`` to
-  ``test/<module>`` or ``doc/scripts`` respectively.
-- Check that your new test working by rerunning the failing tests.
+- Copy the new PostScript file from the appropriate subdirectory within ``build/test/``, ``build/doc/scripts/``, or
+  ``build/doc/examples/`` to ``test/baseline/<module>``, ``doc/scripts/images/``, or ``doc/examples/images/`` respectively.
+- Run the tests to ensure that the new test passes.
+- Run ``dvc diff`` to check that the new file is in the correct directory.
+- Add the new images to dvc using ``dvc add test/baseline/<module>``, ``dvc add doc/scripts/images``, or ``dvc add doc/scripts/examples``
+  depending on the type of test modified.
+- Check that the .dvc file was updated by running ``git status``.
+- Add the modified .dvc file to git using ``git add test/baseline/<module>.dvc``, ``dvc add doc/scripts/images.dvc``, or
+  ``dvc add doc/examples/images.dvc``.
+- Commit the changes using ``git commit``.
+- Open a pull request on GitHub with your changes.
+- Push the new images to the DAGsHub repository using ``dvc push``. Optionally, use ``dvc status --remote origin`` first
+  to query the diff between your local environment and the remote repository.
 
 To add a non-PostScript based test (e.g., `gmean.sh <https://github.com/GenericMappingTools/gmt/blob/master/test/blockmean/gmean.sh>`_):
 
@@ -415,61 +479,6 @@ To add a non-PostScript based test (e.g., `gmean.sh <https://github.com/GenericM
   files do not match (e.g., ``diff -q --strip-trailing-cr answer.txt result.txt > fail``).
 - Check that your new test works using the instructions in the :ref:`running tests <devdocs/contributing:Running tests>`
   section.
-
-Managing Test Images Using Data Version Control (dvc)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-As the baseline images are large blob files that can change often, it is not ideal to store them in ``git``. Instead,
-we use `data version control (dvc) <https://dvc.org/>`_ to track the test images, which is like ``git`` but for data.
-``dvc`` stores the hash (md5sum) of a file or an md5sum that describes the contents of a directory. For each test
-``test/<module>/*.sh`` that generates a .PS file, there is a baseline image file in ``test/baseline/<module>/``
-that is compared to the test result using `GraphicsMagick <www.graphicsmagick.org>`_. Each of the
-directories ``test/baseline/<module>`` are tracked by ``dvc`` using the file ``test/baseline/<module>.dvc``. This file
-contains the hash of a JSON .dir file stored in the .dvc cache. The .dir file contains information about each tracked
-file in the directory, which is used to push/pull the files to/from remote storage. The ``test/baseline/<module>.dvc``
-files are stored as usual on GitHub, while the .PS files are stored separately on the ``dvc`` remote at
-https://dagshub.com/GenericMappingTools/gmt.
-
-Setting up your local environment for dvc
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-#. `Install dvc <https://dvc.org/doc/install>`_
-#. If you will need to push baseline images to the remote, ask a GMT maintainer to add you as a collaborator on
-   `DAGsHub <https://dagshub.com/GenericMappingTools/gmt>`_.
-#. If you will need to push baseline imaged to the remote, set up
-   `authentication for the DVC remote <https://dagshub.com/docs/reference/dagshub_storage/#pushing-files-or-using-a-private-repo>`_.
-
-Pulling files from the remote for testing
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-To pull or sync files from the ``dvc`` remote to your local repository, the commands are similar to ``git``:
-
-::
-
-    dvc status  # should report any files 'not_in_cache'
-    dvc pull    # pull down files from DVC remote cache (fetch + checkout)
-
-
-Once the sync is complete, you should notice that there are images stored in the ``test/baseline/<module>``
-directories (e.g., ``test/baseline/api/api_matrix_as_grid.ps``). These images are technically reflinks/symlinks/copies
-of the files under the ``.dvc/cache`` directory. You can now run the test suite as usual.
-
-Migrating existing test images to dvc
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-#. Sync with git and dvc remotes (``git checkout master; git pull; dvc pull``).
-#. Create a branch for the module that you are working on (``git switch -c migrate-<module>-tests``).
-#. Navigate to the test directory (``cd test``).
-#. Remove the test image from git tracking (``git rm --cached <module>/<test-image>.ps``).
-#. Create a new directory for the image in ``baseline``, if one does not already exist (``mkdir baseline/<module>``).
-#. Move the test image to the new directory (``mv <module>/<test-image>.ps baseline/<module>/``).
-#. Repeat steps 4, 6, and 7 for other .PS based tests for the module.
-#. Run the GMT test suite to check that the tests work properly with the new structure.
-#. Add the directory to dvc (``dvc add baseline/<module>``).
-#. Commit the .dvc and modified .gitignore files to git (``git add baseline/<module>.dvc baseline/.gitignore; git commit``).
-#. Push the changes to git (``git push -u origin migrate-<module>-tests``).
-#. Push the changes to dvc (``dvc push``).
-#. Open a pull request for the changes.
 
 Debugging GMT
 ~~~~~~~~~~~~~

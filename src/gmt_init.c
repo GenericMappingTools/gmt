@@ -4887,7 +4887,13 @@ GMT_LOCAL int gmtinit_parse_genper_modern (struct GMT_CTRL *GMT, char *args, boo
 							GMT->current.proj.g_earth_radius = true;	txt[nlen-1] = 0;break;
 						default:	break; /* Probably just an altitude with numbers */
 					}
-					if (!GMT->current.proj.g_geosync) n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, &txt[1], GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &txt[1]);
+					if (!GMT->current.proj.g_geosync) {
+						n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, &txt[1], GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &txt[1]);
+						if (GMT->current.proj.g_radius && (METERS_IN_A_KM * GMT->current.proj.pars[4]) < GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius) {
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Jg|G: Cannot give a distance from the center of the Earth that is less than Earth radius\n");
+							n_errors++;
+						}
+					}
 					break;
 				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 			}
@@ -4895,6 +4901,8 @@ GMT_LOCAL int gmtinit_parse_genper_modern (struct GMT_CTRL *GMT, char *args, boo
 		c[0] = '\0';	/* Chop off the modifiers */
 		error += n_errors;
 	}
+
+	if (error) return (error);	/* Might as well bail here since already screwed */
 
 	if (d) d[0] = '\0';	/* Chop off the optional +d modifier for map width */
 
@@ -7331,7 +7339,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"<lon0>/<lat0> is the center of the projection. "
 				"The <scale> can also be given as <radius>/<lat>, where <radius> is distance "
 				"in %s to the oblique parallel <lat0>. "
-				"Several optional modifiers control the perspective:", GMT->session.unit_name[GMT->current.setting.proj_length_unit]); 
+				"Several optional modifiers control the perspective:", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			GMT_Usage (API, 3, "+a Append <azimuth> east of North of view [0].");
 			GMT_Usage (API, 3, "+t Append the upward <tilt> of the plane of projection; "
 				"if <tilt> < 0 then viewpoint is centered on the horizon [0].");
@@ -14687,13 +14695,13 @@ GMT_LOCAL bool gmtinit_replace_missing_with_questionmark (struct GMTAPI_CTRL *AP
 	/* Category 1 projections: Always has slashes and need to end in /? */
 	if ((strchr ("cC", arg[0]) && !strncmp (&arg[1], "yl_stere", 8U)) || strchr ("aAbBcCdDeEfFgGlLoOsStT", arg[0])) {	/* These projection all must end in / and if no ? then append it */
 		char *c = NULL;
-		if (strchr ("oO", arg[0]) && (c = strstr (arg, "+v"))) {	/* Got a -Jo with modifier +v - temporarily remove modifer to check for missing ? */
+		if (strchr ("oO", arg[0]) && (c = strstr (arg, "+v"))) {	/* Got a -Jo with modifier +v - temporarily remove modifier to check for missing ? */
 			c[0] = '\0';	/* Chop you go */
 			L = strlen (arg) - 1;	/* Recompute position of last char */
 		}
 		else if (strchr ("gG", arg[0]) && (c = gmt_first_modifier (API->GMT, arg, "atvwz"))) {	/* General perspective with one or more modifiers */
 			c[0] = '\0';	/* Chop you go */
-			L = strlen (arg) - 1;	/* Recompute position of last char */			
+			L = strlen (arg) - 1;	/* Recompute position of last char */
 		}
 		if (arg[L] == '/')	/* User followed instructions and left a trailing / */
 			sprintf (newarg, "%s?", arg);	/* newarg has no trailing modifiers yet */
@@ -14896,7 +14904,7 @@ void gmtinit_complete_RJ (struct GMT_CTRL *GMT, char *codes, struct GMT_OPTION *
 		gmt_M_memset (str, 3, char);
 		str[0] = codes[j];
 		if ((id = gmt_get_option_id (0, str)) == GMT_NOTSET) continue;	/* Not an option we have history for yet */
-		if (codes[j] == 'R' && !GMT->current.ps.active) id++;		/* Examine -RG history if not a plotter */
+		if (codes[j] == 'R' && (!GMT->current.ps.active || !GMT->init.history[id])) id++;		/* Examine -RG history if not a plotter or no -RP */
 		if (GMT->init.history[id] == NULL) continue;	/* No history for this option */
 		if (codes[j] == 'J') {	/* Must now search for actual option since -J only has the code (e.g., -JM) */
 			/* Continue looking for -J<code> */
@@ -15195,12 +15203,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		opt_J = gmtinit_find_J_option (API, *options);
 		if (GMT->hidden.func_level == GMT_CONTROLLER) {	/* The -R -J -O -K prohibition only applies to top-level module call */
 			/* 1. No -O allowed */
-			if ((opt = GMT_Find_Option (API, 'O', *options))) {
+			if (is_PS && (opt = GMT_Find_Option (API, 'O', *options))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Option -O not allowed for modern GMT mode.\n");
 				n_errors++;
 			}
 			/* 2. No -K allowed */
-			if ((opt = GMT_Find_Option (API, 'K', *options))) {
+			if (is_PS && (opt = GMT_Find_Option (API, 'K', *options))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Option -K not allowed for modern GMT mode.\n");
 				n_errors++;
 			}
@@ -15829,6 +15837,12 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		char *setting = getenv ("GMT_END_SHOW");
 		char *show = (setting && !strcmp (setting, "off")) ? "" : "show";
 		GMT->current.ps.oneliner = false;
+		if (gmt_get_current_item (GMT, "cpt", false)) {	/* One-liner with a current CPT, place it on top */
+			if ((i = GMT_Call_Module (GMT->parent, "colorbar", GMT_MODULE_CMD, "-DJTC -Baf"))) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to call module colorbar for a one-liner plot.\n");
+				return;
+			}
+		}
 		if ((i = GMT_Call_Module (GMT->parent, "end", GMT_MODULE_CMD, show))) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to call module end for a one-liner plot.\n");
 			return;
@@ -16312,15 +16326,15 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 	}
 	if ((S->v.status & PSL_VEC_JUST_S) && (S->v.status & PSL_VEC_COMPONENTS)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot combine second point coordinates (+s) with component scaling (+z)\n");
-		error++;		
+		error++;
 	}
 	if ((S->v.status & PSL_VEC_JUST_S) && (S->v.status & PSL_VEC_MAGNIFY)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot combine second point coordinates (+s) with magnitude scaling (+v)\n");
-		error++;		
+		error++;
 	}
 	if ((S->v.status & PSL_VEC_MAGCPT) && !S->v.v_unit_d) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot select magnitude for CPT (+c) without magnitude scaling (via +v or +z)\n");
-		error++;		
+		error++;
 	}
 	if ((S->v.status & PSL_VEC_MID_FWD || S->v.status & PSL_VEC_MID_BWD) && (S->v.status & PSL_VEC_BEGIN || S->v.status & PSL_VEC_END)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot combine mid-point vector head (+m) with end-point heads (+b | +e)\n");
@@ -19430,7 +19444,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			if (S->D.fill[0]) strcat (scode, "+g"), strcat (scode, S->D.fill);
 			fprintf (fp, "S - %s - %s %s - %s\n", scode, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 		}
-		else 
+		else
 			fprintf (fp, "S - %c %s %s %s - %s\n", symbol, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	}
 

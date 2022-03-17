@@ -55,7 +55,7 @@ jobs:
         uses: styfle/cancel-workflow-action@0.9.1
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup vcpkg (Windows)
         uses: dawidd6/action-download-artifact@v2.17.0
@@ -146,7 +146,7 @@ jobs:
           echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
 
       - name: Checkout the gh-pages branch in a separate folder
-        uses: actions/checkout@28c7f3d2b5162b5ddd3dfd9a45aa55eaf396478b
+        uses: actions/checkout@v3
         with:
           ref: gh-pages
           # Checkout to this folder instead of the current one

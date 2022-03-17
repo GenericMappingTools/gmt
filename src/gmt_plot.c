@@ -6025,7 +6025,7 @@ GMT_LOCAL void gmtplot_get_outside_point_extension (struct GMT_CTRL *GMT, double
 	/* The is_dnan catches bad cases yielding a NaN angle */
 	if (gmt_M_is_dnan (d_angle) || doubleAlmostEqualZero (fabs (d_angle), 90.0))		/* Line is orthogonal to border; no need to extend it when at a horizontal border */
 		L = 0.0;
-	else if (doubleAlmostEqualZero (d_angle, 0.0))	/* Line is parallel to border; would get infinity so truncate to width of map */
+	else if (doubleAlmostEqualZero (d_angle, 0.0) || doubleAlmostEqualZero (fabs (d_angle), 180.0))	/* Line is parallel to border; would get infinity so truncate to width of map */
 		//L = GMT->current.map.width; /* What we want but still picking up stray horizontal lines, hence L = 0 for now */
 		L = 0.0;
 	else	/* Safe to get width (but still truncate to width of map) */

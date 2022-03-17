@@ -253,6 +253,8 @@ that could contain either an image or a data set (e.g., geotiff) we determine
 which case it is and act accordingly.  If your favorite image format is not
 automatically detected then please let us know its magic bytes so we can add it.
 
+.. include:: macos_preview_issue.rst_
+
 .. module_note_ends
 
 Examples

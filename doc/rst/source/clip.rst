@@ -70,8 +70,6 @@ Required Arguments
     as well. With no arguments we terminate all active clipping paths.
     Experts may restrict the termination to just *n* of the active
     clipping path by passing that as the argument.
-    Remember to supply
-    **-X** and **-Y** settings if you have moved since the clip started.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_

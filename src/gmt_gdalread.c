@@ -684,15 +684,15 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		Ctrl->hdr[7] = adfGeoTransform[1];
 		Ctrl->hdr[8] = fabs(adfGeoTransform[5]);
 
+		if (got_R) {
+			Ctrl->hdr[0] = dfULX;	Ctrl->hdr[1] = dfLRX;
+			Ctrl->hdr[2] = dfLRY;	Ctrl->hdr[3] = dfULY;
+		}
+
 		if (Ctrl->hdr[2] > Ctrl->hdr[3]) {	/* Sometimes GDAL does it: y_min > y_max. If so, revert it */
 			tmpdble = Ctrl->hdr[2];
 			Ctrl->hdr[2] = Ctrl->hdr[3];
 			Ctrl->hdr[3] = tmpdble;
-		}
-
-		if (got_R) {
-			Ctrl->hdr[0] = dfULX;	Ctrl->hdr[1] = dfLRX;
-			Ctrl->hdr[2] = dfLRY;	Ctrl->hdr[3] = dfULY;
 		}
 	}
 
@@ -756,7 +756,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	bool   pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
 	bool   fliplr, got_R = false, got_r = false;
 	bool   topdown = false, rowmajor = true;               /* arrays from GDAL have this order */
-	bool   just_copy = false, copy_flipud = false;
+	bool   just_copy = false, copy_flipud = false, UDflip_Y = false;
 	int	   *whichBands = NULL;
 	int64_t *rowVec = NULL, *colVec = NULL;
 	int64_t  off, i_x_nXYSize, startColPos = 0, indent = 0, col_indent = 0, nXSize_withPad = 0, nYSize_withPad;
@@ -943,6 +943,12 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	if (status == CE_Failure && got_R) {
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_gdalread: Image %s does not have geographic coordinates so -R is ignored for subregion\n", gdal_filename);
 		got_R = false;
+	}
+	if ((dfLRY < dfULY) && adfGeoTransform[5] > 0) {
+		/* Case when y-axes comes positive up from GDAL (that normally has it positive down) */
+		double t;
+		t = dfLRY;	dfLRY = dfULY;	dfULY = t;
+		UDflip_Y = true;
 	}
 
 	if (got_R || got_r) {
@@ -1147,7 +1153,6 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 		/* Can't find why but have to multiply by nRGBA otherwise it crashes in win32 builds */
 		rowVec = gmt_M_memory(GMT, NULL, (nRowsPerBlock * nRGBA) * nBlocks, size_t);
-		for (m = 0; m < nY; m++) rowVec[m] = m * nX[piece];	/* Steps in pixels as we go down rows */
 		colVec = gmt_M_memory(GMT, NULL, (nX[piece]+pad_w[piece]+pad_e[piece]) * nRGBA, size_t);	/* For now this will be used only to select BIP ordering */
 		for (i = 0; i < nBands; i++) {
 			if (!nReqBands)		/* No band selection, read them sequentially */
@@ -1182,7 +1187,12 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				row_i = k * nRowsPerBlock;
 				row_e = (k + 1) * nRowsPerBlock;
 				buffy = nRowsPerBlock;
-				for (m = 0; m < nRowsPerBlock; m++) rowVec[m+k*nRowsPerBlock] = m * nX[piece];
+				if (UDflip_Y) {		/* Case when y-axes comes positive up from GDAL (that normally has it positive down) */
+					size_t n = ((nRowsPerBlock-1) + (nBlocks-1) * nRowsPerBlock);
+					for (m = nRowsPerBlock-1; m >= 0 ; m--) rowVec[n - (m + k * nRowsPerBlock)] = m * nX[piece];
+				}
+				else
+					for (m = 0; m < nRowsPerBlock; m++) rowVec[m + k * nRowsPerBlock] = m * nX[piece];
 				if (k == nBlocks-1) {					/* Last block only by chance is not smaller than the others */
 					buffy = nBufYSize - k * nRowsPerBlock;
 					row_e = nYSize;

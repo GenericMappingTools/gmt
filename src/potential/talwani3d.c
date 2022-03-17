@@ -27,7 +27,7 @@
  * sphere) and gave the correct answer.  It expects all distances
  * to be in meters (you can override with the -M option) or to be
  * in degrees lon/lat (will scale for a flat earth) and densities
- * is expected to be in kg/m^3.
+ * is expected to be in kg/m^3 or g/cm^3.
  *
  * Based on methods by
  *
@@ -160,6 +160,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.rho = atof (opt->arg);
+				if (fabs (Ctrl->D.rho) < 10.0) Ctrl->D.rho *= 1000;	/* Gave units of g/cm^3 */
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
@@ -169,7 +170,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 					case 'n': Ctrl->F.mode = TALWANI3D_GEOID;
 						if (opt->arg[1]) Ctrl->F.lat = atof (&opt->arg[1]), Ctrl->F.lset = true;
 						break;
-					case 'g':  Ctrl->F.mode = TALWANI3D_FAA; 	break;
+					case 'f': case '\0': Ctrl->F.mode = TALWANI3D_FAA; 	break;
 					default:
 						GMT_Report (API, GMT_MSG_WARNING, "Option -F: Unrecognized field %c\n", opt->arg[0]);
 						n_errors++;
@@ -240,6 +241,8 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 	                                 "Option -G: Must specify output gridfile name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file,
 	                                 "Option -N: Must specify output gridfile name.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Z.mode == 1,
+	                                 "Option -N: Cannot give a grid of zlevels via -Z if -N is used.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -261,7 +264,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A The z-axis is positive upwards [Default is positive down].");
 	GMT_Usage (API, 1, "\n-D<density>");
-	GMT_Usage (API, -2, "Set fixed density contrast that overrides settings in model file (in kg/m^3).");
+	GMT_Usage (API, -2, "Set fixed density contrast that overrides settings in model file (in kg/m^3 or g/cm^3).");
 	GMT_Usage (API, 1, "\n-Ff|n[<lat>]|v]");
 	GMT_Usage (API, -2, "Specify desired geopotential field component:");
 	GMT_Usage (API, 3, "f: Free-air anomalies (mGal) [Default].");
@@ -272,7 +275,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set name of output file. Grid file name is requires unless -N is used.");
 	GMT_Option (API, "I");
 	GMT_Usage (API, 1, "\n-M[hz]");
-	GMT_Usage (API, -2, "Change units used, via one or two directives:");
+	GMT_Usage (API, -2, "Change distance units used, via one or two directives:");
 	GMT_Usage (API, 3, "h: All x- and y-distances are given in km [meters].");
 	GMT_Usage (API, 3, "z: All z-distances are given in km [meters].");
 	GMT_Usage (API, 1, "\n-N<trktable>");
@@ -283,7 +286,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set observation level for output locations [0]. "
 		"Append either a constant or the name of grid file with variable levels. "
 		"If given a grid then it also defines the output grid.");
-	GMT_Usage (API, -2, "Note: Cannot use both -Z<grid> and -R -I [-r].");
+	GMT_Usage (API, -2, "Note: Cannot use -Z<grid> with -R -I [-r] or -N.");
 	GMT_Option (API, "bo,d,e");
 	GMT_Usage (API, 1, "\n-fg Map units (lon, lat in degree, else in m [but see -Mh]).");
 	GMT_Option (API, "h,i,o,r,x,.");
@@ -757,10 +760,6 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the talwani3d main code ----------------------------*/
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
-	/* Specify input expected columns to be at least 2 */
-	if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-		Return (error);
-	}
 	/* Register likely model files unless the caller has already done so */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLYGON, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 		Return (API->error);
@@ -781,8 +780,13 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 			Return (API->error);
 		if (gmt_M_is_geographic (GMT, GMT_IN)) lat = 0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI]);
 	}
-	else {	/* Got a dataset with output locations via -N */
+	else {	/* Got a dataset with output locations (x,y,z) via -N */
+		unsigned int n_expected = 3;
+		if (Ctrl->Z.active) n_expected--;	/* Only read x,y from file */
 		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from the -N file */
+		if ((error = GMT_Set_Columns (API, GMT_IN, n_expected, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			Return (API->error);
+		}
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL)
 			Return (API->error);
 		if (D->n_columns < 2) {
@@ -811,7 +815,10 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 	n_alloc1 = GMT_CHUNK;
 	cake = gmt_M_memory (GMT, NULL, n_alloc1, struct TALWANI3D_CAKE);
 
-	/* Read the sliced model */
+	/* Read the sliced model; expecting 2 coordinates per record */
+	if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+		Return (API->error);
+	}
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
@@ -860,7 +867,12 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 				/* Process the next segment header */
-				ns = sscanf (GMT->current.io.segment_header, "%lf %lf", &depth, &rho);
+				if (strstr (GMT->current.io.segment_header, "contour -Z"))	/* Got plain grdcontour output - no density is present */
+					ns = sscanf (GMT->current.io.segment_header, "%lf", &depth);
+				else {	/* By the book */
+					ns = sscanf (GMT->current.io.segment_header, "%lf %lf", &depth, &rho);
+					if (fabs (rho) < 10.0) rho *= 1000;	/* Gave units of g/cm^3 */
+				}
 				if (ns == 1 && !Ctrl->D.active) {
 					GMT_Report (API, GMT_MSG_ERROR, "Neither segment header nor -D specified density - must quit\n");
 					gmt_M_free (GMT, cake);
@@ -988,12 +1000,13 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 				gmt_prep_tmp_arrays (GMT, GMT_OUT, S->n_rows, 1);	/* Init or reallocate tmp vector */
 #ifdef _OPENMP
 				/* Spread calculation over selected cores */
-#pragma omp parallel for private(row,z_level) shared(GMT,Ctrl,S,scl,cake,depths,ndepths,flat_earth, G0)
+#pragma omp parallel for private(row,z_level) shared(S,Ctrl,GMT,scl,cake,depths,ndepths,flat_earth,G0)
 #endif
 				/* Separate the calculation from the output in two separate row-loops since cannot do rec-by-rec output
 				 * with OpenMP due to race condiations that would mess up the output order */
 				for (row = 0; row < (int64_t)S->n_rows; row++) {	/* Calculate attraction at all output locations for this segment */
 					z_level = (S->n_columns == 3 && !Ctrl->Z.active) ? S->data[GMT_Z][row] : Ctrl->Z.level;	/* Default observation z level unless provided in input file */
+					if (!Ctrl->M.active[TALWANI3D_VER]) z_level /= METERS_IN_A_KM;	/* Change level to km */
 					GMT->hidden.mem_coord[GMT_X][row] = talwani3d_get_one_output (S->data[GMT_X][row] * scl, S->data[GMT_Y][row] * scl, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth, G0);
 				}
 				/* This loop is not under OpenMP */
@@ -1022,7 +1035,7 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 		}
 #ifdef _OPENMP
 		/* Spread calculation over selected cores */
-#pragma omp parallel for private(row,col,node,y_obs,z_level) shared(API,GMT,Ctrl,G,x_obs,cake,depths,ndepths,flat_earth, G0)
+#pragma omp parallel for private(row,y_obs,col,node,z_level) shared(n_rows,GMT,G,flat_earth,Ctrl,n_columns,x_obs,cake,depths,ndepths,G0)
 #endif
 		for (row = 0; row < n_rows; row++) {	/* Do row-by-row and report on progress if -V */
 			y_obs = gmt_M_grd_row_to_y (GMT, row, G->header);
@@ -1030,7 +1043,7 @@ EXTERN_MSC int GMT_talwani3d (void *V_API, int mode, void *args) {
 #ifndef _OPENMP
 			GMT_Report (API, GMT_MSG_INFORMATION, "Finished row %5d\n", row);
 #endif
-			for (col = 0; col < (openmp_int)G->header->n_columns; col++) {
+			for (col = 0; col < n_columns; col++) {
 				/* Loop over cols; always save the next level before we update the array at that col */
 				node = gmt_M_ijp (G->header, row, col);
 				z_level = (Ctrl->A.active) ? -G->data[node] : G->data[node];	/* Get observation z level and possibly flip direction */

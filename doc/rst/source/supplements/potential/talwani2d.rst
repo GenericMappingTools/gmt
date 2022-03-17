@@ -52,8 +52,8 @@ Required Arguments
     One or more ASCII files describing cross-sectional polygons of one or more bodies.  Polygons
     will be automatically closed if not already closed, and repeated vertices will
     be eliminated.  The segment header for each body will be examined for a density
-    parameter in kg/m^3; see **-D** for overriding this value.  If no *table* is given then we
-    read standard input.
+    parameter in kg/m^3 or g/cm^3; see **-D** for overriding this value.  If no *table* is
+    given then we read standard input.
 
 Optional Arguments
 ------------------
@@ -66,7 +66,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *density*
-    Sets a fixed density contrast that overrides any per-body settings in the model file, in kg/m^3.
+    Sets a fixed density contrast that overrides any per-body settings in the model file, in kg/m^3 or g/cm^3.
 
 .. _-F:
 

@@ -1338,7 +1338,7 @@ EXTERN_MSC int GMT_grdfilter (void *V_API, int mode, void *args) {
 
 	gmt_M_toc(GMT,"");		/* Print total run time, but only if -Vt was set */
 
-	gmt_M_free (GMT, weight);
+	if (!Ctrl->F.custom) gmt_M_free (GMT, weight);
 	gmt_M_free (GMT, F.x);
 	gmt_M_free (GMT, F.y);
 	if (visit_check) gmt_M_free (GMT, F.visit);
@@ -1468,7 +1468,7 @@ GMT_LOCAL void grdfilter_threaded_function (struct THREAD_STRUCT *t) {
 
 	/* We need a local copy of these because they are modified in this function */
 	visit = gmt_M_memory (GMT, NULL, Gin->header->n_columns, char);
-	if (!weight)
+	if (!t->weight)
 		weight = gmt_M_memory(GMT, NULL, F.n_columns*F.n_rows, double);	/* Allocate space for convolution grid */
 	else
 		weight = t->weight;	/* The F.custom case, where weights were obtained in main and allows NOT multi-threading */
