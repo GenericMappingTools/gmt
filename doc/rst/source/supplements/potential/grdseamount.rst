@@ -109,7 +109,7 @@ Optional Arguments
    :width: 500 px
    :align: center
 
-   The five types of seamounts selectable via option **-C**.  In all cases, :math:`h_0` is the maximum
+   The five types of seamounts selected via option **-C**.  In all cases, :math:`h_0` is the maximum
    *height*, :math:`r_0` is the basal *radius*, :math:`h_c` is the noise floor set via **-L** [0], and
    *f* is the *flattening* set via **-F** [0]. The top radius :math:`r_t` is only nonzero if there is
    flattening and hence does not apply to the disc model.
