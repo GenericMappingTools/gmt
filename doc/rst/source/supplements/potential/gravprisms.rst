@@ -21,6 +21,7 @@ Synopsis
 [ |-G|\ *outfile* ]
 [ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
 [ |SYN_OPT-I| ]
+[ |-K|\ *outavedens* ]
 [ |-L|\ *base* ]
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
@@ -28,7 +29,7 @@ Synopsis
 [ |-S|\ *shapegrid* ]
 [ |-T|\ *top* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ *avedens* ]
+[ |-W|\ *inavedens* ]
 [ |-Z|\ *level*\|\ *obsgrid* ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
@@ -64,7 +65,7 @@ gravity gradient anomalies, or geoid anomalies.  Options are available to contro
 axes units and direction.
 
 .. figure:: /_images/GMT_seamount_prisms.*
-   :width: 500 px
+   :width: 600 px
    :align: center
 
    Three density models modeled by prisms for a truncated Gaussian seamount via **-C**: (left) Constant
@@ -148,6 +149,12 @@ Optional Arguments
     Requires **-S** to know the full height of the seamount.
     See :doc:`grdseamount </supplements/potential/grdseamount>` for more details.
 
+.. _-K:
+
+**-K**\ *outavedens*
+    Give name of an output grid with spatially varying, vertically-averaged prism densities created
+    by **-C** and **-H**.
+
 .. _-L:
 
 **-L**\ *base*
@@ -190,7 +197,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ *avedens*
+**-W**\ *inavedens*
     Give name of an input grid with spatially varying, vertically-averaged prism densities. Requires
     **-C** and the grid must be co-registered with the grid provided by **-S** (or **L** and **-T**).
 
