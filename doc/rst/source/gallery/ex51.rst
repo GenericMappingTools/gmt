@@ -43,8 +43,8 @@ with :doc:`/gmtselect`. Finally we are all set to use the coastlines with
 .. literalinclude:: /_verbatim/ex51.txt
    :language: bash
 
-.. figure:: /_images/ex51.*
-   :width: 500 px
+.. figure:: https://user-images.githubusercontent.com/14077947/158881478-9751c8e9-c26d-455b-9bbf-dec667459cb6.png
+   :width: 80%
    :align: center
 
    Comparison of GSHHG and OSM coastlines.

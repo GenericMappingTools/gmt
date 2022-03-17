@@ -14,13 +14,23 @@ complex illustration.
 
 .. jinja:: jinja_ctx
 
-   {% for i in range(1, 53) %}
+   {% for i in range(1, 51) %}
    {% set i = '%02d' % i %}
    -  .. figure:: /_images/ex{{i}}.*
          :target: ./gallery/ex{{i}}.html
 
          :ref:`example_{{i}}`
    {% endfor %}
+
+   - .. figure:: https://user-images.githubusercontent.com/14077947/158881478-9751c8e9-c26d-455b-9bbf-dec667459cb6.png
+         :target: ./gallery/ex51.html
+
+         :ref:`example_51`
+
+   - .. figure:: /_images/ex52.png
+         :target: ./gallery/ex52.html
+
+         :ref:`example_52`
 
    - .. figure:: https://user-images.githubusercontent.com/14077947/123172626-62ca6880-d44b-11eb-8d91-21e448930460.png
          :target: ./gallery/ex53.html
