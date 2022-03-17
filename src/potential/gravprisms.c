@@ -369,6 +369,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 	                                 "Option -L: Requires -T (or -S)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.quit && !Ctrl->C.dump,
 	                                 "Option -C: Modifier +q requires +w\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dz > 0.0 && !Ctrl->H.active,
+	                                 "Option -C: Modifier +z set without -H is disallowed\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
