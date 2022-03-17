@@ -241,7 +241,7 @@ We have prepared a set of 2828 prisms that represent a truncated Gaussian seamou
 height 6000 m, radius 30 km, with the base at z = 0 m, available in the remote file @prisms.txt.
 A quick view of the 3-D model can be had via::
 
-    gmt plot3d -R-30/30/-30/30/0/7000 -JX12c -JZ3c -Glightgray -So1q+b @prisms.txt -B -p200/20 -pdf smt
+    gmt plot3d -R-30/30/-30/30/0/7000 -JX12c -JZ3c -Ggray -So1q+b @prisms.txt -B -Wfaint -p200/20 -pdf smt
 
 To compute the free-air anomalies on a grid over the set of prisms given in @prisms.txt,
 using 1700 kg/m^3 as a fixed density contrast, with horizontal distances in km and
@@ -258,7 +258,7 @@ for the same model, try::
     gmt plot vgg_crossing.txt -R-30/30/-50/400 -i0,3 -W1p -B -pdf vgg_crossing
 
 Finally, redo the gravity calculation but now use the individual prism densities in the
-prism file and restrict calculations to the same crossing profile, i.e.,::
+prism file and restrict calculations to the same crossing profile, i.e.::
 
     gmt gravprisms -Ncrossing.txt -Mh @prisms.txt -Ff -Z7000 > faa_crossing.txt
     gmt plot faa_crossing.txt -R-30/30/0/350 -i0,3 -W1p -B -pdf faa_crossing
