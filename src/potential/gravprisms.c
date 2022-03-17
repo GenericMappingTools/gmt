@@ -779,9 +779,10 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 				z_prev = z_next;	/* The the top of this prism be the bottom of the next */
 			} while (z_prev < z2);	/* Until we run out of this stack */
 			if (Ctrl->K.active) {	/* Get vertical average density and keep track of means */
+				double dz = z2 - z1;
 				Rho->data[node] = gravprisms_mean_density (Ctrl, H->data[node], z1, z2);
-				rs += Rho->data[node];
-				ws += (z2 - z1);
+				rs += Rho->data[node] * dz;
+				ws += dz;
 			}
 		}
 		/* Finalize allocation */
