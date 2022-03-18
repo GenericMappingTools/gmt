@@ -126,9 +126,12 @@ struct GRDSEAMOUNT_CTRL {
 		unsigned int bmode;
 		unsigned int fmode;
 	} Q;
-	struct GRDSEAMOUNT_S {	/* -S<r_scale> */
+	struct GRDSEAMOUNT_S {	/* -S<r1>/<r2>[+u<u0>][+a<az1/az2>][+d<rcut>] */
 		bool active;
-		double value;
+		bool slide;
+		double value;	/* Deprecated -S<r_scale> */
+		double r1, r2, az1, az2, u0, v, rcut;
+		double h1, h2, hcut;	/* These are computed from r1, r2, rcut based on shape */
 	} S;
 	struct GRDSEAMOUNT_T {	/* -T[l]<t0>/<t1>/<d0>|n  */
 		bool active, log;
@@ -163,6 +166,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->Q.bmode = SMT_CUMULATIVE;
 	C->Q.fmode = FLUX_GAUSSIAN;
 	C->S.value = 1.0;
+	C->S.u0 = 0.2;
 	C->T.n_times = 1;
 	C->H.p = 1.0;	/* Linear density increase */
 	C->H.densify = 0.0;	/* No water-driven compaction on flanks */
@@ -433,9 +437,46 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				if (c) c[0] = '+';
 				break;
 			case 'S':	/* Ad hoc radial scale */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
-				Ctrl->S.value = atof (opt->arg);
+				if (strchr (opt->arg, '/')) {	/* Slide settings */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.slide);
+					Ctrl->S.slide = true;
+					if ((c = gmt_first_modifier (GMT, opt->arg, "aduv"))) {
+						unsigned int pos = 0;
+						char txt[GMT_LEN256] = {""};
+						while (gmt_getmodopt (GMT, 'S', c, "aduv", &pos, txt, &n_errors) && n_errors == 0) {
+							switch (txt[0]) {
+								case 'a':	/* Get Azimuthal band for slide */
+									if (sscanf (opt->arg, "%lg/%lg", &Ctrl->S.az1, &Ctrl->S.az2) != 2) {
+										GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unable to parse the two azimuth values\n");
+										n_errors++;
+									}
+									break;
+								case 'd':	/* Get distal radial start */
+									Ctrl->S.rcut = atof (&txt[1]);
+									break;
+								case 'u':	/* Get initial u offset u0 */
+									Ctrl->S.u0 = atof (&txt[1]);
+									break;
+								case 'v':	/* Get volume percent of slide */
+									Ctrl->S.v = atof (&txt[1]);
+									break;
+								default:
+									n_errors++;
+									break;
+							}
+						}
+						c[0] = '\0';	/* Chop off all modifiers so range can be determined */
+					}
+					if (sscanf (opt->arg, "%lg/%lg", &Ctrl->S.r1, &Ctrl->S.r2) != 2) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unable to parse the two radial values\n");
+						n_errors++;
+					}
+				}
+				else {	/* Deprecated radial scaling */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
+					Ctrl->S.value = atof (opt->arg);
+				}
 				break;
 			case 'T':	/* Time grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
@@ -687,6 +728,24 @@ GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double
 
 	double rho = Ctrl->H.rho_l + Ctrl->H.densify * q + Ctrl->H.del_rho * Ctrl->H.H * (pow (u1, Ctrl->H.p1) - pow (u2, Ctrl->H.p1)) / (dz * (Ctrl->H.p1));
 	return (rho);
+}
+
+GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_GRID *G, double *in, unsigned int row, unsigned int col) {
+	double dx = G->x[col] - in[GMT_X], dy = G->y[row] - in[GMT_Y];
+	double az = (dx == 0.0 && dy == 0.0) ? 0.0 : R2D * atan2 (dy, dx) - 360.0;
+	gmt_M_unused (GMT);
+	while (az < Ctrl->S.az1) az += 360.0;
+	return (az <= Ctrl->S.az2);
+}
+
+GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double r_km, double u) {
+	double this_r = u * r_km, q;
+	gmt_M_unused (GMT);
+	if (this_r < Ctrl->S.r1) return DBL_MAX;	/* Outside range */
+	if (this_r > Ctrl->S.r2) return DBL_MAX;	/* Outside range */
+	u = ((this_r - Ctrl->S.r1) / (Ctrl->S.r2 - Ctrl->S.r1));	/* Normalized u inside the slide range 0-1 */
+	q = Ctrl->S.u0 * ((1.0 + Ctrl->S.u0) / (u + Ctrl->S.u0) - 1.0);
+	return (Ctrl->S.h1 + (Ctrl->S.h2 - Ctrl->S.h1) * q);
 }
 
 GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in, char *code) {
@@ -1222,7 +1281,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								dx = 0.0;	/* Break point here if debugging peak of seamount location */
 							}
 #endif
-							/* In the following, orig_add is the height of the sesamount prrior to any truncation, while add is the current value (subject to truncation) */
+							/* In the following, orig_add is the height of the seamount prior to any truncation, while add is the current value (subject to truncation) */
 							if (Ctrl->E.active) {	/* For elliptical bases we must deal with direction etc */
 								dx = (map) ? (x - in[GMT_X]) * GMT->current.proj.DIST_KM_PR_DEG * c : (x - in[GMT_X]);
 								dy = (map) ? (y - in[GMT_Y]) * GMT->current.proj.DIST_KM_PR_DEG : (y - in[GMT_Y]);
@@ -1276,6 +1335,9 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							}
 							if (add <= 0.0) continue;	/* No amplitude, so skip */
 							ij = gmt_M_ijp (Grid->header, row, col);	/* Current node location */
+							if (Ctrl->S.slide && grdseamount_in_sector (GMT, Ctrl, Grid, in, row, col)) {
+								add = MIN (add, grdseamount_slide (GMT, Ctrl, this_r, rr));
+							}
 							z_assign = amplitude * add;		/* height to be added to grid */
 							if (Ctrl->A.active)	/* No amplitude, just set inside value for mask */
 								Grid->data[ij] = Ctrl->A.value[GMT_IN];
