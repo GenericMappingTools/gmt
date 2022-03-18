@@ -79,7 +79,7 @@ struct TALWANI2D_CTRL {
 		bool active;
 		struct GMT_ARRAY T;
 	} T;
-	struct TALWANI2D_Z {	/* Observation level constant */
+	struct TALWANI2D_Z {	/* -Z<zlevel>[/<ymin>/<ymax>] Observation level constant and optional 2.5D gravity limits */
 		bool active;
 		double level;
 		double ymin, ymax;
@@ -264,7 +264,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-Z[<level>][/<ymin/<ymax>]");
 	GMT_Usage (API, -2, "-Z Set observation level for output locations [0]. "
-		"For FAA only: Optionally append <ymin/ymax> to get a 2.5-D solution.");
+		"For FAA only: Optionally append /<ymin/ymax> to get a 2.5-D solution.");
 	GMT_Option (API, "bi,bo,d,e,h,i,o,x,.");
 	return (GMT_MODULE_USAGE);
 }
@@ -740,7 +740,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 
 	for (k = 0, rho = 0.0; k < n_bodies; k++) {
 		rho += body[k].rho;
-		GMT_Report (API, GMT_MSG_INFORMATION, "%lg Rho: %lg N-vertx: %4d\n", body[k].rho, body[k].n);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Rho: %lg N-vertices: %4d\n", body[k].rho, body[k].n);
 	}
 	GMT_Report (API, GMT_MSG_INFORMATION, "Start calculating %s\n", kind[Ctrl->F.mode]);
 

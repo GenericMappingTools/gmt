@@ -109,7 +109,7 @@ Optional Arguments
    :width: 500 px
    :align: center
 
-   The five types of seamounts selectable via option **-C**.  In all cases, :math:`h_0` is the maximum
+   The five types of seamounts selected via option **-C**.  In all cases, :math:`h_0` is the maximum
    *height*, :math:`r_0` is the basal *radius*, :math:`h_c` is the noise floor set via **-L** [0], and
    *f* is the *flattening* set via **-F** [0]. The top radius :math:`r_t` is only nonzero if there is
    flattening and hence does not apply to the disc model.
@@ -148,7 +148,7 @@ Optional Arguments
 **-H**\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
     Set reference seamount parameters for an *ad-hoc* variable radial density function with depth. Give
     the low and high seamount densities in kg/m^3 or g/cm^3 and the fixed reference height *H* in meters.
-    Use modifers **+d** and **+p** to change the water-pressure-driven flank density increase
+    Use modifiers **+d** and **+p** to change the water-pressure-driven flank density increase
     over the full reference height [0] and the variable density profile exponent *power* [1, i.e., a linear change].
     Below, *h(r)* is the final height of any seamount and *z(r)* is a point inside the seamount.  If the seamount is
     truncated (via **-F**) then *h(r)* refers to the untruncated height.  **Note**: If **-V** is used
@@ -166,7 +166,7 @@ Optional Arguments
    A linear density distribution selected via option **-H**.  Flank density can be affected by water
    pressure if :math:`\Delta \rho_f > 0` while the normalized internal density gradient is raised to
    power *p* to allow for nonlinear gradients.  **Note**: The reference height *H* refers to a very tall
-   seamount for which the supplied densities are suitable.  Smaller samounts will thus see lower core
+   seamount for which the supplied densities are suitable.  Smaller seamounts will thus see lower core
    densities by virtue of being smaller.
 
 .. _-K:
@@ -189,8 +189,8 @@ Optional Arguments
     Write the times and names of all grids that were created to the text file *list*.
     Requires **-T**.  If not *list* file is given then we write to standard output.
     The output listing is suitable to be used as input to :doc:`grdflexure </supplements/potential/grdflexure>`.
-    **Note**: If **-W** is used the we write the relief grid name first followd by the density grid name.  Thus,
-    the output records contain *time reliefgrid *\ [ *densitygrid* ] *timetag*.
+    **Note**: If **-W** is used the we write the relief grid name first followed by the density grid name.  Thus,
+    the output records contain *time reliefgrid* [ *densitygrid* ] *timetag*.
 
 .. _-N:
 

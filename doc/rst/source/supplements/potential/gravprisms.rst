@@ -50,8 +50,8 @@ We either read the multi-segment *table* from file (or standard input), which ma
 7 columns: The first four are *x y z_low z_high*, i.e., the center *x, y* coordinates and the
 vertical range of the prism from *z_low* to *z_high*, while the next two columns hold the dimensions
 *dx dy* of each prism (see **-E** if all prisms have the same *x*- and *y*-dimensions).
-Last column may contain individual prism densities (but will be overridden by a fixed density contrast
-if given via **-D**).  Alternatively, we can use **-C** to create the prisms needed to approximate
+Last column may contain individual prism densities (but will be overridden by fixed or variable density contrasts
+if given via **-D**).  Alternatively, we can use **-C** to *create* the prisms needed to approximate
 the entire feature (**-S**) or just the volume between two surfaces (one of which may be a constant)
 that define a layer (set via **-L** and **-T**).  If a variable density model (**-H**) is selected
 then each vertical prism will be broken into constant-density, stacked sub-prisms using a prescribed
@@ -67,7 +67,7 @@ axes units and direction.
    :align: center
 
    Three density models modeled by prisms for a truncated Gaussian seamount via **-C**: (left) Constant
-   density (**-D**), (middle) vertically-averaged density varying radially (**-W**), and
+   density (**-D**), (middle) vertically-averaged density varying radially (**-D**), and
    (right) density varies with *r* and *z* (**-H**), requiring a stack of prisms.
 
 Required Arguments
@@ -76,7 +76,8 @@ Required Arguments
 *table*
     The file describing the prisms with record format *x y z_lo z_hi* [ *dx dy* ] [ *rho* ],
     where the optional items are controlled by options **-E** and **-D**, respectively.
-    Density contrasts can be given in kg/m^3 of g/cm^3.
+    Density contrasts can be given in kg/m^3 of g/cm^3. **Note**: If **-C** is used then
+    no *table* will be read.
 
 .. _-I:
 
@@ -105,24 +106,24 @@ Optional Arguments
     of sub-prisms with individual densities; thus *dz* needs to be set for the heights of these sub-prisms (the first
     and last sub-prisms in the stack may have their heights adjusted to match the limits of the surfaces).  Without
     **-H** we only create a single uniform-density prism, but those prisms may have spatially varying densities via
-    **-W**.  Append **+w**\ *file* to save the prisms to a table, and optionally use **+q** to quit execution once
-    the file has been saved, i.e., no geopotential calculations will take place.
+    **-D**.  Append **+w**\ *file* to save the prisms to a table, and optionally use **+q** to quit execution once
+    that file has been saved, i.e., no geopotential calculations will take place.
 
 .. _-D:
 
 **-D**\ *density*
     Sets a fixed density contrast that overrides any individual prism settings in the prisms file, in kg/m^3 of g/cm^3. Alternatively, give name of an input grid with spatially varying, vertically-averaged
-    prism densities. Requires **-C** and the grid must be co-registered with the grid provided by **-S**
+    prism densities. This requires **-C** and the grid must be co-registered with the grid provided by **-S**
     (or **L** and **-T**).
 
 .. _-E:
 
 **-E**\ *dx*\ [/*dy*]
     If all prisms in *table* have constant x/y-dimensions then they can be set here.  In that case *table*
-    only contains the centers of each prism and the *z* range (and optionally *density*; see **-D**).
+    must only contain the centers of each prism and the *z* range (and optionally *density*; see **-D**).
     If only *dx* is given then we set *dy = dx*. **Note**: For geographic coordinates the *dx* dimension
-    is in geographic delta longitude and hence the physical width of the prism will decrease with latitude
-    if *dx* stays the same.
+    is in geographic longitude increment and hence the physical width of the prism will decrease with latitude
+    if *dx* stays numerically the same.
 
 .. _-F:
 
@@ -137,14 +138,14 @@ Optional Arguments
     Specify the name of the output data (for grids, see :ref:`Grid File Formats
     <grd_inout_full>`). Required when an equidistant grid is implied for output.
     If **-N** is used then output is written to standard output unless **-G**
-    specifies an output file.
+    specifies an output table name.
 
 .. _-H:
 
 **-H**\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
     Set reference seamount parameters for an *ad-hoc* variable radial density function with depth. Give
     the low and high seamount densities in kg/m^3 or g/cm^3 and the fixed reference height *H* in meters.
-    Use modifers **+d** and **+p** to change the water-pressure-driven flank density increase over the
+    Use modifiers **+d** and **+p** to change the water-pressure-driven flank density increase over the
     full reference height [0] and the variable density profile exponent *power* [1, i.e., a linear change].
     Requires **-S** to know the full height of the seamount.
     See :doc:`grdseamount </supplements/potential/grdseamount>` for more details.
@@ -169,7 +170,7 @@ Optional Arguments
     Specifies individual (x, y[, z]) locations where we wish to compute the predicted value.
     When this option is used there are no grids involved and the output data records are written
     to standard output (see **-bo** for binary output). If **-Z** is not set then *trackfile* must
-    have 3 columns and we take the *z* value as our observation level; otherwise the level must be
+    have 3 columns and we take the *z* value as our observation level; otherwise s constant level must be
     set via **-Z**. **Note**: If **-G** is used to set an output file we will write the output table
     to that file instead of standard output.
 
@@ -237,10 +238,10 @@ Examples
 --------
 
 We have prepared a set of 2828 prisms that represent a truncated Gaussian seamount of
-height 6000 m, radius 30 km, with the base at z = 0 m, available in the file prisms.txt.
-A quick view of the 3-D model can be made via::
+height 6000 m, radius 30 km, with the base at z = 0 m, available in the remote file @prisms.txt.
+A quick view of the 3-D model can be had via::
 
-    gmt plot3d -R-30/30/-30/30/0/7000 -JX12c -JZ3c -Glightgray -So1q+b @prisms.txt -B -p200/20 -pdf smt
+    gmt plot3d -R-30/30/-30/30/0/7000 -JX12c -JZ3c -Ggray -So1q+b @prisms.txt -B -Wfaint -p200/20 -pdf smt
 
 To compute the free-air anomalies on a grid over the set of prisms given in @prisms.txt,
 using 1700 kg/m^3 as a fixed density contrast, with horizontal distances in km and
@@ -256,9 +257,8 @@ for the same model, try::
     gmt gravprisms -Ncrossing.txt -Mh @prisms.txt -D1700 -Fv -Z7000 > vgg_crossing.txt
     gmt plot vgg_crossing.txt -R-30/30/-50/400 -i0,3 -W1p -B -pdf vgg_crossing
 
-
 Finally, redo the gravity calculation but now use the individual prism densities in the
-prism file and restrict calculations to the same crossing profile, i.e.,::
+prism file and restrict calculations to the same crossing profile, i.e.::
 
     gmt gravprisms -Ncrossing.txt -Mh @prisms.txt -Ff -Z7000 > faa_crossing.txt
     gmt plot faa_crossing.txt -R-30/30/0/350 -i0,3 -W1p -B -pdf faa_crossing
@@ -269,13 +269,12 @@ Note
 
 The analytical expression for the geoid over a vertical prism (Nagy et al., 2000) is
 fairly involved and contains 48 terms.  Due to various cancellations the end result
-is more unstable than similar expressions for gravity and VGG.  Be aware that the
+is more unstable than the simpler expressions for gravity and VGG.  Be aware that the
 result may have less significant digits that you may expect.
 
 
 References
 ----------
-
 
 Grant, F. S. and West, G. F., 1965, *Interpretation Theory in Applied Geophysics*,
 583 pp., McGraw-Hill.
