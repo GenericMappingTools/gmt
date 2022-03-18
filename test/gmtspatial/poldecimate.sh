@@ -7,7 +7,7 @@
 #gmt math -T0/2000/1 -o1 0 100 RAND = z
 #paste x y z > polar.txt
 ps=poldecimate.ps
-DATA=$(gmt which -G @nn_polar.txt)
+DATA=$(gmt which -Gc @nn_polar.txt)
 # NN averaging
 gmt spatial -Aa100k -fg $DATA > results.txt
 gmt psxy -R0/360/60/90 -JA0/90/4.5i -P -K -Bafg -BWsne $DATA -Sc0.05i -Ggreen -X1.5i -Y0.75i > $ps
