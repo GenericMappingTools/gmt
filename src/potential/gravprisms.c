@@ -33,6 +33,7 @@
  */
 
 #include "gmt_dev.h"
+#include "newton.h"
 #include "talwani.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gravprisms"
@@ -438,9 +439,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-#define GRAVITATIONAL_CONST_GEOID 6.674e-11	/* To get geoid in meter we divide by g0 in gravprisms_get_one_n_output */
-#define GRAVITATIONAL_CONST_FAA   6.674e-6	/* To convert m/s^2 to mGal requires 1e5 */
-#define GRAVITATIONAL_CONST_VGG   6.674e-2	/* To convert mGal/m to 0.1 mGal/km requires an additional 1e4 */
+/* To get geoid in meter we divide by g0 in gravprisms_get_one_n_output */
+/* To convert m/s^2 to mGal requires 1e5 */
+/* To convert mGal/m to 0.1 mGal/km requires 1e9 */
 
 /* Geoid: Carefully checking terms to avoid divisions by zero in atan or log (zero) */
 #define zatan(a,b) ((fabs(b) < GMT_CONV15_LIMIT) ? 0.0 : atan(a/b))		/* For safe atan (a/b) */
@@ -483,7 +484,7 @@ GMT_LOCAL double geoidprism (double dx1, double dx2, double dy1, double dy2, dou
 	n221 = -(0.5 * (dx1_sq * zatan (dy2dz2, (dx1 * R221)) + dy2_sq * zatan (dx1dz2, (dy2 * R221)) + dz2_sq * zatan (dx1dy2, (dz2 * R221))) - zlog (dx1dz2, R221 + dy2) - zlog (dy2dz2, R221 + dx1) - zlog (dx1dy2, R221 + dz2));
 	n222 = +(0.5 * (dx2_sq * zatan (dy2dz2, (dx2 * R222)) + dy2_sq * zatan (dx2dz2, (dy2 * R222)) + dz2_sq * zatan (dx2dy2, (dz2 * R222))) - zlog (dx2dz2, R222 + dy2) - zlog (dy2dz2, R222 + dx2) - zlog (dx2dy2, R222 + dz2));
 
-	n = -rho * GRAVITATIONAL_CONST_GEOID * (n111 + n112 + n121 + n122 + n211 + n212 + n221 + n222);
+	n = -rho * NEWTON_G * (n111 + n112 + n121 + n122 + n211 + n212 + n221 + n222);
 
 	return (n);
 }
@@ -521,7 +522,7 @@ GMT_LOCAL double gravprism (double dx1, double dx2, double dy1, double dy2, doub
 	g221 = -(dz2 * atan (dx1dy2 / (dz2 * R221)) - dx1 * log (R221 + dy2) - dy2 * log (R221 + dx1));
 	g222 = +(dz2 * atan (dx2dy2 / (dz2 * R222)) - dx2 * log (R222 + dy2) - dy2 * log (R222 + dx2));
 
-	g = -rho * GRAVITATIONAL_CONST_FAA * (g111 + g112 + g121 + g122 + g211 + g212 + g221 + g222);
+	g = -1.0e5 * rho * NEWTON_G * (g111 + g112 + g121 + g122 + g211 + g212 + g221 + g222);
 
 	return (g);
 }
@@ -559,7 +560,7 @@ GMT_LOCAL double vggprism (double dx1, double dx2, double dy1, double dy2, doubl
 	v221 = -atan (dx1dy2 / (dz2 * R221));
 	v222 = +atan (dx2dy2 / (dz2 * R222));
 
-	v = -rho * GRAVITATIONAL_CONST_VGG * (v111 + v112 + v121 + v122 + v211 + v212 + v221 + v222);
+	v = -1.0e9 * rho * NEWTON_G * (v111 + v112 + v121 + v122 + v211 + v212 + v221 + v222);
 
 	return (v);
 }

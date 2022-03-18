@@ -30,6 +30,7 @@
  */
 
 #include "gmt_dev.h"
+#include "newton.h"
 #include "okbfuns.h"
 #include "../mgd77/mgd77.h"
 #ifdef HAVE_GLIB_GTHREAD
@@ -298,7 +299,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 					Ctrl->C.got_gravgrid = true;
 				}
 				else
-					Ctrl->C.rho = atof(opt->arg) * 6.674e-6;
+					Ctrl->C.rho = 1.0e5 * atof(opt->arg) * NEWTON_G;
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
@@ -1296,7 +1297,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 			if (Gsource) {                                           /* If we have a variable source grid */
 				rho_or_mag = Gsource->data[gmt_M_ijp(Gsource->header, row, col)];
 				if (isnan(rho_or_mag)) continue;
-				if (Ctrl->C.got_gravgrid) rho_or_mag *= 6.674e-6;
+				if (Ctrl->C.got_gravgrid) rho_or_mag *= (1.0e5 * NEWTON_G);
 			}
 
 			if (Ctrl->H.do_igrf) {                                  /* Here we have a constantly varying dec and dip */
