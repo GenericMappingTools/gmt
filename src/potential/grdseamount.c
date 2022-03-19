@@ -126,12 +126,12 @@ struct GRDSEAMOUNT_CTRL {
 		unsigned int bmode;
 		unsigned int fmode;
 	} Q;
-	struct GRDSEAMOUNT_S {	/* -S<r1>/<r2>[+u<u0>][+a<az1/az2>][+d<rcut>] */
+	struct GRDSEAMOUNT_S {	/* -S<h1>/<h2>[+u<u0>][+a<az1/az2>][+d<hcut>][+t<t0/t1>][+v<V%>] */
 		bool active;
 		bool slide;
 		double value;	/* Deprecated -S<r_scale> */
-		double r1, r2, az1, az2, u0, v, rcut;
-		double h1, h2, hcut;	/* These are computed from r1, r2, rcut based on shape */
+		double h1, h2, az1, az2, u0, t0, t1, v, hcut;
+		double r1, r2, rcut;	/* These are computed from h1, h2, hcut based on shape */
 	} S;
 	struct GRDSEAMOUNT_T {	/* -T[l]<t0>/<t1>/<d0>|n  */
 		bool active, log;
@@ -441,21 +441,27 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				if (strchr (opt->arg, '/')) {	/* Slide settings */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.slide);
 					Ctrl->S.slide = true;
-					if ((c = gmt_first_modifier (GMT, opt->arg, "aduv"))) {
+					if ((c = gmt_first_modifier (GMT, opt->arg, "adtuv"))) {
 						unsigned int pos = 0;
 						char txt[GMT_LEN256] = {""};
-						while (gmt_getmodopt (GMT, 'S', c, "aduv", &pos, txt, &n_errors) && n_errors == 0) {
+						while (gmt_getmodopt (GMT, 'S', c, "adtuv", &pos, txt, &n_errors) && n_errors == 0) {
 							switch (txt[0]) {
-								case 'a':	/* Get Azimuthal band for slide */
+								case 'a':	/* Get Azimuth band for slide */
 									if (sscanf (opt->arg, "%lg/%lg", &Ctrl->S.az1, &Ctrl->S.az2) != 2) {
 										GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unable to parse the two azimuth values\n");
 										n_errors++;
 									}
 									break;
-								case 'd':	/* Get distal radial start */
-									Ctrl->S.rcut = atof (&txt[1]);
+								case 'd':	/* Get distal start height */
+									Ctrl->S.hcut = atof (&txt[1]);
 									break;
-								case 'u':	/* Get initial u offset u0 */
+								case 't':	/* Get time-window for slide */
+									if (sscanf (opt->arg, "%lg/%lg", &Ctrl->S.t0, &Ctrl->S.t1) != 2) {
+										GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unable to parse the two time values\n");
+										n_errors++;
+									}
+									break;
+								case 'u':	/* Get initial normalized offset u0 */
 									Ctrl->S.u0 = atof (&txt[1]);
 									break;
 								case 'v':	/* Get volume percent of slide */
@@ -468,8 +474,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 						}
 						c[0] = '\0';	/* Chop off all modifiers so range can be determined */
 					}
-					if (sscanf (opt->arg, "%lg/%lg", &Ctrl->S.r1, &Ctrl->S.r2) != 2) {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unable to parse the two radial values\n");
+					if (sscanf (opt->arg, "%lg/%lg", &Ctrl->S.h1, &Ctrl->S.h2) != 2) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unable to parse the two height values for slide\n");
 						n_errors++;
 					}
 				}
@@ -731,21 +737,51 @@ GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double
 }
 
 GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_GRID *G, double *in, unsigned int row, unsigned int col) {
+	/* Return true if the azimuth from seamount center to this point is inside the wedge selected via -S+a */
 	double dx = G->x[col] - in[GMT_X], dy = G->y[row] - in[GMT_Y];
-	double az = (dx == 0.0 && dy == 0.0) ? 0.0 : R2D * atan2 (dy, dx) - 360.0;
+	double az = (dx == 0.0 && dy == 0.0) ? 0.0 : R2D * atan2 (dy, dx) - 360.0;	/* Make sure we start negative */
 	gmt_M_unused (GMT);
-	while (az < Ctrl->S.az1) az += 360.0;
+	while (az < Ctrl->S.az1) az += 360.0;	/* Keep wrapping until we pass az1 */
 	return (az <= Ctrl->S.az2);
 }
 
-GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double r_km, double u) {
-	double this_r = u * r_km, q;
+GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double r_km, double r) {
+	/* r is normalized radial position (0-1) */
+	double u, this_r = r * r_km, q;
 	gmt_M_unused (GMT);
 	if (this_r < Ctrl->S.r1) return DBL_MAX;	/* Outside range */
 	if (this_r > Ctrl->S.r2) return DBL_MAX;	/* Outside range */
-	u = ((this_r - Ctrl->S.r1) / (Ctrl->S.r2 - Ctrl->S.r1));	/* Normalized u inside the slide range 0-1 */
-	q = Ctrl->S.u0 * ((1.0 + Ctrl->S.u0) / (u + Ctrl->S.u0) - 1.0);
-	return (Ctrl->S.h1 + (Ctrl->S.h2 - Ctrl->S.h1) * q);
+	u = ((this_r - Ctrl->S.r1) / (Ctrl->S.r2 - Ctrl->S.r1));	/* Normalized u inside the slide range of 0-1 */
+	q = Ctrl->S.u0 * ((1.0 + Ctrl->S.u0) / (u + Ctrl->S.u0) - 1.0);	/* Normalized slide shape function */
+	return (Ctrl->S.h1 + (Ctrl->S.h2 - Ctrl->S.h1) * q);	/* Scale to actual topography */
+}
+
+GMT_LOCAL double grdseamount_height (struct GRDSEAMOUNT_CTRL *Ctrl, double this_r, double rr, double h_scale, double f, double noise, double *orig_add) {
+	/* Return the height of the seamount at this normalized radius rr */
+	double add;
+	if (Ctrl->C.mode == SHAPE_CONE) {	/* Circular cone case */
+		if (rr < 1.0) {	/* Since in minor direction rr may exceed 1 and be outside the ellipse */
+			*orig_add = (1.0 - rr) * h_scale;
+			add = (rr < Ctrl->F.value) ? 1.0 : *orig_add;
+		}
+		else
+			*orig_add = add = 0.0;
+	}
+	else if (Ctrl->C.mode == SHAPE_DISC)	/* Circular disc/plateau case */
+		*orig_add = add = (rr <= 1.0) ? 1.0 : 0.0;
+	else if (Ctrl->C.mode == SHAPE_PARA) {	/* Circular parabolic case */
+		*orig_add = (1.0 - rr*rr) * h_scale;
+		add = (rr < Ctrl->F.value) ? 1.0 : *orig_add;
+	}
+	else if (Ctrl->C.mode == SHAPE_POLY) {	/* Circular parabolic case */
+		*orig_add = poly_smt_func (rr) * h_scale;
+		add = (rr < Ctrl->F.value) ? 1.0 : *orig_add;
+	}
+	else {	/* Circular Gaussian case */
+		*orig_add = exp (f * this_r * this_r) * h_scale - noise;
+		add = (rr < Ctrl->F.value) ? 1.0 : *orig_add;
+	}
+	return (add);
 }
 
 GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in, char *code) {
@@ -1289,55 +1325,16 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								/* this_r is now r^2 in the 0 to -4.5 range expected for the Gaussian case */
 								rr = sqrt (-this_r/4.5);	/* Convert this r^2 to a normalized radius 0-1 inside cone */
 								if (Ctrl->A.active && rr > 1.0) continue;	/* Beyond the seamount base so nothing to do for a mask */
-								if (inc_mode == SHAPE_CONE) {	/* Elliptical cone case */
-									if (rr < 1.0) {	/* Since in minor direction rr may exceed 1 and be outside the ellipse */
-										orig_add = (1.0 - rr) * h_scale;
-										add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
-									}
-									else
-										orig_add = add = 0.0;
-								}
-								else if (inc_mode == SHAPE_DISC)	/* Elliptical disc/plateau case */
-									orig_add = add = (rr <= 1.0) ? 1.0 : 0.0;
-								else if (inc_mode == SHAPE_PARA) {	/* Elliptical parabolic case */
-									orig_add = (1.0 - rr*rr) * h_scale;
-									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
-								}
-								else if (inc_mode == SHAPE_POLY) {	/* Elliptical parabolic case */
-									orig_add = poly_smt_func (rr) * h_scale;
-									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
-								}
-								else {	/* Elliptical Gaussian case */
-									orig_add = exp (this_r) * h_scale - noise;
-									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
-								}
 							}
-							else {	/* Circular features are simpler */
+							else	/* Circular features are simpler */
 								rr = this_r / r_km;	/* Now in 0-1 range */
-								if (inc_mode == SHAPE_CONE) {	/* Circular cone case */
-									orig_add = (1.0 - rr) * h_scale;
-									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
-								}
-								else if (inc_mode == SHAPE_DISC)	/* Circular disc/plateau case */
-									orig_add = add = (rr <= 1.0) ? 1.0 : 0.0;
-								else if (inc_mode == SHAPE_PARA) {	/* Circular parabolic case */
-									orig_add = (1.0 - rr*rr) * h_scale;
-									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
-								}
-								else if (inc_mode == SHAPE_POLY) {	/* Circular parabolic case */
-									orig_add = poly_smt_func (rr) * h_scale;
-									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
-								}
-								else {	/* Circular Gaussian case */
-									orig_add = exp (f * this_r * this_r) * h_scale - noise;
-									add = (rr < Ctrl->F.value) ? 1.0 : orig_add;
-								}
-							}
-							if (add <= 0.0) continue;	/* No amplitude, so skip */
-							ij = gmt_M_ijp (Grid->header, row, col);	/* Current node location */
+							/* Compute next height (add) it the untruncated version if -F is set (orig_add) */
+							add = grdseamount_height (Ctrl, this_r, rr, h_scale, f, noise, &orig_add);
 							if (Ctrl->S.slide && grdseamount_in_sector (GMT, Ctrl, Grid, in, row, col)) {
 								add = MIN (add, grdseamount_slide (GMT, Ctrl, this_r, rr));
 							}
+							if (add <= 0.0) continue;	/* No amplitude, so skip */
+							ij = gmt_M_ijp (Grid->header, row, col);	/* Current node location */
 							z_assign = amplitude * add;		/* height to be added to grid */
 							if (Ctrl->A.active)	/* No amplitude, just set inside value for mask */
 								Grid->data[ij] = Ctrl->A.value[GMT_IN];
