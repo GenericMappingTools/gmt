@@ -25,7 +25,7 @@
 #
 
 set (SUPPL_NAME potential)
-set (SUPPL_HEADERS okbfuns.h talwani.h)
+set (SUPPL_HEADERS okbfuns.h newton.h talwani.h)
 set (SUPPL_PROGS_SRCS grdredpol.c gmtgravmag3d.c gmtflexure.c gravfft.c
 	gravprisms.c grdflexure.c grdgravmag3d.c grdseamount.c talwani2d.c talwani3d.c)
 set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} okbfuns.c)

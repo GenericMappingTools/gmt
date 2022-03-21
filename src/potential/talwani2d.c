@@ -41,6 +41,7 @@
  */
 
 #include "gmt_dev.h"
+#include "newton.h"
 #include "talwani.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"talwani2d"
@@ -79,7 +80,7 @@ struct TALWANI2D_CTRL {
 		bool active;
 		struct GMT_ARRAY T;
 	} T;
-	struct TALWANI2D_Z {	/* Observation level constant */
+	struct TALWANI2D_Z {	/* -Z<zlevel>[/<ymin>/<ymax>] Observation level constant and optional 2.5D gravity limits */
 		bool active;
 		double level;
 		double ymin, ymax;
@@ -264,7 +265,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-Z[<level>][/<ymin/<ymax>]");
 	GMT_Usage (API, -2, "-Z Set observation level for output locations [0]. "
-		"For FAA only: Optionally append <ymin/ymax> to get a 2.5-D solution.");
+		"For FAA only: Optionally append /<ymin/ymax> to get a 2.5-D solution.");
 	GMT_Option (API, "bi,bo,d,e,h,i,o,x,.");
 	return (GMT_MODULE_USAGE);
 }
@@ -342,7 +343,7 @@ GMT_LOCAL double talwani2d_grav_2_5D (struct GMT_CTRL *GMT, double x[], double z
 		xx0 = xx1;
 		zz0 = zz1;
 	}
-	sum *= SI_GAMMA * rho * SI_TO_MGAL;	/* To get mGal */
+	sum *= NEWTON_G * rho * SI_TO_MGAL;	/* To get mGal */
 	return (sum);
 }
 
@@ -382,7 +383,7 @@ GMT_LOCAL double talwani2d_get_grav2d (struct GMT_CTRL *GMT, double x[], double 
 		ri = ri1;
 		phi_i = phi_i1;
 	}
-	sum *= 2.0 * SI_GAMMA * rho * SI_TO_MGAL;	/* To get mGal */
+	sum *= 2.0 * NEWTON_G * rho * SI_TO_MGAL;	/* To get mGal */
 	return (sum);
 }
 
@@ -423,7 +424,7 @@ GMT_LOCAL double talwani2d_get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z
 		}
 	}
 
-	sum *= (-SI_GAMMA * rho * SI_TO_EOTVOS);        /* To get Eotvos */
+	sum *= (-NEWTON_G * rho * SI_TO_EOTVOS);        /* To get Eotvos */
 	return (sum);
 }
 
@@ -511,7 +512,7 @@ GMT_LOCAL double talwani2d_get_geoid2d (struct GMT_CTRL *GMT, double y[], double
 		}
 		N = N + ni;
 	}
-	N *= (-SI_GAMMA * rho / G0);
+	N *= (-NEWTON_G * rho / G0);
 	return (N);
 }
 
@@ -740,7 +741,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 
 	for (k = 0, rho = 0.0; k < n_bodies; k++) {
 		rho += body[k].rho;
-		GMT_Report (API, GMT_MSG_INFORMATION, "%lg Rho: %lg N-vertx: %4d\n", body[k].rho, body[k].n);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Rho: %lg N-vertices: %4d\n", body[k].rho, body[k].n);
 	}
 	GMT_Report (API, GMT_MSG_INFORMATION, "Start calculating %s\n", kind[Ctrl->F.mode]);
 

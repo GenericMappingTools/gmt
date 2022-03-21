@@ -42,6 +42,7 @@
  */
 
 #include "gmt_dev.h"
+#include "newton.h"
 #include "talwani.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"talwani3d"

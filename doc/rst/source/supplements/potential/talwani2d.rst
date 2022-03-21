@@ -18,7 +18,7 @@ Synopsis
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
 [ |-T|\ *min*\ /*max*\ /\ *inc*\ [**+i**\|\ **n**]\ \|\ *file*\|\ *list* ]
-[ |-Z|\ *level*\ [*ymin*\ /*ymax*] ]
+[ |-Z|\ *level*\ [/*ymin*\ /*ymax*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-d| ]
@@ -101,7 +101,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *level*\ [*ymin*\ /*ymax*]
+**-Z**\ *level*\ [/*ymin*\ /*ymax*]
     Set a constant observation level [0].  Optionally, and for gravity anomalies only (**-Ff**),
     append the finite extent limits of a 2.5-D body.
 

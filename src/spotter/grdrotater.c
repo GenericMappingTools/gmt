@@ -31,7 +31,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdrotater"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Finite rotation reconstruction of geographic grid"
-#define THIS_MODULE_KEYS	"<G{,FD(,GG},TD("
+#define THIS_MODULE_KEYS	"<G{,FD(,GG},TD(,DD)"
 #define THIS_MODULE_NEEDS	"g"
 #define THIS_MODULE_OPTIONS "-:>RVbdfhno" GMT_OPT("HMmQ")
 
@@ -153,7 +153,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
-	for (opt = options; opt; opt = opt->next) if (opt->option == 'E' || opt->option == 'e') gave_e = true;	/* Pre-check to see if GMT4 or newer syntax */
+	for (opt = options; opt; opt = opt->next)
+		if (opt->option == 'E' || opt->option == 'e') gave_e = true;	/* Pre-check to see if GMT4 or newer syntax */
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -305,7 +306,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 		}
 	}
 
-        if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
+	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->G.active, "No output grid file allowed with -S\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Cannot use -N with -S\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "Must specify input file\n");
@@ -319,7 +320,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL struct GMT_DATASET * grdrotater_get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
+GMT_LOCAL struct GMT_DATASET *grdrotater_get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	/* Return a single polygon that encloses this geographic grid exactly.
 	 * It is used in the case when no particular clip polygon has been given.
 	 * Note that the path is the same for pixel or grid-registered grids.

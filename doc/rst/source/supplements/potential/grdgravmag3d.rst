@@ -48,7 +48,8 @@ Required Arguments
 .. _-C:
 
 **-C**\ *density*
-    Sets body density in SI. This option is mutually exclusive with **-H**
+    Sets body density in SI. Append either a constant or the name of a grid file with variable densities.
+    This option is mutually exclusive with **-H**
 
 .. _-F:
 
@@ -73,7 +74,7 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H+m**\ *magfile*  **-Hx**\|\ **y**\|\ **z**\|\ **h**\|\ **t** **-H+i**\|\ **g**\|\ **r**\|\ **f**\|\ **n**
+**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H**\ *magfile*  **-Hx**\|\ **y**\|\ **z**\|\ **h**\|\ **t** **-H+i**\|\ **g**\|\ **r**\|\ **f**\|\ **n**
     Sets parameters for computation of magnetic anomaly (Can be used multiple times).
 
       *f_dec/f_dip* -> geomagnetic declination/inclination
@@ -82,7 +83,7 @@ Optional Arguments
 
     OR for a grid mode
 
-      **+m**\ *magfile*, where *magfile* is the name of the magnetic intensity file.
+      *magfile*, where *magfile* is the name of the magnetic intensity file.
 
     To compute a component, specify any of:
 

@@ -50,7 +50,7 @@ them). In both cases, the model parameters are set with **-T** and
 **-Z** options. Mode 3: compute the admittance or coherence between
 two grids. The output is the average in the radial direction.
 Optionally, the model admittance may also be calculated. The horizontal
-dimensions of the grdfiles are assumed to be in meters. Geographical
+dimensions of the grids are assumed to be in meters. Geographical
 grids may be used by specifying the |SYN_OPT-f| option that scales degrees
 to meters. If you have grids with dimensions in km, you could change
 this to meters using :doc:`grdedit </grdedit>` or scale the output with
@@ -85,7 +85,7 @@ Optional Arguments
     Compute only the theoretical admittance curves of the selected model
     and exit. *n* and *wavelength* are used to compute (n \* wavelength)
     the total profile length in meters. *mean\_depth* is the mean water
-    depth. Append dataflags (one or two) of **t**\|\ **b**\|\ **w** in any order.
+    depth. Append data flags (one or two) of **t**\|\ **b**\|\ **w** in any order.
     Here, *t* = use "from top" model, *b* = use "from below" model. Optionally
     specify *w* to write wavelength instead of frequency.
 
