@@ -144,7 +144,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
 	GMT_Usage (API, 1, "\n-I[<dx>[/<dy>]|b|i|r]");
 	GMT_Usage (API, -2, "Return various results depending on directives:");
-	GMT_Usage (API, 3, "b: Return the grid's bounding box polygon.");
+	GMT_Usage (API, 3, "b: Return the grid's bounding box polygon at node resolution.");
 	GMT_Usage (API, 3, "i: The original img2grd -R string is issued, if available. "
 		"If the grid is not an img grid then the regular -R string is issued.");
 	GMT_Usage (API, 3, "r: The grid's -R string is issued.");
@@ -535,7 +535,7 @@ GMT_LOCAL void grdinfo_smart_increments (struct GMT_CTRL *GMT, double inc[], uns
 
 EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0, k_data, k_tile_id;
-	unsigned int n_grds = 0, n_cols = 0, col, row, level, i_status, gtype, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
+	unsigned int n_grds = 0, n_cols = 0, col, level, i_status, gtype, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
 	unsigned int x_col_min, x_col_max, y_col_min, y_col_max, z_col_min, z_col_max, GMT_W = GMT_Z;
 	bool subset, delay, num_report, is_cube;
 
@@ -881,31 +881,17 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_BOUNDBOX) {
-			double *xx = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G);
-			double *yy = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G);
+			double *xx = NULL, *yy = NULL;
+			unsigned int k, np = gmt_grid_perimeter (GMT, header, &xx, &yy);
 
 			sprintf (record, "Bounding box for %s", HH->name);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 			/* Loop around perimeter building a closed polygon */
-			out[GMT_Y] = header->wesn[YLO];	/* Set south latitude */
-			for (col = 0; col < header->n_columns; col++) {	/* South going east */
-				out[GMT_X] = xx[col];
+			for (k = 0; k < np; k++) {	/* perimeter goes CCW */
+				out[GMT_X] = xx[k];	out[GMT_Y] = yy[k];
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
-			for (row = 2; row <= header->n_rows; row++) {	/* East going north */
-				out[GMT_Y] = yy[header->n_rows-row];
-				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			}
-			for (col = 1; col <= header->n_columns; col++) {	/* North going west */
-				out[GMT_X] = xx[header->n_columns-col];
-				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			}
-			for (row = 1; row < header->n_rows; row++) {	/* West going south */
-				out[GMT_Y] = yy[row];
-				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			}
-			GMT_Destroy_Data (API, &xx);
-			GMT_Destroy_Data (API, &yy);
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 		}
 		else if (Ctrl->C.active && !Ctrl->I.active) {
 			if (num_report) {	/* External interface, return as data with no leading text {...} is for 3-D cubes only */
