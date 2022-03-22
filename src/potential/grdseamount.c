@@ -826,6 +826,21 @@ GMT_LOCAL void grdseamount_pappas_slide (double r1, double r2, double dh, double
 	*rf = r2 + dr * (2.0 * u0_1 * (1.0 - u0 * log (u0_1 / u0)) - 1.0) / (u0_1 * log (u0_1 / u0) - 1.0);
 }
 
+GMT_LOCAL double grdseamount_distal_r (double rc, double hc, double Vs) {
+	/* Return the radial distance to the end of the distal slide deposit */
+	double c = 3.0 * Vs / (M_PI * hc);
+	double rd = 0.5 * (sqrt (rc*rc + 4 * c) - rc);
+	return (rd);
+}
+
+//GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double dr, double dh, double Vf, double V0, double phi) {
+//	/* Determine the tuning parameter u0 that yields the specified slide fraction */
+//	double rhs = (Vf - phi * V0) / (TWO_PI * dh * dr);
+//	gmt_M_unused (GMT);
+//	gmt_M_unused (Ctrl);
+//	/* Iterate on equation (14) to solve for optimal u0 */
+//}
+
 GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in, char *code) {
 	uint64_t col;
 	int n;
