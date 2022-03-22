@@ -800,9 +800,11 @@ GMT_LOCAL void grdseamount_para_pappas (double r0, double h0, double f, double r
 
 GMT_LOCAL void grdseamount_gauss_pappas (double r0, double h0, double f, double r1, double r2, double *Af, double *rf) {
 	/* Compute flank crossectional area and centroid distance from axis for a Gaussian model */
-	double u1 = r1 / r0, u2 = r2 / r0, c = 0.5 * 3 * sqrt (2.0);
-	*Af = h0 * exp (4.5 *f * f) * (sqrt (TWO_PI)/(6.0 * r0) * (erf (c * u2) - erf (c * u1)) - (r1 - r2) * exp (4.5 * u1 * u1));
-	*rf = sqrt (2.0 / M_PI);
+	double u1 = r1 / r0, u2 = r2 / r0, c = 0.5 * 3 * sqrt (2.0), num, den;
+	*Af = h0 * r0 * exp (4.5 * f * f) * ((sqrt (TWO_PI)/6.0) * (erf (c * u2) - erf (c * u1)) - (u1 - u2) * exp (-4.5 * u1 * u1));
+	num = (exp (-4.5 * u2 * u2) - exp (-4.5 * u1 * u1)) / 9.0 - 0.5 * (u1 * u1 - u2 * u2) * exp (-4.5 * u1 * u1);
+	den = (sqrt (TWO_PI)/6.0) * (erf (c * u2) - erf (c * u1)) - (u1 - u2) * exp (-4.5 * u1 * u1);
+	*rf = r0 * num / den;
 }
 
 GMT_LOCAL void grdseamount_poly_pappas (double r0, double h0, double f, double r1, double r2, double *Af, double *rf) {
