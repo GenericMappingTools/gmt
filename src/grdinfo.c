@@ -144,7 +144,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
 	GMT_Usage (API, 1, "\n-I[<dx>[/<dy>]|b|i|r]");
 	GMT_Usage (API, -2, "Return various results depending on directives:");
-	GMT_Usage (API, 3, "b: Return the grid's bounding box polygon.");
+	GMT_Usage (API, 3, "b: Return the grid's bounding box polygon at node resolution.");
 	GMT_Usage (API, 3, "i: The original img2grd -R string is issued, if available. "
 		"If the grid is not an img grid then the regular -R string is issued.");
 	GMT_Usage (API, 3, "r: The grid's -R string is issued.");
@@ -881,23 +881,17 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_BOUNDBOX) {
+			double *xx = NULL, *yy = NULL;
+			unsigned int k, np = gmt_grid_perimeter (GMT, header, &xx, &yy);
+
 			sprintf (record, "Bounding box for %s", HH->name);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
-			/* LL */
-			out[GMT_X] = header->wesn[XLO];	out[GMT_Y] = header->wesn[YLO];
-			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			/* LR */
-			out[GMT_X] = header->wesn[XHI];
-			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			/* UR */
-			out[GMT_Y] = header->wesn[YHI];
-			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			/* UL */
-			out[GMT_X] = header->wesn[XLO];
-			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			/* LL (repeat to close polygon) */
-			out[GMT_X] = header->wesn[XLO];	out[GMT_Y] = header->wesn[YLO];
-			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			/* Loop around perimeter building a closed polygon */
+			for (k = 0; k < np; k++) {	/* perimeter goes CCW */
+				out[GMT_X] = xx[k];	out[GMT_Y] = yy[k];
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			}
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 		}
 		else if (Ctrl->C.active && !Ctrl->I.active) {
 			if (num_report) {	/* External interface, return as data with no leading text {...} is for 3-D cubes only */

@@ -41,6 +41,7 @@
  */
 
 #include "gmt_dev.h"
+#include "newton.h"
 #include "talwani.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"talwani2d"
@@ -342,7 +343,7 @@ GMT_LOCAL double talwani2d_grav_2_5D (struct GMT_CTRL *GMT, double x[], double z
 		xx0 = xx1;
 		zz0 = zz1;
 	}
-	sum *= SI_GAMMA * rho * SI_TO_MGAL;	/* To get mGal */
+	sum *= NEWTON_G * rho * SI_TO_MGAL;	/* To get mGal */
 	return (sum);
 }
 
@@ -382,7 +383,7 @@ GMT_LOCAL double talwani2d_get_grav2d (struct GMT_CTRL *GMT, double x[], double 
 		ri = ri1;
 		phi_i = phi_i1;
 	}
-	sum *= 2.0 * SI_GAMMA * rho * SI_TO_MGAL;	/* To get mGal */
+	sum *= 2.0 * NEWTON_G * rho * SI_TO_MGAL;	/* To get mGal */
 	return (sum);
 }
 
@@ -423,7 +424,7 @@ GMT_LOCAL double talwani2d_get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z
 		}
 	}
 
-	sum *= (-SI_GAMMA * rho * SI_TO_EOTVOS);        /* To get Eotvos */
+	sum *= (-NEWTON_G * rho * SI_TO_EOTVOS);        /* To get Eotvos */
 	return (sum);
 }
 
@@ -511,7 +512,7 @@ GMT_LOCAL double talwani2d_get_geoid2d (struct GMT_CTRL *GMT, double y[], double
 		}
 		N = N + ni;
 	}
-	N *= (-SI_GAMMA * rho / G0);
+	N *= (-NEWTON_G * rho / G0);
 	return (N);
 }
 
