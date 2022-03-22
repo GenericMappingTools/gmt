@@ -815,7 +815,7 @@ GMT_LOCAL void grdseamount_poly_pappas (double r0, double h0, double f, double r
 	*Af = (h0 * r0 / poly_smt_func (f)) * ((u1 - u2) * (1 - p_u1) + 1.5 * (u1 * u1 - u2 * u2) - 0.25 * (pow (u1, 4.0) - pow (u2, 4.0)) - L - T);
 	num = (-3.0 * (u1 - u2) + 0.5 * (1 - p_u1) * (u1 * u1 - u2 * u2) + (pow (u1, 3.0) - pow (u2, 3.0)) - 0.2 * (pow (u1, 5.0) - pow (u2, 5.0)) - L + T);
 	den = (u1 - u2) * (1 - p_u1) + 1.5 * (u1 * u1 - u2 * u2) - 0.25 * (pow (u1, 4.0) - pow (u2, 4.0)) - L - T;
-	*rf = r1 + r0 * num / den;
+	*rf = r2 + (r1 - r2) * num / den;
 }
 
 GMT_LOCAL void grdseamount_pappas_slide (double r1, double r2, double dh, double u0, double *Af, double *rf) {
