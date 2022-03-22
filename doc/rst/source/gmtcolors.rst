@@ -51,7 +51,7 @@ The chart below lists the 663 unique color names that can be used in GMT.
 
 **Download PDF versions:**
 :download:`A4 size </_images/GMT_RGBchart_a4.pdf>`,
-:download:`US letter size </_images/GMT_RGBchart_letter.pdf>`,
+:download:`US letter size </_images/GMT_RGBchart.pdf>`,
 :download:`Tabloid size </_images/GMT_RGBchart_tabloid.pdf>`
 
 .. _RGBchart:
