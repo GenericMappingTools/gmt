@@ -784,6 +784,46 @@ GMT_LOCAL double grdseamount_height (struct GRDSEAMOUNT_CTRL *Ctrl, double this_
 	return (add);
 }
 
+GMT_LOCAL void grdseamount_cone_pappas (double r0, double h0, double f, double r1, double r2, double *Af, double *rf) {
+	/* Compute flank crossectional area and centroid distance from axis for a cone model */
+	double dr = r2 - r1;
+	*Af = (h0 * dr * dr) / (2.0 * r0 * (1 - f));
+	*rf = (2.0 * r2 + r1) / 12.0;
+}
+
+GMT_LOCAL void grdseamount_para_pappas (double r0, double h0, double f, double r1, double r2, double *Af, double *rf) {
+	/* Compute flank crossectional area and centroid distance from axis for a parabolic model */
+	double r12 = r1 * r1, r22 = r2 * r2;
+	*Af = (h0 * (r12 * r1 - 3.0 * r12 * r2 + 2.0 * r22 * r2)) / (6.0 * r0 * r0 * (1.0 - f));
+	*rf = (r22 - r12) / (24.0 * (r12 * r1 - 3.0 * r12 * r2 + 2.0 * r22 * r2));
+}
+
+GMT_LOCAL void grdseamount_gauss_pappas (double r0, double h0, double f, double r1, double r2, double *Af, double *rf) {
+	/* Compute flank crossectional area and centroid distance from axis for a Gaussian model */
+	double u1 = r1 / r0, u2 = r2 / r0, c = 0.5 * 3 * sqrt (2.0);
+	*Af = h0 * exp (4.5 *f * f) * (sqrt (TWO_PI)/(6.0 * r0) * (erf (c * u2) - erf (c * u1)) - (r1 - r2) * exp (4.5 * u1 * u1));
+	*rf = sqrt (2.0 / M_PI);
+}
+
+GMT_LOCAL void grdseamount_poly_pappas (double r0, double h0, double f, double r1, double r2, double *Af, double *rf) {
+	/* Compute flank crossectional area and centroid distance from axis for a polynomial model */
+	double u1 = r1 / r0, u2 = r2 / r0, p_u1 = poly_smt_func (u1), c = sqrt (3) / 3.0, num, den, L, T;
+	L = 1.5 * log ((u1 * u1 - u1 + 1) / (u2 * u2 - u2 + 1));
+	T = sqrt (3) * (atan (c * (2 * u1 - 1)) - atan (c * (2 * u2 - 1)));
+	*Af = (h0 * r0 / poly_smt_func (f)) * ((u1 - u2) * (1 - p_u1) + 1.5 * (u1 * u1 - u2 * u2) - 0.25 * (pow (u1, 4.0) - pow (u2, 4.0)) - L - T);
+	num = (-3.0 * (u1 - u2) + 0.5 * (1 - p_u1) * (u1 * u1 - u2 * u2) + (pow (u1, 3.0) - pow (u2, 3.0)) - 0.2 * (pow (u1, 5.0) - pow (u2, 5.0)) - L + T);
+	den = (u1 - u2) * (1 - p_u1) + 1.5 * (u1 * u1 - u2 * u2) - 0.25 * (pow (u1, 4.0) - pow (u2, 4.0)) - L - T;
+	*rf = r1 + r0 * num / den;
+}
+
+GMT_LOCAL void grdseamount_pappas_slide (double r1, double r2, double dh, double u0, double *Af, double *rf) {
+	/* Compute flank crossectional area and centroid distance from axis for the slide model.
+	 * Here dh = h2 - h1 */
+	double dr = r1 - r2, u0_1 = 1.0 + u0;
+	*Af = dh * dr * u0 * (u0_1 * log (u0_1 / u0) - 1.0);
+	*rf = r2 + dr * (2.0 * u0_1 * (1.0 - u0 * log (u0_1 / u0)) - 1.0) / (u0_1 * log (u0_1 / u0) - 1.0);
+}
+
 GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in, char *code) {
 	uint64_t col;
 	int n;
@@ -849,6 +889,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL, g_noise = exp (-4.5), g_scl = 1.0 / (1.0 - g_noise), phi_prev, phi_curr;
 	double orig_add, dz, h_orig, scale_prev = 0.0, rho_z, sum_rz, sum_z;
 	void (*shape_func[N_SHAPES]) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
+	void (*pappas_func[N_SHAPES]) (double r0, double h0, double f, double r1, double r2, double *Af, double *rf);
 	double (*phi_solver[N_SHAPES]) (double in[], double f, double v, bool elliptical);
 
 	struct GMT_GRID *Grid = NULL;
@@ -946,17 +987,21 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	/* Assign functions to shape_func and phi_solver array of functions */
-	shape_func[SHAPE_CONE] = grdseamount_cone_area_volume_height;
-	phi_solver[SHAPE_CONE] = grdseamount_cone_solver;
-	shape_func[SHAPE_DISC] = grdseamount_disc_area_volume_height;
-	phi_solver[SHAPE_DISC] = grdseamount_disc_solver;
-	shape_func[SHAPE_PARA] = grdseamount_para_area_volume_height;
-	phi_solver[SHAPE_PARA] = grdseamount_para_solver;
-	shape_func[SHAPE_GAUS] = grdseamount_gaussian_area_volume_height;
-	phi_solver[SHAPE_GAUS] = grdseamount_gauss_solver;
-	shape_func[SHAPE_POLY] = grdseamount_poly_area_volume_height;
-	phi_solver[SHAPE_POLY] = grdseamount_poly_solver;
+	/* Assign functions to shape_func, phi_solver and pappas_func array of function pointers */
+	shape_func[SHAPE_CONE]  = grdseamount_cone_area_volume_height;
+	phi_solver[SHAPE_CONE]  = grdseamount_cone_solver;
+	pappas_func[SHAPE_CONE] = grdseamount_cone_pappas;
+	shape_func[SHAPE_DISC]  = grdseamount_disc_area_volume_height;
+	phi_solver[SHAPE_DISC]  = grdseamount_disc_solver;
+	shape_func[SHAPE_PARA]  = grdseamount_para_area_volume_height;
+	phi_solver[SHAPE_PARA]  = grdseamount_para_solver;
+	pappas_func[SHAPE_PARA] = grdseamount_para_pappas;
+	shape_func[SHAPE_GAUS]  = grdseamount_gaussian_area_volume_height;
+	phi_solver[SHAPE_GAUS]  = grdseamount_gauss_solver;
+	pappas_func[SHAPE_GAUS] = grdseamount_gauss_pappas;
+	shape_func[SHAPE_POLY]  = grdseamount_poly_area_volume_height;
+	phi_solver[SHAPE_POLY]  = grdseamount_poly_solver;
+	pappas_func[SHAPE_POLY] = grdseamount_poly_pappas;
 
 	build_mode = Ctrl->C.mode;
 	cone_increments = (Ctrl->T.active && Ctrl->Q.disc);
