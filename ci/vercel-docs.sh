@@ -37,8 +37,8 @@ cmake3 .. -G Ninja
 cmake3 --build .
 cmake3 --build . --target docs_depends
 #cmake3 --build . --target optimize_images
-cmake --build . --target examples
-cmake --build . --target scripts
+cmake3 --build . --target examples
+cmake3 --build . --target scripts
 cmake3 --build . --target docs_html
 # cmake3 --build . --target docs_man
 # cmake3 --build . --target install
