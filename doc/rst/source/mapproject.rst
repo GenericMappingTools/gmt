@@ -27,7 +27,7 @@ Synopsis
 [ |-S| ]
 [ |-T|\ [**h**]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **r**\|\ **R**\|\ **w**\|\ **x**] ]
+[ |-W|\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **r**\|\ **R**\|\ **w**\|\ **x**] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -230,7 +230,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **r**\|\ **R**\|\ **w**\|\ **x**]
+**-W**\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **r**\|\ **R**\|\ **w**\|\ **x**]
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
     To output the plot coordinates of a map point, give **g**\ *lon*/*lat*.
@@ -240,8 +240,10 @@ Optional Arguments
     point is given as normalized positions in the 0-1 range, or **x**\ *px*/*py*,
     where a plot point is given directly. To output the rectangular domain that
     covers an oblique area as defined by **-R -J**, append **r**,
-    or use **R** to get the result in -Rw/e/s/n string format [Default returns
-    the width and height of the map].
+    or use **R** to get the result in -Rw/e/s/n string format. Similarly, if an
+    oblique domain is set via **-R**\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
+    use **o** to return the diagonal corner coordinates in degrees and the equivalent
+    **-R** string as trailing text [Default returns the width and height of the map].
 
 .. _-Z:
 
