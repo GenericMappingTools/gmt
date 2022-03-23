@@ -23,7 +23,7 @@ int main () {
 	/* Associate our data table with a virtual file */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN|GMT_IS_REFERENCE, D, input);
 	/* Prepare the module arguments */
-	sprintf (args, "%s -R-3/3/-3/3 -JX12 -Baf -BWSen -F+p+ggray -Dg-1.8/2.6+w12c+jTL -P\n", input);
+	sprintf (args, "%s -R-3/3/-3/3 -JX12c -Baf -BWSen -F+p+ggray -Dg-1.8/2.6+w8c+jTL -P\n", input);
 
 	/* Call the pslegend module */
 	GMT_Call_Module (API, "pslegend", GMT_MODULE_CMD, args);
