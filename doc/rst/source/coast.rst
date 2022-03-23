@@ -116,12 +116,12 @@ Optional Arguments
     This is another dataset independent of GSHHG and hence the |-A| and |-D| options do not apply. The following codes
     are supported:
 
-    -  Append one or more comma-separated countries using either the
-       `2-character ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_
-       (e.g., NO for Norway) or the full country name (e.g., Norway). Append .\ *state* to a country code to select a
-       state of a country (if available), e.g., US.TX for Texas.
-    - Append =\ *continent* to specify a continent, using either the full names or the abbreviations AG (Africa),
-      AF (Africa), AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA (South America).
+    - Append one or more comma-separated countries using either the
+      `2-character ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_
+      (e.g., NO for Norway) or the full country name (e.g., Norway). Append .\ *state* to a country code to select a
+      state of a country (if available), e.g., US.TX for Texas.
+    - Append =\ *continent* to specify a continent, using either the full names or the abbreviations AF (Africa),
+      AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA (South America).
     - To specify a collection or named region, give either the code of the full name.
 
     The following modifiers are supported:
@@ -238,7 +238,6 @@ Optional Arguments
 
 **-Q**
     Mark end of existing clip path. No projection information is needed.
-    Also supply **-X** and **-Y** settings if you have moved since the clip started.
 
 .. _-S:
 

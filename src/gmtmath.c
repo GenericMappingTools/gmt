@@ -496,19 +496,26 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"     -----------------------\n");
 	GMT_Message (API, GMT_TIME_NONE, "     ABS        1 1  ");	GMT_Usage (API, -21, "abs (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACOS       1 1  ");	GMT_Usage (API, -21, "acos (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ACOSD      1 1  ");	GMT_Usage (API, -21, "acosd (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACOSH      1 1  ");	GMT_Usage (API, -21, "acosh (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACOT       1 1  ");	GMT_Usage (API, -21, "acot (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ACOTD      1 1  ");	GMT_Usage (API, -21, "acotd (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACOTH      1 1  ");	GMT_Usage (API, -21, "acoth (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACSC       1 1  ");	GMT_Usage (API, -21, "acsc (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ACSCD      1 1  ");	GMT_Usage (API, -21, "acscd (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACSCH      1 1  ");	GMT_Usage (API, -21, "acsch (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ADD        2 1  ");	GMT_Usage (API, -21, "A + B"); 
 	GMT_Message (API, GMT_TIME_NONE, "     AND        2 1  ");	GMT_Usage (API, -21, "B if A == NaN, else A"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ASEC       1 1  ");	GMT_Usage (API, -21, "asec (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ASECD      1 1  ");	GMT_Usage (API, -21, "asecd (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ASECH      1 1  ");	GMT_Usage (API, -21, "asech (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ASIN       1 1  ");	GMT_Usage (API, -21, "asin (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ASIND      1 1  ");	GMT_Usage (API, -21, "asind (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ASINH      1 1  ");	GMT_Usage (API, -21, "asinh (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ATAN       1 1  ");	GMT_Usage (API, -21, "atan (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ATAND      1 1  ");	GMT_Usage (API, -21, "atand (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ATAN2      2 1  ");	GMT_Usage (API, -21, "atan2 (A, B)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ATAN2D     2 1  ");	GMT_Usage (API, -21, "atan2d (A, B)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ATANH      1 1  ");	GMT_Usage (API, -21, "atanh (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     BCDF       3 1  ");	GMT_Usage (API, -21, "Binomial cumulative distribution function for p = A, n = B and x = C"); 
 	GMT_Message (API, GMT_TIME_NONE, "     BEI        1 1  ");	GMT_Usage (API, -21, "Kelvin function bei (A)"); 
@@ -956,6 +963,20 @@ GMT_LOCAL int gmtmath_ACOS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	return 0;
 }
 
+GMT_LOCAL int gmtmath_ACOSD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ACOSD 1 1 acosd (A).  */
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACOSD!\n");
+	if (S[last]->constant) a = R2D * d_acos (S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++)
+			T->segment[s]->data[col][row] = (S[last]->constant) ? a : R2D * d_acos (T->segment[s]->data[col][row]);
+	return 0;
+}
+
 GMT_LOCAL int gmtmath_ACOSH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ACOSH 1 1 acosh (A).  */
 {
@@ -985,6 +1006,20 @@ GMT_LOCAL int gmtmath_ACOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	return 0;
 }
 
+GMT_LOCAL int gmtmath_ACOTD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ACOTD 1 1 acotd (A).  */
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACOTD!\n");
+	if (S[last]->constant) a = R2D * atan (1.0 / S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++)
+			T->segment[s]->data[col][row] = (S[last]->constant) ? a : R2D * atan (1.0 / T->segment[s]->data[col][row]);
+	return 0;
+}
+
 GMT_LOCAL int gmtmath_ACOTH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: ACOTH 1 1 acoth (A).  */
 	uint64_t s, row;
@@ -1010,6 +1045,20 @@ GMT_LOCAL int gmtmath_ACSC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
 			T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_asin (1.0 / T->segment[s]->data[col][row]);
+	return 0;
+}
+
+GMT_LOCAL int gmtmath_ACSCD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ACSCD 1 1 acscd (A).  */
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACSCD!\n");
+	if (S[last]->constant) a = R2D * d_asin (1.0 / S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++)
+			T->segment[s]->data[col][row] = (S[last]->constant) ? a : R2D * d_asin (1.0 / T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1081,6 +1130,20 @@ GMT_LOCAL int gmtmath_ASEC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	return 0;
 }
 
+GMT_LOCAL int gmtmath_ASECD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ASECD 1 1 asecd (A).  */
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ASECD!\n");
+	if (S[last]->constant) a = R2D * d_acos (1.0 / S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++)
+			T->segment[s]->data[col][row] = (S[last]->constant) ? a : R2D * d_acos (1.0 / T->segment[s]->data[col][row]);
+	return 0;
+}
+
 GMT_LOCAL int gmtmath_ASECH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: ASECH 1 1 asech (A).  */
 	uint64_t s, row;
@@ -1106,6 +1169,20 @@ GMT_LOCAL int gmtmath_ASIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
 			T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_asin (T->segment[s]->data[col][row]);
+	return 0;
+}
+
+GMT_LOCAL int gmtmath_ASIND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ASIND 1 1 asind (A).  */
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ASIND!\n");
+	if (S[last]->constant) a = R2D * d_asin (S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++)
+			T->segment[s]->data[col][row] = (S[last]->constant) ? a : R2D * d_asin (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1137,6 +1214,20 @@ GMT_LOCAL int gmtmath_ATAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	return 0;
 }
 
+GMT_LOCAL int gmtmath_ATAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ATAND 1 1 atand (A).  */
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	gmt_M_unused(GMT);
+
+	if (S[last]->constant) a = R2D * atan (S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++)
+			T->segment[s]->data[col][row] = (S[last]->constant) ? a : R2D * atan (T->segment[s]->data[col][row]);
+	return 0;
+}
+
 GMT_LOCAL int gmtmath_ATAN2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: ATAN2 2 1 atan2 (A, B).  */
 	uint64_t s, row;
@@ -1153,6 +1244,27 @@ GMT_LOCAL int gmtmath_ATAN2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 			a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 			b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
 			T_prev->segment[s]->data[col][row] = d_atan2 (a, b);
+		}
+	}
+	return 0;
+}
+
+GMT_LOCAL int gmtmath_ATAN2D (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ATAN2D 2 1 atan2d (A, B).  */
+	uint64_t s, row;
+	unsigned int prev;
+	double a, b;
+	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
+
+	if ((prev = gmtmath_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
+
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for ATAN2D!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for ATAN2D!\n");
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+			b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+			T_prev->segment[s]->data[col][row] = R2D * d_atan2 (a, b);
 		}
 	}
 	return 0;
@@ -5691,7 +5803,7 @@ GMT_LOCAL int gmtmath_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GMTMATH_N_OPERATORS 200
+#define GMTMATH_N_OPERATORS 207
 
 GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int), unsigned int n_args[], unsigned int n_out[]) {
 	/* Operator function	# of operands	# of outputs */
@@ -5896,6 +6008,13 @@ GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO
 	ops[197] = gmtmath_VPDF;	n_args[197] = 3;	n_out[197] = 1;
 	ops[198] = gmtmath_DEG2KM;	n_args[198] = 1;	n_out[198] = 1;
 	ops[199] = gmtmath_KM2DEG;	n_args[199] = 1;	n_out[199] = 1;
+	ops[200] = gmtmath_ACOSD;	n_args[200] = 1;	n_out[200] = 1;
+	ops[201] = gmtmath_ACOTD;	n_args[201] = 1;	n_out[201] = 1;
+	ops[202] = gmtmath_ACSCD;	n_args[202] = 1;	n_out[202] = 1;
+	ops[203] = gmtmath_ASECD;	n_args[203] = 1;	n_out[203] = 1;
+	ops[204] = gmtmath_ASIND;	n_args[204] = 1;	n_out[204] = 1;
+	ops[205] = gmtmath_ATAND;	n_args[205] = 1;	n_out[205] = 1;
+	ops[206] = gmtmath_ATAN2D;	n_args[206] = 2;	n_out[206] = 1;
 }
 
 GMT_LOCAL void gmtmath_free_stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack) {
@@ -6304,6 +6423,13 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		"VPDF",	/* id = 197 */
 		"DEG2KM",	/* id = 198 */
 		"KM2DEG",	/* id = 199 */
+		"ACOSD",	/* id = 200 */
+		"ACOTD",	/* id = 201 */
+		"ACSCD",	/* id = 202 */
+		"ASECD",	/* id = 203 */
+		"ASIND",	/* id = 204 */
+		"ATAND",	/* id = 205 */
+		"ATAN2D",	/* id = 206 */
 		"" /* last element is intentionally left blank */
 	};
 

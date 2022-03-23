@@ -32,6 +32,7 @@
  * */
 
 #include "gmt_dev.h"
+#include "newton.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gravfft"
 #define THIS_MODULE_MODERN_NAME	"gravfft"
@@ -77,7 +78,7 @@ struct GRAVFFT_CTRL {
 	struct GRAVFFT_F {	/* -F[f[+s]|b|g|e|n|v] */
 		bool active;
 		bool slab;
-		bool bouger;
+		bool bouguer;
 		unsigned int mode;
 	} F;
 	struct GRAVFFT_G {	/* -G<outfile> */
@@ -129,7 +130,6 @@ struct GRAVFFT_CTRL {
 #define FSIGNIF 24
 #endif
 
-#define GRAVITATIONAL_CONST 6.667e-11
 #define	YOUNGS_MODULUS	7.0e10		/* Pascal = Nt/m**2  */
 #define	NORMAL_GRAVITY	9.806199203	/* Moritz's 1980 IGF value for gravity at 45 degrees latitude (m/s) */
 #define	POISSONS_RATIO	0.25
@@ -272,7 +272,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 					case 'b':
 						Ctrl->F.mode   = GRAVFFT_FAA;
 						Ctrl->F.slab   = true;
-						Ctrl->F.bouger = true;
+						Ctrl->F.bouguer = true;
 						break;
 					case 'f': default:
 						Ctrl->F.mode = GRAVFFT_FAA; 	   /* FAA */
@@ -634,7 +634,7 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Surface and density grids have different intervals\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		for (m = 0; m < Rho->header->size; m++) if (gmt_M_is_fnan (Rho->data[m])) Rho->data[m] = 0.0;	/* Replace any NaNs with zeros */
+		for (m = 0; m < Rho->header->size; m++) if (gmt_M_is_fnan (Rho->data[m])) Rho->data[m] = Rho->header->z_min;	/* Replace any NaNs with the minimum density */
 	}
 
 	/* Grids are compatible. Initialize FFT structs, grid headers, read data, and check for NaNs */
@@ -799,10 +799,11 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 			strcpy (Grid[0]->header->title, "Gravity anomalies");
 			strcpy (Grid[0]->header->z_units, "mGal");
 			if (Ctrl->F.slab) {	/* Do the slab adjustment */
-				slab_gravity = (gmt_grdfloat) (1.0e5 * 2 * M_PI * Ctrl->misc.rho * GRAVITATIONAL_CONST *
+				if (Ctrl->D.variable) Ctrl->misc.rho = Rho->header->z_min;
+				slab_gravity = (gmt_grdfloat) (1.0e5 * 2 * M_PI * Ctrl->misc.rho * NEWTON_G *
 				                        fabs (Ctrl->W.water_depth - Ctrl->misc.z_level));
 				GMT_Report (API, GMT_MSG_INFORMATION, "Add %g mGal to predicted FAA grid to account for implied slab\n", slab_gravity);
-				if (Ctrl->F.bouger)		/* The complete bouger contribution */
+				if (Ctrl->F.bouguer)		/* The complete Bouguer contribution */
 					for (m = 0; m < Grid[0]->header->size; m++) Grid[0]->data[m] = slab_gravity - Grid[0]->data[m];
 				else
 					for (m = 0; m < Grid[0]->header->size; m++) Grid[0]->data[m] += slab_gravity;
@@ -908,7 +909,7 @@ GMT_LOCAL void gravfft_do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, s
 	for (i = 2; i <= n; i++) f *= i;	/* n! */
 	p = n - 1.0;
 
-	c = 1.0e5 * 2.0 * M_PI * GRAVITATIONAL_CONST * rho / f; /* Gives mGal */
+	c = 1.0e5 * 2.0 * M_PI * NEWTON_G * rho / f; /* Gives mGal */
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
 		mk = gmt_fft_get_wave (k, K);
@@ -1132,7 +1133,7 @@ GMT_LOCAL void gravfft_load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVF
 	for (k = 0; k < nk; k++) {
 		freq = (k + 1) * delta_k;
 		earth_curvature = (sphericity) ? (2 * earth_rad * freq) / (4 * M_PI * earth_rad * freq + 1) : 1.;
-		t1 = earth_curvature * (twopi * GRAVITATIONAL_CONST);
+		t1 = earth_curvature * (twopi * NEWTON_G);
 		if (Ctrl->F.mode == GRAVFFT_FAA)
 			t1 *= 1.0e5;     /* to have it in mGals */
 		else                 /* Must be the GEOID case */
@@ -1169,7 +1170,7 @@ GMT_LOCAL void gravfft_load_from_top_admitt (struct GMT_CTRL *GMT, struct GRAVFF
 	for (k = 0; k < nk; k++) {
 		freq = (k + 1) * delta_k;
 		earth_curvature = (sphericity) ? (2 * earth_rad * freq) / (4 * M_PI * earth_rad * freq + 1) : 1.;
-		t1 = earth_curvature * (twopi * GRAVITATIONAL_CONST);
+		t1 = earth_curvature * (twopi * NEWTON_G);
 		if (Ctrl->F.mode == GRAVFFT_FAA)
 			t1 *= 1.0e5;     /* to have it in mGals */
 		else                 /* Must be the GEOID case */
@@ -1209,7 +1210,7 @@ GMT_LOCAL void gravfft_load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID
 		else
 			t = pow (mk, p);
 		earth_curvature = (sphericity) ? (2 * earth_rad * mk) / (4 * M_PI * earth_rad * mk + 1) : 1.;
-		t1 = earth_curvature * (twopi * GRAVITATIONAL_CONST);
+		t1 = earth_curvature * (twopi * NEWTON_G);
 		if (Ctrl->F.mode == GRAVFFT_FAA)
 			t1 *= 1.0e5;     /* to have it in mGals */
 		else                 /* Must be the GEOID case */
@@ -1250,7 +1251,7 @@ GMT_LOCAL void gravfft_load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GR
 		else
 			t = pow (mk, p);
 		earth_curvature = (sphericity) ? (2 * earth_rad * mk) / (4 * M_PI * earth_rad * mk + 1) : 1.;
-		t1 = earth_curvature * (twopi * GRAVITATIONAL_CONST);
+		t1 = earth_curvature * (twopi * NEWTON_G);
 		if (Ctrl->F.mode == GRAVFFT_FAA)
 			t1 *= 1.0e5;     /* to have it in mGals */
 		else                 /* Must be the GEOID case */

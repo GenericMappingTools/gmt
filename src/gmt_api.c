@@ -816,7 +816,7 @@ GMT_LOCAL void gmtapi_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 }
 #endif
 
-GMT_LOCAL bool gmtapi_modern_onliner (struct GMTAPI_CTRL *API, struct GMT_OPTION *head) {
+GMT_LOCAL bool gmtapi_modern_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION *head) {
 	/* Must check if a one-liner with special graphics format settings were given, e.g., "gmt pscoast -Rg -JH0/15c -Gred -png map" */
 	bool modern = false;
 	unsigned pos;
@@ -856,7 +856,7 @@ GMT_LOCAL int gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const c
 	struct GMT_OPTION *opt, *head = NULL;
 
 	head = GMT_Create_Options (API, mode, args);	/* Get option list */
-	modern = gmtapi_modern_onliner (API, head);		/* Return true if one-liner syntax was detected */
+	modern = gmtapi_modern_oneliner (API, head);		/* Return true if one-liner syntax was detected */
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to check if a classic name was given or if user tried a one-liner in modern mode */
 		if (modern) {	/* Yikes, someone is using one-liner within a GMT modern mode session */
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot run a one-liner modern command within an existing modern mode session\n");
@@ -13138,6 +13138,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			deactivate_output = true;   /* Turn off implicit output since none is in effect, only secondary -D output */
 		type = (GMT_Find_Option (API, 'I', *head)) ? 'I' : 'G'; /* Giving -I means we are reading an image */
    }
+	/* 1y. Check if this is the gravprisms module, where primary dataset input should be turned off if -C is used */
+	else if (!strncmp (module, "gravprisms", 10U) && (opt = GMT_Find_Option (API, 'C', *head))) {
+		deactivate_input = true;    /* Turn off implicit input since none is in effect */
+    }
 
 	/* 2a. Get the option key array for this module */
 	key = gmtapi_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */

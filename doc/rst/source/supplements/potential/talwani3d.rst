@@ -57,7 +57,8 @@ Required Arguments
     The file describing the horizontal contours of the bodies.  Contours will be
     automatically closed if not already closed, and repeated vertices will be eliminated.
     The segment header for each slice will be examined for the pair *zlevel density*, i.e.,
-    the depth level of the slice and a density contrast in kg/m^3; see **-D** for overriding this value.
+    the depth level of the slice and a density contrast in kg/m^3 or g/cm^3; see **-D**
+    for overriding this value.
 
 .. _-I:
 
@@ -79,11 +80,11 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *density*
-    Sets a fixed density contrast that overrides any individual slice settings in the model file, in kg/m^3.
+    Sets a fixed density contrast that overrides any individual slice settings in the model file, in kg/m^3 or g/cm^3.
 
 .. _-F:
 
-**-F**\ **f**\|\ **n**\|\ **v**
+**-F**\ **f**\|\ **n**\ [*lat*]\|\ **v**
     Specify desired gravitational field component.  Choose between **f** (free-air anomaly) [Default],
     **n** (geoid; optionally append average latitude for normal gravity reference value [Default is
     mid-grid (or mid-profile if **-N**)]) or **v** (vertical gravity gradient).

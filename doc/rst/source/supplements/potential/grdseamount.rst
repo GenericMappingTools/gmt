@@ -21,6 +21,8 @@ Synopsis
 [ |-D|\ *unit* ]
 [ |-E| ]
 [ |-F|\ [*flattening*] ]
+[ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
+[ |-K|\ [*densitymodel*] ]
 [ |-L|\ [*cut*] ]
 [ |-M|\ [*list*] ]
 [ |-N|\ *norm* ]
@@ -29,6 +31,7 @@ Synopsis
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ [**+l**] ]
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
+[ |-W|\ *avedensity* ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
@@ -106,7 +109,7 @@ Optional Arguments
    :width: 500 px
    :align: center
 
-   The five types of seamounts selectable via option **-C**.  In all cases, :math:`h_0` is the maximum
+   The five types of seamounts selected via option **-C**.  In all cases, :math:`h_0` is the maximum
    *height*, :math:`r_0` is the basal *radius*, :math:`h_c` is the noise floor set via **-L** [0], and
    *f* is the *flattening* set via **-F** [0]. The top radius :math:`r_t` is only nonzero if there is
    flattening and hence does not apply to the disc model.
@@ -140,6 +143,40 @@ Optional Arguments
     (**Note**: no feature will be produced!), otherwise we expect to find the flattening in
     the last input column [no truncation].  Ignored if used with **-Cd**.
 
+.. _-H:
+
+**-H**\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
+    Set reference seamount parameters for an *ad-hoc* variable radial density function with depth. Give
+    the low and high seamount densities in kg/m^3 or g/cm^3 and the fixed reference height *H* in meters.
+    Use modifiers **+d** and **+p** to change the water-pressure-driven flank density increase
+    over the full reference height [0] and the variable density profile exponent *power* [1, i.e., a linear change].
+    Below, *h(r)* is the final height of any seamount and *z(r)* is a point inside the seamount.  If the seamount is
+    truncated (via **-F**) then *h(r)* refers to the untruncated height.  **Note**: If **-V** is used
+    the we report the mean density for each seamount processed.  The radial density function is thus defined
+    by :math:`\Delta \rho_s = \rho_h - \rho_l` and the *densify* setting :math:`\Delta \rho_f`:
+
+.. math::
+
+    \rho(r,z) = \rho_l + \Delta \rho_f \left (\frac{H-h(r)}{H} \right ) + \Delta \rho_s \left ( \frac{h(r)-z(r)}{H} \right )^p
+
+.. figure:: /_images/GMT_seamount_density.*
+   :width: 500 px
+   :align: center
+
+   A linear density distribution selected via option **-H**.  Flank density can be affected by water
+   pressure if :math:`\Delta \rho_f > 0` while the normalized internal density gradient is raised to
+   power *p* to allow for nonlinear gradients.  **Note**: The reference height *H* refers to a very tall
+   seamount for which the supplied densities are suitable.  Smaller seamounts will thus see lower core
+   densities by virtue of being smaller.
+
+.. _-K:
+
+**-K**\ *densitymodel*
+    Append a file name to hold a crossection grid with the predicted densities of the reference model.
+    We use normalized coordinates (*x* goes from -1 to +1) and *z* from 0 to 1, both in increments
+    of 0.005, yielding a 401 x 201 grid. **Note**: This option can be used without creating the
+    seamount grid, hence **-R**, **-I**, **-G**, and **-D** are not required.
+
 .. _-L:
 
 **-L**\ [*cut*]
@@ -152,6 +189,8 @@ Optional Arguments
     Write the times and names of all grids that were created to the text file *list*.
     Requires **-T**.  If not *list* file is given then we write to standard output.
     The output listing is suitable to be used as input to :doc:`grdflexure </supplements/potential/grdflexure>`.
+    **Note**: If **-W** is used the we write the relief grid name first followed by the density grid name.  Thus,
+    the output records contain *time reliefgrid* [ *densitygrid* ] *timetag*.
 
 .. _-N:
 
@@ -206,6 +245,14 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+.. _-W:
+
+**-W**\ *avedensity*
+    Give the name of the vertically averaged density grid file. If |-T| is set then *avedensity* must be a filename
+    template that contains a floating point format (C syntax).  If the filename template also contains
+    either %s (for unit name) or %c (for unit letter) then we use the corresponding time (in units specified in |-T|)
+    to generate the individual file names, otherwise we use time in years with no unit.
+
 .. _-Z:
 
 **-Z**\ *level*
@@ -258,6 +305,8 @@ The file l.lis will contain records with numerical time, gridfile, and unit time
 See Also
 --------
 
-:doc:`gmt.conf </gmt.conf>`, :doc:`gmt </gmt>`,
-:doc:`grdmath </grdmath>`, :doc:`gravfft </supplements/potential/gravfft>`,
-:doc:`gmtflexure </supplements/potential/gmtflexure>`
+:doc:`gmt.conf </gmt.conf>`,
+:doc:`gmt </gmt>`,
+:doc:`grdmath </grdmath>`,
+:doc:`gravfft </supplements/potential/gravfft>`,
+:doc:`grdflexure </supplements/potential/grdflexure>`

@@ -3837,3 +3837,55 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 
 	return (GMT_NOERROR);
 }
+
+unsigned int gmt_grid_perimeter (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double **x, double **y) {
+	/* Return arrays that outlines the grid perimeter */
+	unsigned int k = 0, start, col, row, n = 2 * (h->n_columns + h->n_rows) - 3;	/* Number of points for gridline-registered grids */
+	double *xx = NULL, *yy = NULL, *gx = NULL, *gy = NULL;
+	gx = gmt_grd_coord (GMT, h, GMT_X);	/* Get array of x coordinates */
+	gy = gmt_grd_coord (GMT, h, GMT_Y);	/* Get array of y coordinates */
+	if (h->registration == GMT_GRID_PIXEL_REG) n += 8;	/* Since we will add the corners */
+	xx = gmt_M_memory (GMT, NULL, n, double);
+	yy = gmt_M_memory (GMT, NULL, n, double);
+
+	if (h->registration == GMT_GRID_PIXEL_REG) {	/* Must add the LL corner for pixel grids */
+		xx[k] = h->wesn[XLO];	yy[k] = h->wesn[YLO];	k++;
+	}
+	gmt_M_memcpy (&xx[k], gx, h->n_columns, double);	/* Can always use the x-coordinates along south or north */
+	for (col = 0; col < h->n_columns; col++, k++)
+		yy[k] = h->wesn[YLO];	/* But must set y from header */
+	if (h->registration == GMT_GRID_PIXEL_REG) {	/* Must add the LR corner for pixel grids */
+		xx[k] = h->wesn[XHI];	yy[k] = h->wesn[YLO];	k++;
+		start = 1;	/* Need all points from the gy array */
+	}
+	else
+		start = 2;	/* Skip duplicate first point from gy array */
+	for (row = start; row <= h->n_rows; row++, k++) {	/* Can always use the y-coordinates along east or west */
+		xx[k] = h->wesn[XHI];	yy[k] = gy[h->n_rows - row];	/* But must set x from header */
+	}
+	if (h->registration == GMT_GRID_PIXEL_REG) {	/* Must add the TR corner for pixel grids */
+		xx[k] = h->wesn[XHI];	yy[k] = h->wesn[YHI];	k++;
+		start = 1;	/* Need all points from the gx array */
+	}
+	else
+		start = 2;	/* Skip duplicate last point from gx array */
+	for (col = start; col <= h->n_columns; col++, k++) {	/* Can always use the x-coordinates along south or north */
+		xx[k] = gx[h->n_columns-col];	yy[k] = h->wesn[YHI];	/* But must set y from header */
+	}
+	if (h->registration == GMT_GRID_PIXEL_REG) {	/* Must add the TL corner for pixel grids */
+		xx[k] = h->wesn[XLO];	yy[k] = h->wesn[YHI];	k++;
+		start = 0;	/* Need all points from the gy array */
+	}
+	else
+		start = 1;	/* SKip first duplicate point from the gy array */
+	gmt_M_memcpy (&yy[k], &gy[start], h->n_rows-start, double);	/* Can always use the y-coordinates along east or west */
+	for (row = start; row < h->n_rows; row++, k++)
+		xx[k] = h->wesn[XLO];	/* But must set x from header */
+	if (h->registration == GMT_GRID_PIXEL_REG) {	/* Must add the BL corner for pixel grids to close the polygon */
+		xx[k] = h->wesn[XLO];	yy[k] = h->wesn[YLO];	k++;
+	}
+	gmt_M_free (GMT, gx);	gmt_M_free (GMT, gy);
+
+	*x = xx;	*y = yy;
+	return (n);
+}

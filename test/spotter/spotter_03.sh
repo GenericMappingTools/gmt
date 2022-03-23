@@ -9,7 +9,7 @@ ps=spotter_03.ps
 # for the seamounts in the seamounts.txt file, given a plate motion model
 # and a list of possible hotspots.
 
-pac_ps=`gmt which -G @pac_hs.txt`
+pac_ps=`gmt which -Gc @pac_hs.txt`
 
 grep -v '^#' ${pac_ps} > tmp
 $AWK '{printf "s/%s/%d/g\n", $3, NR}' tmp > t.sed
