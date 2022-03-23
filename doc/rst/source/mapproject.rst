@@ -27,7 +27,7 @@ Synopsis
 [ |-S| ]
 [ |-T|\ [**h**]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **r**\|\ **R**\|\ **w**\|\ **x**] ]
+[ |-W|\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -230,7 +230,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **r**\|\ **R**\|\ **w**\|\ **x**]
+**-W**\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**]
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
     To output the plot coordinates of a map point, give **g**\ *lon*/*lat*.
@@ -242,8 +242,9 @@ Optional Arguments
     covers an oblique area as defined by **-R -J**, append **r**,
     or use **R** to get the result in -Rw/e/s/n string format. Similarly, if an
     oblique domain is set via **-R**\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
-    use **o** to return the diagonal corner coordinates in degrees and the equivalent
-    **-R** string as trailing text [Default returns the width and height of the map].
+    use **o** to return the diagonal corner coordinates in degrees (in the order
+    *llx urx lly ury*) or use **O** to get the equivalent **-R** string as trailing
+    text [Default returns the width and height of the map].
 
 .. _-Z:
 
@@ -384,7 +385,7 @@ To determine the oblique region string (in degrees) that corresponds to a rectan
 
    ::
 
-    R=$(gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -Fk -C -Wo -ot)
+    gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -WO
 
 Restrictions
 ------------
