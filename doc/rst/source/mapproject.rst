@@ -379,6 +379,13 @@ defined by an oblique Mercator projection, try
 
     gmt mapproject -R270/20/305/25+r -JOc280/25.5/22/69/2c -WR
 
+To determine the oblique region string (in degrees) that corresponds to a rectangular
+(but oblique) region specified in projected units defined by an oblique Mercator projection, try
+
+   ::
+
+    R=$(gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -Fk -C -Wo -ot)
+
 Restrictions
 ------------
 

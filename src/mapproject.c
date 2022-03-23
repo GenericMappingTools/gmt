@@ -1056,6 +1056,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 				tmode = GMT_COL_FIX;
 				n_output = 4;
 				gmt_M_memcpy (w_out, GMT->common.R.wesn, 4, double);
+				if (w_out[XHI] < w_out[XLO]) w_out[XHI] += 360.0;
 				break;
 			case GMT_MP_M_RSTRING:
 				tmode = GMT_COL_FIX;	/* Fall through on purpose here */
