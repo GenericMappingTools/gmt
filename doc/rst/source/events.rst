@@ -56,12 +56,14 @@ Description
 -----------
 
 Reads (*x*, *y*\ [, *z*] [, *size*], *time* [, *length*] [, *label*]) data from *table* [or standard
-input] and plots how the symbol for each event should look for the specified time *now*.
+input] and plots how the symbol for each event should look for the single specified time *now*.
 The reason they may differ is that events may have different *durations* and we may
 wish to *accentuate* the symbol attributes in ways to draw attention to an event when
-it first appears and perhaps tone it down after a while to reduce clutter and focus
-on more recent events. Optionally, each symbol may have a label that can be displayed at the
-same time or delayed with respect to the symbol. This module is typically used in conjunction with :doc:`movie`
+it first appears, and perhaps tone it down after a while to reduce clutter and focus
+on more recent events. You may also wish for symbols to disappear completely after they reach
+their end time (we call this period the code), or perhaps remain visible but faded, shrunk, or darkened.
+Optionally, each symbol may have a label that can be displayed for a prescribed length of time at the
+same time as the symbol or delayed a bit. This module is typically used in conjunction with :doc:`movie`
 where the implicit loop over time is used to call **events** over a time-sequence and
 thus plot symbols as the events unfold.
 
@@ -201,7 +203,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ **i**\|\ **s**\|\ **t**\|\ **z**\ *val1*\ [**+c**\ *val2*] ]
+**-M**\ **i**\|\ **s**\|\ **t**\|\ **z**\ *val1*\ [**+c**\ *val2*]
 
     Controls how each symbol's four attributes should change from when the symbol first appears,
     during its active duration, and optionally its fate as time moves past its end time.
