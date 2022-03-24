@@ -347,9 +347,9 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (Gout->header->inc[GMT_X] > Gin->header->inc[GMT_X])
+	if ((Gout->header->inc[GMT_X]/ Gin->header->inc[GMT_X]) > (1.0 + GMT_CONV8_LIMIT))
 		GMT_Report (API, GMT_MSG_WARNING, "Output sampling interval in x exceeds input interval and may lead to aliasing.\n");
-	if (Gout->header->inc[GMT_Y] > Gin->header->inc[GMT_Y])
+	if ((Gout->header->inc[GMT_Y] / Gin->header->inc[GMT_Y]) > (1.0 + GMT_CONV8_LIMIT))
 		GMT_Report (API, GMT_MSG_WARNING, "Output sampling interval in y exceeds input interval and may lead to aliasing.\n");
 
 	/* Precalculate longitudes from the output grid layout */
