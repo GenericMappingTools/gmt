@@ -825,6 +825,9 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 		}
 	}
 
+	if (gmt_M_is_geographic (GMT, GMT_IN))	/* Turn on geo for GMT_OUT as well */
+		gmt_set_geographic (GMT, GMT_OUT);	/* Mostly so --FORMAT_GEO_OUT will work as expected */
+
 	if (Ctrl->A.active) {	/* Finalize region via rounding/padding, then report it */
 		if (Ctrl->A.round) {	/* Must round the region via the increments */
 			wesn[XLO] = floor (wesn[XLO] / Ctrl->A.inc[GMT_X]) * Ctrl->A.inc[GMT_X];
