@@ -146,7 +146,7 @@ Optional Arguments
 .. _-E:
 
 **-E**\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*]
-    Set the time knots for the **s**\ ymbol or **t**\ ext time-functions.  Append
+    Set the time knots for the **s**\ ymbol or **t**\ ext time-functions (see `The four time-functions`_).  Append
     **+o** to shift the event start and end times by a constant offset (basically shifting
     the event in time by *dt*\ ; or use **+O** to only shift the start time, effectively shortening
     the duration of the event), **+r** to indicate the
@@ -203,16 +203,23 @@ Optional Arguments
 
 **-M**\ **i**\|\ **s**\|\ **t**\|\ **z**\ *val1*\ [**+c**\ *val2*] ]
 
+    Controls how each symbol's four attributes should change from when the symbol first appears,
+    during its active duration, and optionally its fate as time moves past its end time.
     Modify the initial **i**\ ntensity of the color, the **s**\ ize of the symbol, its **t**\ ransparency
-    or the **z** data value during the *rise* interval [Defaults are 1, 1, 100, and 0 respectively].
-    Option **-M** is repeatable for the different attributes. Optionally, for finite-duration events you
-    may append **+c** to set the corresponding terminal value during the coda [0, 0, 100, 0, respectively].
-    The intensity setting (normally in the interval ±1, with 0 having no effect) is used to brighten
-    (*intensity* > 0) or darken (*intensity* < 0) the symbol color during this period (hue is kept fixed).
-    The size setting is a magnifying factor that temporarily changes the size of the symbol. The transparency
-    setting affects temporary changes to the symbol's transparency. Finally, the z-data setting temporarily
-    adds *val1* to the data set's *z*-values per the time function, and thus can change the symbol's color
-    via the CPT (hence **-C** is a required option for **-Mz**). **Note**: Polygons can only use **-Mt** setting.
+    or the **z** data value (to change symbol color via CPT lookup) during the *rise* interval.
+    [Defaults for these four attributes are 1, 1, 100, and 0 respectively].  These values all represent
+    maximum amplitudes that is scaled by the corresponding time-function created by **-Es** (see `The four time-functions`_).
+    Option **-M** is repeatable for the different attributes. Optionally, for finite-duration events
+    (that should remain visible for all times after their event time has been reached) you
+    may append **+c** to set the corresponding terminal value during the coda [Defaults are 0, 0, 100 and 0, 
+    respectively, meaning the symbols are not plotted unless you change these attributes with one or more **+c** modifiers].
+    The intensity setting (**i**\ ; normally with *val1* in the range ±1, with 0 having no effect) is used to brighten
+    (*val1* > 0) or darken (*val1* < 0) the symbol color during this period (the hue is kept fixed).
+    The size setting (**s**) is a magnifying factor that temporarily changes the size of the symbol by the factor *val1*.
+    The transparency setting (**t**) affects temporary changes to the symbol's transparency. Finally, the  z-data setting
+    (**z**) temporarily adds *val1* to the data set's *z*-values, scaled by the corresponding time function, and thus
+    can change the symbol's *color* via the CPT (hence **-C** is a required option for **-Mz**).
+    **Note**: Polygons can only use **-Mt** setting.
 
 .. _-N:
 
@@ -467,6 +474,7 @@ or you specify **-Ar**\ 200\ **i**.
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmtcolors`,
+:doc:`gmt`,
+:doc:`gmtcolors`,
 :doc:`plot`,
 :doc:`movie`
