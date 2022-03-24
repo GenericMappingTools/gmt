@@ -61,7 +61,7 @@ The reason they may differ is that events may have different *durations* and we 
 wish to *accentuate* the symbol attributes in ways to draw attention to an event when
 it first appears, and perhaps tone it down after a while to reduce clutter and focus
 on more recent events. You may also wish for symbols to disappear completely after they reach
-their end time (we call this period the code), or perhaps remain visible but faded, shrunk, or darkened.
+their end time (we call this period the coda), or perhaps remain visible but faded, shrunk, or darkened.
 Optionally, each symbol may have a label that can be displayed for a prescribed length of time at the
 same time as the symbol or delayed a bit. This module is typically used in conjunction with :doc:`movie`
 where the implicit loop over time is used to call **events** over a time-sequence and
@@ -89,8 +89,8 @@ Required Arguments
 .. _-T:
 
 **-T**\ *now*
-    Set the current plot time. The time shifts and increments set in **-E** are all relative to this
-    current time.  If an absolute time is given you may need to  use :term:`TIME_UNIT` to indicate
+    Set the current plot time. The time shifts and increments set in **-E** are all *relative* to this
+    current time.  If an absolute time is given you will need to use :term:`TIME_UNIT` to indicate
     the unit of the values given in options like **-E** and **-L**.
 
 Optional Arguments
@@ -374,7 +374,7 @@ illustrates how intensity may vary accordingly.
    Implied evolution of one symbol's color intensity as a function of time
    given the time-knots from **-Es** and the intensities from **-Mi**.  Here we
    seek to whiten the symbol during the event arrival, as well as darken it
-   during a permanent code phase.
+   during a permanent coda phase.
 
 Next, for finite events you may wish to either fade them out completely or
 simply fade them to a constant but still visible transparency; this future stage
