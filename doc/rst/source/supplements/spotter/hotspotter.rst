@@ -165,4 +165,4 @@ Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 
 Wessel, P., 2008, Hotspotting: Principles and properties of a plate
 tectonic Hough transform, Geochem. Geophys. Geosyst. 9(Q08004):
-doi:10.1029/2008GC002058.
+https://doi.org/10.1029/2008GC002058.

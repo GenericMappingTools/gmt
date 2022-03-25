@@ -231,7 +231,7 @@ Hydrograph. Rev., LXVII(1)*, 27–35.
 
 Wessel, P., and W. H. F. Smith, 1996, A global, self-consistent,
 hierarchical, high-resolution shoreline database, *J. Geophys. Res.,
-101(B4)*, 8741–8743.
+101(B4)*, 8741–8743, https://doi.org/10.1029/96JB00104.
 
 See Also
 --------

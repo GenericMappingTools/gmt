@@ -349,4 +349,5 @@ References
 ----------
 
 Smith, W. H. F, and P. Wessel, 1990, Gridding with continuous curvature
-splines in tension, *Geophysics*, 55, 293-305.
+splines in tension, *Geophysics*, 55, 293-305, https://doi.org/10.1190/1.1442837.
+
