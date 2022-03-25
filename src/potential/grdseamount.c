@@ -126,11 +126,12 @@ struct GRDSEAMOUNT_CTRL {
 		unsigned int bmode;
 		unsigned int fmode;
 	} Q;
-	struct GRDSEAMOUNT_S {	/* -S<h1>/<h2>[+u<u0>][+a<az1/az2>][+d<hcut>][+t<t0/t1>][+v<V%>] */
+	struct GRDSEAMOUNT_S {	/* -S<h1>/<h2>[+u<u0>][+a<az1/az2>][+d<hcut>][+p<pow>][+t<t0/t1>][+v<V%>] */
 		bool active;
 		bool slide;
+		bool azimuthal;
 		double value;	/* Deprecated -S<r_scale> */
-		double h1, h2, az1, az2, u0, t0, t1, v, hcut;
+		double h1, h2, az1, az2, u0, t0, t1, p, v, hcut;
 		double r1, r2, rcut;	/* These are computed from h1, h2, hcut based on shape */
 	} S;
 	struct GRDSEAMOUNT_T {	/* -T[l]<t0>/<t1>/<d0>|n  */
@@ -166,7 +167,9 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->Q.bmode = SMT_CUMULATIVE;
 	C->Q.fmode = FLUX_GAUSSIAN;
 	C->S.value = 1.0;
+	C->S.az2 = 120.0;
 	C->S.u0 = 0.2;
+	C->S.p = 5;
 	C->T.n_times = 1;
 	C->H.p = 1.0;	/* Linear density increase */
 	C->H.densify = 0.0;	/* No water-driven compaction on flanks */
@@ -189,7 +192,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s] "
 		"[-E] [-F[<flattening>]] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] [-K<densmodel>] "
-		"[-L[<hcut>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<r_scale>] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] "
+		"[-L[<hcut>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<h1>/<h2>[+a<az1/az2>][+d<hcut>][+p<pow>][+t<t0/t1>][+u<u0>][+v<V%>]] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] "
 		"[%s] [-W%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_OUTGRID, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
@@ -246,8 +249,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "<bmode>: Build either (c)umulative [Default] or (i)ncremental volume through time.");
 	GMT_Usage (API, 3, "<fmode>: Assume a (g)aussian [Default] or (c)onstant volume flux distribution.");
 	GMT_Usage (API, -2, "Append +d to build grids with increments as uniform discs [Default gives exact shapes].");
-	GMT_Usage (API, 1, "\n-S<r_scale>");
-	GMT_Usage (API, -2, "Set ad hoc scale factor for radii [1].");
+	GMT_Usage (API, 1, "\n-S<h1>/<h2>[+a<az1/az2>][+d<hcut>][+p<pow>][+t<t0/t1>][+u<u0>][+v<V%>]");
+	GMT_Usage (API, -2, "Control how a sectoral landslide should look like.  Append the height range affected and select optional modifiers:");
+	GMT_Usage (API, 3, "+a Set the azimuthal sector range.");
+	GMT_Usage (API, 3, "+d Set the height of the start of the distal distributed deposit.");
+	GMT_Usage (API, 3, "+p Turn on azimuthal height variation and set power coefficient >= 2 [5].");
+	GMT_Usage (API, 3, "+t Set time range over which the slide will develop.");
+	GMT_Usage (API, 3, "+u Set slide parameter u0 > 0 to affect slide profile [0.1].");
+	GMT_Usage (API, 3, "+v Set desired volume fraction of the slide relative to the entire seamount (in %). This will compute <u0>");
 	GMT_Usage (API, 1, "\n-T<t0>[/<t1>/<dt>[+l]]|<file>");
 	GMT_Usage (API, -2, "Specify start, stop, and time increments for sequence of calculations [one step, no time dependency]. "
 		"For a single specific time, just give <t0> (in years; append k for kyr and M for Myr).");
@@ -441,10 +450,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				if (strchr (opt->arg, '/')) {	/* Slide settings */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.slide);
 					Ctrl->S.slide = true;
-					if ((c = gmt_first_modifier (GMT, opt->arg, "adtuv"))) {
+					if ((c = gmt_first_modifier (GMT, opt->arg, "adptuv"))) {
 						unsigned int pos = 0;
 						char txt[GMT_LEN256] = {""};
-						while (gmt_getmodopt (GMT, 'S', c, "adtuv", &pos, txt, &n_errors) && n_errors == 0) {
+						while (gmt_getmodopt (GMT, 'S', c, "adptuv", &pos, txt, &n_errors) && n_errors == 0) {
 							switch (txt[0]) {
 								case 'a':	/* Get Azimuth band for slide */
 									if (sscanf (opt->arg, "%lg/%lg", &Ctrl->S.az1, &Ctrl->S.az2) != 2) {
@@ -454,6 +463,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 									break;
 								case 'd':	/* Get distal start height */
 									Ctrl->S.hcut = atof (&txt[1]);
+									break;
+								case 'p':	/* Get azimuthal power coefficient [5] and turn on azimuthal variation */
+									Ctrl->S.p = atof (&txt[1]);
+									Ctrl->S.azimuthal = true;
 									break;
 								case 't':	/* Get time-window for slide */
 									if (sscanf (opt->arg, "%lg/%lg", &Ctrl->S.t0, &Ctrl->S.t1) != 2) {
@@ -478,6 +491,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unable to parse the two height values for slide\n");
 						n_errors++;
 					}
+					else if (Ctrl->S.hcut == 0.0)	/* Set the default value */
+						Ctrl->S.hcut = 0.5 * Ctrl->S.h1;
 				}
 				else {	/* Deprecated radial scaling */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
@@ -533,9 +548,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.rho_l > Ctrl->H.rho_h, "Option -H: Low density cannot exceed the high density\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.H <= 0.0, "Option -H: Reference seamount height must be positive\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->C.input, "Option -C: Cannot read from trailing text if binary input is selected\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.azimuthal && Ctrl->S.p < 2.0, "Option -S: Azimuthal power coefficient set with +p must be >= 2 [5]\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.v < 0.0 || Ctrl->S.v >= 100.0, "Option -S: Volume fraction must be less than 100%%\n");
 		if (GMT->common.b.active[GMT_IN] && Ctrl->T.active)
 			GMT_Report (API, GMT_MSG_WARNING, "Option -T: Seamount start end times via binary input area assumed to be in years\n");
-
 	}
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time would be numerical if binary input */
@@ -904,7 +920,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM = 0.0, v_curr, v_prev, *V = NULL;
 	double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch, prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf;
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL, g_noise = exp (-4.5), g_scl = 1.0 / (1.0 - g_noise), phi_prev, phi_curr;
-	double orig_add, dz, h_orig, scale_prev = 0.0, rho_z, sum_rz, sum_z;
+	double orig_add, dz, h_orig, rho_z, sum_rz, sum_z;
 	void (*shape_func[N_SHAPES]) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
 	void (*pappas_func[N_SHAPES]) (double r0, double h0, double f, double r1, double r2, double *Af, double *rf);
 	double (*phi_solver[N_SHAPES]) (double in[], double f, double v, bool elliptical);
@@ -1295,10 +1311,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							}
 							scale_curr = 1.0;
 						}
-						else {	/* Here we want the exact surface at the reduced radius and height given by the scale related to the volume fraction */
+						else	/* Here we want the exact surface at the reduced radius and height given by the scale related to the volume fraction */
 							scale_curr = pow (v_curr, ONE_THIRD);
-							scale_prev = pow (v_prev, ONE_THIRD);
-						}
 					}
 
 					scol_0 = (int)gmt_M_grd_x_to_col (GMT, in[GMT_X], Grid->header);	/* Center column */
