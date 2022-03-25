@@ -14228,7 +14228,7 @@ void gmt_round_wesn (double wesn[], bool geo) {	/* Use data range to round to ne
 	}
 }
 
-GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family, bool exact, struct GMT_OPTION **options, double wesn[], bool *aspect) {
+GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family, bool exact, struct GMT_OPTION **options, double wesn[], int *aspect) {
 	/* Determines the data region by examining the input data.  This could be a grid or datasets.  The
 	 * latter may be one or many files, or none, meaning we must capture stdin.  If we do, then we must
 	 * add that temporary file to the module's options, otherwise we cannot read the data a 2nd time.
@@ -14258,7 +14258,8 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 				gmt_M_memcpy (wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
 				HH = gmt_get_H_hidden (G->header);
 				if (!exact) gmt_round_wesn (wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
-				*aspect = (G->header->x_units[0] && G->header->y_units[0] && !strcmp (G->header->x_units, G->header->y_units));
+				if (G->header->x_units[0] && G->header->y_units[0] && !strcmp (G->header->x_units, G->header->y_units))	/* Want constant scale */
+					*aspect = ((G->header->wesn[XHI]-G->header->wesn[XLO]) >= (G->header->wesn[YHI]-G->header->wesn[YLO])) ? 1 : -1;
 				if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
 			}
 			break;
@@ -14402,7 +14403,6 @@ GMT_LOCAL int gmtinit_set_missing_R_from_grid (struct GMTAPI_CTRL *API, const ch
 	double wesn[4] = {0.0, 0.0, 0.0, 0.0};
 	char region[GMT_LEN256] = {""};
 	int err = GMT_NOERROR;
-	bool aspect;
 	gmt_M_unused(args);
 
 	/* Here we know the module is using a grid to get -R implicitly */
@@ -15484,8 +15484,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					xy[GMT_Y] = (gmt_get_column_type (GMT, GMT_IN, GMT_Y) == GMT_IS_ABSTIME);
 					if (P && (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1))	/* Nonstandard Cartesian axes directions */
 						snprintf (scl, GMT_LEN64, "X%gi%s/%gi%s",  P->dir[GMT_X]*P->w, Tcode[xy[GMT_X]], P->dir[GMT_Y]*P->h, Tcode[xy[GMT_Y]]);
-					else if (GMT->common.R.aspect)	/* Want the same scale in x and y */
+					else if (GMT->common.R.aspect == 1)	/* Want the same scale in x and y and x should be 15 cm */
 						snprintf (scl, GMT_LEN64, "X15c%s/0",  Tcode[xy[GMT_X]]);
+					else if (GMT->common.R.aspect == -1)	/* Want the same scale in x and y and y should be 15 cm */
+						snprintf (scl, GMT_LEN64, "X0/15c%s",  Tcode[xy[GMT_X]]);
 					else
 						snprintf (scl, GMT_LEN64, "X15c%s/15c%s",  Tcode[xy[GMT_X]], Tcode[xy[GMT_Y]]);
 				}
