@@ -36,7 +36,7 @@ by the given contour (or zero if not given) and reports the contour, area, volum
 Alternatively, specify a range of contours to be tried and **grdvolume** will determine the volume and area inside
 the contour for all contour values. Using **-T**, the contour that produced the maximum mean height (or maximum
 curvature of heights vs contour value) is reported as well. This feature may be used with :doc:`grdfilter`
-in designing an Optimal Robust Separator [*Wessel*, 1998].
+in designing an Optimal Robust Separator [*Wessel*, 1998; 2016].
 
 Required Arguments
 ------------------
@@ -203,3 +203,6 @@ References
 
 Wessel, P., 1998, An empirical method for optimal robust
 regional-residual separation of geophysical data, *Math. Geol.*, **30**\ (4), 391-408.
+
+Wessel, P., 2016, Regional–residual separation of bathymetry and revised estimates of Hawaii plume flux,
+*Geophys. J. Int.*, **204**\ (2), 932-947.
