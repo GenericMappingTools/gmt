@@ -2069,7 +2069,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				/* Note: All dimensions are written in inches and read as inches in gmt_plotinit */
 
 				for (T = 0; T < Ctrl->n_items[k]; T++) {
-					t = (frame + 1.0) / n_frames;
+					t = frame / (n_frames - 1.0);
 					I = &Ctrl->item[k][T];	/* Shorthand for this item */
 					/* Set selected font: Prepend + if user specified a font, else just give current default font */
 					if (I->font.size > 0.0)	/* Users selected font */
