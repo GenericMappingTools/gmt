@@ -527,7 +527,7 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdfill main code ----------------------------*/
 
-	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_NEEDS_PAD1, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
@@ -597,10 +597,10 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 	 * the boundary row/cols in the ID grid to 1. */
 
 	ID = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, char);
-	/* Set the top and bottom boundary rows to UINT_MAX */
+	/* Set the top and bottom boundary rows to 1 */
 	offset = (uint64_t)(Grid->header->pad[YHI] + Grid->header->n_rows) * Grid->header->mx;
 	for (node = 0; node < (uint64_t)Grid->header->pad[YHI]*Grid->header->mx; node++) ID[node] = ID[node+offset] = 1;
-	/* Set the left and right boundary columnss to UINT_MAX */
+	/* Set the left and right boundary columns to 1 */
 	offset = Grid->header->pad[XLO] + Grid->header->n_columns;
 	for (row = 0; row < (openmp_int)Grid->header->my; row++) {
 		for (col = 0; col < (openmp_int)Grid->header->pad[XLO]; col++)
