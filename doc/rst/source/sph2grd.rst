@@ -136,8 +136,8 @@ coefficients in the remote file EGM96_to_36.txt, use
 
     gmt sph2grd @EGM96_to_36.txt -GEGM96_to_36.nc -Rg -I1 -V
 
-Reference
----------
+References
+----------
 
 Holmes, S. A., and Featherstone, W. E., 2002, A unified approach to
 the Clenshaw summation and the recursive computation of very high

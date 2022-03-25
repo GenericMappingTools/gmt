@@ -202,7 +202,8 @@ References
 ----------
 
 Wessel, P., 1998, An empirical method for optimal robust
-regional-residual separation of geophysical data, *Math. Geol.*, **30**\ (4), 391-408.
+regional-residual separation of geophysical data, *Math. Geol.*, **30**\ (4), 391-408,
+https://doi.org/10.1023/A:1021744224009.
 
 Wessel, P., 2016, Regional–residual separation of bathymetry and revised estimates of Hawaii plume flux,
-*Geophys. J. Int.*, **204**\ (2), 932-947.
+*Geophys. J. Int.*, **204**\ (2), 932-947, https://doi.org/10.1093/gji/ggv472.
