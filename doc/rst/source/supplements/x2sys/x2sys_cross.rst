@@ -204,10 +204,10 @@ References
 ----------
 
 Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys
-package. *Computers and Geosciences*, **36**, 348-354.
+package. *Computers and Geosciences*, **36**, 348-354, https://doi.org/10.1016/j.cageo.2009.05.009.
 
 Wessel, P. (1989), XOVER: A cross-over error detector for track data,
-*Computers and Geosciences*, **15**\ (3), 333-346.
+*Computers and Geosciences*, **15**\ (3), 333-346, https://doi.org/10.1016/0098-3004(89)90044-7.
 
 See Also
 --------

@@ -174,3 +174,6 @@ ncBrowse, see `<https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_
 ncView, see `<https://cirrus.ucsd.edu/~pierce/software/ncview/index.html>`_
 The Marine Geophysical Data Exchange Format - "MGD77", see
 `<https://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
+
+Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1023/A:1021744224009.

@@ -248,4 +248,4 @@ References
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29),
 p. 319.
 
-Doubrovine, P. V., B. Steinberger, and T. H. Torsvik, 2012, Absolute plate motions in a reference frame defined by moving hot spots in the Pacific, Atlantic, and Indian oceans, J. Geophys. Res., 117(B09101), doi:10.1029/2011jb009072.
+Doubrovine, P. V., B. Steinberger, and T. H. Torsvik, 2012, Absolute plate motions in a reference frame defined by moving hot spots in the Pacific, Atlantic, and Indian oceans, *J. Geophys. Res.*, **117**\ (B09101), https://doi.org/10.1029/2011jb009072.
