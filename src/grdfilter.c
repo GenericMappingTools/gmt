@@ -975,13 +975,13 @@ EXTERN_MSC int GMT_grdfilter (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	/* Check that -D option is compatible with the type of grid */
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/*  Make sure we selected a geographic distance mode */
 		if (Ctrl->D.mode < GRDFILTER_GEO_CARTESIAN || Ctrl->D.mode > GRDFILTER_GEO_SPHERICAL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -D: Input grid is geographic but your distance mode is Cartesian\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	else if (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN) {
+	else if (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN) {	/*  Make sure we selected a Cartesian distance mode */
 		GMT_Report (API, GMT_MSG_ERROR, "Option -D: Input grid is Cartesian but your distance mode is set for geographic distances\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
