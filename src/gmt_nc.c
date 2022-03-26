@@ -1651,12 +1651,12 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 
 	/* Read grid */
 	if (dim2[1] == 0)
-		gmtnc_io_nc_grid (GMT, header, dim, origin, HH->stride, k_get_netcdf, pgrid + HH->data_offset, false);
+		gmtnc_io_nc_grid (GMT, header, dim, origin, HH->stride, k_get_netcdf, pgrid, false);
 	else {
 		/* Read grid in two parts */
 		unsigned int stride_or_width = HH->stride != 0 ? HH->stride : width;
-		gmtnc_io_nc_grid (GMT, header, dim, origin, stride_or_width, k_get_netcdf, pgrid + HH->data_offset, false);
-		gmtnc_io_nc_grid (GMT, header, dim2, origin2, stride_or_width, k_get_netcdf, pgrid + HH->data_offset + dim[1], false);
+		gmtnc_io_nc_grid (GMT, header, dim, origin, stride_or_width, k_get_netcdf, pgrid, false);
+		gmtnc_io_nc_grid (GMT, header, dim2, origin2, stride_or_width, k_get_netcdf, pgrid + dim[1], false);
 	}
 
 	/* If we need to shift grid */
@@ -1721,7 +1721,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 
 	/* Flip grid upside down */
 	if (HH->row_order == k_nc_start_south)
-		gmt_grd_flip_vertical (pgrid + HH->data_offset, width, height, HH->stride, sizeof(grid[0]));
+		gmt_grd_flip_vertical (pgrid, width, height, HH->stride, sizeof(grid[0]));
 
 	/* Add padding with border replication */
 	gmtnc_pad_grid (pgrid, width, height, pad, sizeof(grid[0]), k_pad_fill_zero);
@@ -1731,7 +1731,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 		unsigned n;
 		unsigned pad_x = pad[XLO] + pad[XHI];
 		unsigned stride = HH->stride ? HH->stride : width;
-		gmt_grdfloat *p_data = pgrid + HH->data_offset;
+		gmt_grdfloat *p_data = pgrid;
 		for (n = 0; n < (stride + pad_x) * (height + pad[YLO] + pad[YHI]); n++) {
 			if (n % (stride + pad_x) == 0)
 				fprintf (stderr, "\n");
