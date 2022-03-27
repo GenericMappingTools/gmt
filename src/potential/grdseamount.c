@@ -456,7 +456,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 						while (gmt_getmodopt (GMT, 'S', c, "adptuv", &pos, txt, &n_errors) && n_errors == 0) {
 							switch (txt[0]) {
 								case 'a':	/* Get Azimuth band for slide */
-									if (sscanf (opt->arg, "%lg/%lg", &Ctrl->S.az1, &Ctrl->S.az2) != 2) {
+									if (sscanf (&txt[1], "%lg/%lg", &Ctrl->S.az1, &Ctrl->S.az2) != 2) {
 										GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unable to parse the two azimuth values\n");
 										n_errors++;
 									}
@@ -469,7 +469,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 									Ctrl->S.azimuthal = true;
 									break;
 								case 't':	/* Get time-window for slide */
-									if (sscanf (opt->arg, "%lg/%lg", &Ctrl->S.t0, &Ctrl->S.t1) != 2) {
+									if (sscanf (&txt[1], "%lg/%lg", &Ctrl->S.t0, &Ctrl->S.t1) != 2) {
 										GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unable to parse the two time values\n");
 										n_errors++;
 									}
@@ -493,6 +493,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 					}
 					else if (Ctrl->S.hcut == 0.0)	/* Set the default value */
 						Ctrl->S.hcut = 0.5 * Ctrl->S.h1;
+					if (c) c[0] = '+';	/* Restore modifiers */
 				}
 				else {	/* Deprecated radial scaling */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
@@ -1387,7 +1388,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							/* "silent" else we are inside w/e */
 							x = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 							this_r = gmt_distance (GMT, in[GMT_X], in[GMT_Y], x, y);	/* In Cartesian units or km (if map is true) */
-							if (this_r > r_km) continue;	/* Beyond the base of the seamount */
+							if (this_r > r_km && !Ctrl->S.slide) continue;	/* Beyond the base of the seamount */
 #if 0
 							if (doubleAlmostEqualZero (this_r, 0.0)) {
 								dx = 0.0;	/* Break point here if debugging peak of seamount location */
