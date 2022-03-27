@@ -1379,21 +1379,6 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 					c = (map) ? cosd (in[GMT_Y]) : 1.0;	/* Flat Earth area correction */
 
-					if (Ctrl->S.slide) {	/* Compute the radii needed for slide calculations below. ASSUMES CIRCULAR FOR NOW */
-						double Vf, Vs, Vq, dh = Ctrl->S.h2 - Ctrl->S.h1, u0 = Ctrl->S.u0;
-						Ctrl->S.r1   = grdseamount_r_from_h (build_mode, Ctrl->S.h1,   in[GMT_Z], h0, f);
-						Ctrl->S.r2   = grdseamount_r_from_h (build_mode, Ctrl->S.h2,   in[GMT_Z], h0, f);
-						Ctrl->S.rcut = grdseamount_r_from_h (build_mode, Ctrl->S.hcut, in[GMT_Z], h0, f);
-						Vf = pappas_func[build_mode] (in[GMT_Z], h0, f, Ctrl->S.r1, Ctrl->S.r2);
-						if (Ctrl->S.v_fraction) {	/* Must compute u0 to match specified slide volume */
-							shape_func[build_mode] (a, b, amplitude, 0.0, f, &area, &volume, &height);
-							u0 = grdseamount_slide_u0 (GMT, Ctrl, Ctrl->S.r1, Ctrl->S.r2, dh, Vf, volume);
-						}
-						Vq = grdseamount_pappas_slide (Ctrl->S.r1, Ctrl->S.r2, dh, u0);
-						Vs = Vf - Vq;	/* Actual slide volume (over 0-360 so not specific yet) */
-						Ctrl->S.rd = grdseamount_distal_r (Ctrl->S.rcut, Ctrl->S.hcut, Vs);
-					}
-
 					if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 						sincos ((90.0 - in[GMT_Z]) * D2R, &sa, &ca);	/* in[GMT_Z] is azimuth in degrees, convert to direction, get sin/cos */
 						a = scale_curr * in[3];			/* Semi-major axis */
@@ -1426,6 +1411,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						if (Ctrl->F.mode == TRUNC_FILE) Ctrl->F.value = in[4];	/* Flattening given by input file */
 					}
 					amplitude = scale_curr * h_orig;		/* Seamount max height from base */
+
 					switch (inc_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
 						case SHAPE_CONE:  h_scale = 1.0 / (1.0 - Ctrl->F.value); break;
 						case SHAPE_DISC:  h_scale = 1.0; break;
@@ -1435,6 +1421,21 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					}
 					if (inc_mode == SHAPE_GAUS) h_scale *= g_scl;	/* Adjust for the fact we only go to -/+ 3 sigma and not infinity */
 					if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
+
+					if (Ctrl->S.slide) {	/* Compute the radii needed for slide calculations below. ASSUMES CIRCULAR FOR NOW */
+						double Vf, Vs, Vq, dh = Ctrl->S.h2 - Ctrl->S.h1, u0 = Ctrl->S.u0;
+						Ctrl->S.r1   = grdseamount_r_from_h (build_mode, Ctrl->S.h1,   in[GMT_Z], h0, f);
+						Ctrl->S.r2   = grdseamount_r_from_h (build_mode, Ctrl->S.h2,   in[GMT_Z], h0, f);
+						Ctrl->S.rcut = grdseamount_r_from_h (build_mode, Ctrl->S.hcut, in[GMT_Z], h0, f);
+						Vf = pappas_func[build_mode] (in[GMT_Z], h0, f, Ctrl->S.r1, Ctrl->S.r2);	/* Volume beneath flank surface for given shape */
+						if (Ctrl->S.v_fraction) {	/* Must compute u0 to match specified slide volume */
+							shape_func[build_mode] (a, b, amplitude, 0.0, f, &area, &volume, &height);	/* Get full seamount volume */
+							u0 = grdseamount_slide_u0 (GMT, Ctrl, Ctrl->S.r1, Ctrl->S.r2, dh, Vf, volume);
+						}
+						Vq = grdseamount_pappas_slide (Ctrl->S.r1, Ctrl->S.r2, dh, u0);	/* Volume beneath slide surface */
+						Vs = Vf - Vq;	/* Actual slide volume (over 0-360 so not specific yet) */
+						Ctrl->S.rd = grdseamount_distal_r (Ctrl->S.rcut, Ctrl->S.hcut, Vs);
+					}
 
 					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
 					gmt_M_free (GMT, d_col);
@@ -1474,6 +1475,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							}
 							else	/* Circular features are simpler */
 								rr = this_r / r_km;	/* Now in 0-1 range */
+
 							/* Compute next height (add) it the untruncated version if -F is set (orig_add) */
 							add = grdseamount_height (Ctrl, this_r, rr, h_scale, f, noise, &orig_add);
 							/* Both add and orig_add are normalized fractions of full seamount height */
