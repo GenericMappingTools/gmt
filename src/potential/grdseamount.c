@@ -130,6 +130,7 @@ struct GRDSEAMOUNT_CTRL {
 		bool active;
 		bool slide;
 		bool azimuthal;
+		bool v_fraction;
 		double value;	/* Deprecated -S<r_scale> */
 		double h1, h2, az1, az2, u0, t0, t1, p, v, hcut;
 		double r1, r2, rcut, rd;	/* These are computed from h1, h2, hcut and Vs based on shape */
@@ -479,6 +480,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 									break;
 								case 'v':	/* Get volume percent of slide */
 									Ctrl->S.v = atof (&txt[1]);
+									Ctrl->S.v_fraction = true;
 									break;
 								default:
 									n_errors++;
@@ -834,7 +836,7 @@ GMT_LOCAL double grdseamount_height (struct GRDSEAMOUNT_CTRL *Ctrl, double this_
 }
 
 GMT_LOCAL double grdseamount_cone_pappas (double r0, double h0, double f, double r1, double r2) {
-	/* Compute flank crossectional area and centroid distance from axis for a cone model */
+	/* Compute flank crossectional area and centroid distance from axis for a cone model and return volume via Pappas */
 	double dr = r2 - r1, Af, rf;
 	Af = (h0 * dr * dr) / (2.0 * r0 * (1 - f));
 	rf = (2.0 * r2 + r1) / 12.0;
@@ -842,7 +844,7 @@ GMT_LOCAL double grdseamount_cone_pappas (double r0, double h0, double f, double
 }
 
 GMT_LOCAL double grdseamount_para_pappas (double r0, double h0, double f, double r1, double r2) {
-	/* Compute flank crossectional area and centroid distance from axis for a parabolic model */
+	/* Compute flank crossectional area and centroid distance from axis for a parabolic model and return volume via Pappas */
 	double r12 = r1 * r1, r22 = r2 * r2, Af, rf;
 	Af = (h0 * (r12 * r1 - 3.0 * r12 * r2 + 2.0 * r22 * r2)) / (6.0 * r0 * r0 * (1.0 - f));
 	rf = (r22 - r12) / (24.0 * (r12 * r1 - 3.0 * r12 * r2 + 2.0 * r22 * r2));
@@ -850,7 +852,7 @@ GMT_LOCAL double grdseamount_para_pappas (double r0, double h0, double f, double
 }
 
 GMT_LOCAL double grdseamount_gauss_pappas (double r0, double h0, double f, double r1, double r2) {
-	/* Compute flank crossectional area and centroid distance from axis for a Gaussian model */
+	/* Compute flank crossectional area and centroid distance from axis for a Gaussian model and return volume via Pappas */
 	double u1 = r1 / r0, u2 = r2 / r0, c = 0.5 * 3 * sqrt (2.0), num, den, Af, rf;
 	Af = h0 * r0 * exp (4.5 * f * f) * ((sqrt (TWO_PI)/6.0) * (erf (c * u2) - erf (c * u1)) - (u1 - u2) * exp (-4.5 * u1 * u1));
 	num = (exp (-4.5 * u2 * u2) - exp (-4.5 * u1 * u1)) / 9.0 - 0.5 * (u1 * u1 - u2 * u2) * exp (-4.5 * u1 * u1);
@@ -860,7 +862,7 @@ GMT_LOCAL double grdseamount_gauss_pappas (double r0, double h0, double f, doubl
 }
 
 GMT_LOCAL double grdseamount_poly_pappas (double r0, double h0, double f, double r1, double r2) {
-	/* Compute flank crossectional area and centroid distance from axis for a polynomial model */
+	/* Compute flank crossectional area and centroid distance from axis for a polynomial model and return volume via Pappas */
 	double u1 = r1 / r0, u2 = r2 / r0, p_u1 = poly_smt_func (u1), c = sqrt (3) / 3.0, num, den, L, T, Af, rf;
 	L = 1.5 * log ((u1 * u1 - u1 + 1) / (u2 * u2 - u2 + 1));
 	T = sqrt (3) * (atan (c * (2 * u1 - 1)) - atan (c * (2 * u2 - 1)));
@@ -871,12 +873,18 @@ GMT_LOCAL double grdseamount_poly_pappas (double r0, double h0, double f, double
 	return (TWO_PI * Af * rf);
 }
 
+GMT_LOCAL double ubar (double u0) {
+	/* Compute mean u via equation (6) */
+	double u0_1 = 1.0 + u0;
+	return (2.0 * u0_1 * (1.0 - u0 * log (u0_1 / u0)) - 1.0) / (u0_1 * log (u0_1 / u0) - 1.0);
+}
+
 GMT_LOCAL double grdseamount_pappas_slide (double r1, double r2, double dh, double u0) {
-	/* Compute flank crossectional area and centroid distance from axis for the slide model.
+	/* Compute flank crossectional area and centroid distance from axis for the slide model and return volume via Pappas.
 	 * Here dh = h2 - h1 */
 	double dr = r1 - r2, u0_1 = 1.0 + u0, Af, rf;
 	Af = dh * dr * u0 * (u0_1 * log (u0_1 / u0) - 1.0);
-	rf = r2 + dr * (2.0 * u0_1 * (1.0 - u0 * log (u0_1 / u0)) - 1.0) / (u0_1 * log (u0_1 / u0) - 1.0);
+	rf = r2 + dr * ubar (u0);
 	return (TWO_PI * Af * rf);
 }
 
@@ -887,13 +895,22 @@ GMT_LOCAL double grdseamount_distal_r (double rc, double hc, double Vs) {
 	return (rd);
 }
 
-//GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double dr, double dh, double Vf, double V0, double phi) {
-//	/* Determine the tuning parameter u0 that yields the specified slide fraction */
-//	double rhs = (Vf - phi * V0) / (TWO_PI * dh * dr);
-//	gmt_M_unused (GMT);
-//	gmt_M_unused (Ctrl);
-//	/* Iterate on equation (14) to solve for optimal u0 */
-//}
+GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double r1, double r2, double dh, double Vf, double V0) {
+	/* Determine the tuning parameter u0 that yields the specified slide fraction */
+	double dr = r1 - r2, rhs = (Vf - Ctrl->S.v * V0) / (TWO_PI * dh * dr);
+	double u0_next, u0_1, du, u0 = 0.1;	/* Trial value */
+	int n_iter = 0;
+	gmt_M_unused (GMT);
+
+	/* Iterate on equation (14) to solve for optimal u0 */
+	do {
+		u0_1 = 1.0 + u0;
+		u0_next = rhs / ((r1 + dr * ubar (u0)) * (u0_1 * log (u0_1 / u0) - 1.0));
+		du = fabs (u0_next - u0);
+		n_iter++;
+	} while (du > GMT_CONV12_LIMIT && n_iter < 50);
+	return (u0_next);
+}
 
 GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in, char *code) {
 	uint64_t col;
@@ -1363,12 +1380,16 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					c = (map) ? cosd (in[GMT_Y]) : 1.0;	/* Flat Earth area correction */
 
 					if (Ctrl->S.slide) {	/* Compute the radii needed for slide calculations below. ASSUMES CIRCULAR FOR NOW */
-						double Vf, Vs, Vq;
+						double Vf, Vs, Vq, dh = Ctrl->S.h2 - Ctrl->S.h1, u0 = Ctrl->S.u0;
 						Ctrl->S.r1   = grdseamount_r_from_h (build_mode, Ctrl->S.h1,   in[GMT_Z], h0, f);
 						Ctrl->S.r2   = grdseamount_r_from_h (build_mode, Ctrl->S.h2,   in[GMT_Z], h0, f);
 						Ctrl->S.rcut = grdseamount_r_from_h (build_mode, Ctrl->S.hcut, in[GMT_Z], h0, f);
 						Vf = pappas_func[build_mode] (in[GMT_Z], h0, f, Ctrl->S.r1, Ctrl->S.r2);
-						Vq = grdseamount_pappas_slide (Ctrl->S.r1, Ctrl->S.r2, Ctrl->S.h1 - Ctrl->S.h1, Ctrl->S.u0);
+						if (Ctrl->S.v_fraction) {	/* Must compute u0 to match specified slide volume */
+							shape_func[build_mode] (a, b, amplitude, 0.0, f, &area, &volume, &height);
+							u0 = grdseamount_slide_u0 (GMT, Ctrl, Ctrl->S.r1, Ctrl->S.r2, dh, Vf, volume);
+						}
+						Vq = grdseamount_pappas_slide (Ctrl->S.r1, Ctrl->S.r2, dh, u0);
 						Vs = Vf - Vq;	/* Actual slide volume (over 0-360 so not specific yet) */
 						Ctrl->S.rd = grdseamount_distal_r (Ctrl->S.rcut, Ctrl->S.hcut, Vs);
 					}
