@@ -132,7 +132,7 @@ struct GRDSEAMOUNT_CTRL {
 		bool azimuthal;
 		double value;	/* Deprecated -S<r_scale> */
 		double h1, h2, az1, az2, u0, t0, t1, p, v, hcut;
-		double r1, r2, rcut;	/* These are computed from h1, h2, hcut based on shape */
+		double r1, r2, rcut, rd;	/* These are computed from h1, h2, hcut and Vs based on shape */
 	} S;
 	struct GRDSEAMOUNT_T {	/* -T[l]<t0>/<t1>/<d0>|n  */
 		bool active, log;
@@ -564,7 +564,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 
 GMT_LOCAL void grdseamount_disc_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical disc "seamounts" (more like plateaus).
-	 * Here, f is not used; ignore compiler warning. */
+	 * Here, f is not used. */
 
 	double r2;
 	gmt_M_unused(f);
@@ -651,6 +651,19 @@ GMT_LOCAL double poly_smt_vol (double r) {
 	double r2 = r * r, r3 = r2 * r, r5 = r2 * r3, V, root3 = sqrt (3.0);
 	V = TWO_PI * (root3 * (M_PI / 6.0 + atan (root3 * (2.0 * r - 1.0) / 3.0)) - 1.5 * log (r2 - r + 1.0) - 3.0 * r + 0.5 * r2 + r3 - 0.2 * r5);
 	return (V);
+}
+
+GMT_LOCAL double grdseamount_r_from_h (unsigned int inc_mode, double h, double r0, double h0, double f) {
+	/* Return the radius where height is h */
+	double r;
+	switch (inc_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
+		case SHAPE_CONE: r = (1.0 - (h * (1.0 - f)/h0)); break;
+		case SHAPE_DISC: r = 1.0; break;
+		case SHAPE_PARA: r = sqrt (1.0 - (h * (1.0 - f)/h0)); break;
+		case SHAPE_POLY: r = poly_smt_rc (h * poly_smt_func (f) /h0); break;
+		case SHAPE_GAUS: r = sqrt (f * f - 2.0 * log (h/h0) / 9.0); break;
+	}
+	return (r * r0);
 }
 
 GMT_LOCAL void grdseamount_poly_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
@@ -753,24 +766,43 @@ GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double
 	return (rho);
 }
 
-GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_GRID *G, double *in, unsigned int row, unsigned int col) {
-	/* Return true if the azimuth from seamount center to this point is inside the wedge selected via -S+a */
+GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_GRID *G, double *in, unsigned int row, unsigned int col, double *s) {
+	/* Return true if the azimuth from seamount center to this point is inside the wedge selected via -S+a.
+	 * If inside we also compute teh azimuthal scale s if +p was set */
+	bool in_sector = false;
 	double dx = G->x[col] - in[GMT_X], dy = G->y[row] - in[GMT_Y];
 	double az = (dx == 0.0 && dy == 0.0) ? 0.0 : R2D * atan2 (dy, dx) - 360.0;	/* Make sure we start negative */
 	gmt_M_unused (GMT);
+	*s = 0.0;	/* Default */
 	while (az < Ctrl->S.az1) az += 360.0;	/* Keep wrapping until we pass az1 */
-	return (az <= Ctrl->S.az2);
+	if (az <= Ctrl->S.az2) {	/* Inside sector, compute s */
+		in_sector = true;
+		if (Ctrl->S.azimuthal) {	/* Evaluate scale */
+			double gamma = fabs (2.0 * (az - Ctrl->S.az1) / (Ctrl->S.az2 - Ctrl->S.az1) - 1.0);
+			*s = pow (gamma, Ctrl->S.p);
+		}
+	}
+
+	return (in_sector);
 }
 
-GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double r_km, double r) {
-	/* r is normalized radial position (0-1) */
-	double u, this_r = r * r_km, q;
+GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double r_km, double r, double hf, double s) {
+	/* r is normalized radial position (0-1), and input hf and output height h are as well.
+	 * s is the azimuthal scale which is 0 if no azimuth variation was requested. */
+	double u, this_r = r * r_km, q, hs, h;
 	gmt_M_unused (GMT);
-	if (this_r < Ctrl->S.r1) return DBL_MAX;	/* Outside range */
-	if (this_r > Ctrl->S.r2) return DBL_MAX;	/* Outside range */
-	u = ((this_r - Ctrl->S.r1) / (Ctrl->S.r2 - Ctrl->S.r1));	/* Normalized u inside the slide range of 0-1 */
-	q = Ctrl->S.u0 * ((1.0 + Ctrl->S.u0) / (u + Ctrl->S.u0) - 1.0);	/* Normalized slide shape function */
-	return (Ctrl->S.h1 + (Ctrl->S.h2 - Ctrl->S.h1) * q);	/* Scale to actual topography */
+	if (this_r < Ctrl->S.r1) return DBL_MAX;	/* Outside range, return a huge value so MIN will pick the other value */
+	if (this_r > Ctrl->S.rd) return DBL_MAX;	/* Outside distal range, return a huge value so MIN will pick the other value */
+	if (this_r > Ctrl->S.rcut) {	/* In the distal range for redeposit of slide material */
+		h = Ctrl->S.hcut * (this_r - Ctrl->S.rcut) / (Ctrl->S.rd - Ctrl->S.rcut);
+		return (h);
+	}
+	if (this_r > Ctrl->S.r2) return DBL_MAX;	/* Between foot of slide and toe of deposit, same */
+	u = ((this_r - Ctrl->S.r1) / (Ctrl->S.r2 - Ctrl->S.r1));	/* Normalized radial u inside the slide range of 0-1 */
+	q = Ctrl->S.u0 * ((1.0 + Ctrl->S.u0) / (u + Ctrl->S.u0) - 1.0);	/* Normalized slide shape function q(u) */
+	hs = Ctrl->S.h1 + (Ctrl->S.h2 - Ctrl->S.h1) * q;	/* Slide height scaled to actual topography */
+	h = hf * s + (1.0 - s) * hs;	/* Handle azimuthal variation (if any) by blending flank and slide heights using s(alpha) */
+	return(h);
 }
 
 GMT_LOCAL double grdseamount_height (struct GRDSEAMOUNT_CTRL *Ctrl, double this_r, double rr, double h_scale, double f, double noise, double *orig_add) {
@@ -801,46 +833,51 @@ GMT_LOCAL double grdseamount_height (struct GRDSEAMOUNT_CTRL *Ctrl, double this_
 	return (add);
 }
 
-GMT_LOCAL void grdseamount_cone_pappas (double r0, double h0, double f, double r1, double r2, double *Af, double *rf) {
+GMT_LOCAL double grdseamount_cone_pappas (double r0, double h0, double f, double r1, double r2) {
 	/* Compute flank crossectional area and centroid distance from axis for a cone model */
-	double dr = r2 - r1;
-	*Af = (h0 * dr * dr) / (2.0 * r0 * (1 - f));
-	*rf = (2.0 * r2 + r1) / 12.0;
+	double dr = r2 - r1, Af, rf;
+	Af = (h0 * dr * dr) / (2.0 * r0 * (1 - f));
+	rf = (2.0 * r2 + r1) / 12.0;
+	return (TWO_PI * Af * rf);
 }
 
-GMT_LOCAL void grdseamount_para_pappas (double r0, double h0, double f, double r1, double r2, double *Af, double *rf) {
+GMT_LOCAL double grdseamount_para_pappas (double r0, double h0, double f, double r1, double r2) {
 	/* Compute flank crossectional area and centroid distance from axis for a parabolic model */
-	double r12 = r1 * r1, r22 = r2 * r2;
-	*Af = (h0 * (r12 * r1 - 3.0 * r12 * r2 + 2.0 * r22 * r2)) / (6.0 * r0 * r0 * (1.0 - f));
-	*rf = (r22 - r12) / (24.0 * (r12 * r1 - 3.0 * r12 * r2 + 2.0 * r22 * r2));
+	double r12 = r1 * r1, r22 = r2 * r2, Af, rf;
+	Af = (h0 * (r12 * r1 - 3.0 * r12 * r2 + 2.0 * r22 * r2)) / (6.0 * r0 * r0 * (1.0 - f));
+	rf = (r22 - r12) / (24.0 * (r12 * r1 - 3.0 * r12 * r2 + 2.0 * r22 * r2));
+	return (TWO_PI * Af * rf);
 }
 
-GMT_LOCAL void grdseamount_gauss_pappas (double r0, double h0, double f, double r1, double r2, double *Af, double *rf) {
+GMT_LOCAL double grdseamount_gauss_pappas (double r0, double h0, double f, double r1, double r2) {
 	/* Compute flank crossectional area and centroid distance from axis for a Gaussian model */
-	double u1 = r1 / r0, u2 = r2 / r0, c = 0.5 * 3 * sqrt (2.0), num, den;
-	*Af = h0 * r0 * exp (4.5 * f * f) * ((sqrt (TWO_PI)/6.0) * (erf (c * u2) - erf (c * u1)) - (u1 - u2) * exp (-4.5 * u1 * u1));
+	double u1 = r1 / r0, u2 = r2 / r0, c = 0.5 * 3 * sqrt (2.0), num, den, Af, rf;
+	Af = h0 * r0 * exp (4.5 * f * f) * ((sqrt (TWO_PI)/6.0) * (erf (c * u2) - erf (c * u1)) - (u1 - u2) * exp (-4.5 * u1 * u1));
 	num = (exp (-4.5 * u2 * u2) - exp (-4.5 * u1 * u1)) / 9.0 - 0.5 * (u1 * u1 - u2 * u2) * exp (-4.5 * u1 * u1);
 	den = (sqrt (TWO_PI)/6.0) * (erf (c * u2) - erf (c * u1)) - (u1 - u2) * exp (-4.5 * u1 * u1);
-	*rf = r0 * num / den;
+	rf = r0 * num / den;
+	return (TWO_PI * Af * rf);
 }
 
-GMT_LOCAL void grdseamount_poly_pappas (double r0, double h0, double f, double r1, double r2, double *Af, double *rf) {
+GMT_LOCAL double grdseamount_poly_pappas (double r0, double h0, double f, double r1, double r2) {
 	/* Compute flank crossectional area and centroid distance from axis for a polynomial model */
-	double u1 = r1 / r0, u2 = r2 / r0, p_u1 = poly_smt_func (u1), c = sqrt (3) / 3.0, num, den, L, T;
+	double u1 = r1 / r0, u2 = r2 / r0, p_u1 = poly_smt_func (u1), c = sqrt (3) / 3.0, num, den, L, T, Af, rf;
 	L = 1.5 * log ((u1 * u1 - u1 + 1) / (u2 * u2 - u2 + 1));
 	T = sqrt (3) * (atan (c * (2 * u1 - 1)) - atan (c * (2 * u2 - 1)));
-	*Af = (h0 * r0 / poly_smt_func (f)) * ((u1 - u2) * (1 - p_u1) + 1.5 * (u1 * u1 - u2 * u2) - 0.25 * (pow (u1, 4.0) - pow (u2, 4.0)) - L - T);
+	Af = (h0 * r0 / poly_smt_func (f)) * ((u1 - u2) * (1 - p_u1) + 1.5 * (u1 * u1 - u2 * u2) - 0.25 * (pow (u1, 4.0) - pow (u2, 4.0)) - L - T);
 	num = (-3.0 * (u1 - u2) + 0.5 * (1 - p_u1) * (u1 * u1 - u2 * u2) + (pow (u1, 3.0) - pow (u2, 3.0)) - 0.2 * (pow (u1, 5.0) - pow (u2, 5.0)) - L + T);
 	den = (u1 - u2) * (1 - p_u1) + 1.5 * (u1 * u1 - u2 * u2) - 0.25 * (pow (u1, 4.0) - pow (u2, 4.0)) - L - T;
-	*rf = r2 + (r1 - r2) * num / den;
+	rf = r2 + (r1 - r2) * num / den;
+	return (TWO_PI * Af * rf);
 }
 
-GMT_LOCAL void grdseamount_pappas_slide (double r1, double r2, double dh, double u0, double *Af, double *rf) {
+GMT_LOCAL double grdseamount_pappas_slide (double r1, double r2, double dh, double u0) {
 	/* Compute flank crossectional area and centroid distance from axis for the slide model.
 	 * Here dh = h2 - h1 */
-	double dr = r1 - r2, u0_1 = 1.0 + u0;
-	*Af = dh * dr * u0 * (u0_1 * log (u0_1 / u0) - 1.0);
-	*rf = r2 + dr * (2.0 * u0_1 * (1.0 - u0 * log (u0_1 / u0)) - 1.0) / (u0_1 * log (u0_1 / u0) - 1.0);
+	double dr = r1 - r2, u0_1 = 1.0 + u0, Af, rf;
+	Af = dh * dr * u0 * (u0_1 * log (u0_1 / u0) - 1.0);
+	rf = r2 + dr * (2.0 * u0_1 * (1.0 - u0 * log (u0_1 / u0)) - 1.0) / (u0_1 * log (u0_1 / u0) - 1.0);
+	return (TWO_PI * Af * rf);
 }
 
 GMT_LOCAL double grdseamount_distal_r (double rc, double hc, double Vs) {
@@ -923,7 +960,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL, g_noise = exp (-4.5), g_scl = 1.0 / (1.0 - g_noise), phi_prev, phi_curr;
 	double orig_add, dz, h_orig, rho_z, sum_rz, sum_z;
 	void (*shape_func[N_SHAPES]) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
-	void (*pappas_func[N_SHAPES]) (double r0, double h0, double f, double r1, double r2, double *Af, double *rf);
+	double (*pappas_func[N_SHAPES]) (double r0, double h0, double f, double r1, double r2);
 	double (*phi_solver[N_SHAPES]) (double in[], double f, double v, bool elliptical);
 
 	struct GMT_GRID *Grid = NULL;
@@ -1282,10 +1319,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						}
 						else
 							f = Ctrl->F.value;
+						h0 = (Ctrl->E.active) ? in[5] : in[3];
 						if (Ctrl->Q.disc) {	/* Obtain the equivalent disc parameters given the volumes found */
 							phi_curr = phi_solver[build_mode] (in, f, v_curr, Ctrl->E.active);
 							phi_prev = phi_solver[build_mode] (in, f, v_prev, Ctrl->E.active);
-							h0 = (Ctrl->E.active) ? in[5] : in[3];
 							switch (build_mode) {	/* Given the phi values, evaluate the corresponding heights */
 								case SHAPE_CONE:  h_curr = h0 * (1 - phi_curr) / (1 - f); h_prev = h0 * (1 - phi_prev) / (1 - f); break;
 								case SHAPE_PARA:  h_curr = h0 * (1 - phi_curr * phi_curr) / (1 - f * f); h_prev = h0 * (1 - phi_prev * phi_prev) / (1 - f * f); break;
@@ -1324,6 +1361,17 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					if (srow_0 >= (int)Grid->header->n_rows) continue;	/* Still outside y-range */
 
 					c = (map) ? cosd (in[GMT_Y]) : 1.0;	/* Flat Earth area correction */
+
+					if (Ctrl->S.slide) {	/* Compute the radii needed for slide calculations below. ASSUMES CIRCULAR FOR NOW */
+						double Vf, Vs, Vq;
+						Ctrl->S.r1   = grdseamount_r_from_h (build_mode, Ctrl->S.h1,   in[GMT_Z], h0, f);
+						Ctrl->S.r2   = grdseamount_r_from_h (build_mode, Ctrl->S.h2,   in[GMT_Z], h0, f);
+						Ctrl->S.rcut = grdseamount_r_from_h (build_mode, Ctrl->S.hcut, in[GMT_Z], h0, f);
+						Vf = pappas_func[build_mode] (in[GMT_Z], h0, f, Ctrl->S.r1, Ctrl->S.r2);
+						Vq = grdseamount_pappas_slide (Ctrl->S.r1, Ctrl->S.r2, Ctrl->S.h1 - Ctrl->S.h1, Ctrl->S.u0);
+						Vs = Vf - Vq;	/* Actual slide volume (over 0-360 so not specific yet) */
+						Ctrl->S.rd = grdseamount_distal_r (Ctrl->S.rcut, Ctrl->S.hcut, Vs);
+					}
 
 					if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 						sincos ((90.0 - in[GMT_Z]) * D2R, &sa, &ca);	/* in[GMT_Z] is azimuth in degrees, convert to direction, get sin/cos */
@@ -1407,12 +1455,22 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								rr = this_r / r_km;	/* Now in 0-1 range */
 							/* Compute next height (add) it the untruncated version if -F is set (orig_add) */
 							add = grdseamount_height (Ctrl, this_r, rr, h_scale, f, noise, &orig_add);
-							if (Ctrl->S.slide && grdseamount_in_sector (GMT, Ctrl, Grid, in, row, col)) {
-								add = MIN (add, grdseamount_slide (GMT, Ctrl, this_r, rr));
+							/* Both add and orig_add are normalized fractions of full seamount height */
+							if (Ctrl->S.slide) {	/* Must handle the sector variation */
+								double s;
+								if (grdseamount_in_sector (GMT, Ctrl, Grid, in, row, col, &s)) {	/* Inside slide sector */
+									z_assign = amplitude * add;		/* Height to be added to grid if no slide */
+									/* If we are outside the radial slide range then grdseamount_slide returns DBL_MAX so the flank height is selected */
+									z_assign = MIN (z_assign, grdseamount_slide (GMT, Ctrl, this_r, rr, z_assign, s));
+								}
+								else	/* Normal seamount flank height */
+									z_assign = amplitude * add;
 							}
-							if (add <= 0.0) continue;	/* No amplitude, so skip */
+							else
+								z_assign = amplitude * add;
+							if (z_assign <= 0.0) continue;	/* No amplitude, so skip */
+							/* z_assign is the height to be added to the grid */
 							ij = gmt_M_ijp (Grid->header, row, col);	/* Current node location */
-							z_assign = amplitude * add;		/* height to be added to grid */
 							if (Ctrl->A.active)	/* No amplitude, just set inside value for mask */
 								Grid->data[ij] = Ctrl->A.value[GMT_IN];
 							else {	/* Add in contribution and keep track of max height */
