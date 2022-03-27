@@ -2069,7 +2069,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				/* Note: All dimensions are written in inches and read as inches in gmt_plotinit */
 
 				for (T = 0; T < Ctrl->n_items[k]; T++) {
-					t = frame / (n_frames - 1.0);
+					t = frame / (n_frames - 1.0);	/* Relative time 0-1 for selected frame */
 					I = &Ctrl->item[k][T];	/* Shorthand for this item */
 					/* Set selected font: Prepend + if user specified a font, else just give current default font */
 					if (I->font.size > 0.0)	/* Users selected font */
@@ -2086,7 +2086,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 						else	/* Current frame only */
 							use_frame = data_frame;
 						if (I->kind == 'F' && p == 0) strcat (label, "-R");	/* We will write a functioning -R option to plot the time-axis */
-						t = (use_frame + 1.0) / n_frames;	/* Relative time 0-1 for selected frame */
+						t = use_frame / (n_frames - 1.0);	/* Relative time 0-1 for selected frame */
 						if (I->mode == MOVIE_LABEL_IS_FRAME) {	/* Place a frame counter */
 							if (I->format[0] && movie_valid_format (I->format, 'd'))	/* Set as integer */
 								sprintf (string, I->format, (int)use_frame);
