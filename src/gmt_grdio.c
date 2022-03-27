@@ -1518,7 +1518,7 @@ int gmt_update_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADE
 	return ((*GMT->session.updateinfo[header->type]) (GMT, header));
 }
 
-int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double *wesn, unsigned int *pad, int complex_mode) {
+int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header, gmt_grdfloat *pgrid, double *wesn, unsigned int *pad, int complex_mode) {
 	/* file:	- IGNORED -
 	 * header:	grid structure header
 	 * grid:	array with final grid
@@ -1533,6 +1533,7 @@ int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *h
 	int err = GMT_OK;		/* Implied by gmt_M_err_trap */
 	struct GRD_PAD P;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
+	gmt_grdfloat *grid = pgrid + HH->data_offset;	/* This can be nonzero when grdpaste is reading */
 
 	complex_mode &= GMT_GRID_IS_COMPLEX_MASK;	/* Remove any non-complex flags */
 	/* If we are reading a 2nd grid (e.g., real, then imag) we must update info about the file since it will be a different file */
