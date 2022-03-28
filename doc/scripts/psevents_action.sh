@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Create a short animated GIF showing the life of two simple events
+# Create a short MP4 showing the life of two simple events
 # Both events starts at 0 and ends at 1, but we add rise
 # and fade and coda to one of them (red) and let the other be plain (blue).
 echo 20 6 0 1 Red Label > red.txt
@@ -55,4 +55,4 @@ gmt begin
 	gmt sample1d normal.txt -T${MOVIE_COL0}, -Fl | gmt plot -Sc2p -Gblue -N
 gmt end
 EOF
-gmt movie -C22cx12cx50 main.sh -Sbpre.sh -Npsevents_action -T-0.5/1.5/0.01 -D24 -Fgif+l -Lc0 -Lf+jTR -Pf+jBC+o0/1.5c+ac -M150,png -Z
+gmt movie -C22cx12cx100 main.sh -Sbpre.sh -Npsevents_action -T-0.5/1.5/0.01 -D24 -Fmp4 -Lc0 -Lf+jTR -Pf+jBC+o0/1.5c+ac -M150,png -Z

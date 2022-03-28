@@ -52,19 +52,18 @@ Synopsis
 
 .. module_common_begins
 
-.. figure:: /_images/psevents_action.*
-   :width: 600 px
-   :align: center
+..  youtube:: iWt0yZICKlM
+    :width: 100%
 
-   Animation of two events over the time window -0.5 to 1.5. The events are only active during times
-   0 to 1. One symbol (blue) is plotted normally only while active (size follows the light-blue time-curve,
-   while the other (red) is highlighted when it first arrives by adding a rise, plateau, decay, and fade
-   interval, and finally then let to fade to a persistent but smaller, darker and partly transparent
-   symbol after it is no longer active; its size follows the red time-curve. In contrast, the
-   blue symbol just turns on and off.  We also delay the red symbol's label by 0.25 time units.
-   Red event was plotted using -Es+r0.25+p0.25+d0.25+f0.25 -Et+o0.25 while the blue event used the
-   default settings (i.e., the lightblue time curve). **Note**: The time curves are plotted here just
-   to illustrate what is happening under the hood. The movie we make is really about the two events only.
+Animation of two events over the time window -0.5 to 1.5. The events are only active during times
+0 to 1. One symbol (blue) is plotted normally only while active (size follows the light-blue time-curve,
+while the other (red) is highlighted when it first arrives by adding a rise, plateau, decay, and fade
+interval, and finally then let to fade to a persistent but smaller, darker and partly transparent
+symbol after it is no longer active; its size follows the red time-curve. In contrast, the
+blue symbol just turns on and off.  We also delay the red symbol's label by 0.25 time units.
+Red event was plotted using -Es+r0.25+p0.25+d0.25+f0.25 -Et+o0.25 while the blue event used the
+default settings (i.e., the lightblue time curve). **Note**: The time curves are plotted here just
+to illustrate what is happening under the hood. The movie we make is really about the two events only.
 
 Description
 -----------
