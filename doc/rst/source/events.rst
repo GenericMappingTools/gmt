@@ -52,17 +52,19 @@ Synopsis
 
 .. module_common_begins
 
-.. figure:: /_images/psevents_action.gif
+.. figure:: /_images/psevents_action.*
    :width: 600 px
    :align: center
 
-   Animation of two events from time -0.5 to 1.5. Both events are only active from
-   0 to 1. One symbol (blue) is only plotted while active, while the other (red)
-   is highlighted when it first arrives by adding a rise, plateau, decay, and fade
-   interval, and finally then let to fade to a persistent but smaller, darker
-   and partly transparent symbol after it is no longer active.  in contrast, the
-   blue symbol just turns on and off.  We also delay the red symbol label by 0.25.
-   Red event used -Es+r0.25+p0.25+d0.25+f0.25 -Et+o0.25 while blue used the default.
+   Animation of two events over the time window -0.5 to 1.5. The events are only active during times
+   0 to 1. One symbol (blue) is plotted normally only while active (size follows the light-blue time-curve,
+   while the other (red) is highlighted when it first arrives by adding a rise, plateau, decay, and fade
+   interval, and finally then let to fade to a persistent but smaller, darker and partly transparent
+   symbol after it is no longer active; its size follows the red time-curve. In contrast, the
+   blue symbol just turns on and off.  We also delay the red symbol's label by 0.25 time units.
+   Red event was plotted using -Es+r0.25+p0.25+d0.25+f0.25 -Et+o0.25 while the blue event used the
+   default settings (i.e., the lightblue time curve). **Note**: The time curves are plotted here just
+   to illustrate what is happening under the hood. The movie we make is really about the two events only.
 
 Description
 -----------
@@ -160,7 +162,7 @@ Optional Arguments
 .. _-E:
 
 **-E**\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*]
-    Set the time knots for the **s**\ ymbol or **t**\ ext time-functions (see `The four time-functions`_).  Append
+    Set the relative time knots for the **s**\ ymbol or **t**\ ext time-functions (see `The four time-functions`_).  Append
     **+o** to shift the event start and end times by a constant offset (basically shifting
     the event in time by *dt*\ ; or use **+O** to only shift the start time, effectively shortening
     the duration of the event), **+r** to indicate the
