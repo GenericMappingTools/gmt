@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Create a short MP4 showing the life of two simple events
+# By default, this script only generated the master frame
+# Modify -Fnone to -Fmp4 in L58 to generate the MP4
 # Both events starts at 0 and ends at 1, but we add rise
 # and fade and coda to one of them (red) and let the other be plain (blue).
 echo 20 6 0 1 Red Label > red.txt
