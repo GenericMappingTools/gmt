@@ -52,6 +52,18 @@ Synopsis
 
 .. module_common_begins
 
+.. figure:: /_images/psevents_action.gif
+   :width: 600 px
+   :align: center
+
+   Animation of two events from time -0.5 to 1.5. Both events are only active from
+   0 to 1. One symbol (blue) is only plotted while active, while the other (red)
+   is highlighted when it first arrives by adding a rise, plateau, decay, and fade
+   interval, and finally then let to fade to a persistent but smaller, darker
+   and partly transparent symbol after it is no longer active.  in contrast, the
+   blue symbol just turns on and off.  We also delay the red symbol label by 0.25.
+   Red event used -Es+r0.25+p0.25+d0.25+f0.25 -Et+o0.25 while blue used the default.
+
 Description
 -----------
 
