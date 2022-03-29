@@ -465,9 +465,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Alternatively, append x or -y for row or column \"waterfall\" profiles.",
 		gmt_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
 	GMT_Usage (API, 3, "s: Colored or shaded Surface. Append m to draw mesh-lines on the surface.");
-	GMT_Usage (API, 3, "i: Transform polygons to raster-image via scanline conversion.  Append effective dpu [%d%c].",
+	GMT_Usage (API, 3, "i: Transform polygons to raster-image via scanline conversion.  Append effective dpu [%lg%c].",
 		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
-	GMT_Usage (API, 3, "c: As i, but use PS Level 3 color-masking for nodes with z = NaN.  Append effective dpu [%d%c].",
+	GMT_Usage (API, 3, "c: As i, but use PS Level 3 color-masking for nodes with z = NaN.  Append effective dpu [%lg%c].",
 		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
 	GMT_Usage (API, -2, "To force a monochrome image using the YIQ transformation, append +m.");
 	GMT_Option (API, "R");
@@ -743,14 +743,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				Ctrl->W.active = true;
 				j = (opt->arg[0] == 'm' || opt->arg[0] == 'c' || opt->arg[0] == 'f');
 				id = 0;
-				if (j == 1) {	/* First check that the m or c is not part of a color name instead */
+				if (j == 1) {	/* First check that the c|f|m is not part of a color name instead */
 					char txt_a[GMT_LEN256] = {""};
 					n = j+1;
 					while (opt->arg[n] && opt->arg[n] != ',' && opt->arg[n] != '/') n++;	/* Wind until end or , or / */
 					strncpy (txt_a, opt->arg, n);	txt_a[n] = '\0';
-					if (gmt_colorname2index (GMT, txt_a) >= 0)	/* Found a colorname: reset j to 0 */
+					if (gmt_colorname2index (GMT, txt_a) >= 0)	/* Found a colorname: reset j to 0 and parse normally */
 						j = id = 0;
-					else
+					else	/* Got a type, set the id index accordingly */
 						id = (opt->arg[0] == 'f') ? 2 : ((opt->arg[0] == 'm') ? 1 : 0);
 				}
 				if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
