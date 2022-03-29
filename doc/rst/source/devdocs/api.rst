@@ -2785,19 +2785,23 @@ API or GMT default settings you can do so via
 where ``keyword`` is one such keyword (e.g., :term:`PROJ_LENGTH_UNIT`) and
 ``value`` must be a character string long enough to hold the answer.  In
 addition to the long list of GMT defaults you can also inquire about the
-API parameters ``API_PAD`` (the current pad setting), ``API_IMAGE_LAYOUT`` (the
-order and structure of image memory storage), ``API_GRID_LAYOUT`` (order of
-grid memory storage), ``API_VERSION`` (the API version string),
-``API_CORES`` (the number of cores seen by the API),
-``API_BINDIR`` (the API (GMT) executable path),
-``API_SHAREDIR`` (the API (GMT) shared directory path),
-``API_DATADIR`` (the API (GMT) data directory path), and
-``API_PLUGINDIR`` (the API (GMT) plugin path).
+following API parameters:
+
+  - ``API_PAD`` - the current pad setting
+  - ``API_IMAGE_LAYOUT`` - the order and structure of image memory storage
+  - ``API_GRID_LAYOUT`` - order of grid memory storage
+  - ``API_VERSION`` - the API version string
+  - ``API_CORES`` - the number of cores seen by the API
+  - ``API_BINDIR`` - the API (GMT) executable path
+  - ``API_SHAREDIR`` - the API (GMT) shared directory path
+  - ``API_DATADIR`` - the API (GMT) data directory path
+  - ``API_PLUGINDIR`` - the API (GMT) plugin path
+  - ``API_BIN_VERSION`` - the API version string with Git commit information
+
 Depending on what parameter you selected you could further convert it to
 a numerical value with GMT_Get_Values_ or just use it in a text comparison.
 
-To change any of the API or
-GMT default settings programmatically you would use
+To change any of the API or GMT default settings programmatically you would use
 
 .. _GMT_Set_Default:
 
