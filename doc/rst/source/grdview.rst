@@ -18,7 +18,7 @@ Synopsis
 [ |-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
 [ |-I|\ [*intensgrid*\|\ *intensity*\|\ *modifiers*] ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
-[ |-N|\ *level*\ [**+g**\ *fill*] ]
+[ |-N|\ [*level*]\ [**+g**\ *fill*] ]
 [ |-Q|\ *args*\ [**+m**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smooth* ]
@@ -104,11 +104,14 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *level*\ [**+g**\ *fill*]
+**-N**\ [*level*]\ [**+g**\ *fill*]
     Draws a plane at this z-level. If the optional *color* is provided
     via the **+g** modifier, and the projection is not oblique,
     the frontal facade between the plane and the data perimeter is
     colored. See **-Wf** for setting the pen used for the outline.
+    If no *level* is set then we default to the minimum value in the
+    *reliefgrid*. However, if **-R** was used to set *zmin/zmax* then we
+    use that value if it is less than the grid minimum value.
 
 .. _-Q:
 
