@@ -1424,10 +1424,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 					if (Ctrl->S.slide) {	/* Compute the radii needed for slide calculations below. ASSUMES CIRCULAR FOR NOW */
 						double Vf, Vs, Vq, dh = Ctrl->S.h2 - Ctrl->S.h1, u0 = Ctrl->S.u0;
-						Ctrl->S.r1   = grdseamount_r_from_h (build_mode, Ctrl->S.h1,   in[GMT_Z], h0, f);
-						Ctrl->S.r2   = grdseamount_r_from_h (build_mode, Ctrl->S.h2,   in[GMT_Z], h0, f);
-						Ctrl->S.rcut = grdseamount_r_from_h (build_mode, Ctrl->S.hcut, in[GMT_Z], h0, f);
-						Vf = pappas_func[build_mode] (in[GMT_Z], h0, f, Ctrl->S.r1, Ctrl->S.r2);	/* Volume beneath flank surface for given shape */
+						Ctrl->S.r1   = grdseamount_r_from_h (build_mode, Ctrl->S.h1,   r_in, h_orig, f);
+						Ctrl->S.r2   = grdseamount_r_from_h (build_mode, Ctrl->S.h2,   r_in, h_orig, f);
+						Ctrl->S.rcut = grdseamount_r_from_h (build_mode, Ctrl->S.hcut, r_in, h_orig, f);
+						Vf = pappas_func[build_mode] (r_in, h_orig, f, Ctrl->S.r1, Ctrl->S.r2);	/* Volume beneath flank surface for given shape */
 						if (Ctrl->S.v_fraction) {	/* Must compute u0 to match specified slide volume */
 							shape_func[build_mode] (a, b, amplitude, 0.0, f, &area, &volume, &height);	/* Get full seamount volume */
 							u0 = grdseamount_slide_u0 (GMT, Ctrl, Ctrl->S.r1, Ctrl->S.r2, dh, Vf, volume);
@@ -1464,6 +1464,9 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								dx = 0.0;	/* Break point here if debugging peak of seamount location */
 							}
 #endif
+							if (row == 25 && col == 55) {
+								dx = 0.0;	/* Break point here if debugging peak of seamount location */
+							}
 							/* In the following, orig_add is the height of the seamount prior to any truncation, while add is the current value (subject to truncation) */
 							if (Ctrl->E.active) {	/* For elliptical bases we must deal with direction etc */
 								dx = (map) ? (x - in[GMT_X]) * GMT->current.proj.DIST_KM_PR_DEG * c : (x - in[GMT_X]);
