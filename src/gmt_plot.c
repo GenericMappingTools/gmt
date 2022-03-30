@@ -9114,8 +9114,8 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		}
 		GMT->current.ps.logo_cmd = false;	/* Mission accomplished */
 	}
-	if (GMT->current.setting.map_logo)
-		gmtplot_timestamp (GMT, PSL, GMT->current.setting.map_logo_pos[GMT_X], GMT->current.setting.map_logo_pos[GMT_Y], GMT->current.setting.map_logo_justify, GMT->current.ps.map_logo_label);
+	//if (GMT->current.setting.map_logo)
+	//	gmtplot_timestamp (GMT, PSL, GMT->current.setting.map_logo_pos[GMT_X], GMT->current.setting.map_logo_pos[GMT_Y], GMT->current.setting.map_logo_justify, GMT->current.ps.map_logo_label);
 
 	PSL_settransparencymode (PSL, GMT->current.setting.ps_transpmode);	/* Set PDF transparency mode, if used */
 	/* Enforce chosen line parameters */
@@ -9423,6 +9423,9 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		PSL_setorigin (PSL, x0, y0, -GMT->common.p.z_rotation, PSL_FWD);
 		PSL_setorigin (PSL, -x0, -y0, 0.0, PSL_FWD);
 	}
+
+    if (GMT->current.setting.map_logo)
+        gmtplot_timestamp (GMT, PSL, GMT->current.setting.map_logo_pos[GMT_X], GMT->current.setting.map_logo_pos[GMT_Y], GMT->current.setting.map_logo_justify, GMT->current.ps.map_logo_label);
 
 	/* Check expected change of clip level to achieved one. Update overall clip level. Check for pending clips. */
 
