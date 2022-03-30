@@ -6947,6 +6947,14 @@ GMT_LOCAL void gmtinit_free_GMT_ctrl (struct GMT_CTRL *GMT) {	/* Deallocate cont
 	gmt_M_str_free (GMT);
 }
 
+GMT_LOCAL void gmtinit_init_zproject (struct GMT_CTRL *GMT) {
+	/* Initialize the 3D parameters to a plain 2-D view */
+	GMT->current.proj.z_project.view_azimuth = 180.0;
+	GMT->current.proj.z_project.view_elevation = 90.0;
+	GMT->current.proj.z_project.plane = GMT_NOTSET;	/* Initialize no perspective projection */
+	GMT->current.proj.z_project.level = 0.0;
+}
+
 /*! . */
 GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const char *session, unsigned int pad) {	/* Allocate and initialize a new common control structure */
 	int i;
@@ -7075,10 +7083,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	 * because by default, z_scale = 0.0 */
 	GMT->current.proj.z_level = DBL_MAX;
 	GMT->current.proj.xyz_pos[GMT_X] = GMT->current.proj.xyz_pos[GMT_Y] = GMT->current.proj.xyz_pos[GMT_Z] = true;
-	GMT->current.proj.z_project.view_azimuth = 180.0;
-	GMT->current.proj.z_project.view_elevation = 90.0;
-	GMT->current.proj.z_project.plane = GMT_NOTSET;	/* Initialize no perspective projection */
-	GMT->current.proj.z_project.level = 0.0;
+	gmtinit_init_zproject (GMT);	/* Init 3-D view to plain 2-D view */
 	for (i = 0; i < 4; i++) GMT->current.proj.edge[i] = true;
 	gmtlib_grdio_init (GMT);
 	gmt_set_pad (GMT, pad); /* Sets default number of rows/cols for boundary padding in this session */
@@ -15844,6 +15849,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		char *show = (setting && !strcmp (setting, "off")) ? "" : "show";
 		GMT->current.ps.oneliner = false;
 		if (gmt_get_current_item (GMT, "cpt", false)) {	/* One-liner with a current CPT, place it on top */
+			gmtinit_init_zproject (GMT);	/* Reset to 2-D view just in case */
 			if ((i = GMT_Call_Module (GMT->parent, "colorbar", GMT_MODULE_CMD, "-DJBC -Baf"))) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to call module colorbar for a one-liner plot.\n");
 				return;
