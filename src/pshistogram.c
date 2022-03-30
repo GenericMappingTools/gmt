@@ -214,7 +214,7 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 	F->n_boxes = F->T->n - 1;	/* One less than the bin boundaries */
 	F->boxh = gmt_M_memory (GMT, NULL, F->n_boxes, double);
 	F->n_counted = 0;
-	/* Pic variable bin search unles not variable bounds and the data set is large */
+	/* Pick variable bin search unless not variable bounds and the data set is large */
 	pshistogram_get_bin = (F->T->var_inc || n < BIN_FASTER_IF_THIS_LARGE) ? &pshistogram_get_variable_bin : &pshistogram_get_constant_bin;
 
 	/* First fill boxes with counts  */
@@ -1067,29 +1067,37 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	}
 
 	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [and tickmarks] when -R -T missing */
+		/* Adjust the min/max found for finite bin width */
+		double b_min = x_min, b_max = x_max;
+		if (Ctrl->F.active) {	/* First and last bin will stick out half a bin width from the the data limits */
+			b_min -= 0.5 * F.T->inc;
+			b_max += 0.5 * F.T->inc;
+		}
+		else	/* Only b_max needs to change since it may fall in the last bin starting at x_max */
+			b_max += F.T->inc;
 		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {	/* No tick info set, pick something */
 			if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10)
 				tmp = 1.0;	/* Do powers of 10 only */
 			else {	/* Linear */
-				tmp = pow (10.0, floor (d_log10 (GMT, x_max-x_min)));
-				if (((x_max-x_min) / tmp) < 3.0) tmp *= 0.5;
+				tmp = pow (10.0, floor (d_log10 (GMT, b_max-b_min)));
+				if (((b_max-b_min) / tmp) < 3.0) tmp *= 0.5;
 			}
 		}
 		else
 			tmp = GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval;
 		if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10) {	/* Round to nearest multiples of 1,2,5 * 10^p only */
-			double f = log10 (x_min), p = floor (f), df = f - p;
+			double f = log10 (b_min), p = floor (f), df = f - p;
 			if (df > LOG10_5) F.wesn[XLO] = pow (10.0, p + LOG10_5);
 			else if (df > LOG10_2) F.wesn[XLO] = pow (10.0, p + LOG10_2);
 			else F.wesn[XLO] = pow (10.0, p);
-			f = log10 (x_max), p = floor (f), df = f - p;
+			f = log10 (b_max), p = floor (f), df = f - p;
 			if (df > LOG10_5) F.wesn[XHI] = pow (10.0, p + 1.0);
 			else if (df > LOG10_2) F.wesn[XHI] = pow (10.0, p + LOG10_5);
 			else F.wesn[XHI] = pow (10.0, p + LOG10_2);
 		}
 		else {	/* Linear */
-			F.wesn[XLO] = floor (x_min / tmp) * tmp;
-			F.wesn[XHI] = ceil  (x_max / tmp) * tmp;
+			F.wesn[XLO] = floor (b_min / tmp) * tmp;
+			F.wesn[XHI] = ceil  (b_max / tmp) * tmp;
 		}
 		if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10 && F.wesn[XLO] == 0.0) F.wesn[XLO] = 1.0;	/* To avoid any log10 of zero issues */
 		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {
