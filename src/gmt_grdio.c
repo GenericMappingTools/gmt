@@ -2270,7 +2270,7 @@ void gmt_change_grid_history (struct GMTAPI_CTRL *API, unsigned int mode, struct
 			break;
 		case GMT_GRDHISTORY_NEW:	/* Only keep new command history */
 			cmd = GMT_Create_Cmd (API, API->GMT->current.options);
-			snprintf (command, GMT_BUFSIZ, "%s %s", API->GMT->init.module_name, cmd);
+			snprintf (command, GMT_BUFSIZ, "gmt %s %s", API->GMT->init.module_name, cmd);
 			break;
 		case GMT_GRDHISTORY_BOTH:	/* Only keep old command history */
 			if (HH->command)	/* Extra long previous command history */
@@ -2281,6 +2281,7 @@ void gmt_change_grid_history (struct GMTAPI_CTRL *API, unsigned int mode, struct
 			cmd = GMT_Create_Cmd (API, API->GMT->current.options);
 			/* Append this module command string to the existing history */
 			strncat (command, "; ", L);
+			strncat (command, "gmt ", L);	L -= 4;
 			strncat (command, API->GMT->init.module_name, L);	L -= strlen (API->GMT->init.module_name) + 1;
 			strncat (command, " ", L);
 			strncat (command, cmd, L);
