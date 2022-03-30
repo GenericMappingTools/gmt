@@ -160,7 +160,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	strcpy (C->H.pen, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));	/* Default outline pen */
 	/* -Mi|s|t|z val1 defaults: 1, 1, 100, 1  val2 defaults: 0, 0, 100, 0 */
 	C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] = C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] = 100.0;	/* Rise from and fade to invisibility */
-	C->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1]   = C->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] = 1.0;	/* Default dz amplitude for -Mz */
+	C->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1]   = C->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] = 1.0;	/* Default size scale for -Ms and dz amplitude for -Mz */
 	return (C);
 }
 
@@ -360,9 +360,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active[id]);
 				Ctrl->E.active[id] = true;
 				if (gmt_validate_modifiers (GMT, &opt->arg[k], 'E', PSEVENTS_MODS, GMT_MSG_ERROR)) n_errors++;
-				if ((c = gmt_first_modifier (GMT, &opt->arg[k], PSEVENTS_MODS)) == NULL) {	/* Just sticking to the event range */
-					break;
-				}
+				if ((c = gmt_first_modifier (GMT, &opt->arg[k], PSEVENTS_MODS)) == NULL)	/* Just sticking to the event range */
+					goto maybe_set_two;
 				pos = 0;	txt_a[0] = 0;
 				while (gmt_getmodopt (GMT, 'E', c, PSEVENTS_MODS, &pos, txt_a, &n_errors) && n_errors == 0) {
 					switch (txt_a[0]) {
@@ -383,6 +382,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
 				}
+maybe_set_two:
 				if (k == 0) {	/* Duplicate to text settings */
 					Ctrl->E.active[PSEVENTS_TEXT] = true;
 					gmt_M_memcpy (Ctrl->E.dt[PSEVENTS_TEXT], Ctrl->E.dt[PSEVENTS_SYMBOL], 5U, double);
@@ -470,10 +470,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 
 			case 'M':	/* Set size, intensity, or transparency of symbol during optional rise [0] and fade [0] phases */
 				switch (opt->arg[0]) {
-					case 'i':	id = 0;	k = 1;	break;	/* Intensity settings */
-					case 's':	id = 1;	k = 1;	break;	/* Size settings */
-					case 't':	id = 2;	k = 1;	break;	/* Transparency settings */
-					case 'z':	id = 3;	k = 1;	break;	/* Delta z settings */
+					case 'i':	id = PSEVENTS_INT;		k = 1;	break;	/* Intensity settings */
+					case 's':	id = PSEVENTS_SIZE;		k = 1;	break;	/* Size settings */
+					case 't':	id = PSEVENTS_TRANSP;	k = 1;	break;	/* Transparency settings */
+					case 'z':	id = PSEVENTS_DZ;		k = 1;	break;	/* Delta z settings */
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -M: Directive %c not valid\n", opt->arg[1]);
 						n_errors++;
@@ -593,6 +593,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	}
 
 	if (Ctrl->debug.active) return (GMT_NOERROR);	/* No need the other things */
+
+	if (Ctrl->S.active && !(Ctrl->E.active[PSEVENTS_SYMBOL] || Ctrl->E.active[PSEVENTS_TEXT]))
+		Ctrl->E.active[PSEVENTS_SYMBOL] = true;	/* Default is to plot symbol with step-function life-span if no -E is set */
 
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
