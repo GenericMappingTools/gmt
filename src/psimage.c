@@ -109,7 +109,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"then we use absolute value as width and interpolate image in PostScript. Alternatively:");
 	GMT_Usage (API, 3, "+r Append image dpi (dots per inch).");
 	GMT_Usage (API, 3, "+n Append <n_columns>[/<n_rows>] to replicate image <n_columns> by <n_rows> times [Default is no replication].");
-	GMT_Usage (API, -2, "Note: if neigher +w nor +r are set we default to the default dpu [%lg%c]\n",
+	GMT_Usage (API, -2, "Note: if neither +w nor +r is set we default to the default dpu [%lg%c]\n",
 		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the image", 1);
 	GMT_Usage (API, 1, "\n-G[<color>][+b|f|t]");
