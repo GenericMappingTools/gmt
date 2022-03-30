@@ -91,6 +91,7 @@ struct GRDVIEW_CTRL {
 	struct GRDVIEW_N {	/* -N<level>[+g<fill>] */
 		bool active;
 		bool facade;
+		bool implicit;
 		struct GMT_FILL fill;
 		double level;
 	} N;
@@ -419,7 +420,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid> | <image> | -G<grd_r> -G<grd_g> -G<grd_b>] "
-		"[-I[<intensgrid>|<value>|<modifiers>]] [%s] %s[-N<level>[+g<fill>]] %s%s[-Q<args>[+m]] [%s] [-S<smooth>] "
+		"[-I[<intensgrid>|<value>|<modifiers>]] [%s] %s[-N[<level>][+g<fill>]] %s%s[-Q<args>[+m]] [%s] [-S<smooth>] "
 		"[-T[+o[<pen>]][+s]] [%s] [%s] [-W<type><pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_B_OPT, GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -454,8 +455,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Alternatively, use -I+d to accept the default values (see grdgradient for more details). "
 		"To derive intensities from another grid than <topogrid>, give the alternative data grid with suitable modifiers.");
 	GMT_Option (API, "K");
-	GMT_Usage (API, 1, "\n-N<level>[+g<fill>]");
-	GMT_Usage (API, -2, "Draw a horizontal plane at z = <level>. For rectangular projections, append +g<fill> "
+	GMT_Usage (API, 1, "\n-N[<level>][+g<fill>]");
+	GMT_Usage (API, -2, "Draw a horizontal plane at z = <level> [minimum grid (or -R) value]. For rectangular projections, append +g<fill> "
 		"to paint the facade between the plane and the data perimeter.");
 	GMT_Option (API, "O,P");
 	GMT_Usage (API, 1, "\n-Q<args>[+m]");
@@ -464,9 +465,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Alternatively, append x or -y for row or column \"waterfall\" profiles.",
 		gmt_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
 	GMT_Usage (API, 3, "s: Colored or shaded Surface. Append m to draw mesh-lines on the surface.");
-	GMT_Usage (API, 3, "i: Transform polygons to raster-image via scanline conversion.  Append effective dpu [%d%c].",
+	GMT_Usage (API, 3, "i: Transform polygons to raster-image via scanline conversion.  Append effective dpu [%lg%c].",
 		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
-	GMT_Usage (API, 3, "c: As i, but use PS Level 3 color-masking for nodes with z = NaN.  Append effective dpu [%d%c].",
+	GMT_Usage (API, 3, "c: As i, but use PS Level 3 color-masking for nodes with z = NaN.  Append effective dpu [%lg%c].",
 		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
 	GMT_Usage (API, -2, "To force a monochrome image using the YIQ transformation, append +m.");
 	GMT_Option (API, "R");
@@ -615,15 +616,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 					Ctrl->N.active = true;
 					if ((c = strstr (opt->arg, "+g")) != NULL) {	/* Gave modifier +g<fill> */
 						c[0] = '\0';	/* Truncate string temporarily */
-						Ctrl->N.level = atof (opt->arg);
+						if (opt->arg[0])
+							Ctrl->N.level = atof (opt->arg);
+						else
+							Ctrl->N.implicit = true;	/* Set level when we know grids zmin */
 						c[0] = '+';	/* Restore the + */
 						n_errors += gmt_M_check_condition (GMT, gmt_getfill (GMT, &c[2], &Ctrl->N.fill),
-						                                 "Option -N: Usage is -N<level>[+g<fill>]\n");
+						                                 "Option -N: Usage is -N[<level>][+g<fill>]\n");
 						Ctrl->N.facade = true;
 					}
 					else if (gmt_M_compat_check (GMT, 4) && (c = strchr (opt->arg, '/')) != NULL) {	/* Deprecated <level>/<fill> */
 						GMT_Report (API, GMT_MSG_COMPAT,
-						            "Option -N<level>[/<fill>] is deprecated; use -N<level>[+g<fill>] in the future.\n");
+						            "Option -N<level>[/<fill>] is deprecated; use -N[<level>][+g<fill>] in the future.\n");
 						c[0] = ' ';	/* Take out the slash for now */
 						sscanf (opt->arg, "%lf %s", &Ctrl->N.level, colors);
 						n_errors += gmt_M_check_condition (GMT, gmt_getfill (GMT, colors, &Ctrl->N.fill),
@@ -634,10 +638,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 					else	/* Just got the level */
 						Ctrl->N.level = atof (opt->arg);
 				}
-				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Usage is -N<level>[+g<fill>]\n");
-					n_errors++;
-				}
+				else
+					Ctrl->N.implicit = true;	/* Set level when we know grids zmin */
 				break;
 			case 'Q':	/* Plot mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
@@ -741,14 +743,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				Ctrl->W.active = true;
 				j = (opt->arg[0] == 'm' || opt->arg[0] == 'c' || opt->arg[0] == 'f');
 				id = 0;
-				if (j == 1) {	/* First check that the m or c is not part of a color name instead */
+				if (j == 1) {	/* First check that the c|f|m is not part of a color name instead */
 					char txt_a[GMT_LEN256] = {""};
 					n = j+1;
 					while (opt->arg[n] && opt->arg[n] != ',' && opt->arg[n] != '/') n++;	/* Wind until end or , or / */
 					strncpy (txt_a, opt->arg, n);	txt_a[n] = '\0';
-					if (gmt_colorname2index (GMT, txt_a) >= 0)	/* Found a colorname: reset j to 0 */
+					if (gmt_colorname2index (GMT, txt_a) >= 0)	/* Found a colorname: reset j to 0 and parse normally */
 						j = id = 0;
-					else
+					else	/* Got a type, set the id index accordingly */
 						id = (opt->arg[0] == 'f') ? 2 : ((opt->arg[0] == 'm') ? 1 : 0);
 				}
 				if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
@@ -1228,6 +1230,12 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	yy = gmt_M_memory (GMT, NULL, max_alloc, double);
 	if (Ctrl->N.active) {
 		PSL_comment (PSL, "Plot the plane at desired level\n");
+		if (Ctrl->N.implicit) {
+			Ctrl->N.level = Topo->header->z_min;
+			if (GMT->common.R.wesn[ZLO] < GMT->common.R.wesn[ZHI] && GMT->common.R.wesn[ZLO] < Ctrl->N.level)
+				Ctrl->N.level = GMT->common.R.wesn[ZLO];
+			GMT_Report (API, GMT_MSG_INFORMATION, "Plane/facade level determined to be z = %lg\n", Ctrl->N.level);
+		}
 		gmt_setpen (GMT, &Ctrl->W.pen[2]);
 		if (!GMT->current.proj.z_project.draw[0]) {	/* Southern side */
 			if (GMT->common.R.oblique) {
