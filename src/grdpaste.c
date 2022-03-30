@@ -189,10 +189,6 @@ EXTERN_MSC int GMT_grdpaste (void *V_API, int mode, void *args) {
 
 	if (A->header->registration != B->header->registration)
 		error++;
-	if ((A->header->z_scale_factor != B->header->z_scale_factor) || (A->header->z_add_offset != B->header->z_add_offset)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Scale/offset not compatible!\n");
-		Return (GMT_RUNTIME_ERROR);
-	}
 
 	if (! (fabs (A->header->inc[GMT_X] - B->header->inc[GMT_X]) < 1.0e-6 && fabs (A->header->inc[GMT_Y] - B->header->inc[GMT_Y]) < 1.0e-6)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Grid intervals do not match!\n");
