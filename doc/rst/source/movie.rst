@@ -312,6 +312,8 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+.. include:: explain_array.rst_
+
 Parameters
 ----------
 
