@@ -1069,11 +1069,11 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [and tickmarks] when -R -T missing */
 		/* Adjust the min/max found for finite bin width */
 		double b_min = x_min, b_max = x_max;
-		if (Ctrl->F.active) {
+		if (Ctrl->F.active) {	/* First and last bin will stick out half a bin width from the the data limits */
 			b_min -= 0.5 * F.T->inc;
 			b_max += 0.5 * F.T->inc;
 		}
-		else	/* Only b_max needs to change */
+		else	/* Only b_max needs to change since it may fall in the last bin starting at x_max */
 			b_max += F.T->inc;
 		if (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval == 0.0) {	/* No tick info set, pick something */
 			if (GMT->current.proj.xyz_projection[GMT_X] == GMT_LOG10)
