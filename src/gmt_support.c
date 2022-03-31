@@ -17290,6 +17290,28 @@ double * gmt_duplicate_array (struct GMT_CTRL *GMT, double *array, uint64_t n) {
 	return (x);
 }
 
+void gmt_reset_array_time (struct GMT_CTRL *GMT, struct GMT_ARRAY *T) {
+	/* Check that TIME_UNIT is set to same as given unit in -T
+	 * If there is a mix we ensure -T unit and values are in the chosen
+	 * -T units and that TIME_UNIT is internally reset, as is -R (if set).
+	 * Some modules may need to scale other quantities as well. */
+
+	double conv_scale = GMT->current.setting.time_system.scale;	/* Current scale from seconds to internal time units */
+	if (!T->temporal) return;	/* Not a time-series */
+	if (!T->unit) return;	/* Gave no unit so TIME_UNIT is used */
+	if (T->unit != GMT->current.setting.time_system.unit) return;	/* Internal agreement */
+
+	GMT->current.setting.time_system.unit = T->unit;	/* Override and recompute scales */
+	(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
+	conv_scale *= GMT->current.setting.time_system.i_scale;	/* Scale from whatever unit it was to new unit */
+	T->min *= conv_scale;	/* T->inc is already in the specified unit so we leave that one as is */
+	T->max *= conv_scale;
+	if (GMT->common.R.active[RSET]) {	/* Since -R was already been parsed with initial units [s] */
+		GMT->common.R.wesn[XLO] *= conv_scale;
+		GMT->common.R.wesn[XHI] *= conv_scale;
+	}
+}
+
 unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument, struct GMT_ARRAY *T, unsigned int flags, unsigned int tcol) {
 	/* Many GMT modules need to set up an equidistant set of values to
 	 * serve as output times (or distances), binning boundaries, or similar.
@@ -17613,18 +17635,6 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (m) m[0] = '+';	/* Restore the modifiers */
 	T->col = tcol;
 
-	if (T->temporal && T->unit && T->unit != GMT->current.setting.time_system.unit) {	/* Check that TIME_UNIT is set to same as given unit in -T */
-		double conv_scale = GMT->current.setting.time_system.scale;
-		GMT->current.setting.time_system.unit = T->unit;	/* Override and recompute scales */
-		(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
-		conv_scale *= GMT->current.setting.time_system.i_scale;	/* Scale from whatever it was to new unit */
-		T->min *= conv_scale;
-		T->max *= conv_scale;
-		if (GMT->common.R.active[RSET]) {	/* Since -R was already been parsed as initial units [s] */
-			GMT->common.R.wesn[XLO] *= conv_scale;
-			GMT->common.R.wesn[XHI] *= conv_scale;
-		}
-	}
 	return GMT_NOERROR;
 }
 

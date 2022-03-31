@@ -817,6 +817,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 		/* Process -T<width> [-Lb|h|l] [-W<pen>] */
 		Ctrl->T.active = true;
 		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_UNIQUE, 0);
+		gmt_reset_array_time (GMT, &(Ctrl->T.T));	/* Correct any conflicts between T unit and TIME_UNIT */
 		if (l_arg) {	/* Gave -Lb|h|l */
 			Ctrl->L.active = true;
 			if (l_arg[0] == 'l') Ctrl->L.mode = PSHISTOGRAM_LEFT;
