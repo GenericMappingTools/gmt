@@ -17613,6 +17613,18 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (m) m[0] = '+';	/* Restore the modifiers */
 	T->col = tcol;
 
+	if (T->temporal && T->unit && T->unit != GMT->current.setting.time_system.unit) {	/* Check that TIME_UNIT is set to same as given unit in -T */
+		double conv_scale = GMT->current.setting.time_system.scale;
+		GMT->current.setting.time_system.unit = T->unit;	/* Override and recompute scales */
+		(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
+		conv_scale *= GMT->current.setting.time_system.i_scale;	/* Scale from whatever it was to new unit */
+		T->min *= conv_scale;
+		T->max *= conv_scale;
+		if (GMT->common.R.active[RSET]) {	/* Since -R was already been parsed as initial units [s] */
+			GMT->common.R.wesn[XLO] *= conv_scale;
+			GMT->common.R.wesn[XHI] *= conv_scale;
+		}
+	}
 	return GMT_NOERROR;
 }
 
