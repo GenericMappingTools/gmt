@@ -76,7 +76,10 @@ Required Arguments
 **-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ **-T**\ *file*\|\ *list*
     Make evenly spaced array of bin boundaries from *min* to *max* by *inc*.
     If *min/max* are not given then we default to the range in **-R**.
-    For details on array creation, see `Generate 1D Array`_.
+    For details on array creation, see `Generate 1D Array`_. **Note**: If
+    *inc* is given with a trailing time unit then it takes precedence over
+    the current setting of :term:`TIME_UNIT`; otherwise that setting determines
+    the units used for the bin widths.
 
 Optional Arguments
 ------------------
