@@ -898,9 +898,9 @@ GMT_LOCAL double grdseamount_pappas_slide (struct GRDSEAMOUNT_CTRL *Ctrl, double
 	return (TWO_PI * (As_u * rs_u + As_l * rs_l));
 }
 
-GMT_LOCAL double grdseamount_distal_r (struct GRDSEAMOUNT_CTRL *Ctrl, double Vs) {
+GMT_LOCAL double grdseamount_distal_r (struct GRDSEAMOUNT_CTRL *Ctrl, double r0, double Vs) {
 	/* Return the radial distance to the end of the distal slide deposit */
-	double c = 3.0 * Vs / (M_PI * Ctrl->S.hc);
+	double c = 3.0 * Vs / (M_PI * Ctrl->S.hc) + r0 * (r0 + Ctrl->S.rc);
 	double rd = 0.5 * (sqrt (Ctrl->S.rc*Ctrl->S.rc + 4.0 * c) - Ctrl->S.rc);
 	return (rd);
 }
@@ -1445,7 +1445,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						}
 						Vq = grdseamount_pappas_slide (Ctrl, u0);	/* Volume beneath slide surface */
 						Vs = Vf - Vq;	/* Actual slide volume (over 0-360 so not specific yet) */
-						Ctrl->S.rd = grdseamount_distal_r (Ctrl, Vs);
+						Ctrl->S.rd = grdseamount_distal_r (Ctrl, r_in, Vs);
 					}
 
 					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
