@@ -82,7 +82,7 @@ then you must append a comma to distinguish the list from the setting of an incr
 
 If the module allows you to set up an absolute time series, append a valid time unit from the list
 **y**\ ear, m\ **o**\ nth, **d**\ ay, **h**\ our, **m**\ inute, and **s**\ econd
-to the given increment; add **+t** to ensure time column (or use **-f**).  **Note**: The internal time
+to the given increment; add **+t** to ensure time column (or use **-f**). **Note**: The internal time
 unit is still controlled independently by :term:`TIME_UNIT`.  The first 7 days of March 2020::
 
     gmt math -o0 -T2020-03-01T/2020-03-07T/1d T =
