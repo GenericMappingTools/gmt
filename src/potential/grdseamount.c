@@ -795,13 +795,13 @@ GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTR
 	 * s is the azimuthal scale which is 0 if no azimuth variation was requested. */
 	double u, this_r = r * r_km, q, hs, h;
 	gmt_M_unused (GMT);
-	if (this_r < Ctrl->S.r2) return DBL_MAX;	/* Before slide range, return a huge value so MIN will pick the regular height */
-	if (this_r > Ctrl->S.rd) return DBL_MAX;	/* Beyond distal range, return a huge value so MIN will pick the other height (which will be zero) */
+	if (this_r < Ctrl->S.r2) return hf;	/* Before slide range, return the regular height */
+	if (this_r > Ctrl->S.rd) return hf;	/* Beyond distal range, return the regular height  (likely zero) */
 	if (this_r > Ctrl->S.rc) {	/* In the distal range for redeposit of slide material with thickness h_d(r) */
 		h = Ctrl->S.hc * (1.0 - (this_r - Ctrl->S.rc) / (Ctrl->S.rd - Ctrl->S.rc));
 		return (h);
 	}
-	if (this_r > Ctrl->S.r1) return DBL_MAX;	/* Between foot of slide and toe of deposit, return a huge value so MIN will pick the regular height */
+	if (this_r > Ctrl->S.r1) return hf;	/* Between foot of slide and toe of deposit, return the regular height */
 	/* Here we are within the slide radial range */
 	u = ((this_r - Ctrl->S.r2) / (Ctrl->S.r1 - Ctrl->S.r2));	/* Normalized radial u inside the slide range of 0-1 */
 	q = Ctrl->S.u0 * ((1.0 + Ctrl->S.u0) / (u + Ctrl->S.u0) - 1.0);	/* Normalized slide shape function q(u) */
@@ -1476,9 +1476,6 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								dx = 0.0;	/* Break point here if debugging peak of seamount location */
 							}
 #endif
-							if (row == 25 && col == 55) {
-								dx = 0.0;	/* Break point here if debugging peak of seamount location */
-							}
 							/* In the following, orig_add is the height of the seamount prior to any truncation, while add is the current value (subject to truncation) */
 							if (Ctrl->E.active) {	/* For elliptical bases we must deal with direction etc */
 								dx = (map) ? (x - in[GMT_X]) * GMT->current.proj.DIST_KM_PR_DEG * c : (x - in[GMT_X]);
@@ -1494,18 +1491,14 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							/* Compute next height (add) it the untruncated version if -F is set (orig_add) */
 							add = grdseamount_height (Ctrl, this_r, rr, h_scale, f, exp_f, noise, &orig_add);
 							/* Both add and orig_add are normalized fractions of full seamount height */
+							z_assign = amplitude * add;		/* Height to be added to grid if no slide */
 							if (Ctrl->S.slide) {	/* Must handle the sector variation */
 								double s;
 								if (grdseamount_in_sector (GMT, Ctrl, Grid, in, row, col, &s)) {	/* Inside slide sector */
-									z_assign = amplitude * add;		/* Height to be added to grid if no slide */
-									/* If we are outside the radial slide range then grdseamount_slide returns DBL_MAX so the flank height is selected */
-									z_assign = MIN (z_assign, grdseamount_slide (GMT, Ctrl, this_r, rr, z_assign, s));
+									/* If we are outside the radial slide range then grdseamount_slide returns z_assign so the flank height is selected */
+									z_assign = grdseamount_slide (GMT, Ctrl, r_in, rr, z_assign, s);
 								}
-								else	/* Normal seamount flank height */
-									z_assign = amplitude * add;
 							}
-							else
-								z_assign = amplitude * add;
 							if (z_assign <= 0.0) continue;	/* No amplitude, so skip */
 							/* z_assign is the height to be added to the grid */
 							ij = gmt_M_ijp (Grid->header, row, col);	/* Current node location */
