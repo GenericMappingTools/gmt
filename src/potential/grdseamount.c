@@ -126,13 +126,13 @@ struct GRDSEAMOUNT_CTRL {
 		unsigned int bmode;
 		unsigned int fmode;
 	} Q;
-	struct GRDSEAMOUNT_S {	/* -S<h1>/<h2>[+u<u0>][+a<az1/az2>][+d<hc>][+q<pow>][+t<t0/t1>][+v<V%>] */
+	struct GRDSEAMOUNT_S {	/* -S<h1>/<h2>[+u<u0>][+a<az1/az2>][+d<hc>][+p<pow>][+t<t0/t1>][+v<V%>] */
 		bool active;
 		bool slide;
 		bool azimuthal;
 		bool v_fraction;
 		double value;	/* Deprecated -S<r_scale> */
-		double h1, h2, az1, az2, u0, t0, t1, q, v, hc;
+		double h1, h2, az1, az2, u0, t0, t1, p, v, hc;
 		double r1, r2, rc, rd;	/* These are computed from h1, h2, hc and Vs based on shape */
 	} S;
 	struct GRDSEAMOUNT_T {	/* -T[l]<t0>/<t1>/<d0>|n  */
@@ -170,7 +170,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->S.value = 1.0;
 	C->S.az2 = 120.0;
 	C->S.u0 = 0.2;
-	C->S.q = 5;
+	C->S.p = 5.0;
 	C->T.n_times = 1;
 	C->H.p = 1.0;	/* Linear density increase */
 	C->H.densify = 0.0;	/* No water-driven compaction on flanks */
@@ -193,7 +193,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s] "
 		"[-E] [-F[<flattening>]] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] [-K<densmodel>] "
-		"[-L[<hn>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<h1>/<h2>[+a<az1/az2>][+d<hc>][+q<pow>][+t<t0/t1>][+u<u0>][+v<V%>]] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] "
+		"[-L[<hn>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<h1>/<h2>[+a<az1/az2>][+d<hc>][+p<pow>][+t<t0/t1>][+u<u0>][+v<V%>]] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] "
 		"[%s] [-W%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_OUTGRID, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
@@ -250,11 +250,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "<bmode>: Build either (c)umulative [Default] or (i)ncremental volume through time.");
 	GMT_Usage (API, 3, "<fmode>: Assume a (g)aussian [Default] or (c)onstant volume flux distribution.");
 	GMT_Usage (API, -2, "Append +d to build grids with increments as uniform discs [Default gives exact shapes].");
-	GMT_Usage (API, 1, "\n-S<h1>/<h2>[+a<az1/az2>][+d<hc>][+q<pow>][+t<t0/t1>][+u<u0>][+v<V%>]");
+	GMT_Usage (API, 1, "\n-S<h1>/<h2>[+a<az1/az2>][+d<hc>][+p<pow>][+t<t0/t1>][+u<u0>][+v<V%>]");
 	GMT_Usage (API, -2, "Control how a sectoral landslide should look like.  Append the height range affected and select optional modifiers:");
 	GMT_Usage (API, 3, "+a Set the azimuthal sector range.");
 	GMT_Usage (API, 3, "+d Set the height of the start of the distal distributed deposit.");
-	GMT_Usage (API, 3, "+q Turn on azimuthal height variation and set power coefficient >= 2 [5].");
+	GMT_Usage (API, 3, "+p Turn on azimuthal height variation and set power coefficient >= 2 [5].");
 	GMT_Usage (API, 3, "+t Set time range over which the slide will develop.");
 	GMT_Usage (API, 3, "+u Set slide parameter u0 > 0 to affect slide profile [0.1].");
 	GMT_Usage (API, 3, "+v Set desired volume fraction of the slide relative to the entire seamount (in %). This will compute <u0>");
@@ -451,10 +451,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				if (strchr (opt->arg, '/')) {	/* Slide settings */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.slide);
 					Ctrl->S.slide = true;
-					if ((c = gmt_first_modifier (GMT, opt->arg, "adqtuv"))) {
+					if ((c = gmt_first_modifier (GMT, opt->arg, "adptuv"))) {
 						unsigned int pos = 0;
 						char txt[GMT_LEN256] = {""};
-						while (gmt_getmodopt (GMT, 'S', c, "adqtuv", &pos, txt, &n_errors) && n_errors == 0) {
+						while (gmt_getmodopt (GMT, 'S', c, "adptuv", &pos, txt, &n_errors) && n_errors == 0) {
 							switch (txt[0]) {
 								case 'a':	/* Get Azimuth band for slide */
 									if (sscanf (&txt[1], "%lg/%lg", &Ctrl->S.az1, &Ctrl->S.az2) != 2) {
@@ -465,8 +465,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 								case 'd':	/* Get distal start height */
 									Ctrl->S.hc = atof (&txt[1]);
 									break;
-								case 'q':	/* Get azimuthal power coefficient [5] and turn on azimuthal variation */
-									Ctrl->S.q = atof (&txt[1]);
+								case 'p':	/* Get azimuthal power coefficient [5] and turn on azimuthal variation */
+									Ctrl->S.p = atof (&txt[1]);
 									Ctrl->S.azimuthal = true;
 									break;
 								case 't':	/* Get time-window for slide */
@@ -551,7 +551,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.rho_l > Ctrl->H.rho_h, "Option -H: Low density cannot exceed the high density\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.H <= 0.0, "Option -H: Reference seamount height must be positive\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->C.input, "Option -C: Cannot read from trailing text if binary input is selected\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S.azimuthal && Ctrl->S.q < 2.0, "Option -S: Azimuthal power coefficient set with +p must be >= 2 [5]\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.azimuthal && Ctrl->S.p < 2.0, "Option -S: Azimuthal power coefficient set with +p must be >= 2 [5]\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.v < 0.0 || Ctrl->S.v >= 100.0, "Option -S: Volume fraction must be less than 100%%\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.h1 > Ctrl->S.h2 , "Option -S: Scarp height h2 must exceed h1\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.hc > Ctrl->S.h1, "Option -S: Distal slump height hc cannot exceed h1\n");
@@ -783,7 +783,7 @@ GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_C
 		in_sector = true;
 		if (Ctrl->S.azimuthal) {	/* Evaluate scale */
 			double gamma = fabs (2.0 * (az - Ctrl->S.az1) / (Ctrl->S.az2 - Ctrl->S.az1) - 1.0);
-			*s = pow (gamma, Ctrl->S.q);
+			*s = pow (gamma, Ctrl->S.p);
 		}
 	}
 
@@ -795,14 +795,15 @@ GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTR
 	 * s is the azimuthal scale which is 0 if no azimuth variation was requested. */
 	double u, this_r = r * r_km, q, hs, h;
 	gmt_M_unused (GMT);
-	if (this_r < Ctrl->S.r1) return DBL_MAX;	/* Outside range, return a huge value so MIN will pick the other value */
-	if (this_r > Ctrl->S.rd) return DBL_MAX;	/* Outside distal range, return a huge value so MIN will pick the other value */
-	if (this_r > Ctrl->S.rc) {	/* In the distal range for redeposit of slide material */
-		h = Ctrl->S.hc * (this_r - Ctrl->S.rc) / (Ctrl->S.rd - Ctrl->S.rc);
+	if (this_r < Ctrl->S.r2) return DBL_MAX;	/* Before slide range, return a huge value so MIN will pick the regular height */
+	if (this_r > Ctrl->S.rd) return DBL_MAX;	/* Beyond distal range, return a huge value so MIN will pick the other height (which will be zero) */
+	if (this_r > Ctrl->S.rc) {	/* In the distal range for redeposit of slide material with thickness h_d(r) */
+		h = Ctrl->S.hc * (1.0 - (this_r - Ctrl->S.rc) / (Ctrl->S.rd - Ctrl->S.rc));
 		return (h);
 	}
-	if (this_r > Ctrl->S.r2) return DBL_MAX;	/* Between foot of slide and toe of deposit, same */
-	u = ((this_r - Ctrl->S.r1) / (Ctrl->S.r2 - Ctrl->S.r1));	/* Normalized radial u inside the slide range of 0-1 */
+	if (this_r > Ctrl->S.r1) return DBL_MAX;	/* Between foot of slide and toe of deposit, return a huge value so MIN will pick the regular height */
+	/* Here we are within the slide radial range */
+	u = ((this_r - Ctrl->S.r2) / (Ctrl->S.r1 - Ctrl->S.r2));	/* Normalized radial u inside the slide range of 0-1 */
 	q = Ctrl->S.u0 * ((1.0 + Ctrl->S.u0) / (u + Ctrl->S.u0) - 1.0);	/* Normalized slide shape function q(u) */
 	hs = Ctrl->S.h1 + (Ctrl->S.h2 - Ctrl->S.h1) * q;	/* Slide height scaled to actual topography */
 	h = hf * s + (1.0 - s) * hs;	/* Handle azimuthal variation (if any) by blending flank and slide heights using s(alpha) */

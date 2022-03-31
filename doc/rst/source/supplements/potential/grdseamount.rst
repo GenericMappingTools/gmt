@@ -27,7 +27,7 @@ Synopsis
 [ |-M|\ [*list*] ]
 [ |-N|\ *norm* ]
 [ |-Q|\ *bmode*/*fmode*\ [**+d**] ]
-[ |-S|\ *h1*/*h2*\ [**+a**\ *az1*/*az2*][**+d**\ *hc*][**+q**\ *power*][**+t**\ *t0*/*t1*][**+u**\ *u0*][**+v**\ *phi*] ]
+[ |-S|\ *h1*/*h2*\ [**+a**\ *az1*/*az2*][**+d**\ *hc*][**+p**\ *power*][**+t**\ *t0*/*t1*][**+u**\ *u0*][**+v**\ *phi*] ]
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ [**+l**] ]
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
@@ -226,10 +226,10 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *h1*/*h2*\ [**+a**\ *az1*/*az2*][**+d**\ *hc*][**+q**\ *power*][**+t**\ *t0*/*t1*][**+u**\ *u0*][**+v**\ *phi*]
+**-S**\ *h1*/*h2*\ [**+a**\ *az1*/*az2*][**+d**\ *hc*][**+p**\ *power*][**+t**\ *t0*/*t1*][**+u**\ *u0*][**+v**\ *phi*]
     Sets parameters controlling a sectoral land slide.  Append the lower and upper heights of the landslide scarps, then
     select from various modifiers: **+a** sets the azimuthal sector affected by the slide [0/120], **+d** sets the height of the
-    distal deposit at the toe of the seamount [*h1*/2], **+q** activates azimuthal variation in slide height and sets the power
+    distal deposit at the toe of the seamount [*h1*/2], **+p** activates azimuthal variation in slide height and sets the power
     parameter *power > 2* [5], **+t** sets the time span over which the slides develops, **+u** sets slide shape parameter
     *u0 > 0* [0.2], and **+v** sets the desired fractional volume of the slide (in percent) relative to the entire seamount.
     **Note**: If **+v** is set we will compute the required *u0* so if you set that value it will be overridden.
