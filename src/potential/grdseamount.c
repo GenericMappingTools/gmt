@@ -553,7 +553,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->C.input, "Option -C: Cannot read from trailing text if binary input is selected\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.azimuthal && Ctrl->S.q < 2.0, "Option -S: Azimuthal power coefficient set with +p must be >= 2 [5]\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.v < 0.0 || Ctrl->S.v >= 100.0, "Option -S: Volume fraction must be less than 100%%\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S.h2 > Ctrl->S.h1 , "Option -S: Scarp height h2 must exceed h1\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.h1 > Ctrl->S.h2 , "Option -S: Scarp height h2 must exceed h1\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.hc > Ctrl->S.h1, "Option -S: Distal slump height hc cannot exceed h1\n");
 		if (GMT->common.b.active[GMT_IN] && Ctrl->T.active)
 			GMT_Report (API, GMT_MSG_WARNING, "Option -T: Seamount start end times via binary input area assumed to be in years\n");
@@ -809,13 +809,13 @@ GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTR
 	return(h);
 }
 
-GMT_LOCAL double grdseamount_height (struct GRDSEAMOUNT_CTRL *Ctrl, double this_r, double rr, double h_scale, double f, double noise, double *orig_add) {
+GMT_LOCAL double grdseamount_height (struct GRDSEAMOUNT_CTRL *Ctrl, double this_r, double rr, double h_scale, double f, double f_exp, double noise, double *orig_add) {
 	/* Return the height of the seamount at this normalized radius rr */
 	double add;
 	if (Ctrl->C.mode == SHAPE_CONE) {	/* Circular cone case */
 		if (rr < 1.0) {	/* Since in minor direction rr may exceed 1 and be outside the ellipse */
 			*orig_add = (1.0 - rr) * h_scale;
-			add = (rr < Ctrl->F.value) ? 1.0 : *orig_add;
+			add = (rr < f) ? 1.0 : *orig_add;
 		}
 		else
 			*orig_add = add = 0.0;
@@ -824,15 +824,15 @@ GMT_LOCAL double grdseamount_height (struct GRDSEAMOUNT_CTRL *Ctrl, double this_
 		*orig_add = add = (rr <= 1.0) ? 1.0 : 0.0;
 	else if (Ctrl->C.mode == SHAPE_PARA) {	/* Circular parabolic case */
 		*orig_add = (1.0 - rr*rr) * h_scale;
-		add = (rr < Ctrl->F.value) ? 1.0 : *orig_add;
+		add = (rr < f) ? 1.0 : *orig_add;
 	}
 	else if (Ctrl->C.mode == SHAPE_POLY) {	/* Circular parabolic case */
 		*orig_add = poly_smt_func (rr) * h_scale;
-		add = (rr < Ctrl->F.value) ? 1.0 : *orig_add;
+		add = (rr < f) ? 1.0 : *orig_add;
 	}
 	else {	/* Circular Gaussian case */
-		*orig_add = exp (f * this_r * this_r) * h_scale - noise;
-		add = (rr < Ctrl->F.value) ? 1.0 : *orig_add;
+		*orig_add = exp (f_exp * this_r * this_r) * h_scale - noise;
+		add = (rr < f) ? 1.0 : *orig_add;
 	}
 	return (add);
 }
@@ -987,7 +987,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM = 0.0, v_curr, v_prev, *V = NULL;
 	double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch, prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf;
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL, g_noise = exp (-4.5), g_scl = 1.0 / (1.0 - g_noise), phi_prev, phi_curr;
-	double orig_add, dz, h_orig, rho_z, sum_rz, sum_z;
+	double orig_add, dz, h_orig, rho_z, sum_rz, sum_z, exp_f;
 	void (*shape_func[N_SHAPES]) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
 	double (*pappas_func[N_SHAPES]) (double r0, double h0, double f, double r1, double r2);
 	double (*phi_solver[N_SHAPES]) (double in[], double f, double v, bool elliptical);
@@ -1020,9 +1020,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdseamount main code ----------------------------*/
 
+	f = Ctrl->F.value;
 	inc_mode = Ctrl->C.mode;
 	if (Ctrl->K.active) {
-		/* Here we create the crossection of a normalized reference seamount that goes from
+		/* Here we create the cross-section of a normalized reference seamount that goes from
 		 * -1 to +1 in x and 0-1 in y (height).  Using steps of 0.005 to yield a 401 x 201 grid
 		 * with densities inside the seamount and NaN outside */
 		double range[4] = {-1.0, 1.0, 0.0, 1.0}, inc[2] = {0.005, 0.005};
@@ -1033,13 +1034,13 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		switch (inc_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
-			case SHAPE_CONE:  h_scale = 1.0 / (1.0 - Ctrl->F.value); break;
+			case SHAPE_CONE:  h_scale = 1.0 / (1.0 - f); break;
 			case SHAPE_DISC:  h_scale = 1.0; break;
-			case SHAPE_PARA:  h_scale = 1.0 / (1.0 - Ctrl->F.value * Ctrl->F.value); break;
-			case SHAPE_POLY:  h_scale = 1.0 / poly_smt_func (Ctrl->F.value); break;
-			case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * Ctrl->F.value * Ctrl->F.value); break;
+			case SHAPE_PARA:  h_scale = 1.0 / (1.0 - f * f); break;
+			case SHAPE_POLY:  h_scale = 1.0 / poly_smt_func (f); break;
+			case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * f * f); break;
 		}
-		/* Note: We use the unflattened hight since the guyot shape happened due to erosion later */
+		/* Note: We use the un-flattened height since the guyot shape happened due to erosion later */
 		for (col = 0; col < Model->header->n_columns; col++) {
 			rr = fabs (Model->x[col]);	/* Now in 0-1 range */
 			if (inc_mode == SHAPE_CONE)	/* Circular cone case */
@@ -1197,21 +1198,21 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					a = in[3];		/* Semi-major axis */
 					b = in[4];		/* Semi-minor axis */
 					amplitude = in[5];	/* Seamount max height from base */
-					if (Ctrl->F.mode == TRUNC_FILE) Ctrl->F.value = in[6];	/* Flattening given via input file */
+					if (Ctrl->F.mode == TRUNC_FILE) f = in[6];	/* Flattening given via input file */
 				}
 				else {	/* Circular features */
 					a = b = in[2];		/* Radius in m */
 					amplitude = in[3];	/* Seamount max height from base */
-					if (Ctrl->F.mode == TRUNC_FILE) Ctrl->F.value = in[4];	/* Flattening given via input file */
+					if (Ctrl->F.mode == TRUNC_FILE) f = in[4];	/* Flattening given via input file */
 				}
-				if (Ctrl->F.mode == TRUNC_FILE && (Ctrl->F.value < 0.0 || Ctrl->F.value >= 1.0)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Flattening outside valid range 0-1 (%g)!\n", Ctrl->F.value);
+				if (Ctrl->F.mode == TRUNC_FILE && (f < 0.0 || f >= 1.0)) {
+					GMT_Report (API, GMT_MSG_ERROR, "Flattening outside valid range 0-1 (%g)!\n", f);
 					API->error = GMT_RUNTIME_ERROR;
 					goto wrap_up;
 				}
 				c = (map) ? cosd (in[GMT_Y]) : 1.0;	/* Flat Earth scaling factor */
 				/* Compute area, volume, mean amplitude */
-				shape_func[build_mode] (a, b, amplitude, Ctrl->L.value, Ctrl->F.value, &area, &volume, &height);
+				shape_func[build_mode] (a, b, amplitude, Ctrl->L.value, f, &area, &volume, &height);
 				V[n_smts] = volume;
 				h[n_smts] = amplitude;
 				if (map) {	/* Report values in km^2, km^3, and m */
@@ -1346,8 +1347,6 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								goto wrap_up;
 							}
 						}
-						else
-							f = Ctrl->F.value;
 						h0 = (Ctrl->E.active) ? in[5] : in[3];
 						if (Ctrl->Q.disc) {	/* Obtain the equivalent disc parameters given the volumes found */
 							phi_curr = phi_solver[build_mode] (in, f, v_curr, Ctrl->E.active);
@@ -1402,34 +1401,34 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						r_km = b * Ctrl->S.value;	/* Scaled semi-minor axis in user units (Cartesian or km) */
 						r = r_km;
 						if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
-						f = -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
-						A = f * (e2 * ca2 + sa2);	/* Elliptical components A, B, C needed to evaluate radius(az) */
-						B = -f * (sa * ca * (1.0 - e2));
-						C = f * (e2 * sa2 + ca2);
+						exp_f = -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
+						A = exp_f * (e2 * ca2 + sa2);	/* Elliptical components A, B, C needed to evaluate radius(az) */
+						B = -exp_f * (sa * ca * (1.0 - e2));
+						C = exp_f * (e2 * sa2 + ca2);
 						r_in = a;			/* Semi-major axis in user units (Cartesian or km)*/
 						r_km = r_in * Ctrl->S.value;	/* Scaled semi-major axis in user units (Cartesian or km) */
 						r = r_km;			/* Copy of r_km */
 						if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
 						h_orig = in[5];					/* Seamount max height from base */
-						if (Ctrl->F.mode == TRUNC_FILE) Ctrl->F.value = in[6];	/* Flattening given by input file */
+						if (Ctrl->F.mode == TRUNC_FILE) f = in[6];	/* Flattening given by input file */
 					}
 					else {	/* Circular features */
 						r_in = a = b = scale_curr * in[GMT_Z];	/* Radius in user units */
 						r_km = r_in * Ctrl->S.value;	/* Scaled up by user scale */
 						r = r_km;			/* Copy of r_km */
 						if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
-						f = (inc_mode == SHAPE_CONE) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
+						exp_f = (inc_mode == SHAPE_CONE) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
 						h_orig = in[3];					/* Seamount max height from base */
-						if (Ctrl->F.mode == TRUNC_FILE) Ctrl->F.value = in[4];	/* Flattening given by input file */
+						if (Ctrl->F.mode == TRUNC_FILE) f = in[4];	/* Flattening given by input file */
 					}
 					amplitude = scale_curr * h_orig;		/* Seamount max height from base */
 
 					switch (inc_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
-						case SHAPE_CONE:  h_scale = 1.0 / (1.0 - Ctrl->F.value); break;
+						case SHAPE_CONE:  h_scale = 1.0 / (1.0 - f); break;
 						case SHAPE_DISC:  h_scale = 1.0; break;
-						case SHAPE_PARA:  h_scale = 1.0 / (1.0 - Ctrl->F.value * Ctrl->F.value); break;
-						case SHAPE_POLY:  h_scale = 1.0 / poly_smt_func (Ctrl->F.value); break;
-						case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * Ctrl->F.value * Ctrl->F.value); break;
+						case SHAPE_PARA:  h_scale = 1.0 / (1.0 - f * f); break;
+						case SHAPE_POLY:  h_scale = 1.0 / poly_smt_func (f); break;
+						case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * f * f); break;
 					}
 					if (inc_mode == SHAPE_GAUS) h_scale *= g_scl;	/* Adjust for the fact we only go to -/+ 3 sigma and not infinity */
 					if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
@@ -1492,7 +1491,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 								rr = this_r / r_km;	/* Now in 0-1 range */
 
 							/* Compute next height (add) it the untruncated version if -F is set (orig_add) */
-							add = grdseamount_height (Ctrl, this_r, rr, h_scale, f, noise, &orig_add);
+							add = grdseamount_height (Ctrl, this_r, rr, h_scale, f, exp_f, noise, &orig_add);
 							/* Both add and orig_add are normalized fractions of full seamount height */
 							if (Ctrl->S.slide) {	/* Must handle the sector variation */
 								double s;
