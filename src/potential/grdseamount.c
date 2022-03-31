@@ -103,7 +103,7 @@ struct GRDSEAMOUNT_CTRL {
 	struct GRDSEAMOUNT_I {	/* -I (for checking only) */
 		bool active;
 	} I;
-	struct GRDSEAMOUNT_L {	/* -L[<hcut>] */
+	struct GRDSEAMOUNT_L {	/* -L[<hn>] */
 		bool active;
 		unsigned int mode;
 		double value;
@@ -126,14 +126,14 @@ struct GRDSEAMOUNT_CTRL {
 		unsigned int bmode;
 		unsigned int fmode;
 	} Q;
-	struct GRDSEAMOUNT_S {	/* -S<h1>/<h2>[+u<u0>][+a<az1/az2>][+d<hcut>][+p<pow>][+t<t0/t1>][+v<V%>] */
+	struct GRDSEAMOUNT_S {	/* -S<h1>/<h2>[+u<u0>][+a<az1/az2>][+d<hc>][+q<pow>][+t<t0/t1>][+v<V%>] */
 		bool active;
 		bool slide;
 		bool azimuthal;
 		bool v_fraction;
 		double value;	/* Deprecated -S<r_scale> */
-		double h1, h2, az1, az2, u0, t0, t1, p, v, hcut;
-		double r1, r2, rcut, rd;	/* These are computed from h1, h2, hcut and Vs based on shape */
+		double h1, h2, az1, az2, u0, t0, t1, q, v, hc;
+		double r1, r2, rc, rd;	/* These are computed from h1, h2, hc and Vs based on shape */
 	} S;
 	struct GRDSEAMOUNT_T {	/* -T[l]<t0>/<t1>/<d0>|n  */
 		bool active, log;
@@ -170,7 +170,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->S.value = 1.0;
 	C->S.az2 = 120.0;
 	C->S.u0 = 0.2;
-	C->S.p = 5;
+	C->S.q = 5;
 	C->T.n_times = 1;
 	C->H.p = 1.0;	/* Linear density increase */
 	C->H.densify = 0.0;	/* No water-driven compaction on flanks */
@@ -193,7 +193,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s] "
 		"[-E] [-F[<flattening>]] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] [-K<densmodel>] "
-		"[-L[<hcut>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<h1>/<h2>[+a<az1/az2>][+d<hcut>][+p<pow>][+t<t0/t1>][+u<u0>][+v<V%>]] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] "
+		"[-L[<hn>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<h1>/<h2>[+a<az1/az2>][+d<hc>][+q<pow>][+t<t0/t1>][+u<u0>][+v<V%>]] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] "
 		"[%s] [-W%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_OUTGRID, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
@@ -237,9 +237,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+p Exponential <power> coefficient (> 0) for density change with burial depth [1 (linear)].");
 	GMT_Usage (API, 1, "\n-K<densmodel>");
 	GMT_Usage (API, -2, "Write a 2-D crossection showing variable seamount densities [no grid written].");
-	GMT_Usage (API, 1, "\n-L[<hcut>]");
+	GMT_Usage (API, 1, "\n-L[<hn>]");
 	GMT_Usage (API, -2, "List area, volume, and mean height for each seamount; No grid is created so -R -I are not required. "
-		"Optionally, append the noise-floor cutoff level [0].");
+		"Optionally, append the noise-floor cutoff level <hn> [0].");
 	GMT_Usage (API, 1, "\n-M[<list>]");
 	GMT_Usage (API, -2, "Give filename for output table with names of all grids produced. "
 		"If no filename is given then we write the list to standard output.");
@@ -250,11 +250,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "<bmode>: Build either (c)umulative [Default] or (i)ncremental volume through time.");
 	GMT_Usage (API, 3, "<fmode>: Assume a (g)aussian [Default] or (c)onstant volume flux distribution.");
 	GMT_Usage (API, -2, "Append +d to build grids with increments as uniform discs [Default gives exact shapes].");
-	GMT_Usage (API, 1, "\n-S<h1>/<h2>[+a<az1/az2>][+d<hcut>][+p<pow>][+t<t0/t1>][+u<u0>][+v<V%>]");
+	GMT_Usage (API, 1, "\n-S<h1>/<h2>[+a<az1/az2>][+d<hc>][+q<pow>][+t<t0/t1>][+u<u0>][+v<V%>]");
 	GMT_Usage (API, -2, "Control how a sectoral landslide should look like.  Append the height range affected and select optional modifiers:");
 	GMT_Usage (API, 3, "+a Set the azimuthal sector range.");
 	GMT_Usage (API, 3, "+d Set the height of the start of the distal distributed deposit.");
-	GMT_Usage (API, 3, "+p Turn on azimuthal height variation and set power coefficient >= 2 [5].");
+	GMT_Usage (API, 3, "+q Turn on azimuthal height variation and set power coefficient >= 2 [5].");
 	GMT_Usage (API, 3, "+t Set time range over which the slide will develop.");
 	GMT_Usage (API, 3, "+u Set slide parameter u0 > 0 to affect slide profile [0.1].");
 	GMT_Usage (API, 3, "+v Set desired volume fraction of the slide relative to the entire seamount (in %). This will compute <u0>");
@@ -451,10 +451,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				if (strchr (opt->arg, '/')) {	/* Slide settings */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.slide);
 					Ctrl->S.slide = true;
-					if ((c = gmt_first_modifier (GMT, opt->arg, "adptuv"))) {
+					if ((c = gmt_first_modifier (GMT, opt->arg, "adqtuv"))) {
 						unsigned int pos = 0;
 						char txt[GMT_LEN256] = {""};
-						while (gmt_getmodopt (GMT, 'S', c, "adptuv", &pos, txt, &n_errors) && n_errors == 0) {
+						while (gmt_getmodopt (GMT, 'S', c, "adqtuv", &pos, txt, &n_errors) && n_errors == 0) {
 							switch (txt[0]) {
 								case 'a':	/* Get Azimuth band for slide */
 									if (sscanf (&txt[1], "%lg/%lg", &Ctrl->S.az1, &Ctrl->S.az2) != 2) {
@@ -463,10 +463,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 									}
 									break;
 								case 'd':	/* Get distal start height */
-									Ctrl->S.hcut = atof (&txt[1]);
+									Ctrl->S.hc = atof (&txt[1]);
 									break;
-								case 'p':	/* Get azimuthal power coefficient [5] and turn on azimuthal variation */
-									Ctrl->S.p = atof (&txt[1]);
+								case 'q':	/* Get azimuthal power coefficient [5] and turn on azimuthal variation */
+									Ctrl->S.q = atof (&txt[1]);
 									Ctrl->S.azimuthal = true;
 									break;
 								case 't':	/* Get time-window for slide */
@@ -493,8 +493,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unable to parse the two height values for slide\n");
 						n_errors++;
 					}
-					else if (Ctrl->S.hcut == 0.0)	/* Set the default value */
-						Ctrl->S.hcut = 0.5 * Ctrl->S.h1;
+					else if (Ctrl->S.hc == 0.0)	/* Set the default value */
+						Ctrl->S.hc = 0.5 * Ctrl->S.h1;
 					if (c) c[0] = '+';	/* Restore modifiers */
 				}
 				else {	/* Deprecated radial scaling */
@@ -551,8 +551,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.rho_l > Ctrl->H.rho_h, "Option -H: Low density cannot exceed the high density\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.H <= 0.0, "Option -H: Reference seamount height must be positive\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->C.input, "Option -C: Cannot read from trailing text if binary input is selected\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S.azimuthal && Ctrl->S.p < 2.0, "Option -S: Azimuthal power coefficient set with +p must be >= 2 [5]\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.azimuthal && Ctrl->S.q < 2.0, "Option -S: Azimuthal power coefficient set with +p must be >= 2 [5]\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.v < 0.0 || Ctrl->S.v >= 100.0, "Option -S: Volume fraction must be less than 100%%\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.h2 > Ctrl->S.h1 , "Option -S: Scarp height h2 must exceed h1\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.hc > Ctrl->S.h1, "Option -S: Distal slump height hc cannot exceed h1\n");
 		if (GMT->common.b.active[GMT_IN] && Ctrl->T.active)
 			GMT_Report (API, GMT_MSG_WARNING, "Option -T: Seamount start end times via binary input area assumed to be in years\n");
 	}
@@ -781,7 +783,7 @@ GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_C
 		in_sector = true;
 		if (Ctrl->S.azimuthal) {	/* Evaluate scale */
 			double gamma = fabs (2.0 * (az - Ctrl->S.az1) / (Ctrl->S.az2 - Ctrl->S.az1) - 1.0);
-			*s = pow (gamma, Ctrl->S.p);
+			*s = pow (gamma, Ctrl->S.q);
 		}
 	}
 
@@ -795,8 +797,8 @@ GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTR
 	gmt_M_unused (GMT);
 	if (this_r < Ctrl->S.r1) return DBL_MAX;	/* Outside range, return a huge value so MIN will pick the other value */
 	if (this_r > Ctrl->S.rd) return DBL_MAX;	/* Outside distal range, return a huge value so MIN will pick the other value */
-	if (this_r > Ctrl->S.rcut) {	/* In the distal range for redeposit of slide material */
-		h = Ctrl->S.hcut * (this_r - Ctrl->S.rcut) / (Ctrl->S.rd - Ctrl->S.rcut);
+	if (this_r > Ctrl->S.rc) {	/* In the distal range for redeposit of slide material */
+		h = Ctrl->S.hc * (this_r - Ctrl->S.rc) / (Ctrl->S.rd - Ctrl->S.rc);
 		return (h);
 	}
 	if (this_r > Ctrl->S.r2) return DBL_MAX;	/* Between foot of slide and toe of deposit, same */
@@ -835,77 +837,87 @@ GMT_LOCAL double grdseamount_height (struct GRDSEAMOUNT_CTRL *Ctrl, double this_
 	return (add);
 }
 
+/* The derivations behind these expressions are in sandbox/gurudocs/slides.tex */
+
 GMT_LOCAL double grdseamount_cone_pappas (double r0, double h0, double f, double r1, double r2) {
 	/* Compute flank crossectional area and centroid distance from axis for a cone model and return volume via Pappas */
-	double dr = r2 - r1, Af, rf;
-	Af = (h0 * dr * dr) / (2.0 * r0 * (1 - f));
-	rf = (2.0 * r2 + r1) / 12.0;
+	double K, Af, rf, uf, u1 = r1 / r0, u2 = r2 / r0;
+	K = u1 - u2 - 0.5 * (pow (u1, 2.0) - pow (u2, 2.0));
+	uf = (3.0 * (pow (u1, 2.0) - pow (u2, 2.0)) - 2.0 * (pow (u1, 3.0) - pow (u2, 3.0))) / (6.0 * K);
+	Af = K * h0 * r0 / (1 - f);
+	rf = r0 * uf;
 	return (TWO_PI * Af * rf);
 }
 
 GMT_LOCAL double grdseamount_para_pappas (double r0, double h0, double f, double r1, double r2) {
 	/* Compute flank crossectional area and centroid distance from axis for a parabolic model and return volume via Pappas */
-	double r12 = r1 * r1, r22 = r2 * r2, Af, rf;
-	Af = (h0 * (r12 * r1 - 3.0 * r12 * r2 + 2.0 * r22 * r2)) / (6.0 * r0 * r0 * (1.0 - f));
-	rf = (r22 - r12) / (24.0 * (r12 * r1 - 3.0 * r12 * r2 + 2.0 * r22 * r2));
+	double K, Af, rf, uf, u1 = r1 / r0, u2 = r2 / r0;
+	K = u1 - u2 - (pow (u1, 3.0) - pow (u2, 3.0)) / 3.0;
+	uf = (2.0 * (pow (u1, 2.0) - pow (u2, 2.0)) - (pow (u1, 4.0) - pow (u2, 4.0))) / (4.0 * K);
+	Af = K * h0 * r0 / (1 - f*f);
+	rf = r0 * uf;
 	return (TWO_PI * Af * rf);
 }
 
 GMT_LOCAL double grdseamount_gauss_pappas (double r0, double h0, double f, double r1, double r2) {
 	/* Compute flank crossectional area and centroid distance from axis for a Gaussian model and return volume via Pappas */
-	double u1 = r1 / r0, u2 = r2 / r0, c = 0.5 * 3 * sqrt (2.0), num, den, Af, rf;
-	Af = h0 * r0 * exp (4.5 * f * f) * ((sqrt (TWO_PI)/6.0) * (erf (c * u2) - erf (c * u1)) - (u1 - u2) * exp (-4.5 * u1 * u1));
-	num = (exp (-4.5 * u2 * u2) - exp (-4.5 * u1 * u1)) / 9.0 - 0.5 * (u1 * u1 - u2 * u2) * exp (-4.5 * u1 * u1);
-	den = (sqrt (TWO_PI)/6.0) * (erf (c * u2) - erf (c * u1)) - (u1 - u2) * exp (-4.5 * u1 * u1);
-	rf = r0 * num / den;
+	double K, Af, rf, uf, u1 = r1 / r0, u2 = r2 / r0, c = 3.0 * sqrt (2) / 2.0;
+	K = sqrt (TWO_PI) * (erf (c * u1) - erf (c * u2)) / 6.0;
+	uf = (exp (-4.5 * pow (u2, 2.0)) - exp (-4.5 * pow (u1, 2.0))) / (9.0 * K);
+	Af = K * h0 * r0 * exp (4.5 * f * f);
+	rf = r0 * uf;
 	return (TWO_PI * Af * rf);
 }
 
 GMT_LOCAL double grdseamount_poly_pappas (double r0, double h0, double f, double r1, double r2) {
 	/* Compute flank crossectional area and centroid distance from axis for a polynomial model and return volume via Pappas */
-	double u1 = r1 / r0, u2 = r2 / r0, p_u1 = poly_smt_func (u1), c = sqrt (3) / 3.0, num, den, L, T, Af, rf;
-	L = 1.5 * log ((u1 * u1 - u1 + 1) / (u2 * u2 - u2 + 1));
+	double K, Af, rf, uf, u1 = r1 / r0, u2 = r2 / r0, c = sqrt (3) / 3.0, L, T;
+	L = 1.5 * log ((pow (u1, 2.0) - u1 + 1) / (pow (u2, 2.0) - u2 + 1));
 	T = sqrt (3) * (atan (c * (2 * u1 - 1)) - atan (c * (2 * u2 - 1)));
-	Af = (h0 * r0 / poly_smt_func (f)) * ((u1 - u2) * (1 - p_u1) + 1.5 * (u1 * u1 - u2 * u2) - 0.25 * (pow (u1, 4.0) - pow (u2, 4.0)) - L - T);
-	num = (-3.0 * (u1 - u2) + 0.5 * (1 - p_u1) * (u1 * u1 - u2 * u2) + (pow (u1, 3.0) - pow (u2, 3.0)) - 0.2 * (pow (u1, 5.0) - pow (u2, 5.0)) - L + T);
-	den = (u1 - u2) * (1 - p_u1) + 1.5 * (u1 * u1 - u2 * u2) - 0.25 * (pow (u1, 4.0) - pow (u2, 4.0)) - L - T;
-	rf = r2 + (r1 - r2) * num / den;
+	K = u1 - u2 + 1.5 * (pow (u1, 2.0) - pow (u2, 2.0)) - 0.25 * (pow (u1, 4.0) - pow (u2, 4.0)) - L - T;
+	uf = (-3.0 * (u1 - u2) + 0.5 * (pow (u1, 2.0) - pow (u2, 2.0)) + (pow (u1, 3.0) - pow (u2, 3.0)) - 0.2 * (pow (u1, 5.0) - pow (u2, 5.0)) - L + T) / K;
+	Af = K * h0 * r0 / poly_smt_func (f);
+	rf = r0 * uf;
 	return (TWO_PI * Af * rf);
 }
 
 GMT_LOCAL double ubar (double u0) {
-	/* Compute mean u via equation (6) */
+	/* Compute mean u_s^u via equation (6) */
 	double u0_1 = 1.0 + u0;
 	return (2.0 * u0_1 * (1.0 - u0 * log (u0_1 / u0)) - 1.0) / (u0_1 * log (u0_1 / u0) - 1.0);
 }
 
-GMT_LOCAL double grdseamount_pappas_slide (double r1, double r2, double dh, double u0) {
+GMT_LOCAL double grdseamount_pappas_slide (struct GRDSEAMOUNT_CTRL *Ctrl, double u0) {
 	/* Compute flank crossectional area and centroid distance from axis for the slide model and return volume via Pappas.
-	 * Here dh = h2 - h1 */
-	double dr = r1 - r2, u0_1 = 1.0 + u0, Af, rf;
-	Af = dh * dr * u0 * (u0_1 * log (u0_1 / u0) - 1.0);
-	rf = r2 + dr * ubar (u0);
-	return (TWO_PI * Af * rf);
+	 * Here dh = h2 - h1. We split solution into upper (u) and lower (l) portions */
+	double dr = Ctrl->S.r1 - Ctrl->S.r2, dh = Ctrl->S.h2 - Ctrl->S.h1, u0_1 = 1.0 + u0, As_u, rs_u, As_l, rs_l;
+	As_u = dh * dr * u0 * (u0_1 * log (u0_1 / u0) - 1.0);
+	rs_u = Ctrl->S.r2 + dr * ubar (u0);
+	As_l = dr * Ctrl->S.h1;	/* Area of lower pedestal */
+	rs_l = 0.5 * (Ctrl->S.r1 + Ctrl->S.r2);
+	return (TWO_PI * (As_u * rs_u + As_l * rs_l));
 }
 
-GMT_LOCAL double grdseamount_distal_r (double rc, double hc, double Vs) {
+GMT_LOCAL double grdseamount_distal_r (struct GRDSEAMOUNT_CTRL *Ctrl, double Vs) {
 	/* Return the radial distance to the end of the distal slide deposit */
-	double c = 3.0 * Vs / (M_PI * hc);
-	double rd = 0.5 * (sqrt (rc*rc + 4 * c) - rc);
+	double c = 3.0 * Vs / (M_PI * Ctrl->S.hc);
+	double rd = 0.5 * (sqrt (Ctrl->S.rc*Ctrl->S.rc + 4.0 * c) - Ctrl->S.rc);
 	return (rd);
 }
 
-GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double r1, double r2, double dh, double Vf, double V0) {
+GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double Vf, double V0) {
 	/* Determine the tuning parameter u0 that yields the specified slide fraction */
-	double dr = r1 - r2, rhs = (Vf - Ctrl->S.v * V0) / (TWO_PI * dh * dr);
+
+	double dr = Ctrl->S.r1 - Ctrl->S.r2, dh = Ctrl->S.h2 - Ctrl->S.h1;
+	double rhs = 0.5 * ((Vf - Ctrl->S.v * V0) / (M_PI * dr) - Ctrl->S.h1 * (Ctrl->S.r1 + Ctrl->S.r2)) / dh;
 	double u0_next, u0_1, du, u0 = 0.1;	/* Trial value */
 	int n_iter = 0;
 	gmt_M_unused (GMT);
 
-	/* Iterate on equation (14) to solve for optimal u0 */
+	/* Iterate on equation (16) to solve for optimal u0 */
 	do {
 		u0_1 = 1.0 + u0;
-		u0_next = rhs / ((r1 + dr * ubar (u0)) * (u0_1 * log (u0_1 / u0) - 1.0));
+		u0_next = rhs / ((Ctrl->S.r2 + dr * ubar (u0)) * (u0_1 * log (u0_1 / u0) - 1.0));
 		du = fabs (u0_next - u0);
 		n_iter++;
 	} while (du > GMT_CONV12_LIMIT && n_iter < 50);
@@ -1423,18 +1435,18 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
 
 					if (Ctrl->S.slide) {	/* Compute the radii needed for slide calculations below. ASSUMES CIRCULAR FOR NOW */
-						double Vf, Vs, Vq, dh = Ctrl->S.h2 - Ctrl->S.h1, u0 = Ctrl->S.u0;
+						double Vf, Vs, Vq, u0 = Ctrl->S.u0;
 						Ctrl->S.r1   = grdseamount_r_from_h (build_mode, Ctrl->S.h1,   r_in, h_orig, f);
 						Ctrl->S.r2   = grdseamount_r_from_h (build_mode, Ctrl->S.h2,   r_in, h_orig, f);
-						Ctrl->S.rcut = grdseamount_r_from_h (build_mode, Ctrl->S.hcut, r_in, h_orig, f);
+						Ctrl->S.rc = grdseamount_r_from_h (build_mode, Ctrl->S.hc, r_in, h_orig, f);
 						Vf = pappas_func[build_mode] (r_in, h_orig, f, Ctrl->S.r1, Ctrl->S.r2);	/* Volume beneath flank surface for given shape */
-						if (Ctrl->S.v_fraction) {	/* Must compute u0 to match specified slide volume */
+						if (Ctrl->S.v_fraction) {	/* Must compute u0 to match specified slide volume (else we use given u0) */
 							shape_func[build_mode] (a, b, amplitude, 0.0, f, &area, &volume, &height);	/* Get full seamount volume */
-							u0 = grdseamount_slide_u0 (GMT, Ctrl, Ctrl->S.r1, Ctrl->S.r2, dh, Vf, volume);
+							u0 = grdseamount_slide_u0 (GMT, Ctrl, Vf, volume);	/* Corresponding u0 to use */
 						}
-						Vq = grdseamount_pappas_slide (Ctrl->S.r1, Ctrl->S.r2, dh, u0);	/* Volume beneath slide surface */
+						Vq = grdseamount_pappas_slide (Ctrl, u0);	/* Volume beneath slide surface */
 						Vs = Vf - Vq;	/* Actual slide volume (over 0-360 so not specific yet) */
-						Ctrl->S.rd = grdseamount_distal_r (Ctrl->S.rcut, Ctrl->S.hcut, Vs);
+						Ctrl->S.rd = grdseamount_distal_r (Ctrl, Vs);
 					}
 
 					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
