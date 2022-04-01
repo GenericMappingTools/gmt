@@ -29,6 +29,10 @@
  * can be either exact or approximated via constant-thickness discs. Seamounts
  * can use different models so you can mix and match cones and Gaussians, for example.
  * The density option allows output of vertically-averaged density grids.
+ * With -S we can also allow for flank collapse of seamounts via parameters that
+ * specify one or more slides per seamount that can occur at different times.
+ * This option can be used to study the isostatic rebound of seamounts and islands
+ * after such mass redistributions.
  *
  * */
 
@@ -57,6 +61,8 @@
 #define FLUX_GAUSSIAN	0
 #define FLUX_LINEAR	1
 #define ONE_THIRD 0.333333333333333333333333333333333333333333333333333333333333
+
+#define N_MAX_SLIDES	5	/* Max number of slides for any given seamount */
 
 struct GMT_MODELTIME {	/* Hold info about modeling time */
 	double value;	/* Time in year */
@@ -1065,6 +1071,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double (*pappas_func[N_SHAPES]) (double r0, double h0, double f, double r1, double r2);
 	double (*phi_solver[N_SHAPES]) (double in[], double f, double v, bool elliptical);
 
+	struct SLIDE Slide[N_MAX_SLIDES];	/* Allocate of the stack info for up to these many slides per seamount */
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_GRID *Ave = NULL;
 	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment text table(s) */
@@ -1093,6 +1100,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdseamount main code ----------------------------*/
 
+	gmt_M_memset (Slide, N_MAX_SLIDES, struct SLIDE);	/* Initialize to zero */
 	f = Ctrl->F.value;
 	inc_mode = Ctrl->C.mode;
 	if (Ctrl->K.active) {
