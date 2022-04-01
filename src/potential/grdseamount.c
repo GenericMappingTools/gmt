@@ -631,10 +631,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.rho_l > Ctrl->H.rho_h, "Option -H: Low density cannot exceed the high density\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.H <= 0.0, "Option -H: Reference seamount height must be positive\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->C.input, "Option -C: Cannot read from trailing text if binary input is selected\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S.got_p && Ctrl->S.L.p < 2.0, "Option -S: Azimuthal power coefficient set with +p must be >= 2\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.got_p && !Ctrl->S.read_p && Ctrl->S.L.p < 2.0, "Option -S: Azimuthal power coefficient set with +p must be >= 2\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.L.phi < 0.0 || Ctrl->S.L.phi >= 100.0, "Option -S: Volume fraction must be less than 100%%\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S.got_h && Ctrl->S.L.h1 > Ctrl->S.L.h2 , "Option -S: Scarp height h2 must exceed h1\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->S.got_d && Ctrl->S.got_h && Ctrl->S.L.hc > Ctrl->S.L.h1, "Option -S: Distal slump height hc cannot exceed h1\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.got_h && !Ctrl->S.read_h && Ctrl->S.L.h1 > Ctrl->S.L.h2 , "Option -S: Scarp height h2 must exceed h1\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.got_d && !Ctrl->S.read_d && Ctrl->S.got_h&& !Ctrl->S.read_h && Ctrl->S.L.hc > Ctrl->S.L.h1, "Option -S: Distal slump height hc cannot exceed h1\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.got_v && Ctrl->S.got_u, "Option -S: Cannot set +u if +v is also set\n");
 		if (GMT->common.b.active[GMT_IN] && Ctrl->T.active)
 			GMT_Report (API, GMT_MSG_WARNING, "Option -T: Seamount start end times via binary input area assumed to be in years\n");
@@ -893,30 +893,30 @@ GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SLIDE *S, doubl
 	return(h);
 }
 
-GMT_LOCAL double grdseamount_height (struct GRDSEAMOUNT_CTRL *Ctrl, double this_r, double rr, double h_scale, double f, double f_exp, double noise, double *orig_add) {
+GMT_LOCAL double grdseamount_height (struct SEAMOUNT *S, double this_r, double rr, double h_scale, double f_exp, double *orig_add) {
 	/* Return the height of the seamount at this normalized radius rr */
 	double add;
-	if (Ctrl->C.mode == SHAPE_CONE) {	/* Circular cone case */
+	if (S->build_mode == SHAPE_CONE) {	/* Circular cone case */
 		if (rr < 1.0) {	/* Since in minor direction rr may exceed 1 and be outside the ellipse */
 			*orig_add = (1.0 - rr) * h_scale;
-			add = (rr < f) ? 1.0 : *orig_add;
+			add = (rr < S->f) ? 1.0 : *orig_add;
 		}
 		else
 			*orig_add = add = 0.0;
 	}
-	else if (Ctrl->C.mode == SHAPE_DISC)	/* Circular disc/plateau case */
+	else if (S->build_mode == SHAPE_DISC)	/* Circular disc/plateau case */
 		*orig_add = add = (rr <= 1.0) ? 1.0 : 0.0;
-	else if (Ctrl->C.mode == SHAPE_PARA) {	/* Circular parabolic case */
+	else if (S->build_mode == SHAPE_PARA) {	/* Circular parabolic case */
 		*orig_add = (1.0 - rr*rr) * h_scale;
-		add = (rr < f) ? 1.0 : *orig_add;
+		add = (rr < S->f) ? 1.0 : *orig_add;
 	}
-	else if (Ctrl->C.mode == SHAPE_POLY) {	/* Circular parabolic case */
+	else if (S->build_mode == SHAPE_POLY) {	/* Circular parabolic case */
 		*orig_add = poly_smt_func (rr) * h_scale;
-		add = (rr < f) ? 1.0 : *orig_add;
+		add = (rr < S->f) ? 1.0 : *orig_add;
 	}
 	else {	/* Circular Gaussian case */
-		*orig_add = exp (f_exp * this_r * this_r) * h_scale - noise;
-		add = (rr < f) ? 1.0 : *orig_add;
+		*orig_add = exp (f_exp * this_r * this_r) * h_scale - S->noise;
+		add = (rr < S->f) ? 1.0 : *orig_add;
 	}
 	return (add);
 }
@@ -1111,7 +1111,7 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 		}
 
 		if (Ctrl->S.slide) {	/* Determine how many slide groups */
-			S[n].n_slides = (n_fields - n_expected) / n_per_slide;
+			S[n].n_slides = (n_per_slide == 0) ? 1 : (n_fields - n_expected) / n_per_slide;
 			col = n_expected + n_time;	/* Start of slide columns for this record */
 			for (k = 0; k < S[n].n_slides; k++) {
 				if (Ctrl->S.read_a) {	/* Read the azimuths from file */
@@ -1142,7 +1142,7 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 					S[n].Slide[k].t0 = in[col++];
 					S[n].Slide[k].t1 = in[col++];
 				}
-				else {	/* Get fixed azimuths from -S */
+				else if (Ctrl->S.got_t) {	/* Get fixed azimuths from -S */
 					S[n].Slide[k].t0 = Ctrl->S.L.t0;
 					S[n].Slide[k].t1 = Ctrl->S.L.t1;					
 				}
@@ -1610,7 +1610,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						rr = this_r / r_km;	/* Now in 0-1 range */
 
 					/* Compute next height (add) it the untruncated version if -F is set (orig_add) */
-					add = grdseamount_height (Ctrl, this_r, rr, h_scale, f, exp_f, S[smt].noise, &orig_add);
+					add = grdseamount_height (&S[smt], this_r, rr, h_scale, exp_f, &orig_add);
 					/* Both add and orig_add are normalized fractions of full seamount height */
 					z_assign = amplitude * add;		/* Height to be added to grid if no slide */
 					if (Ctrl->S.slide) {	/* Must handle the sector variation */
