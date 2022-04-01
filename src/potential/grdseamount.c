@@ -147,13 +147,12 @@ struct GRDSEAMOUNT_CTRL {
 		unsigned int bmode;
 		unsigned int fmode;
 	} Q;
-	struct GRDSEAMOUNT_S {	/* -S[<h1>/<h2>][+a[<az1/az2>]][+d[<hc>]][+n[<ns>][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] */
+	struct GRDSEAMOUNT_S {	/* -S[<h1>/<h2>][+a[<az1/az2>]][+d[<hc>]][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] */
 		bool active;
 		bool slide;
 		bool got_h;		/* True if <h1>/<h2> were provided */
 		bool got_a;		/* True if +a was set */
 		bool got_d;		/* True if +d was set */
-		bool got_n;		/* True if +n was set */
 		bool got_p;		/* True if +p was set */
 		bool got_t;		/* True if +t was set */
 		bool got_u;		/* True if +u was set */
@@ -161,7 +160,6 @@ struct GRDSEAMOUNT_CTRL {
 		bool read_h;	/* True if we must read h1 h2 from file instead */
 		bool read_a;	/* True if +a took no arguments and we read from file instead */
 		bool read_d;	/* True if +d took no arguments and we read from file instead */
-		bool read_n;	/* True if +n took no arguments and we read from file instead */
 		bool read_p;	/* True if +p took no arguments and we read from file instead */
 		bool read_t;	/* True if +t took no arguments and we read from file instead */
 		bool read_u;	/* True if +u took no arguments and we read from file instead */
@@ -228,7 +226,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s] "
 		"[-E] [-F[<flattening>]] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] [-K<densmodel>] "
-		"[-L[<hn>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S[<h1>/<h2>][+[a<az1/az2>]][+d[<hc>]][+n[<ns>]][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] "
+		"[-L[<hn>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S[<h1>/<h2>][+[a<az1/az2>]][+d[<hc>]][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] "
 		"[%s] [-W%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_OUTGRID, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
@@ -285,12 +283,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "<bmode>: Build either (c)umulative [Default] or (i)ncremental volume through time.");
 	GMT_Usage (API, 3, "<fmode>: Assume a (g)aussian [Default] or (c)onstant volume flux distribution.");
 	GMT_Usage (API, -2, "Append +d to build grids with increments as uniform discs [Default gives exact shapes].");
-	GMT_Usage (API, 1, "\n-S[<h1>/<h2>][+[a<az1/az2>]][+d[<hc>]][+n[<ns>]][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]]");
+	GMT_Usage (API, 1, "\n-S[<h1>/<h2>][+[a<az1/az2>]][+d[<hc>]][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]]");
 	GMT_Usage (API, -2, "Control how a sectoral landslide should look like.  Append the height range affected (if not we read from file) and select optional modifiers. "
 		"If no argument is given to a modifier it means we will read that parameter from the input file (order is alphabetical):");
 	GMT_Usage (API, 3, "+a Set the azimuthal sector range [0/360].");
 	GMT_Usage (API, 3, "+d Set the height of the start of the distal distributed deposit [h1/2].");
-	GMT_Usage (API, 3, "+n Number of slides per seamount [1].");
 	GMT_Usage (API, 3, "+p Turn on azimuthal height variation and set power coefficient >= 2.");
 	GMT_Usage (API, 3, "+t Set time range over which the slide will develop linearly.");
 	GMT_Usage (API, 3, "+u Set positive slide parameter <u0> to affect slide profile [0.1].");
@@ -488,10 +485,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				if (strchr (opt->arg, '+')) {	/* Slide settings */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.slide);
 					Ctrl->S.slide = true;
-					if ((c = gmt_first_modifier (GMT, opt->arg, "adhnptuv"))) {
+					if ((c = gmt_first_modifier (GMT, opt->arg, "adhptuv"))) {
 						unsigned int pos = 0;
 						char txt[GMT_LEN256] = {""};
-						while (gmt_getmodopt (GMT, 'S', c, "adhnptuv", &pos, txt, &n_errors) && n_errors == 0) {
+						while (gmt_getmodopt (GMT, 'S', c, "adhptuv", &pos, txt, &n_errors) && n_errors == 0) {
 							switch (txt[0]) {
 								case 'a':	/* Get Azimuth band for slide */
 									Ctrl->S.got_a = true;
@@ -517,13 +514,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 										GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unable to parse the two height values for slide in +h\n");
 										n_errors++;
 									}
-									break;
-								case 'n':	/* Get number of slides per seamount */
-									Ctrl->S.got_n = true;
-									if (txt[1] == '\0')	/* Read it from file */
-										Ctrl->S.read_n = true;
-									else
-										Ctrl->S.n = atoi (&txt[1]);
 									break;
 								case 'p':	/* Get azimuthal power coefficient and turn on azimuthal variation */
 									Ctrl->S.got_p = true;
@@ -564,8 +554,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 					}
 					if (!Ctrl->S.got_a)	/* Did not set +a, default to 0-360 (as initialized( */
 						Ctrl->S.got_a = true;
-					if (!Ctrl->S.got_n)	/* Did not set +n, default to 1 (as initialized( */
-						Ctrl->S.got_n = true;
 					if (Ctrl->S.got_h && !Ctrl->S.got_d) {	/* Set the default value for hc */
 						Ctrl->S.L.hc = 0.5 * Ctrl->S.L.h1;
 						Ctrl->S.got_d = true;	/* Since we just set it */

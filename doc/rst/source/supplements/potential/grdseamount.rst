@@ -27,7 +27,7 @@ Synopsis
 [ |-M|\ [*list*] ]
 [ |-N|\ *norm* ]
 [ |-Q|\ *bmode*/*fmode*\ [**+d**] ]
-[ |-S|\ [**+a**\ [*az1*/*az2*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+n**\ [*ns*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]] ]
+[ |-S|\ [**+a**\ [*az1*/*az2*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]] ]
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ [**+l**] ]
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
@@ -226,22 +226,20 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**+a**\ [*az1*/*az2*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+n**\ [*ns*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]]
+**-S**\ [**+a**\ [*az1*/*az2*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]]
     Sets parameters controlling a sectoral land slide by selecting from various modifiers. If
     a modifier is set but not given any arguments it means we are to read those arguments from
     the end of the input records; the order of such input arguments follows alphabetically
-    from the modifiers. If more than one slide per seamounts is set via **+n** then we read
-    *ns* groups of such slide parameters:  **+a** specifies the azimuthal sector affected by
+    from the modifiers. Repeat slide group arguments if there are more than one slide per seamount.
+    Use these modifiers to set slide parameters:  **+a** specifies the azimuthal sector affected by
     the slide [0/360], **+d** sets the height of the distal deposit at the toe of the seamount
-    [*h1*/2], **+h** sets the lower and upper heights of the landslide scarps, **+n** sets
-    the number of slides to read [1], **+p** activates azimuthal variation in slide height
-    and sets the power parameter *power > 2*, **+t** sets the time span over which the slide
-    develops linearly, **+u** sets slide shape parameter *u0 > 0* [0.2], and **+v** sets the
-    desired fractional volume of the slide (in percent) relative to the entire seamount.
-    **Note**: If **+v** is set we must compute the required *u0* so **+u** is not allowed.
-    If **+d**, **+n**, or **+u** are not given then their defaults are used for all seamounts.
-    If **n** is given without arguments then *ns* will be read as the first item at the end
-    of the regular input record so we know how many groups to read from that record.
+    [*h1*/2], **+h** sets the lower and upper heights of the landslide scarps, **+p** activates
+    azimuthal variation in slide height and sets the power parameter *power > 2*, **+t** sets the
+    time span over which the slide develops linearly, **+u** sets slide shape parameter *u0 > 0*
+    [0.2], and **+v** sets the desired fractional volume of the slide (in percent) relative to the
+    entire seamount.
+    **Note**: If **+v** is set we must compute the corresponding *u0* so **+u** is not allowed.
+    If **+d**, **+n**, or **+u** are not given then their defaults are used for all slides.
 
 .. _-T:
 
