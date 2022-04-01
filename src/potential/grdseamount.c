@@ -1452,13 +1452,13 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			/* Ok, we are inside the region - process data */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate seamount # %6d [%c]\n", smt, S[smt].code);
 
-			f = S[smt].f;	/* Flattening given by input file */
+			f = S[smt].f;	/* Flattening for this seamount */
 			sum_rz = sum_z = 0.0;	/* Reset counters for this seamount */
 			if (Ctrl->T.active) {	/* Must compute volume fractions v_curr, v_prev of an evolving seamount */
 				life_span = S[smt].t0 - S[smt].t1;	/* Total life span of this seamount */
 				if (Ctrl->Q.fmode == FLUX_GAUSSIAN) {	/* Gaussian volume flux */
 					if (t == 0) prev_user_time = DBL_MAX;
-					t_mid = 0.5 * (S[smt].t0 + S[smt].t1);	/* time at mid point in evolution */
+					t_mid  = 0.5 * (S[smt].t0 + S[smt].t1);	/* time at mid point in evolution */
 					v_curr = 0.5 * (1.0 + erf (-6.0 * (this_user_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at end of this time step */
 					v_prev = 0.5 * (1.0 + erf (-6.0 * (prev_user_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at start of this time step */
 					if (v_prev < 0.0015) v_prev = 0.0;	/* Deal with the 3-sigma truncation, i.e., throw first tail in with first slice */
