@@ -1190,7 +1190,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	gmt_grdfloat *data = NULL, *current = NULL, *previous = NULL, *rho_weight = NULL, *prev_z = NULL;
 
 	double x, y, c, in[60], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV, scale_curr = 1.0;
-	double add, f, max, r_km, amplitude = 0.0, h_scale = 0.0, z_assign, noise = 0.0, lon, this_user_time = 0.0, life_span, t_mid, rho;
+	double add, f, max, r_km, amplitude = 0.0, h_scale = 0.0, z_assign, lon, this_user_time = 0.0, life_span, t_mid, rho;
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, v_curr, v_prev, *V = NULL;
 	double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch, prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf;
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL, g_noise = exp (-4.5), g_scl = 1.0 / (1.0 - g_noise), phi_prev, phi_curr;
@@ -1260,7 +1260,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			else if (inc_mode == SHAPE_POLY)	/* Circular parabolic case */
 				add = poly_smt_func (rr) * h_scale;
 			else	/* Circular Gaussian case */
-				add = exp (-4.5 * rr * rr) * h_scale - noise;
+				add = exp (-4.5 * rr * rr) * h_scale - g_noise;
 			for (row = 0; row < Model->header->n_rows; row++) {
 				ij = gmt_M_ijp (Model->header, row, col);
 				if (Model->y[row] > add)	/* Outside the seamount */
@@ -1327,8 +1327,6 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	V_sum = gmt_M_memory (GMT, NULL, n_smts, double);	/* Allocate volume array */
 	h_sum = gmt_M_memory (GMT, NULL, n_smts, double);	/* Allocate volume array */
 	h = gmt_M_memory (GMT, NULL, n_smts, double);	/* Allocate volume array */
-	if (inc_mode == SHAPE_GAUS)
-		noise = g_noise;		/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
 
 	if (Ctrl->L.active) {	/* Just list area, volume, etc. for each seamount; no grid needed */
 		n_out = (unsigned int)3;
@@ -1362,7 +1360,6 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	gmt_M_memset (in, N_MAX_COLS, double);
 	for (smt = 0; smt < n_smts; smt++) {
-		noise = S[smt].noise;
 		if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 			a = S[smt].major;		/* Semi-major axis */
 			b = S[smt].minor;		/* Semi-minor axis */
@@ -1611,7 +1608,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						rr = this_r / r_km;	/* Now in 0-1 range */
 
 					/* Compute next height (add) it the untruncated version if -F is set (orig_add) */
-					add = grdseamount_height (Ctrl, this_r, rr, h_scale, f, exp_f, noise, &orig_add);
+					add = grdseamount_height (Ctrl, this_r, rr, h_scale, f, exp_f, S[smt].noise, &orig_add);
 					/* Both add and orig_add are normalized fractions of full seamount height */
 					z_assign = amplitude * add;		/* Height to be added to grid if no slide */
 					if (Ctrl->S.slide) {	/* Must handle the sector variation */
