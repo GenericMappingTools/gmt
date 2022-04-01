@@ -851,30 +851,31 @@ GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double
 	return (rho);
 }
 
-GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct SLIDE *S, struct GMT_GRID *G, double *in, unsigned int row, unsigned int col, double *s) {
+GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct SEAMOUNT *S, unsigned int slide, struct GMT_GRID *G, unsigned int row, unsigned int col, double *s) {
 	/* Return true if the azimuth from seamount center to this point is inside the wedge selected via -S+a.
 	 * If inside we also compute the azimuthal scale s if +p was set */
 	bool in_sector = false;
-	double dx = G->x[col] - in[GMT_X], dy = G->y[row] - in[GMT_Y];
+	double dx = G->x[col] - S->lon, dy = G->y[row] - S->lat;
 	double az = (dx == 0.0 && dy == 0.0) ? 0.0 : R2D * atan2 (dy, dx) - 360.0;	/* Make sure we start negative */
 	gmt_M_unused (GMT);
 	*s = 0.0;	/* Default */
-	while (az < S->az1) az += 360.0;	/* Keep wrapping until we pass az1 */
-	if (az <= S->az2) {	/* Inside sector, compute s */
+	while (az < S->Slide[slide].az1) az += 360.0;	/* Keep wrapping until we pass az1 */
+	if (az <= S->Slide[slide].az2) {	/* Inside sector, compute s */
 		in_sector = true;
 		if (Ctrl->S.got_p) {	/* Evaluate scale */
-			double gamma = fabs (2.0 * (az - S->az1) / (S->az2 - S->az1) - 1.0);
-			*s = pow (gamma, S->p);
+			double gamma = fabs (2.0 * (az - S->Slide[slide].az1) / (S->Slide[slide].az2 - S->Slide[slide].az1) - 1.0);
+			*s = pow (gamma, S->Slide[slide].p);
 		}
 	}
 
 	return (in_sector);
 }
 
-GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SLIDE *S, double r_km, double r, double hf, double s) {
+GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SLIDE *S, double r_km, double r, double frac, double hf, double s) {
 	/* r is normalized radial position (0-1), and input hf and output height h are as well.
-	 * s is the azimuthal scale which is 0 if no azimuth variation was requested. */
-	double u, this_r = r * r_km, q, hs, h;
+	 * s is the azimuthal scale which is 0 if no azimuth variation was requested.
+	 * frac goes from 0-1 over the linear evolution of the slide */
+	double u, this_r = r * r_km, q, hs, hs_full, h;
 	gmt_M_unused (GMT);
 	if (this_r < S->r2) return hf;	/* Before slide range, return the regular height */
 	if (this_r > S->rd) return hf;	/* Beyond distal range, return the regular height  (likely zero) */
@@ -886,7 +887,8 @@ GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SLIDE *S, doubl
 	/* Here we are within the slide radial range */
 	u = ((this_r - S->r2) / (S->r1 - S->r2));	/* Normalized radial u inside the slide range of 0-1 */
 	q = S->u0 * ((1.0 + S->u0) / (u + S->u0) - 1.0);	/* Normalized slide shape function q(u) */
-	hs = S->h1 + (S->h2 - S->h1) * q;	/* Slide height scaled to actual topography */
+	hs_full = S->h1 + (S->h2 - S->h1) * q;	/* Slide height scaled to actual topography */
+	hs = frac * hs_full + (1.0 - frac) * hf;	/* Scale between full hs and hf depending on relative timing (frac) */
 	h = hf * s + (1.0 - s) * hs;	/* Handle azimuthal variation (if any) by blending flank and slide heights using s(alpha) */
 	return(h);
 }
@@ -1075,7 +1077,7 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 		}
 		n_time = 0;	/* Number of numerical columns used for time */
 		S[n].code = Ctrl->C.code;
-		if (In->text) {	/* Have information passed via trailing text */
+		if (In->text[0]) {	/* Have information passed via trailing text */
 			int ns = sscanf (In->text, "%s %s %s", txt_x, txt_y, m);
 			if (Ctrl->T.active) {	/* Force start and stop times to be multiples of the increment */
 				if (ns == 1)	{	/* Only shape code given as trailing text */
@@ -1612,11 +1614,16 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					/* Both add and orig_add are normalized fractions of full seamount height */
 					z_assign = amplitude * add;		/* Height to be added to grid if no slide */
 					if (Ctrl->S.slide) {	/* Must handle the sector variation */
-						double s;
+						double s, t_frac = 1.0;
 						for (k = 0; k < S[smt].n_slides; k++) {	/* See if we are inside any of the slide sectors */
-							if (grdseamount_in_sector (GMT, Ctrl, &S[smt].Slide[k], Grid, in, row, col, &s)) {	/* Inside slide sector */
+							if (Ctrl->T.active) {	/* Must check if in the right time window for a slide */
+								if (this_user_time >= S[smt].Slide[k].t0) continue;	/* Not started sliding yet */
+								if (this_user_time <  S[smt].Slide[k].t1 && !exact) continue;	/* Completed sliding so making no contribution to incremental discs */
+								t_frac = (this_user_time <  S[smt].Slide[k].t1) ? 1.0 : (S[smt].Slide[k].t0 - this_user_time) / (S[smt].Slide[k].t0 - S[smt].Slide[k].t1);
+							}
+							if (grdseamount_in_sector (GMT, Ctrl, &S[smt], k, Grid, row, col, &s)) {	/* Inside slide sector */
 								/* If we are outside the radial slide range then grdseamount_slide returns z_assign so the flank height is selected */
-								z_assign = grdseamount_slide (GMT, &S[smt].Slide[k], r_in, rr, z_assign, s);
+								z_assign = grdseamount_slide (GMT, &S[smt].Slide[k], r_in, rr, t_frac, z_assign, s);
 							}
 						}
 					}
