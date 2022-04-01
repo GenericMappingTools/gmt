@@ -63,6 +63,7 @@
 #define ONE_THIRD 0.333333333333333333333333333333333333333333333333333333333333
 
 #define N_MAX_SLIDES	5	/* Max number of slides for any given seamount */
+#define N_MAX_COLS		59	/* Max possible number of input columns (7 + 2 +5*10) */
 
 struct GMT_MODELTIME {	/* Hold info about modeling time */
 	double value;	/* Time in year */
@@ -85,6 +86,20 @@ struct SLIDE {	/* Hold information for one slide */
 	double r1, r2;		/* The corresponding radii for h1, h2 */
 	double rc;			/* Radius to start of distal deposit */
 	double rd;			/* Radius to end of distal deposit */
+	double noise;
+};
+
+struct SEAMOUNT {	/* HOld information for one seamount */
+	double lon, lat, height;
+	double radius;	/* If circular */
+	double azimuth, major, minor;	/* If elliptical */
+	double f;		/* Flattening */
+	double t0, t1;	/* Time span */
+	double noise;	/* Only nonzero for Gaussian model */
+	unsigned int n_slides;	/* How many land slides for this seamount */
+	unsigned int build_mode;	/* Which seamount shape */
+	struct SLIDE Slide[N_MAX_SLIDES];	/* Information about n_slides land slides */
+	char code;
 };
 
 struct GRDSEAMOUNT_CTRL {
@@ -749,40 +764,40 @@ GMT_LOCAL void grdseamount_poly_area_volume_height (double a, double b, double h
 }
 
 /* Below, phi is a factor that we scale with r (or a,b) for a seamount matching the volume fraction */
-GMT_LOCAL double grdseamount_cone_solver (double in[], double f, double v, bool elliptical) {
+GMT_LOCAL double grdseamount_cone_solver (struct SEAMOUNT *S, double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction */
 	double A, V0, phi, r02, h0;
-	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
-	h0  = (elliptical) ? in[5] : in[3];
+	r02 = (elliptical) ? S->major * S->minor : S->radius * S->radius;
+	h0  = S->height;
 	A = M_PI * r02 * h0 / (3.0 * (1 - f));
 	V0 = M_PI * r02 * h0  * (1 + f + f*f) / 3.0;
 	phi = pow (1.0 - V0 * (1.0 - v) / A, ONE_THIRD);
 	return (phi);
 }
 
-GMT_LOCAL double grdseamount_disc_solver (double in[], double f, double v, bool elliptical) {
+GMT_LOCAL double grdseamount_disc_solver (struct SEAMOUNT *S, double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction fro a disc is trivial */
-	gmt_M_unused (in), gmt_M_unused (f), gmt_M_unused (elliptical);
+	gmt_M_unused (S), gmt_M_unused (f), gmt_M_unused (elliptical);
 	return (v);
 }
 
-GMT_LOCAL double grdseamount_para_solver (double in[], double f, double v, bool elliptical) {
+GMT_LOCAL double grdseamount_para_solver (struct SEAMOUNT *S, double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction */
 	double A, V0, phi, r02, h0;
-	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
-	h0  = (elliptical) ? in[5] : in[3];
+	r02 = (elliptical) ? S->major * S->minor : S->radius * S->radius;
+	h0  = S->height;
 	A = M_PI * r02 * h0 / (2.0 * (1 - f*f));
 	V0 = M_PI * r02 * h0  * (1 + f*f) / 2.0;
 	phi = pow (1.0 - V0 * (1.0 - v)/A, 0.25);
 	return (phi);
 }
 
-GMT_LOCAL double grdseamount_gauss_solver (double in[], double f, double v, bool elliptical) {
+GMT_LOCAL double grdseamount_gauss_solver (struct SEAMOUNT *S, double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction */
 	int n = 0;
 	double A, B, V0, phi, phi0, r02, h0;
-	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
-	h0  = (elliptical) ? in[5] : in[3];
+	r02 = (elliptical) ? S->major * S->minor : S->radius * S->radius;
+	h0  = S->height;
 	A = 2.0 * M_PI * r02 * h0 * exp (9.0 * f * f / 2.0) / 9.0;
 	V0 = 2.0 * M_PI * r02 * h0 * (1.0 + 9.0 * f * f / 2.0) / 9.0;
 	B = V0 * (1.0 - v) / A;
@@ -796,12 +811,12 @@ GMT_LOCAL double grdseamount_gauss_solver (double in[], double f, double v, bool
 }
 
 #define DELTA_PHI 0.01
-GMT_LOCAL double grdseamount_poly_solver (double in[], double f, double v, bool elliptical) {
+GMT_LOCAL double grdseamount_poly_solver (struct SEAMOUNT *S, double f, double v, bool elliptical) {
 	/* Return effective phi given volume fraction from a polynomial seamount */
 	double I1 = TWO_PI * (M_PI * sqrt(3.0) / 3.0 - 1.7);	/* I(1) definite integral */
 	double b = (1.0 - v) * (M_PI * f * f * poly_smt_func (f) - poly_smt_vol (f)) - v * I1;
 	double t = 0.0, phi = 0.0, lhs = 0.0, last_lhs;
-	gmt_M_unused (in);
+	gmt_M_unused (S);
 	gmt_M_unused (elliptical);
 	while (lhs >= b) {
     	t += DELTA_PHI;
@@ -836,7 +851,7 @@ GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double
 	return (rho);
 }
 
-GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_GRID *G, double *in, unsigned int row, unsigned int col, double *s) {
+GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct SLIDE *S, struct GMT_GRID *G, double *in, unsigned int row, unsigned int col, double *s) {
 	/* Return true if the azimuth from seamount center to this point is inside the wedge selected via -S+a.
 	 * If inside we also compute the azimuthal scale s if +p was set */
 	bool in_sector = false;
@@ -844,34 +859,34 @@ GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_C
 	double az = (dx == 0.0 && dy == 0.0) ? 0.0 : R2D * atan2 (dy, dx) - 360.0;	/* Make sure we start negative */
 	gmt_M_unused (GMT);
 	*s = 0.0;	/* Default */
-	while (az < Ctrl->S.L.az1) az += 360.0;	/* Keep wrapping until we pass az1 */
-	if (az <= Ctrl->S.L.az2) {	/* Inside sector, compute s */
+	while (az < S->az1) az += 360.0;	/* Keep wrapping until we pass az1 */
+	if (az <= S->az2) {	/* Inside sector, compute s */
 		in_sector = true;
 		if (Ctrl->S.got_p) {	/* Evaluate scale */
-			double gamma = fabs (2.0 * (az - Ctrl->S.L.az1) / (Ctrl->S.L.az2 - Ctrl->S.L.az1) - 1.0);
-			*s = pow (gamma, Ctrl->S.L.p);
+			double gamma = fabs (2.0 * (az - S->az1) / (S->az2 - S->az1) - 1.0);
+			*s = pow (gamma, S->p);
 		}
 	}
 
 	return (in_sector);
 }
 
-GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double r_km, double r, double hf, double s) {
+GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SLIDE *S, double r_km, double r, double hf, double s) {
 	/* r is normalized radial position (0-1), and input hf and output height h are as well.
 	 * s is the azimuthal scale which is 0 if no azimuth variation was requested. */
 	double u, this_r = r * r_km, q, hs, h;
 	gmt_M_unused (GMT);
-	if (this_r < Ctrl->S.L.r2) return hf;	/* Before slide range, return the regular height */
-	if (this_r > Ctrl->S.L.rd) return hf;	/* Beyond distal range, return the regular height  (likely zero) */
-	if (this_r > Ctrl->S.L.rc) {	/* In the distal range for redeposit of slide material with thickness h_d(r) */
-		h = Ctrl->S.L.hc * (1.0 - (this_r - Ctrl->S.L.rc) / (Ctrl->S.L.rd - Ctrl->S.L.rc));
+	if (this_r < S->r2) return hf;	/* Before slide range, return the regular height */
+	if (this_r > S->rd) return hf;	/* Beyond distal range, return the regular height  (likely zero) */
+	if (this_r > S->rc) {	/* In the distal range for redeposit of slide material with thickness h_d(r) */
+		h = S->hc * (1.0 - (this_r - S->rc) / (S->rd - S->rc));
 		return (h);
 	}
-	if (this_r > Ctrl->S.L.r1) return hf;	/* Between foot of slide and toe of deposit, return the regular height */
+	if (this_r > S->r1) return hf;	/* Between foot of slide and toe of deposit, return the regular height */
 	/* Here we are within the slide radial range */
-	u = ((this_r - Ctrl->S.L.r2) / (Ctrl->S.L.r1 - Ctrl->S.L.r2));	/* Normalized radial u inside the slide range of 0-1 */
-	q = Ctrl->S.L.u0 * ((1.0 + Ctrl->S.L.u0) / (u + Ctrl->S.L.u0) - 1.0);	/* Normalized slide shape function q(u) */
-	hs = Ctrl->S.L.h1 + (Ctrl->S.L.h2 - Ctrl->S.L.h1) * q;	/* Slide height scaled to actual topography */
+	u = ((this_r - S->r2) / (S->r1 - S->r2));	/* Normalized radial u inside the slide range of 0-1 */
+	q = S->u0 * ((1.0 + S->u0) / (u + S->u0) - 1.0);	/* Normalized slide shape function q(u) */
+	hs = S->h1 + (S->h2 - S->h1) * q;	/* Slide height scaled to actual topography */
 	h = hf * s + (1.0 - s) * hs;	/* Handle azimuthal variation (if any) by blending flank and slide heights using s(alpha) */
 	return(h);
 }
@@ -991,43 +1006,169 @@ GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_
 	return (u0_next);
 }
 
-GMT_LOCAL int grdseamount_parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in, char *code) {
-	uint64_t col;
-	int n;
-	double s_scale;
+struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options, uint64_t *n_smt) {
 	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], m[GMT_LEN16], s_unit;
-	gmt_M_unused (GMT);
+	uint64_t n = 0;
+	int n_fields;
+	unsigned int n_expected, n_time, n_per_slide = 0, f_col, k, col;
+	double s_scale, g_noise = exp (-4.5), *in = NULL;
+	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
+	struct SEAMOUNT *S = NULL;
+	struct GMT_RECORD *In = NULL;
 
-	/* There are two scenarios under which there is trailing text (and text is not NULL):
-	 * 1. User gave times with units, e.g., 50M or 10k, so there are two words with time info
-	 * 2. User gave -C so the model code g,c,p,d is the last input word. */
+	/* Specify expected columns */
+	n_expected = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 
-	for (col = 0; col < n_expected; col++) in[col] = data[col][rec];	/* Just copy over this numerical part of the record */
-	if (Ctrl->T.active && text) {	/* Force start and stop times to be multiples of the increment */
-		n = sscanf (text[rec], "%s %s %s", txt_x, txt_y, m);
-		if (n == 1)	/* Only shape code given as trailing text */
-			*code = txt_x[0];
-		else if (n >= 2) {	/* Model time given, and possibly shape code */
-			in[n_expected]   = gmt_get_modeltime (txt_x, &s_unit, &s_scale);
-			in[n_expected+1] = gmt_get_modeltime (txt_y, &s_unit, &s_scale);
-			if (n == 3) *code = m[0];	/* Also gave shape code */
-		}
+	if (Ctrl->S.slide) {	/* Need to read extra groups of columns per slide */
+		if (Ctrl->S.read_a) n_per_slide += 2;	/* +a: Read az1 and az2 */
+		if (Ctrl->S.read_d) n_per_slide += 1;	/* +d: Read hc */
+		if (Ctrl->S.read_h) n_per_slide += 2;	/* +h: Read h1 and h2 */
+		if (Ctrl->S.read_p) n_per_slide += 1;	/* +p: Read p */
+		if (Ctrl->S.read_t) n_per_slide += 2;	/* +t: Read t0 and t1 */
+		if (Ctrl->S.read_u) n_per_slide += 1;	/* +u: Read u0 */
+		if (Ctrl->S.read_v) n_per_slide += 1;	/* +v: Read phi */
 	}
 
-	if (!map) {	/* Scale horizontal units to meters */
-		in[GMT_X] *= inv_scale;
-		in[GMT_Y] *= inv_scale;
-		if (Ctrl->E.active) {	/* Elliptical seamount axes */
-			in[3] *= inv_scale;
-			in[4] *= inv_scale;
-		}
-		else	/* Radius */
-			in[2] *= inv_scale;
+	if (GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR) != GMT_NOERROR) {
+		return (NULL);
 	}
 
-	if (Ctrl->T.active && in[n_expected] < in[n_expected+1])
-		gmt_M_double_swap (in[n_expected], in[n_expected+1]);	/* Ensure start time is always larger */
-	return 0;	/* OK */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+		return (NULL);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {		/* Enables data input and sets access mode */
+		return (NULL);
+	}
+
+	S = gmt_M_memory (API->GMT, NULL, n_alloc, struct SEAMOUNT);
+
+	f_col = (Ctrl->E.active) ? 6 : 4;
+
+	do {	/* Keep returning records until we reach EOF */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+			if (gmt_M_rec_is_error (API->GMT)) {		/* Bail if there are any read errors */
+				return (NULL);
+			}
+			else if (gmt_M_rec_is_eof (API->GMT)) 		/* Reached end of file */
+				break;
+			else if (gmt_M_rec_is_any_header (API->GMT))			/* Skip segment and table headers */
+				continue;
+		}
+		in = In->data;
+		S[n].lon = in[GMT_X];	S[n].lat = in[GMT_Y];
+		if (Ctrl->E.active) {	/* Elliptical parameters */
+			S[n].azimuth = in[GMT_Z];
+			S[n].major = in[3];
+			S[n].minor = in[4];
+			S[n].height = in[5];
+		}
+		else {	/* Circular parameters */
+			S[n].radius = in[GMT_Z];
+			S[n].height = in[3];
+		}
+		S[n].f = (Ctrl->F.mode == TRUNC_FILE) ? in[f_col] : Ctrl->F.value;
+		if (Ctrl->F.mode == TRUNC_FILE && (S[n].f < 0.0 || S[n].f >= 1.0)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Flattening outside valid range 0-1 (%g)!\n", S[n].f);
+			API->error = GMT_RUNTIME_ERROR;
+			gmt_M_free (API->GMT, S);
+			return NULL;
+		}
+		n_time = 0;	/* Number of numerical columns used for time */
+		S[n].code = Ctrl->C.code;
+		if (In->text) {	/* Have information passed via trailing text */
+			int ns = sscanf (In->text, "%s %s %s", txt_x, txt_y, m);
+			if (Ctrl->T.active) {	/* Force start and stop times to be multiples of the increment */
+				if (ns == 1)	{	/* Only shape code given as trailing text */
+					if (Ctrl->C.input) S[n].code = txt_x[0];
+					S[n].t0 = in[n_expected];
+					S[n].t1 = in[n_expected+1];
+					n_time = 2;
+				}
+				else if (ns >= 2) {	/* Model time given, and possibly shape code */
+					S[n].t0 = gmt_get_modeltime (txt_x, &s_unit, &s_scale);
+					S[n].t1 = gmt_get_modeltime (txt_y, &s_unit, &s_scale);
+					if (Ctrl->C.input) S[n].code = m[0];
+				}
+			}
+			else if (Ctrl->C.input) 	/* Only shape code given as trailing text */
+				S[n].code = txt_x[0];
+		}
+		switch (S[n].code) {
+			case 'c': S[n].build_mode = SHAPE_CONE; break;
+			case 'd': S[n].build_mode = SHAPE_DISC; break;
+			case 'o': S[n].build_mode = SHAPE_POLY; break;
+			case 'p': S[n].build_mode = SHAPE_PARA; break;
+			case 'g': S[n].build_mode = SHAPE_GAUS;
+				S[n].noise = g_noise;	/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
+				break;
+			default:
+				GMT_Report (API, GMT_MSG_ERROR, "Unrecognized shape code %c\n", S[n].code);
+				API->error = GMT_RUNTIME_ERROR;
+				gmt_M_free (API->GMT, S);
+				return NULL;
+		}
+
+		if (Ctrl->S.slide) {	/* Determine how many slide groups */
+			S[n].n_slides = (n_fields - n_expected) / n_per_slide;
+			col = n_expected + n_time;	/* Start of slide columns for this record */
+			for (k = 0; k < S[n].n_slides; k++) {
+				if (Ctrl->S.read_a) {	/* Read the azimuths from file */
+					S[n].Slide[k].az1 = in[col++];
+					S[n].Slide[k].az2 = in[col++];
+				}
+				else {	/* Get fixed azimuths from -S */
+					S[n].Slide[k].az1 = Ctrl->S.L.az1;
+					S[n].Slide[k].az2 = Ctrl->S.L.az2;					
+				}
+				if (Ctrl->S.read_d)	/* Read hc from file */
+					S[n].Slide[k].hc = in[col++];
+				else	/* Get fixed hc from -S */
+					S[n].Slide[k].hc = Ctrl->S.L.hc;
+				if (Ctrl->S.read_h) {	/* Read the heights from file */
+					S[n].Slide[k].h1 = in[col++];
+					S[n].Slide[k].h2 = in[col++];
+				}
+				else {	/* Get fixed azimuths from -S */
+					S[n].Slide[k].h1 = Ctrl->S.L.h1;
+					S[n].Slide[k].h2 = Ctrl->S.L.h2;					
+				}
+				if (Ctrl->S.read_p)	/* Read p from file */
+					S[n].Slide[k].p = in[col++];
+				else	/* Get fixed p from -S */
+					S[n].Slide[k].p = Ctrl->S.L.p;
+				if (Ctrl->S.read_t) {	/* Read the slide times from file */
+					S[n].Slide[k].t0 = in[col++];
+					S[n].Slide[k].t1 = in[col++];
+				}
+				else {	/* Get fixed azimuths from -S */
+					S[n].Slide[k].t0 = Ctrl->S.L.t0;
+					S[n].Slide[k].t1 = Ctrl->S.L.t1;					
+				}
+				if (Ctrl->S.read_u)	/* Read u0 from file */
+					S[n].Slide[k].u0 = in[col++];
+				else	/* Get fixed u0 from -S */
+					S[n].Slide[k].u0 = Ctrl->S.L.u0;
+				if (Ctrl->S.read_v)	/* Read phi from file */
+					S[n].Slide[k].phi = in[col++];
+				else	/* Get fixed phi from -S */
+					S[n].Slide[k].phi = Ctrl->S.L.phi;
+			}
+		}
+		n++;	/* One more seamount ingested */
+		if (n == n_alloc) {
+			n_alloc <<= 1;	/* Double it */
+			S = gmt_M_memory (API->GMT, S, n_alloc, struct SEAMOUNT);
+		}
+	} while (true);
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
+		gmt_M_free (API->GMT, S);
+		return NULL;
+	}
+
+	S = gmt_M_memory (API->GMT, S, n, struct SEAMOUNT);
+	*n_smt = n;
+
+	return (S);
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -1038,32 +1179,30 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	openmp_int row, col, max_d_col, d_row, nx1, *d_col = NULL;
 
-	unsigned int n_out, d_mode, rmode, inc_mode;
-	unsigned int t, t_use, build_mode, t0_col = 0, t1_col = 0;
+	unsigned int n_out, d_mode, inc_mode, k, t, t_use, build_mode;
 
-	uint64_t n_expected_fields, n_numerical_fields, n_smts = 0, tbl, seg, rec, ij;
+	uint64_t ij, n_smts, smt;
 
 	bool map = false, periodic = false, replicate, first, empty, exact, exact_increments, cone_increments;
 
-	char unit, code, unit_name[8], gfile[PATH_MAX] = {""}, wfile[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
+	char unit, unit_name[8], gfile[PATH_MAX] = {""}, wfile[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
 
 	gmt_grdfloat *data = NULL, *current = NULL, *previous = NULL, *rho_weight = NULL, *prev_z = NULL;
 
-	double x, y, r, c, in[9], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV, scale_curr = 1.0;
-	double add, f, max, r_km, amplitude, h_scale = 0.0, z_assign, noise = 0.0, this_user_time = 0.0, life_span, t_mid, rho;
-	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, DEG_PR_KM = 0.0, v_curr, v_prev, *V = NULL;
+	double x, y, c, in[60], this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV, scale_curr = 1.0;
+	double add, f, max, r_km, amplitude = 0.0, h_scale = 0.0, z_assign, noise = 0.0, lon, this_user_time = 0.0, life_span, t_mid, rho;
+	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, v_curr, v_prev, *V = NULL;
 	double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch, prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf;
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL, g_noise = exp (-4.5), g_scl = 1.0 / (1.0 - g_noise), phi_prev, phi_curr;
-	double orig_add, dz, h_orig, rho_z, sum_rz, sum_z, exp_f;
-	void (*shape_func[N_SHAPES]) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
+	double orig_add, dz, rho_z, sum_rz, sum_z, exp_f, radius, minor, major;
 	double (*pappas_func[N_SHAPES]) (double r0, double h0, double f, double r1, double r2);
-	double (*phi_solver[N_SHAPES]) (double in[], double f, double v, bool elliptical);
+	double (*phi_solver[N_SHAPES]) (struct SEAMOUNT *S, double f, double v, bool elliptical);
+	void (*shape_func[N_SHAPES]) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
 
 	struct SLIDE Slide[N_MAX_SLIDES];	/* Allocate of the stack info for up to these many slides per seamount */
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_GRID *Ave = NULL;
-	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment text table(s) */
-	struct GMT_DATASEGMENT *S = NULL;
+	struct SEAMOUNT *S = NULL;
 	struct GMT_DATASET *L = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct GRDSEAMOUNT_CTRL *Ctrl = NULL;
@@ -1139,22 +1278,9 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			Return (GMT_NOERROR);
 	}
 
-	code = Ctrl->C.code;
-	/* Specify expected columns */
-	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
-	n_numerical_fields = (Ctrl->T.active) ? n_expected_fields + 2 : n_expected_fields;
-	/* The optional two cols with start and stop time and/or shape are part of the trialing text */
-	rmode = (Ctrl->C.input || Ctrl->T.active) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT;
-	if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_expected_fields, rmode)) != GMT_NOERROR) {
-		Return (error);
-	}
-
-	/* Register likely data sources unless the caller has already done so */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
-		Return (API->error);
-	}
-	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
-		Return (API->error);
+	if ((S = grdseamount_read_input (API, Ctrl, options, &n_smts)) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while reading seamount file\n");
+		goto wrap_up;
 	}
 
 	/* Assign functions to shape_func, phi_solver and pappas_func array of function pointers */
@@ -1179,7 +1305,6 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	map = gmt_M_is_geographic (GMT, GMT_IN);
 	if (map) {	/* Geographic data */
-		DEG_PR_KM = 1.0 / GMT->current.proj.DIST_KM_PR_DEG;
 		d_mode = 2, unit = 'k';	/* Select km and great-circle distances */
 	}
 	else {	/* Cartesian scaling */
@@ -1198,15 +1323,15 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 	if (gmt_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
 		Return (GMT_NOT_A_VALID_TYPE);
-	V = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
-	V_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
-	h_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
-	h = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
+	V = gmt_M_memory (GMT, NULL, n_smts, double);	/* Allocate volume array */
+	V_sum = gmt_M_memory (GMT, NULL, n_smts, double);	/* Allocate volume array */
+	h_sum = gmt_M_memory (GMT, NULL, n_smts, double);	/* Allocate volume array */
+	h = gmt_M_memory (GMT, NULL, n_smts, double);	/* Allocate volume array */
 	if (inc_mode == SHAPE_GAUS)
 		noise = g_noise;		/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
 
 	if (Ctrl->L.active) {	/* Just list area, volume, etc. for each seamount; no grid needed */
-		n_out = (unsigned int)n_numerical_fields + 3;
+		n_out = (unsigned int)3;
 		if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 			goto wrap_up;
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)	/* Registers default output destination, unless already set */
@@ -1216,11 +1341,6 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 
 	/* 0. DETERMINE THE NUMBER OF TIME STEPS */
-
-	if (Ctrl->T.active) {	/* Have requested a time series of bathymetry */
-		t0_col = (unsigned int)n_expected_fields;
-		t1_col = t0_col + 1;
-	}
 
 	if (Ctrl->M.active) {	/* Must create dataset to hold names of all output grids */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_times, 1};
@@ -1240,65 +1360,33 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	/* Calculate the area, volume, height for each shape; if -L then also write the results */
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
-	gmt_M_memset (in, 9, double);
-	for (tbl = n_smts = 0; tbl < D->n_tables; tbl++) {
-		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
-			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
-			for (rec = 0; rec < S->n_rows; rec++, n_smts++) {
-				if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in, &code)) continue;
-				for (col = 0; col < (openmp_int)n_numerical_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
-				if (Ctrl->C.input) {
-					noise = 0.0;
-					switch (code) {
-						case 'c': build_mode = SHAPE_CONE; break;
-						case 'd': build_mode = SHAPE_DISC; break;
-						case 'o': build_mode = SHAPE_POLY; break;
-						case 'p': build_mode = SHAPE_PARA; break;
-						case 'g': build_mode = SHAPE_GAUS;
-							noise = g_noise;	/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
-							break;
-						default:
-							GMT_Report (API, GMT_MSG_ERROR, "Unrecognized shape code %c\n", code);
-							API->error = GMT_RUNTIME_ERROR;
-							goto wrap_up;
-					}
-				}
-				if (Ctrl->E.active) {	/* Elliptical seamount parameters */
-					a = in[3];		/* Semi-major axis */
-					b = in[4];		/* Semi-minor axis */
-					amplitude = in[5];	/* Seamount max height from base */
-					if (Ctrl->F.mode == TRUNC_FILE) f = in[6];	/* Flattening given via input file */
-				}
-				else {	/* Circular features */
-					a = b = in[2];		/* Radius in m */
-					amplitude = in[3];	/* Seamount max height from base */
-					if (Ctrl->F.mode == TRUNC_FILE) f = in[4];	/* Flattening given via input file */
-				}
-				if (Ctrl->F.mode == TRUNC_FILE && (f < 0.0 || f >= 1.0)) {
-					GMT_Report (API, GMT_MSG_ERROR, "Flattening outside valid range 0-1 (%g)!\n", f);
-					API->error = GMT_RUNTIME_ERROR;
-					goto wrap_up;
-				}
-				c = (map) ? cosd (in[GMT_Y]) : 1.0;	/* Flat Earth scaling factor */
-				/* Compute area, volume, mean amplitude */
-				shape_func[build_mode] (a, b, amplitude, Ctrl->L.value, f, &area, &volume, &height);
-				V[n_smts] = volume;
-				h[n_smts] = amplitude;
-				if (map) {	/* Report values in km^2, km^3, and m */
-					area   *= GMT->current.proj.DIST_KM_PR_DEG * GMT->current.proj.DIST_KM_PR_DEG * c;
-					volume *= GMT->current.proj.DIST_KM_PR_DEG * GMT->current.proj.DIST_KM_PR_DEG * c;
-					volume *= 1.0e-3;	/* Use km^3 as unit for volume */
-				}
-				if (Ctrl->L.active) {	/* Only want to add back out area, volume */
-					col = (unsigned int)n_numerical_fields;
-					out[col++] = area;
-					out[col++] = volume;
-					out[col++] = height;
-					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
-				}
-				GMT_Report (API, GMT_MSG_INFORMATION, "Seamount %" PRIu64 " [%c] area, volume, mean height: %g %g %g\n", n_smts, code, area, volume, height);
-			}
+	gmt_M_memset (in, N_MAX_COLS, double);
+	for (smt = 0; smt < n_smts; smt++) {
+		noise = S[smt].noise;
+		if (Ctrl->E.active) {	/* Elliptical seamount parameters */
+			a = S[smt].major;		/* Semi-major axis */
+			b = S[smt].minor;		/* Semi-minor axis */
 		}
+		else	/* Circular features */
+			a = b = S[smt].radius;		/* Radius in m */
+		c = (map) ? cosd (S[smt].lat) : 1.0;	/* Flat Earth scaling factor */
+		/* Compute area, volume, mean amplitude */
+		shape_func[S[smt].build_mode] (a, b, S[smt].height, Ctrl->L.value, S[smt].f, &area, &volume, &height);
+		V[smt] = volume;
+		h[smt] = amplitude;
+		if (map) {	/* Report values in km^2, km^3, and m */
+			area   *= GMT->current.proj.DIST_KM_PR_DEG * GMT->current.proj.DIST_KM_PR_DEG * c;
+			volume *= GMT->current.proj.DIST_KM_PR_DEG * GMT->current.proj.DIST_KM_PR_DEG * c;
+			volume *= 1.0e-3;	/* Use km^3 as unit for volume */
+		}
+		if (Ctrl->L.active) {	/* Only want to add back out area, volume */
+			col = 0;
+			out[col++] = area;
+			out[col++] = volume;
+			out[col++] = height;
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
+		}
+		GMT_Report (API, GMT_MSG_INFORMATION, "Seamount %" PRIu64 " [%c] area, volume, mean height: %g %g %g\n", n_smts, S[smt].code, area, volume, height);
 	}
 	gmt_M_free (GMT, Out);
 	if (Ctrl->L.active) {	/* OK, that was all we wanted */
@@ -1309,7 +1397,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	/* Set up and allocate output grid */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
-	                             GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
+			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
 		gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h);
 		Return (API->error);
 	}
@@ -1352,275 +1440,239 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		empty = true;	/* So far, no seamounts have left a contribution */
 
 		/* 2. VISIT ALL SEAMOUNTS */
-		for (tbl = n_smts = 0; tbl < D->n_tables; tbl++) {
-			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
-				S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
-				for (rec = 0; rec < S->n_rows; rec++,  n_smts++) {
-					if (grdseamount_parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in, &code)) continue;
+		for (smt = 0; smt < n_smts; smt++) {
+			if (Ctrl->T.active) {	/* Check if outside time-range */
+				if (this_user_time >= S[smt].t0) continue;	/* Not started growing yet */
+				if (this_user_time <  S[smt].t1 && !exact) continue;	/* Completed so making no contribution to incremental discs */
+			}
+			if (gmt_M_y_is_outside (GMT, S[smt].lat, wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
+			lon = S[smt].lon;
+			if (gmt_x_is_outside (GMT, &lon,  wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
 
-					if (Ctrl->T.active) {	/* Check if outside time-range */
-						if (this_user_time >= in[t0_col]) continue;	/* Not started growing yet */
-						if (this_user_time < in[t1_col] && !exact) continue;	/* Completed so making no contribution to incremental discs */
-					}
-					if (gmt_M_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
-					if (gmt_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
+			if (!cone_increments) inc_mode = S[smt].build_mode;
+			major = S[smt].major;	minor = S[smt].minor; radius = S[smt].radius;
 
-					if (Ctrl->C.input) {
-						noise = 0.0;
-						switch (code) {
-							case 'c': build_mode = SHAPE_CONE; break;
-							case 'd': build_mode = SHAPE_DISC; break;
-							case 'p': build_mode = SHAPE_PARA; break;
-							case 'o': build_mode = SHAPE_POLY; break;
-							case 'g': build_mode = SHAPE_GAUS;
-								noise = g_noise;	/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
-								break;
-							default:
-								GMT_Report (API, GMT_MSG_ERROR, "Unrecognized shape code %c\n", code);
-								API->error = GMT_RUNTIME_ERROR;
-								goto wrap_up;
-						}
-						if (!cone_increments) inc_mode = build_mode;
-					}
+			/* Ok, we are inside the region - process data */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate seamount # %6d [%c]\n", smt, S[smt].code);
 
-					/* Ok, we are inside the region - process data */
-					GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate seamount # %6d [%c]\n", n_smts, code);
-
-					sum_rz = sum_z = 0.0;	/* Reset counters for this seamount */
-					if (Ctrl->T.active) {	/* Must compute volume fractions v_curr, v_prev of an evolving seamount */
-						life_span = in[t0_col] - in[t1_col];	/* Total life span of this seamount */
-						if (Ctrl->Q.fmode == FLUX_GAUSSIAN) {	/* Gaussian volume flux */
-							if (t == 0) prev_user_time = DBL_MAX;
-							t_mid = 0.5 * (in[t0_col] + in[t1_col]);	/* time at mid point in evolution */
-							v_curr = 0.5 * (1.0 + erf (-6.0 * (this_user_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at end of this time step */
-							v_prev = 0.5 * (1.0 + erf (-6.0 * (prev_user_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at start of this time step */
-							if (v_prev < 0.0015) v_prev = 0.0;	/* Deal with the 3-sigma truncation, i.e., throw first tail in with first slice */
-							if (v_curr > 0.9985) v_curr = 1.0;	/* Deal with the 3-sigma truncation, i.e., throw last tail in with last slice */
-						}
-						else {	/* Linear volume flux */
-							if (t == 0) prev_user_time = in[t0_col];
-							v_curr = (in[t0_col] - this_user_time) / life_span;	/* Normalized volume fraction at end of this time step */
-							v_prev = (in[t0_col] - prev_user_time) / life_span;	/* Normalized volume fraction at start of this time step */
-						}
-						/* Since we don't skip seamounts after they have completed when we want cumulative heights, we add a few further checks */
-						if (v_curr > 1.0) v_curr = 1.0;	/* When we pass the end-life of the volcano we stop at 1 since the volcano is now fully grown */
-						if (v_prev > 1.0) v_prev = 1.0;	/* When we pass the end-life of the volcano we stop at 1 since the volcano is now fully grown */
-						/* When v_curr == v_prev after a volcano has stopped growing the incremental change will be zero */
-						dV = V[n_smts] * (v_curr - v_prev);	/* Incremental volume produced */
-						V_sum[n_smts] += dV;			/* Keep track of volume sum so we can compare with truth later */
-						if (Ctrl->F.mode == TRUNC_FILE) {
-							f = (Ctrl->E.active) ? in[6] : in[4];
-							if (Ctrl->F.mode == TRUNC_FILE && (f < 0.0 || f >= 1.0)) {
-								GMT_Report (API, GMT_MSG_ERROR, "Flattening outside valid range 0-1 (%g)!\n", f);
-								API->error = GMT_RUNTIME_ERROR;
-								goto wrap_up;
-							}
-						}
-						h0 = (Ctrl->E.active) ? in[5] : in[3];
-						if (Ctrl->Q.disc) {	/* Obtain the equivalent disc parameters given the volumes found */
-							phi_curr = phi_solver[build_mode] (in, f, v_curr, Ctrl->E.active);
-							phi_prev = phi_solver[build_mode] (in, f, v_prev, Ctrl->E.active);
-							switch (build_mode) {	/* Given the phi values, evaluate the corresponding heights */
-								case SHAPE_CONE:  h_curr = h0 * (1 - phi_curr) / (1 - f); h_prev = h0 * (1 - phi_prev) / (1 - f); break;
-								case SHAPE_PARA:  h_curr = h0 * (1 - phi_curr * phi_curr) / (1 - f * f); h_prev = h0 * (1 - phi_prev * phi_prev) / (1 - f * f); break;
-								case SHAPE_GAUS:  h_curr = h0 * exp (4.5 * (f*f - phi_curr * phi_curr)); h_prev = h0 * exp (4.5 * (f*f - phi_prev * phi_prev)); break;
-								case SHAPE_POLY:  pf = poly_smt_func (f); h_curr = h0 * poly_smt_func (phi_curr) / pf; h_prev = h0 * poly_smt_func (phi_prev) / pf;	break;
-								//case SHAPE_POLY:  pf = poly_smt_func (f); h_curr = MIN (h0, h0 * poly_smt_func (phi_curr) / pf); h_prev = MIN (h0, h0 * poly_smt_func (phi_prev) / pf);	break;
-							}
-							h_mean = fabs (h_curr - h_prev);	/* This is our disc layer thickness */
-							r_mean = sqrt (dV / (M_PI * h_mean));	/* Radius given by volume and height */
-							h_sum[n_smts] += h_mean;		/* Keep track of height sum so we can compare with truth later */
-
-							GMT_Report (API, GMT_MSG_DEBUG, "r_mean = %.1f h_mean = %.1f v_prev = %.3f v_curr = %.3f phi_prev = %.3f phi_curr = %.3f h_prev = %.1f h_curr = %.1f V_sum = %g h_sum = %g\n",
-								r_mean, h_mean, v_prev, v_curr, phi_prev, phi_curr, h_prev, h_curr, V_sum[n_smts], h_sum[n_smts]);
-							/* Replace the values in the in array with these incremental values instead */
-							if (Ctrl->E.active) {	/* Elliptical parameters */
-								e = in[4] / in[3];	/* Eccentricity */
-								in[3] = r_mean / sqrt (e);	/* Since we solved for sqrt (a*b) above */
-								in[4] = in[3] * e;
-								in[5] = h_mean;
-							}
-							else {	/* Circular */
-								in[GMT_Z] = r_mean;
-								in[3] = h_mean;
-							}
-							scale_curr = 1.0;
-						}
-						else	/* Here we want the exact surface at the reduced radius and height given by the scale related to the volume fraction */
-							scale_curr = pow (v_curr, ONE_THIRD);
-					}
-
-					scol_0 = (int)gmt_M_grd_x_to_col (GMT, in[GMT_X], Grid->header);	/* Center column */
-					if (scol_0 < 0) continue;	/* Still outside x-range */
-					if (scol_0 >= (int)Grid->header->n_columns) continue;	/* Still outside x-range */
-					srow_0 = (int)gmt_M_grd_y_to_row (GMT, in[GMT_Y], Grid->header);	/* Center row */
-					if (srow_0 < 0) continue;	/* Still outside y-range */
-					if (srow_0 >= (int)Grid->header->n_rows) continue;	/* Still outside y-range */
-
-					c = (map) ? cosd (in[GMT_Y]) : 1.0;	/* Flat Earth area correction */
-
-					if (Ctrl->E.active) {	/* Elliptical seamount parameters */
-						sincos ((90.0 - in[GMT_Z]) * D2R, &sa, &ca);	/* in[GMT_Z] is azimuth in degrees, convert to direction, get sin/cos */
-						a = scale_curr * in[3];			/* Semi-major axis */
-						b = scale_curr * in[4];			/* Semi-minor axis */
-						e = b / a;		/* Eccentricity */
-						e2 = e * e;
-						ca2 = ca * ca;
-						sa2 = sa * sa;
-						r_km = b * Ctrl->S.value;	/* Scaled semi-minor axis in user units (Cartesian or km) */
-						r = r_km;
-						if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
-						exp_f = -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
-						A = exp_f * (e2 * ca2 + sa2);	/* Elliptical components A, B, C needed to evaluate radius(az) */
-						B = -exp_f * (sa * ca * (1.0 - e2));
-						C = exp_f * (e2 * sa2 + ca2);
-						r_in = a;			/* Semi-major axis in user units (Cartesian or km)*/
-						r_km = r_in * Ctrl->S.value;	/* Scaled semi-major axis in user units (Cartesian or km) */
-						r = r_km;			/* Copy of r_km */
-						if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
-						h_orig = in[5];					/* Seamount max height from base */
-						if (Ctrl->F.mode == TRUNC_FILE) f = in[6];	/* Flattening given by input file */
-					}
-					else {	/* Circular features */
-						r_in = a = b = scale_curr * in[GMT_Z];	/* Radius in user units */
-						r_km = r_in * Ctrl->S.value;	/* Scaled up by user scale */
-						r = r_km;			/* Copy of r_km */
-						if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
-						exp_f = (inc_mode == SHAPE_CONE) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
-						h_orig = in[3];					/* Seamount max height from base */
-						if (Ctrl->F.mode == TRUNC_FILE) f = in[4];	/* Flattening given by input file */
-					}
-					amplitude = scale_curr * h_orig;		/* Seamount max height from base */
-
-					switch (inc_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
-						case SHAPE_CONE:  h_scale = 1.0 / (1.0 - f); break;
-						case SHAPE_DISC:  h_scale = 1.0; break;
-						case SHAPE_PARA:  h_scale = 1.0 / (1.0 - f * f); break;
-						case SHAPE_POLY:  h_scale = 1.0 / poly_smt_func (f); break;
-						case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * f * f); break;
-					}
-					if (inc_mode == SHAPE_GAUS) h_scale *= g_scl;	/* Adjust for the fact we only go to -/+ 3 sigma and not infinity */
-					if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
-
-					if (Ctrl->S.slide) {	/* Compute the radii needed for slide calculations below. ASSUMES CIRCULAR FOR NOW */
-						double Vf, Vs, Vq, u0 = Ctrl->S.L.u0;
-						Ctrl->S.L.r1   = grdseamount_r_from_h (build_mode, Ctrl->S.L.h1,   r_in, h_orig, f);
-						Ctrl->S.L.r2   = grdseamount_r_from_h (build_mode, Ctrl->S.L.h2,   r_in, h_orig, f);
-						Ctrl->S.L.rc = grdseamount_r_from_h (build_mode, Ctrl->S.L.hc, r_in, h_orig, f);
-						Vf = pappas_func[build_mode] (r_in, h_orig, f, Ctrl->S.L.r1, Ctrl->S.L.r2);	/* Volume beneath flank surface for given shape */
-						if (Ctrl->S.got_v) {	/* Must compute u0 to match specified slide volume (else we use given u0) */
-							shape_func[build_mode] (a, b, amplitude, 0.0, f, &area, &volume, &height);	/* Get full seamount volume */
-							u0 = grdseamount_slide_u0 (GMT, Ctrl, Vf, volume);	/* Corresponding u0 to use */
-						}
-						Vq = grdseamount_pappas_slide (Ctrl, u0);	/* Volume beneath slide surface */
-						Vs = Vf - Vq;	/* Actual slide volume (over 0-360 so not specific yet) */
-						Ctrl->S.L.rd = grdseamount_distal_r (Ctrl, r_in, Vs);
-						GMT_Report (API, GMT_MSG_INFORMATION, "Seamount # %d Slide: r2 = %lg r1 = %lg rc = %lg rd = %lg, u0 = %lg, Vs = %lg\n",
-							n_smts, Ctrl->S.L.r2, Ctrl->S.L.r1, Ctrl->S.L.rc, Ctrl->S.L.rd, u0, Vs);
-					}
-
-					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
-					gmt_M_free (GMT, d_col);
-					d_col = gmt_prep_nodesearch (GMT, Grid, r_km, d_mode, &d_row, &max_d_col);
-
-					for (srow = srow_0 - (int)d_row; srow <= (srow_0 + (int)d_row); srow++) {
-						if (srow < 0) continue;
-						if ((row = (openmp_int)srow) >= (openmp_int)Grid->header->n_rows) continue;
-						y = gmt_M_grd_row_to_y (GMT, row, Grid->header);
-						first = replicate;	/* Used to help us deal with duplicate columns for grid-line registered global grids */
-						for (scol = scol_0 - (int)d_col[row]; scol <= (scol_0 + (int)d_col[row]); scol++) {
-							if (!periodic) {
-								if (scol < 0) continue;
-								if ((col = (openmp_int)scol) >= (openmp_int)Grid->header->n_columns) continue;
-							}
-							if (scol < 0)	/* Periodic grid: Break on through to other side! */
-								col = scol + nx1;
-							else if ((col = (openmp_int)scol) >= (openmp_int)Grid->header->n_columns) 	/* Periodic grid: Wrap around to other side */
-								col -= nx1;
-							/* "silent" else we are inside w/e */
-							x = gmt_M_grd_col_to_x (GMT, col, Grid->header);
-							this_r = gmt_distance (GMT, in[GMT_X], in[GMT_Y], x, y);	/* In Cartesian units or km (if map is true) */
-							if (this_r > r_km && !Ctrl->S.slide) continue;	/* Beyond the base of the seamount */
-#if 0
-							if (doubleAlmostEqualZero (this_r, 0.0)) {
-								dx = 0.0;	/* Break point here if debugging peak of seamount location */
-							}
-#endif
-							/* In the following, orig_add is the height of the seamount prior to any truncation, while add is the current value (subject to truncation) */
-							if (Ctrl->E.active) {	/* For elliptical bases we must deal with direction etc */
-								dx = (map) ? (x - in[GMT_X]) * GMT->current.proj.DIST_KM_PR_DEG * c : (x - in[GMT_X]);
-								dy = (map) ? (y - in[GMT_Y]) * GMT->current.proj.DIST_KM_PR_DEG : (y - in[GMT_Y]);
-								this_r = A * dx * dx + 2.0 * B * dx * dy + C * dy * dy;
-								/* this_r is now r^2 in the 0 to -4.5 range expected for the Gaussian case */
-								rr = sqrt (-this_r/4.5);	/* Convert this r^2 to a normalized radius 0-1 inside cone */
-								if (Ctrl->A.active && rr > 1.0) continue;	/* Beyond the seamount base so nothing to do for a mask */
-							}
-							else	/* Circular features are simpler */
-								rr = this_r / r_km;	/* Now in 0-1 range */
-
-							/* Compute next height (add) it the untruncated version if -F is set (orig_add) */
-							add = grdseamount_height (Ctrl, this_r, rr, h_scale, f, exp_f, noise, &orig_add);
-							/* Both add and orig_add are normalized fractions of full seamount height */
-							z_assign = amplitude * add;		/* Height to be added to grid if no slide */
-							if (Ctrl->S.slide) {	/* Must handle the sector variation */
-								double s;
-								if (grdseamount_in_sector (GMT, Ctrl, Grid, in, row, col, &s)) {	/* Inside slide sector */
-									/* If we are outside the radial slide range then grdseamount_slide returns z_assign so the flank height is selected */
-									z_assign = grdseamount_slide (GMT, Ctrl, r_in, rr, z_assign, s);
-								}
-							}
-							if (z_assign <= 0.0) continue;	/* No amplitude, so skip */
-							/* z_assign is the height to be added to the grid */
-							ij = gmt_M_ijp (Grid->header, row, col);	/* Current node location */
-							if (Ctrl->A.active)	/* No amplitude, just set inside value for mask */
-								Grid->data[ij] = Ctrl->A.value[GMT_IN];
-							else {	/* Add in contribution and keep track of max height */
-								Grid->data[ij] += (gmt_grdfloat)z_assign;
-								if (Grid->data[ij] > max) max = Grid->data[ij];
-							}
-							if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
-								/* When -T is not active then we build the complete seamount as is.  In that case
-								 * we want to use z1 = 0 and z2 = h(r) in the mean density solution.  However, if
-								 * -T is active and this is just an incremental layer (or cumulative surface), then we
-								 * must know the final h(r) as well as the two z-values for the previous and current height at r */
-								double h_at_r = h_orig * orig_add;	/* This is fully-built height at this radius */
-								double z1_at_r = (exact_increments) ? prev_z[ij] : 0.0;	/* Should be previous height or 0.0 */
-								double z2_at_r = amplitude * orig_add;	/* Current or final height */
-								dz = z2_at_r - z1_at_r;	/* Range of integrated depths */
-								rho = grdseamount_mean_density (Ctrl, h_at_r, z1_at_r, z2_at_r);
-								rho_z = rho * dz;
-								Ave->data[ij]  += (gmt_grdfloat)rho_z;	/* Must add up these since seamounts may overlap */
-								rho_weight[ij] += (gmt_grdfloat)dz;
-								sum_rz += rho_z;
-								sum_z += dz;
-								if (exact_increments) prev_z[ij] = amplitude * orig_add;
-							}
-							if (first) {	/* May have to copy over to repeated column in global gridline-registered grids */
-								if (col == 0) {	/* Must copy from x_min to repeated column at x_max */
-									if (Ctrl->A.active) Grid->data[ij+nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij+nx1] += (gmt_grdfloat)z_assign;
-									if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
-										Ave->data[ij+nx1]  += (gmt_grdfloat)rho_z;
-										rho_weight[ij+nx1] += (gmt_grdfloat)rho_z;
-									}
-									first = false;
-								}
-								else if (col == nx1) {	/* Must copy from x_max to repeated column at x_min */
-									if (Ctrl->A.active) Grid->data[ij-nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij-nx1] += (gmt_grdfloat)z_assign;
-									if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
-										Ave->data[ij-nx1]  += (gmt_grdfloat)rho_z;
-										rho_weight[ij-nx1] += (gmt_grdfloat)rho_z;
-									}
-									first = false;
-								}
-							}
-							empty = false;	/* We have made a change to this grid */
-						}
-					}
-					if (sum_z > 0.0) {	/* This is only true when -H -W are used */
-						double mean_rho = sum_rz / sum_z;
-						GMT_Report (API, GMT_MSG_INFORMATION, "Seamount # %d mean density: %g\n", n_smts, mean_rho);
-					}
+			f = S[smt].f;	/* Flattening given by input file */
+			sum_rz = sum_z = 0.0;	/* Reset counters for this seamount */
+			if (Ctrl->T.active) {	/* Must compute volume fractions v_curr, v_prev of an evolving seamount */
+				life_span = S[smt].t0 - S[smt].t1;	/* Total life span of this seamount */
+				if (Ctrl->Q.fmode == FLUX_GAUSSIAN) {	/* Gaussian volume flux */
+					if (t == 0) prev_user_time = DBL_MAX;
+					t_mid = 0.5 * (S[smt].t0 + S[smt].t1);	/* time at mid point in evolution */
+					v_curr = 0.5 * (1.0 + erf (-6.0 * (this_user_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at end of this time step */
+					v_prev = 0.5 * (1.0 + erf (-6.0 * (prev_user_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at start of this time step */
+					if (v_prev < 0.0015) v_prev = 0.0;	/* Deal with the 3-sigma truncation, i.e., throw first tail in with first slice */
+					if (v_curr > 0.9985) v_curr = 1.0;	/* Deal with the 3-sigma truncation, i.e., throw last tail in with last slice */
 				}
+				else {	/* Linear volume flux */
+					if (t == 0) prev_user_time = S[smt].t0;
+					v_curr = (S[smt].t0 - this_user_time) / life_span;	/* Normalized volume fraction at end of this time step */
+					v_prev = (S[smt].t0 - prev_user_time) / life_span;	/* Normalized volume fraction at start of this time step */
+				}
+				/* Since we don't skip seamounts after they have completed when we want cumulative heights, we add a few further checks */
+				if (v_curr > 1.0) v_curr = 1.0;	/* When we pass the end-life of the volcano we stop at 1 since the volcano is now fully grown */
+				if (v_prev > 1.0) v_prev = 1.0;	/* When we pass the end-life of the volcano we stop at 1 since the volcano is now fully grown */
+				/* When v_curr == v_prev after a volcano has stopped growing the incremental change will be zero */
+				dV = V[smt] * (v_curr - v_prev);	/* Incremental volume produced */
+				V_sum[smt] += dV;			/* Keep track of volume sum so we can compare with truth later */
+				h0 = S[smt].height;
+				if (Ctrl->Q.disc) {	/* Obtain the equivalent disc parameters given the volumes found */
+					phi_curr = phi_solver[build_mode] (&S[smt], f, v_curr, Ctrl->E.active);
+					phi_prev = phi_solver[build_mode] (&S[smt], f, v_prev, Ctrl->E.active);
+					switch (build_mode) {	/* Given the phi values, evaluate the corresponding heights */
+						case SHAPE_CONE:  h_curr = h0 * (1 - phi_curr) / (1 - f); h_prev = h0 * (1 - phi_prev) / (1 - f); break;
+						case SHAPE_PARA:  h_curr = h0 * (1 - phi_curr * phi_curr) / (1 - f * f); h_prev = h0 * (1 - phi_prev * phi_prev) / (1 - f * f); break;
+						case SHAPE_GAUS:  h_curr = h0 * exp (4.5 * (f*f - phi_curr * phi_curr)); h_prev = h0 * exp (4.5 * (f*f - phi_prev * phi_prev)); break;
+						case SHAPE_POLY:  pf = poly_smt_func (f); h_curr = h0 * poly_smt_func (phi_curr) / pf; h_prev = h0 * poly_smt_func (phi_prev) / pf;	break;
+						//case SHAPE_POLY:  pf = poly_smt_func (f); h_curr = MIN (h0, h0 * poly_smt_func (phi_curr) / pf); h_prev = MIN (h0, h0 * poly_smt_func (phi_prev) / pf);	break;
+					}
+					h_mean = fabs (h_curr - h_prev);	/* This is our disc layer thickness */
+					r_mean = sqrt (dV / (M_PI * h_mean));	/* Radius given by volume and height */
+					h_sum[smt] += h_mean;		/* Keep track of height sum so we can compare with truth later */
+
+					GMT_Report (API, GMT_MSG_DEBUG, "r_mean = %.1f h_mean = %.1f v_prev = %.3f v_curr = %.3f phi_prev = %.3f phi_curr = %.3f h_prev = %.1f h_curr = %.1f V_sum = %g h_sum = %g\n",
+						r_mean, h_mean, v_prev, v_curr, phi_prev, phi_curr, h_prev, h_curr, V_sum[smt], h_sum[smt]);
+					/* Replace the values in the in array with these incremental values instead */
+					if (Ctrl->E.active) {	/* Elliptical parameters */
+						e = S[smt].major / S[smt].minor;	/* Eccentricity */
+						major = r_mean / sqrt (e);	/* Since we solved for sqrt (a*b) above */
+						minor = major * e;
+					}
+					else {	/* Circular */
+						radius = r_mean;
+					}
+					scale_curr = 1.0;
+				}
+				else	/* Here we want the exact surface at the reduced radius and height given by the scale related to the volume fraction */
+					scale_curr = pow (v_curr, ONE_THIRD);
+			}
+
+			scol_0 = (int)gmt_M_grd_x_to_col (GMT, lon, Grid->header);	/* Center column */
+			if (scol_0 < 0) continue;	/* Still outside x-range */
+			if (scol_0 >= (int)Grid->header->n_columns) continue;	/* Still outside x-range */
+			srow_0 = (int)gmt_M_grd_y_to_row (GMT, S[smt].lat, Grid->header);	/* Center row */
+			if (srow_0 < 0) continue;	/* Still outside y-range */
+			if (srow_0 >= (int)Grid->header->n_rows) continue;	/* Still outside y-range */
+
+			c = (map) ? cosd (S[smt].lat) : 1.0;	/* Flat Earth area correction */
+
+			if (Ctrl->E.active) {	/* Elliptical seamount parameters */
+				sincos ((90.0 - S[smt].azimuth) * D2R, &sa, &ca);	/* azimuth in degrees, convert to direction, get sin/cos */
+				a = scale_curr * major;			/* Semi-major axis */
+				b = scale_curr * minor;			/* Semi-minor axis */
+				e = b / a;		/* Eccentricity */
+				e2 = e * e;
+				ca2 = ca * ca;
+				sa2 = sa * sa;
+				r_km = b * Ctrl->S.value;	/* Scaled semi-minor axis in user units (Cartesian or km) */
+				exp_f = -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
+				A = exp_f * (e2 * ca2 + sa2);	/* Elliptical components A, B, C needed to evaluate radius(az) */
+				B = -exp_f * (sa * ca * (1.0 - e2));
+				C = exp_f * (e2 * sa2 + ca2);
+				r_in = a;			/* Semi-major axis in user units (Cartesian or km)*/
+				r_km = r_in * Ctrl->S.value;	/* Scaled semi-major axis in user units (Cartesian or km) */
+			}
+			else {	/* Circular features */
+				r_in = a = b = scale_curr * radius;	/* Radius in user units */
+				r_km = r_in * Ctrl->S.value;	/* Scaled up by user scale */
+				exp_f = (inc_mode == SHAPE_CONE) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
+			}
+			amplitude = scale_curr * S[smt].height;		/* Seamount max height from base */
+
+			switch (inc_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
+				case SHAPE_CONE:  h_scale = 1.0 / (1.0 - f); break;
+				case SHAPE_DISC:  h_scale = 1.0; break;
+				case SHAPE_PARA:  h_scale = 1.0 / (1.0 - f * f); break;
+				case SHAPE_POLY:  h_scale = 1.0 / poly_smt_func (f); break;
+				case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * f * f); break;
+			}
+			if (inc_mode == SHAPE_GAUS) h_scale *= g_scl;	/* Adjust for the fact we only go to -/+ 3 sigma and not infinity */
+			if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
+
+			if (Ctrl->S.slide) {	/* Compute the radii needed for slide calculations below. ASSUMES CIRCULAR FOR NOW */
+				double Vf, Vs, Vq, u0 = Ctrl->S.L.u0;
+				for (k = 0; k < S[smt].n_slides; k++) {
+					S[smt].Slide[k].r1 = grdseamount_r_from_h (build_mode, S[smt].Slide[k].h1, r_in, S[smt].height, f);
+					S[smt].Slide[k].r2 = grdseamount_r_from_h (build_mode, S[smt].Slide[k].h2, r_in, S[smt].height, f);
+					S[smt].Slide[k].rc = grdseamount_r_from_h (build_mode, S[smt].Slide[k].hc, r_in, S[smt].height, f);
+					Vf = pappas_func[build_mode] (r_in, S[smt].height, f, S[smt].Slide[k].r1, S[smt].Slide[k].r2);	/* Volume beneath flank surface for given shape */
+					if (Ctrl->S.got_v) {	/* Must compute u0 to match specified slide volume (else we use given u0) */
+						shape_func[build_mode] (a, b, amplitude, 0.0, f, &area, &volume, &height);	/* Get full seamount volume */
+						u0 = grdseamount_slide_u0 (GMT, Ctrl, Vf, volume);	/* Corresponding u0 to use */
+					}
+					Vq = grdseamount_pappas_slide (Ctrl, u0);	/* Volume beneath slide surface */
+					Vs = Vf - Vq;	/* Actual slide volume (over 0-360 so not specific yet) */
+					S[smt].Slide[k].rd = grdseamount_distal_r (Ctrl, r_in, Vs);
+					GMT_Report (API, GMT_MSG_INFORMATION, "Seamount # %d Slide %d: r2 = %lg r1 = %lg rc = %lg rd = %lg, u0 = %lg, Vs = %lg\n",
+					smt, k, S[smt].Slide[k].r2, S[smt].Slide[k].r1, S[smt].Slide[k].rc, S[smt].Slide[k].rd, u0, Vs);
+				}
+			}
+
+			/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
+			gmt_M_free (GMT, d_col);
+			d_col = gmt_prep_nodesearch (GMT, Grid, r_km, d_mode, &d_row, &max_d_col);
+
+			for (srow = srow_0 - (int)d_row; srow <= (srow_0 + (int)d_row); srow++) {
+				if (srow < 0) continue;
+				if ((row = (openmp_int)srow) >= (openmp_int)Grid->header->n_rows) continue;
+				y = gmt_M_grd_row_to_y (GMT, row, Grid->header);
+				first = replicate;	/* Used to help us deal with duplicate columns for grid-line registered global grids */
+				for (scol = scol_0 - (int)d_col[row]; scol <= (scol_0 + (int)d_col[row]); scol++) {
+					if (!periodic) {
+						if (scol < 0) continue;
+						if ((col = (openmp_int)scol) >= (openmp_int)Grid->header->n_columns) continue;
+					}
+					if (scol < 0)	/* Periodic grid: Break on through to other side! */
+						col = scol + nx1;
+					else if ((col = (openmp_int)scol) >= (openmp_int)Grid->header->n_columns) 	/* Periodic grid: Wrap around to other side */
+						col -= nx1;
+					/* "silent" else we are inside w/e */
+					x = gmt_M_grd_col_to_x (GMT, col, Grid->header);
+					this_r = gmt_distance (GMT, lon, S[smt].lat, x, y);	/* In Cartesian units or km (if map is true) */
+					if (this_r > r_km && !Ctrl->S.slide) continue;	/* Beyond the base of the seamount */
+#if 0
+					if (doubleAlmostEqualZero (this_r, 0.0)) {
+						dx = 0.0;	/* Break point here if debugging peak of seamount location */
+					}
+#endif
+					/* In the following, orig_add is the height of the seamount prior to any truncation, while add is the current value (subject to truncation) */
+					if (Ctrl->E.active) {	/* For elliptical bases we must deal with direction etc */
+						dx = (map) ? (x - lon) * GMT->current.proj.DIST_KM_PR_DEG * c : (x - lon);
+						dy = (map) ? (y - S[smt].lat) * GMT->current.proj.DIST_KM_PR_DEG : (y - S[smt].lat);
+						this_r = A * dx * dx + 2.0 * B * dx * dy + C * dy * dy;
+						/* this_r is now r^2 in the 0 to -4.5 range expected for the Gaussian case */
+						rr = sqrt (-this_r/4.5);	/* Convert this r^2 to a normalized radius 0-1 inside cone */
+						if (Ctrl->A.active && rr > 1.0) continue;	/* Beyond the seamount base so nothing to do for a mask */
+					}
+					else	/* Circular features are simpler */
+						rr = this_r / r_km;	/* Now in 0-1 range */
+
+					/* Compute next height (add) it the untruncated version if -F is set (orig_add) */
+					add = grdseamount_height (Ctrl, this_r, rr, h_scale, f, exp_f, noise, &orig_add);
+					/* Both add and orig_add are normalized fractions of full seamount height */
+					z_assign = amplitude * add;		/* Height to be added to grid if no slide */
+					if (Ctrl->S.slide) {	/* Must handle the sector variation */
+						double s;
+						for (k = 0; k < S[smt].n_slides; k++) {	/* See if we are inside any of the slide sectors */
+							if (grdseamount_in_sector (GMT, Ctrl, &S[smt].Slide[k], Grid, in, row, col, &s)) {	/* Inside slide sector */
+								/* If we are outside the radial slide range then grdseamount_slide returns z_assign so the flank height is selected */
+								z_assign = grdseamount_slide (GMT, &S[smt].Slide[k], r_in, rr, z_assign, s);
+							}
+						}
+					}
+					if (z_assign <= 0.0) continue;	/* No amplitude, so skip */
+					/* z_assign is the height to be added to the grid */
+					ij = gmt_M_ijp (Grid->header, row, col);	/* Current node location */
+					if (Ctrl->A.active)	/* No amplitude, just set inside value for mask */
+						Grid->data[ij] = Ctrl->A.value[GMT_IN];
+					else {	/* Add in contribution and keep track of max height */
+						Grid->data[ij] += (gmt_grdfloat)z_assign;
+						if (Grid->data[ij] > max) max = Grid->data[ij];
+					}
+					if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
+						/* When -T is not active then we build the complete seamount as is.  In that case
+						 * we want to use z1 = 0 and z2 = h(r) in the mean density solution.  However, if
+						 * -T is active and this is just an incremental layer (or cumulative surface), then we
+						 * must know the final h(r) as well as the two z-values for the previous and current height at r */
+						double h_at_r = S[smt].height * orig_add;	/* This is fully-built height at this radius */
+						double z1_at_r = (exact_increments) ? prev_z[ij] : 0.0;	/* Should be previous height or 0.0 */
+						double z2_at_r = amplitude * orig_add;	/* Current or final height */
+						dz = z2_at_r - z1_at_r;	/* Range of integrated depths */
+						rho = grdseamount_mean_density (Ctrl, h_at_r, z1_at_r, z2_at_r);
+						rho_z = rho * dz;
+						Ave->data[ij]  += (gmt_grdfloat)rho_z;	/* Must add up these since seamounts may overlap */
+						rho_weight[ij] += (gmt_grdfloat)dz;
+						sum_rz += rho_z;
+						sum_z += dz;
+						if (exact_increments) prev_z[ij] = amplitude * orig_add;
+					}
+					if (first) {	/* May have to copy over to repeated column in global gridline-registered grids */
+						if (col == 0) {	/* Must copy from x_min to repeated column at x_max */
+							if (Ctrl->A.active) Grid->data[ij+nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij+nx1] += (gmt_grdfloat)z_assign;
+							if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
+								Ave->data[ij+nx1]  += (gmt_grdfloat)rho_z;
+								rho_weight[ij+nx1] += (gmt_grdfloat)rho_z;
+							}
+							first = false;
+						}
+						else if (col == nx1) {	/* Must copy from x_max to repeated column at x_min */
+							if (Ctrl->A.active) Grid->data[ij-nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij-nx1] += (gmt_grdfloat)z_assign;
+							if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
+								Ave->data[ij-nx1]  += (gmt_grdfloat)rho_z;
+								rho_weight[ij-nx1] += (gmt_grdfloat)rho_z;
+							}
+							first = false;
+						}
+					}
+					empty = false;	/* We have made a change to this grid */
+				}
+			}
+			if (sum_z > 0.0) {	/* This is only true when -H -W are used */
+				double mean_rho = sum_rz / sum_z;
+				GMT_Report (API, GMT_MSG_INFORMATION, "Seamount # %d mean density: %g\n", n_smts, mean_rho);
 			}
 			prev_user_time = this_user_time;	/* Make this the previous time */
 		}
