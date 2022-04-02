@@ -102,10 +102,10 @@ Optional Arguments
     **o** (polynomial) and **p** (parabolic) shapes [Default is Gaussian].  All but the disc can
     furthermore be truncated via a flattening parameter *f* set by **-F**.  If **-C** is not given any
     argument then we will read the shape code from the trailing text.  If **-C** is not given
-    at all then we default to Gaussian shapes [**g**].  **Note**: The polynomial model has an amplitude
-    for a normalized radius *r* that is given by :math:`h(r) = \frac{(1+r)^3(1-r)^3)}{1+r^3}`.  It is
-    very similar to the Gaussian model (volume is just ~2.4% larger) but *h* goes exactly to zero at
-    the basal radius.
+    at all then we default to Gaussian shapes [**g**].  **Note**: The polynomial model has an normalized amplitude
+    for a normalized radius :math:`u = r / r_0` that is given by :math:`v(u) = \frac{(1+u)^3(1-u)^3)}{1+u^3}`.
+    It is very similar to the Gaussian model (volume is just ~2.4% larger) but *v* goes exactly to zero at
+    the basal radius :math:`r_0`.
 
 .. figure:: /_images/GMT_seamount_types.*
    :width: 500 px

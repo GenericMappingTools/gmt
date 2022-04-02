@@ -78,7 +78,8 @@ struct SLIDE {	/* Hold information for one slide */
 	double h1, h2;		/* Two escarpment heights, with h2 > h1 */
 	double hc;			/* Height of deposit at toe of seamount [h1/2] */
 	double az1, az2;	/* Azimuthal range of the slide [0/360] */
-	double u0;			/* Radial slide shape parameter */
+	double u0;			/* Given radial slide shape parameter */
+	double u0_effective;	/* Radial slide shape parameter if recomputed to match volumes */
 	double t0, t1;		/* Start and end time of slide */
 	double p;			/* Azimuthal power parameter */
 	double phi;			/* Desired volume fraction (%) of the whole */
@@ -672,9 +673,9 @@ GMT_LOCAL void grdseamount_disc_area_volume_height (double a, double b, double h
 	gmt_M_unused(f);
 
 	r2 = a * b;
-	*A = M_PI * r2;
-	*z = h - hc;
-	*V = *A * (*z);
+	if (A) *A = M_PI * r2;
+	if (V) *z = h - hc;
+	if (z && A && V) *V = *A * (*z);
 }
 
 GMT_LOCAL void grdseamount_para_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
@@ -684,9 +685,9 @@ GMT_LOCAL void grdseamount_para_area_volume_height (double a, double b, double h
 	r2 = a * b;
 	e = 1.0 - f*f;
 	rc2 = r2 * (1.0 - e * hc / h);	/* product of a*b where h = hc */
-	*A = M_PI * rc2;
-	*V = 0.5 * M_PI * r2 * h * (e * pow ((1.0/e) - (hc/h), 2.0) - f*f*((1.0/e)-1.0));
-	*z = (*V) / (*A);
+	if (A) *A = M_PI * rc2;
+	if (V) *V = 0.5 * M_PI * r2 * h * (e * pow ((1.0/e) - (hc/h), 2.0) - f*f*((1.0/e)-1.0));
+	if (z && A && V) *z = (*V) / (*A);
 }
 
 GMT_LOCAL void grdseamount_cone_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
@@ -696,9 +697,9 @@ GMT_LOCAL void grdseamount_cone_area_volume_height (double a, double b, double h
 
 	r2 = a * b;
 	e = 1.0 - f;
-	*A = M_PI * r2 * (1.0 - e * hc / h);
-	*V = (M_PI / (3 * e)) * r2 * h * (pow (e, 3.0) * pow ((1.0 / e) - (hc / h), 3.0) - pow (f, 3.0));
-	*z = (*V) / (*A);
+	if (A) *A = M_PI * r2 * (1.0 - e * hc / h);
+	if (V) *V = (M_PI / (3 * e)) * r2 * h * (pow (e, 3.0) * pow ((1.0 / e) - (hc / h), 3.0) - pow (f, 3.0));
+	if (z && A && V) *z = (*V) / (*A);
 }
 
 GMT_LOCAL void grdseamount_gaussian_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
@@ -710,17 +711,17 @@ GMT_LOCAL void grdseamount_gaussian_area_volume_height (double a, double b, doub
 	c = (9.0 / 2.0) * f * f;
 	r2 = (circular) ? a * a : a * b;
 	if (fabs (hc) < GMT_CONV8_LIMIT) {	/* Exact, no noise floor */
-		*A = M_PI * r2;
-		*V = (2.0 / 9.0) * M_PI * r2 * h * (1.0 + c);
+		if (A) *A = M_PI * r2;
+		if (V) *V = (2.0 / 9.0) * M_PI * r2 * h * (1.0 + c);
 	}
 	else {			/* Noise floor at hc */
 		t = hc / h;
 		logt = log (t);
 		c = 1.0 + (9.0 / 2.0) * f * f;
-		*A = (2.0 / 9.0) * M_PI * r2 * (c - logt);
-		*V = (2.0 / 9.0) * M_PI * r2 * h * (1.0 + c - t * (1.0 + c - logt));
+		if (A) *A = (2.0 / 9.0) * M_PI * r2 * (c - logt);
+		if (V) *V = (2.0 / 9.0) * M_PI * r2 * h * (1.0 + c - t * (1.0 + c - logt));
 	}
-	*z = (*V) / (*A);
+	if (z && A && V) *z = (*V) / (*A);
 }
 
 GMT_LOCAL double poly_smt_func (double r) {
@@ -775,9 +776,9 @@ GMT_LOCAL void grdseamount_poly_area_volume_height (double a, double b, double h
 	double beta = (poly_smt_vol (rc) - poly_smt_vol (f)) / poly_smt_func (f);
 	r2 = (circular) ? a * a : a * b;
 	r = sqrt (r2);	/* Mean radius */
-	*A = M_PI * r2;
-	*V = r2 * h * (beta + M_PI * f * f) - M_PI * pow (rc * r, 2.0) * hc;
-	*z = (*V) / (*A);
+	if (A) *A = M_PI * r2;
+	if (V) *V = r2 * h * (beta + M_PI * f * f) - M_PI * pow (rc * r, 2.0) * hc;
+	if (z && A && V) *z = (*V) / (*A);
 }
 
 /* Below, phi is a factor that we scale with r (or a,b) for a seamount matching the volume fraction */
@@ -870,29 +871,28 @@ GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double
 
 GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct SEAMOUNT *S, unsigned int slide, struct GMT_GRID *G, unsigned int row, unsigned int col, double *s) {
 	/* Return true if the azimuth from seamount center to this point is inside the wedge selected via -S+a.
-	 * If inside we also compute the azimuthal scale s if +p was set */
+	 * If inside we also compute the azimuthal scale s if +p was set, but we return
+	 * the boosting scale (1 - [s - s_bar]) to use to modify r and h */
 	bool in_sector = false;
 	double dx = G->x[col] - S->lon, dy = G->y[row] - S->lat;
 	double az = (dx == 0.0 && dy == 0.0) ? 0.0 : R2D * atan2 (dy, dx) - 360.0;	/* Make sure we start negative */
 	gmt_M_unused (GMT);
-	*s = 0.0;	/* Default */
+	*s = 1.0;	/* Default is no boost or reduction */
 	while (az < S->Slide[slide].az1) az += 360.0;	/* Keep wrapping until we pass az1 */
 	if (az <= S->Slide[slide].az2) {	/* Inside sector, compute s */
 		in_sector = true;
 		if (Ctrl->S.got_p) {	/* Evaluate scale */
 			double gamma = fabs (2.0 * (az - S->Slide[slide].az1) / (S->Slide[slide].az2 - S->Slide[slide].az1) - 1.0);
-			*s = pow (gamma, S->Slide[slide].p);
+			*s = (1.0 - (pow (gamma, S->Slide[slide].p) - 0.5 * (S->Slide[slide].p + 1.0)));
 		}
 	}
-
 	return (in_sector);
 }
 
-GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SLIDE *S, double r_km, double r, double frac, double hf, double s) {
+GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SLIDE *S, double r_km, double r, double hf, double s) {
 	/* r is normalized radial position (0-1), and input hf and output height h are as well.
-	 * s is the azimuthal scale which is 0 if no azimuth variation was requested.
-	 * frac goes from 0-1 over the linear evolution of the slide */
-	double u, this_r = r * r_km, q, hs, hs_full, h;
+	 * s is the azimuthal scale which is 0 if no azimuth variation was requested. */
+	double u, this_r = r * r_km, q, hs, h;
 	gmt_M_unused (GMT);
 	if (this_r < S->r2) return hf;	/* Before slide range, return the regular height */
 	if (this_r > S->rd) return hf;	/* Beyond distal range, return the regular height  (likely zero) */
@@ -903,9 +903,8 @@ GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SLIDE *S, doubl
 	if (this_r > S->r1) return hf;	/* Between foot of slide and toe of deposit, return the regular height */
 	/* Here we are within the slide radial range */
 	u = ((this_r - S->r2) / (S->r1 - S->r2));	/* Normalized radial u inside the slide range of 0-1 */
-	q = S->u0 * ((1.0 + S->u0) / (u + S->u0) - 1.0);	/* Normalized slide shape function q(u) */
-	hs_full = S->h1 + (S->h2 - S->h1) * q;	/* Slide height scaled to actual topography */
-	hs = frac * hs_full + (1.0 - frac) * hf;	/* Scale between full hs and hf depending on relative timing (frac) */
+	q = S->u0_effective * ((1.0 + S->u0_effective) / (u + S->u0_effective) - 1.0);	/* Normalized slide shape function q(u) */
+	hs = S->h1 + (S->h2 - S->h1) * q;	/* Slide height scaled to actual topography */
 	h = hf * s + (1.0 - s) * hs;	/* Handle azimuthal variation (if any) by blending flank and slide heights using s(alpha) */
 	return(h);
 }
@@ -990,7 +989,7 @@ GMT_LOCAL double ubar (double u0) {
 
 GMT_LOCAL double grdseamount_pappas_slide (struct SLIDE *S, double u0) {
 	/* Compute flank crossectional area and centroid distance from axis for the slide model and return volume via Pappas.
-	 * Here dh = h2 - h1. We split solution into upper (u) and lower (l) portions */
+	 * Here dh = h2 - h1. We split solution into upper (u) and lower (l) portions. */
 	double dr = S->r1 - S->r2, dh = S->h2 - S->h1, u0_1 = 1.0 + u0, As_u, rs_u, As_l, rs_l;
 	As_u = dh * dr * u0 * (u0_1 * log (u0_1 / u0) - 1.0);
 	rs_u = S->r2 + dr * ubar (u0);
@@ -1006,11 +1005,11 @@ GMT_LOCAL double grdseamount_distal_r (struct SLIDE *S, double r0, double Vs) {
 	return (rd);
 }
 
-GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct SLIDE *S, double Vf, double V0) {
+GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct SLIDE *S, double Vf, double V0, double phi) {
 	/* Determine the tuning parameter u0 that yields the specified slide fraction */
 
 	double dr = S->r1 - S->r2, dh = S->h2 - S->h1;
-	double rhs = 0.5 * ((Vf - S->phi * V0) / (M_PI * dr) - S->h1 * (S->r1 + S->r2)) / dh;
+	double rhs = 0.5 * ((Vf - phi * V0) / (M_PI * dr) - S->h1 * (S->r1 + S->r2)) / dh;
 	double u0_next, u0_1, du, u0 = 0.1;	/* Trial value */
 	int n_iter = 0;
 	gmt_M_unused (GMT);
@@ -1271,7 +1270,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, v_curr, v_prev, *V = NULL;
 	double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch, prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf;
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL, g_noise = exp (-4.5), g_scl = 1.0 / (1.0 - g_noise), phi_prev, phi_curr;
-	double orig_add, dz, rho_z, sum_rz, sum_z, exp_f, radius, minor, major;
+	double orig_add, dz, rho_z, sum_rz, sum_z, exp_f, radius, minor, major, r_max, t_slide_fraction = 1.0;
 	double (*pappas_func[N_SHAPES]) (double r0, double h0, double f, double r1, double r2);
 	double (*phi_solver[N_SHAPES]) (struct SEAMOUNT *S, double f, double v, bool elliptical);
 	void (*shape_func[N_SHAPES]) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
@@ -1624,30 +1623,68 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			if (inc_mode == SHAPE_GAUS) h_scale *= g_scl;	/* Adjust for the fact we only go to -/+ 3 sigma and not infinity */
 			if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
 
+			r_max = r_km;	/* No point searching beyond this radius */
 			if (Ctrl->S.slide) {	/* Compute the radii needed for slide calculations below. ASSUMES CIRCULAR FOR NOW */
-				double Vf, Vs, Vq, u0;
+				bool compute_V0 = true;	/* So that we only do that calculation once per seamount */
+				unsigned int want_specific_volume = 0;	/* >0  in cases were we must recompute u0 from desired volume fraction */
+				double Vf, Vs, Vq, V0, Vs_0, s_bar, a_scale, phi_0, phi;
 				for (k = 0; k < S[smt].n_slides; k++) {
 					S[smt].Slide[k].r1 = grdseamount_r_from_h (S[smt].build_mode, S[smt].Slide[k].h1, r_in, S[smt].height, f);
 					S[smt].Slide[k].r2 = grdseamount_r_from_h (S[smt].build_mode, S[smt].Slide[k].h2, r_in, S[smt].height, f);
 					S[smt].Slide[k].rc = grdseamount_r_from_h (S[smt].build_mode, S[smt].Slide[k].hc, r_in, S[smt].height, f);
 					Vf = pappas_func[S[smt].build_mode] (r_in, S[smt].height, f, S[smt].Slide[k].r1, S[smt].Slide[k].r2);	/* Volume beneath flank surface for given shape */
-					if (Ctrl->S.got_v) {	/* Must compute u0 to match specified slide volume (else we use given u0) */
-						if (k == 0) shape_func[S[smt].build_mode] (a, b, amplitude, 0.0, f, &area, &volume, &height);	/* Get full seamount volume (once) */
-						u0 = grdseamount_slide_u0 (GMT, &S[smt].Slide[k], Vf, volume);	/* Corresponding u0 to use */
+					if (Ctrl->T.active) {	/* Must check if we are in the right time window for a slide and if dealing with a partial slide */
+						if (this_user_time >= S[smt].Slide[k].t0) continue;	/* Not started sliding yet, skip here */
+						if (this_user_time <  S[smt].Slide[k].t1 && !exact) continue;	/* Completed sliding so making no contribution to incremental discs, again skip */
+						/* Here we are inside the slide time window and need to compute the fraction of the slide (0-1) that should be used so far */
+						t_slide_fraction = (this_user_time <  S[smt].Slide[k].t1) ? 1.0 : (S[smt].Slide[k].t0 - this_user_time) / (S[smt].Slide[k].t0 - S[smt].Slide[k].t1);
 					}
-					else
-						u0 = S[smt].Slide[k].u0;
-					Vq = grdseamount_pappas_slide (&S[smt].Slide[k], u0);	/* Volume beneath slide surface */
-					Vs = Vf - Vq;	/* Actual slide volume (over 0-360 so not specific yet) */
-					S[smt].Slide[k].rd = grdseamount_distal_r (&S[smt].Slide[k], r_in, Vs);
+					want_specific_volume = 0;	/* To be determined below */
+					/* If either +v is used or t_slide_fraction < 1.0 then we will need to know the full seamount volume */
+					if ((Ctrl->S.got_v || t_slide_fraction < 1.0) && compute_V0) { 	/* Get full seamount volume (once) */
+						shape_func[S[smt].build_mode] (a, b, amplitude, 0.0, f, NULL, &V0, NULL);
+						compute_V0 = false;	/* Done with you */
+					}
+					/* If +v is used then phi_0 is given, but if t_slide_fraction < 1 we want to use t_slide_fraction * phi_0 to compute u0 */
+					if (Ctrl->S.got_v) {	/* Must compute u0 to match specified slide volume (else we use given u0) */
+						/* If we have selected an azimuthal slide change due to +p, the volume integral for Vq needs to be reduced */
+						s_bar = (Ctrl->S.got_p) ? 0.5 * (S[smt].Slide[k].p + 1.0) : 0.0;
+						a_scale = 1.0 / (1.0 - s_bar);	/* Volume adjustment scale > 1 if +p is used, else 1 */
+						phi_0 = a_scale * S[smt].Slide[k].phi;	/* We were given phi but need a bit more to counter the reduction from +p */
+						want_specific_volume = 2;	/* Will need to determine which u0 will give this exact volume fraction and hence actual slide volume */
+					}
+					else if (t_slide_fraction < 1.0) {	/* No +v, only linear change in Vs from full Vs_0. Must first compute Vs_0 so we can get equivalent phi_0 so we can update u0 */
+						Vq = grdseamount_pappas_slide (&S[smt].Slide[k], S[smt].Slide[k].u0);	/* Final volume beneath slide surface using initial u0 */
+						Vs_0 = Vf - Vq;		/* Actual final slide volume (as if over 0-360 so not specific yet) */
+						phi_0 = Vs_0 / V0;	/* Compute the equivalent phi for the final Vs_0 volume */
+						want_specific_volume = 1;	/* Will need to determine which u0 will give a volume fraction phi_0 * t_slide_fraction, but actual slide volume is not specified */
+					}
+					if (want_specific_volume) {	/* Must compute u0 to match specified slide volume (else we just use given u0) */
+						/* Whatever the volume fraction, we may need to reduce it due to time evolution */
+						phi = t_slide_fraction * phi_0;	/* If time-dependent then we only want this smaller fraction */
+						S[smt].Slide[k].u0_effective = grdseamount_slide_u0 (GMT, &S[smt].Slide[k], Vf, V0, phi);	/* Corresponding u0 to use */
+					}
+					else	/* None of that silliness, just use the u0 you were given */
+						S[smt].Slide[k].u0_effective = S[smt].Slide[k].u0;
+					/* Here we know the effective u0. Now we can compute the current Vq volume (volume beneath slide surface) */
+					Vq = grdseamount_pappas_slide (&S[smt].Slide[k], S[smt].Slide[k].u0_effective);	/* Volume beneath slide surface for this u0 */
+					if (want_specific_volume == 2) {	/* The u0 was selected to yield the required Vs, so Vq is correct for this time and +p, etc */
+						Vs = Vf - Vq;	/* This includes reduction due to fractional time duration and +p */
+					}
+					else {	/* Here we just computed the slide volume for given u0, with no reduction for time (or +p for that matter).  Do so now if -T is in effect */
+						Vs_0 = Vf - Vq;	/* We instead got the final volume for this slide */
+						Vs = t_slide_fraction * Vs_0;	/* Actual slide volume is reduced if +p is used but we don't care since a specific volume is not required */
+					}
+					S[smt].Slide[k].rd = grdseamount_distal_r (&S[smt].Slide[k], r_in, Vs);	/* Compute nominal rd radius */
+					if (S[smt].Slide[k].rd > r_max) r_max = S[smt].Slide[k].rd;	/* Must go all the way to the end of the mass redistribution */
 					GMT_Report (API, GMT_MSG_INFORMATION, "Seamount # %d Slide %d: r2 = %lg r1 = %lg rc = %lg rd = %lg, u0 = %lg, Vs = %lg\n",
-					smt, k, S[smt].Slide[k].r2, S[smt].Slide[k].r1, S[smt].Slide[k].rc, S[smt].Slide[k].rd, u0, Vs);
+						smt, k, S[smt].Slide[k].r2, S[smt].Slide[k].r1, S[smt].Slide[k].rc, S[smt].Slide[k].rd, S[smt].Slide[k].u0_effective, Vs);
 				}
 			}
 
 			/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
 			gmt_M_free (GMT, d_col);
-			d_col = gmt_prep_nodesearch (GMT, Grid, r_km, d_mode, &d_row, &max_d_col);
+			d_col = gmt_prep_nodesearch (GMT, Grid, r_max, d_mode, &d_row, &max_d_col);
 
 			for (srow = srow_0 - (int)d_row; srow <= (srow_0 + (int)d_row); srow++) {
 				if (srow < 0) continue;
@@ -1666,7 +1703,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					/* "silent" else we are inside w/e */
 					x = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 					this_r = gmt_distance (GMT, lon, S[smt].lat, x, y);	/* In Cartesian units or km (if map is true) */
-					if (this_r > r_km && !Ctrl->S.slide) continue;	/* Beyond the base of the seamount */
+					if (Ctrl->S.slide) {
+						if (this_r > r_max) continue;	/* Beyond the distal part of the seamount slide */
+					}
+					else if (this_r > r_km) continue;	/* Beyond the base of the seamount */
 #if 0
 					if (doubleAlmostEqualZero (this_r, 0.0)) {
 						dx = 0.0;	/* Break point here if debugging peak of seamount location */
@@ -1689,16 +1729,11 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					/* Both add and orig_add are normalized fractions of full seamount height */
 					z_assign = amplitude * add;		/* Height to be added to grid if no slide */
 					if (Ctrl->S.slide) {	/* Must handle the sector variation */
-						double s, t_frac = 1.0;
+						double s;
 						for (k = 0; k < S[smt].n_slides; k++) {	/* See if we are inside any of the slide sectors */
-							if (Ctrl->T.active) {	/* Must check if in the right time window for a slide */
-								if (this_user_time >= S[smt].Slide[k].t0) continue;	/* Not started sliding yet */
-								if (this_user_time <  S[smt].Slide[k].t1 && !exact) continue;	/* Completed sliding so making no contribution to incremental discs */
-								t_frac = (this_user_time <  S[smt].Slide[k].t1) ? 1.0 : (S[smt].Slide[k].t0 - this_user_time) / (S[smt].Slide[k].t0 - S[smt].Slide[k].t1);
-							}
-							if (grdseamount_in_sector (GMT, Ctrl, &S[smt], k, Grid, row, col, &s)) {	/* Inside slide sector */
-								/* If we are outside the radial slide range then grdseamount_slide returns z_assign so the flank height is selected */
-								z_assign = grdseamount_slide (GMT, &S[smt].Slide[k], r_in, rr, t_frac, z_assign, s);
+							if (grdseamount_in_sector (GMT, Ctrl, &S[smt], k, Grid, row, col, &s)) {	/* Inside slide sector, and s is set [0] */
+								/* If we are outside the radial slide range then grdseamount_slide returns z_assign so the undisturbed flank height is selected */
+								z_assign = grdseamount_slide (GMT, &S[smt].Slide[k], r_in, rr, z_assign, s);
 							}
 						}
 					}
@@ -1846,6 +1881,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 wrap_up:
 
+	gmt_M_free (GMT, S);
 	gmt_M_free (GMT, current);	gmt_M_free (GMT, previous);
 	gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
 	gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
