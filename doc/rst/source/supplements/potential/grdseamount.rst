@@ -52,12 +52,14 @@ a background depth (more complicated backgrounds may be added separately via :do
 The input data must contain *lon*, *lat*, *radius*, *height* for each seamount.
 For elliptical features (requires **-E**) we expect *lon*, *lat*, *azimuth*, *semi-major*, *semi-minor*,
 *height* instead. If seamount flattening is specified (via **-F**) with no value appended
-then a final column with *flattening* is expected (cannot be used for plateaus).
+then an extra column with *flattening* is expected (cannot be used for plateaus).
 For temporal evolution of topography the **-T** option may be used, in which case the
-data file must have two final columns with the start and stop time of seamount construction.
+data file must have two additional columns with the start and stop time of seamount construction.
 In this case you may choose to write out a cumulative shape or just the increments produced
-by each time step (see **-Q**).  Finally, for mixing different seamount shapes in the input *table*
-you can use the trailing text to give the shape code by using **-C** without an argument.
+by each time step (see **-Q**).  If land slides are considered (**-S**) then this initial set of
+columns are followed by one or more groups of slide parameters; see **-S** for the arrangement.
+Finally, for mixing different seamount shapes in the input *table* you can use the trailing text
+to give the shape code by using **-C** without an argument.
 
 Required Arguments (if **-L** not given)
 ----------------------------------------
@@ -227,30 +229,35 @@ Optional Arguments
 .. _-S:
 
 **-S**\ [**+a**\ [*az1*/*az2*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]]
-    Sets parameters controlling a sectoral land slide by selecting from various modifiers. If
+    Sets parameters controlling sectoral land slides by selecting from various modifiers. If
     a modifier is set but not given any arguments it means we are to read those arguments from
     the end of the input records; the order of such input arguments follows alphabetically
-    from the modifiers. Repeat slide group arguments if there are more than one slide per seamount.
+    from the modifiers. Repeat slide group columns if there are more than one slide to read per seamount.
     Use these modifiers to set slide parameters:  **+a** specifies the azimuthal sector affected by
     the slide [0/360], **+d** sets the height of the distal deposit at the toe of the seamount
     [*h1*/2], **+h** sets the lower and upper heights of the landslide scarps, **+p** activates
     azimuthal variation in slide height and sets the power parameter *power > 2*, **+t** sets the
-    time span over which the slide develops linearly, **+u** sets slide shape parameter *u0 > 0*
-    [0.2], and **+v** sets the desired fractional volume of the slide (in percent) relative to the
-    entire seamount.
+    time span over which the slide develops linearly; this modifier also requires **-T** to be
+    active, **+u** sets slide shape parameter *u0 > 0* [0.2], and **+v** sets the desired fractional
+    volume of the slide (in percent) relative to the entire seamount volume.
     **Note**: If **+v** is set we must compute the corresponding *u0* so **+u** is not allowed.
     If **+d**, **+n**, or **+u** are not given then their defaults are used for all slides.
+    Currently, there is a limit of 10 for the number of slides per seamount.
 
 .. _-T:
 
 **-T**\ *t0*\ [/*t1*/*dt*]\ [**+l**]
-    Specify *t0*, *t1*, and time increment (*dt*) for sequence of calculations
-    [Default is one step, with no time dependency].  For a single specific time, just
+    Specify *t0*, *t1*, and time increment (*dt*) for a sequence of calculations
+    [Default is one step, with no time dependency]. For a single specific time, just
     give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.
     For a logarithmic time scale, append **+l** and specify *n* steps instead of *dt*.
     Alternatively, give a file with the desired times in the first column (these times
-    may have individual units appended, otherwise we assume year).  Note that a grid
-    will be written for all time-steps even if there are no loads or no changes.
+    may have individual units appended, otherwise we assume year).  If **-T** is set
+    then the input seamount table is expected to have to extra columns for the *start*
+    and *stop* time following the initial seamount parameters (but before any slide
+    groups; see **-S**). Because positive time is years before present, we require
+    *start* >= *stop* time. **Note**: A grid will be written for all time-steps even
+    if there are no loads or no changes.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
