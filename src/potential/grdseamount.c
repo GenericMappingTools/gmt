@@ -871,19 +871,18 @@ GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double
 
 GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct SEAMOUNT *S, unsigned int slide, struct GMT_GRID *G, unsigned int row, unsigned int col, double *s) {
 	/* Return true if the azimuth from seamount center to this point is inside the wedge selected via -S+a.
-	 * If inside we also compute the azimuthal scale s if +p was set, but we return
-	 * the boosting scale (1 - [s - s_bar]) to use to modify r and h */
+	 * If inside we also compute the azimuthal scale s(alpha) if +p was set, else 0 */
 	bool in_sector = false;
 	double dx = G->x[col] - S->lon, dy = G->y[row] - S->lat;
 	double az = (dx == 0.0 && dy == 0.0) ? 0.0 : R2D * atan2 (dy, dx) - 360.0;	/* Make sure we start negative */
 	gmt_M_unused (GMT);
-	*s = 1.0;	/* Default is no boost or reduction */
+	*s = 0.0;	/* Default is no reduction */
 	while (az < S->Slide[slide].az1) az += 360.0;	/* Keep wrapping until we pass az1 */
 	if (az <= S->Slide[slide].az2) {	/* Inside sector, compute s */
 		in_sector = true;
-		if (Ctrl->S.got_p) {	/* Evaluate scale */
+		if (Ctrl->S.got_p) {	/* Evaluate s(alpha) */
 			double gamma = fabs (2.0 * (az - S->Slide[slide].az1) / (S->Slide[slide].az2 - S->Slide[slide].az1) - 1.0);
-			*s = (1.0 - (pow (gamma, S->Slide[slide].p) - 0.5 * (S->Slide[slide].p + 1.0)));
+			*s = pow (gamma, S->Slide[slide].p);
 		}
 	}
 	return (in_sector);
@@ -1223,6 +1222,7 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 					GMT_Report (API, GMT_MSG_ERROR, "Bad volume fraction value phi for seamount %" PRIu64 " slide %d (%g)\n", n, k, S[n].Slide[k].phi);
 					goto bad;
 				}
+				S[n].Slide[k].phi /= 100.0;	/* Convert to volume fractions (0-1) internally */
 			}
 		}
 		n++;	/* One more seamount ingested */
@@ -1648,7 +1648,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					/* If +v is used then phi_0 is given, but if t_slide_fraction < 1 we want to use t_slide_fraction * phi_0 to compute u0 */
 					if (Ctrl->S.got_v) {	/* Must compute u0 to match specified slide volume (else we use given u0) */
 						/* If we have selected an azimuthal slide change due to +p, the volume integral for Vq needs to be reduced */
-						s_bar = (Ctrl->S.got_p) ? 0.5 * (S[smt].Slide[k].p + 1.0) : 0.0;
+						s_bar = (Ctrl->S.got_p) ? 1.0 / (S[smt].Slide[k].p + 1.0) : 0.0;
 						a_scale = 1.0 / (1.0 - s_bar);	/* Volume adjustment scale > 1 if +p is used, else 1 */
 						phi_0 = a_scale * S[smt].Slide[k].phi;	/* We were given phi but need a bit more to counter the reduction from +p */
 						want_specific_volume = 2;	/* Will need to determine which u0 will give this exact volume fraction and hence actual slide volume */
