@@ -27,7 +27,7 @@ Synopsis
 [ |-M|\ [*list*] ]
 [ |-N|\ *norm* ]
 [ |-Q|\ *bmode*/*fmode*\ [**+d**] ]
-[ |-S|\ [**+a**\ [*az1*/*az2*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]] ]
+[ |-S|\ [**+a**\ [*az1*/*az2*]][**+b**\ [*beta*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]] ]
 [ |-T|\ *t0*\ [/*t1*/*dt*]\ [**+l**] ]
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
@@ -228,21 +228,37 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**+a**\ [*az1*/*az2*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]]
-    Sets parameters controlling sectoral land slides by selecting from various modifiers. If
-    a modifier is set but not given any arguments it means we are to read those arguments from
-    the end of the input records; the order of such input arguments follows alphabetically
-    from the modifiers. Repeat slide group columns if there are more than one slide to read per seamount.
-    Use these modifiers to set slide parameters:  **+a** specifies the azimuthal sector affected by
-    the slide [0/360], **+d** sets the height of the distal deposit at the toe of the seamount
-    [*h1*/2], **+h** sets the lower and upper heights of the landslide scarps, **+p** activates
-    azimuthal variation in slide height and sets the power parameter *power > 2*, **+t** sets the
-    time span over which the slide develops linearly; this modifier also requires **-T** to be
-    active, **+u** sets slide shape parameter *u0 > 0* [0.2], and **+v** sets the desired fractional
-    volume of the slide (in percent) relative to the entire seamount volume.
-    **Note**: If **+v** is set we must compute the corresponding *u0* so **+u** is not allowed.
-    If **+d**, **+n**, or **+u** are not given then their defaults are used for all slides.
-    Currently, there is a limit of 10 for the number of slides per seamount.
+**-S**\ [**+a**\ [*az1*/*az2*]][**+b**\ [*beta*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]]
+    Sets parameters controlling sectoral land slides by selecting suitable modifiers. Parameters
+    set on the command line apply to all seamounts equally,  However, if a modifier is set but
+    not given any arguments then we read those arguments from the end of the input record; the
+    order of such input arguments follows alphabetically from the modifiers. Repeat the slide
+    group columns if there are more than one slide to read per seamount. Use these modifiers
+    to set slide parameters:
+
+        * **+a** specifies the azimuthal sector affected by the slide [0/360].
+
+        * **+b** sets a positive power coefficient for the normalized slide volume fraction
+          time-curve :math:`\psi(\tau) = \tau^\beta` [Default is linear, i.e., 1].
+
+        * **+d** sets the height of the distal deposit at the toe of the seamount [*h1*/2].
+
+        * **+h** sets the lower and upper heights of the landslide scarps.
+
+        * **+p** activates angular variation in slide height and sets the power parameter *power > 2*.
+
+        * **+t** sets the time span over which the slide develops via :math:`\psi(\tau)`, where
+          :math:`\tau = (t - t_0)/(t_1 - t_0) is the normalized time span; this modifier also
+          requires **-T** to be set.
+
+        * **+u** sets radial slide shape parameter *u0 > 0* [0.2].
+
+        * **+v** sets desired fractional volume of the slide (in percent) relative to
+          the entire seamount volume.
+
+    **Note**: If **+v** is set then we must compute the corresponding *u0*, hence **+u** is
+    not allowed. If **+b**, **+d**, or **+u** are not set then their defaults are used for all slides.
+    Currently, we support a maximum of 10 slides per seamount.
 
 .. _-T:
 
