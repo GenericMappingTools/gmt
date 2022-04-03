@@ -64,7 +64,7 @@
 
 #define N_MAX_SLIDES	10	/* Max number of slides for any given seamount */
 #define SHAPE_U0		0.2	/* Default radial shape parameter */
-#define BETA_DEFAULT	1	/* Default psi(tau power parameter */
+#define BETA_DEFAULT	1	/* Default psi(tau) power parameter */
 
 struct GMT_MODELTIME {	/* Hold info about modeling time */
 	double value;	/* Time in year */
@@ -106,9 +106,10 @@ struct SEAMOUNT {	/* Hold information for one seamount */
 };
 
 struct GRDSEAMOUNT_CTRL {
-	struct GRDSEAMOUNT_A {	/* -A[<out>/<in>] */
+	struct GRDSEAMOUNT_A {	/* -A[<out>/<in>][+s<scale>] */
 		bool active;
 		gmt_grdfloat value[2];	/* Inside and outside value for mask */
+		double r_scale;	/* Replaces deprecated -S<r_scale> */
 	} A;
 	struct GRDSEAMOUNT_C {	/* -C[<shape>] */
 		bool active;
@@ -185,7 +186,6 @@ struct GRDSEAMOUNT_CTRL {
 		bool read_u;	/* True if +u took no arguments and we read from file instead */
 		bool read_v;	/* True if +v took no arguments and we read from file instead */
 		struct SLIDE Slide;	/* Holds command-line settings for slide only */
-		double value;	/* Deprecated -S<r_scale> */
 	} S;
 	struct GRDSEAMOUNT_T {	/* -T[l]<t0>/<t1>/<d0>|n  */
 		bool active, log;
@@ -219,7 +219,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->C.code = 'g';
 	C->Q.bmode = SMT_CUMULATIVE;
 	C->Q.fmode = FLUX_GAUSSIAN;
-	C->S.value = 1.0;	/* Deprecated */
+	C->A.r_scale = 1.0;	/* Replaces deprecated -Sscale */
 	C->S.Slide.az1 =   0.0;
 	C->S.Slide.az2 = 360.0;
 	C->S.Slide.u0 = SHAPE_U0;
@@ -244,10 +244,11 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s] "
-		"[-E] [-F[<flattening>]] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] [-K<densmodel>] "
-		"[-L[<hn>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S[<h1>/<h2>][+[a<az1/az2>]][+b[<beta>]][+d[<hc>]][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] [-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] "
-		"[%s] [-W%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>][+s<scale>]] [-C[c|d|g|o|p]] "
+		"[-D%s] [-E] [-F[<flattening>]] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]]  "
+		"[-K<densmodel>] [-L[<hn>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] "
+		"[-S[<h1>/<h2>][+[a<az1/az2>]][+b[<beta>]][+d[<hc>]][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] "
+		"[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [%s] [-W%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_OUTGRID, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
@@ -259,15 +260,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"input is read. Records contain x (or lon), y (or lat), radius, height for each seamount. "
 		"With -E we expect lon, lat, azimuth, semi-major, semi-minor, height instead. "
 		"If -F (with no argument) is given then an extra column with flattening (0-1) is expected. "
-		"If -T is given then two extra columns with start and stop times are expected.");
+		"If -T is given then two extra columns with start and stop times are expected. "
+		"If -S is given then one or more groups of extra columns are expected.");
 	gmt_outgrid_syntax (API, 'G', "Filename for output grid with constructed surface. If -T is set then <outgrid> "
 		"must be a filename template that contains a floating point format (C syntax) and "
 		"we use the corresponding time (in units specified in -T) to generate the file names.");
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A[<out>/<in>]");
+	GMT_Usage (API, 1, "\n-A[<out>/<in>][+s<scale>]");
 	GMT_Usage (API, -2, "Build a mAsk grid instead; append outside/inside values [1/NaN]. "
-		"Here, height is ignored and -L, -N, -Q, -T and -Z are disallowed.");
+		"Here, height is ignored and -L, -N, -Q, -T and -Z are disallowed.  Append +s to scale all radii first.");
 	GMT_Usage (API, 1, "\n-C[c|d|g|o|p]");
 	GMT_Usage (API, -2, "Choose between a variety of shapes [Default is Gaussian]:");
 	GMT_Usage (API, 3, "c: Cone radial shape.");
@@ -359,6 +361,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 			case 'A':	/* Mask option */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
+				if ((c = strstr (opt->arg, "+s"))) {	/* Got a radial boos factor */
+					Ctrl->A.r_scale = atof (&c[2]);
+					c[0] = '\0';	/* Hide modifier */
+				}
 				if (opt->arg[0]) {
 					if ((n = sscanf (opt->arg, "%[^/]/%s", T1, T2)) == 2) {
 						Ctrl->A.value[GMT_OUT] = (T1[0] == 'N') ? GMT->session.f_NaN : (gmt_grdfloat)atof (T1);
@@ -369,6 +375,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 						n_errors++;
 					}
 				}
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'C':	/* Shape option */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
@@ -592,9 +599,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				else {	/* Deprecated ad hoc radial scale */
 					if (gmt_M_compat_check (GMT, 6)) {
 						GMT_Report (API, GMT_MSG_COMPAT,
-					            "Option -S<scale> is deprecated; use -i2+s<scale> or -i3:4+s<scale> (with -E) in the future.\n", opt->arg);
+					            "Option -S<scale> is deprecated; use -A...+s<scale> the future.\n", opt->arg);
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-						Ctrl->S.value = atof (opt->arg);
+						Ctrl->A.r_scale = atof (opt->arg);
 					}
 					else
 						n_errors += gmt_default_option_error (GMT, opt);
@@ -1020,7 +1027,7 @@ GMT_LOCAL double grdseamount_pappas_slide (struct SLIDE *S, double u0) {
 	rs_u = S->r2 + dr * ubar (u0);
 	As_l = dr * S->h1;	/* Area of lower pedestal */
 	rs_l = 0.5 * (S->r1 + S->r2);
-	fprintf (stderr, "As_u = %.16lg rs_u = %.16lg As_l = %.16lg rs_l = %.16lg\n", As_u, rs_u, As_l, rs_l);
+	//fprintf (stderr, "As_u = %.16lg rs_u = %.16lg As_l = %.16lg rs_l = %.16lg\n", As_u, rs_u, As_l, rs_l);
 	return (TWO_PI * (As_u * rs_u + As_l * rs_l));
 }
 
@@ -1028,7 +1035,7 @@ GMT_LOCAL double grdseamount_distal_r (struct SLIDE *S, double r0, double Vs) {
 	/* Return the radial distance to the end of the distal slide deposit */
 	double c = 3.0 * Vs / (M_PI * S->hc) + r0 * (r0 + S->rc);
 	double rd = 0.5 * (sqrt (S->rc*S->rc + 4.0 * c) - S->rc);
-	fprintf (stderr, "Ad = %.16lg rd = %.16lg\n", 0.5 * S->hc * (rd - r0), rd);
+	//fprintf (stderr, "Ad = %.16lg rd = %.16lg\n", 0.5 * S->hc * (rd - r0), rd);
 	return (rd);
 }
 
@@ -1635,17 +1642,17 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 				e2 = e * e;
 				ca2 = ca * ca;
 				sa2 = sa * sa;
-				r_km = b * Ctrl->S.value;	/* Scaled semi-minor axis in user units (Cartesian or km) */
+				r_km = b * Ctrl->A.r_scale;	/* Scaled semi-minor axis in user units (Cartesian or km) */
 				exp_f = -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
 				A = exp_f * (e2 * ca2 + sa2);	/* Elliptical components A, B, C needed to evaluate radius(az) */
 				B = -exp_f * (sa * ca * (1.0 - e2));
 				C = exp_f * (e2 * sa2 + ca2);
 				r_in = a;			/* Semi-major axis in user units (Cartesian or km)*/
-				r_km = r_in * Ctrl->S.value;	/* Scaled semi-major axis in user units (Cartesian or km) */
+				r_km = r_in * Ctrl->A.r_scale;	/* Scaled semi-major axis in user units (Cartesian or km) */
 			}
 			else {	/* Circular features */
 				r_in = a = b = scale_curr * radius;	/* Radius in user units */
-				r_km = r_in * Ctrl->S.value;	/* Scaled up by user scale */
+				r_km = r_in * Ctrl->A.r_scale;	/* Scaled up by user scale */
 				exp_f = (inc_mode == SHAPE_CONE) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
 			}
 			amplitude = scale_curr * S[smt].height;		/* Seamount max height from base */
@@ -1664,7 +1671,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			if (Ctrl->S.slide) {	/* Compute the radii needed for slide calculations below. ASSUMES CIRCULAR FOR NOW */
 				bool compute_V0 = true;	/* So that we only do that calculation once per seamount */
 				unsigned int want_specific_volume = 0;	/* >0  in cases were we must recompute u0 from desired volume fraction */
-				double Vf, Vs, Vq, V0, Vs_0, s_bar, a_scale, phi_0, phi;
+				double Vf, Vs, Vq, V0, Vs_0, s_bar, a_scale, phi_0, phi, Vs_scale;
 				for (k = 0; k < S[smt].n_slides; k++) {
 					S[smt].Slide[k].r1 = grdseamount_r_from_h (S[smt].build_mode, S[smt].Slide[k].h1, r_in, S[smt].height, f);
 					S[smt].Slide[k].r2 = grdseamount_r_from_h (S[smt].build_mode, S[smt].Slide[k].h2, r_in, S[smt].height, f);
@@ -1708,16 +1715,19 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					Vq = grdseamount_pappas_slide (&S[smt].Slide[k], S[smt].Slide[k].u0_effective);	/* Volume beneath slide surface for this u0 */
 					if (want_specific_volume == 2) {	/* The u0 was selected to yield the required Vs, so Vq is correct for this time and +p, etc */
 						Vs = Vf - Vq;	/* This includes reduction due to fractional time duration and +p */
+						Vs_scale = 1.0;
 					}
 					else {	/* Here we just computed the slide volume for given u0, with no reduction for time (or +p for that matter).  Do so now if -T is in effect */
 						Vs_0 = Vf - Vq;	/* We instead got the final volume for this slide */
 						Vs = psi * Vs_0;	/* Actual slide volume is reduced if +p is used but we don't care since a specific volume is not required */
+						s_bar = (Ctrl->S.got_p) ? 1.0 / (S[smt].Slide[k].p + 1.0) : 0.0;
+						Vs_scale = 1.0 - s_bar;	/* To report accurately for this case */
 					}
 					S[smt].Slide[k].rd = grdseamount_distal_r (&S[smt].Slide[k], r_in, Vs);	/* Compute nominal rd radius */
 					if (S[smt].Slide[k].rd > r_max) r_max = S[smt].Slide[k].rd;	/* Must go all the way to the end of the mass redistribution */
 					theta = fabs (S[smt].Slide[k].az2 - S[smt].Slide[k].az1) / 360.0;	/* Fraction of the seamount affected by this slide */
 					GMT_Report (API, GMT_MSG_INFORMATION, "Seamount # %d Slide %d: r2 = %.16lg r1 = %.16lg rc = %.16lg rd = %.16lg, u0 = %.16lg, p = %.16lg, Vs = %.16lg, Vf = %.16lg\n",
-						smt, k, S[smt].Slide[k].r2, S[smt].Slide[k].r1, S[smt].Slide[k].rc, S[smt].Slide[k].rd, S[smt].Slide[k].u0_effective, S[smt].Slide[k].p, Vs * theta, Vf * theta);
+						smt, k, S[smt].Slide[k].r2, S[smt].Slide[k].r1, S[smt].Slide[k].rc, S[smt].Slide[k].rd, S[smt].Slide[k].u0_effective, S[smt].Slide[k].p, Vs * theta * Vs_scale, Vf * theta);
 				}
 			}
 

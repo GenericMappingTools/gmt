@@ -16,7 +16,7 @@ Synopsis
 |-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-A|\ [*out*/*in*] ]
+[ |-A|\ [*out*/*in*][**+s**\ *scale*] ]
 [ |-C|\ [**c**\|\ **d**\|\ **g**\|\ **o**\|\ **p**] ]
 [ |-D|\ *unit* ]
 [ |-E| ]
@@ -91,9 +91,10 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [*out/in*]
+**-A**\ [*out/in*][**+s**\ *scale*]
     Build a mask grid; append outside/inside values [1/NaN].
     Here, height and flattening are ignored and **-L**, **-N** and **-Z** are disallowed.
+    Use **s** to increase all seamount radii or semi-axes first [1].
 
 .. _-C:
 
