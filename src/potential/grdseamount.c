@@ -327,7 +327,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"must be a filename template that contains a floating point format (C syntax) and "
 		"we use the corresponding time (in units specified in -T) to generate the file names.");
 	GMT_Usage (API, 1, "\n-Z<base>");
-	GMT_Usage (API, -2, "Set the reference depth [0].  Not allowed for -Qi.");
+	GMT_Usage (API, -2, "Set the reference depth [0].  Not allowed for -Qi. Alternatively give NaN for unassigned nodes (not allowed for -T)");
 	GMT_Option (API, "bi,di,e");
 	GMT_Usage (API, 1, "\n-fg Map units (lon, lat in degree, radius, major, minor in km) "
 		"[Default is Cartesian - no units are implied; but see -D].");
@@ -628,7 +628,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 			case 'Z':	/* Background relief level */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
-				Ctrl->Z.value = atof (opt->arg);
+				Ctrl->Z.value = (strcasecmp (opt->arg, "nan")) ? atof (opt->arg) : GMT->session.d_NaN;
 				break;
 
 			default:	/* Report bad options */
@@ -650,6 +650,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		}
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'), "Option -G: Filename template must contain format specifier when -T is used\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Q.bmode == SMT_INCREMENTAL, "Option -Z: Cannot be used with -Qi\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && gmt_M_is_dnan (Ctrl->Z.value) && Ctrl->T.active, "Option -Z: Cannot set NaN used when with -T\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Option -M: Requires time information via -T\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode == TRUNC_ARG && (Ctrl->F.value < 0.0 || Ctrl->F.value >= 1.0), "Option -F: Flattening must be in 0-1 range\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->K.active && !Ctrl->H.active, "Option -K: Requires density model function via -H\n");
@@ -1155,7 +1156,7 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 					if (Ctrl->C.input) S[n].code = txt_x[0];
 					S[n].t0 = in[n_expected];	/* Must get time from numerical columns instead */
 					S[n].t1 = in[n_expected+1];
-					n_time = 2;	/* That is how many we read */
+					n_time = 2;	/* That is how many extra we read from numerical record */
 				}
 				else if (ns >= 2) {	/* Model time given, and possibly shape code */
 					S[n].t0 = gmt_get_modeltime (txt_x, &s_unit, &s_scale);
@@ -1166,6 +1167,12 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 			else if (Ctrl->C.input && strlen (txt_x) == 1) 	/* Only shape code possibly given as trailing text */
 				S[n].code = txt_x[0];
 		}
+		else if (Ctrl->T.active) {	/* Since not obtained above we do so now */
+			S[n].t0 = in[n_expected];	/* Must get time from numerical columns instead */
+			S[n].t1 = in[n_expected+1];
+			n_time = 2;	/* That is how many extra we read from numerical record */
+		}
+
 		switch (S[n].code) {	/* Check build code and set parameters [noise = 0 except for Gaussian] */
 			case 'c': S[n].build_mode = SHAPE_CONE; break;
 			case 'd': S[n].build_mode = SHAPE_DISC; break;
@@ -1303,7 +1310,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	uint64_t ij, n_smts, smt;
 
-	bool map = false, periodic = false, replicate, first, empty, exact, exact_increments, cone_increments;
+	bool map = false, periodic = false, replicate, first, empty, exact, exact_increments, cone_increments, z_is_NaN = false;
 
 	char unit, unit_name[8], gfile[PATH_MAX] = {""}, wfile[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
 
@@ -1533,7 +1540,12 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	replicate = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);
 	if (Ctrl->A.active) for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->A.value[GMT_OUT];
 	if (Ctrl->Z.active) {	/* Start with the background depth */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Set the background level to %g\r", Ctrl->Z.value);
+		if (gmt_M_is_dnan (Ctrl->Z.value)) {
+			GMT_Report (API, GMT_MSG_INFORMATION, "Set the background level to NaN\r");
+			z_is_NaN = true;	/* So we are alerted to first setting things to zero before adding */
+		}
+		else
+			GMT_Report (API, GMT_MSG_INFORMATION, "Set the background level to %g\r", Ctrl->Z.value);
 		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = (gmt_grdfloat)Ctrl->Z.value;
 	}
 	exact = (Ctrl->T.active && !Ctrl->Q.disc);
@@ -1550,7 +1562,9 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			this_user_time = Ctrl->T.time[t].value;	/* In years */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Evaluating bathymetry for time %g %s\n", Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
 		}
-		if (Ctrl->Q.bmode == SMT_INCREMENTAL || exact) gmt_M_memset (Grid->data, Grid->header->size, gmt_grdfloat);	/* Wipe clean for next increment */
+		if (Ctrl->Q.bmode == SMT_INCREMENTAL || exact)
+			gmt_M_memset (Grid->data, Grid->header->size, gmt_grdfloat);	/* Wipe clean for next increment */
+
 		max = -DBL_MAX;
 		empty = true;	/* So far, no seamounts have left a contribution */
 
@@ -1792,6 +1806,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					if (Ctrl->A.active)	/* No amplitude, just set inside value for mask */
 						Grid->data[ij] = Ctrl->A.value[GMT_IN];
 					else {	/* Add in contribution and keep track of max height */
+						if (z_is_NaN && gmt_M_is_fnan (Grid->data[ij])) Grid->data[ij] = 0.0;	/* Must first change NaN to 0 before we can add */
 						Grid->data[ij] += (gmt_grdfloat)z_assign;
 						if (Grid->data[ij] > max) max = Grid->data[ij];
 					}
@@ -1814,7 +1829,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					}
 					if (first) {	/* May have to copy over to repeated column in global gridline-registered grids */
 						if (col == 0) {	/* Must copy from x_min to repeated column at x_max */
-							if (Ctrl->A.active) Grid->data[ij+nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij+nx1] += (gmt_grdfloat)z_assign;
+							if (Ctrl->A.active) Grid->data[ij+nx1] = Ctrl->A.value[GMT_IN]; else {
+								if (z_is_NaN && gmt_M_is_fnan (Grid->data[ij+nx1])) Grid->data[ij+nx1] = 0.0;	/* Must first change NaN to 0 before we can add */
+								Grid->data[ij+nx1] += (gmt_grdfloat)z_assign;
+							}
 							if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
 								Ave->data[ij+nx1]  += (gmt_grdfloat)rho_z;
 								rho_weight[ij+nx1] += (gmt_grdfloat)rho_z;
@@ -1822,7 +1840,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							first = false;
 						}
 						else if (col == nx1) {	/* Must copy from x_max to repeated column at x_min */
-							if (Ctrl->A.active) Grid->data[ij-nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij-nx1] += (gmt_grdfloat)z_assign;
+							if (Ctrl->A.active) Grid->data[ij-nx1] = Ctrl->A.value[GMT_IN]; else {
+								Grid->data[ij-nx1] += (gmt_grdfloat)z_assign;
+								if (z_is_NaN && gmt_M_is_fnan (Grid->data[ij-nx1])) Grid->data[ij-nx1] = 0.0;	/* Must first change NaN to 0 before we can add */
+							}
 							if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
 								Ave->data[ij-nx1]  += (gmt_grdfloat)rho_z;
 								rho_weight[ij-nx1] += (gmt_grdfloat)rho_z;

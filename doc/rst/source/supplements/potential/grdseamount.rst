@@ -293,7 +293,8 @@ Optional Arguments
 
 **-Z**\ *level*
     Set the background water depth [0]. As all seamounts have positive relief, you may
-    use a larger negative *level* to place them under water.
+    use a larger negative *level* to place them under water. Alternatively, append NaN
+    if you wish to flag unused nodes (not allowed if **-T** is used).
 
 .. |Add_-bi| replace:: [Default is 4 input columns].
 .. include:: ../../explain_-bi.rst_
