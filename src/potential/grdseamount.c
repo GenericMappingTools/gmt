@@ -1798,9 +1798,9 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						if (this_r > r_max) continue;	/* Beyond the distal part of the seamount slide */
 					}
 					else if (this_r > r_km) continue;	/* Beyond the base of the seamount */
-#if 0
+#ifdef DEBUG
 					if (doubleAlmostEqualZero (this_r, 0.0)) {
-						dx = 0.0;	/* Break point here if debugging peak of seamount location */
+						dx = 0.0;	/* Set break point here if debugging peak of seamount location */
 					}
 #endif
 					/* In the following, orig_add is the height of the seamount prior to any truncation, while add is the current value (subject to truncation) */
