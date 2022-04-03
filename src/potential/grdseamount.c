@@ -1059,7 +1059,7 @@ GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct SLIDE *S, do
 	return (u0_next);
 }
 
-struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options, uint64_t *n_smt) {
+struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options, unsigned int *d_mode, uint64_t *n_smt) {
 	/* We read possibly variable-length records and carefully checks the arguments before we store the
 	 * information in the SEAMOUNT structure S, which is returned and n_smts is set to the count.
 	 * A seamount record starts with basic specification for the location and size:
@@ -1078,14 +1078,40 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 	 * Based on the record length we figure out how many slides (if any) there are per seamount.
 	 */
 
-	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], m[GMT_LEN16], s_unit;
+	bool map = gmt_M_is_geographic (API->GMT, GMT_IN);
+	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], m[GMT_LEN16], t_unit, unit, unit_name[8];
 	uint64_t n = 0;
-	int n_fields;
-	unsigned int n_expected, n_time, n_per_slide = 0, f_col, k, col;
+	int n_fields, want, error;
+	unsigned int n_expected, n_time, n_per_slide = 0, f_col, k, col, mode;
 	double s_scale, g_noise = exp (-4.5), *in = NULL;
+	double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	struct SEAMOUNT *S = NULL;
 	struct GMT_RECORD *In = NULL;
+
+	if (map) {	/* Geographic data */
+		mode = 2, unit = 'k';	/* Select km and great-circle distances */
+	}
+	else {	/* Cartesian scaling */
+		unsigned int s_unit;
+		int is;
+		if ((is = gmt_check_scalingopt (API->GMT, 'D', Ctrl->D.unit, unit_name)) == -1) {
+			API->error = GMT_PARSE_ERROR;
+			return (NULL);
+		}
+		else
+			s_unit = (unsigned int)is;
+		/* We only need inv_scale here which scales input data in these units to m */
+		if ((error = gmt_init_scales (API->GMT, s_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name))) {
+			API->error = GMT_PARSE_ERROR;
+			return (NULL);
+		}
+		mode = 0, unit = 'X';	/* Select Cartesian distances */
+	}
+	if (gmt_init_distaz (API->GMT, unit, mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) {
+		API->error = GMT_NOT_A_VALID_TYPE;
+		return (NULL);
+	}
 
 	/* Specify expected columns for the seamount specification (except for possibly mode in trailing text) based on -E -F arguments */
 	n_expected = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
@@ -1130,47 +1156,61 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 			else if (gmt_M_rec_is_any_header (API->GMT))			/* Skip segment and table headers */
 				continue;
 		}
-		in = In->data;
-		S[n].lon = in[GMT_X];	S[n].lat = in[GMT_Y];
-		if (Ctrl->E.active) {	/* Elliptical parameters */
-			S[n].azimuth = in[GMT_Z];
-			S[n].major = in[3];
-			S[n].minor = in[4];
-			S[n].height = in[5];
+		if (n_fields < (int)n_expected) {
+			GMT_Report (API, GMT_MSG_ERROR, "Expected at least (%d) columns but only found (%d) for seamount %" PRIu64 ".\n", n_expected, n_fields, n);
+			goto bad;
 		}
-		else {	/* Circular parameters */
-			S[n].radius = in[GMT_Z];
+		in = In->data;
+		S[n].lon = in[GMT_X];	S[n].lat = in[GMT_Y];	/* Store lon, lat or Cartesian x,y */
+		if (Ctrl->E.active) {	/* Elliptical seamount axes */
+			S[n].azimuth = in[2];
+			S[n].major   = in[3];
+			S[n].minor   = in[4];
+			S[n].height  = in[5];
+		}
+		else {	/* Circular seamount parameters */
+			S[n].radius = in[2];
 			S[n].height = in[3];
 		}
-		S[n].f = (Ctrl->F.mode == TRUNC_FILE) ? in[f_col] : Ctrl->F.value;
+		if (!map) {	/* Scale Cartesian horizontal units to meters */
+			S[n].lon *= inv_scale;
+			S[n].lat *= inv_scale;
+			if (Ctrl->E.active) {	/* Elliptical seamount axes */
+				S[n].major *= inv_scale;
+				S[n].minor *= inv_scale;
+			}
+			else	/* Radius */
+				S[n].radius *= inv_scale;
+		}
+		S[n].f = (Ctrl->F.mode == TRUNC_FILE) ? in[f_col] : Ctrl->F.value;	/* Default is 0 */
 		if (S[n].f < 0.0 || S[n].f >= 1.0) {
 			GMT_Report (API, GMT_MSG_ERROR, "Flattening outside valid range 0-1 (%g) for seamount %" PRIu64 "\n", S[n].f, n);
 			goto bad;
 		}
-		n_time = 0;	/* Number of numerical columns used for time */
+		n_time = 0;	/* Number of numerical columns used for time for current record */
 		S[n].code = Ctrl->C.code;	/* Set default code if given */
-		if (In->text[0]) {	/* May have information passed via trailing text */
-			int ns = sscanf (In->text, "%s %s %s", txt_x, txt_y, m);
-			if (Ctrl->T.active) {
-				if (ns == 1)	{	/* Possibly only shape code given as trailing text */
-					if (Ctrl->C.input) S[n].code = txt_x[0];
+		if (In->text[0]) {	/* May have passed time information and/or code via trailing text */
+			int ns = sscanf (In->text, "%s %s %s", txt_x, txt_y, m);	/* Only consider first three words */
+			if (Ctrl->T.active) {	/* -T requires times t0, t1 */
+				if (ns == 1)	{	/* Possibly only shape code was given as trailing text */
+					if (Ctrl->C.input && strlen (txt_x) == 1) S[n].code = txt_x[0];
 					S[n].t0 = in[n_expected];	/* Must get time from numerical columns instead */
 					S[n].t1 = in[n_expected+1];
-					n_time = 2;	/* That is how many extra we read from numerical record */
+					n_time = 2;	/* That is how many extra columns we read from this numerical record */
 				}
-				else if (ns >= 2) {	/* Model time given, and possibly shape code */
-					S[n].t0 = gmt_get_modeltime (txt_x, &s_unit, &s_scale);
-					S[n].t1 = gmt_get_modeltime (txt_y, &s_unit, &s_scale);
+				else if (ns >= 2) {	/* Model time given, and possibly also shape code */
+					S[n].t0 = gmt_get_modeltime (txt_x, &t_unit, &s_scale);	/* t_unit, s_scale not used here */
+					S[n].t1 = gmt_get_modeltime (txt_y, &t_unit, &s_scale);
 					if (Ctrl->C.input && strlen (m) == 1) S[n].code = m[0];
 				}
 			}
-			else if (Ctrl->C.input && strlen (txt_x) == 1) 	/* Only shape code possibly given as trailing text */
+			else if (ns >= 1 && Ctrl->C.input && strlen (txt_x) == 1) 	/* Only shape code possibly given as trailing text */
 				S[n].code = txt_x[0];
 		}
-		else if (Ctrl->T.active) {	/* Since not obtained above we do so now */
+		else if (Ctrl->T.active) {	/* If -T and no trailing text we did not obtain t0, t1 above so we do so now */
 			S[n].t0 = in[n_expected];	/* Must get time from numerical columns instead */
 			S[n].t1 = in[n_expected+1];
-			n_time = 2;	/* That is how many extra we read from numerical record */
+			n_time = 2;	/* That is how many extra columns we read from this numerical record */
 		}
 
 		switch (S[n].code) {	/* Check build code and set parameters [noise = 0 except for Gaussian] */
@@ -1189,6 +1229,11 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 		if (Ctrl->S.slide) {	/* Determine how many slide groups for this seamount, if any */
 			/* If all -S modifiers were set and there is nothing to read we know all seamounts have 1 slide, else some may have none */
 			S[n].n_slides = (n_per_slide == 0) ? 1 : (n_fields - n_expected - n_time) / n_per_slide;
+			want = n_expected + n_time + n_per_slide * S[n].n_slides;
+			if (want != n_fields) {
+				GMT_Report (API, GMT_MSG_ERROR, "Column mismatch between expected (%d) and found (%d) for seamount %" PRIu64 ".\n", want, n_fields, n);
+				goto bad;
+			}
 			if (S[n].n_slides > N_MAX_SLIDES) {
 				GMT_Report (API, GMT_MSG_ERROR, "Found %d slides for seamount %" PRIu64 " which exceeds maximum of %d. Change N_MAX_SLIDES and recompile.\n", S[n].n_slides, n, N_MAX_SLIDES);
 				goto bad;
@@ -1289,6 +1334,7 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 
 	S = gmt_M_memory (API->GMT, S, n, struct SEAMOUNT);
 	*n_smt = n;
+	*d_mode = mode;
 
 	return (S);
 
@@ -1312,14 +1358,14 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	bool map = false, periodic = false, replicate, first, empty, exact, exact_increments, cone_increments, z_is_NaN = false;
 
-	char unit, unit_name[8], gfile[PATH_MAX] = {""}, wfile[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
+	char gfile[PATH_MAX] = {""}, wfile[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
 
 	gmt_grdfloat *data = NULL, *current = NULL, *previous = NULL, *rho_weight = NULL, *prev_z = NULL;
 
 	double x, y, c, this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV, scale_curr = 1.0;
 	double add, f, max, r_km, amplitude = 0.0, h_scale = 0.0, z_assign, lon, this_user_time = 0.0, life_span, t_mid, rho;
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, v_curr, v_prev, *V = NULL;
-	double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch, prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf;
+	double prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf;
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL, g_noise = exp (-4.5), g_scl = 1.0 / (1.0 - g_noise), phi_prev, phi_curr;
 	double orig_add, dz, rho_z, sum_rz, sum_z, exp_f, radius, minor, major, r_max, tau = 1.0, theta, psi = 1.0;
 	double (*pappas_func[N_SHAPES]) (double r0, double h0, double f, double r1, double r2);
@@ -1357,6 +1403,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	gmt_M_memset (Slide, N_MAX_SLIDES, struct SLIDE);	/* Initialize to zero */
 	f = Ctrl->F.value;
 	inc_mode = Ctrl->C.mode;
+	map = gmt_M_is_geographic (GMT, GMT_IN);	/* If geographic */
+
 	if (Ctrl->K.active) {
 		/* Here we create the cross-section of a normalized reference seamount that goes from
 		 * -1 to +1 in x and 0-1 in y (height).  Using steps of 0.005 to yield a 401 x 201 grid
@@ -1405,7 +1453,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			Return (GMT_NOERROR);
 	}
 
-	if ((S = grdseamount_read_input (API, Ctrl, options, &n_smts)) == NULL) {
+	if ((S = grdseamount_read_input (API, Ctrl, options, &d_mode, &n_smts)) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while reading seamount file\n");
 		goto wrap_up;
 	}
@@ -1429,26 +1477,6 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	cone_increments = (Ctrl->T.active && Ctrl->Q.disc);
 	if (cone_increments) inc_mode = SHAPE_DISC;	/* if adding slices then output shapes are disks */
 
-	map = gmt_M_is_geographic (GMT, GMT_IN);
-	if (map) {	/* Geographic data */
-		d_mode = 2, unit = 'k';	/* Select km and great-circle distances */
-	}
-	else {	/* Cartesian scaling */
-		unsigned int s_unit;
-		int is;
-		if ((is = gmt_check_scalingopt (GMT, 'D', Ctrl->D.unit, unit_name)) == -1) {
-			Return (GMT_PARSE_ERROR);
-		}
-		else
-			s_unit = (unsigned int)is;
-		/* We only need inv_scale here which scales input data in these units to m */
-		if ((error = gmt_init_scales (GMT, s_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name))) {
-			Return (error);
-		}
-		d_mode = 0, unit = 'X';	/* Select Cartesian distances */
-	}
-	if (gmt_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
-		Return (GMT_NOT_A_VALID_TYPE);
 	V = gmt_M_memory (GMT, NULL, n_smts, double);	/* Allocate volume array */
 	V_sum = gmt_M_memory (GMT, NULL, n_smts, double);	/* Allocate volume array */
 	h_sum = gmt_M_memory (GMT, NULL, n_smts, double);	/* Allocate volume array */
