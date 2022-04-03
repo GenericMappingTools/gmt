@@ -942,7 +942,7 @@ GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SLIDE *S, doubl
 	return(h);
 }
 
-GMT_LOCAL double grdseamount_height (struct SEAMOUNT *S, double this_r, double rr, double h_scale, double f_exp, double *orig_add) {
+GMT_LOCAL double grdseamount_height (struct SEAMOUNT *S, double this_r, double rr, double h_scale, double f_exp, bool elliptic, double *orig_add) {
 	/* Return the height of the seamount at this normalized radius rr */
 	double add;
 	if (S->build_mode == SHAPE_CONE) {	/* Circular cone case */
@@ -963,7 +963,11 @@ GMT_LOCAL double grdseamount_height (struct SEAMOUNT *S, double this_r, double r
 		*orig_add = poly_smt_func (rr) * h_scale;
 		add = (rr < S->f) ? 1.0 : *orig_add;
 	}
-	else {	/* Circular Gaussian case */
+	else if (elliptic) {	/* Gaussian elliptic case */
+		*orig_add = exp (this_r) * h_scale - S->noise;	/* Exponent argument already set */
+		add = (rr < S->f) ? 1.0 : *orig_add;
+	}
+	else {	/* Circular Gaussian case with regular argument */
 		*orig_add = exp (f_exp * this_r * this_r) * h_scale - S->noise;
 		add = (rr < S->f) ? 1.0 : *orig_add;
 	}
@@ -1816,7 +1820,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						rr = this_r / r_km;	/* Now in 0-1 range */
 
 					/* Compute next height (add) it the untruncated version if -F is set (orig_add) */
-					add = grdseamount_height (&S[smt], this_r, rr, h_scale, exp_f, &orig_add);
+					add = grdseamount_height (&S[smt], this_r, rr, h_scale, exp_f, Ctrl->E.active, &orig_add);
 					/* Both add and orig_add are normalized fractions of full seamount height */
 					z_assign = amplitude * add;		/* Height to be added to grid if no slide */
 					if (Ctrl->S.slide) {	/* Must handle the sector variation */
