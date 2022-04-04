@@ -1657,7 +1657,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						r_mean, h_mean, v_prev, v_curr, phi_prev, phi_curr, h_prev, h_curr, V_sum[smt], h_sum[smt]);
 					/* Replace the values in the in array with these incremental values instead */
 					if (Ctrl->E.active) {	/* Elliptical parameters */
-						e = this_smt.major / this_smt.minor;	/* Eccentricity */
+						e = this_smt.minor / this_smt.major;	/* Eccentricity */
 						this_smt.major = r_mean / sqrt (e);	/* Since we solved for sqrt (a*b) above */
 						this_smt.minor = this_smt.major * e;
 					}
