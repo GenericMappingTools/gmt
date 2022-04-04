@@ -781,10 +781,10 @@ GMT_LOCAL double poly_smt_vol (double r) {
 GMT_LOCAL double grdseamount_r_from_h (unsigned int inc_mode, double h, double r0, double h0, double f) {
 	/* Return the radius where height is h */
 	double r;
-	switch (inc_mode) {	/* This adjusts hight scaling for truncated features. If f = 0 then h_scale == 1 */
+	switch (inc_mode) {	/* This adjusts height scaling for truncated features. If f = 0 then h_scale == 1 */
 		case SHAPE_CONE: r = (1.0 - (h * (1.0 - f)/h0)); break;
 		case SHAPE_DISC: r = 1.0; break;
-		case SHAPE_PARA: r = sqrt (1.0 - (h * (1.0 - f)/h0)); break;
+		case SHAPE_PARA: r = sqrt (1.0 - (h * (1.0 - f*f)/h0)); break;
 		case SHAPE_POLY: r = poly_smt_rc (h * poly_smt_func (f) /h0); break;
 		case SHAPE_GAUS: r = sqrt (f * f - 2.0 * log (h/h0) / 9.0); break;
 	}
@@ -927,19 +927,19 @@ GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SLIDE *S, doubl
 		rd = S->rd;
 		hc = S->hc;
 	}
-	if (this_r < S->r2) return hf;	/* Before slide range, return the regular height */
+	if (this_r <= S->r2) return hf;	/* Before slide range, return the regular height */
 	if (this_r > rd) return hf;	/* Beyond distal range, return the regular height  (likely zero) */
 	if (this_r > rc) {	/* In the distal range for redeposit of slide material with thickness h_d(r) */
 		h = hc * (1.0 - (this_r - rc) / (rd - rc));
 		return (h);
 	}
-	if (this_r > S->r1) return hf;	/* Between foot of slide and toe of deposit, return the regular height */
+	if (this_r >= S->r1) return hf;	/* Between foot of slide and toe of deposit, return the regular height */
 	/* Here we are within the slide radial range */
 	u = ((this_r - S->r2) / (S->r1 - S->r2));	/* Normalized radial u inside the slide range of 0-1 */
 	q = S->u0_effective * ((1.0 + S->u0_effective) / (u + S->u0_effective) - 1.0);	/* Normalized slide shape function q(u) */
 	hs = S->h1 + (S->h2 - S->h1) * q;	/* Slide height scaled to actual topography */
-	h = hf * s + (1.0 - s) * hs;	/* Handle azimuthal variation (if any) by blending flank and slide heights using s(alpha) */
-	return(h);
+	h = hf * s + (1.0 - s) * hs;		/* Handle azimuthal variation (if any) by blending flank and slide heights using s(alpha) */
+	return (h);
 }
 
 GMT_LOCAL double grdseamount_height (struct SEAMOUNT *S, unsigned build_mode, double this_r, double rr, double h_scale, double f_exp, bool elliptic, double *orig_add) {
@@ -1709,7 +1709,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 				case SHAPE_POLY:  h_scale = 1.0 / poly_smt_func (f); break;
 				case SHAPE_GAUS:  h_scale = 1.0 / exp (-4.5 * f * f); break;
 			}
-			if (inc_mode == SHAPE_GAUS) h_scale *= g_scl;	/* Adjust for the fact we only go to -/+ 3 sigma and not infinity */
+			if (inc_mode == SHAPE_GAUS)	/* Adjust for the fact we only go to -/+ 3 sigma and not infinity */
+				h_scale *= g_scl;
 			if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
 
 			r_max = r_km;	/* No point searching beyond this radius */
