@@ -6068,6 +6068,7 @@ GMT_LOCAL int gmtsupport_sort_order_ascend (const void *p_1, const void *p_2) {
 void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
 	/* Properly free memory allocated by gmt_read_list */
 	uint64_t i;
+	if (n == 0) return;	/* Nothing to do here */
 	for (i = 0; i < n; i++) gmt_M_str_free (list[i]);
 	gmt_M_free (GMT, list);
 }
