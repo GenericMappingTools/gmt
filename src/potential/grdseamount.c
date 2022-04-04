@@ -1801,11 +1801,6 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						if (this_r > r_max) continue;	/* Beyond the distal part of the seamount slide */
 					}
 					else if (this_r > r_km) continue;	/* Beyond the base of the seamount */
-#ifdef DEBUG
-					if (doubleAlmostEqualZero (this_r, 0.0)) {
-						dx = 0.0;	/* Set break point here if debugging peak of seamount location */
-					}
-#endif
 					/* In the following, orig_add is the height of the seamount prior to any truncation, while add is the current value (subject to truncation) */
 					if (Ctrl->E.active) {	/* For elliptical bases we must deal with direction etc */
 						dx = (map) ? (x - this_smt.lon) * GMT->current.proj.DIST_KM_PR_DEG * c : (x - this_smt.lon);
@@ -1822,6 +1817,12 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					add = grdseamount_height (&this_smt, this_r, rr, h_scale, exp_f, Ctrl->E.active, &orig_add);
 					/* Both add and orig_add are normalized fractions of full seamount height */
 					z_assign = amplitude * add;		/* Height to be added to grid if no slide */
+#ifdef DEBUG
+					if (doubleAlmostEqualZero (this_r, 10000.0)) {
+						dx = 0.0;	/* Set break point here if debugging peak of seamount location or some other point */
+						fprintf (stderr, "r = %lg add = %lg amplitude = %lg z_assign = %lg rr = %lg r_km = %lg\n", this_r, add, amplitude, z_assign, rr, r_km);
+					}
+#endif
 					if (Ctrl->S.slide) {	/* Must handle the sector variation */
 						double s;
 						for (k = 0; k < this_smt.n_slides; k++) {	/* See if we are inside any of the slide sectors */
