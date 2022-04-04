@@ -15450,16 +15450,16 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if (is_D_module && !got_R && !got_J && P)	/* Module call with -Dx in a subplot, turn on JR since we know both must exist */
 			required = "JR";
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
-			/* Check if previous plot was 3-D and this is a 2-D overlay for a colorbar, which requires a Cartesian -R -J setup */
+			/* Check if previous plot was 3-D and this is a 2-D overlay for a colorbar, which requires a Cartesian -R -J setup instead */
 			if (GMT->current.map.last_dim == 3 && (opt = GMT_Find_Option (API, 'p', *options)) == NULL && !got_J && !strncmp (mod_name, "psscale", 7U)) {
 				char region[GMT_LEN128] = {""};
-				fprintf (stderr, "Our case exactly\n");
 				sprintf (region, "0/%.16lg/0/%.16lg", GMT->current.map.last_width, GMT->current.map.last_height);
 				if ((opt = GMT_Make_Option (API, 'R', region)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				if ((opt = GMT_Make_Option (API, 'J', "x1i")) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				got_J = got_R = true;
+				GMT_Report (API, GMT_MSG_DEBUG, "2-D colorbar beneath 3-D plot requested: Switching to bounding box -R%s -Jx1i.\n", region);
 			}
 			else {
 				/* First consult the history */
