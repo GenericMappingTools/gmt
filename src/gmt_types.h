@@ -260,6 +260,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	unsigned int n_lon_nodes;		/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
 	unsigned int n_lat_nodes;		/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
 	unsigned int path_mode;		/* 0 if we should call gmt_fix_up_path to resample across gaps > path_step, 1 to leave alone */
+	unsigned int last_dim;		/* 2 for 2-D or 3 for 3-D as previous plot */
 	double last_width;			/* Full width in inches of previous plot */
 	double last_height;			/* Full height in inches of previous plot */
 	double width;				/* Full width in inches of this world map */

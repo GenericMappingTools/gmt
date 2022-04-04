@@ -14661,7 +14661,7 @@ GMT_LOCAL int gmtinit_get_last_dimensions (struct GMTAPI_CTRL *API, int fig) {
 		GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_last_dimensions: Could not open file %s for figure %d\n", file, fig);
 		return GMT_ERROR_ON_FOPEN;
 	}
-	if (fscanf (fp, "%lg %lg", &API->GMT->current.map.last_width, &API->GMT->current.map.last_height) != 2) {
+	if (fscanf (fp, "%lg %lg %d", &API->GMT->current.map.last_width, &API->GMT->current.map.last_height, &API->GMT->current.map.last_dim) != 3) {
 		GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_last_dimensions: Could not read dimensions from file %s for figure %d\n", file, fig);
 		fclose (fp);
 		return GMT_DATA_READ_ERROR;
@@ -14688,7 +14688,10 @@ GMT_LOCAL int gmtinit_set_last_dimensions (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_ERROR, "gmtinit_set_last_dimensions: Could not create file %s for figure %d\n", file, fig);
 		return GMT_ERROR_ON_FOPEN;
 	}
-	fprintf (fp, "%lg %lg\n", API->GMT->current.map.width, API->GMT->current.map.height);
+	if (API->GMT->current.proj.three_D)
+		fprintf (fp, "%lg %lg 3\n", API->GMT->current.proj.z_project.xmax - API->GMT->current.proj.z_project.xmin, API->GMT->current.proj.z_project.ymax - API->GMT->current.proj.z_project.ymin);
+	else
+		fprintf (fp, "%lg %lg 2\n", API->GMT->current.map.width, API->GMT->current.map.height);
 	fclose (fp);
 	return (GMT_NOERROR);
 }
@@ -15364,7 +15367,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 								c += 2;
 								if (c[0] == '\0') strcat (arg, P->Bxlabel);	/* Yes, +l was empty so add preset label */
 							}
-							else {	/* No panel-speicific label override, use the preset label */
+							else {	/* No panel-specific label override, use the preset label */
 								strcat (arg, "+l");
 								strcat (arg, P->Bxlabel);
 							}
@@ -15447,21 +15450,34 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if (is_D_module && !got_R && !got_J && P)	/* Module call with -Dx in a subplot, turn on JR since we know both must exist */
 			required = "JR";
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
-			/* First consult the history */
-			id = gmt_get_option_id (0, "R");	/* The -RP history item */
-			if (gmtlib_module_may_get_R_from_RP (API->GMT, mod_name)) {	/* First check -RP history */
-				if (!GMT->init.history[id]) id++;	/* No history for -RP, increment to -RG as fall-back */
-			}
-			else id++;	/* Only examine -RG history if not a plotter */
-			if (GMT->init.history[id]) {	/* There is history for -R */
-				if ((opt = GMT_Make_Option (API, 'R', "")) == NULL) return NULL;	/* Failure to make option */
+			/* Check if previous plot was 3-D and this is a 2-D overlay for a colorbar, which requires a Cartesian -R -J setup instead */
+			if (GMT->current.map.last_dim == 3 && (opt = GMT_Find_Option (API, 'p', *options)) == NULL && !got_J && !strncmp (mod_name, "psscale", 7U)) {
+				char region[GMT_LEN128] = {""};
+				sprintf (region, "0/%.16lg/0/%.16lg", GMT->current.map.last_width, GMT->current.map.last_height);
+				if ((opt = GMT_Make_Option (API, 'R', region)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
-				n_slashes = gmt_count_char (GMT, GMT->init.history[id], '/');	/* May need to know if it is 3 (2-D) or 5 (3-D) later regarding -p -JZ */
-				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Added -R to options since history is available [%s].\n", GMT->init.history[id]);
+				if ((opt = GMT_Make_Option (API, 'J', "x1i")) == NULL) return NULL;	/* Failure to make option */
+				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+				got_J = got_R = true;
+				GMT_Report (API, GMT_MSG_DEBUG, "2-D colorbar beneath 3-D plot requested: Switching to bounding box -R%s -Jx1i.\n", region);
 			}
-			else if (strchr (required, 'g') || strchr (required, 'd')) {	/* No history but can examine input data sets */
-				if (gmtinit_determine_R_option_from_data (API, required, false, options)) {
-					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Failure while determining the region from input data.\n");
+			else {
+				/* First consult the history */
+				id = gmt_get_option_id (0, "R");	/* The -RP history item */
+				if (gmtlib_module_may_get_R_from_RP (API->GMT, mod_name)) {	/* First check -RP history */
+					if (!GMT->init.history[id]) id++;	/* No history for -RP, increment to -RG as fall-back */
+				}
+				else id++;	/* Only examine -RG history if not a plotter */
+				if (GMT->init.history[id]) {	/* There is history for -R */
+					if ((opt = GMT_Make_Option (API, 'R', "")) == NULL) return NULL;	/* Failure to make option */
+					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+					n_slashes = gmt_count_char (GMT, GMT->init.history[id], '/');	/* May need to know if it is 3 (2-D) or 5 (3-D) later regarding -p -JZ */
+					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Added -R to options since history is available [%s].\n", GMT->init.history[id]);
+				}
+				else if (strchr (required, 'g') || strchr (required, 'd')) {	/* No history but can examine input data sets */
+					if (gmtinit_determine_R_option_from_data (API, required, false, options)) {
+						GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Failure while determining the region from input data.\n");
+					}
 				}
 			}
 		}
