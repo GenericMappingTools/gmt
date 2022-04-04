@@ -77,19 +77,17 @@ Examples
 --------
 
 To create a bin index file from the MGD77 file 01030061.mgd77 using the
-settings associated with the tag MGD77, do
-
-   ::
+settings associated with the tag MGD77, do::
 
     gmt x2sys_binlist 01030061.mgd77 -TMGD77 > 01030061.tbf
 
 To create a track bin index file of all MGD77+ files residing in the
 current directory using the settings associated with the tag MGD77+ and
-calculate track distances, run
-
-   ::
+calculate track distances, run::
 
     gmt x2sys_binlist *.nc -TMGD77+ -D > all.tbf
+
+.. include:: x2sys_refs.rst_
 
 See Also
 --------
