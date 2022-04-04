@@ -95,6 +95,7 @@ PNG    Portable Network Graphics (with transparency layer)
 ppm    Portable Pixel Map
 ps     Plain PostScript
 tif    Tagged Image Format File
+view   Use format set by GMT_GRAPHICS_FORMAT
 ====== ====================================================
 
 Examples

@@ -65,7 +65,7 @@ jobs:
                libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev libglib2.0-dev
 
       - name: Cache GSHHG and DCW data
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-coastline
         with:
           path: ${{ env.COASTLINEDIR }}

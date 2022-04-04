@@ -56,14 +56,29 @@ Description
 -----------
 
 Reads (*x*, *y*\ [, *z*] [, *size*], *time* [, *length*] [, *label*]) data from *table* [or standard
-input] and plots how the symbol for each event should look for the specified time *now*.
+input] and plots how the symbol for each event should look for the single specified time *now*.
 The reason they may differ is that events may have different *durations* and we may
 wish to *accentuate* the symbol attributes in ways to draw attention to an event when
-it first appears and perhaps tone it down after a while to reduce clutter and focus
-on more recent events. Optionally, each symbol may have a label that can be displayed at the
-same time or delayed with respect to the symbol. This module is typically used in conjunction with :doc:`movie`
+it first appears, and perhaps tone it down after a while to reduce clutter and focus
+on more recent events. You may also wish for symbols to disappear completely after they reach
+their end time (we call this period the coda), or perhaps remain visible but faded, shrunk, or darkened.
+Optionally, each symbol may have a label that can be displayed for a prescribed length of time at the
+same time as the symbol or delayed a bit. This module is typically used in conjunction with :doc:`movie`
 where the implicit loop over time is used to call **events** over a time-sequence and
 thus plot symbols as the events unfold.
+
+..  youtube:: iWt0yZICKlM
+    :width: 100%
+
+Animation of two events over the time window -0.5 to 1.5. The events are only active during times
+0 to 1. One symbol (blue) is plotted normally only while active (size follows the light-blue time-curve,
+while the other (red) is highlighted when it first arrives by adding a rise, plateau, decay, and fade
+interval, and finally then let to fade to a persistent but smaller, darker and partly transparent
+symbol after it is no longer active; its size follows the red time-curve. In contrast, the
+blue symbol just turns on and off.  We also delay the red symbol's label by 0.25 time units.
+Red event was plotted using -Es+r0.25+p0.25+d0.25+f0.25 -Et+o0.25 while the blue event used the
+default settings (i.e., the light-blue time curve). **Note**: The time curves are plotted here just
+to illustrate what is happening under the hood. The movie we make is really about the two events only.
 
 Required Arguments
 ------------------
@@ -87,8 +102,8 @@ Required Arguments
 .. _-T:
 
 **-T**\ *now*
-    Set the current plot time. The time shifts and increments set in **-E** are all relative to this
-    current time.  If an absolute time is given you may need to  use :term:`TIME_UNIT` to indicate
+    Set the current plot time. The time shifts and increments set in **-E** are all *relative* to this
+    current time.  If an absolute time is given you will need to use :term:`TIME_UNIT` to indicate
     the unit of the values given in options like **-E** and **-L**.
 
 Optional Arguments
@@ -146,7 +161,7 @@ Optional Arguments
 .. _-E:
 
 **-E**\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*]
-    Set the time knots for the **s**\ ymbol or **t**\ ext time-functions.  Append
+    Set the relative time knots for the **s**\ ymbol or **t**\ ext time-functions (see `The four time-functions`_).  Append
     **+o** to shift the event start and end times by a constant offset (basically shifting
     the event in time by *dt*\ ; or use **+O** to only shift the start time, effectively shortening
     the duration of the event), **+r** to indicate the
@@ -201,18 +216,25 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ **i**\|\ **s**\|\ **t**\|\ **z**\ *val1*\ [**+c**\ *val2*] ]
+**-M**\ **i**\|\ **s**\|\ **t**\|\ **z**\ *val1*\ [**+c**\ *val2*]
 
+    Controls how each symbol's four attributes should change from when the symbol first appears,
+    during its active duration, and optionally its fate as time moves past its end time.
     Modify the initial **i**\ ntensity of the color, the **s**\ ize of the symbol, its **t**\ ransparency
-    or the **z** data value during the *rise* interval [Defaults are 1, 1, 100, and 0 respectively].
-    Option **-M** is repeatable for the different attributes. Optionally, for finite-duration events you
-    may append **+c** to set the corresponding terminal value during the coda [0, 0, 100, 0, respectively].
-    The intensity setting (normally in the interval ±1, with 0 having no effect) is used to brighten
-    (*intensity* > 0) or darken (*intensity* < 0) the symbol color during this period (hue is kept fixed).
-    The size setting is a magnifying factor that temporarily changes the size of the symbol. The transparency
-    setting affects temporary changes to the symbol's transparency. Finally, the z-data setting temporarily
-    adds *val1* to the data set's *z*-values per the time function, and thus can change the symbol's color
-    via the CPT (hence **-C** is a required option for **-Mz**). **Note**: Polygons can only use **-Mt** setting.
+    or the **z** data value (to change symbol color via CPT lookup) during the *rise* interval.
+    [Defaults for these four attributes are 1, 1, 100, and 0 respectively].  These values all represent
+    maximum amplitudes that is scaled by the corresponding time-function created by **-Es** (see `The four time-functions`_).
+    Option **-M** is repeatable for the different attributes. Optionally, for finite-duration events
+    (that should remain visible for all times after their event time has been reached) you
+    may append **+c** to set the corresponding terminal value during the coda [Defaults are 0, 0, 100 and 0, 
+    respectively, meaning the symbols are not plotted unless you change these attributes with one or more **+c** modifiers].
+    The intensity setting (**i**\ ; normally with *val1* in the range ±1, with 0 having no effect) is used to brighten
+    (*val1* > 0) or darken (*val1* < 0) the symbol color during this period (the hue is kept fixed).
+    The size setting (**s**) is a magnifying factor that temporarily changes the size of the symbol by the factor *val1*.
+    The transparency setting (**t**) affects temporary changes to the symbol's transparency. Finally, the  z-data setting
+    (**z**) temporarily adds *val1* to the data set's *z*-values, scaled by the corresponding time function, and thus
+    can change the symbol's *color* via the CPT (hence **-C** is a required option for **-Mz**).
+    **Note**: Polygons can only use **-Mt** setting.
 
 .. _-N:
 
@@ -365,7 +387,7 @@ illustrates how intensity may vary accordingly.
    Implied evolution of one symbol's color intensity as a function of time
    given the time-knots from **-Es** and the intensities from **-Mi**.  Here we
    seek to whiten the symbol during the event arrival, as well as darken it
-   during a permanent code phase.
+   during a permanent coda phase.
 
 Next, for finite events you may wish to either fade them out completely or
 simply fade them to a constant but still visible transparency; this future stage
@@ -467,6 +489,7 @@ or you specify **-Ar**\ 200\ **i**.
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmtcolors`,
+:doc:`gmt`,
+:doc:`gmtcolors`,
 :doc:`plot`,
 :doc:`movie`

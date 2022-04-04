@@ -109,6 +109,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"then we use absolute value as width and interpolate image in PostScript. Alternatively:");
 	GMT_Usage (API, 3, "+r Append image dpi (dots per inch).");
 	GMT_Usage (API, 3, "+n Append <n_columns>[/<n_rows>] to replicate image <n_columns> by <n_rows> times [Default is no replication].");
+	GMT_Usage (API, -2, "Note: if neither +w nor +r is set we default to the default dpu [%lg%c]\n",
+		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the image", 1);
 	GMT_Usage (API, 1, "\n-G[<color>][+b|f|t]");
 	GMT_Usage (API, -2, "Change some pixels to be transparent (or to optional <color>) depending on selected modifier (repeatable):");
@@ -182,8 +184,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 							Ctrl->D.interpolate = true;
 						}
 					}
-					else if (gmt_get_modifier (Ctrl->D.refpoint->args, 'r', string))
+					else if (gmt_get_modifier (Ctrl->D.refpoint->args, 'r', string)) {
 						Ctrl->D.dpi = atof (string);
+						if (strchr (string, 'c')) Ctrl->D.dpi *= 2.54;	/* Convert dpc to dpi */
+					}
 					/* Optional modifiers +j, +n, +o */
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
@@ -290,6 +294,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 
+	if (Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0) {	/* No width or dpi set, default to GMT dpi */
+		Ctrl->D.dpi = GMT->current.setting.graphics_dpu;
+		if (GMT->current.setting.graphics_dpu_unit == 'c') Ctrl->D.dpi *= 2.54;	/* Convert dpc to dpi */
+	}
+
 	if (!Ctrl->D.active) {	/* Old syntax without reference point implies -Dx0/0 */
 		Ctrl->D.refpoint = gmt_get_refpoint (GMT, "x0/0", 'D');	/* Default if no -D given */
 		Ctrl->D.active = true;
@@ -302,7 +311,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "-D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 	}
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single input raster or EPS file\n");
-	n_errors += gmt_M_check_condition (GMT, !p_fail && Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Option -D: Must specify image width (+w) or dpi (+r)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.n_columns < 1 || Ctrl->D.n_rows < 1,
 			"Option -D: Must specify positive values for replication with +n\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.rgb[PSIMAGE_FGD][0] == -1 && Ctrl->G.rgb[PSIMAGE_BGD][0] == -1,

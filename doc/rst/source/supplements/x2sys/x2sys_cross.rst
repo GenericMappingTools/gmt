@@ -187,32 +187,22 @@ Examples
 --------
 
 To compute all internal crossovers in the gmt-formatted file c2104.gmt,
-and using the tag GMT, try
-
-   ::
+and using the tag GMT, try::
 
     gmt x2sys_cross c2104.gmt -TGMT > c2104.txt
 
 To find the crossover locations with bathymetry between the two MGD77
-files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
-
-   ::
+files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try::
 
     gmt x2sys_cross A13232.mgd77 A99938.mgd77 -Qe -TMGD77 > crossovers.txt
 
-References
-----------
-
-Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys
-package. *Computers and Geosciences*, **36**, 348-354.
-
-Wessel, P. (1989), XOVER: A cross-over error detector for track data,
-*Computers and Geosciences*, **15**\ (3), 333-346.
+.. include:: x2sys_refs.rst_
 
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`x2sys_binlist`,
+:doc:`gmt </gmt>`,
+:doc:`x2sys_binlist`,
 :doc:`x2sys_init`,
 :doc:`x2sys_datalist`,
 :doc:`x2sys_get`,

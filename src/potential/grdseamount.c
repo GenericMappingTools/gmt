@@ -559,13 +559,13 @@ GMT_LOCAL void grdseamount_gaussian_area_volume_height (double a, double b, doub
 
 GMT_LOCAL double poly_smt_func (double r) {
 	/* Polynomial radial function similar to a Gaussian */
-	return (pow ((1.0 + r) * (1.0 - r), 3.0) / (1.0 + pow (r, 3.0)));
+	return ((r <= -1.0 || r > 1.0) ? 0.0 : pow ((1.0 + r) * (1.0 - r), 3.0) / (1.0 + pow (r, 3.0)));
 }
 
 GMT_LOCAL double ddr_poly_smt_func (double r) {
 	/* Radial derivative of polynomial radial function similar to a Gaussian */
 	double r2 = r * r;
-	return (-(3.0 * r * pow (r - 1.0, 2.0) * (r2 * r + r + 2.0)) / pow (r2 - r + 1.0, 2.0));
+	return ((fabs(r) > 1.0) ? 0.0 : -(3.0 * r * pow (r - 1.0, 2.0) * (r2 * r + r + 2.0)) / pow (r2 - r + 1.0, 2.0));
 }
 
 GMT_LOCAL double poly_smt_rc (double hc) {

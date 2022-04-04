@@ -971,7 +971,22 @@ EXTERN_MSC int GMT_grdfilter (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdfilter main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
-	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get entire grid */
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header first */
+		Return (API->error);
+	}
+	/* Check that -D option is compatible with the type of grid */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/*  Make sure we selected a geographic distance mode */
+		if (Ctrl->D.mode < GRDFILTER_GEO_CARTESIAN || Ctrl->D.mode > GRDFILTER_GEO_SPHERICAL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Option -D: Input grid is geographic but your distance mode is Cartesian\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
+	else if (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN) {	/*  Make sure we selected a Cartesian distance mode */
+		GMT_Report (API, GMT_MSG_ERROR, "Option -D: Input grid is Cartesian but your distance mode is set for geographic distances\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
+	/* Safe to read the adta */
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, Gin)) == NULL) {	/* Get entire grid */
 		Return (API->error);
 	}
 	if (GMT->common.R.active[GSET])	/* Explicitly set the output registration */

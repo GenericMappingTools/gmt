@@ -826,7 +826,7 @@ GMT_LOCAL bool gmtapi_modern_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTIO
 
 	for (opt = head; opt; opt = opt->next) {
 		if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
-		if (strchr ("bejpPt", opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format [UPDATE LIST IF ADDING MORE FORMATS IN FUTURE] */
+		if (strchr ("bejpPtv", opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format [UPDATE LIST IF ADDING MORE FORMATS IN FUTURE] */
 		if ((len = strlen (opt->arg)) == 0 || len >= GMT_LEN128) continue;	/* No arg or very long args that are filenames can be skipped */
 		snprintf (format, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
 		if ((c = strchr (format, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
@@ -2401,8 +2401,9 @@ GMT_LOCAL void gmtapi_update_grd_item (struct GMTAPI_CTRL *API, unsigned int mod
 	char *txt = (mode & GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
 
 	gmt_M_memset (buffer, GMT_BUFSIZ, char);    /* Start with a clean slate */
-	if (mode & GMT_COMMENT_IS_OPTION) { /* Must start with module name since it is not part of the option args */
-		strncat (buffer, API->GMT->init.module_name, GMT_BUFSIZ);
+	if (mode & GMT_COMMENT_IS_OPTION) { /* Must start with gmt and module name since it is not part of the option args */
+        strncat (buffer, "gmt ", GMT_BUFSIZ);
+        strncat (buffer, API->GMT->init.module_name, GMT_BUFSIZ-4);
 		lim -= strlen (buffer) + 1; /* Remaining characters that we can use */
 		strncat (buffer, " ", lim);
 	}
@@ -2454,8 +2455,9 @@ GMT_LOCAL void gmtapi_update_txt_item (struct GMTAPI_CTRL *API, unsigned int mod
 	if ((mode & GMT_COMMENT_IS_OPTION) == 0 && (mode & GMT_COMMENT_IS_RESET) == 0 && string[0])
 		strncat (buffer, string, length-1); /* Use old text if we are not resetting */
 	lim = length - strlen (buffer) - 1; /* Remaining characters that we can use */
-	if (mode & GMT_COMMENT_IS_OPTION) { /* Must start with module name since it is not part of the option args */
-		strncat (buffer, API->GMT->init.module_name, lim);
+	if (mode & GMT_COMMENT_IS_OPTION) { /* Must start with gmt and module name since it is not part of the option args */
+        strncat (buffer, "gmt ", lim);  lim -= 4;
+        strncat (buffer, API->GMT->init.module_name, lim);
 		lim = length - strlen (buffer) - 1; /* Remaining characters that we can use */
 		strncat (buffer, " ", lim);
 	}
@@ -8118,7 +8120,7 @@ char * gmtlib_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, vo
 	gmt_M_memset (buffer, GMT_BUFSIZ, char);
 	if (mode & GMT_COMMENT_IS_TITLE) strcat (buffer, "  Title :");
 	if (mode & GMT_COMMENT_IS_COMMAND) {
-		strcat (buffer, " Command : ");
+		strcat (buffer, " Command : gmt ");
 		if (strlen(API->GMT->init.module_name) < 500)		/* 500, just to shut up a Coverity issue */
 			strcat (buffer, API->GMT->init.module_name);
 		strcat (buffer, " ");
@@ -12563,7 +12565,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 		if (API->external && gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
 			/* For externals only, print the equivalent command-line string under -Vd */
 			char *text = (mode == GMT_MODULE_OPT) ? GMT_Create_Cmd (API, args) : args;
-			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Call_Command string: %s %s\n", module, text);
+			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Call_Command string: gmt %s %s\n", module, text);
 			if (mode == GMT_MODULE_OPT) GMT_Destroy_Cmd (API, &text);
 		}
 		status = (*p_func) (V_API, mode, args);				/* Call the module in peace */
@@ -13527,6 +13529,8 @@ int GMT_Get_Default (void *V_API, const char *keyword, char *value) {
 	else if (!strncmp (keyword, "API_IMAGE_LAYOUT", 16U)) {	/* Report image/band layout */
 		gmt_M_memcpy (value, API->GMT->current.gdal_read_in.O.mem_layout, 4, char);
 	}
+	else if (!strncmp (keyword, "API_BIN_VERSION", 15U))	/* The API version */
+		sprintf (value, "%s", GMT_PACKAGE_VERSION_WITH_GIT_REVISION);
 	else if (!strncmp (keyword, "API_GRID_LAYOUT", 15U)) {	/* Report grid layout */
 		if (API->shape == GMT_IS_COL_FORMAT)
 			strcpy (value, "columns");

@@ -82,5 +82,6 @@ or you specify **-Ar**\ 200\ **i**.
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmtcolors`,
+:doc:`gmt`,
+:doc:`gmtcolors`,
 :doc:`psxy`

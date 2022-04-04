@@ -100,24 +100,18 @@ Examples
 
 To find all the tracks associated with the tag MGD77, restricted to
 occupy a certain region in the south Pacific, and have at least free air
-anomalies and bathymetry, try
-
-   ::
+anomalies and bathymetry, try::
 
     gmt x2sys_get -V -TMGD77 -R180/240/-60/-30 -Ffaa,depth
 
 To find all the tracks associated with the tag MGD77 that have depth but
-not twt, try
-
-   ::
+not twt, try::
 
     gmt x2sys_get -V -TMGD77 -Fdepth -Nwt
 
 To find all the pairs associated with the tag MGD77 that might intersect
 each other, but only those pairs which involves tracks in your list
-new.lis, try
-
-   ::
+new.lis, try::
 
     gmt x2sys_get -V -TMGD77 -Lnew.lis > xpairs.lis
 
@@ -128,6 +122,8 @@ The tracks that are returned all have the requested data (**-F**) within
 the specified region (**-R**). Furthermore, the columns of Y and N for
 other data types also reflect the content of the track portion within
 the selected region, unless **-G** is set.
+
+.. include:: x2sys_refs.rst_
 
 See Also
 --------

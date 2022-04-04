@@ -121,7 +121,7 @@ Required Arguments
     used in naming frames.  For instance, name_000010.png has a tag width of 6.  By default, this
     is automatically set but if you are splitting large jobs across several computers then you
     must use the same tag width for all names. **Note**: If just *nframes* is given then only **MOVIE_FRAME**
-    is available as no data file is available.
+    is available as no data file is available.  For details on array creation, see `Generate 1D Array`_.
 
 
 Optional Arguments
@@ -311,6 +311,8 @@ Optional Arguments
     **movie** so in effect *n-1* cores are used for the individual frames.
 
 .. include:: explain_help.rst_
+
+.. include:: explain_array.rst_
 
 Parameters
 ----------
