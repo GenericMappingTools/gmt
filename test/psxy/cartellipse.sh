@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Test Cartesian plotting of ellipses
+# GRAPHICSMAGICK_RMS = 0.004
 
 gmt begin cartellipse ps
 	gmt subplot begin 2x2 -Fs7c
