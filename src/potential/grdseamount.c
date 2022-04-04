@@ -1820,7 +1820,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 #ifdef DEBUG
 					if (doubleAlmostEqualZero (this_r, 10000.0)) {
 						dx = 0.0;	/* Set break point here if debugging peak of seamount location or some other point */
-						fprintf (stderr, "r = %lg add = %lg amplitude = %lg z_assign = %lg rr = %lg r_km = %lg\n", this_r, add, amplitude, z_assign, rr, r_km);
+						fprintf (stderr, "r = %lg orig_add = %lg add = %lg amplitude = %lg z_assign = %lg rr = %lg r_km = %lg\n", this_r, orig_add, add, amplitude, z_assign, rr, r_km);
 					}
 #endif
 					if (Ctrl->S.slide) {	/* Must handle the sector variation */
