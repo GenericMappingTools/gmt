@@ -178,19 +178,17 @@ Examples
 
 To find all the magnetic crossovers associated with the tag MGD77 from
 the file COE_data.txt, restricted to occupy a certain region in the
-south Pacific, and return location, time, and crossover value, try
-
-   ::
+south Pacific, and return location, time, and crossover value, try::
 
     gmt x2sys_list COE_data.txt -V -TMGD77 -R180/240/-60/-30 -Cmag -Fxytz > mag_coe.txt
 
 To find all the faa crossovers globally that involves track 12345678 and
 output time since start of the year, using a binary double precision
-format, try
-
-   ::
+format, try::
 
     gmt x2sys_list COE_data.txt -V -TMGD77 -Cfaa -S12345678 -FTz -bod > faa_coe.b
+
+.. include:: x2sys_refs.rst_
 
 See Also
 --------

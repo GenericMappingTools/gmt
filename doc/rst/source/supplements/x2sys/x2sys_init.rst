@@ -362,6 +362,8 @@ The Format Definition Files used to have extension .def but since that is also u
 by GMT's symbol macro files we have deprecated that extension and now use .fmt.
 However, old .def files are still being read.
 
+.. include:: x2sys_refs.rst_
+
 See Also
 --------
 
