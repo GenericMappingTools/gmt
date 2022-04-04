@@ -942,10 +942,10 @@ GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SLIDE *S, doubl
 	return(h);
 }
 
-GMT_LOCAL double grdseamount_height (struct SEAMOUNT *S, double this_r, double rr, double h_scale, double f_exp, bool elliptic, double *orig_add) {
+GMT_LOCAL double grdseamount_height (struct SEAMOUNT *S, unsigned build_mode, double this_r, double rr, double h_scale, double f_exp, bool elliptic, double *orig_add) {
 	/* Return the height of the seamount at this normalized radius rr */
 	double add;
-	if (S->build_mode == SHAPE_CONE) {	/* Circular cone case */
+	if (build_mode == SHAPE_CONE) {	/* Circular cone case */
 		if (rr < 1.0) {	/* Since in minor direction rr may exceed 1 and be outside the ellipse */
 			*orig_add = (1.0 - rr) * h_scale;
 			add = (rr < S->f) ? 1.0 : *orig_add;
@@ -953,13 +953,13 @@ GMT_LOCAL double grdseamount_height (struct SEAMOUNT *S, double this_r, double r
 		else
 			*orig_add = add = 0.0;
 	}
-	else if (S->build_mode == SHAPE_DISC)	/* Circular disc/plateau case */
+	else if (build_mode == SHAPE_DISC)	/* Circular disc/plateau case */
 		*orig_add = add = (rr <= 1.0) ? 1.0 : 0.0;
-	else if (S->build_mode == SHAPE_PARA) {	/* Circular parabolic case */
+	else if (build_mode == SHAPE_PARA) {	/* Circular parabolic case */
 		*orig_add = (1.0 - rr*rr) * h_scale;
 		add = (rr < S->f) ? 1.0 : *orig_add;
 	}
-	else if (S->build_mode == SHAPE_POLY) {	/* Circular parabolic case */
+	else if (build_mode == SHAPE_POLY) {	/* Circular parabolic case */
 		*orig_add = poly_smt_func (rr) * h_scale;
 		add = (rr < S->f) ? 1.0 : *orig_add;
 	}
@@ -1479,7 +1479,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	pappas_func[SHAPE_POLY] = grdseamount_poly_pappas;
 
 	cone_increments = (Ctrl->T.active && Ctrl->Q.disc);
-	if (cone_increments) inc_mode = SHAPE_DISC;	/* if adding slices then output shapes are disks */
+	if (cone_increments) inc_mode = SHAPE_DISC;	/* If adding slices then output shapes are disks */
 
 	V = gmt_M_memory (GMT, NULL, n_smts, double);	/* Allocate volume array */
 	V_sum = gmt_M_memory (GMT, NULL, n_smts, double);	/* Allocate volume array */
@@ -1814,13 +1814,12 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						rr = this_r / r_km;	/* Now in 0-1 range */
 
 					/* Compute next height (add) it the untruncated version if -F is set (orig_add) */
-					add = grdseamount_height (&this_smt, this_r, rr, h_scale, exp_f, Ctrl->E.active, &orig_add);
+					add = grdseamount_height (&this_smt, inc_mode, this_r, rr, h_scale, exp_f, Ctrl->E.active, &orig_add);
 					/* Both add and orig_add are normalized fractions of full seamount height */
 					z_assign = amplitude * add;		/* Height to be added to grid if no slide */
 #ifdef DEBUG
-					if (doubleAlmostEqualZero (this_r, 10000.0)) {
-						dx = 0.0;	/* Set break point here if debugging peak of seamount location or some other point */
-						fprintf (stderr, "r = %lg orig_add = %lg add = %lg amplitude = %lg z_assign = %lg rr = %lg r_km = %lg\n", this_r, orig_add, add, amplitude, z_assign, rr, r_km);
+					if (doubleAlmostEqualZero (this_r, 0.0)) {
+						dx = 0.0;	/* Set break point here if debugging peak of seamount location (or edit to select some other point) */
 					}
 #endif
 					if (Ctrl->S.slide) {	/* Must handle the sector variation */

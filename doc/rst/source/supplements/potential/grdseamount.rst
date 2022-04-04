@@ -44,22 +44,23 @@ Synopsis
 Description
 -----------
 
-**grdseamount** will compute the combined topographic shape of multiple synthetic seamounts given their individual shape
-parameters.  We read from *table* (or standard input) a list of seamount locations and sizes and can evaluate either
-Gaussian, parabolic, conical, polynomial or disc shapes, which may be circular or elliptical, and optionally
-truncated. Various scaling options are available to modify the result, including an option to add in
-a background depth (more complicated backgrounds may be added separately via :doc:`grdmath </grdmath>`).
-The input data must contain *lon*, *lat*, *radius*, *height* for each seamount.
-For elliptical features (requires **-E**) we expect *lon*, *lat*, *azimuth*, *semi-major*, *semi-minor*,
-*height* instead. If seamount flattening is specified (via **-F**) with no value appended
-then an extra column with *flattening* is expected (cannot be used for plateaus).
-For temporal evolution of topography the **-T** option may be used, in which case the
-data file must have two additional columns with the start and stop time of seamount construction.
-In this case you may choose to write out a cumulative shape or just the increments produced
-by each time step (see **-Q**).  If land slides are considered (**-S**) then this initial set of
-columns are followed by one or more groups of slide parameters; see **-S** for the arrangement.
-Finally, for mixing different seamount shapes in the input *table* you can use the trailing text
-to give the shape code by using **-C** without an argument.
+**grdseamount** will compute the combined topographic shape of multiple synthetic seamounts given
+their individual shape parameters.  We read from *table* (or standard input) a list of seamount
+locations and sizes and can evaluate either Gaussian, parabolic, conical, polynomial or disc
+shapes, which may be circular or elliptical, and optionally truncated. Various scaling options
+are available to modify the result, including an option to add in a background depth (more
+complicated backgrounds may be added separately via :doc:`grdmath </grdmath>`). The input data
+must contain *lon*, *lat*, *radius*, *height* for each seamount. For elliptical features (requires
+**-E**) we expect *lon*, *lat*, *azimuth*, *semi-major*, *semi-minor*, *height* instead. If
+seamount flattening is specified (via **-F**) with no value appended then an extra column with
+*flattening* is expected (cannot be used for plateaus). For temporal evolution of topography the
+**-T** option may be used, in which case the data file must have two additional columns with the
+start and stop time of seamount construction. In this case you may choose to write out a
+cumulative shape or just the increments produced by each time step (see **-Q**).  If land slides
+are considered (**-S**) then this initial set of columns are followed by one or more groups of
+slide parameters; see **-S** for the arrangement. Finally, for mixing different seamount shapes
+in the input *table* you can use the trailing text to give the shape code by using **-C** without
+an argument.
 
 Required Arguments (if **-L** not given)
 ----------------------------------------
@@ -94,19 +95,19 @@ Optional Arguments
 **-A**\ [*out/in*][**+s**\ *scale*]
     Build a mask grid; append outside/inside values [1/NaN].
     Here, height and flattening are ignored and **-L**, **-N** and **-Z** are disallowed.
-    Use **s** to increase all seamount radii or semi-axes first [1].
+    Use **+s** to increase all seamount radii or semi-axes first ("bleeding outwards") [1].
 
 .. _-C:
 
 **-C**\ [**c**\|\ **d**\|\ **g**\|\ **o**\|\ **p**]
     Select seamount shape function: choose among **c** (cone), **d** (disc), **g** (Gaussian)
-    **o** (polynomial) and **p** (parabolic) shapes [Default is Gaussian].  All but the disc can
-    furthermore be truncated via a flattening parameter *f* set by **-F**.  If **-C** is not given any
-    argument then we will read the shape code from the trailing text.  If **-C** is not given
-    at all then we default to Gaussian shapes [**g**].  **Note**: The polynomial model has an normalized amplitude
-    for a normalized radius :math:`u = r / r_0` that is given by :math:`v(u) = \frac{(1+u)^3(1-u)^3)}{1+u^3}`.
-    It is very similar to the Gaussian model (volume is just ~2.4% larger) but *v* goes exactly to zero at
-    the basal radius :math:`r_0`.
+    **o** (polynomial) and **p** (parabolic) shapes [Default is Gaussian].  All but the disc
+    can furthermore be truncated via a flattening parameter *f* set by **-F**.  If **-C** is
+    not given any argument then we will read the shape code from the trailing text.  If **-C**
+    is not given at all then we default to Gaussian shapes [**g**].  **Note**: The polynomial
+    model has an normalized amplitude for a normalized radius :math:`u = r / r_0` that is given
+    by :math:`v(u) = \frac{(1+u)^3(1-u)^3)}{1+u^3}`. It is very similar to the Gaussian model
+    (volume is just ~2.4% larger) but *v* goes exactly to zero at the basal radius :math:`r_0`.
 
 .. figure:: /_images/GMT_seamount_types.*
    :width: 500 px
@@ -203,12 +204,15 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ *bmode*/*fmode*\ [**+d**]
-    Can only be used in conjunction with **-T**.  Append two different modes settings separated by a slash:
-    The *bmode* determines how we construct the surface: Specify **c** for cumulative
-    volume through time [Default], or **i** for incremental volume added for each time slice.
-    The *fmode* determines the volume flux curve we use: Give **c** for a constant volume flux or
-    **g** for a Gaussian volume flux [Default] between the start and stop times of each feature. These fluxes
-    integrate to a linear or error-function volume fraction over time, respectively, as shown below.
+    Can only be used in conjunction with **-T**.  Append two different mode settings separated by a slash:
+    
+        * The *bmode* determines how we construct the surface: Specify **c** for cumulative
+          volume through time [Default], or **i** for incremental volume added for each time slice.
+    
+        * The *fmode* determines the volume flux curve we use: Give **c** for a constant volume flux or
+          **g** for a Gaussian volume flux [Default] between the start and stop times of each feature.
+
+    These fluxes integrate to a linear or error-function volume fraction over time, respectively, as shown below.
     By default we compute the exact cumulative and incremental values for the seamounts specified.  Append
     **+d** to instead approximate each incremental layer by a disc of constant thickness.
 
@@ -242,14 +246,14 @@ Optional Arguments
         * **+b** sets a positive power coefficient for the normalized slide volume fraction
           time-curve :math:`\psi(\tau) = \tau^\beta` [Default is linear, i.e., 1].
 
-        * **+d** sets the height of the distal deposit at the toe of the seamount [*h1*/2].
+        * **+d** sets the height of the distal deposit at the toe of the seamount [:math:`h_1/2`].
 
         * **+h** sets the lower and upper heights of the landslide scarps.
 
         * **+p** activates angular variation in slide height and sets the power parameter *power > 2*.
 
-        * **+t** sets the time span over which the slide develops via :math:`\psi(\tau)`, where
-          :math:`\tau = (t - t_0)/(t_1 - t_0) is the normalized time span; this modifier also
+        * **+t** sets the time span over which the slide develops via :math:`\psi(\tau)` (see **+b**), where
+          :math:`\tau = (t - t_0)/(t_1 - t_0)` is the normalized time span; this modifier also
           requires **-T** to be set.
 
         * **+u** sets radial slide shape parameter *u0 > 0* [0.2].
@@ -288,6 +292,7 @@ Optional Arguments
     template that contains a floating point format (C syntax).  If the filename template also contains
     either %s (for unit name) or %c (for unit letter) then we use the corresponding time (in units specified in |-T|)
     to generate the individual file names, otherwise we use time in years with no unit.
+    Requires **-H** to define the density model.
 
 .. _-Z:
 
