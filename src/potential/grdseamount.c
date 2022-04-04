@@ -1890,8 +1890,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 				double mean_rho = sum_rz / sum_z;
 				GMT_Report (API, GMT_MSG_INFORMATION, "Seamount # %d mean density: %g\n", n_smts, mean_rho);
 			}
-			prev_user_time = this_user_time;	/* Make this the previous time */
 		}
+		prev_user_time = this_user_time;	/* Make this the previous time */
 		if (empty && Ctrl->T.active) {	/* No contribution made */
 			GMT_Report (API, GMT_MSG_INFORMATION, "No contribution made for time %g %s\n",
 			            Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
