@@ -126,9 +126,7 @@ recognized by the tag GMT:
 To make lon,lat, and depth input for :doc:`blockmean </blockmean>` and :doc:`surface </surface>` using
 all the files listed in the file tracks.lis and defined by the tag TRK,
 but only the data that are inside the specified area, and make output
-binary, run
-
-   ::
+binary, run::
 
     gmt x2sys_datalist =tracks.lis -TTRK -Flon,lat,depth -R40/-30/25/35 -bo > alltopo_bin.xyz
 
@@ -180,6 +178,8 @@ ABC obs 0.5\*exp(-1e-3(lat))^1.5
 ABC weight -1
 
 ABC fuel 0.02\*((dist))
+
+.. include:: x2sys_refs.rst_
 
 See Also
 --------
