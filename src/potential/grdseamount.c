@@ -685,7 +685,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void grdseamount_disc_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
+GMT_LOCAL void grdseamount_disc_area_volume_height (double a, double b, double h, double hn, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical disc "seamounts" (more like plateaus).
 	 * Here, f is not used. */
 
@@ -694,35 +694,35 @@ GMT_LOCAL void grdseamount_disc_area_volume_height (double a, double b, double h
 
 	r2 = a * b;
 	if (A) *A = M_PI * r2;
-	if (V) *z = h - hc;
+	if (V) *z = h - hn;
 	if (z && A && V) *V = *A * (*z);
 }
 
-GMT_LOCAL void grdseamount_para_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
+GMT_LOCAL void grdseamount_para_area_volume_height (double a, double b, double h, double hn, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical parabolic seamounts. */
 	double e, r2, rc2;
 
 	r2 = a * b;
 	e = 1.0 - f*f;
-	rc2 = r2 * (1.0 - e * hc / h);	/* product of a*b where h = hc */
+	rc2 = r2 * (1.0 - e * hn / h);	/* product of a*b where h = hn */
 	if (A) *A = M_PI * rc2;
-	if (V) *V = 0.5 * M_PI * r2 * h * (e * pow ((1.0/e) - (hc/h), 2.0) - f*f*((1.0/e)-1.0));
+	if (V) *V = 0.5 * M_PI * r2 * h * (e * pow ((1.0/e) - (hn/h), 2.0) - f*f*((1.0/e)-1.0));
 	if (z && A && V) *z = (*V) / (*A);
 }
 
-GMT_LOCAL void grdseamount_cone_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
+GMT_LOCAL void grdseamount_cone_area_volume_height (double a, double b, double h, double hn, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical conical seamounts */
 
 	double e, r2;
 
 	r2 = a * b;
 	e = 1.0 - f;
-	if (A) *A = M_PI * r2 * (1.0 - e * hc / h);
-	if (V) *V = (M_PI / (3 * e)) * r2 * h * (pow (e, 3.0) * pow ((1.0 / e) - (hc / h), 3.0) - pow (f, 3.0));
+	if (A) *A = M_PI * r2 * (1.0 - e * hn / h);
+	if (V) *V = (M_PI / (3 * e)) * r2 * h * (pow (e, 3.0) * pow ((1.0 / e) - (hn / h), 3.0) - pow (f, 3.0));
 	if (z && A && V) *z = (*V) / (*A);
 }
 
-GMT_LOCAL void grdseamount_gauss_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
+GMT_LOCAL void grdseamount_gauss_area_volume_height (double a, double b, double h, double hn, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical Gaussian seamounts */
 
 	bool circular = doubleAlmostEqual (a, b);
@@ -730,12 +730,12 @@ GMT_LOCAL void grdseamount_gauss_area_volume_height (double a, double b, double 
 
 	c = (9.0 / 2.0) * f * f;
 	r2 = (circular) ? a * a : a * b;
-	if (fabs (hc) < GMT_CONV8_LIMIT) {	/* Exact, no noise floor */
+	if (fabs (hn) < GMT_CONV8_LIMIT) {	/* Exact, no noise floor */
 		if (A) *A = M_PI * r2;
 		if (V) *V = (2.0 / 9.0) * M_PI * r2 * h * (1.0 + c);
 	}
-	else {			/* Noise floor at hc */
-		t = hc / h;
+	else {			/* Noise floor at hn */
+		t = hn / h;
 		logt = log (t);
 		c = 1.0 + (9.0 / 2.0) * f * f;
 		if (A) *A = (2.0 / 9.0) * M_PI * r2 * (c - logt);
@@ -755,13 +755,13 @@ GMT_LOCAL double ddr_poly_smt_func (double r) {
 	return ((fabs(r) > 1.0) ? 0.0 : -(3.0 * r * pow (r - 1.0, 2.0) * (r2 * r + r + 2.0)) / pow (r2 - r + 1.0, 2.0));
 }
 
-GMT_LOCAL double poly_smt_rc (double hc) {
-	/* Determine the radius where h(rc) == hc via Newton-Rhapson */
+GMT_LOCAL double poly_smt_rc (double hn) {
+	/* Determine the radius where h(rc) == hn via Newton-Rhapson */
 	unsigned int k = 0;
 	double r0 = 0.5, r1, dr;
 	do {
 		k++;
-    	r1 = r0 - (poly_smt_func (r0) - hc) / ddr_poly_smt_func (r0);
+    	r1 = r0 - (poly_smt_func (r0) - hn) / ddr_poly_smt_func (r0);
     	dr = fabs (r1 - r0);
     	r0 = r1;
     }
@@ -789,15 +789,15 @@ GMT_LOCAL double grdseamount_r_from_h (unsigned int inc_mode, double h, double r
 	return (r * r0);
 }
 
-GMT_LOCAL void grdseamount_poly_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
+GMT_LOCAL void grdseamount_poly_area_volume_height (double a, double b, double h, double hn, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical polynomial seamounts. */
 	bool circular = doubleAlmostEqual (a, b);
-	double r2, r, rc = (hc > 0.0) ? poly_smt_rc (hc / h) : 1.0;	/* Fraction of normalized radius at noise floor */
+	double r2, r, rc = (hn > 0.0) ? poly_smt_rc (hn / h) : 1.0;	/* Fraction of normalized radius at noise floor */
 	double beta = (poly_smt_vol (rc) - poly_smt_vol (f)) / poly_smt_func (f);
 	r2 = (circular) ? a * a : a * b;
 	r = sqrt (r2);	/* Mean radius */
 	if (A) *A = M_PI * r2;
-	if (V) *V = r2 * h * (beta + M_PI * f * f) - M_PI * pow (rc * r, 2.0) * hc;
+	if (V) *V = r2 * h * (beta + M_PI * f * f) - M_PI * pow (rc * r, 2.0) * hn;
 	if (z && A && V) *z = (*V) / (*A);
 }
 
@@ -1369,7 +1369,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double orig_add, dz, rho_z, sum_rz, sum_z, exp_f, r_max, tau = 1.0, theta, psi = 1.0;
 	double (*pappas_func[N_SHAPES]) (double r0, double h0, double f, double r1, double r2);
 	double (*phi_solver[N_SHAPES]) (struct SEAMOUNT *S, double f, double v, bool elliptical);
-	void (*shape_func[N_SHAPES]) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
+	void (*shape_func[N_SHAPES]) (double a, double b, double h, double hn, double f, double *A, double *V, double *z);
 
 	struct SLIDE Slide[N_MAX_SLIDES];	/* Allocate of the stack info for up to these many slides per seamount */
 	struct GMT_GRID *Grid = NULL;
