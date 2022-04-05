@@ -123,6 +123,7 @@ for apiprog in \
     testapi_matrix_as_grid \
     testapi_vector_strings \
     testapi_vector_plot \
+    testapi_vector_times \
     testapi_vector_io \
     testapi_matrix_io \
     testapi_matrix_360 \
