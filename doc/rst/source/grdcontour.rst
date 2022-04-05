@@ -243,7 +243,7 @@ Optional Arguments
 
 **-Z**\ [**+o**\ *shift*][**+p**][**+s**\ *factor*]
     Use to subtract *shift* from the data and multiply the results by
-    *factor* before contouring starts [1/0]. (Numbers in **-A**, **-C**,
+    *factor* before contouring starts [+o0+s1]. (Numbers in **-A**, **-C**,
     **-L** refer to values after this scaling has occurred.) Append
     **+p** to indicate that this grid file contains z-values that are
     periodic in 360 degrees (e.g., phase data, angular distributions)
