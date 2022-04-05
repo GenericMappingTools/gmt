@@ -126,6 +126,7 @@ Optional Arguments
         specific *pen* may be present and will override the pen set by **-W**
         for this contour level only. **Note**: Please specify *pen* in proper
         format so it can be distinguished from a plain number like *angle*.
+        If only *cont-level* columns are present then we set type to **C**.
 
     (3) If *contours* is a string with comma-separated values it is interpreted
         as those specific contours only.  To indicate a single specific contour
