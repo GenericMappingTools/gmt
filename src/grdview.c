@@ -1566,11 +1566,11 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 			for (ip_l = 0, ip_r = nx_i - 1; ip_l < nx_i; ip_l++, ip_r--) {
 				if (go_right && top_jp[ip_l] < bottom_jp[ip_l])	/* No pixels yet in this column, we can move to the right */
-					first_ip = ip_l;
+					first_ip = ip_l + 1;
 				else	/* First non-empty sliver */
 					go_right = false;
 				if (go_left && top_jp[ip_r] < bottom_jp[ip_r])	/* No pixels yet in this column, we can move to the left */
-					last_ip = ip_r;
+					last_ip = ip_r - 1;
 				else	/* First non-empty sliver */
 					go_left = false;
 			}
