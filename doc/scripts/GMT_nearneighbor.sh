@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-gmt begin GMT_nearneighbor ps
+gmt begin GMT_nearneighbor
 gmt set GMT_THEME cookbook
 gmt plot -R0/2/0/2 -Jx2i -Sc2i -Wthick -Glightgreen@70 -Bg0.25 << EOF
 0.75	1.25

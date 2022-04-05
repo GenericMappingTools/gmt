@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Illustrate the problem with grdsample -T
-gmt begin GMT_grid2pix ps
+gmt begin GMT_grid2pix
 	gmt set GMT_THEME cookbook
 	gmt subplot begin 2x1 -F6i/2.5i -M3p -A+jTR+o-0.2i/0
 		gmt subplot set 0

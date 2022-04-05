@@ -18624,6 +18624,9 @@ GMT_LOCAL FILE *gmtinit_open_figure_file (struct GMTAPI_CTRL *API, unsigned int 
 int gmt_get_graphics_id (struct GMT_CTRL *GMT, const char *format) {
 	int code = 0;
 	gmt_M_unused(GMT);
+	if (!strncmp (format, "view", 4U)) {
+		return GMT->current.setting.graphics_format;
+	}
 	while (gmt_session_format[code] && strncmp (format, gmt_session_format[code], strlen (gmt_session_format[code])))
 		code++;
 	return (gmt_session_format[code]) ? code : GMT_NOTSET;
