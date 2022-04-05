@@ -1552,28 +1552,55 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 			}
 		}
 
-		if (!Ctrl->Q.mask) {	/* Must implement the clip path for the image */
+		if (!Ctrl->Q.mask) {	/* Must implement the clip path for the perspective image */
+			/* We now have the top and bottom j-pixel per i-pixel and will build a closed clip path.
+			 * First, we find the first and last i-pixel of the actual image, then do the loop.
+			 * Because pixels are square and of finite size we build a stair-step curve around them,
+			 * hence we need 2x the number of coordinates for both the top and bottom sides */
+			int ip_l, ip_r, first_ip = 0, last_ip = nx_i - 1;
+			bool go_right = true, go_left = true;
+			double mid_y = 0.5 * (GMT->current.proj.z_project.ymin + GMT->current.proj.z_project.ymax);
 
 			x_pixel_size = x_width / (double)nx_i;
 			y_pixel_size = y_width / (double)ny_i;
-			n4 = 4 * nx_i;
+
+			for (ip_l = 0, ip_r = nx_i - 1; ip_l < nx_i; ip_l++, ip_r--) {
+				if (go_right && top_jp[ip_l] < bottom_jp[ip_l])	/* No pixels yet in this column, we can move to the right */
+					first_ip = ip_l;
+				else	/* First non-empty sliver */
+					go_right = false;
+				if (go_left && top_jp[ip_r] < bottom_jp[ip_r])	/* No pixels yet in this column, we can move to the left */
+					last_ip = ip_r;
+				else	/* First non-empty sliver */
+					go_left = false;
+			}
+			/* Compute number of points needed to draw the staircase clip path */
+			n4 = 4 * (last_ip - first_ip + 1);	/* 2 sides, and 2 points per pixel */
 			x_imask = gmt_M_memory (GMT, NULL, n4, double);
 			y_imask = gmt_M_memory (GMT, NULL, n4, double);
 			nk = n4 - 1;
 
-			for (ip = k = 0; ip < nx_i; ip++, k += 2) {
+			for (ip = first_ip, k = 0; ip <= last_ip; ip++, k += 2) {	/* From first to last i-pixel */
 				k1 = k + 1;
 				x_imask[k]  = x_imask[nk-k]  = GMT->current.proj.z_project.xmin + ip * x_pixel_size;
 				x_imask[k1] = x_imask[nk-k1] = x_imask[k] + x_pixel_size;
-				if (top_jp[ip] < bottom_jp[ip]) {	/* No pixels set in this column */
-					y_imask[k] = y_imask[k1] = y_imask[nk-k] = y_imask[nk-k1] = GMT->current.proj.z_project.ymin;
+				if (top_jp[ip] < bottom_jp[ip]) {	/* No pixels set in this column (e.g., in the middle due to NaNs?) */
+					y_imask[k] = y_imask[k1] = y_imask[nk-k] = y_imask[nk-k1] = mid_y;	/* Somewhat arbitrary */
 				}
-				else {	/* Set top of upper pixel and bottom of lower pixel */
+				else {	/* Set top of upper pixel and bottom of lower pixel steps */
 					y_imask[k] = y_imask[k1] = GMT->current.proj.z_project.ymin + (top_jp[ip] + 1) * y_pixel_size;
 					y_imask[nk-k] = y_imask[nk-k1] = GMT->current.proj.z_project.ymin + bottom_jp[ip] * y_pixel_size;
 				}
 			}
-			PSL_beginclipping (PSL, x_imask, y_imask, 4 * nx_i, GMT->session.no_rgb, 3);
+#if 1
+			{	/* For debugging the clip path - set the if# to 1 */
+				FILE *fp = fopen ("image_mask.txt", "w");
+				for (k = 0; k < n4; k++)
+					fprintf (fp, "%lg\t%lg\n", x_imask[k], y_imask[k]);
+				fclose (fp);
+			}
+#endif
+			PSL_beginclipping (PSL, x_imask, y_imask, n4, GMT->session.no_rgb, 3);
 			gmt_M_free (GMT, x_imask);
 			gmt_M_free (GMT, y_imask);
 		}
