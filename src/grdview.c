@@ -1592,7 +1592,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 					y_imask[nk-k] = y_imask[nk-k1] = GMT->current.proj.z_project.ymin + bottom_jp[ip] * y_pixel_size;
 				}
 			}
-#if 1
+#if 0
 			{	/* For debugging the clip path - set the if# to 1 */
 				FILE *fp = fopen ("image_mask.txt", "w");
 				for (k = 0; k < n4; k++)
