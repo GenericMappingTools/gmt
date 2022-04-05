@@ -413,8 +413,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s Fixed contour interval.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s Comma-separated contours (for single contour append comma to be seen as list).", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s File with contour levels, types, and optional fixed annotation angle and/or pen: "
-		"<contlevel> [<angle>] C|c|A|a [<pen>]. Use A|a for annotated contours and C|c for plain contours. If -T is used, "
-		"only inner-most contours with upper case C or A will be ticked", GMT_LINE_BULLET);
+		"<contlevel> [[<angle>] C|c|A|a [<pen>]]. Use A|a for annotated contours and C|c for plain contours. If -T is used, "
+		"only inner-most contours with upper case C or A will be ticked. "
+		"If file only contains <contlevel> then we default to type C for plain contours only.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s Name of a CPT. [CPT contours are set to C unless the CPT flags are set; "
 		"Use -A to force all to become A].", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Note: If neither -A nor -C are set then we auto-select the intervals.");

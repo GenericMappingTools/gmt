@@ -98,7 +98,7 @@ Optional Arguments
 
     (2) If *contours* is a file but not a CPT, it is expected to contain
         one record per contour, with information given in the order
-        *contour-level* [*angle*] **C**\|\ **c**\|\ **A**\|\ **a** [*pen*],
+        *contour-level* [[*angle*] **C**\|\ **c**\|\ **A**\|\ **a** [*pen*]],
         where items in brackets are optional.  The levels marked **C** (or **c**)
         are contoured, while the levels marked **A** (or **a**) are both contoured
         and annotated. If the annotation *angle* is present we will plot the label
@@ -106,6 +106,7 @@ Optional Arguments
         specific *pen* may be present and will override the pen set by **-W**
         for this contour level only. **Note**: Please specify *pen* in proper
         format so it can be distinguished from a plain number like *angle*.
+        If only *cont-level* columns are present then we set type to **C**.
 
     (3) If *contours* is a string with comma-separated values it is interpreted
         as those specific contours only.  To indicate a single specific contour

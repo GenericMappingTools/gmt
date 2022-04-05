@@ -9822,13 +9822,13 @@ GMT_LOCAL int gmtsupport_is_cpt_file (struct GMT_CTRL *GMT, char *file) {
 	/* Read a file that may be a CPT file or a contour listing file.  We will return
 	 * 0 if it is a contour file, 1 if a CPT and -1 if we get read errors.
 	 * Because a non-commented record in a contour listing file is of the format
-	 *   cval [angle] C|A|c|a [pen]] OR  cval C|A|c|a [angle [pen]] (deprecated format),
+	 *   cval [[angle] C|A|c|a [pen]]] OR  cval C|A|c|a [angle [pen]] (deprecated format),
 	 * we can uniquely determine if it is that sort of file by finding the lone
 	 * character A|a|C|c between white space on the left and white space or NULL on right.
-	 * If that is not found then it must be a CPT file.
+	 * If that is not found then it must be a CPT file, unless only one column is found.
 	 */
-	int answer = 1;	/* Default response is that this is a CPT file, flagged as 1 */
-	char *txt = NULL, *c = NULL;
+	int n, answer = 1;	/* Default response is that this is a CPT file, flagged as 1 */
+	char *txt = NULL, *c = NULL, A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""};
 	unsigned int k = 0;
 	struct GMT_DATASET *C = NULL;
 
@@ -9845,10 +9845,10 @@ GMT_LOCAL int gmtsupport_is_cpt_file (struct GMT_CTRL *GMT, char *file) {
 		return (-1);
 	}
 	if ((c = strchr (txt, ';'))) c[0] = '\0';	/* Chop off optional CPT labels since they may have text that can trick us */
-
+	n = sscanf (txt, "%s %s", A, B);	/* See if we can read 2 items */
 	while (txt[k] && !(txt[k] == '\t' || txt[k] == ' ')) k++;	/* Scan to first occurrence of white space, thus skipping <cval> */
 	while (txt[k] && strchr ("AaCc", txt[k]) == NULL) k++;		/* Scan to first occurrence of one of the key letters */
-	if ((k && (txt[k-1] == '\t' || txt[k-1] == ' ')) && (txt[k] && (txt[k+1] == '\t' || txt[k+1] == ' ' || txt[k+1] == '\0')))
+	if (n == 1 || ((k && (txt[k-1] == '\t' || txt[k-1] == ' ')) && (txt[k] && (txt[k+1] == '\t' || txt[k+1] == ' ' || txt[k+1] == '\0'))))
 		answer = 0;	/* Yes, this is a contour file */
 	if (c) c[0] = ';';	/* Restore semicolon to be nice */
 
@@ -17911,14 +17911,15 @@ void gmt_extend_region (struct GMT_CTRL *GMT, double wesn[], unsigned int mode, 
 }
 
 struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, char *file, bool inner_tics, unsigned int *type, unsigned int *n_contours) {
-	/* Read contour info from file with cval [angle] C|A|c|a [pen]] records.
+	/* Read contour info from file with cval [[angle] C|A|c|a [pen]]] records.
 	 * The deprecated format was cval C|A|c|a [angle [pen]].
 	 * If fix-angle annotations are specified we must pass out the type flag as well.
+	 * If only cval is given then we set type to C.
 	 */
 	bool got_angle;
 	char pen[GMT_LEN64] = {""}, txt[GMT_LEN64] = {""};
 	unsigned int seg, row, c, save_coltype = gmt_get_column_type (GMT, GMT_IN, GMT_X);
-	int nc;
+	int nc = 0;
 	struct GMT_DATASET *C = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_CONTOUR_INFO * cont = NULL;
@@ -17942,8 +17943,11 @@ struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, cha
 			cont[c].val = S->data[GMT_X][row];
 			cont[c].angle = GMT->session.d_NaN;	/* May be overridden below */
 			pen[0] = txt[0] = '\0';
-			nc = sscanf (S->text[row], "%c %s %s", &cont[c].type, txt, pen);
-			if (strchr ("AaCc", cont[c].type) == NULL) {
+			if (S->text && S->text[row])
+				nc = sscanf (S->text[row], "%c %s %s", &cont[c].type, txt, pen);
+			else
+				nc = 0;
+			if (nc && strchr ("AaCc", cont[c].type) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Not a recognized contour type: %c\n", cont[c].type);
 				gmt_M_free (GMT, cont);
 				return (NULL);
@@ -17966,6 +17970,8 @@ struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, cha
 						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cannot tell if %s is a pen or angle; chose angle. Please use trailing c|i|p units for all pens\n", txt);
 				}
 			}
+			else if (nc == 0)	/* Only got cval, set default type */
+				cont[c].type = 'C';
 			/* else nc == 1 for record with only type information (no angle nor pen) */
 			if (pen[0]) {	/* Got a pen */
 				if (gmt_getpen (GMT, pen, &cont[c].pen)) {	/* Bad pen syntax */
