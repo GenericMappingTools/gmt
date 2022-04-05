@@ -243,15 +243,6 @@ Optional Arguments
 
 **-S**\ [**+a**\ [*az1*/*az2*]][**+b**\ [*beta*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]]
 
-.. figure:: /_images/GMT_seamount_model.*
-   :width: 500 px
-   :align: center
-
-   Geometry for an *ad hoc* landslide approximation.  The volume of the slide material (pink)
-   will be deposited at the toe of the seamount (light blue) starting at a height of :math:`h_c`
-   and linearly tapering to zero at a distal point :math:`r_d`. Note that :math:`h_2 > h_1`
-   while :math:`r_1 > r_2`.
-
     Sets parameters controlling sectoral land slides by selecting suitable modifiers. Parameters
     set on the command line apply to all seamounts equally,  However, if a modifier is set but
     not given any arguments then we read those arguments from the end of the input record; the
@@ -264,29 +255,11 @@ Optional Arguments
         * **+b** sets a positive power coefficient for the normalized slide volume fraction
           time-curve :math:`\psi(\tau) = \tau^\beta` [Default is linear, i.e., 1].
 
-.. figure:: /_images/GMT_seamount_psi.*
-   :width: 500 px
-   :align: center
-
-   We can control how quickly a slide happens by manipulating the :math:`\psi(\tau)` function.
-   A linear curve means the mass redistribution is taking place at a constant rate during the
-   slide duration. Adjust :math:`\beta` to have the bulk of the redistribution happen at the
-   front (:math:`\beta < 1`) or closer to the end (:math:`\beta > 1`) of the event.
-
         * **+d** sets the height of the distal deposit at the toe of the seamount [:math:`h_1/2`].
 
         * **+h** sets the lower and upper heights of the landslide scarps.
 
         * **+p** activates angular variation in slide height and sets the power parameter *power > 2*.
-
-.. figure:: /_images/GMT_seamount_azim.*
-   :width: 500 px
-   :align: center
-
-   A range of azimuthal variation in slide height can be achieved by modulating the power parameter,
-   *p*. This variation means the slide volume is reduced by :math:`1 - \bar{s}` (dashed lines). E.g.,
-   for *p = 2* the slide volume is only 67% of the volume we would have if there was no azimuthal
-   variation (i.e., *s = 0*).
 
         * **+t** sets the time span over which the slide develops via :math:`\psi(\tau)` (see **+b**), where
           :math:`\tau = (t - t_0)/(t_1 - t_0)` is the normalized time span; this modifier also
@@ -294,20 +267,48 @@ Optional Arguments
 
         * **+u** sets radial slide shape parameter *u0 > 0* [0.2].
 
-.. figure:: /_images/GMT_seamount_u0.*
-   :width: 500 px
-   :align: center
-
-   A variety of slide shapes are possible by varying :math:`u_0`.  The slide area for a conical seamount
-   would be the area between the flank (dashed line) and the selected curve. A smaller $u_0$ will cut
-   more deeply into the seamount.
-
         * **+v** sets desired fractional volume of the slide (in percent) relative to
           the entire seamount volume.
 
     **Note**: If **+v** is set then we must compute the corresponding *u0*, hence **+u** is
     not allowed. If **+b**, **+d**, or **+u** are not set then their defaults are used for all slides.
     Currently, we support a maximum of 10 slides per seamount.
+
+.. figure:: /_images/GMT_seamount_specs.*
+   :width: 500 px
+   :align: center
+
+   Geometry for an *ad hoc* landslide approximation (modifiers **+a**, **+d** and **+h**).
+   The volume of the slide material (pink)
+   will be deposited at the toe of the seamount (light blue) starting at a height of :math:`h_c`
+   and linearly tapering to zero at a distal point :math:`r_d`. Note that :math:`h_2 > h_1`
+   while :math:`r_1 > r_2`.
+
+.. figure:: /_images/GMT_seamount_psi.*
+   :width: 500 px
+   :align: center
+
+   We can control how quickly a slide happens by manipulating the :math:`\psi(\tau)` function
+   (modifier **+b**). A linear curve means the mass redistribution is taking place at a constant
+   rate during the slide duration. Adjust :math:`\beta` to have the bulk of the redistribution
+   happen at the front (:math:`\beta < 1`) or closer to the end (:math:`\beta > 1`) of the event.
+
+.. figure:: /_images/GMT_seamount_azim.*
+   :width: 500 px
+   :align: center
+
+   A range of azimuthal variation in slide height can be achieved by modulating the power parameter,
+   *p* (modifier **+p**). This variation means the slide volume is reduced by :math:`1 - \bar{s}`
+   (dashed lines). E.g., for *p = 2* the slide volume is only 67% of the volume we would have if
+   there was no azimuthal variation (i.e., *s = 0*).
+
+.. figure:: /_images/GMT_seamount_u0.*
+   :width: 500 px
+   :align: center
+
+   A variety of slide shapes are possible by varying :math:`u_0` (modifier **+u**).  The slide area
+   for a conical seamount would be the area between the flank (dashed line) and the selected curve.
+   A smaller :math:`u_0` will cut more deeply into the seamount.
 
 .. _-T:
 
