@@ -5,7 +5,7 @@ int main () {
 	char input[GMT_VF_LEN] = {""};     			/* String to hold virtual input filename */
 	char args[128] = {""};            			/* String to hold module command arguments */
 
-	uint64_t dim[4] = {2, 2, 1, 0};
+	uint64_t dim[4] = {2, 4, 1, 0};
 	char *x[4] = {"2021-03-01", "2021-03-02", "2021-03-03", "2021-03-04"};
 	double y[4] = {0.0, 1.0, 2.0, 3.0};
 
@@ -19,7 +19,7 @@ int main () {
 	/* Associate our data table with a virtual file */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, V, input);
 	/* Prepare the module arguments */
-	sprintf (args, "%s -JX10c/5c -R2021-03-01/2021-03-04/-0.1/30 -Baf -P -Vd", input);
+	sprintf (args, "%s -JX10c/5c -R2021-03-01/2021-03-04/-0.1/30 -Baf -BWSen -P", input);
 	/* Call the psxy module */
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, args);
 	GMT_Close_VirtualFile (API, input);
