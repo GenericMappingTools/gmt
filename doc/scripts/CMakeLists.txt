@@ -33,7 +33,7 @@ if (SPHINX_FOUND)
 	endforeach (_fig ${_scripts_ps2png})
 
 	# Convert PS to PDF
-	set (_scripts_ps2pdf images/GMT_RGBchart_a4.ps images/GMT_RGBchart_letter.ps images/GMT_RGBchart_tabloid.ps images/GMT_App_F_stand+_iso+.ps images/GMT_App_F_symbol_dingbats.ps)
+	set (_scripts_ps2pdf images/GMT_RGBchart.ps images/GMT_App_F_stand+_iso+.ps images/GMT_App_F_symbol_dingbats.ps)
 	set (_scripts_pdf)
 	foreach (_fig ${_scripts_ps2pdf})
 		string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
