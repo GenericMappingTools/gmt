@@ -1387,13 +1387,9 @@ GMT_LOCAL double grdseamount_ellipse_setup (struct SEAMOUNT *S, struct GRDSEAMOU
 	return (a);		/* Semi-major axis in user units (Cartesian or km) */
 }
 
-GMT_LOCAL double grdseamount_ellipse_eval (struct SEAMOUNT *S, double x, double y, double *ABC, double *r_major_fraction) {
+GMT_LOCAL double grdseamount_ellipse_eval (struct SEAMOUNT *S, double x, double y, double *ABC) {
 	/* Compute the equivalent circular radius (0-1) for this ellipse */
 	double r_normalized, u2, dx = S->scl_x * (x - S->lon), dy = S->scl_y * (y - S->lat);
-	double d_az = grdseamount_azimuth (dx, dy) - S->azimuth;	/* Angle relative to seamount's major axis */
-	double e = S->minor / S->major, s, c;
-	sincosd (d_az, &s, &c);
-	*r_major_fraction = e / sqrt (s * s + pow (e * c, 2.0));	/* Will be < 1 if pointing toward minor axis even if r is 1 */
 	u2 = ABC[0] * dx * dx + ABC[1] * dx * dy + ABC[2] * dy * dy;
 	/* u2 is now a normalized r^2 in the 0 to -4.5 (-8) range expected for the Gaussian case */
 	r_normalized = sqrt (-u2 / 4.5);	/* Convert u2 to a normalized radius 0-1 (or 0-1.3333333) for -8) */
@@ -1436,10 +1432,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	gmt_grdfloat *data = NULL, *current = NULL, *previous = NULL, *rho_weight = NULL, *prev_z = NULL;
 
 	double this_r, dV, scale_curr = 1.0, major, minor, z_assign, this_user_time = 0.0, life_span, t_mid;
-	double normalized_untruncated_height, normalized_truncated_height, f, max_height, r_km, amplitude = 0.0;
+	double normalized_untruncated_height, normalized_truncated_height, max_height, r_km, amplitude = 0.0;
 	double x, y, r_mean, h_mean, wesn[4], r_normalized, out[3], area, volume, height, v_curr, v_prev, rho;
-	double prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf, phi_prev, phi_curr, r_boost = 1.0, ABC[3];
-	double dz, rho_z, sum_rz, sum_z, r_max, tau = 1.0, theta, psi = 1.0, r_major_fraction, h0_scale = 1.0;
+	double prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf, phi_prev, phi_curr, r_boost = 1.0;
+	double dz, rho_z, sum_rz, sum_z, r_max, tau = 1.0, theta, psi = 1.0, h0_scale = 1.0, ABC[3], f;
 
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL, *V = NULL;
 
@@ -1837,11 +1833,11 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					}
 #endif
 					if (Ctrl->E.active) {	/* For elliptical bases we must deal with its orientation */
-						r_normalized = grdseamount_ellipse_eval (&this_smt, x, y, ABC, &r_major_fraction);
+						r_normalized = grdseamount_ellipse_eval (&this_smt, x, y, ABC);
 						if (Ctrl->A.active && r_normalized > r_boost) continue;	/* Beyond the seamount base so nothing to do for a mask */
 					}
 					else	/* Circular features are simpler */
-						r_normalized = r_major_fraction = this_r / r_km;	/* Now in 0-1 range */
+						r_normalized = this_r / r_km;	/* Now in 0-1 range */
 					/* Compute next height (normalized_truncated_height) it the untruncated version if -F is set (normalized_untruncated_height) */
 					normalized_truncated_height = grdseamount_height (inc_mode, r_normalized, h0_scale, f, &normalized_untruncated_height);
 					/* Both normalized_truncated_height and normalized_untruncated_height are normalized fractions of full seamount height */
