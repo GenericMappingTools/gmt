@@ -371,6 +371,14 @@ Optional Arguments
 .. include:: ../../explain_distunits.rst_
 
 
+Notes
+-----
+
+Because the Gaussian curve only drops to 1.11% of its maximum at the base radius (3 sigma)
+of a seamount, we actually evaluate the Gaussian curves out to 4 sigma so that the amplitude
+drops to 0.034% of peak height before we jump to zero.  This prevents a very noticeable
+step at the base.
+
 Examples
 --------
 
@@ -397,3 +405,10 @@ See Also
 :doc:`grdmath </grdmath>`,
 :doc:`gravfft </supplements/potential/gravfft>`,
 :doc:`grdflexure </supplements/potential/grdflexure>`
+
+Reference
+---------
+
+Smith, J. R.  and Wessel, P., 2000, Isostatic consequences of giant landslides on the Hawaiian Ridge,
+Pure Appl. Geophys., 157, 1097-1114, 
+`https://dx.doi.org/10.1007/s000240050019 <https://dx.doi.org/10.1007/s000240050019>`_.
