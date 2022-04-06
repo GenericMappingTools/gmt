@@ -922,10 +922,11 @@ GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_C
 	return (in_sector);
 }
 
-GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SLIDE *S, double r_km, double r, double hf, double s) {
+GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SEAMOUNT *S, unsigned int slide, double r_km, double r, double hf, double s) {
 	/* r is normalized radial position (0-1), and input hf and output height h are as well.
 	 * s is the azimuthal scale which is 0 if no azimuth variation was requested. */
-	double u, this_r = r * r_km, q, hs, h, rc, rd, hc;
+	double u, this_r = r * r_km, q, hs, h, rc, rd, hc, ignore;
+	struct SLIDE *S = SMT->Slide[slide];
 	gmt_M_unused (GMT);
 	if (!gmt_M_is_zero (s)) {	/* Must reduce the triangular deposit area by (1-s) */
 		double scl = sqrt (1.0 - s);
@@ -1379,7 +1380,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double x, y, c, this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy, dV, scale_curr = 1.0;
 	double add, f, max, r_km, amplitude = 0.0, h_scale = 0.0, z_assign, this_user_time = 0.0, life_span, t_mid, rho;
 	double r_mean, h_mean, wesn[4], rr, out[12], a, b, area, volume, height, v_curr, v_prev, *V = NULL;
-	double prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf, phi_prev, phi_curr;
+	double prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf, phi_prev, phi_curr, r_boost = 1.0;
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL;
 	double orig_add, dz, rho_z, sum_rz, sum_z, exp_f, r_max, tau = 1.0, theta, psi = 1.0;
 	double (*pappas_func[N_SHAPES]) (double r0, double h0, double f, double r1, double r2);
@@ -1621,6 +1622,11 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			if (gmt_x_is_outside (GMT, &this_smt.lon,  wesn[XLO], wesn[XHI])) continue;	/* Outside x-range, if inside may return periodically shifted longitude */
 
 			if (!cone_increments) inc_mode = this_smt.build_mode;
+			/* Because the Gaussian is still 1.1% of max height at final radius r0, this results in an ugly
+			 * height step of 1.1%.  We decided to keep evaluating the Gaussian until 4 sigma, at which point
+			 * the height is only 0.034%, or 1.7 meters for a 5000 m tall seamount. This is less noticeable.
+			 * Thus r_boost is set to 4/3 for the Gaussian but kept at 1 otherwise */
+			r_boost = (this_smt.build_mode == SHAPE_GAUS) ? 4.0/3.0 : 1.0;
 
 			/* Ok, we are inside the region - process data */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate seamount # %6d [%c]\n", smt, this_smt.code);
@@ -1720,7 +1726,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			}
 			if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
 
-			r_max = r_km;	/* No point searching beyond this radius */
+			r_max = r_boost * r_km;	/* No point searching beyond this radius */
 			if (Ctrl->S.slide) {	/* Compute the radii needed for slide calculations below. ASSUMES CIRCULAR FOR NOW */
 				bool compute_V0 = true;	/* So that we only do that calculation once per seamount */
 				unsigned int want_specific_volume = 0;	/* >0  in cases were we must recompute u0 from desired volume fraction */
@@ -1805,10 +1811,11 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					/* "silent" else we are inside w/e */
 					x = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 					this_r = gmt_distance (GMT, this_smt.lon, this_smt.lat, x, y);	/* In Cartesian units or km (if map is true) */
-					if (Ctrl->S.slide) {
-						if (this_r > r_max) continue;	/* Beyond the distal part of the seamount slide */
-					}
-					else if (this_r > r_km) continue;	/* Beyond the base of the seamount */
+					if (this_r > r_max) continue;	/* Beyond the distal part of the seamount slide */
+					//if (Ctrl->S.slide) {
+					//	if (this_r > r_max) continue;	/* Beyond the distal part of the seamount slide */
+					//}
+					//else if (this_r > r_km) continue;	/* Beyond the base of the seamount */
 					/* In the following, orig_add is the height of the seamount prior to any truncation, while add is the current value (subject to truncation) */
 					if (Ctrl->E.active) {	/* For elliptical bases we must deal with direction etc */
 						dx = (map) ? (x - this_smt.lon) * GMT->current.proj.DIST_KM_PR_DEG * c : (x - this_smt.lon);
@@ -1816,7 +1823,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						this_r = A * dx * dx + 2.0 * B * dx * dy + C * dy * dy;
 						/* this_r is now r^2 in the 0 to -4.5 range expected for the Gaussian case */
 						rr = sqrt (-this_r/4.5);	/* Convert this r^2 to a normalized radius 0-1 inside cone */
-						if (Ctrl->A.active && rr > 1.0) continue;	/* Beyond the seamount base so nothing to do for a mask */
+						if (Ctrl->A.active && rr > r_boost) continue;	/* Beyond the seamount base so nothing to do for a mask */
 					}
 					else	/* Circular features are simpler */
 						rr = this_r / r_km;	/* Now in 0-1 range */
@@ -1838,11 +1845,11 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						for (k = 0; !in_sector && k < this_smt.n_slides; k++) {	/* See if we are inside any of the slide sectors */
 							if (grdseamount_in_sector (GMT, Ctrl, &this_smt, k, Grid, row, col, &s)) {	/* Inside slide sector, and s is set [0] */
 								/* If we are outside the radial slide range then grdseamount_slide returns z_assign so the undisturbed flank height is selected */
-								z_assign = grdseamount_slide (GMT, &this_smt.Slide[k], r_in, rr, z_assign, s);
+								z_assign = grdseamount_slide (GMT, &this_smt, k, r_in, rr, z_assign, s);
 								in_sector = true;
 							}
 						}
-						if (!in_sector && this_r > r_km)	/* Beyond the base of the seamount */
+						if (!in_sector && this_r > r_boost * r_km)	/* Beyond the base of the seamount */
 							z_assign = 0.0;
 					}
 					if (z_assign <= 0.0) continue;	/* No amplitude, so skip */
