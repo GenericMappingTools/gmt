@@ -16,7 +16,7 @@
  *--------------------------------------------------------------------*/
 /*
  * Author:      Paul Wessel
- * Date: 	3-MAR-2013
+ * Date: 	3-MAR-2013, revised 6-APR-2022
  *
  *
  * grdseamount.c will create a grid made up from elliptical or circular
@@ -32,7 +32,7 @@
  * With -S we can also allow for flank collapse of seamounts via parameters that
  * specify one or more slides per seamount that can occur at different times.
  * This option can be used to study the isostatic rebound of seamounts and islands
- * after such mass redistributions.
+ * after such mass redistribution.
  *
  * */
 
@@ -64,12 +64,12 @@
 
 #define N_MAX_SLIDES	10	/* Max number of slides for any given seamount */
 #define SHAPE_U0		0.2	/* Default radial shape parameter */
-#define BETA_DEFAULT	1	/* Default psi(tau) power parameter */
+#define BETA_DEFAULT	1	/* Default psi(tau) beta power parameter */
 
 struct GMT_MODELTIME {	/* Hold info about modeling time */
 	double value;	/* Time in year */
 	double scale;	/* Scale factor from year to given user unit */
-	char unit;	/* Either M (Myr), k (kyr), or blank (implies y) */
+	char unit;		/* Either M (Myr), k (kyr), or blank (implies y) */
 	unsigned int u;	/* For labeling: Either 0 (yr), 1 (kyr), or 2 (Myr) */
 
 };
@@ -220,19 +220,19 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.value[GMT_IN] = GMT->session.f_NaN;
 	C->A.value[GMT_OUT] = 1.0f;
+	C->A.r_scale = 1.0;	/* Replaces deprecated -Sscale */
 	C->C.mode = SHAPE_GAUS;
 	C->C.code = 'g';
+	C->H.p = 1.0;	/* Linear density increase */
+	C->H.densify = 0.0;	/* No water-driven compaction on flanks */
 	C->Q.bmode = SMT_CUMULATIVE;
 	C->Q.fmode = FLUX_GAUSSIAN;
-	C->A.r_scale = 1.0;	/* Replaces deprecated -Sscale */
 	for (unsigned int k = 0; k < N_MAX_SLIDES; k++) {
 		C->S.Info[k].Slide.az2 = 360.0;
 		C->S.Info[k].Slide.u0 = SHAPE_U0;
 		C->S.Info[k].Slide.beta = BETA_DEFAULT;
 	}
 	C->T.n_times = 1;
-	C->H.p = 1.0;	/* Linear density increase */
-	C->H.densify = 0.0;	/* No water-driven compaction on flanks */
 
 	return (C);
 }
@@ -251,9 +251,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>][+s<scale>]] [-C[c|d|g|o|p]] "
-		"[-D%s] [-E] [-F[<flattening>]] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]]  "
+		"[-D%s] [-E] [-F[<flattening>]] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] "
 		"[-K<densmodel>] [-L[<hn>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] "
-		"[-S[<h1>/<h2>][+[a<az1/az2>]][+b[<beta>]][+d[<hc>]][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] "
+		"[-S[+[a<az1/az2>]][+b[<beta>]][+d[<hc>]][+h<h1>/<h2>][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] "
 		"[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [%s] [-W%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_OUTGRID, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
@@ -311,12 +311,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "<bmode>: Build either (c)umulative [Default] or (i)ncremental volume through time.");
 	GMT_Usage (API, 3, "<fmode>: Assume a (g)aussian [Default] or (c)onstant volume flux distribution.");
 	GMT_Usage (API, -2, "Append +d to build grids with increments as uniform discs [Default gives exact shapes].");
-	GMT_Usage (API, 1, "\n-S[<h1>/<h2>][+[a<az1/az2>]][+b[<beta>]][+d[<hc>]][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]]");
-	GMT_Usage (API, -2, "Control how a sectoral landslide should look like.  Append the height range affected (if not we read from file) and select optional modifiers. "
+	GMT_Usage (API, 1, "\n-S[+[a<az1/az2>]][+b[<beta>]][+d[<hc>]][+h<h1>/<h2>][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]]");
+	GMT_Usage (API, -2, "Control how a sectoral landslide should look like.  Select optional modifiers; "
 		"If no argument is given to a modifier it means we will read that parameter from the input file (order is alphabetical):");
 	GMT_Usage (API, 3, "+a Set the local azimuthal sector range [0/360].");
 	GMT_Usage (API, 3, "+b Set the power coefficient for slide temporal function psi(tau) [1 (linear)].");
 	GMT_Usage (API, 3, "+d Set the height of the start of the distal distributed deposit [h1/2].");
+	GMT_Usage (API, 3, "+h Set the height range of the slide form <h1> to <h2>.");
 	GMT_Usage (API, 3, "+p Turn on azimuthal height variation and set power coefficient >= 2.");
 	GMT_Usage (API, 3, "+t Set time range over which the slide will develop linearly.");
 	GMT_Usage (API, 3, "+u Set positive slide parameter <u0> to affect slide profile [%g].", SHAPE_U0);
@@ -346,8 +347,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 	/* This parses the options provided to grdseamount and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
-	 * returned when registering these sources/destinations with the API.
-	 */
+	 * returned when registering these sources/destinations with the API. */
 
 	unsigned int n_errors = 0, k;
 	int n;
@@ -963,20 +963,16 @@ GMT_LOCAL double grdseamount_slide_height (struct GMT_CTRL *GMT, struct SEAMOUNT
 
 GMT_LOCAL double grdseamount_height (unsigned build_mode, double r, double h0_scale, double f, double *normalized_untruncated_height) {
 	/* Return the (truncated) height of the seamount at this normalized radius r and pass back untruncated height as well.
-	 * The latter is used with the height equations to get correct height for r > r_F */
+	 * The latter is used with the height equations to get correct height for r > r_F. This functions is only called ir r <= 1.0 */
 	double add;
 
 	switch (build_mode) {
 		case SHAPE_CONE:	/* Circular cone case */
-			if (r < 1.0) {	/* Since in minor direction r may exceed 1 and be outside the ellipse */
-				*normalized_untruncated_height = (1.0 - r) * h0_scale;
-				add = (r < f) ? 1.0 : *normalized_untruncated_height;
-			}
-			else
-				*normalized_untruncated_height = add = 0.0;
+			*normalized_untruncated_height = (1.0 - r) * h0_scale;
+			add = (r < f) ? 1.0 : *normalized_untruncated_height;
 			break;
 		case SHAPE_DISC:	/* Circular disc/plateau case */
-			*normalized_untruncated_height = add = (r <= 1.0) ? 1.0 : 0.0;
+			*normalized_untruncated_height = add = 1.0;
 			break;
 		case SHAPE_PARA:	/* Circular parabolic case */
 			*normalized_untruncated_height = (1.0 - r*r) * h0_scale;
@@ -1661,9 +1657,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 				if (this_user_time >= S[smt].t0) continue;	/* Not started growing yet */
 				if (this_user_time <  S[smt].t1 && !exact) continue;	/* Completed so making no contribution to incremental discs */
 			}
-			if (gmt_M_y_is_outside (GMT, S[smt].lat, wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
 			gmt_M_memcpy (&this_smt, &S[smt], 1, struct SEAMOUNT);	/* Make a copy so we can modify if needed */
-			if (gmt_x_is_outside (GMT, &this_smt.lon,  wesn[XLO], wesn[XHI])) continue;	/* Outside x-range, if inside may return periodically shifted longitude */
+			(void)(gmt_x_is_outside (GMT, &this_smt.lon, wesn[XLO], wesn[XHI])); /* May return periodically shifted longitude */
 
 			if (!cone_increments) inc_mode = this_smt.build_mode;
 			/* Because the Gaussian is still 1.1% of max height at final radius r0, this results in an ugly
@@ -1730,11 +1725,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			}
 
 			scol_0 = (int)gmt_M_grd_x_to_col (GMT, this_smt.lon, Grid->header);	/* Center column */
-			if (scol_0 < 0) continue;	/* Still outside x-range */
-			if (scol_0 >= (int)Grid->header->n_columns) continue;	/* Still outside x-range */
 			srow_0 = (int)gmt_M_grd_y_to_row (GMT, this_smt.lat, Grid->header);	/* Center row */
-			if (srow_0 < 0) continue;	/* Still outside y-range */
-			if (srow_0 >= (int)Grid->header->n_rows) continue;	/* Still outside y-range */
+
+			/* Note: (scol_0, srow_0) may be outside the region but the seamount may still have parts of it inside
+			 * hence we do not skip seamounts whose center is outside the region */
 
 			if (Ctrl->E.active) {	/* Set elliptical seamount parameters major, minor and the 3 coefficients A, B, C */
 				major = grdseamount_ellipse_setup (&this_smt, Ctrl, scale_curr, ABC);
