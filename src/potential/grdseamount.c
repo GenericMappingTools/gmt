@@ -898,9 +898,9 @@ GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double
 	double u1 = (h - z1) / Ctrl->H.H;
 	double u2 = (h - z2) / Ctrl->H.H;
 	double q = (Ctrl->H.H - h) / Ctrl->H.H;
-	double dz = z2 - z1;
+	double thickness = z2 - z1;
 
-	double rho = Ctrl->H.rho_l + Ctrl->H.densify * q + Ctrl->H.del_rho * Ctrl->H.H * (pow (u1, Ctrl->H.p1) - pow (u2, Ctrl->H.p1)) / (dz * (Ctrl->H.p1));
+	double rho = Ctrl->H.rho_l + Ctrl->H.densify * q + Ctrl->H.del_rho * Ctrl->H.H * (pow (u1, Ctrl->H.p1) - pow (u2, Ctrl->H.p1)) / (thickness * (Ctrl->H.p1));
 	return (rho);
 }
 
@@ -1079,7 +1079,7 @@ GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct SLIDE *S, do
 	return (u0_next);
 }
 
-struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options, unsigned int *d_mode, uint64_t *n_smt) {
+struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options, unsigned int *distance_mode, uint64_t *n_smt) {
 	/* We read possibly variable-length records and carefully checks the arguments before we store the
 	 * information in the SEAMOUNT structure S, which is returned and n_smts is set to the count.
 	 * A seamount record starts with basic specification for the location and size:
@@ -1358,7 +1358,7 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 
 	S = gmt_M_memory (API->GMT, S, n, struct SEAMOUNT);
 	*n_smt = n;
-	*d_mode = mode;
+	*distance_mode = mode;
 
 	return (S);
 
@@ -1407,8 +1407,7 @@ GMT_LOCAL double grdseamount_height_scale (unsigned int mode, double f) {
 		case SHAPE_POLY:  h0_scale = 1.0 / poly_smt_func (f); break;
 		case SHAPE_GAUS:  h0_scale = 1.0 / exp (-4.5 * f * f); break;
 		default:	/* For Coverity */
-			h0_scale = 1.0;
-			break;
+			h0_scale = 1.0; break;
 	}
 	return (h0_scale);
 }
@@ -1421,11 +1420,11 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	int scol, srow, scol_0, srow_0, error;
 
-	openmp_int row, col, max_d_col, d_row, nx1, *d_col = NULL;
+	openmp_int row, col, max_d_col, delta_rows, nx1, *delta_cols = NULL;
 
-	unsigned int n_out, d_mode, inc_mode, k, t, t_use;
+	unsigned int n_out, distance_mode, inc_mode, k, t, t_use;
 
-	uint64_t ij, n_smts, smt;
+	uint64_t node, n_smts, smt;
 
 	char gfile[PATH_MAX] = {""}, wfile[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
 
@@ -1435,7 +1434,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double normalized_untruncated_height, normalized_truncated_height, max_height, r_km, amplitude = 0.0;
 	double x, y, r_mean, h_mean, wesn[4], r_normalized, out[3], area, volume, height, v_curr, v_prev, rho;
 	double prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf, phi_prev, phi_curr, r_boost = 1.0;
-	double dz, rho_z, sum_rz, sum_z, r_max, tau = 1.0, theta, psi = 1.0, h0_scale = 1.0, ABC[3], f;
+	double thickness, rho_z, sum_rz, sum_z, r_max, tau = 1.0, theta, psi = 1.0, h0_scale = 1.0, ABC[3], f;
 
 	double *V_sum = NULL, *h_sum = NULL, *h = NULL, *V = NULL;
 
@@ -1488,11 +1487,11 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			r_normalized = fabs (Model->x[col]);	/* Now in 0-1 range */
 			(void) grdseamount_height (Ctrl->C.mode, r_normalized, h0_scale, Ctrl->F.value, &normalized_untruncated_height);
 			for (row = 0; row < Model->header->n_rows; row++) {
-				ij = gmt_M_ijp (Model->header, row, col);
+				node = gmt_M_ijp (Model->header, row, col);
 				if (Model->y[row] > normalized_untruncated_height)	/* Outside the seamount */
-					Model->data[ij] = GMT->session.f_NaN;
+					Model->data[node] = GMT->session.f_NaN;
 				else	/* Evaluate the density at this depth */
-					Model->data[ij] = (gmt_grdfloat)grdseamount_density (Ctrl, Model->y[row], normalized_untruncated_height);
+					Model->data[node] = (gmt_grdfloat)grdseamount_density (Ctrl, Model->y[row], normalized_untruncated_height);
 			}
 		}
 
@@ -1504,7 +1503,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			Return (GMT_NOERROR);
 	}
 
-	if ((S = grdseamount_read_input (API, Ctrl, options, &d_mode, &n_smts)) == NULL) {
+	if ((S = grdseamount_read_input (API, Ctrl, options, &distance_mode, &n_smts)) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while reading seamount file\n");
 		goto wrap_up;
 	}
@@ -1617,7 +1616,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	nx1 = (openmp_int)Grid->header->n_columns + Grid->header->registration - 1;
 	if (map && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) periodic = true;
 	replicate = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);
-	if (Ctrl->A.active) for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->A.value[GMT_OUT];
+	if (Ctrl->A.active) for (node = 0; node < Grid->header->size; node++) Grid->data[node] = Ctrl->A.value[GMT_OUT];
 	if (Ctrl->Z.active) {	/* Start with the background depth */
 		if (gmt_M_is_dnan (Ctrl->Z.value)) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Set the background level to NaN\r");
@@ -1625,7 +1624,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		}
 		else
 			GMT_Report (API, GMT_MSG_INFORMATION, "Set the background level to %g\r", Ctrl->Z.value);
-		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = (gmt_grdfloat)Ctrl->Z.value;
+		for (node = 0; node < Grid->header->size; node++) Grid->data[node] = (gmt_grdfloat)Ctrl->Z.value;
 	}
 	exact = (Ctrl->T.active && !Ctrl->Q.disc);
 	exact_increments = (exact && Ctrl->Q.bmode == SMT_INCREMENTAL);
@@ -1805,15 +1804,15 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			}
 
 			/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
-			gmt_M_free (GMT, d_col);
-			d_col = gmt_prep_nodesearch (GMT, Grid, r_max, d_mode, &d_row, &max_d_col);
+			gmt_M_free (GMT, delta_cols);
+			delta_cols = gmt_prep_nodesearch (GMT, Grid, r_max, distance_mode, &delta_rows, &max_d_col);
 
-			for (srow = srow_0 - (int)d_row; srow <= (srow_0 + (int)d_row); srow++) {
+			for (srow = srow_0 - (int)delta_rows; srow <= (srow_0 + (int)delta_rows); srow++) {
 				if (srow < 0) continue;	/* Above grid area */
 				if ((row = (openmp_int)srow) >= (openmp_int)Grid->header->n_rows) continue;	/* Below grid area */
 				y = gmt_M_grd_row_to_y (GMT, row, Grid->header);	/* Current node latitude or y */
 				first = replicate;	/* Used to help us deal with duplicate columns for grid-line registered global grids only */
-				for (scol = scol_0 - (int)d_col[row]; scol <= (scol_0 + (int)d_col[row]); scol++) {
+				for (scol = scol_0 - (int)delta_cols[row]; scol <= (scol_0 + (int)delta_cols[row]); scol++) {
 					if (!periodic) {	/* Check if we are outside or inside the longitude range */
 						if (scol < 0) continue;	/* West of the grid area */
 						if ((col = (openmp_int)scol) >= (openmp_int)Grid->header->n_columns) continue;	/* East of the grid area */
@@ -1829,7 +1828,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					/* In the following, normalized_untruncated_height is the height of the seamount prior to any truncation, while normalized_truncated_height is the current value (including any truncation) */
 #ifdef DEBUG
 					if (doubleAlmostEqualZero (y, 0.0) && x >= 7.72) {
-						ij = 0;	/* Set break point here if debugging peak of seamount location (or edit to select some other point) */
+						node = 0;	/* Set break point here if debugging peak of seamount location (or edit to select some other point) */
 					}
 #endif
 					if (Ctrl->E.active) {	/* For elliptical bases we must deal with its orientation */
@@ -1844,7 +1843,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					z_assign = amplitude * normalized_truncated_height;		/* Height to be added to grid if no slide */
 #ifdef DEBUG
 					if (doubleAlmostEqualZero (r_normalized, 0.0)) {
-						ij = 0;	/* Set break point here if debugging peak of seamount location (or edit to select some other point) */
+						node = 0;	/* Set break point here if debugging peak of seamount location (or edit to select some other point) */
 					}
 #endif
 					if (Ctrl->S.slide) {	/* Must handle the sector variation */
@@ -1867,13 +1866,13 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 					if (z_assign <= 0.0) continue;	/* No amplitude, so skip */
 					/* z_assign is the height to be added to the grid */
-					ij = gmt_M_ijp (Grid->header, row, col);	/* Current node location */
+					node = gmt_M_ijp (Grid->header, row, col);	/* Current node location */
 					if (Ctrl->A.active)	/* No amplitude, just set inside value for mask */
-						Grid->data[ij] = Ctrl->A.value[GMT_IN];
+						Grid->data[node] = Ctrl->A.value[GMT_IN];
 					else {	/* Add in contribution and keep track of max height */
-						if (z_is_NaN && gmt_M_is_fnan (Grid->data[ij])) Grid->data[ij] = 0.0;	/* Must first change NaN to 0 before we can add */
-						Grid->data[ij] += (gmt_grdfloat)z_assign;
-						if (Grid->data[ij] > max_height) max_height = Grid->data[ij];
+						if (z_is_NaN && gmt_M_is_fnan (Grid->data[node])) Grid->data[node] = 0.0;	/* Must first change NaN to 0 before we can add */
+						Grid->data[node] += (gmt_grdfloat)z_assign;
+						if (Grid->data[node] > max_height) max_height = Grid->data[node];
 					}
 					if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
 						/* When -T is not active then we build the complete seamount as is.  In that case
@@ -1881,37 +1880,37 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						 * -T is active and this is just an incremental layer (or cumulative surface), then we
 						 * must know the final h(r) as well as the two z-values for the previous and current height at r */
 						double h_at_r = this_smt.height * normalized_untruncated_height;	/* This is fully-built height at this radius */
-						double z1_at_r = (exact_increments) ? prev_z[ij] : 0.0;	/* Should be previous height or 0.0 */
+						double z1_at_r = (exact_increments) ? prev_z[node] : 0.0;	/* Should be previous height or 0.0 */
 						double z2_at_r = amplitude * normalized_untruncated_height;	/* Current or final height */
-						dz = z2_at_r - z1_at_r;	/* Range of integrated depths */
+						thickness = z2_at_r - z1_at_r;	/* Range of integrated depths */
 						rho = grdseamount_mean_density (Ctrl, h_at_r, z1_at_r, z2_at_r);
-						rho_z = rho * dz;
-						Ave->data[ij]  += (gmt_grdfloat)rho_z;	/* Must add up these since seamounts may overlap */
-						rho_weight[ij] += (gmt_grdfloat)dz;
+						rho_z = rho * thickness;
+						Ave->data[node]  += (gmt_grdfloat)rho_z;	/* Must add up these since seamounts may overlap */
+						rho_weight[node] += (gmt_grdfloat)thickness;
 						sum_rz += rho_z;
-						sum_z += dz;
-						if (exact_increments) prev_z[ij] = amplitude * normalized_untruncated_height;
+						sum_z += thickness;
+						if (exact_increments) prev_z[node] = amplitude * normalized_untruncated_height;
 					}
 					if (first) {	/* May have to copy over to repeated column in global gridline-registered grids */
 						if (col == 0) {	/* Must copy from x_min to repeated column at x_max */
-							if (Ctrl->A.active) Grid->data[ij+nx1] = Ctrl->A.value[GMT_IN]; else {
-								if (z_is_NaN && gmt_M_is_fnan (Grid->data[ij+nx1])) Grid->data[ij+nx1] = 0.0;	/* Must first change NaN to 0 before we can add */
-								Grid->data[ij+nx1] += (gmt_grdfloat)z_assign;
+							if (Ctrl->A.active) Grid->data[node+nx1] = Ctrl->A.value[GMT_IN]; else {
+								if (z_is_NaN && gmt_M_is_fnan (Grid->data[node+nx1])) Grid->data[node+nx1] = 0.0;	/* Must first change NaN to 0 before we can add */
+								Grid->data[node+nx1] += (gmt_grdfloat)z_assign;
 							}
 							if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
-								Ave->data[ij+nx1]  += (gmt_grdfloat)rho_z;
-								rho_weight[ij+nx1] += (gmt_grdfloat)rho_z;
+								Ave->data[node+nx1]  += (gmt_grdfloat)rho_z;
+								rho_weight[node+nx1] += (gmt_grdfloat)rho_z;
 							}
 							first = false;
 						}
 						else if (col == nx1) {	/* Must copy from x_max to repeated column at x_min */
-							if (Ctrl->A.active) Grid->data[ij-nx1] = Ctrl->A.value[GMT_IN]; else {
-								Grid->data[ij-nx1] += (gmt_grdfloat)z_assign;
-								if (z_is_NaN && gmt_M_is_fnan (Grid->data[ij-nx1])) Grid->data[ij-nx1] = 0.0;	/* Must first change NaN to 0 before we can add */
+							if (Ctrl->A.active) Grid->data[node-nx1] = Ctrl->A.value[GMT_IN]; else {
+								Grid->data[node-nx1] += (gmt_grdfloat)z_assign;
+								if (z_is_NaN && gmt_M_is_fnan (Grid->data[node-nx1])) Grid->data[node-nx1] = 0.0;	/* Must first change NaN to 0 before we can add */
 							}
 							if (Ctrl->W.active) {	/* Must accumulate the average vertical density */
-								Ave->data[ij-nx1]  += (gmt_grdfloat)rho_z;
-								rho_weight[ij-nx1] += (gmt_grdfloat)rho_z;
+								Ave->data[node-nx1]  += (gmt_grdfloat)rho_z;
+								rho_weight[node-nx1] += (gmt_grdfloat)rho_z;
 							}
 							first = false;
 						}
@@ -1968,12 +1967,12 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		if (Ctrl->N.active) {	/* Normalize so max height == N.value */
 			double n_scl = Ctrl->N.value / max_height;
 			GMT_Report (API, GMT_MSG_INFORMATION, "Normalize seamount amplitude so max height is %g\r", Ctrl->N.value);
-			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] *= (gmt_grdfloat)n_scl;
+			for (node = 0; node < Grid->header->size; node++) Grid->data[node] *= (gmt_grdfloat)n_scl;
 		}
 		if (exact) gmt_M_memcpy (current, Grid->data, Grid->header->size, float);	/* Store solution for the current time */
 
 		if (exact_increments) {	/* Need to subtract current solution from the previous solution */
-			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] -= previous[ij];	/* Get increments relative to previous time */
+			for (node = 0; node < Grid->header->size; node++) Grid->data[node] -= previous[node];	/* Get increments relative to previous time */
 			if (t < (Ctrl->T.n_times-1)) gmt_M_memcpy (previous, current, Grid->header->size, float);	/* Now update previous */
 		}
 
@@ -1986,14 +1985,14 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		if (Ctrl->W.active) {	/* Must average in case multiple seamounts overprint on the same node */
 			double rs = 0.0, ws = 0.0;
 			char remark[GMT_GRID_REMARK_LEN160] = {""};
-			for (ij = 0; ij < Ave->header->size; ij++) {
-				if (rho_weight[ij] > 0.0) {
-					rs += Ave->data[ij];
-					ws += rho_weight[ij];
-					Ave->data[ij] /= rho_weight[ij];
+			for (node = 0; node < Ave->header->size; node++) {
+				if (rho_weight[node] > 0.0) {
+					rs += Ave->data[node];
+					ws += rho_weight[node];
+					Ave->data[node] /= rho_weight[node];
 				}
 				else
-					Ave->data[ij] = GMT->session.f_NaN;
+					Ave->data[node] = GMT->session.f_NaN;
 			}
 			if (ws > 0.0) rs /= ws;	/* Mean load density for this feature */
 			sprintf (remark, "Mean Load Density: %lg", rs);
@@ -2018,7 +2017,7 @@ wrap_up:
 
 	gmt_M_free (GMT, S);
 	gmt_M_free (GMT, current);	gmt_M_free (GMT, previous);
-	gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
+	gmt_M_free (GMT, delta_cols);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
 	gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
 	if (Ctrl->W.active) gmt_M_free (GMT, rho_weight);
 	if (Ctrl->W.active && exact_increments) gmt_M_free (GMT, prev_z);
