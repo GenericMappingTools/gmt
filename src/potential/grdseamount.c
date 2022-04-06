@@ -922,11 +922,11 @@ GMT_LOCAL bool grdseamount_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_C
 	return (in_sector);
 }
 
-GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SEAMOUNT *S, unsigned int slide, double r_km, double r, double hf, double s) {
+GMT_LOCAL double grdseamount_slide (struct GMT_CTRL *GMT, struct SEAMOUNT *SMT, unsigned int slide, double r_km, double r, double hf, double s) {
 	/* r is normalized radial position (0-1), and input hf and output height h are as well.
 	 * s is the azimuthal scale which is 0 if no azimuth variation was requested. */
 	double u, this_r = r * r_km, q, hs, h, rc, rd, hc, ignore;
-	struct SLIDE *S = SMT->Slide[slide];
+	struct SLIDE *S = &SMT->Slide[slide];
 	gmt_M_unused (GMT);
 	if (!gmt_M_is_zero (s)) {	/* Must reduce the triangular deposit area by (1-s) */
 		double scl = sqrt (1.0 - s);
