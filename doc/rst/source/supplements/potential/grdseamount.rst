@@ -380,7 +380,7 @@ Notes
 Because the Gaussian curve only drops to 1.11% of its peak at the base radius (3 sigma)
 of a seamount, we actually evaluate the Gaussian curves out to 4 sigma so that the amplitude
 drops to 0.034% of peak height before we jump to zero.  This prevents the otherwise very noticeable
-steps at the base of the seamount.
+step at the base of the seamount.
 
 Examples
 --------
