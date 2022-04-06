@@ -219,7 +219,7 @@ The **batch** module creates several hidden script files that are used in the ge
 (initializes variables related to the overall batch job and includes the contents of the optional *includefile*),
 *batch_preflight* (optional since it derives from **-Sb** and computes or prepares needed data files), *batch_postflight*
 (optional since it derives from **-Sf** and processes files once all the batch job complete), *batch_job*
-(accepts a job counter argument and processes data for those parameters), and *batch_cleanup* (removes temporary
+(accepts a job counter argument and processes data for those parameters), and a hidden *batch_cleanup* (removes temporary
 files at the end of the process). For each job, there is a separate *batch_params_######* script that provides
 job-specific variables (e.g., job number and anything given via **-T**).  The *preflight* and *postflight* scripts
 have access to the information in *batch_init*, while the *batch_job* script in addition has access to the job-specific

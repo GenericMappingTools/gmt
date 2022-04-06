@@ -1321,7 +1321,7 @@ GMT_LOCAL bool movie_valid_format (char *format, char code) {
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
-	int error = 0, precision, scol, srow;
+	int error = GMT_NOERROR, current_error, precision, scol, srow;
 	int (*run_script)(const char *);	/* pointer to system function or a dummy */
 
 	unsigned int n_values = 0, n_frames = 0, n_data_frames, first_fade_out_frame = 0, frame, i_frame, col, p_width, p_height, k, T;
@@ -1341,7 +1341,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
 	char string[GMT_LEN128] = {""}, extra[GMT_BUFSIZ] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
 	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {""};
-	char intro_file[PATH_MAX] = {""}, conf_file[PATH_MAX], tmpwpath[PATH_MAX] = {""}, *script_file =  NULL, which[2] = {"LP"}, spacer, dir_sep;
+	char intro_file[PATH_MAX] = {""}, conf_file[PATH_MAX], tmpwpath[PATH_MAX] = {""}, zap_workdir[PATH_MAX] = {""}, *script_file =  NULL, which[2] = {"LP"};
+	char spacer, dir_sep;
 
 	double percent = 0.0, L_col = 0, sx, sy, fade_level = 0.0;
 
@@ -1578,18 +1579,59 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Make a path to workdir that works on current architecture (for command line calls) */
 	strncpy (tmpwpath, workdir, PATH_MAX);
-	if (Ctrl->In.mode == GMT_DOS_MODE)		/* On Windows to do remove a file in a subdir one need to use back slashes */
+	if (Ctrl->In.mode == GMT_DOS_MODE)		/* On Windows to remove a file in a subdir one need to use back slashes */
 		gmt_strrepc (tmpwpath, '/', '\\');
+
+	/* Build file names */
+	if (Ctrl->S[MOVIE_PREFLIGHT].active && !Ctrl->S[MOVIE_PREFLIGHT].PS)
+		sprintf (pre_file, "movie_preflight.%s", extension[Ctrl->In.mode]);
+	if (Ctrl->S[MOVIE_POSTFLIGHT].active && !Ctrl->S[MOVIE_POSTFLIGHT].PS)
+		sprintf (post_file, "movie_postflight.%s", extension[Ctrl->In.mode]);
+	sprintf (init_file, "movie_init.%s", extension[Ctrl->In.mode]);
+	sprintf (main_file, "movie_frame.%s", extension[Ctrl->In.mode]);
+
+	/* Prepare the cleanup script */
+	sprintf (cleanup_file, "%s/movie_cleanup_%d.%s", API->tmp_dir, (int)getpid(), extension[Ctrl->In.mode]);
+	if ((fp = fopen (cleanup_file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to create cleanup file %s - exiting\n", cleanup_file);
+		Return (GMT_ERROR_ON_FOPEN);
+	}
+	gmt_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
+	sprintf (zap_workdir, "%s %s", rmdir[Ctrl->In.mode], tmpwpath);
+	if (Ctrl->Z.active) {	/* Want to delete the entire frame directory */
+		gmt_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with frame files");
+		/* Delete the entire working directory with frame jobs and tmp files */
+		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], tmpwpath);
+	}
+	else {	/* Just delete the remaining scripts and PS files */
+		GMT_Report (API, GMT_MSG_INFORMATION, "%u frame PNG files saved in directory: %s\n", n_frames, workdir);
+		if (Ctrl->S[MOVIE_PREFLIGHT].active)	/* Remove the preflight script */
+			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep, pre_file);
+		if (Ctrl->S[MOVIE_POSTFLIGHT].active)	/* Remove the postflight script */
+			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep, post_file);
+		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep, init_file);	/* Delete the init script */
+		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep, main_file);	/* Delete the main script */
+		fprintf (fp, "%s %s%c*.ps\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep);	/* Delete any PostScript layers */
+	}
+	fclose (fp);
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
+	if (chmod (cleanup_file, S_IRWXU)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to make cleanup script %s executable - exiting\n", cleanup_file);
+		Return (GMT_RUNTIME_ERROR);
+	}
+#endif
+
+	/* Here the cleanup_script has been completed and from now on we do not Return but set error code and jump to
+	 * the end of the program at tag clean_then_die: */
 
 	/* Create the initialization file with settings common to all frames */
 
 	n_written = (n_frames > 0);
-	sprintf (init_file, "movie_init.%s", extension[Ctrl->In.mode]);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Create parameter initiation script %s\n", init_file);
 	if ((fp = fopen (init_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create file %s - exiting\n", init_file);
 		movie_close_files (Ctrl);
-		Return (GMT_ERROR_ON_FOPEN);
+		error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 	}
 
 	sprintf (string, "Static parameters set for animation sequence %s", Ctrl->N.prefix);
@@ -1618,18 +1660,17 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if (Ctrl->S[MOVIE_PREFLIGHT].PS)	/* Just got a PS file, nothing to do */
 			fclose (Ctrl->S[MOVIE_PREFLIGHT].fp);
 		else {	/* Run the preflight script */
-			sprintf (pre_file, "movie_preflight.%s", extension[Ctrl->In.mode]);
 			is_classic = gmt_script_is_classic (GMT, Ctrl->S[MOVIE_PREFLIGHT].fp);
 			if (is_classic) {
 				GMT_Report (API, GMT_MSG_ERROR, "Your preflight file %s is not in GMT modern node - exiting\n", pre_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Create preflight script %s and execute it\n", pre_file);
 			if ((fp = fopen (pre_file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create preflight script %s - exiting\n", pre_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_ERROR_ON_FOPEN);
+				error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 			}
 			gmt_set_script (fp, Ctrl->In.mode);			/* Write 1st line of a script */
 			gmt_set_comment (fp, Ctrl->In.mode, "Preflight script");
@@ -1663,7 +1704,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if (chmod (pre_file, S_IRWXU)) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to make preflight script %s executable - exiting.\n", pre_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 			}
 #endif
 			/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as a background plot */
@@ -1671,7 +1712,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if ((error = system (cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Running preflight script %s returned error %d - exiting.\n", pre_file, error);
 				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 			}
 		}
 		place_background = (!access ("movie_background.ps", R_OK));	/* Need to place a background layer in the main frames */
@@ -1684,12 +1725,12 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to read time file: %s - exiting\n", Ctrl->T.file);
 				fclose (Ctrl->In.fp);
-				Return (API->error);
+				error = API->error;	goto clean_then_die;
 			}
 			if (D->n_segments > 1) {	/* We insist on a simple file structure with a single segment */
 				GMT_Report (API, GMT_MSG_ERROR, "Your time file %s has more than one segment - reformat first\n", Ctrl->T.file);
 				fclose (Ctrl->In.fp);
-				Return (API->error);
+				error = API->error;	goto clean_then_die;
 			}
 			n_frames = n_data_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
 			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
@@ -1700,7 +1741,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			char output[GMT_VF_LEN] = {""}, cmd[GMT_LEN128] = {""};
 			unsigned int V = GMT->current.setting.verbose;
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT|GMT_IS_REFERENCE, NULL, output) == GMT_NOTSET) {
-				Return (API->error);
+				error = API->error;	goto clean_then_die;
 			}
 			if (GMT->common.f.active[GMT_IN])
 				sprintf (cmd, "-T%s -o1 -f%s --GMT_HISTORY=readonly T = %s", Ctrl->T.file, GMT->common.f.string, output);
@@ -1709,11 +1750,11 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Calling gmtmath with args %s\n", cmd);
 			GMT->current.setting.verbose = GMT_MSG_ERROR;	/* So we don't get unwanted verbosity from gmtmath */
   			if (GMT_Call_Module (API, "gmtmath", GMT_MODULE_CMD, cmd)) {
-				Return (API->error);	/* Some sort of failure */
+				error = API->error;	goto clean_then_die;
 			}
 			GMT->current.setting.verbose = V;	/* Restore */
 			if ((D = GMT_Read_VirtualFile (API, output)) == NULL) {	/* Load in the data array */
-				Return (API->error);	/* Some sort of failure */
+				error = API->error;	goto clean_then_die;
 			}
 			n_frames = n_data_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
 			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
@@ -1730,7 +1771,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	if (n_frames == 0) {	/* So not good... */
 		GMT_Report (API, GMT_MSG_ERROR, "No frames specified! - exiting.\n");
 		fclose (Ctrl->In.fp);
-		Return (GMT_RUNTIME_ERROR);
+		error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 	}
 
 	if (Ctrl->M.update)	/* Now we can determine and update last or middle frame number */
@@ -1740,7 +1781,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if (!(Ctrl->K.preserve[GMT_IN] || Ctrl->K.preserve[GMT_OUT]) && n_fade_frames > n_data_frames) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -K: Combined fading duration cannot exceed animation duration\n");
 			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 		}
 		n_fade_frames = 0;	/* If clobbering */
 		if (Ctrl->K.preserve[GMT_IN])  n_fade_frames += Ctrl->K.fade[GMT_IN];	/* We are preserving, not clobbering */
@@ -1753,15 +1794,15 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			I = &Ctrl->item[k][T];	/* Shorthand for this item */
 			if ((I->mode == MOVIE_LABEL_IS_COL_C || I->mode == MOVIE_LABEL_IS_COL_T) && D == NULL) {    /* Need a floating point number */
 				GMT_Report (API, GMT_MSG_ERROR, "No table given via -T for data-based labels in %c - exiting\n", which[k]);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 			}
 			if (I->mode == MOVIE_LABEL_IS_COL_C && I->col >= D->n_columns) {
 				GMT_Report (API, GMT_MSG_ERROR, "Data table does not have enough columns for your -%c c%d request - exiting\n", which[k], I->col);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 			}
 			if (I->mode == MOVIE_LABEL_IS_COL_T && D->table[0]->segment[0]->text == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Data table does not have trailing text for your -%c t%d request - exit\n", which[k], I->col);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 			}
 		}
 	}
@@ -1781,13 +1822,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if (is_classic) {
 				GMT_Report (API, GMT_MSG_ERROR, "Your postflight file %s is not in GMT modern node - exiting\n", post_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Create postflight script %s\n", post_file);
 			if ((fp = fopen (post_file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create postflight file %s - exiting\n", post_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_ERROR_ON_FOPEN);
+				error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 			}
 			gmt_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 			gmt_set_comment (fp, Ctrl->In.mode, "Postflight script");
@@ -1820,7 +1861,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				if (chmod (post_file, S_IRWXU)) {
 					GMT_Report (API, GMT_MSG_ERROR, "Unable to make postflight script %s executable - exiting\n", post_file);
 					fclose (Ctrl->In.fp);
-					Return (GMT_RUNTIME_ERROR);
+					error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 				}
 #endif
 			/* Run post-flight now before dealing with the loop so the overlay exists */
@@ -1828,7 +1869,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if ((error = run_script (cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
 				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 			}
 		}
 	}
@@ -1897,7 +1938,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if ((fp = fopen (param_file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create frame parameter file %s - exiting\n", param_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_ERROR_ON_FOPEN);
+				error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 			}
 			sprintf (state_prefix, "Parameter file for pre-frame %s", state_tag);
 			gmt_set_comment (fp, Ctrl->In.mode, state_prefix);
@@ -1918,7 +1959,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if ((fp = fopen (intro_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create movie intro script file %s - exiting\n", intro_file);
 			fclose (Ctrl->E.fp);
-			Return (GMT_ERROR_ON_FOPEN);
+			error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 		}
 		sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, possibly fading */
 		if (Ctrl->E.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->E.fill);}	/* Chose another fade color than black */
@@ -1986,7 +2027,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 #ifndef WIN32	/* Set executable bit if not Windows cmd */
 		if (chmod (intro_file, S_IRWXU)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", intro_file);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 		}
 #endif
 	}
@@ -2013,7 +2054,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if ((fp = fopen (param_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create frame parameter file %s - exiting\n", param_file);
 			fclose (Ctrl->In.fp);
-			Return (GMT_ERROR_ON_FOPEN);
+			error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 		}
 		sprintf (state_prefix, "Parameter file for frame %s", state_tag);
 		gmt_set_comment (fp, Ctrl->In.mode, state_prefix);
@@ -2191,7 +2232,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if ((fp = fopen (master_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create loop frame script file %s - exiting\n", master_file);
 			fclose (Ctrl->In.fp);
-			Return (GMT_ERROR_ON_FOPEN);
+			error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 		}
 		if (is_title) {	/* Master frame is from the title sequence */
 			if (Ctrl->M.frame < Ctrl->E.fade[GMT_IN])	/* During title fade-in */
@@ -2333,14 +2374,14 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if (chmod (master_file, S_IRWXU)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", master_file);
 			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 		}
 #endif
 		sprintf (cmd, "%s %s %*.*d", sys_cmd_nowait[Ctrl->In.mode], master_file, precision, precision, Ctrl->M.frame);
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running script %s returned error %d - exiting.\n", cmd, error);
 			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Single master plot (frame %d) built: %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
 		if (!Ctrl->Q.active) {
@@ -2348,7 +2389,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if (gmt_remove_file (GMT, master_file)) {	/* Delete the master_file script */
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the master file script %s.\n", master_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 			}
 		}
 		if (Ctrl->M.exit) {	/* Well, we are done */
@@ -2357,19 +2398,20 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if (chdir (topdir)) {	/* Should never happen but we do check */
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to change directory to starting directory - exiting.\n");
 				perror (topdir);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 			}
 			if (!Ctrl->Q.active) {	/* Delete the entire directory */
-				/* Delete the entire working directory with batch jobs and tmp files */
+				/* Delete the entire working directory with frame jobs and tmp files */
 				sprintf (line, "%s %s\n", rmdir[Ctrl->In.mode], tmpwpath);
 				if ((error = system (line))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Deleting the working directory %s returned error %d.\n", workdir, error);
-					Return (GMT_RUNTIME_ERROR);
+					error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 				}
 			}
 			if (Ctrl->Z.delete) {	/* Delete input scripts */
-				if ((error = movie_delete_scripts (GMT, Ctrl)))
-					Return (error);
+				if ((error = movie_delete_scripts (GMT, Ctrl))) {
+					goto clean_then_die;
+				}
 			}
 			Return (GMT_NOERROR);
 		}
@@ -2377,12 +2419,11 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Now build the main loop script from the mainscript */
 
-	sprintf (main_file, "movie_frame.%s", extension[Ctrl->In.mode]);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Create main movie frame script %s\n", main_file);
 	if ((fp = fopen (main_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create loop frame script file %s - exiting\n", main_file);
 		fclose (Ctrl->In.fp);
-		Return (GMT_ERROR_ON_FOPEN);
+		error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 	}
 	if (Ctrl->K.active) {
 		sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
@@ -2415,6 +2456,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (htxt, ",H%d", Ctrl->H.factor);
 		strcat (extra, htxt);
 	}
+
 	gmt_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 	gmt_set_comment (fp, Ctrl->In.mode, "Main frame loop script");
 	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since sub-shells may mess things up */
@@ -2460,7 +2502,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 #ifndef WIN32	/* Set executable bit if not Windows cmd */
 	if (chmod (main_file, S_IRWXU)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", main_file);
-		Return (GMT_RUNTIME_ERROR);
+		error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 	}
 #endif
 
@@ -2495,7 +2537,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for frame %*.*d\n", precision, precision, frame);
 			if ((error = system (cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Running script %s returned error %d - aborting.\n", cmd, error);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 			}
 			status[frame].started = true;	/* We have now launched this frame job */
 			frame++;			/* Advance to next frame for next launch */
@@ -2530,7 +2572,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	if (chdir (topdir)) {	/* Should never happen but we should check */
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to change directory to starting directory - exiting.\n");
 		perror (topdir);
-		Return (GMT_RUNTIME_ERROR);
+		error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 	}
 
 	if (Ctrl->F.active[MOVIE_GIF]) {	/* Want an animated GIF */
@@ -2557,7 +2599,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running GIF conversion returned error %d - exiting.\n", error);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation built: %s.gif\n", Ctrl->N.prefix);
 		if (Ctrl->F.skip) GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation reflects every %d frame only\n", Ctrl->F.stride);
@@ -2579,7 +2621,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to MP4 returned error %d - exiting.\n", error);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "MP4 movie built: %s.mp4\n", Ctrl->N.prefix);
 	}
@@ -2602,41 +2644,15 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to webM returned error %d - exiting.\n", error);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "WebM movie built: %s.webm\n", Ctrl->N.prefix);
 	}
 
-	/* Prepare the cleanup script */
-	sprintf (cleanup_file, "movie_cleanup.%s", extension[Ctrl->In.mode]);
-	if ((fp = fopen (cleanup_file, "w")) == NULL) {
-		GMT_Report (API, GMT_MSG_ERROR, "Unable to create cleanup file %s - exiting\n", cleanup_file);
-		Return (GMT_ERROR_ON_FOPEN);
-	}
-	gmt_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
-	if (Ctrl->Z.active) {	/* Want to delete the entire frame directory */
-		gmt_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with frame files");
-		/* Delete the entire working directory with batch jobs and tmp files */
-		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], tmpwpath);
-	}
-	else {	/* Just delete the remaining scripts and PS files */
-		GMT_Report (API, GMT_MSG_INFORMATION, "%u frame PNG files saved in directory: %s\n", n_frames, workdir);
-		if (Ctrl->S[MOVIE_PREFLIGHT].active)	/* Remove the preflight script */
-			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep, pre_file);
-		if (Ctrl->S[MOVIE_POSTFLIGHT].active)	/* Remove the postflight script */
-			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep, post_file);
-		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep, init_file);	/* Delete the init script */
-		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep, main_file);	/* Delete the main script */
-		if (layers)
-			fprintf (fp, "%s %s%c*.ps\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep);	/* Delete any PostScript layers */
-	}
-	fclose (fp);
-#ifndef WIN32	/* Set executable bit if not Windows cmd */
-	if (chmod (cleanup_file, S_IRWXU)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Unable to make cleanup script %s executable - exiting\n", cleanup_file);
-		Return (GMT_RUNTIME_ERROR);
-	}
-#endif
+clean_then_die:
+
+	current_error = error;	/* Since we may jump here because of an issue earlier */
+
 	if (!Ctrl->Q.active) {
 		/* Run cleanup script at the end */
 		if (Ctrl->In.mode == GMT_DOS_MODE)
@@ -2657,10 +2673,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 
 	/* Finally, delete the clean-up script separately since under DOS we got complaints when we had it delete itself (which works under *nix) */
-	if (!Ctrl->Q.active && gmt_remove_file (GMT, cleanup_file)) {	/* Delete the cleanup script itself */
+	if (gmt_remove_file (GMT, cleanup_file)) {	/* Delete the cleanup script itself */
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the cleanup script %s.\n", cleanup_file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	Return (GMT_NOERROR);
+	if (Ctrl->Q.active && current_error)	/* Force removal of work dir since job failed */
+		system (zap_workdir);
+
+	Return (current_error);
 }

@@ -436,7 +436,7 @@ scripting language used): *movie_init* (initializes variables related to canvas 
 and includes the contents of the optional *includefile*), *movie_preflight* (optional since it derives
 from **-Sb** and computes needed data files and possibly a background layer), *movie_postflight*
 (optional since it derives from **-Sf** and builds a foreground layer), *movie_frame* (accepts a frame counter
-argument and builds the frame image), and *movie_cleanup* (removes temporary files at the end of the
+argument and builds the frame image), and a hidden *movie_cleanup* (removes temporary files at the end of the
 run). For each frame there is a separate *movie_params_######* script that provides frame-specific
 variables (e.g., frame number and anything given via **-T**).  The pre- and post-flight scripts have
 access to the information in *movie_init* while the frame script in addition has access to the frame-specific
