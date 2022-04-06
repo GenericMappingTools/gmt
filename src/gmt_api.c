@@ -3980,9 +3980,11 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				if ((V_obj = S_obj->resource) == NULL) {
 					gmt_M_free (GMT, D_obj);	return_null (API, GMT_PTR_IS_NULL);
 				}
-				if (V_obj->type[0] != GMT_DOUBLE) {
-					GMT_Report (API, GMT_MSG_ERROR, "Only double-precision vectors can be passed via reference to datasets\n");
-					gmt_M_free (GMT, D_obj);	return_null (API, GMT_NOT_A_VALID_TYPE);
+				for (col = 0; col < V_obj->n_columns; col++) {
+					if (V_obj->type[col] != GMT_DOUBLE) {
+						GMT_Report (API, GMT_MSG_ERROR, "Only double-precision vectors can be passed via reference to datasets\n");
+						gmt_M_free (GMT, D_obj);	return_null (API, GMT_NOT_A_VALID_TYPE);
+					}
 				}
 				VH = gmt_get_V_hidden (V_obj);
 				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
@@ -4009,7 +4011,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 					else
 						col_pos = col_pos_out = col;	/* Just goto that column */
 					S->data[col_pos_out] = V_obj->data[col_pos].f8;
-					SH->alloc_mode[col_pos_out] = VH->alloc_mode[col];	/* Inherit from what we got */
+					SH->alloc_mode[col_pos_out] = GMT_ALLOC_EXTERNALLY;	/* Not this objects job to free what was passed in by reference */
 				}
 				DH = gmt_get_DD_hidden (D_obj);
 				if (smode) S->text = V_obj->text;
@@ -7646,7 +7648,7 @@ GMT_LOCAL int gmtapi_init_import (struct GMTAPI_CTRL *API, enum GMT_enum_family 
 					return_value (API, API->error, GMT_NOTSET);	/* Failure to register */
 				}
 				n_reg++;	/* Count of new items registered */
-				gmt_M_free (API->GMT, wesn);
+				if (API->GMT->common.R.active[RSET]) gmt_M_free (API->GMT, wesn);
 				if (first_ID == GMT_NOTSET) first_ID = object_ID;	/* Found our first ID */
 				if ((item = gmtlib_validate_id (API, family, object_ID, GMT_IN, GMTAPI_MODULE_INPUT)) == GMT_NOTSET)
 					return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */

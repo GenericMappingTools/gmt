@@ -95,6 +95,7 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
+#include "gmt_gsformats.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"movie"
 #define THIS_MODULE_MODERN_NAME	"movie"
@@ -1026,7 +1027,10 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					s[0] = '\0';	/* Truncate for now */
 				}
 				if ((c = strchr (opt->arg, ',')) ) {	/* Gave frame and format */
-					Ctrl->M.format = strdup (&c[1]);
+					if (!strncmp (&c[1], "view", 4U))  /* Check for using 'view' to set with GMT_GRAPHICS_FORMAT */
+						Ctrl->M.format = strdup (gmt_session_format[API->GMT->current.setting.graphics_format]);
+					else
+						Ctrl->M.format = strdup (&c[1]);
 					c[0] = '\0';	/* Chop off format */
 					switch (opt->arg[0]) {
 						case 'f':	Ctrl->M.frame  = 0; break;
@@ -1046,7 +1050,10 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					}
 				}
 				else if (opt->arg[0])	/* Must be format, with frame = 0 implicit */
-					Ctrl->M.format = strdup (opt->arg);
+					if (strchr ("v", opt->arg[0])) /* Check for using 'view' to set with GMT_GRAPHICS_FORMAT */
+						Ctrl->M.format = strdup (gmt_session_format[API->GMT->current.setting.graphics_format]);
+					else
+						Ctrl->M.format = strdup (opt->arg);
 				else /* Default is PDF of frame 0 */
 					Ctrl->M.format = strdup ("pdf");
 				if (s) s[0] = '+';	/* Restore */

@@ -98,7 +98,7 @@ Optional Arguments
 
     (2) If *contours* is a file but not a CPT, it is expected to contain
         one record per contour, with information given in the order
-        *contour-level* [*angle*] **C**\|\ **c**\|\ **A**\|\ **a** [*pen*],
+        *contour-level* [[*angle*] **C**\|\ **c**\|\ **A**\|\ **a** [*pen*]],
         where items in brackets are optional.  The levels marked **C** (or **c**)
         are contoured, while the levels marked **A** (or **a**) are both contoured
         and annotated. If the annotation *angle* is present we will plot the label
@@ -106,6 +106,7 @@ Optional Arguments
         specific *pen* may be present and will override the pen set by **-W**
         for this contour level only. **Note**: Please specify *pen* in proper
         format so it can be distinguished from a plain number like *angle*.
+        If only *cont-level* columns are present then we set type to **C**.
 
     (3) If *contours* is a string with comma-separated values it is interpreted
         as those specific contours only.  To indicate a single specific contour
@@ -242,7 +243,7 @@ Optional Arguments
 
 **-Z**\ [**+o**\ *shift*][**+p**][**+s**\ *factor*]
     Use to subtract *shift* from the data and multiply the results by
-    *factor* before contouring starts [1/0]. (Numbers in **-A**, **-C**,
+    *factor* before contouring starts [+o0+s1]. (Numbers in **-A**, **-C**,
     **-L** refer to values after this scaling has occurred.) Append
     **+p** to indicate that this grid file contains z-values that are
     periodic in 360 degrees (e.g., phase data, angular distributions)
