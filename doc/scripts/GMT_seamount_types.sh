@@ -32,7 +32,7 @@ EOF
     gmt text -F+f16p,Times-Italic+j -N << EOF
 1	-0.05	TC	r@-t@- = fr@-0@-
 4	-0.05	TC	r@-0@-
-4.3	0.2	LM	h@-c@-
+4.3	0.2	LM	h@-n@-
 2.59	-0.05	TC	r@-c@-
 -0.2	1	RM	h@-0@-
 EOF
@@ -66,7 +66,7 @@ EOF
     gmt text -F+f16p,Times-Italic+j -N << EOF
 1	-0.05	TC	r@-t@- = fr@-0@-
 4	-0.05	TC	r@-0@-
-4.3	0.2	LM	h@-c@-
+4.3	0.2	LM	h@-n@-
 2.59	-0.05	TC	r@-c@-
 -0.2	1	RM	h@-0@-
 EOF
@@ -110,7 +110,7 @@ EOF
 1	-0.05	TC	r@-t@- = fr@-0@-
 4	-0.05	TC	r@-0@-
 3.4	-0.05	TC	r@-c@-
-4.3	0.2	LM	h@-c@-
+4.3	0.2	LM	h@-n@-
 -0.2	1	RM	h@-0@-
 EOF
     echo "@%1%c@%% (cone)" | gmt text -F+f18p+cTL -Dj0.1i
@@ -143,7 +143,7 @@ EOF
 1	-0.05	TC	r@-t@- = fr@-0@-
 4	-0.05	TC	r@-0@-
 3.60555	-0.05	TC	r@-c@-
-4.3	0.2	LM	h@-c@-
+4.3	0.2	LM	h@-n@-
 -0.2	1	RM	h@-0@-
 EOF
     echo "@%1%p@%% (parabolic)" | gmt text -F+f18p+cTL -Dj0.1i
@@ -172,7 +172,7 @@ EOF
 EOF
     gmt text -F+f16p,Times-Italic+j -N << EOF
 4	-0.05	TC	r@-0@- = r@-c@-
-4.3	0.2	LM	h@-c@-
+4.3	0.2	LM	h@-n@-
 -0.2	1	RM	h@-0@-
 EOF
     echo "@%1%d@%% (disc)" | gmt text -F+f18p+cTL -Dj0.1i

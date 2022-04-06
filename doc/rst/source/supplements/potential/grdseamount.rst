@@ -23,7 +23,7 @@ Synopsis
 [ |-F|\ [*flattening*] ]
 [ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
 [ |-K|\ [*densitymodel*] ]
-[ |-L|\ [*hnoise*] ]
+[ |-L|\ [*hn*] ]
 [ |-M|\ [*list*] ]
 [ |-N|\ *norm* ]
 [ |-Q|\ *bmode*/*fmode*\ [**+d**] ]
@@ -47,41 +47,43 @@ Description
 **grdseamount** will compute the combined topographic shape of multiple synthetic seamounts given
 their individual shape parameters.  We read from *table* (or standard input) a list of seamount
 locations and sizes and can evaluate either Gaussian, parabolic, conical, polynomial or disc
-shapes, which may be circular or elliptical, and optionally truncated. Various scaling options
-are available to modify the result, including an option to add in a background depth (more
-complicated backgrounds may be added separately via :doc:`grdmath </grdmath>`). The input data
+shapes, which may be circular or elliptical, and optionally truncated. Various options are available
+to modify the result, including an option to add in a background depth or set unmodified nodes to NaN
+(more complicated backgrounds may be added separately via :doc:`grdmath </grdmath>`). The input data
 must contain *lon*, *lat*, *radius*, *height* for each seamount. For elliptical features (requires
 **-E**) we expect *lon*, *lat*, *azimuth*, *semi-major*, *semi-minor*, *height* instead. If
-seamount flattening is specified (via **-F**) with no value appended then an extra column with
-*flattening* is expected (cannot be used for plateaus). For temporal evolution of topography the
-**-T** option may be used, in which case the data file must have two additional columns with the
-start and stop time of seamount construction. In this case you may choose to write out a
-cumulative shape or just the increments produced by each time step (see **-Q**).  If land slides
-are considered (**-S**) then this initial set of columns are followed by one or more groups of
-slide parameters; see **-S** for the arrangement. Finally, for mixing different seamount shapes
+flat seamount tops is specified (via **-F**) with no value appended then an extra column with
+*flattening* is expected (**-F** cannot be used for plateaus). For temporal evolution of topography
+the **-T** option may be used, in which case the data file must have two additional columns with
+the start and stop time of seamount construction. In this case, you may choose to write out a
+cumulative shape or just the increments produced for each time step (see **-Q**).  If land slides
+are considered (**-S**), then this initial set of input columns are followed by one or more groups
+of slide parameters; see **-S** for the arrangement. Finally, for mixing different seamount shapes
 in the input *table* you can use the trailing text to give the shape code by using **-C** without
-an argument.
+appending an argument.
 
 .. figure:: /_images/GMT_seamount_slide.*
    :width: 500 px
    :align: center
 
    Truncated polynomial seamount with the scars of two mass-wasting events on its flank.  Users can
-   assign time-span to the construction of the seamount and separately to the time-span of any
+   assign a time-span to the construction of the seamount and separate time-spans for any desired
    mass-wasting events.
 
-Required Arguments (if **-L** not given)
-----------------------------------------
+Required Arguments (if **-L** is not given)
+-------------------------------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
 .. _-G:
 
-.. |Add_outgrid| replace:: Give the name of the output grid file. If |-T| is set then *outgrid* must be a filename
-    template that contains a floating point format (C syntax).  If the filename template also contains
-    either %s (for unit name) or %c (for unit letter) then we use the corresponding time (in units specified in |-T|)
-    to generate the individual file names, otherwise we use time in years with no unit.
+.. |Add_outgrid| replace:: Give the name of the output grid file. If |-T| is set then *outgrid* must be
+    a filename template that contains a floating point format to hold the output time (Format (C language
+    syntax)).  If the filename template
+    also contains either %s (for unit name) or %c (for unit letter) then we use the corresponding time
+    (in units specified in |-T|) to generate the individual file names, otherwise we use time in years
+    with no unit included.
 .. include:: /explain_grd_inout.rst_
     :start-after: outgrid-syntax-begins
     :end-before: outgrid-syntax-ends
@@ -101,71 +103,72 @@ Optional Arguments
 .. _-A:
 
 **-A**\ [*out/in*][**+s**\ *scale*]
-    Build a mask grid; append outside/inside values [1/NaN].
-    Here, height and flattening are ignored and **-L**, **-N** and **-Z** are disallowed.
-    Use **+s** to increase all seamount radii or semi-axes first ("bleeding outwards") [1].
+    Build a mask grid only that may be used to manipulate data sets to exclude or to isolate
+    seamount observations; append outside/inside values [1/NaN]. Here, height and flattening
+    are ignored and **-L**, **-N** and **-Z** are disallowed. Optionally, use **+s** to
+    increase all seamount radii or semi-axes first ("bleeding the mask outwards") [1].
 
 .. _-C:
 
 **-C**\ [**c**\|\ **d**\|\ **g**\|\ **o**\|\ **p**]
-    Select seamount shape function: choose among **c** (cone), **d** (disc), **g** (Gaussian)
+    Select a seamount shape function: choose among **c** (cone), **d** (disc), **g** (Gaussian)
     **o** (polynomial) and **p** (parabolic) shapes [Default is Gaussian].  All but the disc
     can furthermore be truncated via a flattening parameter *f* set by **-F**.  If **-C** is
-    not given any argument then we will read the shape code from the trailing text.  If **-C**
-    is not given at all then we default to Gaussian shapes [**g**].  **Note**: The polynomial
-    model has an normalized amplitude for a normalized radius :math:`u = r / r_0` that is given
-    by :math:`v(u) = \frac{(1+u)^3(1-u)^3)}{1+u^3}`. It is very similar to the Gaussian model
-    (volume is just ~2.4% larger) but *v* goes exactly to zero at the basal radius :math:`r_0`.
+    not given any argument, then we will read the shape code from the trailing text.  If **-C**
+    is not given at all, then we default to Gaussian shapes [**g**].  **Note**: The polynomial
+    model has an normalized amplitude *v* for a normalized radius :math:`u = r / r_0` that is given
+    by :math:`v(u) = \frac{(1+u)^3(1-u)^3)}{1+u^3}`. It is comparable to the Gaussian model (its
+    volume is just ~2.4% larger), but *v* goes exactly to zero at the basal radius :math:`r_0`.
 
 .. figure:: /_images/GMT_seamount_types.*
    :width: 500 px
    :align: center
 
    The five types of seamounts selected via option **-C**.  In all cases, :math:`h_0` is the maximum
-   *height*, :math:`r_0` is the basal *radius*, :math:`h_c` is the noise floor set via **-L** [0], and
-   *f* is the *flattening* set via **-F** [0]. The top radius :math:`r_t` is only nonzero if there is
-   flattening and hence does not apply to the disc model.
+   *height*, :math:`r_0` is the basal *radius*, :math:`h_n` is the noise floor set via **-L** [0], and
+   *f* is the *flattening* set via **-F** [0]. The top radius :math:`r_t = f r_0` is only nonzero if
+   there is flattening, hence it does not apply to the disc model.
 
 .. _-D:
 
 **-D**\ *unit*
-    Append the unit used for horizontal distances in the input file (see `Units`_).
-    Does not apply for geographic data (|SYN_OPT-f|) which we convert to km.
+    Append the Cartesian unit used for horizontal distances in the input file (see `Units`_).
+    Does not apply for geographic data (|SYN_OPT-f|) which we automatically convert to km.
 
 .. _-E:
 
 **-E**
-    Elliptical data format. We expect the input records to contain
+    Elliptical data file format. We expect input records to contain
     *lon, lat, azimuth, semi-major, semi-minor, height* (with  the latter in meter)
-    for each seamount.  [Default is Circular data format, expecting
-    *lon, lat, radius, height*].
+    for each seamount.  [Default is Circular data format, expecting *lon, lat, radius, height*].
 
 .. figure:: /_images/GMT_seamount_map.*
    :width: 500 px
    :align: center
 
-   Use **-E** to select elliptical rather than circular shape in map view.  Both shapes require
-   lon, lat. Circular only requires the radius :math:`r_0` while elliptical requires the azimuth
-   :math:`\alpha` and the major and minor semi-axes .
+   Use **-E** to select elliptical rather than circular shapes in map view.  Both shapes require
+   lon, lat. Circular shapes only require the radius :math:`r_0`, while elliptical ones require the
+   azimuth :math:`\alpha` of the major axis as well as the major and minor semi-axes .
 
 .. _-F:
 
 **-F**\ [*flattening*]
-    Seamounts are to be truncated to guyots.  Append *flattening* from 0 (no flattening) to 1
-    (**Note**: no feature will be produced!), otherwise we expect to find the flattening in
-    the last input column [no truncation].  Ignored if used with **-Cd**.
+    Seamounts will be truncated to guyots.  Append *flattening* from 0 (no flattening) up to but not
+    including 1. If no argument is given then we expect to find the flattening in the last input column
+    [no truncation].  Ignored if used with **-Cd**.
 
 .. _-H:
 
 **-H**\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
     Set reference seamount parameters for an *ad-hoc* variable radial density function with depth. Give
     the low and high seamount densities in kg/m^3 or g/cm^3 and the fixed reference height *H* in meters.
-    Use modifiers **+d** and **+p** to change the water-pressure-driven flank density increase
-    over the full reference height [0] and the variable density profile exponent *power* [1, i.e., a linear change].
-    Below, *h(r)* is the final height of any seamount and *z(r)* is a point inside the seamount.  If the seamount is
-    truncated (via **-F**) then *h(r)* refers to the untruncated height.  **Note**: If **-V** is used
-    the we report the mean density for each seamount processed.  The radial density function is thus defined
-    by :math:`\Delta \rho_s = \rho_h - \rho_l` and the *densify* setting :math:`\Delta \rho_f`:
+    Use modifiers **+d** and **+p** to change the water-pressure-driven flank density increase over the
+    full reference height [0] and the variable density profile exponent *power* [1, i.e., a linear change].
+    Below, *h(r)* is the final height of any seamount and *z(r)* is a point inside the seamount.  If the
+    seamount is truncated (via **-F**) then *h(r)* refers to the untruncated height.  **Note**: If **-V**
+    is used then we report the mean density for each seamount processed.  The radial density function is
+    thus defined (with :math:`\Delta \rho_s = \rho_h - \rho_l` and the *densify* setting is
+    :math:`\Delta \rho_f`.):
 
 .. math::
 
@@ -175,8 +178,8 @@ Optional Arguments
    :width: 500 px
    :align: center
 
-   A linear density distribution selected via option **-H**.  Flank density can be affected by water
-   pressure if :math:`\Delta \rho_f > 0` while the normalized internal density gradient is raised to
+   A linear density distribution selected with option **-H**.  Flank density can be affected by water
+   pressure if :math:`\Delta \rho_f > 0`, while the normalized internal density gradient is raised to
    power *p* to allow for nonlinear gradients.  **Note**: The reference height *H* refers to a very tall
    seamount for which the supplied densities are suitable.  Smaller seamounts will thus see lower core
    densities by virtue of being smaller.
@@ -184,30 +187,30 @@ Optional Arguments
 .. _-K:
 
 **-K**\ *densitymodel*
-    Append a file name to hold a crossection grid with the predicted densities of the reference model.
+    Append the file name for a crossection grid with the predicted densities of the reference model.
     We use normalized coordinates (*x* goes from -1 to +1) and *z* from 0 to 1, both in increments
-    of 0.005, yielding a 401 x 201 grid. **Note**: This option can be used without creating the
+    of 0.005, yielding a fixed 401 x 201 grid. **Note**: This option can be used without creating the
     seamount grid, hence **-R**, **-I**, **-G**, and **-D** are not required.
 
 .. _-L:
 
-**-L**\ [*hnoise*]
-    List area, volume, and mean height for each seamount; No grid is created.
-    Optionally, append the noise-floor cutoff level below which we ignore area and volume [0].
+**-L**\ [*hn*]
+    List *area*, *volume*, and *mean height* for each seamount; No grid will be created.
+    Optionally, append *hn* for a noise-floor cutoff level below which we ignore area and volume [0].
 
 .. _-M:
 
 **-M**\ [*list*]
-    Write the times and names of all grids that were created to the text file *list*.
-    Requires **-T**.  If not *list* file is given then we write to standard output.
-    The output listing is suitable to be used as input to :doc:`grdflexure </supplements/potential/grdflexure>`.
-    **Note**: If **-W** is used the we write the relief grid name first followed by the density grid name.  Thus,
-    the output records contain *time reliefgrid* [ *densitygrid* ] *timetag*.
+    Write the times and names of all relief grids that were created to the text file *list*.
+    Requires **-T**.  If no *list* file is given then we write to standard output. The output listing
+    is suitable to be used as input to :doc:`grdflexure </supplements/potential/grdflexure>`.
+    **Note**: If **-W** is used the we write the relief grid name first, followed by the density grid
+    name.  Thus, the output records contain *time reliefgrid* [ *densitygrid* ] *timetag*.
 
 .. _-N:
 
 **-N**\ *norm*
-    Normalize grid so maximum grid height equals *norm* [no normalization].
+    Normalize the grid so the maximum grid height equals *norm* [no normalization].
 
 .. _-Q:
 
@@ -215,22 +218,23 @@ Optional Arguments
     Can only be used in conjunction with **-T**.  Append two different mode settings separated by a slash:
     
         * The *bmode* determines how we construct the surface: Specify **c** for cumulative
-          volume through time [Default], or **i** for incremental volume added for each time slice.
+          volume through time [Default] or **i** for the incremental volume added for each time slice.
     
         * The *fmode* determines the volume flux curve we use: Give **c** for a constant volume flux or
           **g** for a Gaussian volume flux [Default] between the start and stop times of each feature.
 
-    These fluxes integrate to a linear or error-function volume fraction over time, respectively, as shown below.
-    By default we compute the exact cumulative and incremental values for the seamounts specified.  Append
-    **+d** to instead approximate each incremental layer by a disc of constant thickness.
+    These fluxes integrate to a linear and error-function volume fraction over time, respectively, as
+    shown below. By default, we compute the exact cumulative and incremental values for the seamounts
+    specified.  Append **+d** to instead approximate each incremental layer by a disc of constant thickness.
 
 .. figure:: /_images/GMT_seamount_cum_inc.*
    :width: 500 px
    :align: center
 
    Use *bmode* in **-Q** to choose between cumulative output (**c**; actual topography as function
-   of time [left]) or incremental output (**i**; the difference in actual topography over five
-   time-steps [right]).  Here we used **-Cg** for a Gaussian model with no flattening and a linear volume flux.
+   of time [left]) or incremental output (**i**; the differences in actual topography over five
+   time-steps [right]).  Here, we used **-Cg** for a Gaussian model with no flattening and a linear
+   volume flux.
 
 .. figure:: /_images/GMT_seamount_flux.*
    :width: 500 px
@@ -243,23 +247,23 @@ Optional Arguments
 
 **-S**\ [**+a**\ [*az1*/*az2*]][**+b**\ [*beta*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]]
 
-    Sets parameters controlling sectoral land slides by selecting suitable modifiers. Parameters
-    set on the command line apply to all seamounts equally,  However, if a modifier is set but
+    Set parameters controlling sectoral land slides by providing suitable modifiers. Parameters
+    given on the command line apply to all seamounts equally,  However, if a modifier is set but
     not given any arguments then we read those arguments from the end of the input record; the
     order of such input arguments follows alphabetically from the modifiers. Repeat the slide
-    group columns if there are more than one slide to read per seamount. Use these modifiers
+    group columns if there is more than one slide to read per seamount. Use these modifiers
     to set slide parameters:
 
         * **+a** specifies the azimuthal sector affected by the slide [0/360].
 
-        * **+b** sets a positive power coefficient for the normalized slide volume fraction
-          time-curve :math:`\psi(\tau) = \tau^\beta` [Default is linear, i.e., 1].
+        * **+b** sets a positive power coefficient :math:`\beta` for the normalized slide volume
+          fraction time-curve :math:`\psi(\tau) = \tau^\beta` [Default is linear, i.e., 1].
 
         * **+d** sets the height of the distal deposit at the toe of the seamount [:math:`h_1/2`].
 
-        * **+h** sets the lower and upper heights of the landslide scarps.
+        * **+h** sets the lower and upper heights of the flank affected by the landslide.
 
-        * **+p** activates angular variation in slide height and sets the power parameter *power > 2*.
+        * **+p** activates angular variation in slide height; append a power parameter *power > 2*.
 
         * **+t** sets the time span over which the slide develops via :math:`\psi(\tau)` (see **+b**), where
           :math:`\tau = (t - t_0)/(t_1 - t_0)` is the normalized time span; this modifier also
@@ -267,7 +271,7 @@ Optional Arguments
 
         * **+u** sets radial slide shape parameter *u0 > 0* [0.2].
 
-        * **+v** sets desired fractional volume of the slide (in percent) relative to
+        * **+v** sets desired fractional volume :math:`\phi` of the slide (in percent) relative to
           the entire seamount volume.
 
     **Note**: If **+v** is set then we must compute the corresponding *u0*, hence **+u** is
@@ -278,27 +282,26 @@ Optional Arguments
    :width: 500 px
    :align: center
 
-   Geometry for an *ad hoc* landslide approximation (modifiers **+a**, **+d** and **+h**).
-   The volume of the slide material (pink)
-   will be deposited at the toe of the seamount (light blue) starting at a height of :math:`h_c`
-   and linearly tapering to zero at a distal point :math:`r_d`. Note that :math:`h_2 > h_1`
-   while :math:`r_1 > r_2`.
+   Geometry for an *ad hoc* landslide approximation (via modifiers **+a**, **+d** and **+h**).
+   The volume of the slide material (pink) will be deposited at the toe of the seamount (light blue)
+   starting at a height of :math:`h_c` and linearly tapering to zero at a distal point :math:`r_d`.
+   **Note**: :math:`h_2 > h_1` while :math:`r_1 > r_2`.
 
 .. figure:: /_images/GMT_seamount_psi.*
    :width: 500 px
    :align: center
 
-   We can control how quickly a slide happens by manipulating the :math:`\psi(\tau)` function
-   (modifier **+b**). A linear curve means the mass redistribution is taking place at a constant
+   We can control how quickly a slide evolves by manipulating the :math:`\psi(\tau)` function (via
+   modifier **+b**). A linear curve means the mass redistribution is taking place at a constant
    rate during the slide duration. Adjust :math:`\beta` to have the bulk of the redistribution
-   happen at the front (:math:`\beta < 1`) or closer to the end (:math:`\beta > 1`) of the event.
+   happen early on (:math:`\beta < 1`) or closer to the end (:math:`\beta > 1`) of the event.
 
 .. figure:: /_images/GMT_seamount_azim.*
    :width: 500 px
    :align: center
 
-   A range of azimuthal variation in slide height can be achieved by modulating the power parameter,
-   *p* (modifier **+p**). This variation means the slide volume is reduced by :math:`1 - \bar{s}`
+   A range of azimuthal variations in slide height can be achieved by modulating the power parameter,
+   *p* (via modifier **+p**). This variation means the slide volume is reduced by :math:`1 - \bar{s}`
    (dashed lines). E.g., for *p = 2* the slide volume is only 67% of the volume we would have if
    there was no azimuthal variation (i.e., *s = 0*).
 
@@ -306,9 +309,9 @@ Optional Arguments
    :width: 500 px
    :align: center
 
-   A variety of slide shapes are possible by varying :math:`u_0` (modifier **+u**).  The slide area
-   for a conical seamount would be the area between the flank (dashed line) and the selected curve.
-   A smaller :math:`u_0` will cut more deeply into the seamount.
+   A variety of slide shapes are possible by varying :math:`u_0` (via modifier **+u**).  For instance,
+   the slide area for a conical seamount would be the area between the flank (dashed line) and the
+   selected curve. A smaller :math:`u_0` will cut more deeply into the seamount.
 
 .. _-T:
 
@@ -316,14 +319,14 @@ Optional Arguments
     Specify *t0*, *t1*, and time increment (*dt*) for a sequence of calculations
     [Default is one step, with no time dependency]. For a single specific time, just
     give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.
-    For a logarithmic time scale, append **+l** and specify *n* steps instead of *dt*.
-    Alternatively, give a file with the desired times in the first column (these times
-    may have individual units appended, otherwise we assume year).  If **-T** is set
-    then the input seamount table is expected to have to extra columns for the *start*
+    For a logarithmic time scale, append **+l** and given the number of steps *n* instead
+    of increment *dt*. Alternatively, give a file with the desired times in the first column
+    (these times may have individual units appended, otherwise we assume year).  If **-T** is
+    set, then the input seamount table is expected to have to extra columns for the *start*
     and *stop* time following the initial seamount parameters (but before any slide
-    groups; see **-S**). Because positive time is years before present, we require
+    groups; see **-S**). Because positive time is in years before present, we require
     *start* >= *stop* time. **Note**: A grid will be written for all time-steps even
-    if there are no loads or no changes.
+    if there are no loads or no changes for one or more times.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
@@ -333,11 +336,11 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *avedensity*
-    Give the name of the vertically averaged density grid file. If |-T| is set then *avedensity* must be a filename
-    template that contains a floating point format (C syntax).  If the filename template also contains
-    either %s (for unit name) or %c (for unit letter) then we use the corresponding time (in units specified in |-T|)
-    to generate the individual file names, otherwise we use time in years with no unit.
-    Requires **-H** to define the density model.
+    Give the name of the vertically averaged density grid file. If |-T| is set then *avedensity* must
+    be a filename template that contains a floating point format (C syntax; see **-G**).  If the filename
+    template also contains either %s (for unit name) or %c (for unit letter) then we use the corresponding
+    time (in units specified in |-T|) to generate the individual file names, otherwise we use time in years
+    with no unit. Requires **-H** to define the density model.
 
 .. _-Z:
 
@@ -374,10 +377,10 @@ Optional Arguments
 Notes
 -----
 
-Because the Gaussian curve only drops to 1.11% of its maximum at the base radius (3 sigma)
+Because the Gaussian curve only drops to 1.11% of its peak at the base radius (3 sigma)
 of a seamount, we actually evaluate the Gaussian curves out to 4 sigma so that the amplitude
-drops to 0.034% of peak height before we jump to zero.  This prevents a very noticeable
-step at the base.
+drops to 0.034% of peak height before we jump to zero.  This prevents the otherwise very noticeable
+steps at the base of the seamount.
 
 Examples
 --------
