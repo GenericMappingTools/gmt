@@ -910,7 +910,7 @@ GMT_LOCAL double grdseamount_azimuth (double dx, double dy) {
 	return ((az > 180.0) ? az - 360.0 : az);	/* ..but we return -180 < az <= +180 */
 }
 
-GMT_LOCAL bool grdseamount_node_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct SEAMOUNT *S, unsigned int slide, struct GMT_GRID *G, unsigned int row, unsigned int col, double *s) {
+GMT_LOCAL bool grdseamount_node_in_sector (struct GMT_CTRL *GMT, struct SEAMOUNT *S, unsigned int slide, struct GMT_GRID *G, unsigned int row, unsigned int col, double *s) {
 	/* Return true if the azimuth from seamount center to this point is inside the wedge selected via -S+a.
 	 * If inside we also compute the azimuthal scale s(alpha) if +p was set, else 0 */
 	bool in_sector = false;
@@ -1098,11 +1098,11 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 	 * Based on the record length we figure out how many slides (if any) there are per seamount.
 	 */
 
-	bool map = gmt_M_is_geographic (API->GMT, GMT_IN);
+	bool map = gmt_M_is_geographic (API->GMT, GMT_IN), use_first = false;
 	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], m[GMT_LEN16], t_unit, unit, unit_name[8];
 	uint64_t n = 0;
 	int n_fields, want, error;
-	unsigned int n_expected, n_time, n_per_slide = 0, f_col, k, col, mode;
+	unsigned int n_expected, n_time, n_per_slide = 0, f_col, k, kk, col, mode;
 	double s_scale, *in = NULL, fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	struct SEAMOUNT *S = NULL;
@@ -1136,6 +1136,11 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 	n_expected = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 
 	if (Ctrl->S.slide) {	/* May need to read extra groups of columns per slide */
+		/* Note: If -S was given multiple times it means a fixed number of slides for each seamount
+		 * and the modifiers may differ between slide 1, slide 2, etc.  Hence n_per_slide below
+		 * is just the total sum of columns to consume during the read.  On the other hand, if
+		 * -S was given just once then we may have a variable number of slide per seamount and
+		 * n_per_slide gives the fixed number of parameters to read per slide. */
 		for (k = 0; k < Ctrl->S.n_slides; k++) {
 			if (Ctrl->S.Info[k].read_a) n_per_slide += 2;	/* +a: Read az1 and az2 */
 			if (Ctrl->S.Info[k].read_b) n_per_slide += 1;	/* +b: Read beta */
@@ -1252,8 +1257,15 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 
 		if (Ctrl->S.slide) {	/* Determine how many slide groups for this seamount, if any */
 			/* If all -S modifiers were set and there is nothing to read we know all seamounts have as many slides as -S was set, else some may have none */
-			S[n].n_slides = (n_per_slide == 0) ? Ctrl->S.n_slides : (n_fields - n_expected - n_time) / n_per_slide;
-			want = n_expected + n_time + n_per_slide * S[n].n_slides;
+			if (Ctrl->S.n_slides > 1) {	/* Fixed number of slides, columns may vary between slides */
+				S[n].n_slides = Ctrl->S.n_slides;
+				want = n_expected + n_time + n_per_slide;
+			}
+			else {	/* Number of slides may vary, but each slide has same group of parameters to read */
+				S[n].n_slides = (n_per_slide == 0) ? Ctrl->S.n_slides : (n_fields - n_expected - n_time) / n_per_slide;
+				want = n_expected + n_time + n_per_slide * S[n].n_slides;
+				use_first = true;
+			}
 			if (want != n_fields) {
 				GMT_Report (API, GMT_MSG_ERROR, "Column mismatch between expected (%d) and found (%d) for seamount %" PRIu64 ".\n", want, n_fields, n);
 				goto bad;
@@ -1264,7 +1276,8 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 			}
 			col = n_expected + n_time;	/* Start of first slide column for this record */
 			for (k = 0; k < S[n].n_slides; k++) {
-				if (Ctrl->S.Info[k].read_a) {	/* Read the azimuths from file */
+				kk = (use_first) ? 0 : k;	/* Consult the read_? args form the first or each Slide info */
+				if (Ctrl->S.Info[kk].read_a) {	/* Read the azimuths from file */
 					S[n].Slide[k].az1 = in[col++];
 					S[n].Slide[k].az2 = in[col++];
 				}
@@ -1276,7 +1289,7 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 					GMT_Report (API, GMT_MSG_ERROR, "Bad azimuth range for seamount %" PRIu64 " slide %d (%g/%g)\n", n, k, S[n].Slide[k].az1, S[n].Slide[k].az2);
 					goto bad;
 				}
-				if (Ctrl->S.Info[k].read_b)	/* Read beta from file */
+				if (Ctrl->S.Info[kk].read_b)	/* Read beta from file */
 					S[n].Slide[k].beta = in[col++];
 				else	/* Get fixed beta from -S [BETA_DEFAULT] */
 					S[n].Slide[k].beta = Ctrl->S.Info[k].Slide.beta;
@@ -1284,11 +1297,11 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 					GMT_Report (API, GMT_MSG_ERROR, "Bad psi power coefficient beta <= 0 for seamount %" PRIu64 " slide %d (%g)\n", n, k, S[n].Slide[k].beta);
 					goto bad;
 				}
-				if (Ctrl->S.Info[k].read_d)	/* Read hc from file */
+				if (Ctrl->S.Info[kk].read_d)	/* Read hc from file */
 					S[n].Slide[k].hc = in[col++];
-				else if (Ctrl->S.Info[k].got_d)	/* Get fixed hc from -S */
+				else if (Ctrl->S.Info[kk].got_d)	/* Get fixed hc from -S */
 					S[n].Slide[k].hc = Ctrl->S.Info[k].Slide.hc;
-				if (Ctrl->S.Info[k].read_h) {	/* Read the heights from file */
+				if (Ctrl->S.Info[kk].read_h) {	/* Read the heights from file */
 					S[n].Slide[k].h1 = in[col++];
 					S[n].Slide[k].h2 = in[col++];
 				}
@@ -1300,46 +1313,46 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 					GMT_Report (API, GMT_MSG_ERROR, "Bad height range for seamount %" PRIu64 " slide %d (%g/%g)\n", n, k, S[n].Slide[k].h1, S[n].Slide[k].h2);
 					goto bad;
 				}
-				if (!Ctrl->S.Info[k].got_d)	/* Default to halfway up to h1 */
+				if (!Ctrl->S.Info[kk].got_d)	/* Default to halfway up to h1 */
 					S[n].Slide[k].hc = 0.5 * S[n].Slide[k].h1;
 				if (S[n].Slide[k].hc > S[n].Slide[k].h1) {	/* hc needs to be <= h1 */
 					GMT_Report (API, GMT_MSG_ERROR, "Bad toe height for seamount %" PRIu64 " slide %d (%g)\n", n, k, S[n].Slide[k].hc);
 					goto bad;
 				}
-				if (Ctrl->S.Info[k].read_p)	/* Read p from file */
+				if (Ctrl->S.Info[kk].read_p)	/* Read p from file */
 					S[n].Slide[k].p = in[col++];
 				else	/* Get fixed p from -S */
 					S[n].Slide[k].p = Ctrl->S.Info[k].Slide.p;
 				/* Reading p = 0 from file is OK - it means no azimuthal variation for this slide */
-				if (Ctrl->S.Info[k].got_p && !gmt_M_is_zero (S[n].Slide[k].p) && S[n].Slide[k].p < 2.0) {
+				if (Ctrl->S.Info[kk].got_p && !gmt_M_is_zero (S[n].Slide[k].p) && S[n].Slide[k].p < 2.0) {
 					GMT_Report (API, GMT_MSG_ERROR, "Bad azimuthal power value p < 2 for seamount %" PRIu64 " slide %d (%g)\n", n, k, S[n].Slide[k].p);
 					goto bad;
 				}
-				if (Ctrl->S.Info[k].read_t) {	/* Read the slide times from file */
+				if (Ctrl->S.Info[kk].read_t) {	/* Read the slide times from file */
 					S[n].Slide[k].t0 = in[col++];
 					S[n].Slide[k].t1 = in[col++];
 				}
-				else if (Ctrl->S.Info[k].got_t) {	/* Get fixed azimuths from -S */
+				else if (Ctrl->S.Info[kk].got_t) {	/* Get fixed azimuths from -S */
 					S[n].Slide[k].t0 = Ctrl->S.Info[k].Slide.t0;
 					S[n].Slide[k].t1 = Ctrl->S.Info[k].Slide.t1;					
 				}
-				if (Ctrl->S.Info[k].got_t && S[n].Slide[k].t0 < S[n].Slide[k].t1) {	/* Probably screwed up order */
+				if (Ctrl->S.Info[kk].got_t && S[n].Slide[k].t0 < S[n].Slide[k].t1) {	/* Probably screwed up order */
 					GMT_Report (API, GMT_MSG_ERROR, "Bad time range for seamount %" PRIu64 " slide %d (%g/%g)\n", n, k, S[n].Slide[k].t0, S[n].Slide[k].t1);
 					goto bad;
 				}
-				if (Ctrl->S.Info[k].read_u)	/* Read u0 from file */
+				if (Ctrl->S.Info[kk].read_u)	/* Read u0 from file */
 					S[n].Slide[k].u0 = in[col++];
 				else	/* Get fixed u0 from -S [SHAPE_U0] */
 					S[n].Slide[k].u0 = Ctrl->S.Info[k].Slide.u0;
-				if (!Ctrl->S.Info[k].got_v && S[n].Slide[k].u0 <= 0.0) {	/* Only check if +v not set */
+				if (!Ctrl->S.Info[kk].got_v && S[n].Slide[k].u0 <= 0.0) {	/* Only check if +v not set */
 					GMT_Report (API, GMT_MSG_ERROR, "Bad shape value u0 <= 0 for seamount %" PRIu64 " slide %d (%g)\n", n, k, S[n].Slide[k].u0);
 					goto bad;
 				}
-				if (Ctrl->S.Info[k].read_v)	/* Read phi from file */
+				if (Ctrl->S.Info[kk].read_v)	/* Read phi from file */
 					S[n].Slide[k].phi = in[col++];
 				else	/* Get fixed phi from -S [0] */
 					S[n].Slide[k].phi = Ctrl->S.Info[k].Slide.phi;
-				if (Ctrl->S.Info[k].got_v && (S[n].Slide[k].phi <= 0.0 || S[n].Slide[k].phi >= 100.0)) {
+				if (Ctrl->S.Info[kk].got_v && (S[n].Slide[k].phi <= 0.0 || S[n].Slide[k].phi >= 100.0)) {
 					GMT_Report (API, GMT_MSG_ERROR, "Bad volume fraction value phi for seamount %" PRIu64 " slide %d (%g)\n", n, k, S[n].Slide[k].phi);
 					goto bad;
 				}
@@ -1852,7 +1865,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						bool in_sector = false;
 						double s;
 						for (k = 0; !in_sector && k < this_smt.n_slides; k++) {	/* See if we are inside any of the slide sectors */
-							if (grdseamount_node_in_sector (GMT, Ctrl, &this_smt, k, Grid, row, col, &s)) {	/* Inside slide sector, and s is now set [0] */
+							if (grdseamount_node_in_sector (GMT, &this_smt, k, Grid, row, col, &s)) {	/* Inside slide sector, and s is now set [0] */
 								/* If we are outside the radial slide range then grdseamount_slide_height returns z_assign so the undisturbed flank height is selected */
 								z_assign = grdseamount_slide_height (GMT, &this_smt, k, major, r_normalized, z_assign, s);
 								in_sector = true;
