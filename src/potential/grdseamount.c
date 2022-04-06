@@ -985,6 +985,7 @@ GMT_LOCAL double grdseamount_height (unsigned build_mode, double r, double h0_sc
 		case SHAPE_POLY:	/* Circular parabolic case */
 			*normalized_untruncated_height = poly_smt_func (r) * h0_scale;
 			add = (r < f) ? 1.0 : *normalized_untruncated_height;
+			break;
 		default:
 			*normalized_untruncated_height = exp (-4.5 * r * r) * h0_scale;
 			add = (r < f) ? 1.0 : *normalized_untruncated_height;		
