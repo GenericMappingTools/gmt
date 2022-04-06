@@ -674,7 +674,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->C.input, "Option -C: Cannot read from trailing text if binary input is selected\n");
 		for (k = 0; k < Ctrl->S.n_slides; k++) {
 			n_errors += gmt_M_check_condition (GMT, Ctrl->S.Info[k].got_b && !Ctrl->S.Info[k].read_b && Ctrl->S.Info[k].Slide.beta <= 0.0, "Option -S: Slide psi(tau) power coefficient set with +b must be > 0\n");
-			n_errors += gmt_M_check_condition (GMT, Ctrl->S.Info[k].got_p && !Ctrl->S.Info[k].read_p && Ctrl->S.Info[k].Slide.p < 2.0, "Option -S: Azimuthal power coefficient set with +p must be >= 2\n");
+			n_errors += gmt_M_check_condition (GMT, Ctrl->S.Info[k].got_p && !Ctrl->S.Info[k].read_p && !gmt_M_is_zero (Ctrl->S.Info[k].Slide.p) && Ctrl->S.Info[k].Slide.p < 2.0, "Option -S: Azimuthal power coefficient set with +p must be >= 2\n");
 			n_errors += gmt_M_check_condition (GMT, Ctrl->S.Info[k].Slide.phi < 0.0 || Ctrl->S.Info[k].Slide.phi >= 100.0, "Option -S: Volume fraction must be less than 100%%\n");
 			n_errors += gmt_M_check_condition (GMT, Ctrl->S.Info[k].got_h && !Ctrl->S.Info[k].read_h && Ctrl->S.Info[k].Slide.h1 > Ctrl->S.Info[k].Slide.h2 , "Option -S: Scarp height h2 must exceed h1\n");
 			n_errors += gmt_M_check_condition (GMT, Ctrl->S.Info[k].got_d && !Ctrl->S.Info[k].read_d && Ctrl->S.Info[k].got_h&& !Ctrl->S.Info[k].read_h && Ctrl->S.Info[k].Slide.hc > Ctrl->S.Info[k].Slide.h1, "Option -S: Distal slump height hc cannot exceed h1\n");
@@ -921,7 +921,7 @@ GMT_LOCAL bool grdseamount_node_in_sector (struct GMT_CTRL *GMT, struct GRDSEAMO
 	while (az < S->Slide[slide].az1) az += 360.0;	/* Keep wrapping until we pass az1 */
 	if (az <= S->Slide[slide].az2) {	/* Inside sector s */
 		in_sector = true;
-		if (Ctrl->S.Info[slide].got_p) {	/* Also evaluate s(alpha) symmetric about mid point */
+		if (S->Slide[slide].p > 0.0) {	/* Also evaluate s(alpha) symmetric about mid point */
 			double gamma = fabs (2.0 * (az - S->Slide[slide].az1) / (S->Slide[slide].az2 - S->Slide[slide].az1) - 1.0);
 			*s = pow (gamma, S->Slide[slide].p);
 		}
@@ -1310,8 +1310,9 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 					S[n].Slide[k].p = in[col++];
 				else	/* Get fixed p from -S */
 					S[n].Slide[k].p = Ctrl->S.Info[k].Slide.p;
-				if (Ctrl->S.Info[k].got_p && S[n].Slide[k].p < 2.0) {
-					GMT_Report (API, GMT_MSG_ERROR, "Bad qzimuthal power value p < 2 for seamount %" PRIu64 " slide %d (%g)\n", n, k, S[n].Slide[k].p);
+				/* Reading p = 0 from file is OK - it means no azimuthal variation for this slide */
+				if (Ctrl->S.Info[k].got_p && !gmt_M_is_zero (S[n].Slide[k].p) && S[n].Slide[k].p < 2.0) {
+					GMT_Report (API, GMT_MSG_ERROR, "Bad azimuthal power value p < 2 for seamount %" PRIu64 " slide %d (%g)\n", n, k, S[n].Slide[k].p);
 					goto bad;
 				}
 				if (Ctrl->S.Info[k].read_t) {	/* Read the slide times from file */
@@ -1765,7 +1766,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					/* If +v is used then phi_0 is given, but if tau < 1 we want to use psi * phi_0 to compute u0 */
 					if (Ctrl->S.Info[k].got_v) {	/* Must compute u0 to match specified slide volume (else we use given u0) */
 						/* If we have selected an azimuthal slide change due to +p, the volume integral for Vq needs to be reduced */
-						s_bar = (Ctrl->S.Info[k].got_p) ? 1.0 / (this_smt.Slide[k].p + 1.0) : 0.0;
+						s_bar = (this_smt.Slide[k].p > 0.0) ? 1.0 / (this_smt.Slide[k].p + 1.0) : 0.0;
 						a_scale = 1.0 / (1.0 - s_bar);	/* Volume adjustment scale > 1 if +p is used, else 1 */
 						phi_0 = a_scale * this_smt.Slide[k].phi;	/* We were given phi but need a bit more to counter the reduction from +p */
 						want_specific_volume = 2;	/* Will need to determine which u0 will give this exact volume fraction and hence actual slide volume */
@@ -1792,7 +1793,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					else {	/* Here we just computed the slide volume for given u0, with no reduction for time (or +p for that matter).  Do so now if -T is in effect */
 						Vs_0 = Vf - Vq;	/* We instead got the final volume for this slide */
 						Vs = psi * Vs_0;	/* Actual slide volume is reduced if +p is used but we don't care since a specific volume is not required */
-						s_bar = (Ctrl->S.Info[k].got_p) ? 1.0 / (this_smt.Slide[k].p + 1.0) : 0.0;
+						s_bar = (this_smt.Slide[k].p > 0.0) ? 1.0 / (this_smt.Slide[k].p + 1.0) : 0.0;
 						Vs_scale = 1.0 - s_bar;	/* To report accurately for this case */
 					}
 					this_smt.Slide[k].rd = grdseamount_distal_r (&this_smt.Slide[k], major, Vs);	/* Compute nominal rd radius */

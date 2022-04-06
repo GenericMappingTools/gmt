@@ -264,6 +264,8 @@ Optional Arguments
         * **+h** sets the lower and upper heights of the flank affected by the landslide.
 
         * **+p** activates angular variation in slide height; append a power parameter *power > 2*.
+          **Note**: For multiple slides it is valid to provide *power* = 0 for some (either via
+          command argument or read from file), which simply turns off angular variation for those slides.
 
         * **+t** sets the time span over which the slide develops via :math:`\psi(\tau)` (see **+b**), where
           :math:`\tau = (t - t_0)/(t_1 - t_0)` is the normalized time span; this modifier also
