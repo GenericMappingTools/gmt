@@ -187,6 +187,7 @@ struct GRDSEAMOUNT_CTRL {
 		bool disc;	/* True if incremental volumes should be served as disks [Default is exact] */
 		unsigned int bmode;
 		unsigned int fmode;
+		double c0, c1;	/* Coefficients needed for the cumulative Gaussian flux calculations */
 	} Q;
 	struct GRDSEAMOUNT_S {	/* -S[+a[<az1/az2>]][+b[<beta>]][+d[<hc>]][+h[<h1>/<h2>]][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] */
 		bool active;
@@ -222,12 +223,14 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.value[GMT_IN] = GMT->session.f_NaN;
 	C->A.value[GMT_OUT] = 1.0f;
-	C->A.r_scale = 1.0;	/* Replaces deprecated -Sscale */
+	C->A.r_scale = 1.0;	/* Replaces deprecated -S<scale> */
 	C->C.mode = SHAPE_GAUS;
 	C->C.code = 'g';
 	C->H.p = 1.0;	/* Linear density increase */
 	C->Q.bmode = SMT_CUMULATIVE;
 	C->Q.fmode = FLUX_GAUSSIAN;
+	C->Q.c0 = erf (6.0 / M_SQRT2);
+	C->Q.c1 = 0.5 / C->Q.c0;
 	for (unsigned int slide = 0; slide < N_MAX_SLIDES; slide++) {
 		C->S.Info[slide].Slide.az2 = 360.0;
 		C->S.Info[slide].Slide.u0 = SHAPE_U0;
@@ -1434,6 +1437,27 @@ GMT_LOCAL double grdseamount_height_scale (unsigned int mode, double f) {
 	return (h0_scale);
 }
 
+GMT_LOCAL double grdseamount_volume_flux_curve (struct GRDSEAMOUNT_CTRL *Ctrl, struct SEAMOUNT *S, double this_time, double prev_time, double *v_prev) {
+	/* Return a cumulative flux curve that goes exactly from 0-1 over the life of any volcano */
+	double v_curr, life_span = S->t0 - S->t1;	/* Total life span of this seamount */
+	if (Ctrl->Q.fmode == FLUX_GAUSSIAN) {	/* Cumulative Gaussian volume flux gives an error function growth curve */
+		double t_mid = 0.5 * (S->t0 + S->t1);	/* time at mid point in evolution */
+		v_curr  = Ctrl->Q.c1 * (Ctrl->Q.c0 + erf (-6.0 * (this_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at end of this time step */
+		*v_prev = Ctrl->Q.c1 * (Ctrl->Q.c0 + erf (-6.0 * (prev_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at start of this time step */
+	}
+	else {	/* Cumulative constant flux gives a linear volume growth */
+		v_curr  = (S->t0 - this_time) / life_span;	/* Normalized volume fraction at end of this time */
+		*v_prev = (S->t0 - prev_time) / life_span;	/* Normalized volume fraction at start of prev time */
+	}
+	/* Deal with any round-off */
+	if (*v_prev < 0.0) *v_prev = 0.0;
+	else if (*v_prev > 1.0) *v_prev = 1.0;
+	if (v_curr < 0.0)   v_curr = 0.0;
+	else if (v_curr > 1.0)   v_curr = 1.0;
+
+	return (v_curr);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -1452,7 +1476,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	gmt_grdfloat *data = NULL, *current = NULL, *previous = NULL, *rho_weight = NULL, *prev_z = NULL;
 
-	double this_r, dV, scale_curr = 1.0, major, minor, z_assign, this_user_time = 0.0, life_span, t_mid;
+	double this_r, dV, scale_curr = 1.0, major, minor, z_assign, this_user_time = 0.0;
 	double normalized_untruncated_height, normalized_truncated_height, max_height, r_km, amplitude = 0.0;
 	double x, y, r_mean, h_mean, wesn[4], r_normalized, out[3], area, volume, height, v_curr, v_prev, rho;
 	double prev_user_time = 0.0, h_curr = 0.0, h_prev = 0.0, h0, pf, phi_prev, phi_curr, r_boost = 1.0;
@@ -1689,23 +1713,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			f = this_smt.f;	/* Flattening for this seamount */
 			sum_rz = sum_z = 0.0;	/* Reset counters for this seamount */
 			if (Ctrl->T.active) {	/* Must compute volume fractions v_curr, v_prev of an evolving seamount */
-				life_span = this_smt.t0 - this_smt.t1;	/* Total life span of this seamount */
-				if (Ctrl->Q.fmode == FLUX_GAUSSIAN) {	/* Gaussian volume flux */
-					if (t == 0) prev_user_time = DBL_MAX;
-					t_mid  = 0.5 * (this_smt.t0 + this_smt.t1);	/* time at mid point in evolution */
-					v_curr = 0.5 * (1.0 + erf (-6.0 * (this_user_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at end of this time step */
-					v_prev = 0.5 * (1.0 + erf (-6.0 * (prev_user_time - t_mid) / (M_SQRT2 * life_span)));	/* Normalized volume fraction at start of this time step */
-					if (v_prev < 0.0015) v_prev = 0.0;	/* Deal with the 3-sigma truncation, i.e., throw first tail in with first slice */
-					if (v_curr > 0.9985) v_curr = 1.0;	/* Deal with the 3-sigma truncation, i.e., throw last tail in with last slice */
-				}
-				else {	/* Linear volume flux */
-					if (t == 0) prev_user_time = this_smt.t0;
-					v_curr = (this_smt.t0 - this_user_time) / life_span;	/* Normalized volume fraction at end of this time step */
-					v_prev = (this_smt.t0 - prev_user_time) / life_span;	/* Normalized volume fraction at start of this time step */
-				}
-				/* Since we don't skip seamounts after they have completed when we want cumulative heights, we add a few further checks */
-				if (v_curr > 1.0) v_curr = 1.0;	/* When we pass the end-life of the volcano we stop at 1 since the volcano is now fully grown */
-				if (v_prev > 1.0) v_prev = 1.0;	/* When we pass the end-life of the volcano we stop at 1 since the volcano is now fully grown */
+				if (t == 0) prev_user_time = this_smt.t0;	/* First time */
+				v_curr = grdseamount_volume_flux_curve (Ctrl, &this_smt, this_user_time, prev_user_time, &v_prev);
 				/* When v_curr == v_prev after a volcano has stopped growing the incremental change will be zero */
 				dV = V[smt] * (v_curr - v_prev);	/* Incremental volume produced */
 				V_sum[smt] += dV;			/* Keep track of volume sum so we can compare with truth later */
