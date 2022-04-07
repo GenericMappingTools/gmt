@@ -18,25 +18,24 @@ if (SPHINX_FOUND)
 	if (NO_DVC)
 		configure_file (example.in example @ONLY)
 		set (_examples_png)
-		# Generate PS files and convert to PNG
+		# Generate PNG images
 		foreach (_num 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 52)
+			# Run example scripts
 			add_custom_command (
 				OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ex${_num}/ex${_num}.png
 				COMMAND ${BASH} example ex${_num}/ex${_num}.sh
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/ex${_num}/ex${_num}.sh)
-
+			# Copy PNG figures
 			add_custom_command (
 				OUTPUT ${RST_BINARY_DIR}/_images/ex${_num}.png
 				COMMAND ${CMAKE_COMMAND} -E copy
 				${CMAKE_CURRENT_BINARY_DIR}/ex${_num}/ex${_num}.png
 				${RST_BINARY_DIR}/_images
 				DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/ex${_num}/ex${_num}.png)
-
 			list (APPEND _examples_png ${RST_BINARY_DIR}/_images/ex${_num}.png)
 
 		endforeach (_num)
-		add_custom_target (examples DEPENDS ${_examples_png})
 	else (NO_DVC)
 		# Convert figures to PNG
 		file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/images/*.ps")
