@@ -177,10 +177,6 @@
 # Testing and development
 #
 
-# Do not rely on DVC for pulling images from the DAGsHub remote, instead
-# generate the images needed for building the documentation with
-# "make examples"  (out-of-source).
-#set (NO_DVC TRUE)
 
 # Enable running examples/tests with "ctest" or "make check" (out-of-source).
 # Need to set either DO_EXAMPLES, DO_TESTS or both and uncomment the following

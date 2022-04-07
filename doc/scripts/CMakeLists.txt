@@ -15,7 +15,39 @@
 #-------------------------------------------------------------------------------
 
 if (SPHINX_FOUND)
-	if (NO_DVC)
+	if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/images") # Use the DVC managed images for building the docs if available
+		# Convert PS to PNG
+		file (GLOB _scripts_ps2png RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/images/*.ps")
+		set (_scripts_png)
+		foreach (_fig ${_scripts_ps2png})
+			string (REPLACE ".ps" ".png" _png_fig ${_fig})
+			list (APPEND _scripts_png ${RST_BINARY_DIR}/_images/${_png_fig})
+			add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
+			COMMAND ${CMAKE_COMMAND} -E env
+			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
+			-A -P -E150 -Tg -Qg4 -Qt4
+			-D${RST_BINARY_DIR}/_images
+			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			DEPENDS gmt_for_img_convert _docs_rst_mkdir_images ${_fig})
+		endforeach (_fig ${_scripts_ps2png})
+		# Convert PS to PDF
+		set (_scripts_ps2pdf images/GMT_RGBchart.ps images/GMT_App_F_stand+_iso+.ps images/GMT_App_F_symbol_dingbats.ps)
+		set (_scripts_pdf)
+		foreach (_fig ${_scripts_ps2pdf})
+			string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
+			list (APPEND _scripts_pdf ${RST_BINARY_DIR}/_images/${_pdf_fig})
+			add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
+				COMMAND ${CMAKE_COMMAND} -E env
+				GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+				${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
+				-D${RST_BINARY_DIR}/_images
+				${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				DEPENDS gmt_for_img_convert _docs_rst_mkdir_images ${_fig})
+		endforeach (_fig ${_scripts_ps})
+	else () # Generate the images from the scripts if the DVC images dir is not present
 		configure_file (script.in script @ONLY)
 		file (GLOB _scripts_sh2ps RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*.sh")
 		list (REMOVE_ITEM _scripts_sh2ps GMT_encoding.sh gen_data_App_O.sh gen_data_dummy.sh)
@@ -55,39 +87,7 @@ if (SPHINX_FOUND)
 				DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${_script}.png)
 			list (APPEND _scripts_png "${RST_BINARY_DIR}/_images/${_script}.png")
 		endforeach (_sh ${_scripts_sh2ps})
-	else (NO_DVC)
-		# Convert PS to PNG
-		file (GLOB _scripts_ps2png RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/images/*.ps")
-		set (_scripts_png)
-		foreach (_fig ${_scripts_ps2png})
-			string (REPLACE ".ps" ".png" _png_fig ${_fig})
-			list (APPEND _scripts_png ${RST_BINARY_DIR}/_images/${_png_fig})
-			add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
-			COMMAND ${CMAKE_COMMAND} -E env
-			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
-			-A -P -E150 -Tg -Qg4 -Qt4
-			-D${RST_BINARY_DIR}/_images
-			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS gmt_for_img_convert _docs_rst_mkdir_images ${_fig})
-		endforeach (_fig ${_scripts_ps2png})
-		# Convert PS to PDF
-		set (_scripts_ps2pdf images/GMT_RGBchart.ps images/GMT_App_F_stand+_iso+.ps images/GMT_App_F_symbol_dingbats.ps)
-		set (_scripts_pdf)
-		foreach (_fig ${_scripts_ps2pdf})
-			string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
-			list (APPEND _scripts_pdf ${RST_BINARY_DIR}/_images/${_pdf_fig})
-			add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
-				COMMAND ${CMAKE_COMMAND} -E env
-				GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-				${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
-				-D${RST_BINARY_DIR}/_images
-				${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
-				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				DEPENDS gmt_for_img_convert _docs_rst_mkdir_images ${_fig})
-		endforeach (_fig ${_scripts_ps})
-	endif (NO_DVC)
+	endif ()
 
 	# Convert script to verbatim txt
 	file (GLOB _scripts_sh2txt RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*.sh")
