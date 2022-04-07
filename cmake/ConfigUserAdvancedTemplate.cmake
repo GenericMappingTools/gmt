@@ -177,7 +177,6 @@
 # Testing and development
 #
 
-
 # Enable running examples/tests with "ctest" or "make check" (out-of-source).
 # Need to set either DO_EXAMPLES, DO_TESTS or both and uncomment the following
 # line.
