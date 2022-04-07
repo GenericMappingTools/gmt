@@ -50,7 +50,7 @@ if (SPHINX_FOUND)
 	else () # Generate the images from the scripts if the DVC images dir is not present
 		configure_file (script.in script @ONLY)
 		file (GLOB _scripts_sh2ps RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*.sh")
-		list (REMOVE_ITEM _scripts_sh2ps GMT_encoding.sh gen_data_App_O.sh gen_data_dummy.sh)
+		list (REMOVE_ITEM _scripts_sh2ps GMT_encoding.sh gen_data_App_O.sh gen_data_dummy.sh GMT_latex.sh GMT_slope2intensity.sh GMT_seamount_density.sh)
 		set (_scripts_png)
 		set (_scripts_pdf)
 		foreach (_sh ${_scripts_sh2ps})
