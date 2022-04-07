@@ -664,7 +664,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && gmt_M_is_geographic (GMT, GMT_IN), "Option -D: Cannot be used with geographic data (e.g., -fg)\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'), "Option -G: Filename template must contain format specifier when -T is used\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Q.bmode == SMT_INCREMENTAL, "Option -Z: Cannot be used with -Qi\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && gmt_M_is_dnan (Ctrl->Z.value) && Ctrl->T.active, "Option -Z: Cannot set NaN used when with -T\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Option -M: Requires time information via -T\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode == TRUNC_ARG && (Ctrl->F.value < 0.0 || Ctrl->F.value >= 1.0), "Option -F: Flattening must be in 0-1 range\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->K.active && !Ctrl->H.active, "Option -K: Requires density model function via -H\n");
@@ -1864,7 +1863,11 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						bool in_sector = false;
 						unsigned int slide;
 						double s;
-						for (slide = 0; !in_sector && slide < this_smt.n_slides; slide++) {	/* See if we are inside any of the slide sectors */
+						for (slide = 0; !in_sector && slide < this_smt.n_slides; slide++) {	/* See if we are inside any of the slide sectors once we pass the time check */
+							if (Ctrl->T.active) {	/* Must check if we are in the right time window for a slide and if dealing with a partial slide */
+								if (this_user_time >= this_smt.Slide[slide].t0) continue;	/* Not started sliding yet, skip here */
+								if (this_user_time <  this_smt.Slide[slide].t1 && !exact) continue;	/* Completed sliding so making no contribution to incremental discs, again skip */
+							}
 							if (grdseamount_node_in_sector (GMT, &this_smt, slide, Grid, row, col, &s)) {	/* Inside slide sector, and s is now set [0] */
 								/* If we are outside the radial slide range then grdseamount_slide_height returns z_assign so the undisturbed flank height is selected */
 								z_assign = grdseamount_slide_height (GMT, &this_smt, slide, major, r_normalized, z_assign, s);
