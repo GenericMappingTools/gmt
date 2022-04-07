@@ -4,7 +4,7 @@
 name: Docs
 
 on:
-  # pull_request:
+  pull_request:
   push:
     branches:
       - master
@@ -83,9 +83,9 @@ jobs:
         run: bash ci/download-coastlines.sh
         if: steps.cache-coastline.outputs.cache-hit != 'true'
 
-      # Pull baseline image data from dvc remote (DAGsHub)
-      - name: Pull baseline image data from dvc remote
-        run: dvc pull
+      # # Pull baseline image data from dvc remote (DAGsHub)
+      # - name: Pull baseline image data from dvc remote
+      #   run: dvc pull
 
       - name: Configure GMT
         run: |
@@ -138,37 +138,37 @@ jobs:
           ! [ -s doc/rst/html.log ]
           cmake --build . --target docs_man
 
-      - name: Install GMT
-        run: |
-          cd build
-          cmake --build . --target install
-          # Add GMT PATH to bin
-          echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
+      # - name: Install GMT
+      #   run: |
+      #     cd build
+      #     cmake --build . --target install
+      #     # Add GMT PATH to bin
+      #     echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
 
-      - name: Checkout the gh-pages branch in a separate folder
-        uses: actions/checkout@v3
-        with:
-          ref: gh-pages
-          # Checkout to this folder instead of the current one
-          path: deploy
-          # Download the entire history
-          fetch-depth: 0
-        if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-latest'
+      # - name: Checkout the gh-pages branch in a separate folder
+      #   uses: actions/checkout@v3
+      #   with:
+      #     ref: gh-pages
+      #     # Checkout to this folder instead of the current one
+      #     path: deploy
+      #     # Download the entire history
+      #     fetch-depth: 0
+      #   if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-latest'
 
-      - name: Deploy documentation to GitHub
-        run: bash ci/deploy-gh-pages.sh
-        if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-latest'
+      # - name: Deploy documentation to GitHub
+      #   run: bash ci/deploy-gh-pages.sh
+      #   if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-latest'
 
-      - name: Package GMT
-        run: |
-          set -x -e
-          cd build
-          cmake --build . --target gmt_release
-          cmake --build . --target gmt_release_tar
-          if [ "$RUNNER_OS" = "macOS" ]; then
-            # Create macOS bundle
-            cpack -G Bundle
-          elif [ "$RUNNER_OS" = "Windows" ]; then
-            # Don't use cpack here. Chocolatey also provides a cpack command.
-            cmake --build . --target package
-          fi
+      # - name: Package GMT
+      #   run: |
+      #     set -x -e
+      #     cd build
+      #     cmake --build . --target gmt_release
+      #     cmake --build . --target gmt_release_tar
+      #     if [ "$RUNNER_OS" = "macOS" ]; then
+      #       # Create macOS bundle
+      #       cpack -G Bundle
+      #     elif [ "$RUNNER_OS" = "Windows" ]; then
+      #       # Don't use cpack here. Chocolatey also provides a cpack command.
+      #       cmake --build . --target package
+      #     fi
