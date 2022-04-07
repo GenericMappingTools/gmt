@@ -1041,12 +1041,9 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	data = gmt_M_memory (GMT, data, n, double);
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION) || Ctrl->N.active) {	/* Must do work on the array for statistics */
+	{	/* Must do some work on the array for statistics */
 		bool mmm[3];
-		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION))
-			mmm[PSHISTOGRAM_L2] = mmm[PSHISTOGRAM_L1] = mmm[PSHISTOGRAM_LMS] = true;	/* Need to know mean, median, mode plus deviations */
-		else
-			gmt_M_memcpy (mmm, Ctrl->N.selected, 3, bool);
+		mmm[PSHISTOGRAM_L2] = mmm[PSHISTOGRAM_L1] = mmm[PSHISTOGRAM_LMS] = true;	/* Need to know mean, median, mode plus deviations */
 		if (F.weights) {	/* Must use a copy since get_loc_scale sorts the array and that does not work if we have weights */
 			double *tmp = gmt_M_memory (GMT, NULL, n, double);
 			gmt_M_memcpy (tmp, data, n, double);
@@ -1056,15 +1053,14 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		}
 		else
 			pshistogram_get_loc_scl (GMT, data, n, mmm, stats);
-
-		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
-			sprintf (format, "Extreme values of the data :\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_Report (API, GMT_MSG_INFORMATION, format, data[0], data[n-1]);
-			sprintf (format, "Locations: L2, L1, LMS; Scales: L2, L1, LMS\t%s\t%s\t%s\t%s\t%s\t%s\n",
-			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
-			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_Report (API, GMT_MSG_INFORMATION, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
-		}
+	}
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
+		sprintf (format, "Extreme values of the data :\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, data[0], data[n-1]);
+		sprintf (format, "Locations: L2, L1, LMS; Scales: L2, L1, LMS\t%s\t%s\t%s\t%s\t%s\t%s\n",
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		GMT_Report (API, GMT_MSG_INFORMATION, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
 	}
 
 	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [and tickmarks] when -R -T missing */
