@@ -1064,18 +1064,20 @@ GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct SLIDE *S, do
 
 	double dr = S->r1 - S->r2, dh = S->h2 - S->h1;
 	double rhs = 0.5 * ((Vf - phi * V0) / (M_PI * dr) - S->h1 * (S->r1 + S->r2)) / dh;
-	double u0_next, u0_1, du, u0 = 0.1;	/* Trial value */
+	double u0, u0_1, du, prev_u0 = 0.1, w = 2.0;	/* Trial value 0.5, use over-relaxation of 2 */
 	int n_iter = 0;
 	gmt_M_unused (GMT);
 
 	/* Iterate on equation (16) to solve for optimal u0 */
 	do {
-		u0_1 = 1.0 + u0;
-		u0_next = rhs / ((S->r2 + dr * ubar (u0)) * (u0_1 * log (u0_1 / u0) - 1.0));
-		du = fabs (u0_next - u0);
+		u0_1 = 1.0 + prev_u0;
+		u0 = rhs / ((S->r2 + dr * ubar (prev_u0)) * (u0_1 * log (u0_1 / prev_u0) - 1.0));
+		du = fabs (prev_u0 - u0);
+		//fprintf (stderr, "%d prev_u0 = %lg u0 = %lg du = %lg\n", n_iter, prev_u0, u0, du);
+		prev_u0 = w * u0 + (1.0 - w) * prev_u0;
 		n_iter++;
-	} while (du > GMT_CONV12_LIMIT && n_iter < 50);
-	return (u0_next);
+	} while (du > GMT_CONV12_LIMIT && n_iter < 1000);	/* Pretty slow to converge so give it time */
+	return (u0);
 }
 
 struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options, unsigned int *distance_mode, uint64_t *n_smt) {
