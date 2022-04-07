@@ -65,6 +65,7 @@
 #define N_MAX_SLIDES	10	/* Max number of slides for any given seamount */
 #define SHAPE_U0		0.2	/* Default radial shape parameter */
 #define BETA_DEFAULT	1	/* Default psi(tau) beta power parameter */
+#define MAX_ITERATIONS	1000	/* Max tries to improve an estimate in a loop */
 
 struct GMT_MODELTIME {	/* Hold info about modeling time */
 	double value;	/* Time in year */
@@ -781,7 +782,9 @@ GMT_LOCAL double poly_smt_rc (double hn) {
     	dr = fabs (r1 - r0);
     	r0 = r1;
     }
-    while (iteration < 20 && dr > GMT_CONV12_LIMIT);	/* Seems to take 4-6 iterations so 20 so should be OK */
+    while (iteration < MAX_ITERATIONS && dr > GMT_CONV12_LIMIT);	/* Seems to take 4-6 iterations so 20 so should be OK */
+	if (iteration == MAX_ITERATIONS)
+		fprintf (stderr, "poly_smt_rc: Solving r from h in polynomial case did not converge after %d iterations\n", MAX_ITERATIONS);
     return (r0);
 }
 
@@ -1076,7 +1079,11 @@ GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct SLIDE *S, do
 		//fprintf (stderr, "%d prev_u0 = %lg u0 = %lg du = %lg\n", n_iter, prev_u0, u0, du);
 		prev_u0 = w * u0 + (1.0 - w) * prev_u0;
 		n_iter++;
-	} while (du > GMT_CONV12_LIMIT && n_iter < 1000);	/* Pretty slow to converge so give it time */
+	} while (du > GMT_CONV12_LIMIT && n_iter < MAX_ITERATIONS);	/* Pretty slow to converge so give it time */
+	if (n_iter == MAX_ITERATIONS)
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Volume fraction phi = %lg gave corresponding u0 = %lg but did not converge after %d iterations\n", phi, u0, MAX_ITERATIONS);
+	else
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Volume fraction phi = %lg gave corresponding u0 = %lg\n", phi, u0);
 	return (u0);
 }
 
