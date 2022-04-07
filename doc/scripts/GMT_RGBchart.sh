@@ -34,7 +34,7 @@ $AWK -v h=$rectheight -v fs=$fontsize  '{if ($2 <= 127) printf "%g %g %gp,1 %s\n
 $AWK -v h=$rectheight -v fs=$fontsize  '{if ($2 > 127) printf "%g %g %gp,1 %s\n",$4+0.5,$5+1-0.5*h,fs,$1}' $allinfo > $blacktags
 $AWK -v h=$textheight -v fs=$fontsizeL '{printf "%g %g %gp,1 @#%s@#\n",$4+0.5,$5+0.6*h,fs,$3}' $allinfo > $labels
 
-gmt begin GMT_RGBchart
+gmt begin GMT_RGBchart ps,pdf,png
 	gmt set PS_MEDIA tabloid PS_PAGE_ORIENTATION landscape
 
 	# Plot all tiles and texts

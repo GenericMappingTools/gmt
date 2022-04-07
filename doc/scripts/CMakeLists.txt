@@ -19,47 +19,42 @@ if (SPHINX_FOUND)
 		configure_file (script.in script @ONLY)
 		file (GLOB _scripts_sh2ps RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*.sh")
 		list (REMOVE_ITEM _scripts_sh2ps GMT_encoding.sh gen_data_App_O.sh gen_data_dummy.sh)
-		if (NOT LATEX OR NOT DVIPS)
-			list (REMOVE_ITEM _scripts_sh2ps doc/scripts/GMT_latex.sh doc/scripts/GMT_slope2intensity.sh doc/scripts/GMT_seamount_density.sh)
-		endif (NOT LATEX OR NOT DVIPS)
-		set (_scripts_ps)
 		set (_scripts_png)
+		set (_scripts_pdf)
 		foreach (_sh ${_scripts_sh2ps})
 			get_filename_component (_script ${_sh} NAME_WE)
+			if (("${_script}" STREQUAL "GMT_RGBchart") OR ("${_script}" STREQUAL "GMT_App_F_symbol_dingbats") OR  ("${_script}" STREQUAL "GMT_App_F_stand+_iso+"))
+				# Generate PNG and PDF output files
+				add_custom_command (
+					OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${_script}.png" "${CMAKE_CURRENT_BINARY_DIR}/${_script}.pdf"
+					COMMAND ${BASH} script "${_script}.sh"
+					WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+					DEPENDS gmt_for_img_convert "${CMAKE_CURRENT_SOURCE_DIR}/${_script}.sh")
+				# Copy PDF output files
+				add_custom_command (
+					OUTPUT ${RST_BINARY_DIR}/_images/${_script}.pdf
+					COMMAND ${CMAKE_COMMAND} -E copy
+					${CMAKE_CURRENT_BINARY_DIR}/${_script}/${_script}.pdf
+					${RST_BINARY_DIR}/_images
+					DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${_script}.pdf)
+				list (APPEND _scripts_pdf "${RST_BINARY_DIR}/_images/${_script}.pdf")
+			else ()
+				# Generate PNG output files
+				add_custom_command (
+					OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${_script}.png"
+					COMMAND ${BASH} script "${_script}.sh"
+					WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+					DEPENDS gmt_for_img_convert "${CMAKE_CURRENT_SOURCE_DIR}/${_script}.sh")
+			endif ()
+			# Copy PNG output files
 			add_custom_command (
-				OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/${_script}.ps"
-				COMMAND ${BASH} script "${_script}.sh"
-				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				DEPENDS gmt_for_img_convert "${CMAKE_CURRENT_SOURCE_DIR}/${_script}.sh")
-			list (APPEND _scripts_ps "${CMAKE_CURRENT_SOURCE_DIR}/${_script}.ps")
+				OUTPUT ${RST_BINARY_DIR}/_images/${_script}.png
+				COMMAND ${CMAKE_COMMAND} -E copy
+				${CMAKE_CURRENT_BINARY_DIR}/${_script}/${_script}.png
+				${RST_BINARY_DIR}/_images
+				DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${_script}.png)
 			list (APPEND _scripts_png "${RST_BINARY_DIR}/_images/${_script}.png")
-			add_custom_command (OUTPUT "${RST_BINARY_DIR}/_images/${_script}.png"
-				COMMAND ${CMAKE_COMMAND} -E env
-				GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-				${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
-				-A -P -E150 -Tg -Qg4 -Qt4
-				-C-sFONTPATH="${GMT_SOURCE_DIR}/doc/examples/ex31/fonts"
-				-D${RST_BINARY_DIR}/_images
-				"${CMAKE_CURRENT_BINARY_DIR}/${_script}/${_script}.ps"
-				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				DEPENDS gmt_for_img_convert "${CMAKE_CURRENT_BINARY_DIR}/${_script}/${_script}.ps")
 		endforeach (_sh ${_scripts_sh2ps})
-		add_custom_target (scripts DEPENDS ${_scripts_ps})
-		# Convert PS to PDF
-		set (_scripts_ps2pdf GMT_RGBchart/GMT_RGBchart.ps GMT_App_F_stand+_iso+/GMT_App_F_stand+_iso+.ps GMT_App_F_symbol_dingbats/GMT_App_F_symbol_dingbats.ps)
-		set (_scripts_pdf)
-		foreach (_fig ${_scripts_ps2pdf})
-			get_filename_component (_pdf_fig ${_fig} NAME_WE)
-			list (APPEND _scripts_pdf "${RST_BINARY_DIR}/_images/${_pdf_fig}.pdf")
-			add_custom_command (OUTPUT "${RST_BINARY_DIR}/_images/${_pdf_fig}.pdf"
-				COMMAND ${CMAKE_COMMAND} -E env
-				GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-				${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
-				-D${RST_BINARY_DIR}/_images
-				${CMAKE_CURRENT_BINARY_DIR}/${_fig}
-				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				DEPENDS gmt_for_img_convert _docs_rst_mkdir_images ${CMAKE_CURRENT_BINARY_DIR}/${_fig})
-		endforeach (_fig ${_scripts_ps})
 	else (NO_DVC)
 		# Convert PS to PNG
 		file (GLOB _scripts_ps2png RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/images/*.ps")

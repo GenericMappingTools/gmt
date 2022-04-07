@@ -49,7 +49,7 @@ done
 unset GLOBIGNORE
 
 # Start with proper GMT defaults
-gmt set -Du PS_CHAR_ENCODING ISOLatin1+ GMT_GRAPHICS_FORMAT ps
+gmt set -Du PS_CHAR_ENCODING ISOLatin1+ GMT_GRAPHICS_FORMAT png
 
 # Now run the original script
 . "${script}" example

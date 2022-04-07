@@ -92,3 +92,5 @@ EOF
 echo "grestore" >> $ps
 gmt psxy -R -JX -O -T >> $ps
 rm -f t.txt s.grd v.grd rgb_cube.cpt rgb_cube.grd curve.txt path.txt saturation.txt value.txt
+
+gmt psconvert -Tg $ps

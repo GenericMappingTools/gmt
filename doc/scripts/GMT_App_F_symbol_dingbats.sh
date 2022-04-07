@@ -5,7 +5,7 @@
 # Use the row, col values to generate the octal code needed and
 # plot it with gmt pstext, including the header row and left column
 
-gmt begin GMT_App_F_symbol_dingbats
+gmt begin GMT_App_F_symbol_dingbats ps,pdf,png
 gmt set GMT_THEME cookbook
 gmt set MAP_FRAME_PEN thick FONT_TITLE 14p
 
