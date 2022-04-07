@@ -670,7 +670,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 
 EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psmeca task */
-	bool transparence_old = false, not_defined = false, has_text;
+	bool transparence_old = false, not_defined = false, has_text, added_delaz = false;
 
 	int i, n, form = 0, new_fmt;
 	int n_rec = 0, n_plane_old = 0, error;
@@ -984,6 +984,9 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 				gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 
+				/* Keep track of whether we have added delaz to avoid double-correcting */
+				added_delaz=false;
+
 				/* If option -C is used, read the new position */
 
 				if (Ctrl->A.active) {
@@ -1046,6 +1049,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 					gmt_setpen (GMT, &current_pen);
 					if (fabs (N.val) < EPSIL && fabs (T.val + P.val) < EPSIL) {
 						meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
+						added_delaz = true;
 						meca_ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
 					}
 					else
@@ -1063,8 +1067,10 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 				}
 
 				if (Ctrl->T.active) {
-					meca.NP1.str = meca_zero_360(meca.NP1.str + delaz);
-					meca.NP2.str = meca_zero_360(meca.NP2.str + delaz);
+					if (! added_delaz) {
+						meca.NP1.str = meca_zero_360(meca.NP1.str + delaz);
+						meca.NP2.str = meca_zero_360(meca.NP2.str + delaz);
+					}
 					current_pen = Ctrl->T.pen;
 					if (Ctrl->H.active) {
 						double scl = (Ctrl->H.mode == PSMECA_READ_SCALE) ? in[xcol] : Ctrl->H.value;
@@ -1079,8 +1085,10 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 					}
 				}
 				else if (Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || Ctrl->S.plotmode == PLOT_DC) {
-					meca.NP1.str = meca_zero_360(meca.NP1.str + delaz);
-					meca.NP2.str = meca_zero_360(meca.NP2.str + delaz);
+					if (! added_delaz) {
+						meca.NP1.str = meca_zero_360(meca.NP1.str + delaz);
+						meca.NP2.str = meca_zero_360(meca.NP2.str + delaz);
+					}
 					current_pen = Ctrl->L.pen;
 					if (Ctrl->H.active) {
 						double scl = (Ctrl->H.mode == PSMECA_READ_SCALE) ? in[xcol] : Ctrl->H.value;
