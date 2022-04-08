@@ -410,20 +410,32 @@ step at the base of the seamount.
 Examples
 --------
 
+To compute the shape of a circular Gaussian seamount located at 1W, 2S on a 1 arc minute grid for a basal radius
+of 30 km and a height of 4500 meters, try::
+
+    echo 1W 2S 30 4500 | gmt grdseamount -R1:30W/0:30W/2:30S/1:30S -I1m -Ggeo_circ_smt.nc
+    gmt grdimage geo_circ_smt.nc -B -png circ
+
+To compute the shape of an elliptical conic seamount located at 200,400 on a 1x1 Cartesian grid for basal
+semi-major axis of 35 and semi-minor axis of 20, with an azimuth of 29 for the major axis,  a height of
+3700 meters, and some flattening (0.15), try::
+
+    echo 200 400 29 35 20 3700 | gmt grdseamount -R150/250/350/450 -I1 -E -F0.15 -Gcat_ell_smt.nc
+    gmt grdview cat_ell_smt.nc -B -Qi -I+d -JZ2c -p195/20 -png ell
+
 To compute the incremental loads from two elliptical, truncated Gaussian seamounts being constructed
 from 3 Ma to 2 Ma and 2.8 M to 1.9 Ma using a constant volumetric production rate,
-and output an incremental grid every 0.1 Myr from 3 Ma to 1.9 Ma, we can try:
-
-::
+and output an incremental grid every 0.1 Myr from 3 Ma to 1.9 Ma, and internally use meters for
+horizontal distances, we can try::
 
     cat << EOF > t.txt
     #lon lat azimuth, semi-major, semi-minor, height tstart tend
     0	0	-20	120	60	5000	3.0M	2M
     50	80	-40	110	50	4000	2.8M	21.9M
     EOF
-    gmt grdseamount -R-1024/1022/-1122/924+uk -I2000 -Gsmt_%3.1f_%s.nc t.txt -T3M/1.9M/0.1M -Qi/c -Dk -E -F0.2 -Cg -Ml.lis
+    gmt grdseamount -R-1024/1022/-1122/924+uk -I2000 -Gsmt_%3.1f_%s.nc t.txt -T3M/1.9M/0.1M -Qi/c -Dk -E -F0.2 -Cg -Mfiles.txt
 
-The file l.lis will contain records with numerical time, gridfile, and unit time.
+The file files.txt will contain records with numerical time, gridfile, and formatted-time.
 
 See Also
 --------
