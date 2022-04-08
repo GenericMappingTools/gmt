@@ -241,7 +241,8 @@ Optional Arguments
    :align: center
 
    Use *fmode* in **-Q** to choose between a constant (**c**; dashed line) or Gaussian (**g**; heavy line)
-   volume flux model.
+   volume flux model.  **Note**: We actually adjust the error-function curve so that it goes exactly form
+   0 to 1 for this purpose.
 
 .. _-S:
 
