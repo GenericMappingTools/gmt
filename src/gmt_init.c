@@ -8704,7 +8704,7 @@ bool gmt_check_region (struct GMT_CTRL *GMT, double wesn[]) {
 
 /*! . */
 int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
-	unsigned int i, icol, pos, error = 0, n_slash = 0, first = 0;
+	unsigned int i, icol, pos, error = 0, n_slash = 0, first = 0, x_type, y_type;
 	int got, col_type[2], expect_to_read;
 	size_t length;
 	bool inv_project = false, scale_coord = false, got_r, got_country, done[3] = {false, false, false};
@@ -8990,7 +8990,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 					if (!(gmt_M_type (GMT, GMT_IN, icol) & GMT_IS_RATIME)) gmt_set_column_type (GMT, GMT_IN, icol, got), done[icol] = true;	/* Only set if not already set to a time flavor */
 					GMT->current.proj.xyz_projection[icol] = GMT_TIME;
 				}
-				else if (got == GMT_IS_FLOAT) {	/* Don't want to set col type prematurely ince -R0/13:30E/... would first find Cartesian and then fail on 13:30E */
+				else if (got == GMT_IS_FLOAT) {	/* Don't want to set col type prematurely since -R0/13:30E/... would first find Cartesian and then fail on 13:30E */
 					if (done[icol] && gmt_M_type (GMT, GMT_IN, icol) == GMT_IS_UNKNOWN)	/* 2nd time for this column and still not set, then FLOAT is OK */
 						gmt_set_column_type (GMT, GMT_IN, icol, got);
 				}
@@ -9027,7 +9027,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			return (error);
 		for (pos = 0; pos < 4; pos++) p[pos] *= inv_scale;
 	}
-	if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_GEO && gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_GEO) {	/* Two geographical coordinates means lon,lat */
+	x_type = gmt_M_type (GMT, GMT_IN, GMT_X); y_type = gmt_M_type (GMT, GMT_IN, GMT_Y);
+	if ((x_type & GMT_IS_GEO) && (y_type & GMT_IS_GEO)) {	/* Two geographical coordinates means lon,lat */
 		gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_LON);
 		gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
 	}
