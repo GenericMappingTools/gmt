@@ -22,7 +22,7 @@ Synopsis
 [ |-L|\ **l**\ *lower* ] [ |-L|\ **u**\ *upper* ]
 [ |-M|\ *max_radius* ]
 [ |-N|\ *max_iterations* ]
-[ |-Q| ]
+[ |-Q|\ **r** ]
 [ |-S|\ *search_radius*\ [**m**\|\ **s**] ]
 [ |-T|\ [**b**\|\ **i**]\ *tension_factor* ]
 [ |SYN_OPT-V| ]
@@ -178,6 +178,10 @@ Optional Arguments
     sizes suggested by **-Q** can be achieved by altering **-R** and/or
     **-I**. You can recover the **-R** and **-I** you want later by
     using :doc:`grdsample` or :doc:`grdcut` on the output of **surface**.
+    Alternatively, append **r** to have **surface** use the specified
+    **-R** setting exactly as given in the calculations [Default will
+    seek a slightly larger region that allows for more intermediate
+    steps to ensure better convergence].
 
 .. _-S:
 
@@ -274,6 +278,14 @@ hawaii_grd.nc, and monitoring each iteration, try:
    ::
 
     gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vi
+
+Notes
+-----
+
+While the region specified by **-R** determines your final output grid, internally
+we may use a slightly larger region that will allow for more intermediate grids
+(i.e., more common factors between *n_columns - 1* and *n_rows - 1*). This
+should allow for better convergence in the final solution.
 
 Gridding Geographic Data: Boundary Conditions
 ---------------------------------------------

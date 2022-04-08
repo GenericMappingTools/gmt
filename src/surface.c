@@ -1662,7 +1662,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A<aspect_ratio>|m] [-C<convergence_limit>] "
-		"[-D<breakline>[+z[<zlevel>]]] [%s] [-Ll|u<limit>] [-M<radius>] [-N<n_iterations>] [-Q] "
+		"[-D<breakline>[+z[<zlevel>]]] [%s] [-Ll|u<limit>] [-M<radius>] [-N<n_iterations>] [-Q[r]] "
 		"[-S<search_radius>[m|s]] [-T[b|i]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation>] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s [%s] [%s] [%s] %s[%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT,
@@ -1721,7 +1721,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "b: Set tension in boundary conditions only.");
 	GMT_Usage (API, 3, "i: Set tension in interior equations only.n");
 	GMT_Usage (API, -2, "Note: Without a directive we set tension for both to same value.");
-	GMT_Usage (API, 1, "\n-Q Query for grid sizes that might run faster than your selected -R -I, then exit.");
+	GMT_Usage (API, 1, "\n-Q Query for grid sizes that might run faster than your selected -R -I, then exit. "
+		"Append r to instead use the specified -R exactly as given in the calculations.");
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-W[<logfile>]");
 	GMT_Usage (API, -2, "Write convergence information to a log file [surface_log.txt].");
