@@ -627,7 +627,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     NAN        2 1  ");	GMT_Usage (API, -21, "NaN if A == B, else A"); 
 	GMT_Message (API, GMT_TIME_NONE, "     NEG        1 1  ");	GMT_Usage (API, -21, "-A"); 
 	GMT_Message (API, GMT_TIME_NONE, "     NEQ        2 1  ");	GMT_Usage (API, -21, "1 if A != B, else 0"); 
-	GMT_Message (API, GMT_TIME_NONE, "     NORM       1 1  ");	GMT_Usage (API, -21, "Normalize (A) so max(A)-min(A) = 1"); 
+	GMT_Message (API, GMT_TIME_NONE, "     NORM       1 1  ");	GMT_Usage (API, -21, "Normalize (A) so min(A) = 0 and max(A) = 1"); 
 	GMT_Message (API, GMT_TIME_NONE, "     NOT        1 1  ");	GMT_Usage (API, -21, "NaN if A == NaN, 1 if A == 0, else 0"); 
 	GMT_Message (API, GMT_TIME_NONE, "     NRAND      2 1  ");	GMT_Usage (API, -21, "Normal, random values with mean A and std. deviation B"); 
 	GMT_Message (API, GMT_TIME_NONE, "     OR         2 1  ");	GMT_Usage (API, -21, "NaN if B == NaN, else A"); 
@@ -3910,7 +3910,7 @@ GMT_LOCAL int gmtmath_NEQ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 }
 
 GMT_LOCAL int gmtmath_NORM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: NORM 1 1 Normalize (A) so max(A)-min(A) = 1.  */
+/*OPERATOR: NORM 1 1 Normalize (A) min(A) == 0 and so max(A) = 1.  */
 {
 	uint64_t s, row, n;
 	double a, z, zmin = DBL_MAX, zmax = -DBL_MAX;
@@ -3930,7 +3930,7 @@ GMT_LOCAL int gmtmath_NORM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 		}
 		a = (n == 0 || zmax == zmin) ? GMT->session.d_NaN : 1.0 / (zmax - zmin);	/* Normalization scale */
 	}
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : a * (T->segment[s]->data[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : a * (T->segment[s]->data[col][row] - zmin);
 	return 0;
 }
 
