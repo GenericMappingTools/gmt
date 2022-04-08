@@ -437,7 +437,7 @@ horizontal distances, we can try::
 
 The file files.txt will contain records with numerical time, gridfile, and formatted-time.
 
-**Note**: There are many more examples of use, including working with :doc:`grdflexure </supplements/potential/grdflexure>`, in the test directory for the potential supplement.
+**Note**: There are many more examples of use, including working with :doc:`grdflexure </supplements/potential/grdflexure>`, in the `test directory <https://github.com/GenericMappingTools/gmt/tree/master/test/potential>`_ for the potential supplement.
 
 See Also
 --------
