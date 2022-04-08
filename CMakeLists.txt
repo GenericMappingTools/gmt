@@ -115,8 +115,6 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/ci
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/test
 		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/.gitignore
-		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/package.json
-		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/vercel.json
 		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/examples/.gitignore
 		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/examples/images.dvc
 		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/doc/scripts/.gitignore

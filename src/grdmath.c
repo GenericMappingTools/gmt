@@ -340,7 +340,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     NAN        2 1  ");	GMT_Usage (API, -21, "NaN if A == B, else A");
 	GMT_Message (API, GMT_TIME_NONE, "     NEG        1 1  ");	GMT_Usage (API, -21, "-A");
 	GMT_Message (API, GMT_TIME_NONE, "     NEQ        2 1  ");	GMT_Usage (API, -21, "1 if A != B, else 0");
-	GMT_Message (API, GMT_TIME_NONE, "     NORM       1 1  ");	GMT_Usage (API, -21, "Normalize (A) so max(A)-min(A) = 1");
+	GMT_Message (API, GMT_TIME_NONE, "     NORM       1 1  ");	GMT_Usage (API, -21, "Normalize (A) so min(A) = 0 and max(A) = 1");
 	GMT_Message (API, GMT_TIME_NONE, "     NOT        1 1  ");	GMT_Usage (API, -21, "NaN if A == NaN, 1 if A == 0, else 0");
 	GMT_Message (API, GMT_TIME_NONE, "     NRAND      2 1  ");	GMT_Usage (API, -21, "Normal, random values with mean A and std. deviation B");
 	GMT_Message (API, GMT_TIME_NONE, "     OR         2 1  ");	GMT_Usage (API, -21, "NaN if B == NaN, else A");
@@ -4058,7 +4058,7 @@ GMT_LOCAL void grdmath_NEQ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 }
 
 GMT_LOCAL void grdmath_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
-/*OPERATOR: NORM 1 1 Normalize (A) so max(A)-min(A) = 1.  */
+/*OPERATOR: NORM 1 1 Normalize (A) so min(A) = 0 and max(A) = 1.  */
 	uint64_t node, n = 0;
 	openmp_int row, col;
 	float z, zmin = FLT_MAX, zmax = -FLT_MAX;
@@ -4078,7 +4078,7 @@ GMT_LOCAL void grdmath_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 		}
 		a = (n == 0 || zmax == zmin) ? GMT->session.f_NaN : (1.0 / (zmax - zmin));	/* Normalization scale */
 	}
-	gmt_M_grd_loop (GMT, info->G, row, col, node) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : a * stack[last]->G->data[node]);
+	gmt_M_grd_loop (GMT, info->G, row, col, node) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : a * (stack[last]->G->data[node] - zmin));
 }
 
 GMT_LOCAL void grdmath_NOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {

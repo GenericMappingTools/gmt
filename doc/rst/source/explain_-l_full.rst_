@@ -43,4 +43,5 @@ width among the specified columns. If **legend** is not called explicitly we wil
 plot via :doc:`/end`. **Note**: If auto-coloring is used for pens or fills and **-l** is set then *label* may contain a
 C-format for integers (e.g., %3.3d) or just # and we will use the sequence number with the format to build the label
 entries.  Alternatively, give a list of comma-separated labels, or give no label if your segment headers contain label
-settings.
+settings. **Note**: Due to this mechanism, if your single label actually contains commas, you must replace these with the
+octal code for a comma (\\054).
