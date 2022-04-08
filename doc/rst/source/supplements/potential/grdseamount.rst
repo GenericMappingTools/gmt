@@ -171,7 +171,7 @@ Optional Arguments
     *H* in meters. Use modifiers **+d** and **+p** to change the water-pressure-driven flank density increase
     over the full reference height [0] and the variable density profile exponent *power* [1, i.e., a linear
     change]. Below, *h(r)* is the final height of any seamount and *z(r)* is a point inside the seamount.
-    If the seamount is truncated (via **-F**) then *h(r)* refers to the untruncated height.  **Note**: If
+    If the seamount is truncated (via **-F**) then *h(r)* refers to the original height.  **Note**: If
     **-V** is used then we report the mean density for each seamount processed.  The radial density function
     is thus defined (with :math:`\Delta \rho_s = \rho_h - \rho_l` and the *densify* setting is :math:`\Delta \rho_f`.):
 
@@ -259,12 +259,13 @@ Optional Arguments
 
 **-S**\ [**+a**\ [*az1*/*az2*]][**+b**\ [*beta*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]]
 
-    Set parameters controlling sectoral :ref:`land slides <SMT_slide>` by providing suitable modifiers. Parameters
-    given on the command line apply to all seamounts equally,  However, if a modifier is set but
-    not given any arguments then we read those arguments from the end of the input record; the
-    order of such input arguments follows alphabetically from the modifier codes (and not the
-    order the modifiers may appear on the command line). Repeat the slide group columns if there
-    is more than one slide to read per seamount. Use these modifiers to set slide parameters:
+    Set parameters controlling sectoral, rotational :ref:`land slides <SMT_slide>` by providing
+    suitable modifiers. Parameters given on the command line apply to all seamounts equally.
+    However, if a modifier is set but not given any arguments then we read those arguments from
+    the end of the input record; the order of such input arguments follows alphabetically from
+    the modifier codes (and not the order the modifiers may appear on the command line). Repeat
+    the slide group columns if there is more than one slide to read per seamount. Use these
+    modifiers to set slide parameters:
 
         * **+a** specifies the azimuthal sector affected by the slide [0/360].
 
@@ -360,10 +361,10 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *avedensity*
-    Give the name of the vertically averaged density grid file. If |-T| is set then *avedensity* must
+    Give the name of the vertically averaged density grid file. If **-T** is set then *avedensity* must
     be a filename template that contains a floating point format (C syntax; see **-G**).  If the filename
     template also contains either %s (for unit name) or %c (for unit letter) then we use the corresponding
-    time (in units specified in |-T|) to generate the individual file names, otherwise we use time in years
+    time (in units specified in **-T**) to generate the individual file names, otherwise we use time in years
     with no unit. Requires **-H** to define the density model.
 
 .. _-Z:
@@ -401,8 +402,8 @@ Optional Arguments
 Notes
 -----
 
-Because the Gaussian curve only drops to 1.11% of its peak at the base radius (3 sigma)
-of a seamount, we actually evaluate the Gaussian curves out to 4 sigma so that the amplitude
+Because the Gaussian curve only drops to 1.11% of its peak amplitude at the base radius (3 sigma)
+of a seamount, we actually evaluate Gaussian curves all the way to 4 sigma so that the amplitude
 drops to 0.034% of peak height before we jump to zero.  This prevents the otherwise very noticeable
 step at the base of the seamount.
 
