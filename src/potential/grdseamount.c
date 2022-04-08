@@ -229,7 +229,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->H.p = 1.0;	/* Linear density increase */
 	C->Q.bmode = SMT_CUMULATIVE;
 	C->Q.fmode = FLUX_GAUSSIAN;
-	C->Q.c0 = erf (6.0 / M_SQRT2);
+	C->Q.c0 = erf (3.0 / M_SQRT2);
 	C->Q.c1 = 0.5 / C->Q.c0;
 	for (unsigned int slide = 0; slide < N_MAX_SLIDES; slide++) {
 		C->S.Info[slide].Slide.az2 = 360.0;
