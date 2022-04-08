@@ -1120,8 +1120,8 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 	struct GMT_RECORD *In = NULL;
 
 	if (map) {	/* Geographic data */
-		mode = 2, unit = 'k';	/* Select km and great-circle distances */
-		gmt_set_geographic (API->GMT, GMT_OUT);	/* Ensure output grid is geographic */
+		mode = 2, unit = 'k';	/* Select km and great-circle distances internally */
+		gmt_set_geographic (API->GMT, GMT_OUT);	/* Ensure output grid is flagged as geographic */
 	}
 	else {	/* Cartesian scaling */
 		unsigned int s_unit;
