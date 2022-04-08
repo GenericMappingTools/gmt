@@ -1356,6 +1356,7 @@ GMT_LOCAL unsigned int surface_suggest_sizes (struct GMT_CTRL *GMT, struct SURFA
 				Ctrl->Q.wesn[XLO] = w;	Ctrl->Q.wesn[XHI] = e;	Ctrl->Q.wesn[YLO] = s; Ctrl->Q.wesn[YHI] = n;
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Internally speed up convergence by using the larger region %s (go from %d x %d to optimal %d x %d, with speedup-factor %.8lg)\n",
 					region, n_columns, n_rows, sug[k].n_columns, sug[k].n_rows, sug[k].factor);
+				gmt_M_free (GMT, sug);
 				return (1);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Hint: Choosing %s [n_columns = %d, n_rows = %d] might cut run time by a factor of %.8g\n",
