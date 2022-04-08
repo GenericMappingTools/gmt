@@ -9028,7 +9028,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		for (pos = 0; pos < 4; pos++) p[pos] *= inv_scale;
 	}
 	x_type = gmt_M_type (GMT, GMT_IN, GMT_X); y_type = gmt_M_type (GMT, GMT_IN, GMT_Y);
-	if (x_type & GMT_IS_GEO && y_type & GMT_IS_GEO) {	/* Two geographical coordinates means lon,lat */
+	if ((x_type & GMT_IS_GEO) && (y_type & GMT_IS_GEO)) {	/* Two geographical coordinates means lon,lat */
 		gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_LON);
 		gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
 	}
