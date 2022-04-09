@@ -113,8 +113,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Perform weighted calculations [no weights]. Optionally set weight directive:");
 	GMT_Usage (API, 3, "i: Read 4 cols (x,y,z,w) but skip w on output.");
 	GMT_Usage (API, 3, "o: Read 3 cols (x,y,z) but include weight sum (i.e., counts) on output.");
-	GMT_Usage (API, -2, "Default selects both weighted input and output. "
-		"Append +s read/write standard deviations instead, with w = 1/s. Default (or +w) reads weights directly.");
+	GMT_Usage (API, -2, "Default selects both weighted input and output. Optionally, append one modifier:");
+	GMT_Usage (API, 3, "+s Read/write standard deviations instead, using conversion w = 1/s.");
+	GMT_Usage (API, 3, "+w Read/write weights as is [Default].");
 
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 3 columns (or 4 if -W is set).");
@@ -131,7 +132,6 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 	 */
 
 	unsigned int n_errors = 0, pos = 0, k;
-	bool sigma;
 	char arg[GMT_LEN16] = {""}, p[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -147,7 +147,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 
 				case 'A':	/* Requires -G and selects which fields should be written as grids */
 				Ctrl->A.active = true;
-				strip_commas (opt->arg, arg);
+				BLK_strip_commas (opt->arg, arg);	/* Make local copy with any commas removed */
 				for (k = 0; arg[k] && Ctrl->A.n_selected < BLK_N_FIELDS; k++) {
 					switch (arg[k]) {	/* z,s,l,h,w */
 						case 'z':	Ctrl->A.selected[0] = true;	break;
@@ -247,29 +247,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 			case 'W':	/* Use in|out weights -W[i|o][+s] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
-				if ((c = strstr (opt->arg, "+s"))) {	/* Gave +s */
-					sigma = true;
-					c[0] = '\0';	/* Hide modifier */
-				}
-				switch (opt->arg[0]) {	/* Check for -Wi or -Wo as well */
-					case '\0':
-						Ctrl->W.weighted[GMT_IN] = Ctrl->W.weighted[GMT_OUT] = true;
-						Ctrl->W.sigma[GMT_IN] = Ctrl->W.sigma[GMT_OUT] = sigma;
-						break;
-					case 'i': case 'I':
-						Ctrl->W.weighted[GMT_IN] = true;
-						Ctrl->W.sigma[GMT_IN] = sigma;
-						break;
-					case 'o': case 'O':
-						Ctrl->W.weighted[GMT_OUT] = true;
-						Ctrl->W.sigma[GMT_OUT] = sigma;
-						break;
-					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Unrecognized argument %s!\n", opt->arg);
-						n_errors++;
-						break;
-				}
-				if (c) c[0] = '+';	/* Restore modifier */
+				n_errors += BLK_parse_weight_opt (API, opt->arg, Ctrl->W.weighted, Ctrl->W.sigma);
 				break;
 
 			default:	/* Report bad options */
