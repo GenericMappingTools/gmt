@@ -3417,6 +3417,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 
 	if (found_text) {	/* Determine record type */
 		if (GMT->current.io.trailing_text[GMT_IN]) ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
+		else ret_val = GMT_READ_TEXT;
 	}
 	else	/* No trailing text found, reset tpos */
 		*tpos = 0;
