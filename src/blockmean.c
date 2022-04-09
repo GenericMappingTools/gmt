@@ -128,7 +128,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_
 
 	unsigned int n_errors = 0, k;
 	bool sigma;
-	char arg[GMT_LEN16] = {""};
+	char arg[GMT_LEN16] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -223,11 +223,13 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_
 						n_errors++; break;
 				}
 				break;
-			case 'W':	/* Use in|out weights */
+			case 'W':	/* Use in|out weights -W[i|o][+s] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
-				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s", GMT_MSG_ERROR)) n_errors++;
-				sigma = (gmt_get_modifier (opt->arg, 's', arg)) ? true : false;
+				if ((c = strstr (opt->arg, "+s"))) {	/* Gave +s */
+					sigma = true;
+					c[0] = '\0';	/* Hide modifier */
+				}
 				switch (opt->arg[0]) {
 					case '\0':	case '+':
 						Ctrl->W.weighted[GMT_IN] = Ctrl->W.weighted[GMT_OUT] = true;
@@ -241,9 +243,11 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_
 						Ctrl->W.weighted[GMT_OUT] = true;
 						break;
 					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Unrecognized argument %s!\n", opt->arg);
 						n_errors++;
 						break;
 				}
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 
 			default:	/* Report bad options */
