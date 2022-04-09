@@ -66,6 +66,7 @@
 #define SHAPE_U0		0.2	/* Default radial shape parameter */
 #define BETA_DEFAULT	1	/* Default psi(tau) beta power parameter */
 #define MAX_ITERATIONS	1000	/* Max tries to improve an estimate in a loop */
+#define RHO_GRID_INC	0.005	/* Fixed grid spacing for the normalized model rho grid (-K) */
 
 struct GMT_MODELTIME {	/* Hold info about modeling time */
 	double value;	/* Time in year */
@@ -182,7 +183,7 @@ struct GRDSEAMOUNT_CTRL {
 		bool active;
 		double value;
 	} N;
-	struct GRDSEAMOUNT_Q {	/* -Q[c|i][g|c]  Note: 2nd c was l previously. Default is -Qcg */
+	struct GRDSEAMOUNT_Q {	/* -Qc|i[/g|c]  Note: 2nd c was l previously. Default is -Qc/g */
 		bool active;
 		bool disc;	/* True if incremental volumes should be served as disks [Default is exact] */
 		unsigned int bmode;
@@ -256,7 +257,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>][+s<scale>]] [-C[c|d|g|o|p]] "
 		"[-D%s] [-E] [-F[<flattening>]] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] "
-		"[-K<densmodel>] [-L[<hn>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] "
+		"[-K<densmodel>] [-L[<hn>]] [-M[<list>]] [-N<norm>] [-Q<bmode>[/<fmode>][+d]] "
 		"[-S[+[a<az1/az2>]][+b[<beta>]][+d[<hc>]][+h<h1>/<h2>][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] "
 		"[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [%s] [-W%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_OUTGRID, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
@@ -310,8 +311,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If no filename is given then we write the list to standard output.");
 	GMT_Usage (API, 1, "\n-N<norm>");
 	GMT_Usage (API, -2, "Normalize grid so maximum grid height equals <norm>. Not allowed with -T.");
-	GMT_Usage (API, 1, "\n-Q<bmode><fmode>[+d]");
-	GMT_Usage (API, -2, "Only used in conjunction with -T. Append the two modes:");
+	GMT_Usage (API, 1, "\n-Q<bmode>[/<fmode>][+d]");
+	GMT_Usage (API, -2, "Set build modes. Only used in conjunction with -T. Append the two modes separated by a slash:");
 	GMT_Usage (API, 3, "<bmode>: Build either (c)umulative [Default] or (i)ncremental volume through time.");
 	GMT_Usage (API, 3, "<fmode>: Assume a (g)aussian [Default] or (c)onstant volume flux distribution.");
 	GMT_Usage (API, -2, "Append +d to build grids with increments as uniform discs [Default gives exact shapes].");
@@ -332,7 +333,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+l For a logarithmic time scale, interpret <dt> as <n_steps> instead of time increment.");
 	GMT_Usage (API, -2, "Alternatively, read a list of times from the first column in a file by appending <tfile>. "
 		"Note: This option implies two extra input columns with <start> and <stop> time for each seamount's life span. "
-		"Use -Q to select cumulative versus incremental construction.");
+		"Use -Q to select cumulative [Default] versus incremental construction.");
 	GMT_Option (API, "V");
 	gmt_outgrid_syntax (API, 'W', "Filename for output grid with vertically averaged seamount densities. If -T is set then <outgrid> "
 		"must be a filename template that contains a floating point format (C syntax) and "
@@ -506,16 +507,31 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 					Ctrl->Q.disc = true;
 					c[0] = '\0';	/* Hide modifier */
 				}
-				if (opt->arg[0]) {	/* Gave mbode/fmode */
+				if (opt->arg[0]) {	/* Gave bmode[/fmode] */
 					char b, f;
-					if (sscanf (opt->arg, "%c/%c", &b, &f) == 2) {
-						Ctrl->Q.bmode = (b == 'i' || b == 'l') ? SMT_INCREMENTAL : SMT_CUMULATIVE;	/* Allow l for backwards compatibility */
-						Ctrl->Q.fmode = (f == 'c') ? FLUX_LINEAR : FLUX_GAUSSIAN;
+					int ns = sscanf (opt->arg, "%c/%c", &b, &f);
+					if (ns == 1) /* Only got build mode, set default flux mode */
+						f = 'g';	/* Gaussian flux */
+					switch (b) {
+						case 'c':	Ctrl->Q.bmode = SMT_CUMULATIVE;		break;
+						case 'i':	Ctrl->Q.bmode = SMT_INCREMENTAL;	break;
+						default:
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Build mode not recognized (%c)\n", b);
+							n_errors++;
+							break;
 					}
-					else {
-						GMT_Report (API, GMT_MSG_WARNING, "Option -Q: Unable to parse the two modes\n");
-						n_errors++;
+					switch (f) {
+						case 'c':	case 'l':	Ctrl->Q.fmode = FLUX_LINEAR;		break;	/* Allow l for backwards compatibility */
+						case 'g':	Ctrl->Q.fmode = FLUX_GAUSSIAN;	break;
+						default:
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Flux mode not recognized (%c)\n", f);
+							n_errors++;
+							break;
 					}
+				}
+				else {
+					GMT_Report (API, GMT_MSG_WARNING, "Option -Q: No argument given (expected -Q<bmode>[/<fmode>])\n");
+					n_errors++;
 				}
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
@@ -1518,9 +1534,9 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	if (Ctrl->K.active) {
 		/* Here we create the cross-section of a normalized reference seamount that goes from
-		 * -1 to +1 in x and 0-1 in y (height).  Using steps of 0.005 to yield a 401 x 201 grid
+		 * 0-1 in x (radius) and 0-1 in y (height).  Using steps of 0.005 to yield a 201 x 201 grid
 		 * with densities inside the seamount and NaN outside */
-		double range[4] = {-1.0, 1.0, 0.0, 1.0}, inc[2] = {0.005, 0.005};
+		double range[4] = {0.0, 1.0, 0.0, 1.0}, inc[2] = {RHO_GRID_INC, RHO_GRID_INC};
 		struct GMT_GRID *Model = NULL;
 		if ((Model = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, range, inc,
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {

@@ -146,7 +146,7 @@ EOF
 4.3	0.2	LM	h@-n@-
 -0.2	1	RM	h@-0@-
 EOF
-    echo "@%1%p@%% (parabolic)" | gmt text -F+f18p+cTL -Dj0.1i
+    echo "@%1%p@%% (parabola)" | gmt text -F+f18p+cTL -Dj0.1i
     # 5. Disc
 cat << EOF > tmp
 0	1

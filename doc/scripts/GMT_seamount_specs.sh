@@ -47,6 +47,7 @@ gmt begin GMT_seamount_specs
 	EOF
 	gmt text -F+f8p,Times-Italic+j -N -Dj4p -Ba10f1 -BWS --MAP_FRAME_TYPE=graph --FONT_ANNOT_PRIMARY=6p <<- EOF
 	0.00	0.1	RM	h@-c@-
+	0.50	1.1	CB	Cross-section parameters
 	0.00	1.0	RM	h@-0@-
 	0.00	0.2	RM	h@-1@-
 	0.00	0.8	RM	h@-2@-
@@ -60,5 +61,11 @@ gmt begin GMT_seamount_specs
 	2.65	0	TC	r
 	1.02	0.4	LM	h@-s@-(r)
 	0.72	0.9	LM	h(r)
+	2.50	1.1	CB	Map view parameters
+	2.26	0.97	LM	@~a@~@-1@-
+	2.69	0.78	LM	@~a@~@-2@-
 	EOF
+	echo 2.5 0.6 | gmt plot -Sw1i/20/140 -Glightgray -N
+	echo 2.5 0.6 0.4i 20 140 | gmt plot -Sm10p+b -W0.5p -Gblack -N
+	echo 2.5 0.6 | gmt plot -Sc1i -W1p -N
 gmt end show
