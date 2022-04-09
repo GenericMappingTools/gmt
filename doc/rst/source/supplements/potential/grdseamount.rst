@@ -118,7 +118,7 @@ Optional Arguments
     then we will read the shape code from the input file's trailing text.  If **-C**
     is not given at all, then we default to Gaussian seamounts [**g**].  **Note**: The polynomial
     model has a normalized amplitude *v* for a normalized radius :math:`u = r / r_0` that is given
-    by :math:`v(u) = \frac{(1+u)^3(1-u)^3}{1+u^3}`. It is comparable to the Gaussian model (its
+    by :math:`v(u) = (1+u)^3(1-u)^3/(1+u^3)`. It is comparable to the Gaussian model (its
     volume is just ~2.4% larger), and *v* goes exactly to zero at the basal radius :math:`r_0`.
 
 .. _SMT_types:
@@ -145,8 +145,8 @@ Optional Arguments
     Set :ref:`elliptical <SMT_map>` data file format. We expect input records to contain
     *lon, lat, azimuth, semi-major, semi-minor, height* (with  the latter in meter)
     for each seamount [Default is Circular data format, expecting *lon, lat, radius, height*].
-    To mix circular and elliptical seamounts you must use **-E** and convert the circular
-    parameters to elliptical ones via *azimuth = 0* and *semi-major = semi-minor = radius*.
+    To mix circular and elliptical seamounts you must use **-E** and provide the circular
+    parameters as elliptical ones via *azimuth = 0* and *semi-major = semi-minor = radius*.
 
 .. _SMT_map:
 
@@ -169,7 +169,7 @@ Optional Arguments
 
 **-H**\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
     Set reference seamount parameters for an *ad-hoc* variable radial :ref:`density function <SMT_rho>`
-    with depth. Give the low and high seamount densities in kg/m:math:`^3` or g/cm:math:`^3` and the fixed reference height
+    with depth. Give the low and high seamount densities in kg/m^3 or g/cm^3 and the fixed reference height
     *H* in meters. Use modifiers **+d** and **+p** to change the water-pressure-driven flank density increase
     over the full reference height [0] and set the variable density profile exponent *power* [1, i.e., a linear
     change]. Below, *h(r)* is the final height of any seamount and *z(r)* is a point inside the seamount.
@@ -197,8 +197,8 @@ Optional Arguments
 
 **-K**\ *densitymodel*
     Append the file name for a crossection grid with the predicted densities of the reference model.
-    We use normalized coordinates (both *x* (radius) and *y (*height* go from 0 to 1 in increments
-    of 0.005, yielding a fixed 201 x 201 grid. **Note**: This option can be used without creating the
+    We use normalized coordinates (both *x* (radius) and *y* (height) go from 0 to 1 in increments
+    of 0.005), yielding a fixed 201 x 201 grid. **Note**: This option can be used without creating the
     seamount grid, hence **-R**, **-I**, **-G**, and **-D** are not required.
 
 .. _-L:
@@ -212,7 +212,7 @@ Optional Arguments
 **-M**\ [*list*]
     Write the times and names of all relief grids (and density grids if **-W** is set) that were created
     to the text file *list*. Requires **-T**.  If no *list* file is given then we write to standard output.
-    The leading numerical column will be times in years, while the last trailing text word is formatted time.
+    The leading numerical column will be time in years, while the last trailing text word is formatted time.
     The output listing is suitable as input to :doc:`grdflexure </supplements/potential/grdflexure>`.
     **Note**: The output records thus contain *time reliefgrid* [ *densitygrid* ] *timetag*.
 
@@ -262,6 +262,19 @@ Optional Arguments
 
 **-S**\ [**+a**\ [*az1*/*az2*]][**+b**\ [*beta*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]]
 
+.. _SMT_specs:
+
+.. figure:: /_images/GMT_seamount_specs.*
+   :width: 500 px
+   :align: center
+
+   Geometry for an *ad hoc* landslide approximation (via cross-section modifiers **+d** and **+h**
+   and map-view parameter **+a**). The volume of the slide material (pink) will be deposited at or
+   below the toe of the surface rupture (light blue), starting at a height of :math:`h_c` and linearly
+   tapering to zero at a distal point :math:`r_d`. **Note**: :math:`h_2 > h_1` while :math:`r_1 > r_2`.
+
+.. _SMT_specstxt:
+
     Set parameters controlling the simulation of sectoral, rotational :ref:`land slides <SMT_slide>` by providing
     suitable modifiers. Parameters given on the command line apply to all seamounts equally.
     However, if a modifier is set but not given an argument then we read those arguments from
@@ -289,7 +302,7 @@ Optional Arguments
           where :math:`\tau = (t - t_0)/(t_1 - t_0)` is the normalized time span 0-1 when the slide
           occurs; this modifier also requires **-T** to be set.
 
-        * **+u** sets radial slide :ref:`shape parameter <SMT_u0>` *u0 > 0* [0.2].
+        * **+u** sets normalized radial slide :ref:`shape parameter <SMT_u0>` *u0 > 0* [0.2].
 
         * **+v** sets desired fractional volume :math:`\phi` of the slide (in percent) relative to
           the entire seamount volume.
@@ -297,49 +310,6 @@ Optional Arguments
     **Note**: If **+v** is set then we must compute the corresponding *u0*, hence **+u** is
     not allowed. If **+b**, **+d**, or **+u** are not set then their defaults are used for all slides.
     Currently, we support a maximum of 10 slides per seamount.
-
-.. _SMT_specs:
-
-.. figure:: /_images/GMT_seamount_specs.*
-   :width: 500 px
-   :align: center
-
-   Geometry for an *ad hoc* landslide approximation (via cross-section modifiers **+d** and **+h**
-   and map-view parameter **+a**). The volume of the slide material (pink) will be deposited at or
-   below the toe of the surface rupture (light blue), starting at a height of :math:`h_c` and linearly
-   tapering to zero at a distal point :math:`r_d`. **Note**: :math:`h_2 > h_1` while :math:`r_1 > r_2`.
-
-.. _SMT_psi:
-
-.. figure:: /_images/GMT_seamount_psi.*
-   :width: 500 px
-   :align: center
-
-   We can control how quickly a slide evolves over time by manipulating the :math:`\psi(\tau)` function
-   (via modifier **+b**). A linear curve means mass redistribution is taking place at a constant
-   rate during the slide duration. Adjust :math:`\beta` to have the bulk of the redistribution
-   take place early (:math:`\beta < 1`) or happen closer to the end (:math:`\beta > 1`) of the event.
-
-.. _SMT_azim:
-
-.. figure:: /_images/GMT_seamount_azim.*
-   :width: 500 px
-   :align: center
-
-   A range of azimuthal amplitude variation in radial slide height :math:`h_s(r)` can be achieved by modulating
-   the power parameter, *p* (via modifier **+p**). This variation means the slide volume is reduced by
-   :math:`1 - \bar{s}` (dashed lines). E.g., for *p = 2* the slide volume is only 67% of the volume it
-   would have been if there was no azimuthal variation (i.e., *s = 0* [Default]).
-
-.. _SMT_u0:
-
-.. figure:: /_images/GMT_seamount_u0.*
-   :width: 500 px
-   :align: center
-
-   A variety radial slide shapes :math:`h_s(r)` is available by varying :math:`u_0` (via modifier **+u**).  For instance,
-   the slide area for a conical seamount would be the area between the flank (dashed line) and the
-   selected curve. A smaller :math:`u_0` will cut more deeply into the seamount.
 
 .. _-T:
 
@@ -401,6 +371,76 @@ Optional Arguments
 
 .. include:: ../../explain_distunits.rst_
 
+
+Slide simulation specifics
+--------------------------
+
+The simulation of land slides via **-S** is not a physical model (apart from preserving mass).  Instead,
+we approximate the shapes of landslides and their evolution via simple geometric shapes and functions.
+The :ref:`radial slide height <SMT_u0>` is modeled as
+
+.. math::
+
+    h_s(r) = h_1 + (h_2 - h_1) u_0 \left (\frac{1 + u_0}{u + u_0} - 1\right ),
+
+where :math:`u = (r - r_2)/(r_1 - r_2)` is the normalized horizontal distance of the rupture
+surface.  This shape can be modulated by using **+u** to change :math:`u_0`.
+
+.. _SMT_u0:
+
+.. figure:: /_images/GMT_seamount_u0.*
+   :width: 500 px
+   :align: center
+
+   A variety of radial slide shapes :math:`h_s(r)` is available by varying :math:`u_0` (via modifier **+u**).
+   For instance, the slide area for a conical seamount would be the area between the flank (dashed line) and the
+   selected curve. A smaller :math:`u_0` will cut more deeply into the seamount.
+
+By default, the radial slide profile is fixed regardless of where in the slide sector we look..  However,
+:ref:`angular variation <SMT_azim>` can be added to :math:`h_s(r)` via the function
+
+.. math::
+
+    s(\alpha) = s(\gamma) = 1 - \lvert \gamma \rvert ^p,
+
+where :math:`\gamma = 2 (\alpha - \alpha_1)/(\alpha_2 - \alpha_1) - 1` and *p* is the power exponent
+that can be set via **+p**. When enabled, we use :math:`s(\alpha)` to scale the radial slide profile so that it starts
+of at zero at the two sectoral locations and then grows rapidly as we enter the slide sector.  This has
+the effect of smoothing the step functions we otherwise encounter as we enter the slide sector.
+
+.. _SMT_azim:
+
+.. figure:: /_images/GMT_seamount_azim.*
+   :width: 500 px
+   :align: center
+
+   A range of azimuthal amplitude variation in radial slide height :math:`h_s(r)` can be achieved by modulating
+   the power parameter, *p* (via modifier **+p**). This variation means the slide volume is reduced by
+   :math:`1 - \bar{s}` (dashed lines). E.g., for *p = 2* the slide volume is only 67% of the volume it
+   would have been if there was no azimuthal variation (i.e., *s = 0* [Default]).
+
+Finally, an observed landslide may not have occurred instantly but developed over a finite time period.  We can
+simulate that by distributing the total slide volume over this time. The normalized volume rate distribution
+is simulated by
+
+.. math::
+
+    \psi(\tau) = \tau^\beta = \left (\frac{t - t_0}{t_1 - t_0} \right )^\beta,
+
+where :math:`\tau` is the normalized time during a slide event.  We use this function to compute the portion
+of the slide volume that should be deposited at a given time *t*.  Modifier **+b** is used to specify the
+power exponent :math:`\beta` [1].
+
+.. _SMT_psi:
+
+.. figure:: /_images/GMT_seamount_psi.*
+   :width: 500 px
+   :align: center
+
+   We can control how quickly a slide evolves over time by manipulating the :math:`\psi(\tau)` function
+   (via modifier **+b**). A linear curve means mass redistribution is taking place at a constant
+   rate during the slide duration. Adjust :math:`\beta` to have the bulk of the redistribution
+   take place early (:math:`\beta < 1`) or closer to the end (:math:`\beta > 1`) of the event.
 
 Notes
 -----
