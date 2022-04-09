@@ -262,19 +262,6 @@ Optional Arguments
 
 **-S**\ [**+a**\ [*az1*/*az2*]][**+b**\ [*beta*]][**+d**\ [*hc*]][**+h**\ [*h1*/*h2*]][**+p**\ [*power*]][**+t**\ [*t0*/*t1*]][**+u**\ [*u0*]][**+v**\ [*phi*]]
 
-.. _SMT_specs:
-
-.. figure:: /_images/GMT_seamount_specs.*
-   :width: 500 px
-   :align: center
-
-   Geometry for an *ad hoc* landslide approximation (via cross-section modifiers **+d** and **+h**
-   and map-view parameter **+a**). The volume of the slide material (pink) will be deposited at or
-   below the toe of the surface rupture (light blue), starting at a height of :math:`h_c` and linearly
-   tapering to zero at a distal point :math:`r_d`. **Note**: :math:`h_2 > h_1` while :math:`r_1 > r_2`.
-
-.. _SMT_specstxt:
-
     Set parameters controlling the simulation of sectoral, rotational :ref:`land slides <SMT_slide>` by providing
     suitable modifiers. Parameters given on the command line apply to all seamounts equally.
     However, if a modifier is set but not given an argument then we read those arguments from
@@ -283,7 +270,7 @@ Optional Arguments
     the slide group columns if there is more than one slide to read per seamount. Use these
     modifiers to set relevant slide parameters:
 
-        * **+a** specifies the azimuthal sector affected by the slide [0/360].
+        * **+a** specifies the :ref:`azimuthal sector <SMT_specs>` affected by the slide [0/360].
 
         * **+b** sets a positive power coefficient :math:`\beta` for the normalized slide volume
           fraction :ref:`time-curve <SMT_psi>` :math:`\psi(\tau) = \tau^\beta` [Default is linear,
@@ -302,7 +289,7 @@ Optional Arguments
           where :math:`\tau = (t - t_0)/(t_1 - t_0)` is the normalized time span 0-1 when the slide
           occurs; this modifier also requires **-T** to be set.
 
-        * **+u** sets normalized radial slide :ref:`shape parameter <SMT_u0>` *u0 > 0* [0.2].
+        * **+u** sets normalized radial slide :ref:`shape parameter <SMT_u0>` :math:`u_0 > 0` [0.2].
 
         * **+v** sets desired fractional volume :math:`\phi` of the slide (in percent) relative to
           the entire seamount volume.
@@ -310,6 +297,18 @@ Optional Arguments
     **Note**: If **+v** is set then we must compute the corresponding *u0*, hence **+u** is
     not allowed. If **+b**, **+d**, or **+u** are not set then their defaults are used for all slides.
     Currently, we support a maximum of 10 slides per seamount.
+
+.. _SMT_specs:
+
+.. figure:: /_images/GMT_seamount_specs.*
+   :width: 500 px
+   :align: center
+
+   Geometry for an *ad hoc* landslide approximation (via cross-section modifiers **+d** and **+h**
+   and map-view parameter **+a**). The volume of the slide material (pink) will be deposited at or
+   below the toe of the surface rupture (light blue), starting at a height of :math:`h_c` and linearly
+   tapering to zero at a distal point :math:`r_d`. The various radii are computed from the heights and
+   the shape function of the seamount.  **Note**: :math:`h_2 > h_1` while :math:`r_1 > r_2`.
 
 .. _-T:
 
@@ -376,12 +375,12 @@ Slide simulation specifics
 --------------------------
 
 The simulation of land slides via **-S** is not a physical model (apart from preserving mass).  Instead,
-we approximate the shapes of landslides and their evolution via simple geometric shapes and functions.
+we approximate the shapes of rotational landslides and their evolution via simple geometric shapes and functions.
 The :ref:`radial slide height <SMT_u0>` is modeled as
 
 .. math::
 
-    h_s(r) = h_1 + (h_2 - h_1) u_0 \left (\frac{1 + u_0}{u + u_0} - 1\right ),
+    h_s(r) = h_s(u) = h_1 + (h_2 - h_1)q(u) = h_1 + (h_2 - h_1) u_0 \left (\frac{1 + u_0}{u + u_0} - 1\right ),
 
 where :math:`u = (r - r_2)/(r_1 - r_2)` is the normalized horizontal distance of the rupture
 surface.  This shape can be modulated by using **+u** to change :math:`u_0`.
@@ -392,21 +391,22 @@ surface.  This shape can be modulated by using **+u** to change :math:`u_0`.
    :width: 500 px
    :align: center
 
-   A variety of radial slide shapes :math:`h_s(r)` is available by varying :math:`u_0` (via modifier **+u**).
+   A variety of normalized radial slide shapes :math:`q(u)` is available by varying :math:`u_0` (via modifier **+u**).
    For instance, the slide area for a conical seamount would be the area between the flank (dashed line) and the
    selected curve. A smaller :math:`u_0` will cut more deeply into the seamount.
 
-By default, the radial slide profile is fixed regardless of where in the slide sector we look..  However,
-:ref:`angular variation <SMT_azim>` can be added to :math:`h_s(r)` via the function
+By default, the radial slide profile is fixed regardless of where in the slide sector we look.  However,
+gentle or more abrupt :ref:`angular variation <SMT_azim>` can be added to :math:`h_s(r)` via the function
 
 .. math::
 
     s(\alpha) = s(\gamma) = 1 - \lvert \gamma \rvert ^p,
 
 where :math:`\gamma = 2 (\alpha - \alpha_1)/(\alpha_2 - \alpha_1) - 1` and *p* is the power exponent
-that can be set via **+p**. When enabled, we use :math:`s(\alpha)` to scale the radial slide profile so that it starts
-of at zero at the two sectoral locations and then grows rapidly as we enter the slide sector.  This has
-the effect of smoothing the step functions we otherwise encounter as we enter the slide sector.
+that can be set via **+p**. When enabled, we use :math:`s(\alpha)` to scale the radial slide profile
+so that it starts of at zero at the two sectoral locations and then grows more (larger *p*) or less
+(smaller *p*) rapidly as we enter the slide sector.  This modifier has the effect of smoothing the step
+functions we otherwise encounter as we enter the slide sector.
 
 .. _SMT_azim:
 
@@ -417,7 +417,7 @@ the effect of smoothing the step functions we otherwise encounter as we enter th
    A range of azimuthal amplitude variation in radial slide height :math:`h_s(r)` can be achieved by modulating
    the power parameter, *p* (via modifier **+p**). This variation means the slide volume is reduced by
    :math:`1 - \bar{s}` (dashed lines). E.g., for *p = 2* the slide volume is only 67% of the volume it
-   would have been if there was no azimuthal variation (i.e., *s = 0* [Default]).
+   would have been if there was no azimuthal variation (i.e., *s = 1* [Default]).
 
 Finally, an observed landslide may not have occurred instantly but developed over a finite time period.  We can
 simulate that by distributing the total slide volume over this time. The normalized volume rate distribution
@@ -425,7 +425,7 @@ is simulated by
 
 .. math::
 
-    \psi(\tau) = \tau^\beta = \left (\frac{t - t_0}{t_1 - t_0} \right )^\beta,
+    \psi(t) = \psi(\tau) = \tau^\beta = \left (\frac{t - t_0}{t_1 - t_0} \right )^\beta,
 
 where :math:`\tau` is the normalized time during a slide event.  We use this function to compute the portion
 of the slide volume that should be deposited at a given time *t*.  Modifier **+b** is used to specify the
