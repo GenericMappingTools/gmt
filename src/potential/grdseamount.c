@@ -1125,7 +1125,7 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 	 * Based on the record length we figure out how many slides (if any) there are per seamount.
 	 */
 
-	bool map = gmt_M_is_geographic (API->GMT, GMT_IN), use_first = false;
+	bool map, use_first = false;
 	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], m[GMT_LEN16], t_unit, unit, unit_name[8];
 	uint64_t n = 0;
 	int n_fields, want, error;
@@ -1135,6 +1135,8 @@ struct SEAMOUNT *grdseamount_read_input (struct GMTAPI_CTRL *API, struct GRDSEAM
 	struct SEAMOUNT *S = NULL;
 	struct GMT_RECORD *In = NULL;
 
+	/* Set geographic if either lon or lat shows hints of being geographic since we know this is a spatial module */
+	map = (gmt_M_type (API->GMT, GMT_IN, GMT_X) == GMT_IS_LON || gmt_M_type (API->GMT, GMT_IN, GMT_Y) == GMT_IS_LAT);
 	if (map) {	/* Geographic data */
 		mode = 2, unit = 'k';	/* Select km and great-circle distances internally */
 		gmt_set_geographic (API->GMT, GMT_OUT);	/* Ensure output grid is flagged as geographic */
@@ -1788,9 +1790,12 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 			r_max = r_boost * r_km;	/* No point searching beyond this radius */
 			if (Ctrl->S.slide) {	/* Compute the radii needed for slide calculations below. ASSUMES CIRCULAR FOR NOW */
-				bool compute_V0 = true;	/* So that we only do that calculation once per seamount */
 				unsigned int slide, want_specific_volume = 0;	/* >0  in cases were we must recompute u0 from desired volume fraction */
 				double Vf, Vs, Vq, V0, Vs_0, s_bar, a_scale, phi_0, phi, Vs_scale;
+
+				/* Get full seamount volume (once) */
+				shape_func[this_smt.build_mode] (major, minor, amplitude, 0.0, f, NULL, &V0, NULL);
+
 				for (slide = 0; slide < this_smt.n_slides; slide++) {
 					this_smt.Slide[slide].r1 = grdseamount_r_from_h (this_smt.build_mode, this_smt.Slide[slide].h1, major, this_smt.height, f);
 					this_smt.Slide[slide].r2 = grdseamount_r_from_h (this_smt.build_mode, this_smt.Slide[slide].h2, major, this_smt.height, f);
@@ -1804,11 +1809,6 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						psi = pow (tau, this_smt.Slide[slide].beta);	/* Fraction of total slide as function of tau is tau^beta */
 					}
 					want_specific_volume = 0;	/* To be determined below */
-					/* If either +v is used or tau < 1.0 then we will need to know the full seamount volume */
-					if ((Ctrl->S.Info[slide].got_v || tau < 1.0) && compute_V0) { 	/* Get full seamount volume (once) */
-						shape_func[this_smt.build_mode] (major, minor, amplitude, 0.0, f, NULL, &V0, NULL);
-						compute_V0 = false;	/* Done with you */
-					}
 					/* If +v is used then phi_0 is given, but if tau < 1 we want to use psi * phi_0 to compute u0 */
 					if (Ctrl->S.Info[slide].got_v) {	/* Must compute u0 to match specified slide volume (else we use given u0) */
 						/* If we have selected an azimuthal slide change due to +p, the volume integral for Vq needs to be reduced */
@@ -1845,8 +1845,9 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					this_smt.Slide[slide].rd = grdseamount_distal_r (&this_smt.Slide[slide], major, Vs);	/* Compute nominal rd radius */
 					if (this_smt.Slide[slide].rd > r_max) r_max = this_smt.Slide[slide].rd;	/* Must go all the way to the end of the mass redistribution */
 					theta = fabs (this_smt.Slide[slide].az2 - this_smt.Slide[slide].az1) / 360.0;	/* Fraction of the seamount affected by this slide */
-					GMT_Report (API, GMT_MSG_INFORMATION, "Seamount # %d Slide %d: r2 = %.16lg r1 = %.16lg rc = %.16lg rd = %.16lg, u0 = %.16lg, p = %.16lg, Vs = %.16lg, Vf = %.16lg\n",
-						smt, slide, this_smt.Slide[slide].r2, this_smt.Slide[slide].r1, this_smt.Slide[slide].rc, this_smt.Slide[slide].rd, this_smt.Slide[slide].u0_effective, this_smt.Slide[slide].p, Vs * theta * Vs_scale, Vf * theta);
+					phi_0 = 100.0 * theta * Vs_0 / V0;	/* Compute the equivalent phi for the final Vs_0 volume */
+					GMT_Report (API, GMT_MSG_INFORMATION, "Seamount # %d Slide %d: r2 = %.16lg r1 = %.16lg rc = %.16lg rd = %.16lg, u0 = %.16lg, p = %.16lg, Vs = %.16lg, Vf = %.16lg phi = %lg%%\n",
+						smt, slide, this_smt.Slide[slide].r2, this_smt.Slide[slide].r1, this_smt.Slide[slide].rc, this_smt.Slide[slide].rd, this_smt.Slide[slide].u0_effective, this_smt.Slide[slide].p, Vs * theta * Vs_scale, Vf * theta, phi_0);
 				}
 			}
 
