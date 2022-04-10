@@ -15626,7 +15626,7 @@ openmp_int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, doub
 
 	dist_y = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], G->header->wesn[XLO], G->header->wesn[YLO] + G->header->inc[GMT_Y]);
 	if (mode) {	/* Input data is geographical, so circle widens with latitude due to cos(lat) effect */
-		max_d_col = urint (ceil (G->header->n_columns / 2.0) + 0.1);	/* Upper limit on +- halfwidth */
+		max_d_col = G->header->n_columns;	/* Upper limit on +- halfwidth */
 		*actual_max_d_col = 0;
 		for (row = 0; row < (openmp_int)G->header->n_rows; row++) {
 			lat = gmt_M_grd_row_to_y (GMT, row, G->header);
