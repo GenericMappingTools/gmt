@@ -15628,19 +15628,20 @@ openmp_int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, doub
 		*actual_max_d_col = 0;
 		for (row = 0; row < (openmp_int)G->header->n_rows; row++) {
 			lat = gmt_M_grd_row_to_y (GMT, row, G->header);
-			/* Determine longitudinal width of one grid ell at this latitude */
+			/* Determine longitudinal width of one grid cell at this latitude */
 			dist_x = gmt_distance (GMT, G->header->wesn[XLO], lat, lon, lat);
 			d_col[row] = (fabs (lat) == 90.0) ? G->header->n_columns : urint (ceil (radius / dist_x) + 0.1);
-			if (d_col[row] > G->header->n_columns) d_col[row] = G->header->n_columns;	/* No point exceed the upper limit */
-			if (d_col[row] > (*actual_max_d_col)) *actual_max_d_col = d_col[row];
+			if (d_col[row] > G->header->n_columns) d_col[row] = G->header->n_columns;	/* No point exceeding the upper limit */
+			if (d_col[row] > (*actual_max_d_col)) *actual_max_d_col = d_col[row];	/* Update the max range so far */
 		}
 	}
-	else {	/* Plain Cartesian data with rectangular box */
+	else {	/* Plain Cartesian data with rectangular box and no latitude variation */
 		dist_x = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], lon, G->header->wesn[YLO]);
 		*actual_max_d_col = urint (ceil (radius / dist_x) + 0.1);
-		if (*actual_max_d_col > G->header->n_columns) *actual_max_d_col = G->header->n_columns;	/* No point exceed the upper limit */
-		for (row = 0; row < (openmp_int)G->header->n_rows; row++) d_col[row] = *actual_max_d_col;
+		if (*actual_max_d_col > G->header->n_columns) *actual_max_d_col = G->header->n_columns;	/* No point exceeding the upper limit */
+		for (row = 0; row < (openmp_int)G->header->n_rows; row++) d_col[row] = *actual_max_d_col;	/* Constant array */
 	}
+
 	/* Set fixed limit on +/- delta rows */
 	dist_y = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], G->header->wesn[XLO], G->header->wesn[YLO] + G->header->inc[GMT_Y]);
 	*d_row = urint (ceil (radius / dist_y) + 0.1);	/* The constant half-width of nodes in y-direction */
