@@ -281,11 +281,11 @@ Grant, F. S. and West, G. F., 1965, *Interpretation Theory in Applied Geophysics
 
 Kim, S.-S., and P. Wessel, 2016, New analytic solutions for modeling vertical
 gravity gradient anomalies, *Geochem. Geophys. Geosyst., 17*,
-`https://dx.doi.org/10.1002/2016GC006263 <https://dx.doi.org/10.1002/2016GC006263>`_.
+`https://doi.org/10.1002/2016GC006263 <https://doi.org/10.1002/2016GC006263>`_.
 
 Nagy D., Papp G., Benedek J., 2000, The gravitational potential and its derivatives
 for the prism, *J. Geod., 74*, 552–560,
-`https://dx.doi.org/10.1007/s001900000116 <https://dx.doi.org/10.1007/s001900000116>`_.
+`https://doi.org/10.1007/s001900000116 <https://doi.org/10.1007/s001900000116>`_.
 
 See Also
 --------

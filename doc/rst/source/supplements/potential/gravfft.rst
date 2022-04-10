@@ -336,13 +336,13 @@ References
 Luis, J.F. and M.C. Neves. 2006, The isostatic compensation of the
 Azores Plateau: a 3D admittance and coherence analysis. J. Geothermal
 Volc. Res. Volume 156, Issues 1-2, Pages 10–22,
-`https://dx.doi.org/10.1016/j.jvolgeores.2006.03.010 <https://dx.doi.org/10.1016/j.jvolgeores.2006.03.010>`_
+`https://doi.org/10.1016/j.jvolgeores.2006.03.010 <https://doi.org/10.1016/j.jvolgeores.2006.03.010>`_
 
 Parker, R. L., 1972, The rapid calculation of potential anomalies, Geophys. J., 31, 447–455.
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431–19,441,
-`https://dx.doi.org/10.1029/2000JB000083 <https://dx.doi.org/10.1029/2000JB000083>`_
+`https://doi.org/10.1029/2000JB000083 <https://doi.org/10.1029/2000JB000083>`_
 
 See Also
 --------
