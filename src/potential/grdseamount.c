@@ -949,11 +949,11 @@ GMT_LOCAL bool grdseamount_node_in_sector (struct GMT_CTRL *GMT, struct SEAMOUNT
 	double az = grdseamount_azimuth (G->x[col] - S->lon, G->y[row] - S->lat) - 360.0;	/* Make sure we start with far negative azimuth (< -180 for sure) */
 	gmt_M_unused (GMT);
 
-	*s = 1.0;	/* Default is no reduction with azimuth */
+	*s = 1.0;	/* Default is no reduction in radial slide height with azimuth */
 	while (az < S->Slide[slide].az1) az += 360.0;	/* Keep wrapping until we pass az1 */
 	if (az <= S->Slide[slide].az2) {	/* Inside sector s */
 		in_sector = true;
-		if (S->Slide[slide].p > 0.0)	/* Also evaluate s(alpha) symmetric about mid point */
+		if (S->Slide[slide].p > 0.0)	/* Also evaluate s(alpha) symmetric about mid azimuth */
 			*s = s_of_alpha (&S->Slide[slide], az);
 	}
 	return (in_sector);
@@ -966,8 +966,8 @@ GMT_LOCAL double grdseamount_slide_height (struct GMT_CTRL *GMT, struct SEAMOUNT
 	struct SLIDE *S = &SMT->Slide[slide];
 	gmt_M_unused (GMT);
 
-	if (!gmt_M_is_zero (s)) {	/* Must reduce the triangular deposit area by (1-s) */
-		double scl = sqrt (1.0 - s);
+	if (s < 1.0) {	/* Must reduce the triangular deposit area by s) */
+		double scl = sqrt (s);
 		rc = r_km - (r_km - S->rc) * scl;
 		rd = r_km + (S->rd - r_km) * scl;
 		hc = S->hc * scl;
@@ -988,7 +988,7 @@ GMT_LOCAL double grdseamount_slide_height (struct GMT_CTRL *GMT, struct SEAMOUNT
 	u = ((this_r - S->r2) / (S->r1 - S->r2));	/* Normalized radial u inside the slide range of 0-1 */
 	q = S->u0_effective * ((1.0 + S->u0_effective) / (u + S->u0_effective) - 1.0);	/* Normalized slide shape function q(u) */
 	hs = S->h1 + (S->h2 - S->h1) * q;	/* Slide height scaled to actual topography */
-	h = hf * s + (1.0 - s) * hs;		/* Handle azimuthal variation (if any) by blending flank and slide heights using s(alpha) */
+	h = (1.0 - s) * hf + s * hs;		/* Handle azimuthal variation (if any) by blending flank and slide heights using s(alpha) */
 	return (h);
 }
 
