@@ -27,7 +27,7 @@
  *
  * For details, see Luis, J.F. and M.C. Neves. 2006, "The isostatic compensation of the Azores Plateau:
  * a 3D admittance and coherence analysis. J. Geotermal Vulc. Res. Volume 156, Issues 1-2 ,
- * Pages 10-22, http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010
+ * Pages 10-22, https://doi.org/10.1016/j.jvolgeores.2006.03.010
  *
  * */
 
