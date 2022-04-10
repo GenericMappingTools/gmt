@@ -33,6 +33,7 @@ jobs:
           --exclude ^http://topex.ucsd.edu/marine_grav/mar_grav.html
           --exclude ^https://topex.ucsd.edu/sandwell/
           --exclude ^http://topex.ucsd.edu
+          --exclude ^https://doi.org
           --verbose
           **/*.rst
           **/*.rst_
