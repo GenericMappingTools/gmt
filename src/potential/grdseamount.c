@@ -795,9 +795,10 @@ GMT_LOCAL double poly_smt_rc (double hn) {
 		iteration++;
     	r1 = r0 - (poly_smt_func (r0) - hn) / ddr_poly_smt_func (r0);
     	dr = fabs (r1 - r0);
+ 		//fprintf (stderr, "%d r0 = %lg r1 = %lg dr = %lg\n", iteration, r0, r1, dr);
     	r0 = r1;
-    }
-    while (iteration < MAX_ITERATIONS && dr > GMT_CONV12_LIMIT);	/* Seems to take 4-6 iterations so 20 so should be OK */
+   }
+    while (iteration < MAX_ITERATIONS && dr > GMT_CONV15_LIMIT);	/* Seems to take 4-6 iterations */
 	if (iteration == MAX_ITERATIONS)
 		fprintf (stderr, "poly_smt_rc: Solving r from h in polynomial case did not converge after %d iterations\n", MAX_ITERATIONS);
     return (r0);
@@ -1093,8 +1094,8 @@ GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct SLIDE *S, do
 
 	double dr = S->r1 - S->r2, dh = S->h2 - S->h1;
 	double rhs = 0.5 * ((Vf - phi * V0) / (M_PI * dr) - S->h1 * (S->r1 + S->r2)) / dh;
-	double u0, u0_1, du, prev_u0 = 0.1, w = 2.0;	/* Trial value 0.5, use over-relaxation of 2 */
-	int n_iter = 0;
+	double u0, u0_1, du, prev_u0 = 0.1, w = 1.8;	/* Trial value 0.5, use over-relaxation of 2 */
+	int iteration = 0;
 	gmt_M_unused (GMT);
 
 	/* Iterate on equation (16) to solve for optimal u0 */
@@ -1102,14 +1103,14 @@ GMT_LOCAL double grdseamount_slide_u0 (struct GMT_CTRL *GMT, struct SLIDE *S, do
 		u0_1 = 1.0 + prev_u0;
 		u0 = rhs / ((S->r2 + dr * ubar (prev_u0)) * (u0_1 * log (u0_1 / prev_u0) - 1.0));
 		du = fabs (prev_u0 - u0);
-		//fprintf (stderr, "%d prev_u0 = %lg u0 = %lg du = %lg\n", n_iter, prev_u0, u0, du);
+		//fprintf (stderr, "%d prev_u0 = %lg u0 = %lg du = %lg\n", iteration, prev_u0, u0, du);
 		prev_u0 = w * u0 + (1.0 - w) * prev_u0;
-		n_iter++;
-	} while (du > GMT_CONV12_LIMIT && n_iter < MAX_ITERATIONS);	/* Pretty slow to converge so give it time */
-	if (n_iter == MAX_ITERATIONS)
+		iteration++;
+	} while (du > GMT_CONV15_LIMIT && iteration < MAX_ITERATIONS);	/* Pretty slow to converge so give it time */
+	if (iteration == MAX_ITERATIONS)
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Volume fraction phi = %lg gave corresponding u0 = %lg but did not converge after %d iterations\n", phi, u0, MAX_ITERATIONS);
 	else
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Volume fraction phi = %lg gave corresponding u0 = %lg\n", phi, u0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Volume fraction phi = %lg gave corresponding u0 = %lg after %d iterations\n", phi, u0, iteration);
 	return (u0);
 }
 
@@ -1798,7 +1799,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			r_max = r_boost * r_km;	/* No point searching beyond this radius */
 			if (Ctrl->S.slide) {	/* Compute the radii needed for slide calculations below. ASSUMES CIRCULAR FOR NOW */
 				unsigned int slide, want_specific_volume = 0;	/* >0  in cases were we must recompute u0 from desired volume fraction */
-				double Vf, Vs, Vq, V0, Vs_0, s_bar, a_scale, phi_0, phi, Vs_scale;
+				double Vf, Vs, Vq, V0, Vs_0, s_bar, phi_0, phi;
 
 				/* Get full seamount volume (once) */
 				shape_func[this_smt.build_mode] (major, minor, amplitude, 0.0, f, NULL, &V0, NULL);
@@ -1821,8 +1822,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					/* If +v is used then phi_0 is given, but if tau < 1 we want to use psi * phi_0 to compute u0 */
 					if (Ctrl->S.Info[slide].got_v) {	/* Must compute u0 to match specified slide volume (else we use given u0) */
 						/* If we have selected an azimuthal slide change due to +p, the volume integral for Vq needs to be reduced */
-						a_scale = 1.0 / s_bar;	/* Volume adjustment scale > 1 if +p is used, else 1 */
-						phi_0 = a_scale * this_smt.Slide[slide].phi / theta;	/* We were given phi but need a bit more to counter the reduction from +p (and scaled up to 360) */
+						phi_0 = this_smt.Slide[slide].phi / theta;	/* We were given phi but need a bit more to counter the reduction from +p (and scaled up to 360) */
 						want_specific_volume = 2;	/* Will need to determine which u0 will give this exact volume fraction and hence actual slide volume */
 					}
 					else if (tau < 1.0) {	/* No +v, only linear change in Vs from full Vs_0. Must first compute Vs_0 so we can get equivalent phi_0 so we can update u0 */
@@ -1841,20 +1841,17 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						this_smt.Slide[slide].u0_effective = this_smt.Slide[slide].u0;
 					/* Here we know the effective u0. Now we can compute the current Vq volume (volume beneath slide surface) */
 					Vq = grdseamount_pappas_slide (&this_smt.Slide[slide], this_smt.Slide[slide].u0_effective);	/* Volume beneath slide surface for this u0 */
-					if (want_specific_volume == 2) {	/* The u0 was selected to yield the required Vs, so Vq is correct for this time and +p, etc */
+					if (want_specific_volume == 2)	/* The u0 was selected to yield the required Vs, so Vq is correct for this time and +p, etc */
 						Vs = Vf - Vq;	/* This includes reduction due to fractional time duration and +p */
-						Vs_scale = 1.0;
-					}
 					else {	/* Here we just computed the slide volume for given u0, with no reduction for time (or +p for that matter).  Do so now if -T is in effect */
 						Vs_0 = Vf - Vq;	/* We instead got the final volume for this slide */
 						Vs = psi * Vs_0;	/* Actual slide volume is reduced if +p is used but we don't care since a specific volume is not required */
-						Vs_scale = s_bar;	/* To report accurately for this case */
 					}
 					this_smt.Slide[slide].rd = grdseamount_distal_r (&this_smt.Slide[slide], major, Vs);	/* Compute nominal rd radius */
 					if (this_smt.Slide[slide].rd > r_max) r_max = this_smt.Slide[slide].rd;	/* Must go all the way to the end of the mass redistribution */
 					phi_0 = 100.0 * theta * Vs_0 / V0;	/* Compute the equivalent phi for the final Vs_0 volume */
 					GMT_Report (API, GMT_MSG_INFORMATION, "Seamount # %d Slide %d: r2 = %.16lg r1 = %.16lg rc = %.16lg rd = %.16lg, u0 = %.16lg, p = %.16lg, Vs = %.16lg, Vf = %.16lg phi = %lg%%\n",
-						smt, slide, this_smt.Slide[slide].r2, this_smt.Slide[slide].r1, this_smt.Slide[slide].rc, this_smt.Slide[slide].rd, this_smt.Slide[slide].u0_effective, this_smt.Slide[slide].p, Vs * theta * Vs_scale, Vf * theta, phi_0);
+						smt, slide, this_smt.Slide[slide].r2, this_smt.Slide[slide].r1, this_smt.Slide[slide].rc, this_smt.Slide[slide].rd, this_smt.Slide[slide].u0_effective, this_smt.Slide[slide].p, Vs * theta * s_bar, Vf * theta, phi_0);
 				}
 			}
 
