@@ -923,6 +923,19 @@ GMT_LOCAL double grdseamount_mean_density (struct GRDSEAMOUNT_CTRL *Ctrl, double
 	return (rho);
 }
 
+GMT_LOCAL double sbar (struct SLIDE *S) {
+	/* Compute mean s over alpha range */
+	double s_bar = (S->p > 0.0) ? S->p / (S->p + 1.0) : 1.0;
+	return (s_bar);
+}
+
+GMT_LOCAL double s_of_alpha (struct SLIDE *S, double az) {
+	/* Evaluate the s(alpha) = s(gamma) function. Only called when p is nonzero */
+	double gamma = fabs (2.0 * (az - S->az1) / (S->az2 - S->az1) - 1.0);
+	double s = 1.0 - pow (gamma, S->p);
+	return (s);
+}
+
 GMT_LOCAL double grdseamount_azimuth (double dx, double dy) {
 	/* Compute the azimuth from seamount center to current node (local flat Earth if geographic) */
 	double az = 90.0 - R2D * atan2 (dy, dx);	/* This will be in range 90 - (-180/+180) = -90 to 270 ... */
@@ -936,14 +949,12 @@ GMT_LOCAL bool grdseamount_node_in_sector (struct GMT_CTRL *GMT, struct SEAMOUNT
 	double az = grdseamount_azimuth (G->x[col] - S->lon, G->y[row] - S->lat) - 360.0;	/* Make sure we start with far negative azimuth (< -180 for sure) */
 	gmt_M_unused (GMT);
 
-	*s = 0.0;	/* Default is no reduction with azimuth */
+	*s = 1.0;	/* Default is no reduction with azimuth */
 	while (az < S->Slide[slide].az1) az += 360.0;	/* Keep wrapping until we pass az1 */
 	if (az <= S->Slide[slide].az2) {	/* Inside sector s */
 		in_sector = true;
-		if (S->Slide[slide].p > 0.0) {	/* Also evaluate s(alpha) symmetric about mid point */
-			double gamma = fabs (2.0 * (az - S->Slide[slide].az1) / (S->Slide[slide].az2 - S->Slide[slide].az1) - 1.0);
-			*s = pow (gamma, S->Slide[slide].p);
-		}
+		if (S->Slide[slide].p > 0.0)	/* Also evaluate s(alpha) symmetric about mid point */
+			*s = s_of_alpha (&S->Slide[slide], az);
 	}
 	return (in_sector);
 }
@@ -1793,6 +1804,8 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 				shape_func[this_smt.build_mode] (major, minor, amplitude, 0.0, f, NULL, &V0, NULL);
 
 				for (slide = 0; slide < this_smt.n_slides; slide++) {
+					theta = fabs (this_smt.Slide[slide].az2 - this_smt.Slide[slide].az1) / 360.0;	/* Fraction of the seamount affected by this slide */
+					s_bar = sbar (&this_smt.Slide[slide]);
 					this_smt.Slide[slide].r1 = grdseamount_r_from_h (this_smt.build_mode, this_smt.Slide[slide].h1, major, this_smt.height, f);
 					this_smt.Slide[slide].r2 = grdseamount_r_from_h (this_smt.build_mode, this_smt.Slide[slide].h2, major, this_smt.height, f);
 					this_smt.Slide[slide].rc = grdseamount_r_from_h (this_smt.build_mode, this_smt.Slide[slide].hc, major, this_smt.height, f);
@@ -1808,8 +1821,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					/* If +v is used then phi_0 is given, but if tau < 1 we want to use psi * phi_0 to compute u0 */
 					if (Ctrl->S.Info[slide].got_v) {	/* Must compute u0 to match specified slide volume (else we use given u0) */
 						/* If we have selected an azimuthal slide change due to +p, the volume integral for Vq needs to be reduced */
-						s_bar = (this_smt.Slide[slide].p > 0.0) ? 1.0 / (this_smt.Slide[slide].p + 1.0) : 0.0;
-						a_scale = 1.0 / (1.0 - s_bar);	/* Volume adjustment scale > 1 if +p is used, else 1 */
+						a_scale = 1.0 / s_bar;	/* Volume adjustment scale > 1 if +p is used, else 1 */
 						phi_0 = a_scale * this_smt.Slide[slide].phi;	/* We were given phi but need a bit more to counter the reduction from +p */
 						want_specific_volume = 2;	/* Will need to determine which u0 will give this exact volume fraction and hence actual slide volume */
 					}
@@ -1821,7 +1833,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					}
 					if (want_specific_volume) {	/* Must compute u0 to match specified slide volume (else we just use given u0) */
 						/* Whatever the volume fraction, we may need to reduce it due to time evolution */
-						phi = psi * phi_0;	/* If time-dependent then we only want this smaller fraction */
+						phi = psi * phi_0 / theta;	/* If time-dependent then we only want this smaller fraction (but scaled up to 360) */
 						this_smt.Slide[slide].u0_effective = grdseamount_slide_u0 (GMT, &this_smt.Slide[slide], Vf, V0, phi);	/* Corresponding u0 to use */
 						Vs_0 = phi * V0;
 					}
@@ -1836,12 +1848,10 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					else {	/* Here we just computed the slide volume for given u0, with no reduction for time (or +p for that matter).  Do so now if -T is in effect */
 						Vs_0 = Vf - Vq;	/* We instead got the final volume for this slide */
 						Vs = psi * Vs_0;	/* Actual slide volume is reduced if +p is used but we don't care since a specific volume is not required */
-						s_bar = (this_smt.Slide[slide].p > 0.0) ? 1.0 / (this_smt.Slide[slide].p + 1.0) : 0.0;
-						Vs_scale = 1.0 - s_bar;	/* To report accurately for this case */
+						Vs_scale = s_bar;	/* To report accurately for this case */
 					}
 					this_smt.Slide[slide].rd = grdseamount_distal_r (&this_smt.Slide[slide], major, Vs);	/* Compute nominal rd radius */
 					if (this_smt.Slide[slide].rd > r_max) r_max = this_smt.Slide[slide].rd;	/* Must go all the way to the end of the mass redistribution */
-					theta = fabs (this_smt.Slide[slide].az2 - this_smt.Slide[slide].az1) / 360.0;	/* Fraction of the seamount affected by this slide */
 					phi_0 = 100.0 * theta * Vs_0 / V0;	/* Compute the equivalent phi for the final Vs_0 volume */
 					GMT_Report (API, GMT_MSG_INFORMATION, "Seamount # %d Slide %d: r2 = %.16lg r1 = %.16lg rc = %.16lg rd = %.16lg, u0 = %.16lg, p = %.16lg, Vs = %.16lg, Vf = %.16lg phi = %lg%%\n",
 						smt, slide, this_smt.Slide[slide].r2, this_smt.Slide[slide].r1, this_smt.Slide[slide].rc, this_smt.Slide[slide].rd, this_smt.Slide[slide].u0_effective, this_smt.Slide[slide].p, Vs * theta * Vs_scale, Vf * theta, phi_0);
