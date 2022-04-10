@@ -32,7 +32,7 @@ EOF
     gmt text -F+f16p,Times-Italic+j -N << EOF
 1	-0.05	TC	r@-t@- = fr@-0@-
 4	-0.05	TC	r@-0@-
-4.3	0.2	LM	h@-c@-
+4.3	0.2	LM	h@-n@-
 2.59	-0.05	TC	r@-c@-
 -0.2	1	RM	h@-0@-
 EOF
@@ -42,9 +42,9 @@ EOF
     echo "1	1" >> tmp
 h=$(gmt math -Q 0.25 STO@U 1 ADD 3 POW 1 @U SUB 3 POW MUL @U 3 POW 1 ADD DIV INV =)
     gmt math -T1/4/0.1 T 4 DIV STO@U 1 ADD 3 POW 1 @U SUB 3 POW MUL @U 3 POW 1 ADD DIV $h MUL = >> tmp
-    gmt math -T-4/-1/0.1 T 4 DIV STO@U 1 ADD 3 POW 1 @U SUB 3 POW MUL @U 3 POW 1 ADD DIV $h MUL = body
+    gmt math -T-4/-1/0.1 T 4 DIV STO@U 1 ADD 3 POW 1 @U SUB 3 POW MUL @U 3 POW 1 ADD DIV $h MUL = | sed -e 's/NaN/0/g' > body
     gmt math -T1/4/0.1 T 4 DIV STO@U 1 ADD 3 POW 1 @U SUB 3 POW MUL @U 3 POW 1 ADD DIV $h MUL = >> body
-    gmt math -T-4/4/0.1 T 4 DIV STO@U 1 ADD 3 POW 1 @U SUB 3 POW MUL @U 3 POW 1 ADD DIV $h MUL = line
+    gmt math -T-4/4/0.1 T 4 DIV STO@U 1 ADD 3 POW 1 @U SUB 3 POW MUL @U 3 POW 1 ADD DIV $h MUL = | sed -e 's/NaN/0/g' > line
     gmt plot -R-5/5/-0.05/1.35 -Glightgray body -Y-1.6i
     gmt plot -W2p tmp
     gmt plot -W0.5p,- line
@@ -66,7 +66,7 @@ EOF
     gmt text -F+f16p,Times-Italic+j -N << EOF
 1	-0.05	TC	r@-t@- = fr@-0@-
 4	-0.05	TC	r@-0@-
-4.3	0.2	LM	h@-c@-
+4.3	0.2	LM	h@-n@-
 2.59	-0.05	TC	r@-c@-
 -0.2	1	RM	h@-0@-
 EOF
@@ -110,7 +110,7 @@ EOF
 1	-0.05	TC	r@-t@- = fr@-0@-
 4	-0.05	TC	r@-0@-
 3.4	-0.05	TC	r@-c@-
-4.3	0.2	LM	h@-c@-
+4.3	0.2	LM	h@-n@-
 -0.2	1	RM	h@-0@-
 EOF
     echo "@%1%c@%% (cone)" | gmt text -F+f18p+cTL -Dj0.1i
@@ -143,10 +143,10 @@ EOF
 1	-0.05	TC	r@-t@- = fr@-0@-
 4	-0.05	TC	r@-0@-
 3.60555	-0.05	TC	r@-c@-
-4.3	0.2	LM	h@-c@-
+4.3	0.2	LM	h@-n@-
 -0.2	1	RM	h@-0@-
 EOF
-    echo "@%1%p@%% (parabolic)" | gmt text -F+f18p+cTL -Dj0.1i
+    echo "@%1%p@%% (parabola)" | gmt text -F+f18p+cTL -Dj0.1i
     # 5. Disc
 cat << EOF > tmp
 0	1
@@ -172,7 +172,7 @@ EOF
 EOF
     gmt text -F+f16p,Times-Italic+j -N << EOF
 4	-0.05	TC	r@-0@- = r@-c@-
-4.3	0.2	LM	h@-c@-
+4.3	0.2	LM	h@-n@-
 -0.2	1	RM	h@-0@-
 EOF
     echo "@%1%d@%% (disc)" | gmt text -F+f18p+cTL -Dj0.1i
