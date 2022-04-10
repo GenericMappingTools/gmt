@@ -619,14 +619,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 						}
 						c[0] = '\0';	/* Chop off all modifiers so range can be determined */
 					}
-					if (!Ctrl->S.Info[slide].got_a)	/* Did not set +a, default to 0-360 (as initialized) */
-						Ctrl->S.Info[slide].got_a = true;
 					if (Ctrl->S.Info[slide].got_h && !Ctrl->S.Info[slide].got_d) {	/* Set the default value for hc = 0.5*h1 */
 						Ctrl->S.Info[slide].Slide.hc = 0.5 * Ctrl->S.Info[slide].Slide.h1;
 						Ctrl->S.Info[slide].got_d = true;	/* Since we just set it to the default value */
 					}
-					if (!Ctrl->S.Info[slide].got_u)	/* Did not set +u, default to SHAPE_U0 (as initialized) */
-						Ctrl->S.Info[slide].got_u = true;
 					if (c) c[0] = '+';	/* Restore modifiers */
 				}
 				else {	/* Deprecated ad hoc radial scale */
@@ -699,7 +695,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 			n_errors += gmt_M_check_condition (GMT, Ctrl->S.Info[slide].got_p && !Ctrl->S.Info[slide].read_p && !gmt_M_is_zero (Ctrl->S.Info[slide].Slide.p) && Ctrl->S.Info[slide].Slide.p < 2.0, "Option -S: Azimuthal power coefficient set with +p must be >= 2\n");
 			n_errors += gmt_M_check_condition (GMT, Ctrl->S.Info[slide].Slide.phi < 0.0 || Ctrl->S.Info[slide].Slide.phi >= 100.0, "Option -S: Volume fraction must be less than 100%%\n");
 			n_errors += gmt_M_check_condition (GMT, Ctrl->S.Info[slide].got_h && !Ctrl->S.Info[slide].read_h && Ctrl->S.Info[slide].Slide.h1 > Ctrl->S.Info[slide].Slide.h2 , "Option -S: Scarp height h2 must exceed h1\n");
-			n_errors += gmt_M_check_condition (GMT, Ctrl->S.Info[slide].got_d && !Ctrl->S.Info[slide].read_d && Ctrl->S.Info[slide].got_h&& !Ctrl->S.Info[slide].read_h && Ctrl->S.Info[slide].Slide.hc > Ctrl->S.Info[slide].Slide.h1, "Option -S: Distal slump height hc cannot exceed h1\n");
+			n_errors += gmt_M_check_condition (GMT, Ctrl->S.Info[slide].got_d && !Ctrl->S.Info[slide].read_d && Ctrl->S.Info[slide].got_h && !Ctrl->S.Info[slide].read_h && Ctrl->S.Info[slide].Slide.hc > Ctrl->S.Info[slide].Slide.h1, "Option -S: Distal slump height hc cannot exceed h1\n");
 			n_errors += gmt_M_check_condition (GMT, Ctrl->S.Info[slide].got_v && Ctrl->S.Info[slide].got_u, "Option -S: Cannot set +u if +v is also set\n");
 			n_errors += gmt_M_check_condition (GMT, Ctrl->S.Info[slide].got_t && !Ctrl->T.active, "Option -S: Cannot set +t unless -T is also set\n");
 		}
@@ -1827,6 +1823,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 						/* Whatever the volume fraction, we may need to reduce it due to time evolution */
 						phi = psi * phi_0;	/* If time-dependent then we only want this smaller fraction */
 						this_smt.Slide[slide].u0_effective = grdseamount_slide_u0 (GMT, &this_smt.Slide[slide], Vf, V0, phi);	/* Corresponding u0 to use */
+						Vs_0 = phi * V0;
 					}
 					else	/* None of that silliness, just use the u0 you were given */
 						this_smt.Slide[slide].u0_effective = this_smt.Slide[slide].u0;
