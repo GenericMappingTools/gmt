@@ -1822,7 +1822,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					if (Ctrl->S.Info[slide].got_v) {	/* Must compute u0 to match specified slide volume (else we use given u0) */
 						/* If we have selected an azimuthal slide change due to +p, the volume integral for Vq needs to be reduced */
 						a_scale = 1.0 / s_bar;	/* Volume adjustment scale > 1 if +p is used, else 1 */
-						phi_0 = a_scale * this_smt.Slide[slide].phi;	/* We were given phi but need a bit more to counter the reduction from +p */
+						phi_0 = a_scale * this_smt.Slide[slide].phi / theta;	/* We were given phi but need a bit more to counter the reduction from +p (and scaled up to 360) */
 						want_specific_volume = 2;	/* Will need to determine which u0 will give this exact volume fraction and hence actual slide volume */
 					}
 					else if (tau < 1.0) {	/* No +v, only linear change in Vs from full Vs_0. Must first compute Vs_0 so we can get equivalent phi_0 so we can update u0 */
@@ -1833,7 +1833,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 					}
 					if (want_specific_volume) {	/* Must compute u0 to match specified slide volume (else we just use given u0) */
 						/* Whatever the volume fraction, we may need to reduce it due to time evolution */
-						phi = psi * phi_0 / theta;	/* If time-dependent then we only want this smaller fraction (but scaled up to 360) */
+						phi = psi * phi_0;	/* If time-dependent then we only want this smaller fraction */
 						this_smt.Slide[slide].u0_effective = grdseamount_slide_u0 (GMT, &this_smt.Slide[slide], Vf, V0, phi);	/* Corresponding u0 to use */
 						Vs_0 = phi * V0;
 					}
