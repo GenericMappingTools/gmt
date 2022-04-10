@@ -15619,30 +15619,32 @@ openmp_int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, doub
 	 * in the same units as the radius.  We also return the widest value in the d_col array via
 	 * the actual_max_d_col value.
 	 */
-	openmp_int max_d_col, row, *d_col = gmt_M_memory (GMT, NULL, G->header->n_rows, unsigned int);
+	openmp_int row, *d_col = gmt_M_memory (GMT, NULL, G->header->n_rows, unsigned int);
 	double dist_x, dist_y, lon, lat;
 
-	lon = G->header->wesn[XLO] + G->header->inc[GMT_X];
-
-	dist_y = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], G->header->wesn[XLO], G->header->wesn[YLO] + G->header->inc[GMT_Y]);
+	lon = G->header->wesn[XLO] + G->header->inc[GMT_X];	/* One step in from west */
+	/* Set limit on +/- delta cols */
 	if (mode) {	/* Input data is geographical, so circle widens with latitude due to cos(lat) effect */
-		max_d_col = G->header->n_columns;	/* Upper limit on +- halfwidth */
 		*actual_max_d_col = 0;
 		for (row = 0; row < (openmp_int)G->header->n_rows; row++) {
 			lat = gmt_M_grd_row_to_y (GMT, row, G->header);
 			/* Determine longitudinal width of one grid ell at this latitude */
 			dist_x = gmt_distance (GMT, G->header->wesn[XLO], lat, lon, lat);
-			d_col[row] = (fabs (lat) == 90.0) ? max_d_col : urint (ceil (radius / dist_x) + 0.1);
-			if (d_col[row] > max_d_col) d_col[row] = max_d_col;	/* Safety valve */
+			d_col[row] = (fabs (lat) == 90.0) ? G->header->n_columns : urint (ceil (radius / dist_x) + 0.1);
+			if (d_col[row] > G->header->n_columns) d_col[row] = G->header->n_columns;	/* No point exceed the upper limit */
 			if (d_col[row] > (*actual_max_d_col)) *actual_max_d_col = d_col[row];
 		}
 	}
 	else {	/* Plain Cartesian data with rectangular box */
 		dist_x = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], lon, G->header->wesn[YLO]);
-		*actual_max_d_col = max_d_col = urint (ceil (radius / dist_x) + 0.1);
-		for (row = 0; row < (openmp_int)G->header->n_rows; row++) d_col[row] = max_d_col;
+		*actual_max_d_col = urint (ceil (radius / dist_x) + 0.1);
+		if (*actual_max_d_col > G->header->n_columns) *actual_max_d_col = G->header->n_columns;	/* No point exceed the upper limit */
+		for (row = 0; row < (openmp_int)G->header->n_rows; row++) d_col[row] = *actual_max_d_col;
 	}
+	/* Set fixed limit on +/- delta rows */
+	dist_y = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], G->header->wesn[XLO], G->header->wesn[YLO] + G->header->inc[GMT_Y]);
 	*d_row = urint (ceil (radius / dist_y) + 0.1);	/* The constant half-width of nodes in y-direction */
+	if (*d_row > G->header->n_rows) *d_row = G->header->n_rows;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Max node-search half-widths are: half_x = %d, half_y = %d\n", *d_row, *actual_max_d_col);
 	return (d_col);		/* The (possibly variable) half-width of nodes in x-direction as function of y */
 }
