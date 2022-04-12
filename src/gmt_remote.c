@@ -811,6 +811,36 @@ GMT_LOCAL struct GMT_DATA_HASH *gmtremote_hash_load (struct GMT_CTRL *GMT, char 
 	return (L);
 };
 
+int gmtlib_refresh_file (struct GMTAPI_CTRL *API, char *file) {
+	/* Return various codes depending on outcome:
+	 * If file does not exist, return 1 for downloading it
+	 * If file exist but unable to stat, return -1 for error
+	 * If file exist and is older than refresh_time, return 1 for re-downloading it
+	 * If file exist and is young enough, return 0 to use as is.
+	 */
+	struct stat buf;
+	time_t mod_time, right_now = time (NULL);	/* Unix time right now */
+
+	if (access (file, R_OK)) return GMT_YES_DOWNLOAD;    /* Not found locally so need to download the first time */
+
+	if (stat (file, &buf)) {	/* Should not happen, but who knows */
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to get information about %s via stat - abort\n", file);
+		return GMT_NOTSET;
+	}
+
+	/*  Get the file's modification (creation) time */
+#ifdef __APPLE__
+	mod_time = buf.st_mtimespec.tv_sec;	/* Apple even has tv_nsec for nano-seconds... */
+#else
+	mod_time = buf.st_mtime;
+#endif
+
+	if ((right_now - mod_time) > (GMT_DAY2SEC_I * API->GMT->current.setting.refresh_time))
+		return GMT_YES_DOWNLOAD;	/* Older than selected number of days; Time to get a new file */
+	else
+		return GMT_NO_DOWNLOAD;	/*OK to use this file */
+}
+
 GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 	/* This function is called every time we are about to access a @remotefile.
 	 * It is called twice: Once for the hash table and once for the info table.
@@ -829,8 +859,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 	 * The result of this is that any file(s) that have changed will be removed
 	 * so that they must be downloaded again to get the new versions.
 	 */
-	struct stat buf;
-	time_t mod_time, right_now = time (NULL);	/* Unix time right now */
+	int action;
 	char indexpath[PATH_MAX] = {""}, old_indexpath[PATH_MAX] = {""}, new_indexpath[PATH_MAX] = {""}, url[PATH_MAX] = {""};
 	const char *index_file = (index == GMT_HASH_INDEX) ? GMT_HASH_SERVER_FILE : GMT_INFO_SERVER_FILE;
 	struct LOCFILE_FP *LF = NULL;
@@ -866,18 +895,9 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 
 	/* Here we have the existing index file and its path is in indexpath. Check how old it is */
 
-	if (stat (indexpath, &buf)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Unable to get information about %s - abort\n", indexpath);
-		return 1;
-	}
-	/*  Get its modification (creation) time */
-#ifdef __APPLE__
-	mod_time = buf.st_mtimespec.tv_sec;	/* Apple even has tv_nsec for nano-seconds... */
-#else
-	mod_time = buf.st_mtime;
-#endif
+	if ((action = gmtlib_refresh_file (API, indexpath)) == GMT_NOTSET) return 1;
 
-	if ((right_now - mod_time) > (GMT_DAY2SEC_I * GMT->current.setting.refresh_time)) {	/* Older than selected number of days; Time to get a new index file */
+	if (action == GMT_YES_DOWNLOAD) {	/* Older than selected number of days; Time to get a new index file */
 		GMT_Report (API, GMT_MSG_DEBUG, "File %s older than 24 hours, get latest from server.\n", indexpath);
 		strcpy (new_indexpath, indexpath);	/* Duplicate path name */
 		strcat (new_indexpath, ".new");		/* Append .new to the copied path */

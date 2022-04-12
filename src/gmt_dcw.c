@@ -89,6 +89,32 @@ static char *GMT_DCW_continents[GMT_DCW_N_CONTINENTS] = {"Africa", "Antarctica",
 
 /* Local functions only visible inside this file */
 
+GMT_LOCAL bool gmtdcw_need_refresh (struct GMT_CTRL *GMT, char *fpath) {
+	/* Obtains versions from both local and cloud versions and returns true if we must refresh */
+	FILE *fp = NULL;
+	char this_version[GMT_LEN16] = {""}, cloud_version[GMT_LEN16] = {""};
+	char path[PATH_MAX] = {""};
+	int tmajor, tminor, tpatch = 0, cmajor, cminor, cpatch = 0;
+	int cdfid;
+
+	if (gmt_nc_open (GMT, fpath, NC_NOWRITE, &cdfid)) return true;	/* fpath is dcw-gmt.nc so if not found we have work to do */
+	/* Get version attribute */
+	gmt_M_memset (this_version, strlen (this_version), char);
+	if (nc_get_att_text (cdfid, NC_GLOBAL, "version", this_version)) return true;	/* If we cannot read version then what file are we reading here? */
+	gmt_nc_close (GMT, cdfid);	/* Done with reading netCDF file */
+	sprintf (path, "%s/geography/dcw/VERSION", GMT->session.USERDIR);	/* Open local VERSION file which we know is fresh */
+	if ((fp = fopen (path, "r")) && fscanf (fp, "%s\n", cloud_version) < 1) return false;	/* Not good, cannot happen but also safety valve */
+	fclose (fp);	/* Done reading from VERSION */
+	gmt_strrepc (this_version,  '.', ' ');	/* Get rid of periods */
+	gmt_strrepc (cloud_version, '.', ' ');	/* Get rid of periods */
+	sscanf (this_version,  "%d %d %d", &tmajor, &tminor, &tpatch);	/* Get the version major, minor and patch numbers */
+	sscanf (cloud_version, "%d %d %d", &cmajor, &cminor, &cpatch);
+	if (cmajor > tmajor) return true;	/* Cloud major version is more recent, must refresh */
+	if (cminor > tminor) return true;	/* Cloud major equals this major, but cloud minor version is more recent so must refresh */
+	if (cpatch > tpatch) return true;	/* Cloud major and minor equals this major and minor, but cloud patch is more recent so must refresh */
+	return false;	/* No, we are up to date */
+}
+
 GMT_LOCAL bool gmtdcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, char *path) {
 	/* This is the order of checking:
 	 * 1. Check in GMT->session.DCWDIR, if set
@@ -116,7 +142,36 @@ GMT_LOCAL bool gmtdcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, 
 		}
 	}
 	if (GMT->session.USERDIR) {	/* Check user dir via remote download */
+		int action;
 		char remote_path[PATH_MAX] = {""};
+		/* First check what the DCW version is on the server */
+		sprintf (path, "%s/geography/dcw/VERSION", GMT->session.USERDIR);
+		if ((action = gmtlib_refresh_file (GMT->parent, path)) == GMT_NOTSET) return false;
+		if (action == GMT_YES_DOWNLOAD) {	/* Update the VERSION file before checking version */
+			sprintf (path, "%s/geography/dcw", GMT->session.USERDIR);	/* Local directory destination */
+			if (access (path, R_OK) && gmt_mkdir (path)) {	/* Must first create the directory */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to create GMT directory : %s\n", path);
+				return false;
+			}
+			sprintf (path, "%s/geography/dcw/VERSION", GMT->session.USERDIR);
+			snprintf (remote_path, PATH_MAX, "%s/geography/dcw/VERSION", gmt_dataserver_url (GMT->parent));	/* Unique remote path */
+			if (gmt_download_file (GMT, "VERSION", remote_path, path, true)) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to obtain remote file %s\n", remote_path);
+				return false;
+			}
+			else	/* Successfully downloaded the first time */
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Refreshed DCW VERSION file %s\n", path);
+		}
+		/* First check if the netCDF file is here and if it needs refreshing */
+		sprintf (path, "%s/geography/dcw/dcw-gmt.nc", GMT->session.USERDIR);
+		if (access (path, R_OK) == 0) {	/* Previously downloaded, check if outdated */
+			if (gmtdcw_need_refresh (GMT, path)) {	/* Yep, wipe older files so new can be downloaded */
+				sprintf (path, "%s/geography/dcw", GMT->session.USERDIR);
+				if (gmt_remove_dir (GMT->parent, path, false)) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to remove directory %s\n", path);
+				}
+			}
+		}
 		sprintf (path, "%s/geography/dcw/%s%s", GMT->session.USERDIR, name, suffix);
 		if (access (path, R_OK) == 0) {	/* Previously downloaded */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. DCW: Read the Digital Chart of the World from %s\n", path);
