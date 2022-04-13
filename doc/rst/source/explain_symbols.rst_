@@ -626,7 +626,8 @@
             **+s**\ <symbol><size> or **+sk**\ *customsymbol*/*size*
                 Specify the code and size of the decorative symbol.
                 Custom symbols need to be simple, i.e., not require data columns,
-                or give a single EPS file.
+                or be a single EPS file.  Hence, valid symbols are limited to the
+                plain geometric one-parameter symbols and the custom symbol (**k**).
 
             **+w**
                 Specify how many (*x*,\ *y*) points will be used to estimate

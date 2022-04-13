@@ -10479,14 +10479,18 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 
 			case 's':	/* Symbol to place */
 				if (p[1]) {
-					if (p[1] == 'k') {	/* Custom symbol - separate file from size */
+					if (strchr (GMT_DECORATE_SYMBOLS, p[1]) == NULL) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S~: Symbol +%s not allowed!\n", &p[1]);
+						bad++;
+					}
+					else if (p[1] == 'k') {	/* Custom symbol - separate file from size */
 						char *s = strrchr (p, '/');
 						strncpy (G->size, &s[1], GMT_LEN64-1);
 						s[0] = '\0';	/* Truncate size */
 						strncpy (G->symbol_code, &p[1], GMT_LEN64-1);
 						s[0] = '/';	/* Restore size */
 					}
-					else {	/* Regular symbol */
+					else {	/* Regular geometric symbol */
 						strncpy (G->size, &p[2], GMT_LEN64-1);
 						G->symbol_code[0] = p[1];
 					}
