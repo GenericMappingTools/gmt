@@ -7525,7 +7525,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 		switch (action) {
 			case GMT_SYMBOL_MOVE:	/* Flush existing polygon and start a new path */
 				if (flush) gmtplot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
-				n = 0;
+				n = 0;	/* Start of a new line or polygon */
 				if (n >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 				xx[n] = x, yy[n] = y, n++;
 				gmtplot_get_the_pen (&p, s, current_pen, current_fill);
@@ -7535,7 +7535,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 			case GMT_SYMBOL_STROKE:	/* To force the drawing of a line (outline == 2), not a closed polygon */
 				if (flush) gmtplot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, 2, &flush);
-				n = 0;
+				n = 0;	/* After Stroke we reset to no points */
 				break;
 
 			case GMT_SYMBOL_DRAW:	/* Append another point to the path */
