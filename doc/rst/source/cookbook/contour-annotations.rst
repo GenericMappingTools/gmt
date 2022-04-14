@@ -117,13 +117,13 @@ a line to be labeled. The codes are:
     Similar to **n** but splits input lines into a series of two-point
     line segments first.  The rest of the algorithm them operates on
     these sets of lines.  This code (and **S**) are specific to
-    quoted lines.
+    quoted and decorated lines.
 
 **S**:
     Similar to **N** but with the modification described for **s**.
 
 **x**:
-    Full syntax is **x**\ *cross.d*. Here, an ASCII file *cross.d* is a
+    Full syntax is **x**\ *cross.txt*. Here, an ASCII file *cross.txt* is a
     multi-segment file whose lines will intersect our segment lines;
     labels will be placed at these intersections.
 
@@ -288,7 +288,7 @@ modified by **+u** or **+=**). However, for quoted lines other options apply:
         the current multi-segment number as label.
 
     **+Lx**:
-        As **h** but use the multi-segment headers in the *cross.d* file
+        As **h** but use the multi-segment headers in the *cross.txt* file
         instead. This choice obviously requires the crossing segments
         location algorithm (code **x\|\ X**) to be in effect.
 

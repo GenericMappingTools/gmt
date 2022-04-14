@@ -366,7 +366,7 @@
         **Note**: The colon separates the algorithm settings from the label information.
         Choose among six controlling algorithms:
 
-            **d**\ *dist*\ [**c**\|\ **i**\|\ **p**] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**]
+            **d**\ *dist*\ [**c**\|\ **i**\|\ **p**][/\ *frac*] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**][/\ *frac*]
                 For lower case **d**, give distances between labels on the plot in
                 your preferred measurement unit **c** (cm), **i** (inch), or **p**
                 (points), while for upper case **D**, specify distances in map units
@@ -374,9 +374,9 @@
                 (km), **M** (mile), **n** (nautical mile) or **u** (US survey foot),
                 and **d** (arc degree), **m** (arc minute), or **s** (arc second).
                 [Default is 10\ **c** or 4\ **i**]. As an option, you can append
-                /*fraction* which is used to place the very first label for each
-                contour when the cumulative along-contour distance equals *fraction
-                \* dist* [0.25].
+                append *frac* which will place the first label at the distance *d = dist*
+                :math:`\times` *frac* from the start of a line (and every
+                *dist* thereafter). If not given, *frac* defaults to 0.25.
 
             **f**\ *ffile.txt*\ [/*slop*\ [**c**\|\ **i**\|\ **p**]]
                 Read the ASCII file *ffile.txt* and places labels at locations in the
@@ -395,16 +395,16 @@
                 center of the map, given as [LCR][BMT]. Alternatively, select **L** to interpret the point
                 pairs as defining great circle segments [Default is straight lines].
 
-            **n**\|\ **N**\ *n_label*
+            **n**\|\ **N**\ *n_label*\ [/*min_dist*\ [**c**\|\ **i**\|\ **p**]]
                 Specify the number of equidistant labels for quoted lines
                 [1]. Upper case **N** starts labeling exactly at the start of the
                 line [Default centers them along the line]. **N**-1 places one
                 justified label at start, while **N**\ +1 places one justified label
                 at the end of quoted lines. Optionally, append
-                /*min_dist*\ [**c**\|\ **i**\|\ **p**] to enforce that a
-                minimum distance separation between successive labels is enforced.
+                /*min_dist*\ [**c**\|\ **i**\|\ **p**] to enforce a
+                minimum distance separation between successive labels.
 
-            **s**\|\ **S**\ *n_label*
+            **s**\|\ **S**\ *n_label*\ [/*min_dist*\ [**c**\|\ **i**\|\ **p**]]
                 Same as **n**\|\ **N**\ *n_label* but implies that the input data are
                 first to be converted into a series of 2-point line segments before plotting.
 
@@ -551,7 +551,7 @@
         **Note**: The colon separates the algorithm settings from the required symbol information.
         Choose among six controlling algorithms:
 
-            **d**\ *dist*\ [**c**\|\ **i**\|\ **p**] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**]
+            **d**\ *dist*\ [**c**\|\ **i**\|\ **p**][/\ *frac*] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**][/\ *frac*]
                 For lower case **d**, give distances between symbols on the plot in
                 your preferred measurement unit **c** (cm), **i** (inch), or **p**
                 (points), while for upper case **D**, specify distances in map units
@@ -559,9 +559,9 @@
                 (km), **M** (mile), **n** (nautical mile) or **u** (US survey foot),
                 and **d** (arc degree), **m** (arc minute), or **s** (arc second).
                 [Default is 10\ **c** or 4\ **i**]. As an option, you can append
-                /*fraction* which is used to place the very first symbol for each
-                line when the cumulative along-line distance equals *fraction
-                \* dist* [0.25].
+                append *frac* which will place the first symbol at the distance *d = dist*
+                :math:`\times` *frac* from the start of a line (and every
+                *dist* thereafter). If not given, *frac* defaults to 0.25.
 
             **f**\ *ffile.txt*\ [/*slop*\ [**c**\|\ **i**\|\ **p**]]
                 Read the ASCII file *ffile.txt* and place symbols at locations in the
@@ -580,18 +580,17 @@
                 center of the map, given as [LCR][BMT].
                 **L** will interpret the point pairs as defining great circles [Default is straight line].
 
-            **n**\|\ **N**\ *n_symbol*
+            **n**\|\ **N**\ *n_symbol*\ [/*min_dist*\ [**c**\|\ **i**\|\ **p**]]
                 Specify the number of equidistant symbols for decorated lines
                 [1]. Upper case **N** starts placing symbols exactly at the start of the
                 line [Default centers them along the line]. **N**-1 places one symbol
-                at start, while **N**\ +1 places one symbol
-                at the end of decorated lines. Optionally, append
-                /*min_dist*\ [**c**\|\ **i**\|\ **p**] to enforce that a
-                minimum distance separation between successive symbols is enforced.
+                at start, while **N**\ +1 places one symbol at the end of decorated lines.
+                Optionally, append /*min_dist*\ [**c**\|\ **i**\|\ **p**] to enforce a
+                minimum distance separation between successive symbols.
 
-            **s**\|\ **S**\ *n_symbol*
+            **s**\|\ **S**\ *n_symbol*\ [/*min_dist*\ [**c**\|\ **i**\|\ **p**]]
                 Same as **n**\|\ **N**\ *n_symbol* but implies that the input data are
-		        first to be converted into a series of 2-point line segments before plotting.
+                first to be converted into a series of 2-point line segments before plotting.
 
             **x**\|\ **X**\ *xfile.txt*
                 Read the ASCII multisegment file *xfile.txt* and places symbols at the
