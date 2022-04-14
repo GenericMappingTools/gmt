@@ -18683,7 +18683,7 @@ unsigned int gmt_get_required_file (struct GMT_CTRL *GMT, char *text, char optio
 }
 
 unsigned int gmt_get_no_argument (struct GMT_CTRL *GMT, char *text, char option, char modifier) {
-	/* Convert the text arg to an unsigned int and if no arg given we fuss and return error */
+	/* Return error if an argument actually was given when none is expected */
 	unsigned int error = GMT_NOERROR;
 	if (text && text[0]) {
 		if (modifier)
@@ -18704,7 +18704,7 @@ unsigned int gmt_get_required_uint (struct GMT_CTRL *GMT, char *text, char optio
 }
 
 unsigned int gmt_get_required_sint (struct GMT_CTRL *GMT, char *text, char option, char modifier, int *value) {
-	/* Convert the text arg to an int and if no arg given we fuss and return error */
+	/* Convert the text arg to a signed int and if no arg given we fuss and return error */
 	unsigned int err;
 	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
 		*value = atoi (text);
