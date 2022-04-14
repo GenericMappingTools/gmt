@@ -3691,7 +3691,6 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 	struct GMT_DATASET_HIDDEN *DH = NULL, *DHi = NULL;
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
-	struct GMT_VECTOR_HIDDEN *VH = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
@@ -3986,7 +3985,6 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 						gmt_M_free (GMT, D_obj);	return_null (API, GMT_NOT_A_VALID_TYPE);
 					}
 				}
-				VH = gmt_get_V_hidden (V_obj);
 				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
 					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_REFERENCE|GMT_VIA_VECTOR external memory objects\n");
 				/* Each column double array source becomes preallocated column arrays in a separate table with a single segment */
@@ -12949,7 +12947,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		/* Found the -S option, check if we requested quoted or decorated lines via fixed or crossing lines */
 		/* If not f|x then we don't want this at all and set type = ! */
 		type = (!strchr ("~q", opt->arg[0]) || !strchr ("fx", opt->arg[1])) ? '!' : 'D';  /* Only -S[~q][fx] will yield D */
-		strip_colon = (strchr (opt->arg, ':' != NULL)); /* true if optional arguments beginning with colon, otherwise false */
+		strip_colon = (strchr (opt->arg, ':') != NULL); /* true if optional arguments beginning with colon, otherwise false */
 		strip_colon_opt = opt->option;    /* The option with (a possible) colon argument */
 		if (strip_colon)
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Got quoted or decorate line and must strip argument %s from colon to end\n", opt->arg);
