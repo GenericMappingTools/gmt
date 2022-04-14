@@ -162,7 +162,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 					}
 					Ctrl->A.n_selected++;
 				}
-				if (Ctrl->A.n_selected == 0) {	/* Let -Az be the default */
+				if (Ctrl->A.n_selected == 0) {	/* No argument; let -Az be the default */
 					GMT_Report (API, GMT_MSG_DEBUG, "-A interpreted to mean -Az.\n");
 					Ctrl->A.selected[0] = true;
 					Ctrl->A.n_selected = 1;
@@ -171,6 +171,10 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 			case 'C':	/* Report center of block instead */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
+				if (opt->arg[0]) {	/* Do not allow mistaken arguments here */
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Takes no argument but found %s\n", opt->arg);
+					n_errors++;
+				}
 				break;
 			case 'D':	/* Histogram mode estimate */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
@@ -203,7 +207,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 							else if (opt->arg[2] == 'h' || opt->arg[2] == '\0')	/* E.g., let Er+ be thought of as -Er+h */
 								Ctrl->E.mode = BLK_DO_INDEX_HI;
 							else {	/* Neither +l, +h, or just + is bad */
-								GMT_Report (API, GMT_MSG_ERROR, "Unrecognized argument -E%s!\n", opt->arg);
+								GMT_Report (API, GMT_MSG_ERROR, "Option -E: Unrecognized argument %s!\n", opt->arg);
 								n_errors++;
 							}
 							break;
@@ -219,8 +223,10 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 				}
 				else if (opt->arg[0] == '\0')	/* Plain -E : Report LMSscale, low, high in cols 4-6 */
 					Ctrl->E.mode = BLK_DO_EXTEND3;
-				else	/* WTF? */
+				else {	/* WTF? */
+					GMT_Report (API, GMT_MSG_ERROR, "Option -E: Unrecognized argument %s!\n", opt->arg);
 					n_errors++;
+				}
 				break;
 			case 'G':	/* Write output grid(s) */
 				if (!API->external) n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
@@ -229,10 +235,16 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 					GMT_Report (API, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
 				}
-				else {
-					Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
-					Ctrl->G.n++;
+				else {	/* From externals, or the first time (n == 0) from the command line */
+					if (Ctrl->G.n == BLK_N_FIELDS) {
+						GMT_Report (API, GMT_MSG_COMPAT, "Option -G: Too many output grids specified!\n");
+						n_errors++;
+					}
+					else {	/* We can add one more */
+						Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
+						if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
+						Ctrl->G.n++;
+					}
 				}
 				break;
 			case 'I':	/* Get block dimensions */
@@ -243,6 +255,10 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 			case 'Q':	/* Quick mode for modal z */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
+				if (opt->arg[0]) {	/* Do not allow mistaken arguments here */
+					GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Takes no argument but found %s\n", opt->arg);
+					n_errors++;
+				}
 				break;
 			case 'W':	/* Use in|out weights -W[i|o][+s] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
@@ -265,7 +281,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 		if (GMT->parent->external && !Ctrl->A.active) {		/* From externals let -G equals -Az */
 			Ctrl->A.active = true;
 			Ctrl->A.selected[0] = true;
-			Ctrl->A.n_selected = 1;
+			Ctrl->A.n_selected  = 1;
 		}
 	}
 
@@ -275,7 +291,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->E.mode == BLK_DO_INDEX_LO || Ctrl->E.mode == BLK_DO_INDEX_HI), "-Es|r are incompatible with -G\n");
 	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
 		if (Ctrl->A.active && Ctrl->A.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[0], "%s")) {
-			GMT_Report (API, GMT_MSG_ERROR, "-G file format must contain a %%s for field type substitution.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -G: File format must contain a %%s for field type substitution.\n");
 			n_errors++;
 		}
 		else if (!Ctrl->A.active)	/* Set default z output grid */
