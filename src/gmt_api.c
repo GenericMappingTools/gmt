@@ -13014,7 +13014,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		/* Found the -G option, check if any strings are requested */
 		/* If not -Gf|x then we don't want this at all and set type = ! */
 		type = (opt->arg[0] == 'f' || opt->arg[0] == 'x') ? 'D' : '!';
-        strip_colon_opt = opt->option;    /* An option with (a possible) colon argument */
+		strip_colon_opt = opt->option;    /* An option with (a possible) colon argument */
 	}
 	/* 1i. Check if this is the talwani3d module, where output type is grid except with -N it is dataset */
 	else if (!strncmp (module, "talwani3d", 9U)) {
