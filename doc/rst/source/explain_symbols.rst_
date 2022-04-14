@@ -401,8 +401,8 @@
                 line [Default centers them along the line]. **N**-1 places one
                 justified label at start, while **N**\ +1 places one justified label
                 at the end of quoted lines. Optionally, append
-                /*min_dist*\ [**c**\|\ **i**\|\ **p**] to enforce that a
-                minimum distance separation between successive labels is enforced.
+                /*min_dist*\ [**c**\|\ **i**\|\ **p**] to enforce a
+                minimum distance separation between successive labels.
 
             **s**\|\ **S**\ *n_label*\ [/*min_dist*\ [**c**\|\ **i**\|\ **p**]]
                 Same as **n**\|\ **N**\ *n_label* but implies that the input data are
@@ -580,16 +580,15 @@
                 center of the map, given as [LCR][BMT].
                 **L** will interpret the point pairs as defining great circles [Default is straight line].
 
-            **n**\|\ **N**\ *n_symbol*
+            **n**\|\ **N**\ *n_symbol*\ [/*min_dist*\ [**c**\|\ **i**\|\ **p**]]
                 Specify the number of equidistant symbols for decorated lines
                 [1]. Upper case **N** starts placing symbols exactly at the start of the
                 line [Default centers them along the line]. **N**-1 places one symbol
-                at start, while **N**\ +1 places one symbol
-                at the end of decorated lines. Optionally, append
-                /*min_dist*\ [**c**\|\ **i**\|\ **p**] to enforce that a
-                minimum distance separation between successive symbols is enforced.
+                at start, while **N**\ +1 places one symbol at the end of decorated lines.
+                Optionally, append /*min_dist*\ [**c**\|\ **i**\|\ **p**] to enforce a
+                minimum distance separation between successive symbols.
 
-            **s**\|\ **S**\ *n_symbol*
+            **s**\|\ **S**\ *n_symbol*\ [/*min_dist*\ [**c**\|\ **i**\|\ **p**]]
                 Same as **n**\|\ **N**\ *n_symbol* but implies that the input data are
 		        first to be converted into a series of 2-point line segments before plotting.
 
