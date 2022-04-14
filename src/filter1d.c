@@ -287,12 +287,13 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 
 			case 'D':	/* Get fixed increment */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.inc = atof (opt->arg);
 				Ctrl->D.active = true;
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->D.inc);
 				break;
 			case 'E':	/* Include ends of series */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'F':	/* Filter selection  */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
@@ -303,7 +304,7 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 						Ctrl->F.highpass = true;
 						c[0] = '\0';	/* Chop off +h */
 					}
-					if (gmt_access (GMT, &opt->arg[1], R_OK))
+					if (gmt_access (GMT, &opt->arg[1], R_OK))	/* Not a file we can read */
 						Ctrl->F.width = atof (&opt->arg[1]);
 					else if (Ctrl->F.filter != 'f') {	/* Got variable filter width series */
 						Ctrl->F.variable = true;
@@ -338,13 +339,18 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			case 'I':	/* DEPRECATED: Activate the ignore option.  This is now -di<value> and happens during reading */
-				sprintf (txt, "i%s", opt->arg);
-				n_errors += gmt_parse_d_option (GMT, txt);
+				if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 LEVEL */
+					GMT_Report (API, GMT_MSG_COMPAT, "-I option is deprecated; use -di<ignoreval> instead.\n");
+					sprintf (txt, "i%s", opt->arg);
+					n_errors += gmt_parse_d_option (GMT, txt);
+				}
+				else
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'L':	/* Check for lack of data */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
-				Ctrl->L.value = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->L.value);
 				break;
 			case 'N':	/* Select column with independent coordinate [0] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -359,10 +365,10 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 						}
 					}
 					else if (!strchr (opt->arg, '/'))
-						sval = atoi (opt->arg);
+						n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &sval);
 				}
 				else
-					sval = atoi (opt->arg);
+					n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &sval);
 				if (gmt_M_compat_check (GMT, 5) && (strstr (opt->arg, "+a") || (opt->arg[0] == 'g' || opt->arg[0] == 'c'))) {	/* Deprecated syntax */
 					GMT_Report (API, GMT_MSG_COMPAT, "-Nc|g[+a] option is deprecated; use -T[<min>/<max>/]<int>[+a|n] instead.\n");
 					if ((c = strstr (opt->arg, "+a"))) {	/* Want to output any spatial distances computed */
@@ -390,13 +396,13 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'Q':	/* Assess quality of output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.value = atof (opt->arg);
 				Ctrl->Q.active = true;
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->Q.value);
 				break;
 			case 'S':	/* Activate symmetry test */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
-				Ctrl->S.value = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->S.value);
 				break;
 			case 'T':	/* Set output knots */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
