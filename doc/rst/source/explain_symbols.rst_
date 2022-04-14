@@ -590,7 +590,7 @@
 
             **s**\|\ **S**\ *n_symbol*\ [/*min_dist*\ [**c**\|\ **i**\|\ **p**]]
                 Same as **n**\|\ **N**\ *n_symbol* but implies that the input data are
-		        first to be converted into a series of 2-point line segments before plotting.
+                first to be converted into a series of 2-point line segments before plotting.
 
             **x**\|\ **X**\ *xfile.txt*
                 Read the ASCII multisegment file *xfile.txt* and places symbols at the
