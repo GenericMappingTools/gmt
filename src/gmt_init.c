@@ -18118,7 +18118,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c requires a file argument\n", option);
 				error++;
 			}
-			else if (!gmt_M_file_is_memory (item) && gmt_access (GMT, item, F_OK)) {	/* File does not exist */
+			else if (gmt_access (GMT, item, F_OK)) {	/* File does not exist */
 				error++;
 			}
 			break;
