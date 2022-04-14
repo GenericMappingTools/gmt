@@ -3826,13 +3826,13 @@ GMT_LOCAL int gmtplot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_
 }
 
 GMT_LOCAL void gmtplot_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, int outline, bool *flush) {
-    /* Finishes drawing a line or polygon that has been building, then resets flush and n */
+	/* Finishes drawing a line or polygon that has been building, then resets flush and n */
 	int draw_outline;
 
-    *flush = false;         /* We are flushing it now */
-    if (*n == 0) return;    /* There is nothing to flush */
+	*flush = false;         /* We are flushing it now... */
+	if (*n == 0) return;    /* ...but there was nothing to flush */
 
-    draw_outline = (outline && p->rgb[0] != -1) ? 1 : 0;
+	draw_outline = (outline && p->rgb[0] != -1) ? 1 : 0;
 	if (draw_outline) gmt_setpen (GMT, p);
 	if (outline == 2) {	/* Stroke path only */
 		PSL_plotline (PSL, x, y, (int)*n, PSL_MOVE|PSL_STROKE);
