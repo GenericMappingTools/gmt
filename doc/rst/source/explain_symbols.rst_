@@ -378,10 +378,13 @@
                 contour when the cumulative along-contour distance equals *fraction
                 \* dist* [0.25].
 
-            **f**\ *ffile.txt*
+            **f**\ *ffile.txt*\ [/*slop*\ [**c**\|\ **i**\|\ **p**]]
                 Read the ASCII file *ffile.txt* and places labels at locations in the
-                file that matches locations along the quoted lines. Inexact matches
-                and points outside the region are skipped.
+                file that best matches locations along the quoted lines. Labels will
+                only be placed if the coordinates match the line coordinates to
+                within a distance of *slop* (append desired unit or we use
+                :term:`PROJ_LENGTH_UNIT`). The default *slop* is zero, meaning only
+                exact coordinate matches will do.
 
             **l**\|\ **L**\ *line1*\ [,\ *line2*,...]
                 Give the coordinates of the end points for one or more comma-separated straight line segments.
@@ -560,10 +563,13 @@
                 line when the cumulative along-line distance equals *fraction
                 \* dist* [0.25].
 
-            **f**\ *ffile.txt*
-                Read the ASCII file *ffile.txt* and places symbols at locations in the
-                file that matches locations along the decorated lines. Inexact matches
-                and points outside the region are skipped.
+            **f**\ *ffile.txt*\ [/*slop*\ [**c**\|\ **i**\|\ **p**]]
+                Read the ASCII file *ffile.txt* and place symbols at locations in the
+                file that matches locations along the decorated lines. Symbols will
+                only be placed if the coordinates match the line coordinates to
+                within a distance of *slop* (append desired unit or we use
+                :term:`PROJ_LENGTH_UNIT`). The default *slop* is zero, meaning only
+                exact coordinate matches will do.
 
             **l**\|\ **L**\ *line1*\ [,\ *line2*,...]
                 Give the coordinates of the end points for one or more comma-separated straight line segments.
