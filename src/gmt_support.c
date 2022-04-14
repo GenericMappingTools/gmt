@@ -4975,7 +4975,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 
 	if ((type = gmt_locate_custom_symbol (GMT, in_name, name, path, &pos)) == 0) return GMT_RUNTIME_ERROR;
 
-	if (type == GMT_CUSTOM_EPS) {	/* Must replace EPS symbol with a simple 1-action custom symbl EPS command */
+	if (type == GMT_CUSTOM_EPS) {	/* Must replace EPS symbol with a simple 1-action custom symbol EPS command */
 		/* Single action with x=y=0, set size=1, and add in EPS loaded */
 		head = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
 		strncpy (head->name, basename (&name[pos]), GMT_LEN64-1);
