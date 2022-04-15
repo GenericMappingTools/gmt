@@ -835,7 +835,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 					Ctrl->A.file = strdup (&opt->arg[k]);
 				break;
 			case 'C':	/* Processed in the main loop but not here; just skip */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				break;
 			case 'E':	/* Set minimum eigenvalue cutoff */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);

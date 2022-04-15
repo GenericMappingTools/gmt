@@ -376,13 +376,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				n_errors += psmeca_A_parse (GMT, Ctrl, opt->arg);
 				break;
 			case 'C':	/* Either modern -Ccpt option or a deprecated -C now served by -A */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				/* Change position [set line attributes] */
 				if (psmeca_is_old_C_option (GMT, opt->arg)) {	/* Need the -A parser for obsolete -C syntax */
 					Ctrl->A.active = true;
 					n_errors += psmeca_A_parse (GMT, Ctrl, opt->arg);
 				}
 				else {	/* Here we have the modern -C<cpt> parsing */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 					Ctrl->C.active = true;
 					if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				}

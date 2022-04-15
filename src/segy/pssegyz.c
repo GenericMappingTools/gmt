@@ -295,11 +295,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				if (Ctrl->S.active) {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Can't specify more than one trace location key\n");
-					n_errors++;
-					continue;
-				}
 				Ctrl->S.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) == 2) {
 					txt[0] = txt_a;	txt[1] = txt_b;
