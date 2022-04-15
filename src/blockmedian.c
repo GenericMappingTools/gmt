@@ -216,7 +216,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GM
 						n_errors++;
 					}
 					else 	/* We can add one more */
-						n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
+						n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]));
 					Ctrl->G.n++;
 				}
 				break;

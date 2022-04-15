@@ -331,7 +331,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 						else
 							Ctrl->A.mode = PSEVENTS_LINE_REC;	/* Read line (x,y,t) records */
 						break;
-					case 's':	Ctrl->A.mode = PSEVENTS_LINE_SEG; break;	/* Read polygons/lines segments */
+					case 's':	/* Read polygons/lines segments */
+						Ctrl->A.mode = PSEVENTS_LINE_SEG;
+						break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Specify -Ar[<dpu>]|s\n");
 						n_errors++;
@@ -348,7 +350,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
-				if (opt->arg[0]) Ctrl->D.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->D.string);
 				break;
 
 			case 'E':	/* Set event times. If -T is abstime then these are in units of TIME_UNIT [s] */
@@ -398,7 +400,7 @@ maybe_set_two:
 			case 'G':	/* Set a fixed symbol fill */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.fill = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->G.fill);
 				break;
 
 			case 'H':	/* Label text box settings */
@@ -504,7 +506,7 @@ maybe_set_two:
 			case 'Q':	/* Save events file for posterity */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
-				if (opt->arg[0]) Ctrl->Q.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Q.file));
 				break;
 
 			case 'S':	/* Set symbol type and size (append units) */
@@ -632,12 +634,10 @@ maybe_set_two:
 		n_errors += gmt_M_check_condition (GMT, GMT->current.setting.proj_length_unit == GMT_PT, "PROJ_LENGTH_UNIT: Must be either cm or inch for -Ar<dpu> to work.\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active && Ctrl->M.active[PSEVENTS_DZ], "Option -Mz: Requires -C");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.string == NULL, "Option -D: No argument given\n");
 	n_errors += gmt_M_check_condition (GMT, !gmt_M_is_zero (Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_DECAY]), "Option -Et: No decay phase for labels.\n");
 	n_errors += gmt_M_check_condition (GMT, !gmt_M_is_zero (Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_PLATEAU]), "Option -Et: No plateau phase for labels.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->F.string == NULL, "Option -F: No argument given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->G.fill == NULL, "Option -G: No argument given\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.file == NULL, "Option -Q: No file name given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (!Ctrl->C.active && !Ctrl->G.active && !Ctrl->W.active), "Option -S: Must specify at least one of -C, -G, -W to plot visible symbols.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && (!Ctrl->C.active && !Ctrl->G.active && !Ctrl->W.active), "Option -Z: Must specify at least one of -C, -G, -W to plot visible symbols.\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
