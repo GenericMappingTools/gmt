@@ -371,7 +371,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 
 			case 'A':	/* Mask option */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if ((c = strstr (opt->arg, "+s"))) {	/* Got a radial boost factor */
 					Ctrl->A.r_scale = atof (&c[2]);
 					c[0] = '\0';	/* Hide modifier */
@@ -391,7 +390,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'C':	/* Shape option */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				Ctrl->C.code = opt->arg[0];
 				switch (opt->arg[0]) {
 					case 'c': Ctrl->C.mode = SHAPE_CONE; break;
@@ -411,16 +409,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'D':	/* Cartesian unit option */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				Ctrl->D.unit = opt->arg[0];
 				break;
 			case 'E':	/* Elliptical shapes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				break;
 			case 'F':	/* Truncation fraction */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				Ctrl->F.mode = TRUNC_FILE;
 				if (opt->arg[0]) {
 					Ctrl->F.value = atof (opt->arg);
@@ -429,13 +424,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'G':	/* Output file name or name template */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'H':	/* Reference seamount density parameters */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "dp"))) {
 					unsigned int pos = 0;
 					char txt[GMT_LEN256] = {""};
@@ -467,12 +460,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'I':	/* Grid spacing */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'K':	/* Output file name for density grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->K.active);
-				Ctrl->K.active = true;
 				if (opt->arg[0]) {
 					Ctrl->K.file = strdup (opt->arg);
 					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->K.file))) n_errors++;
@@ -484,7 +475,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'L':	/* List area, volume and mean height only, then exit */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if (opt->arg[0]) {
 					Ctrl->L.mode = 1;
 					Ctrl->L.value = atof (opt->arg);
@@ -492,17 +482,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'M':	/* Output file name with list of generated grids */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
 				if (opt->arg[0]) Ctrl->M.file = strdup (opt->arg);
 				break;
 			case 'N':	/* Normalization to max height */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				Ctrl->N.value = atof (opt->arg);
 				break;
 			case 'Q':	/* Set two modes: build mode and flux mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if ((c = strstr (opt->arg, "+d"))) {
 					Ctrl->Q.disc = true;
 					c[0] = '\0';	/* Hide modifier */
@@ -638,13 +625,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'T':	/* Time array selection */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if ((Ctrl->T.n_times = gmt_modeltime_array (GMT, opt->arg, &Ctrl->T.log, &Ctrl->T.time)) == 0)
 					n_errors++;
 				break;
 			case 'W':	/* Output file name for average density grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg[0]) {
 					Ctrl->W.file = strdup (opt->arg);
 					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->W.file))) n_errors++;
@@ -656,7 +641,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'Z':	/* Background relief level (or NaN) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				Ctrl->Z.value = (strcasecmp (opt->arg, "nan")) ? atof (opt->arg) : GMT->session.d_NaN;
 				break;
 

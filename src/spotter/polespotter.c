@@ -152,49 +152,41 @@ static int parse (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *Ctrl, struct GM
 
 			case 'A':	/* File with abyssal hill traces */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
 				break;
 			case 'D':	/* Step length */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				Ctrl->D.length = atof (opt->arg);
 				break;
 			case 'E':	/* Sigma of lines (store 1/sigma here) */
 				switch (opt->arg[0]) {
 					case 'a':
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active[0]);
-						Ctrl->E.active[0] = true;
 						Ctrl->A.weight = 1.0 / atof (&opt->arg[1]);
 						break;
 					case 'f':
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active[1]);
-						Ctrl->E.active[1] = true;
 						Ctrl->F.weight = 1.0 / atof (&opt->arg[1]);
 						break;
 				}
 				break;
 			case 'F':	/* File with fracture zone traces */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* Normalize grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				break;
 			case 'S':	/* modes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
@@ -230,7 +222,6 @@ static int parse (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *Ctrl, struct GM
 					default:
 						n_errors++;
 				}
-				Ctrl->S.active = true;
 				break;
 
 			default:	/* Report bad options */

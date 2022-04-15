@@ -242,7 +242,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 
 			case 'A':	/* Area comparisons */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'u': Ctrl->A.mode = GRDSELECT_UNION; k = 1; break;
 					case 'i': Ctrl->A.mode = GRDSELECT_INTERSECTION; k = 1; break;
@@ -262,13 +261,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'C':	/* Point file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->C.file))) n_errors++;
 				break;
 			case 'D':	/* Specified grid increments */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				if (opt->arg[0] && gmt_getinc (GMT, opt->arg, Ctrl->D.inc)) {
 					gmt_inc_syntax (GMT, 'D', 1);
 					n_errors++;
@@ -276,12 +273,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'E':	/* Column format */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (opt->arg[0] == 'b') Ctrl->E.box = true;
 				break;
 			case 'F':	/* Polygon file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if ((c = strstr (opt->arg, "+i")))
 					Ctrl->F.mode = GMT_INSIDE;
 				else if ((c = strstr (opt->arg, "+o")))
@@ -293,7 +288,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'I':	/* Invert selected tests */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (opt->arg[0] == '\0') {   /* If -I is given then all tests are reversed */
 					for (k = 0; k < GRD_SELECT_N_TESTS; k++) Ctrl->I.pass[k] = false;
 				}
@@ -319,13 +313,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'L':	/* Line file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if (opt->arg[0]) Ctrl->L.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
 				break;
 			case 'M':	/* Extend the region */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
 				k = GMT_Get_Values (GMT->parent, opt->arg, Ctrl->M.margin, 4);
 				if (k == 1)	/* Same increments in all directions */
 					Ctrl->M.margin[XHI] = Ctrl->M.margin[YLO] = Ctrl->M.margin[YHI] = Ctrl->M.margin[XLO];
@@ -340,7 +332,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'N':	/* NaN condition */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
 					case 'l':	Ctrl->N.mode = GRDSELECT_LESS_NANS;	break;
 					case 'h':	Ctrl->N.mode = GRDSELECT_MORE_NANS;	break;
@@ -352,18 +343,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'Q':	/* Expect cubes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
+				break;
+			case 'W':	/* w range */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				n_errors += gmt_get_limits (GMT, 'W', opt->arg, 1, &Ctrl->W.w_min, &Ctrl->W.w_max);
 				break;
 			case 'Z':	/* z range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				n_errors += gmt_get_limits (GMT, 'Z', opt->arg, 1, &Ctrl->Z.z_min, &Ctrl->Z.z_max);
-				break;
-
-			case 'W':	/* w range */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
-				n_errors += gmt_get_limits (GMT, 'W', opt->arg, 1, &Ctrl->W.w_min, &Ctrl->W.w_max);
 				break;
 
 			default:	/* Report bad options */
