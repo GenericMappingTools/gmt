@@ -167,10 +167,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GM
 			case 'C':	/* Report center of block instead */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
-				if (opt->arg[0]) {	/* Do not allow mistaken arguments here */
-					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Takes no argument but found %s\n", opt->arg);
-					n_errors++;
-				}
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'E':	/* Report extended statistics */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
@@ -218,11 +215,9 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GM
 						GMT_Report (API, GMT_MSG_COMPAT, "Option -G: Too many output grids specified!\n");
 						n_errors++;
 					}
-					else {	/* We can add one more */
-						Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
-						if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
-						Ctrl->G.n++;
-					}
+					else 	/* We can add one more */
+						n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
+					Ctrl->G.n++;
 				}
 				break;
 			case 'I':	/* Get block dimensions */
@@ -233,20 +228,12 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GM
 			case 'Q':	/* Quick mode for median z */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;		/* Get median z and (x,y) of that point */
-				if (opt->arg[0]) {	/* Do not allow mistaken arguments here */
-					GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Takes no argument but found %s\n", opt->arg);
-					n_errors++;
-				}
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':	/* Select a particular quantile [0.5 (median)] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
-				if (opt->arg[0])
-					Ctrl->T.quantile = atof (opt->arg);
-				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -T: No argument given\n");
-					n_errors++;
-				}
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->T.quantile);
 				break;
 			case 'W':	/* Use in|out weights -W[i|o][+s|w] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);

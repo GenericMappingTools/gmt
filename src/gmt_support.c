@@ -18656,3 +18656,81 @@ double gmt_get_vector_shrinking (struct GMT_CTRL *GMT, struct GMT_VECT_ATTR *v, 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Given vector value %g and shrink limit %g, returned scale = %g\n", val, v->v_norm, s);
 	return (s);
 }
+
+/* Helper functions to handle the parsing of option and modifier arguments that are required.
+ * If argument is missing then that is an error, otherwise we parse and return */
+
+unsigned int gmtsupport_print_and_err (struct GMT_CTRL *GMT, char *text, char option, char modifier) {
+	unsigned int error = GMT_NOERROR;
+	if (!text || !text[0]) {
+		if (modifier)
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument provided for modifier +%c\n", option, modifier);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument provided\n", option);
+		error = GMT_PARSE_ERROR;
+	}
+	return (error);
+}
+
+unsigned int gmt_get_required_file (struct GMT_CTRL *GMT, char *text, char option, char modifier, unsigned int family, unsigned int direction, unsigned int mode, char **string) {
+	/* Get required file name and do basic path checking */
+	unsigned int err;
+	if ((err = gmt_get_required_string (GMT, text, option, modifier, string))) return (err);
+	/* Got a name, check it */
+	if (GMT_Get_FilePath (GMT->parent, family, direction, mode, string))
+		err++;
+	return (err);
+}
+
+unsigned int gmt_get_no_argument (struct GMT_CTRL *GMT, char *text, char option, char modifier) {
+	/* Return error if an argument actually was given when none is expected */
+	unsigned int error = GMT_NOERROR;
+	if (text && text[0]) {
+		if (modifier)
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument expected for modifier +%c\n", option, modifier);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument expected\n", option);
+		error = GMT_PARSE_ERROR;
+	}
+	return (error);
+}
+
+unsigned int gmt_get_required_uint (struct GMT_CTRL *GMT, char *text, char option, char modifier, unsigned int *value) {
+	/* Convert the text arg to an unsigned int and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*value = (unsigned int)atoi (text);
+	return (err);
+}
+
+unsigned int gmt_get_required_sint (struct GMT_CTRL *GMT, char *text, char option, char modifier, int *value) {
+	/* Convert the text arg to a signed int and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*value = atoi (text);
+	return (err);
+}
+
+unsigned int gmt_get_required_float (struct GMT_CTRL *GMT, char *text, char option, char modifier, float *value) {
+	/* Convert the text arg to a float and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*value = (float)atof (text);
+	return (err);
+}
+
+unsigned int gmt_get_required_double (struct GMT_CTRL *GMT, char *text, char option, char modifier, double *value) {
+	/* Convert the text arg to a double and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*value = atof (text);
+	return (err);
+}
+
+unsigned int gmt_get_required_string (struct GMT_CTRL *GMT, char *text, char option, char modifier, char **string) {
+	/* Convert the text arg to an allocated string and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*string = strdup (text);
+	return (err);
+}

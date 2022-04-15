@@ -171,10 +171,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 			case 'C':	/* Report center of block instead */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
-				if (opt->arg[0]) {	/* Do not allow mistaken arguments here */
-					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Takes no argument but found %s\n", opt->arg);
-					n_errors++;
-				}
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':	/* Histogram mode estimate */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
@@ -240,11 +237,9 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 						GMT_Report (API, GMT_MSG_COMPAT, "Option -G: Too many output grids specified!\n");
 						n_errors++;
 					}
-					else {	/* We can add one more */
-						Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
-						if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
-						Ctrl->G.n++;
-					}
+					else 	/* We can add one more */
+						n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
+					Ctrl->G.n++;
 				}
 				break;
 			case 'I':	/* Get block dimensions */
@@ -255,10 +250,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 			case 'Q':	/* Quick mode for modal z */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
-				if (opt->arg[0]) {	/* Do not allow mistaken arguments here */
-					GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Takes no argument but found %s\n", opt->arg);
-					n_errors++;
-				}
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'W':	/* Use in|out weights -W[i|o][+s] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
