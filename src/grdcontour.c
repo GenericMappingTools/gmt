@@ -347,11 +347,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':	/* Contour interval/cpt */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				if (Ctrl->C.active) {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Given more than once\n");
-					n_errors++;
-					break;
-				}
 				Ctrl->C.active = true;
 				n_errors += gmt_contour_C_arg_parsing (GMT, opt->arg, &Ctrl->C.info);
 				break;

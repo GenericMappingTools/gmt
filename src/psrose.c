@@ -270,7 +270,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'C':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				if (gmt_M_compat_check (GMT, 5)) {	/* Need to check for deprecated -Cm|[+w]<modefile> option */
 					if (((c = strstr (opt->arg, "+w")) || (opt->arg[0] == 'm' && opt->arg[1] == '\0') || opt->arg[0] == '\0') && strstr (opt->arg, GMT_CPT_EXTENSION) == NULL) {
 						GMT_Report (API, GMT_MSG_COMPAT, "Option -C for mode-vector(s) is deprecated; use -E instead.\n");
@@ -290,7 +289,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 						break;
 					}
 				}
-				Ctrl->C.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
