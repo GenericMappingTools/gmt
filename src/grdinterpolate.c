@@ -609,7 +609,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 
-			sprintf (cmd, "%s -G%s ->%s", i_file, grid, o_file);
+			sprintf (cmd, "%s -G%s -N ->%s", i_file, grid, o_file);	/* Pass -N since points may be outside and we want NaNs returned then */
 			if (GMT->common.R.active[RSET]) {	/* Gave a subregion, so pass -R along */
 				strcat (cmd, " -R");
 				strcat (cmd, GMT->common.R.string);
