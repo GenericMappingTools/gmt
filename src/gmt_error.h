@@ -92,10 +92,18 @@ EXTERN_MSC const char * GMT_strerror (int err);
 
 #define gmt_M_is_verbose(C,level) (MAX(C->parent->verbose, C->current.setting.verbose) >= level)
 
-/* Check condition and report error if true */
+/* Check condition and report error if true - passing GMT as arg */
 #define gmt_M_check_condition(C,condition,...) ((condition) ? 1+GMT_Report(C->parent,GMT_MSG_ERROR,__VA_ARGS__) : 0)
-/* Check if a module option has been called more than once (context has opt available) */
-#define gmt_M_repeated_module_option(API,active) (gmt_M_check_condition (API->GMT, active, "Option -%c: Given more than once (offending option is -%c%s)\n", opt->option, opt->option, opt->arg))
+/* Check condition and report error if true - passing API as arg */
+#define gmt_M_check_active(API,condition,...) ((condition) ? 1+GMT_Report(API,GMT_MSG_ERROR,__VA_ARGS__) : 0)
+/* Check if a module option has been called more than once (context has opt available), then sets active to true. */
+#define gmt_M_repeated_module_option(API,active) gmt_M_check_active (API, active, "Option -%c: Given more than once (offending option is -%c%s)\n", opt->option, opt->option, opt->arg); active = true
+/* Because it is called like this:
+ *		n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+ * the macro expands to the two statements
+ *		n_errors += ((Ctrl->T.active) ? 1+GMT_Report (API,GMT_MSG_ERROR, "Option -%c: Given more than once (offending option is -%c%s)\n", opt->option, opt->option, opt->arg) : 0); Ctrl->T.active = true;
+ * which is why the macro does not have a semi-colon at the end after setting active = true
+ */
 
 /* Set __func__ identifier */
 #ifndef HAVE___FUNC__

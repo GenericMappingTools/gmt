@@ -201,7 +201,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'C':	/* Rheology constants E and nu */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				switch (opt->arg[0]) {
 					case 'p':
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[0]);
