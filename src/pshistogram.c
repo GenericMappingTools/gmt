@@ -779,11 +779,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 				Ctrl->S.active = true;
 				break;
 			case 'T':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				t_arg = opt->arg;
 				break;
 			case 'W':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				w_arg = opt->arg;
 				break;
 			case 'Z':

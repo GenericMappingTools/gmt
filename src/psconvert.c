@@ -252,7 +252,7 @@ GMT_LOCAL void psconvert_pclose2 (struct popen2 **Faddr, int dir) {
 GMT_LOCAL int psconvert_parse_new_A_settings (struct GMT_CTRL *GMT, char *arg, struct PSCONVERT_CTRL *Ctrl) {
 	/* Syntax: -A[+r][+u] */
 	gmt_M_unused (GMT);
-	Ctrl->A.active = Ctrl->A.crop = true;
+	Ctrl->A.crop = true;
 
 	if (strstr (arg, "r"))
 		Ctrl->A.round = true;
@@ -284,7 +284,6 @@ GMT_LOCAL int psconvert_parse_new_I_settings (struct GMT_CTRL *GMT, char *arg, s
 		return (error);
 	}
 
-	Ctrl->I.active = true;
 	while (gmt_getmodopt (GMT, 'N', arg, "msS", &pos, p, &error) && error == 0) {
 		switch (p[0]) {
 			case 'm':	/* Margins */
@@ -352,8 +351,6 @@ GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, s
 	char p[GMT_LEN128] = {""};
 
 	if (gmt_validate_modifiers (GMT, arg, 'N', "fgip", GMT_MSG_ERROR)) return (1);	/* Bail right away */
-
-	Ctrl->N.active = true;
 
 	while (gmt_getmodopt (GMT, 'N', arg, "fgip", &pos, p, &error) && error == 0) {
 		switch (p[0]) {
@@ -482,10 +479,14 @@ GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struc
 	}
 	/* Now parse -A and possibly -I -N via backwards compatibility conversions */
 	n_errors += psconvert_parse_new_A_settings (GMT, A_option, Ctrl);
-	if (I_option[0])
+	if (I_option[0]) {
 		n_errors += psconvert_parse_new_I_settings (GMT, I_option, Ctrl);
-	if (N_option[0])
+		Ctrl->I.active = true;
+	}
+	if (N_option[0]) {
 		n_errors += psconvert_parse_new_N_settings (GMT, N_option, Ctrl);
+		Ctrl->N.active = true;
+	}
 	return (n_errors);
 }
 
@@ -496,7 +497,6 @@ GMT_LOCAL int psconvert_parse_GE_settings (struct GMT_CTRL *GMT, char *arg, stru
 	char p[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	C->W.active = true;
 	while (gmt_getmodopt (GMT, 'W', arg, "acfgklnotu", &pos, p, &error) && error == 0) {	/* Looking for +a, etc */
 		switch (p[0]) {
 			case 'a':	/* Altitude setting */
@@ -857,9 +857,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 						break;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M[j].active);
-				if (!n_errors && !Ctrl->M[j].active) {	/* Got -Mb<file> or -Mf<file> */
+				if (!n_errors && Ctrl->M[j].active) {	/* Got -Mb<file> or -Mf<file> */
 					if (!gmt_access (GMT, &opt->arg[1], R_OK)) {	/* The plot file exists */
-						Ctrl->M[j].active = true;
 						Ctrl->M[j].file = strdup (&opt->arg[1]);
 					}
 					else {

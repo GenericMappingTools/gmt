@@ -247,11 +247,6 @@ static int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_O
 			/* variable spacing */
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				if (Ctrl->S.active) {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Can only be set once\n");
-					n_errors++;
-				}
-				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'o':
 						Ctrl->S.mode = PLOT_OFFSET;

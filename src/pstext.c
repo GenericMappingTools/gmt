@@ -610,9 +610,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->N.active = true;
 				break;
 			case 'S':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				if (opt->arg[0] == '\0' || (k = gmt_count_char (GMT, opt->arg, '/')) > 0 || gmt_is_fill (GMT, opt->arg)) {
 					/* -S[<dx>/<dy>/][>shade>]; requires -G */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 					Ctrl->S.active = true;
 					if (opt->arg[0]) {
 						k = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
@@ -665,15 +665,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'Z':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				/* For backward compatibility we will see -Z+ as the current -Z
 				 * and -Z<level> as an alternative to -p<az>/<el>/<level> */
-				if (opt->arg[0] == '+' && !opt->arg[1])	/* Deprecated -Z+ option */
-					Ctrl->Z.active = true;
+				if (opt->arg[0] == '+' && !opt->arg[1])	{	/* Deprecated -Z+ option */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				}
 				else if (opt->arg[0])	/* Deprecated -Z<level> option */
 					GMT->current.proj.z_level = atof(opt->arg);
-				else	/* Normal -Z only */
-					Ctrl->Z.active = true;
+				else {	/* Normal -Z only */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				}
 				break;
 
 			case 'i':	/* Local -i option for pstext to select a specific word in the text */

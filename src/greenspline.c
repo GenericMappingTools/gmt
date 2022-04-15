@@ -550,12 +550,12 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				if (Ctrl->C.value < 0.0) Ctrl->C.dryrun = true, Ctrl->C.value = 0.0;	/* Check for deprecated syntax giving negative value */
 				break;
 			case 'D':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				if (gmt_M_compat_check (API->GMT, 6) && strlen (opt->arg) == 1) {	/* Old -D<mode> option supported for backwards compatibility (now -Z) */
 					Ctrl->Z.active = true;
 					Ctrl->Z.mode = atoi (opt->arg);	/* Since I added 0 to be 1-D later so now this is mode -1 */
 				}
 				else {	/* Give grid or cube information */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 					Ctrl->D.active = true;
 					Ctrl->D.information = strdup (opt->arg);
 				}
