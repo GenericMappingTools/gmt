@@ -366,6 +366,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.value = atof (opt->arg);
 				break;
 			case 'N':
 				if (gmt_M_compat_check (GMT, 4)) {
