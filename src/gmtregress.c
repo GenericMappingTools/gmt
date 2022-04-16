@@ -261,7 +261,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':	/* Set confidence level in %, convert to fraction */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.value = atof (opt->arg) * 0.01;
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->C.value);
+				Ctrl->C.value *= 0.01;
 				break;
 			case 'E':	/* Select regression type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
@@ -346,7 +347,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {	/* Look for one-sided outliers */
 					case '-': Ctrl->Z.mode = -1;	break;
 					case '+': Ctrl->Z.mode = +1;	break;
-					default: Ctrl->Z.mode = 0;		break;
+					default:  Ctrl->Z.mode = 0;		break;
 				}
 				break;
 

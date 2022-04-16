@@ -285,7 +285,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'W':	/* Scale for the logo */
 				GMT_Report (API, GMT_MSG_COMPAT, "Option -W is deprecated; -D...+w%s was set instead, use this in the future.\n", opt->arg);
-				Ctrl->D.width = gmt_M_to_inch (GMT, opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->D.width);
 				break;
 
 			default:	/* Report bad options */

@@ -306,36 +306,40 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'E':
-				GMT_Report (API, GMT_MSG_COMPAT, "The -E option is deprecated but is accepted.\n");
-				GMT_Report (API, GMT_MSG_COMPAT, "For the current -D syntax you should use -D modifier +e instead.\n");
-				GMT_Report (API, GMT_MSG_COMPAT, "Note you cannot mix new-style modifiers (+e) with the old-style -D option.\n");
-				Ctrl->D.extend = true;
-				if ((c = strchr (opt->arg, 'n')) != NULL) {	/* Got +n[<text>] */
-					c--;	*c = 0; c += 2;
-					Ctrl->D.etext = (*c) ? strdup (c) : strdup ("NaN");
-					Ctrl->D.emode = 4;
-					c -= 2;
+				if (gmt_M_compat_check (GMT, 5)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "The -E option is deprecated but is accepted.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "For the current -D syntax you should use -D modifier +e instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Note you cannot mix new-style modifiers (+e) with the old-style -D option.\n");
+					Ctrl->D.extend = true;
+					if ((c = strchr (opt->arg, 'n')) != NULL) {	/* Got +n[<text>] */
+						c--;	*c = 0; c += 2;
+						Ctrl->D.etext = (*c) ? strdup (c) : strdup ("NaN");
+						Ctrl->D.emode = 4;
+						c -= 2;
+					}
+					j = 0;
+					if (opt->arg[0] == 'b') {
+						Ctrl->D.emode |= 1;
+						j = 1;
+					}
+					else if (opt->arg[j] == 'f') {
+						Ctrl->D.emode |= 2;
+						j = 1;
+					}
+					if (opt->arg[j] == 'b') {
+						Ctrl->D.emode |= 1;
+						j++;
+					}
+					else if (opt->arg[j] == 'f') {
+						Ctrl->D.emode |= 2;
+						j++;
+					}
+					if (j == 0) Ctrl->D.emode |= 3;	/* No b|f added */
+					if (opt->arg[j]) Ctrl->D.elength = gmt_M_to_inch (GMT, &opt->arg[j]);
+					if (c) *c = '+';	/* Put back the + sign */
 				}
-				j = 0;
-				if (opt->arg[0] == 'b') {
-					Ctrl->D.emode |= 1;
-					j = 1;
-				}
-				else if (opt->arg[j] == 'f') {
-					Ctrl->D.emode |= 2;
-					j = 1;
-				}
-				if (opt->arg[j] == 'b') {
-					Ctrl->D.emode |= 1;
-					j++;
-				}
-				else if (opt->arg[j] == 'f') {
-					Ctrl->D.emode |= 2;
-					j++;
-				}
-				if (j == 0) Ctrl->D.emode |= 3;	/* No b|f added */
-				if (opt->arg[j]) Ctrl->D.elength = gmt_M_to_inch (GMT, &opt->arg[j]);
-				if (c) *c = '+';	/* Put back the + sign */
+				else
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
@@ -375,6 +379,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -388,6 +393,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
@@ -442,14 +448,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				else
 					n_errors += gmt_default_option_error (GMT, opt);
 				break;
-			case 'W':	/* Dump out interpolated colors for debugging */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.scale = atof (opt->arg);
-				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->Z.file));
 				break;
+			case 'W':	/* Dump out interpolated colors for debugging */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->W.scale);
 #ifdef DEBUG
 			case 'd':	/* Dump out interpolated colors for debugging */
 				dump = true;

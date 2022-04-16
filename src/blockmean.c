@@ -166,10 +166,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_
 				break;
 			case 'C':	/* Report center of block instead */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				if (opt->arg[0]) {	/* Do not allow mistaken arguments here */
-					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Takes no argument but found %s\n", opt->arg);
-					n_errors++;
-				}
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'E':	/* Extended report with standard deviation, min, and max in cols 4-6 */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
@@ -194,7 +191,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_
 						n_errors++;
 					}
 					else 	/* We can add one more */
-						n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
+						n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]));
 					Ctrl->G.n++;
 				}
 				break;
