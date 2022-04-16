@@ -116,6 +116,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT_OPT
 
 			case 'C':	/* Convert GMT4 .gmtdefaults4 to gmt.conf */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':	/* Get GMT system-wide defaults settings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);

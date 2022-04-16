@@ -328,14 +328,14 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				switch (opt->arg[1]) {
 					case 'x':
-						Ctrl->A.scale = atof (&opt->arg[2]);
+						n_errors += gmt_get_required_double (GMT, &opt->arg[2], opt->option, 'x', &Ctrl->A.scale);
 						Ctrl->A.get_alt = true;
 						break;
 					case '\0':
 						Ctrl->A.get_alt = true;
 						break;
 					default:
-						Ctrl->A.altitude = atof (&opt->arg[1]);
+						n_errors += gmt_get_required_double (GMT, &opt->arg[1], opt->option, 0, &Ctrl->A.altitude);
 						break;
 				}
 				switch (opt->arg[0]) {
@@ -362,7 +362,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 			case 'D':	/* Description file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				gmt_M_str_free (Ctrl->D.file);
-				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->D.file));
 				break;
 			case 'E':	/* Extrude feature down to the ground */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
@@ -440,11 +440,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 			case 'I':	/* Custom icon */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				gmt_M_str_free (Ctrl->I.file);
-				if (opt->arg[0] == '+')
+				if (opt->arg[0] == '+') {
 					snprintf (buffer, GMT_LEN256, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
+					Ctrl->I.file = strdup (buffer);
+				}
 				else if (opt->arg[0])
-					strncpy (buffer, opt->arg, GMT_LEN256-1);
-				Ctrl->I.file = strdup (buffer);
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_LOCAL, &(Ctrl->I.file));
 				break;
 			case 'L':	/* Extended data */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);

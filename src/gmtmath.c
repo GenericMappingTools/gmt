@@ -837,7 +837,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'E':	/* Set minimum eigenvalue cutoff */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.eigen = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->E.eigen);
 				break;
 			case 'F':	/* Now obsolete, using -o instead */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -849,9 +849,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':	/* Reverse output order */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'L':	/* Apply operator per segment basis */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Sets no of columns and optionally the time column [0] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);

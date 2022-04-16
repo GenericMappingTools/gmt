@@ -244,6 +244,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 
 			case 'A':	/* pAste mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'C':	/* record-count selection mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
@@ -277,7 +278,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 					c[0] = '\0';	/* Chop off modifier */
 					Ctrl->D.origin = true;
 				}
-				if (*opt->arg) /* optarg is optional */
+				if (*opt->arg) /* arg is optional */
 					Ctrl->D.name = strdup (opt->arg);
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
@@ -330,6 +331,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 				break;
 			case 'L':	/* Only output segment headers */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Sort per segment on specified column */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
