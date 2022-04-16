@@ -187,21 +187,17 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				if (!opt->arg[0] && gmt_M_compat_check (GMT, 4)) {	/* In GMT4, just -A implied -Az */
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -A is deprecated; use -Az instead.\n");
-					Ctrl->A.active = true;
 					Ctrl->A.mode = 'z';
 				}
 				else if (!strchr ("dflmnrSsuz", opt->arg[0])) {
 					GMT_Report (API, GMT_MSG_ERROR, "Select -Ad, -Af, -Al, -Am, -An, -Ar, -AS, -As, -Au, or -Az\n");
 					n_errors++;
 				}
-				else {
-					Ctrl->A.active = true;
+				else
 					Ctrl->A.mode = opt->arg[0];
-				}
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				Ctrl->D.information = strdup (opt->arg);
 				break;
 			case 'E':
@@ -218,13 +214,11 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':
@@ -245,12 +239,10 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				if (opt->arg[0]) Ctrl->S.file = strdup (opt->arg);
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				ptr_to_arg = opt->arg;
 				break;
 

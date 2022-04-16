@@ -109,7 +109,6 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.use_igrf = true;
 	C->M.pad_zero = true;
-	C->N.active = true;
 	C->F.ncoef_row = 25;
 	C->F.ncoef_col = 25;
 	C->T.year = 2000;
@@ -151,7 +150,7 @@ GMT_LOCAL void grdgravmag3d_rtp_filt_colinear (int i, int j, int n21, double *gx
 	gxr[ij] = rnr * t2;
 	gxi[ij] = rni * t2;
 
-	if (Ctrl->N.active) {		/* Use the Taylor expansion */
+	if (!Ctrl->N.active) {		/* Use the Taylor expansion */
 		gxar[ij] = -2*alfa_u_beta_v*u*ro2 * t2 - 4*(gama_ro_2-alfa_u_beta_v_2)*ro2*alfa_u_beta_v*u * t3;
 		gxai[ij] = 2*gama*ro3*u * t2 - 8*gama*ro3*alfa_u_beta_v_2*u * t3;
 		gxbr[ij] = -2*alfa_u_beta_v*v*ro2 * t2 - 4*(gama_ro_2-alfa_u_beta_v_2)*ro2*alfa_u_beta_v*v * t3;
@@ -200,7 +199,7 @@ GMT_LOCAL void grdgravmag3d_rtp_filt_not_colinear (int i, int j, int n21, double
 	gxr[ij] = rnr / den_r;
 	gxi[ij] = rni / den_r;
 
-	if (Ctrl->N.active) {		/* Use the Taylor expansion */
+	if (!Ctrl->N.active) {		/* Use the Taylor expansion */
 		gxar[ij] = -u*tau_u_mu_v*ro2/den_r -2*(-alfa_u_beta_v_tau_u_mu_v+gama*ro2*nu)*ro2*alfa_u_beta_v*u/den_i1;
 		gxai[ij] = u*nu*ro3/den_r -2*(alfa_u_beta_v_nu+tau_u_mu_v_gama)*ro3*alfa_u_beta_v*u/den_i1;
 		gxbr[ij] = -v*tau_u_mu_v*ro2/den_r -2*(-alfa_u_beta_v_tau_u_mu_v+gama*ro2*nu)*ro2*alfa_u_beta_v*v/den_i1;
@@ -1094,7 +1093,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->C.dec, &Ctrl->C.dip);
 				Ctrl->C.dec *= D2R;
 				Ctrl->C.dip *= D2R;
@@ -1103,7 +1101,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				break;
 			case 'E':		/* -Ei<dip_grid> -Ee<dec_grid> */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				Ctrl->C.use_igrf = false;
 				Ctrl->E.dip_grd_only = true;
 
@@ -1137,7 +1134,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				j = sscanf (opt->arg, "%d/%d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
 				if (j == 1) Ctrl->F.compute_n = true;	/* Case of only one filter dimension was given */
 				if (Ctrl->F.ncoef_row %2 != 1 || Ctrl->F.ncoef_col %2 != 1) {
@@ -1151,7 +1147,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
@@ -1171,21 +1166,17 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = false;
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = false;
-			sscanf (opt->arg, "%lf", &Ctrl->T.year);
+				sscanf (opt->arg, "%lf", &Ctrl->T.year);
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = false;
 				sscanf (opt->arg, "%lf", &Ctrl->W.wid);
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				Ctrl->Z.file = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
@@ -1489,7 +1480,7 @@ EXTERN_MSC int GMT_grdredpol (void *V_API, int mode, void *args) {
 						gama1 = -sin(Ctrl->C.dip);
 						da = alfa1 - alfa;	db = beta1 - beta;	dg = gama1 - gama;
 					}
-					if (!Ctrl->N.active)		/* Do not use the Taylor expansion (What's the interest?) */
+					if (Ctrl->N.active)		/* Do not use the Taylor expansion (What's the interest?) */
 						da = db = dg = dt = dm = dn = 0;
 
 					/* Rebuild the filter */

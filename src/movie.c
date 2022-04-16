@@ -743,7 +743,6 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'C':	/* Known frame dimension or set a custom canvas size */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				strncpy (arg, opt->arg, GMT_LEN64-1);	/* Get a copy... */
 				gmt_str_tolower (arg);		/* ..so we can make it lower case */
 				/* 16x9 formats */
@@ -809,7 +808,6 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'E':	/* Title/fade sequence  */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "dfg"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'E', c, "dfg", &pos, p, &n_errors) && n_errors == 0) {
@@ -925,7 +923,6 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'G':	/* Canvas fill */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if ((c = strstr (opt->arg, "+p"))) {	/* Gave outline modifier */
 					if (c[2] && gmt_getpen (GMT, &c[2], &pen)) {	/* Bad pen */
 						gmt_pen_syntax (GMT, 'G', NULL, "+p<pen> sets pen attributes [no outline]", NULL, 0);
@@ -949,19 +946,16 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'H':	/* RIP at a higher dpu, then downsample in gs to improve sub-pixeling */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.active = true;
 				Ctrl->H.factor = atoi (opt->arg);
 				break;
 
 			case 'I':	/* Include file with settings used by all scripts */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				Ctrl->I.file = strdup (opt->arg);
 				break;
 
 			case 'K':	/* Fade from/to a black background -K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->K.active);
-				Ctrl->K.active = true;
 				frames = 0;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "fgp"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
@@ -1017,7 +1011,6 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'M':	/* Create a single frame plot as well as movie (unless -Q is active) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
 				if ((s = strstr (opt->arg, "+r")) ) {	/* Gave specific resolution for master frame */
 					Ctrl->M.dpu = atof (&s[2]);
 					Ctrl->M.dpu_set = true;
@@ -1058,7 +1051,6 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'N':	/* Movie prefix and directory name */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				Ctrl->N.prefix = strdup (opt->arg);
 				break;
 
@@ -1098,7 +1090,6 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'Q':	/* Debug - leave temp files and directories behind; Use -Qs to only write scripts */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (opt->arg[0] == 's') Ctrl->Q.scripts = true;
 				break;
 
@@ -1114,7 +1105,6 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S[k].active);
 				/* Got a valid f or b */
-				Ctrl->S[k].active = true;
 				Ctrl->S[k].file = strdup (&opt->arg[1]);
 				if ((Ctrl->S[k].fp = fopen (Ctrl->S[k].file, "r")) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -S%c: Unable to open file %s\n", opt->arg[0], Ctrl->S[k].file);
@@ -1124,7 +1114,6 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'T':	/* Number of frames or the name of file with frame information (note: file may not exist yet) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "pswW"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'T', c, "pswW", &pos, p, &n_errors) && n_errors == 0) {
@@ -1159,13 +1148,11 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'W':	/* Work dir where data files may be found. If not given we make one up later */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg[0]) Ctrl->W.dir = strdup (opt->arg);
 				break;
 
 			case 'Z':	/* Erase frames after movie has been made */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				if (opt->arg[0] == 's') Ctrl->Z.delete = true;	/* Also delete input scripts */
 				break;
 

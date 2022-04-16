@@ -144,17 +144,14 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 
 			case 'A':	/* Specify z-axis is positive up [Default is down] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				Ctrl->D.rho = atof (opt->arg);
 				if (fabs (Ctrl->D.rho) < 10.0) Ctrl->D.rho *= 1000;	/* Gave units of g/cm^3 */
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'v': Ctrl->F.mode = TALWANI2D_VGG;		break;
 					case 'n': Ctrl->F.mode = TALWANI2D_GEOID;
@@ -173,11 +170,9 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 					switch (opt->arg[k]) {
 						case 'h':
 							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI2D_HOR]);
-							Ctrl->M.active[TALWANI2D_HOR] = true;
 							break;
 						case 'z':
 							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI2D_VER]);
-							Ctrl->M.active[TALWANI2D_VER] = true;
 							break;
 						default:
 							n_errors++;
@@ -189,17 +184,14 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				Ctrl->N.file = strdup (opt->arg);
 				break;
 			case 'T':	/* Either get a file with time coordinate or a min/max/dt setting */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_DIST | GMT_ARRAY_UNIQUE, 0);
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				k = (opt->arg[0] == '/') ? 1 : 0;	/* In case someone gives -Z/ymin/ymax */
 				n = sscanf (&opt->arg[k], "%lf/%lf/%lf", &Ctrl->Z.level, &Ctrl->Z.ymin, &Ctrl->Z.ymax);
 				if (n == 3) Ctrl->Z.mode = 3;

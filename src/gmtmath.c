@@ -803,7 +803,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 
 			case 'A':	/* y(x) table for LSQFIT/SVDFIT operations */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;	k = 0;
 				if (opt->arg[0] == '-') {	/* Old-style leading hyphen to the filename has been replaced by modifier +r */
 					if (gmt_M_compat_check (GMT, 5)) {
 						GMT_Report (API, GMT_MSG_COMPAT, "The leading hyphen in -A is deprecated.  Append modifier +r instead.\n");
@@ -850,20 +849,16 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':	/* Reverse output order */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Apply operator per segment basis */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				break;
 			case 'N':	/* Sets no of columns and optionally the time column [0] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (sscanf (opt->arg, "%" PRIu64 "/%" PRIu64, &Ctrl->N.ncol, &Ctrl->N.tcol) == 1) Ctrl->N.tcol = 0;
 				break;
 			case 'Q':	/* Quick for -Ca -N1/0 -T0/0/1 */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'n')	/* Want no unit conversion on output */
 					Ctrl->Q.unit = GMT_INCH;	/* We do this which will convert from inch to inch, i.e., no change */
 				else if (opt->arg[0] && strchr (GMT_DIM_UNITS, opt->arg[0]))	/* Want a specific unit conversion from inch to this unit on output */
@@ -872,7 +867,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'S':	/* Only want one row (first or last) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'f': case 'F': case '\0':
 						Ctrl->S.mode = -1; break;
@@ -886,7 +880,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':	/* Either get a file with time coordinate or a min/max/dt setting */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				t_arg = opt->arg;
 				break;
 

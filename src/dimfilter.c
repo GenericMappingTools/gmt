@@ -369,26 +369,22 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				set++;
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->D.mode);
 				set++;
 				break;
 #ifdef OBSOLETE
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				set++;
 				break;
 #endif
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'b':
 						Ctrl->F.filter = DIMFILTER_BOXCAR;
@@ -416,24 +412,20 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				set++;
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				set++;
 				break;
 			case 'L':	/* Write shell template to stdout */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Scan: Option to set the number of sections and how to reduce the sector results to a single value */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
 					case 'l':	/* Lower bound (min) */
 						Ctrl->N.filter = DIMSECTOR_MIN;
@@ -461,21 +453,18 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 				break;
 			case 'Q':	/* entering the MAD error analysis mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				set++;
 				break;
 #ifdef OBSOLETE
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				Ctrl->S.file = strdup (opt->arg);
 				set++;
 				break;
 #endif
 			case 'T':	/* Toggle registration */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				set++;
 				break;

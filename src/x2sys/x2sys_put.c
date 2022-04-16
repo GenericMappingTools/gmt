@@ -125,20 +125,16 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct GMT_
 
 			case 'D':	/* Remove all traces of these tracks from the database */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				break;
 			case 'F':	/* Force update of existing tracks if new data are found */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
-			case 'S':
+			case 'S':	/* Swap option for index.b reading [Obsolete but left for backwardness] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;	/* Swap option for index.b reading [Obsolete but left for backwardness] */
 				break;
 
 			default:	/* Report bad options */

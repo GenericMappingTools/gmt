@@ -212,26 +212,21 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPT
 
 			case 'A':	/* Swap data */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = !Ctrl->A.active;
 				break;
 			case 'C':	/* trace clip */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				Ctrl->C.value = (float) atof (opt->arg);
 				break;
 			case 'D':	/* trace scaling */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				Ctrl->D.value = atof (opt->arg);
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				Ctrl->E.value = atof (opt->arg);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (gmt_getrgb (GMT, opt->arg, Ctrl->F.rgb)) {
 					n_errors++;
 					gmt_rgb_syntax (GMT, 'F', " ");
@@ -239,54 +234,44 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				Ctrl->L.value = atoi (opt->arg);
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
 				Ctrl->M.value = atoi (opt->arg);
 				break;
 			case 'N':	/* trace norm. */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				break;
 			case 'Q':
 				switch (opt->arg[0]) {
 					case 'b':	/* Trace bias */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[B_ID]);
-						Ctrl->Q.active[B_ID] = true;
 						Ctrl->Q.value[B_ID] = atof (&opt->arg[1]);
 						break;
 					case 'i':	/* Image dpi */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[I_ID]);
-						Ctrl->Q.active[I_ID] = true;
 						Ctrl->Q.value[I_ID] = atof (&opt->arg[1]);
 						break;
 					case 'u':	/* reduction velocity application */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[U_ID]);
-						Ctrl->Q.active[U_ID] = true;
 						Ctrl->Q.value[U_ID] = atof (&opt->arg[1]);
 						break;
 					case 'x': /* over-rides of header info */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[X_ID]);
-						Ctrl->Q.active[X_ID] = true;
 						Ctrl->Q.value[X_ID] = atof (&opt->arg[1]);
 						break;
 					case 'y': /* over-rides of header info */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Y_ID]);
-						Ctrl->Q.active[Y_ID] = true;
 						Ctrl->Q.value[Y_ID] = atof (&opt->arg[1]);
 						break;
 				}
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'o':
 						Ctrl->S.mode = PLOT_OFFSET;
@@ -301,16 +286,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'T':	/* plot traces only at listed locations */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				break;
 
 			default:	/* Report bad options */
