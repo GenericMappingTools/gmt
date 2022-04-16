@@ -95,7 +95,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct GM
 
 			case 'D':	/* Get GMT system-wide defaults settings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				Ctrl->D.mode = opt->arg[0];
 				break;
 			case 'L':	/* List the user's current GMT defaults settings */

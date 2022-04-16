@@ -215,17 +215,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 
 			case 'D':	/* Give grid information */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				Ctrl->D.information = strdup (opt->arg);
 				break;
 			case 'E':	/* Create or read an equidistant profile for slicing */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				Ctrl->E.lines = strdup (opt->arg);
 				break;
 			case 'F':	/* Set the spline type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'l':	Ctrl->F.mode = GMT_SPLINE_LINEAR;	break;
 					case 'a':	Ctrl->F.mode = GMT_SPLINE_AKIMA;	break;
@@ -249,14 +246,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 				break;
 			case 'T':	/* Set level sampling spacing */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				Ctrl->T.string = strdup (opt->arg);
 				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR | GMT_ARRAY_RANGE | GMT_ARRAY_UNIQUE, GMT_Z);
 				break;
 
 			case 'S':	/* Sample vertically across the grid stack at one or more points */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				if ((c = strstr (opt->arg, "+h"))) {	/* Got a fixed header string for output segment headers */
 					if (c[2])
 						Ctrl->S.header = strdup (&c[2]);
@@ -288,7 +283,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 
 			case 'Z':	/* Control input/output grid management */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				if (opt->arg[0] == 'i') k = 1;	/* Skip the now deprecated 'i' in -Zi */
 				if (opt->arg[k])
 					n_errors += gmt_parse_array (GMT, 'Z', &opt->arg[k], &(Ctrl->Z.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR | GMT_ARRAY_RANGE | GMT_ARRAY_UNIQUE, GMT_Z);

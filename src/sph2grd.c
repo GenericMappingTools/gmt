@@ -154,18 +154,15 @@ static int parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT_OP
 
 			case 'D':	/* Evaluate derivative solutions */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				Ctrl->D.mode = opt->arg[0];
 				GMT_Report (API, GMT_MSG_ERROR, "Comment -D: Not implemented yet.\n");
 				break;
 			case 'E':	/* Evaluate on ellipsoid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				GMT_Report (API, GMT_MSG_ERROR, "Comment -E: Not implemented yet.\n");
 				break;
 			case 'F':	/* Bandpass or Gaussian filter -F[k]<lc>/<lp>/<hp>/<hc> or -F[k]<lo>/<hi>*/
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				k = 0;
 				if (opt->arg[0] == 'k') Ctrl->F.km = true, k = 1;	/* Convert later when GMT is initialized */
 				n = sscanf (&opt->arg[k], "%[^/]/%[^/]/%[^/]/%s", A, B, D, E);
@@ -188,23 +185,19 @@ static int parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				Ctrl->N.mode = opt->arg[0];
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				break;
 
 			default:	/* Report bad options */

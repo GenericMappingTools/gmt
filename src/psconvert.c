@@ -252,7 +252,7 @@ GMT_LOCAL void psconvert_pclose2 (struct popen2 **Faddr, int dir) {
 GMT_LOCAL int psconvert_parse_new_A_settings (struct GMT_CTRL *GMT, char *arg, struct PSCONVERT_CTRL *Ctrl) {
 	/* Syntax: -A[+r][+u] */
 	gmt_M_unused (GMT);
-	Ctrl->A.active = Ctrl->A.crop = true;
+	Ctrl->A.crop = true;
 
 	if (strstr (arg, "r"))
 		Ctrl->A.round = true;
@@ -284,7 +284,6 @@ GMT_LOCAL int psconvert_parse_new_I_settings (struct GMT_CTRL *GMT, char *arg, s
 		return (error);
 	}
 
-	Ctrl->I.active = true;
 	while (gmt_getmodopt (GMT, 'N', arg, "msS", &pos, p, &error) && error == 0) {
 		switch (p[0]) {
 			case 'm':	/* Margins */
@@ -352,8 +351,6 @@ GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, s
 	char p[GMT_LEN128] = {""};
 
 	if (gmt_validate_modifiers (GMT, arg, 'N', "fgip", GMT_MSG_ERROR)) return (1);	/* Bail right away */
-
-	Ctrl->N.active = true;
 
 	while (gmt_getmodopt (GMT, 'N', arg, "fgip", &pos, p, &error) && error == 0) {
 		switch (p[0]) {
@@ -482,10 +479,14 @@ GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struc
 	}
 	/* Now parse -A and possibly -I -N via backwards compatibility conversions */
 	n_errors += psconvert_parse_new_A_settings (GMT, A_option, Ctrl);
-	if (I_option[0])
+	if (I_option[0]) {
 		n_errors += psconvert_parse_new_I_settings (GMT, I_option, Ctrl);
-	if (N_option[0])
+		Ctrl->I.active = true;
+	}
+	if (N_option[0]) {
 		n_errors += psconvert_parse_new_N_settings (GMT, N_option, Ctrl);
+		Ctrl->N.active = true;
+	}
 	return (n_errors);
 }
 
@@ -496,7 +497,6 @@ GMT_LOCAL int psconvert_parse_GE_settings (struct GMT_CTRL *GMT, char *arg, stru
 	char p[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	C->W.active = true;
 	while (gmt_getmodopt (GMT, 'W', arg, "acfgklnotu", &pos, p, &error) && error == 0) {	/* Looking for +a, etc */
 		switch (p[0]) {
 			case 'a':	/* Altitude setting */
@@ -810,31 +810,26 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'D':	/* Change output directory */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				Ctrl->D.dir = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.dir))) n_errors++;
 				break;
 			case 'E':	/* Set output dpi */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				Ctrl->E.dpi = atof (opt->arg);
 				break;
 			case 'F':	/* Set explicitly the output file name */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				Ctrl->F.file = gmt_strdup_noquote (opt->arg);
 				gmt_filename_get (Ctrl->F.file);
 				break;
 			case 'G':	/* Set GS path */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				gmt_M_str_free (Ctrl->G.file);
 				Ctrl->G.file = malloc (strlen (opt->arg)+3);	/* Add space for quotes */
 				sprintf (Ctrl->G.file, "%c%s%c", quote, opt->arg, quote);
 				break;
 			case 'H':	/* RIP at a higher dpi, then downsample in gs */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.active = true;
 				Ctrl->H.factor = atoi (opt->arg);
 				break;
 			case 'I':	/* Set margins/scale modifiers [Deprecated -I: Do not use the ICC profile when converting gray shades] */
@@ -843,7 +838,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'L':	/* Give list of files to convert */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				Ctrl->L.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
 				break;
@@ -857,9 +851,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 						break;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M[j].active);
-				if (!n_errors && !Ctrl->M[j].active) {	/* Got -Mb<file> or -Mf<file> */
+				if (!n_errors && Ctrl->M[j].active) {	/* Got -Mb<file> or -Mf<file> */
 					if (!gmt_access (GMT, &opt->arg[1], R_OK)) {	/* The plot file exists */
-						Ctrl->M[j].active = true;
 						Ctrl->M[j].file = strdup (&opt->arg[1]);
 					}
 					else {
@@ -874,7 +867,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'P':	/* Force Portrait mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->P.active);
-				Ctrl->P.active = true;
 				break;
 			case 'Q':	/* Anti-aliasing settings */
 				Ctrl->Q.active = true;
@@ -899,7 +891,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'T':	/* Select output format (optionally also request EPS) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if ((j = (int)strlen(opt->arg)) > 1 && opt->arg[j-1] == '-')	/* Old deprecated way of appending a single - sign at end */
 					grayscale = true;
 				else if (strstr (opt->arg, "+m"))	/* Modern monochrome option (like -M in grdimage) */
@@ -966,9 +957,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				if (GMT->current.setting.run_mode == GMT_CLASSIC)
-					Ctrl->Z.active = true;
-				else {
+				if (GMT->current.setting.run_mode == GMT_MODERN) {
 					GMT_Report (API, GMT_MSG_ERROR, "The -Z option is not available in MODERN mode!\n");
 					n_errors++;
 				}

@@ -180,11 +180,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 
 			case 'A':	/* Adjust increments */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				break;
 			case 'C':	/* Control history output -Cb|c|n|p */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				switch (opt->arg[0]) {
 					case 'b': Ctrl->C.mode = GMT_GRDHISTORY_BOTH;	break;
 					case 'c': Ctrl->C.mode = GMT_GRDHISTORY_NEW;	break;
@@ -198,12 +196,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'D':	/* Give grid information */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				Ctrl->D.information = strdup (opt->arg);
 				break;
 			case 'E':	/* Transpose or rotate grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (opt->arg[0] == '\0')	/* Default transpose */
 					Ctrl->E.mode = 't';
 				else if (strchr ("aehlrtv", opt->arg[0]))
@@ -215,13 +211,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'G':	/* Separate output grid file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'L':	/* Rotate w/e */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if (strstr (opt->arg, "+n")) Ctrl->L.mode = -1;
 				else if (strstr (opt->arg, "+p")) Ctrl->L.mode = +1;
 				else if (opt->arg[0])
@@ -229,17 +223,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'N':	/* Replace nodes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (opt->arg[0]) Ctrl->N.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file))) n_errors++;
 				break;
 			case 'S':	/* Rotate global grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				break;
 			case 'T':	/* Toggle registration */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				break;
 
 			default:	/* Report bad options */

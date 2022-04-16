@@ -111,19 +111,15 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 
 			case 'A':	/* Only consider readable files */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				break;
 			case 'C':	/* Print Y or N instead of names */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				break;
 			case 'D':	/* Want directory instead */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				break;
 			case 'G':	/* Download file first, if required */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->G.mode = GMT_AUTO_DIR;		break;
 					case 'c': Ctrl->G.mode = GMT_CACHE_DIR;		break;

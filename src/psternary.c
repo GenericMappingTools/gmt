@@ -177,44 +177,36 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 
 			case 'A':	/* Turn off draw_arc mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				gmt_M_str_free (Ctrl->A.string);
 				Ctrl->A.string = strdup (opt->arg);
 				break;
 			case 'C':	/* Use CPT for coloring symbols */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.string);
 				if (opt->arg[0]) Ctrl->C.string = strdup (opt->arg);
 				break;
 			case 'G':	/* Fill */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				gmt_M_str_free (Ctrl->G.string);
 				Ctrl->G.string = strdup (opt->arg);
 				break;
 			case 'L':	/* Get the three labels separated by slashes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				sscanf (opt->arg, "%[^/]/%[^/]/%s", Ctrl->L.vlabel[GMT_X], Ctrl->L.vlabel[GMT_Y], Ctrl->L.vlabel[GMT_Z]);
 				break;
 			case 'M':	/* Convert a,b,c -> x,y and dump */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Use the outside of the polygons as clip area */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Plot symbols */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				gmt_M_str_free (Ctrl->S.string);
 				Ctrl->S.string = strdup (opt->arg);
 				break;
 			case 'W':	/* Pen settings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				gmt_M_str_free (Ctrl->W.string);
 				Ctrl->W.string = strdup (opt->arg);
 				break;

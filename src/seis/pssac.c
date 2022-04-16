@@ -241,7 +241,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if ((j = sscanf (opt->arg, "%lf/%lf", &Ctrl->C.t0, &Ctrl->C.t1)) != 2) {
 					Ctrl->C.t0 = GMT->common.R.wesn[XLO];
 					Ctrl->C.t1 = GMT->common.R.wesn[XHI];
@@ -254,19 +253,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 					n_errors++;
 				}
 				else {
-					Ctrl->D.active = true;
 					Ctrl->D.dx = gmt_M_to_inch (GMT, txt_a);
 					Ctrl->D.dy = (j == 2) ? gmt_M_to_inch (GMT, txt_b) : Ctrl->D.dx;
 				}
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				strncpy(Ctrl->E.keys, &opt->arg[0], GMT_LEN256-1);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				strncpy(Ctrl->F.keys, &opt->arg[0], GMT_LEN256-1);
 				break;
 			case 'G':      /* phase painting */
@@ -276,7 +272,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 					default : j = 0, k = 0; break;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[k]);
-				Ctrl->G.active[k] = true;
 				pos = j;
 				while (gmt_getmodopt (GMT, 'G', opt->arg, "gtz", &pos, p, &n_errors) && n_errors == 0) {
 					switch (p[0]) {
@@ -302,7 +297,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
 				j = sscanf(opt->arg, "%[^/]/%s", txt_a, txt_b);
 				if (j == 1) { /* -Msize */
 					Ctrl->M.norm = true;
@@ -337,11 +331,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				len = strlen (opt->arg) - 1;
 				j = (opt->arg[0] == 'i') ? 1 : 0;
 				if (strchr(GMT_DIM_UNITS, (int)opt->arg[len])) /* Recognized unit character */
@@ -373,7 +365,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				pos = 0;
-				Ctrl->T.active = true;
 				Ctrl->T.shift = 0.0;  /* default no shift */
 				while (gmt_getmodopt (GMT, 'T', opt->arg, "trs", &pos, p, &n_errors) && n_errors == 0) {
 					switch (p[0]) {
@@ -394,7 +385,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				break;
 			case 'W':		/* Set line attributes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, &opt->arg[0], &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 3);
 					n_errors++;

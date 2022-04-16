@@ -132,7 +132,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 
 			case 'A':	/* GDAL prog name */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				Ctrl->A.prog_name = opt->arg;
 				if (gmt_get_modifier (opt->arg, 'm', txt_a)) {
 					if (strcmp(txt_a, "hillshade") && strcmp(txt_a, "color-relief") && strcmp(txt_a, "slope") &&
@@ -151,26 +150,22 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 
 			case 'F':	/* -F<gdal options> */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				Ctrl->F.opts = strdup(opt->arg);
 				break;
 
 			case 'G':	/* Output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 
 			case 'I':	/* Grid spacings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 
 			case 'M':	/* -M[+r+w] which read-write machinery. GMT or GDAL */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
 				if (opt->arg[0] == '\0')
 					Ctrl->M.read_gdal = Ctrl->M.write_gdal = true;
 				else {
@@ -185,7 +180,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 
 			case 'W':	/* -W<fname> sets output VECTOR data fname when written by GDAL -- NOT USED YET */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				Ctrl->W.file = opt->arg;
 				Ctrl->M.write_gdal = true;
 				break;

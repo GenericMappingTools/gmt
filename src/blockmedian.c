@@ -131,7 +131,6 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GM
 
 			case 'A':	/* Requires -G and selects which fields should be written as grids */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				BLK_strip_commas (opt->arg, arg);	/* Make local copy with any commas removed */
 				for (k = 0; arg[k] && Ctrl->A.n_selected < BLK_N_FIELDS; k++) {
 					switch (arg[k]) {	/* z,s,l,q25,q75,h,w (without the commas) */
@@ -166,12 +165,11 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GM
 				break;
 			case 'C':	/* Report center of block instead */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'E':	/* Report extended statistics */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;		/* Report standard deviation, min, and max in cols 4-6 [Default] */
+				/* Report standard deviation, min, and max in cols 4-6 [Default] */
 				if (opt->arg[0] == 'b')		/* Instead report min, 25%, 75% and max in cols 4-7 */
 					Ctrl->E.mode = BLK_DO_EXTEND4;
 				else if (opt->arg[0] == 'r' || opt->arg[0] == 's') {	/* Report row number or sid of median */
@@ -205,7 +203,6 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GM
 				break;
 			case 'G':	/* Write output grid(s) */
 				if (!API->external) n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
 					GMT_Report (API, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
@@ -222,22 +219,19 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GM
 				break;
 			case 'I':	/* Get block dimensions */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'Q':	/* Quick mode for median z */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;		/* Get median z and (x,y) of that point */
+				/* Get median z and (x,y) of that point */
 				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':	/* Select a particular quantile [0.5 (median)] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->T.quantile);
 				break;
 			case 'W':	/* Use in|out weights -W[i|o][+s|w] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				n_errors += BLK_parse_weight_opt (API, opt->arg, Ctrl->W.weighted, Ctrl->W.sigma);
 				break;
 

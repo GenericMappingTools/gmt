@@ -293,7 +293,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if (opt->arg[0] && !gmt_access (GMT, opt->arg, F_OK)) {	/* File with density exists */
 					Ctrl->box.srcfile = strdup(opt->arg);           /* Source (density) grid */
 					Ctrl->C.got_gravgrid = true;
@@ -303,26 +302,22 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				Ctrl->D.z_dir = 1;
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				Ctrl->E.thickness = fabs(atof(opt->arg));
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				Ctrl->F.file = strdup(opt->arg);
 				break;
  			case 'G':
-				Ctrl->G.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.file = strdup(opt->arg);
 				break;
 			case 'H':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.active = true;
 				if (opt->arg[0] && !gmt_access (GMT, opt->arg, F_OK)) {	/* File with density exists */
 					Ctrl->box.srcfile = strdup(opt->arg);           /* Source (magnetization) grid */
 					Ctrl->H.got_maggrid = true;
@@ -387,7 +382,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (gmt_getinc(GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
@@ -407,7 +401,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'n') {
 					Ctrl->Q.n_pad = atoi(&opt->arg[1]);
 				}
@@ -430,14 +423,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				break;
 	 		case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				Ctrl->S.radius = atof(opt->arg) * 1000;
 				break;
  			case 'T':
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				if (opt->arg[0] == 't')      Ctrl->Z.top = true;
 				else if (opt->arg[0] == 'b') Ctrl->Z.bot = true;
 				else
