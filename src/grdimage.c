@@ -246,8 +246,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 			case '<':	/* Input file (only one or three is accepted) */
 				Ctrl->In.active = true;
 				if (n_files >= 3) {n_errors++; continue; }
-				file[n_files] = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(file[n_files]))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(file[n_files]));
 				n_files++;
 				break;
 			case '>':	/* Output file (probably for -A via external interface) */
@@ -399,9 +398,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'M':	/* Monochrome image */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Do not clip at map boundary */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':	/* PS3 colormasking */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
@@ -428,6 +429,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'W':	/* Warn if no image, usually when called from grd2kml */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */

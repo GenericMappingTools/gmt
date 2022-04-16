@@ -526,9 +526,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'M':	/* Map units */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Relax domain check */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Only checked later */
 				break;

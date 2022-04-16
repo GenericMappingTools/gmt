@@ -157,24 +157,20 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 				if (n_in == 0) {
 					Ctrl->In.file = strdup (opt->arg);
 					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
-					n_in++;
 				}
 				else if (n_in == 1) {
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 					Ctrl->G.active = true;
-					Ctrl->G.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
-					n_in++;
 				}
 				else {
-					n_in++;
 					GMT_Report (API, GMT_MSG_ERROR, "Specify only one input file\n");
 					n_errors++;
 				}
+				n_in++;
 				break;
 			case '>':	/* Output file may be set this way from the external API */
 				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				n_in++;
 				break;
 
@@ -207,6 +203,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'Z':	/* For scaling or phase data */

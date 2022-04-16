@@ -209,8 +209,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 			case '<':	/* Input file (only one is accepted) */
 				Ctrl->In.active = true;
 				if (n_files >= 2) {n_errors++; continue; }
-				if (opt->arg[0]) Ctrl->In.file[n_files] = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[n_files]))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[n_files]));
 				n_files++;
 				break;
 
@@ -218,6 +217,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 
 			case 'A':	/* Polar data grids */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'C':	/* Vary symbol color with z */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
@@ -247,6 +247,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 				break;
 			case 'N':	/* Do not clip at border */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':	/* Vector plots, with parameters */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
@@ -373,6 +374,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 				break;
 			case 'T':	/* Rescale Cartesian angles */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'W':	/* Set line attributes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
@@ -384,6 +386,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 				break;
 			case 'Z':	/* Azimuths given */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				Ctrl->A.active = true;
 				break;
 

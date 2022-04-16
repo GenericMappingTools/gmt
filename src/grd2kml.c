@@ -270,7 +270,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'H':	/* RIP at a higher dpi, then downsample in gs */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.factor = atoi (opt->arg);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->H.factor);
 				break;
 			case 'I':	/* Here, intensity must be a grid file since we need to filter it */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -305,12 +305,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'L':	/* Tiles sizes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->L.size);
 				Ctrl->L.size = atoi (opt->arg);
 				break;
 			case 'N':	/* File name prefix */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				gmt_M_str_free (Ctrl->N.prefix);
-				Ctrl->N.prefix = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->N.prefix);
 				break;
 			case 'Q':	/* Deprecated colormasking option */
 				GMT_Report (API, GMT_MSG_ERROR, "Option -Q is deprecated as transparency is automatically detected\n");
