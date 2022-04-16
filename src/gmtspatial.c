@@ -918,6 +918,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':	/* Clip to given region */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':	/* Look for duplications */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);

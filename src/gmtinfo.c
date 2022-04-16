@@ -228,6 +228,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* Column output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case '0':	/* Hidden option to get 2 more columns back with column types */
 				Ctrl->C.extra = 2;	/* Need to report back x and y data types */
@@ -320,6 +321,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'L':	/* Detect limiting range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Error bar output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
