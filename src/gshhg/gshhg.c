@@ -143,25 +143,26 @@ static int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTI
 			case '<':	/* Count input files */
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			case '>':	/* Got output file */
-				Ctrl->Out.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.min = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->A.min);
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -175,7 +176,7 @@ static int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTI
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				sval = atoi (opt->arg);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &sval);
 				n_errors += gmt_M_check_condition (GMT, sval < 0, "Option -N: Level cannot be negative!\n");
 				Ctrl->N.level = sval;
 				break;
