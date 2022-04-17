@@ -296,7 +296,7 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 			case 'F':	/* Filter selection  */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				if (opt->arg[0] && strchr ("BbCcGgMmPpLlUuFf", opt->arg[0])) {	/* OK filter code */
-					Ctrl->F.filter = opt->arg[0];
+					n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->F.filter);
 					if ((c = strstr (opt->arg, "+h"))) {	/* Want high-pass filter */
 						Ctrl->F.highpass = true;
 						c[0] = '\0';	/* Chop off +h */

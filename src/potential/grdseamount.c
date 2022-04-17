@@ -409,7 +409,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'D':	/* Cartesian unit option */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.unit = opt->arg[0];
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->D.unit);
 				break;
 			case 'E':	/* Elliptical shapes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);

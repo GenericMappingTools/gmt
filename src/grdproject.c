@@ -173,7 +173,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct GMT
 				/* Intentionally fall through - to get -F */
 			case 'F':	/* Force specific unit */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.unit = opt->arg[0];
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->F.unit);
 				break;
 			case 'G':	/* Output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
@@ -185,8 +185,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'M':	/* Directly specify units */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.unit = opt->arg[0];
-				n_errors += gmt_M_check_condition (GMT, !Ctrl->M.unit,
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->M.unit);
+				n_errors += gmt_M_check_condition (GMT, strchr ("cip", Ctrl->M.unit) == NULL,
 							"Option -M: projected measure unit must be one of 'c', i', or 'p'\n");
 				break;
 			case 'N':	/* GMT4 Backwards compatible.  n_columns/n_rows can now be set with -D */

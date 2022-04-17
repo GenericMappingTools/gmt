@@ -350,7 +350,7 @@ static int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct GM
 				Ctrl->T.t_zero = atof (opt->arg);
 				break;
 
-			case 'W':	/* Report confidence ellipses */
+			case 'W':	/* Report confidence ellipses - argument is optional */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.mode = opt->arg[0];
 				break;

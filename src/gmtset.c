@@ -120,7 +120,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'D':	/* Get GMT system-wide defaults settings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.mode = opt->arg[0];
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->D.mode);
 				break;
 			case 'G':	/* Optional defaults file on input and output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);

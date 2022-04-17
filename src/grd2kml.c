@@ -261,9 +261,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'F':	/* Select filter type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				if (strchr ("bcgm", opt->arg[0]))
-					Ctrl->F.filter = opt->arg[0];
-				else {
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->F.filter);
+				if (strchr ("bcgm", Ctrl->F.filter) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -F: Choose among b, c, g, m!\n");
 					n_errors++;
 				}
