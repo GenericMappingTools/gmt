@@ -675,8 +675,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 					GMT_Report (API, GMT_MSG_ERROR, "A maximum of two input grids may be processed\n");
 				}
 				else {
-					Ctrl->In.file[Ctrl->In.n_grids] = strdup (opt->arg);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_grids]))) n_errors++;;
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_grids]));
 					Ctrl->In.n_grids++;
 				}
 				break;
@@ -746,7 +745,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 				break;
 			case 'G':	/* Output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':	/* Integrate */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -781,6 +780,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 				break;
 			case 'Q':	/* No operator */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Scale */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
