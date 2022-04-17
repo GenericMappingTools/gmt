@@ -169,16 +169,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 			case '>':	/* Got named output file */
 				if (no_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Turn off draw_arc mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				gmt_M_str_free (Ctrl->A.string);
-				Ctrl->A.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->A.string);
 				break;
 			case 'C':	/* Use CPT for coloring symbols */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
@@ -187,28 +185,30 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 				break;
 			case 'G':	/* Fill */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				gmt_M_str_free (Ctrl->G.string);
-				Ctrl->G.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->G.string);
 				break;
 			case 'L':	/* Get the three labels separated by slashes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				sscanf (opt->arg, "%[^/]/%[^/]/%s", Ctrl->L.vlabel[GMT_X], Ctrl->L.vlabel[GMT_Y], Ctrl->L.vlabel[GMT_Z]);
+				if (sscanf (opt->arg, "%[^/]/%[^/]/%s", Ctrl->L.vlabel[GMT_X], Ctrl->L.vlabel[GMT_Y], Ctrl->L.vlabel[GMT_Z]) != 3) {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -L: Must provide three labels separated by slashes\n");
+					n_errors++;
+				}
 				break;
 			case 'M':	/* Convert a,b,c -> x,y and dump */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Use the outside of the polygons as clip area */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Plot symbols */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				gmt_M_str_free (Ctrl->S.string);
-				Ctrl->S.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->S.string);
 				break;
 			case 'W':	/* Pen settings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				gmt_M_str_free (Ctrl->W.string);
-				Ctrl->W.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->W.string);
 				break;
 
 			default:	/* Report bad options */

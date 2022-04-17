@@ -232,6 +232,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case '0':	/* Hidden option to get 2 more columns back with column types */
 				Ctrl->C.extra = 2;	/* Need to report back x and y data types */
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':	/* Region adjustment Granularity */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);

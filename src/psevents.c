@@ -394,7 +394,6 @@ maybe_set_two:
 
 			case 'G':	/* Set a fixed symbol fill */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->G.fill);
 				break;
 
