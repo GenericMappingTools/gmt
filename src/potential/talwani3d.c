@@ -155,10 +155,11 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 
 			case 'A':	/* Specify z-axis is positive up [Default is down] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.rho = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->D.rho);
 				if (fabs (Ctrl->D.rho) < 10.0) Ctrl->D.rho *= 1000;	/* Gave units of g/cm^3 */
 				break;
 			case 'F':
@@ -177,7 +178,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -203,7 +204,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file));
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
@@ -229,10 +230,6 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 	                                 "Option -Z: Cannot also specify -R -I\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && !Ctrl->G.active,
 	                                 "Option -G: Must specify output gridfile name.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file,
-	                                 "Option -G: Must specify output gridfile name.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file,
-	                                 "Option -N: Must specify output gridfile name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Z.mode == 1,
 	                                 "Option -N: Cannot give a grid of zlevels via -Z if -N is used.\n");
 

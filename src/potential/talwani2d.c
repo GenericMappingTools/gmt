@@ -138,16 +138,16 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			case 'A':	/* Specify z-axis is positive up [Default is down] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.rho = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->D.rho);
 				if (fabs (Ctrl->D.rho) < 10.0) Ctrl->D.rho *= 1000;	/* Gave units of g/cm^3 */
 				break;
 			case 'F':
@@ -184,7 +184,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file));
 				break;
 			case 'T':	/* Either get a file with time coordinate or a min/max/dt setting */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);

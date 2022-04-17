@@ -413,6 +413,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'E':	/* Elliptical shapes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'F':	/* Truncation fraction */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
@@ -424,8 +425,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'G':	/* Output file name or name template */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'H':	/* Reference seamount density parameters */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
@@ -464,14 +464,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'K':	/* Output file name for density grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->K.active);
-				if (opt->arg[0]) {
-					Ctrl->K.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->K.file))) n_errors++;
-				}
-				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -K: No file name appended\n");
-					n_errors++;
-				}
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->K.file));
 				break;
 			case 'L':	/* List area, volume and mean height only, then exit */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
@@ -486,7 +479,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'N':	/* Normalization to max height */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.value = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->N.value);
 				break;
 			case 'Q':	/* Set two modes: build mode and flux mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
@@ -630,14 +623,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				break;
 			case 'W':	/* Output file name for average density grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				if (opt->arg[0]) {
-					Ctrl->W.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->W.file))) n_errors++;
-				}
-				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -W: No file name appended\n");
-					n_errors++;
-				}
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->W.file));
 				break;
 			case 'Z':	/* Background relief level (or NaN) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
