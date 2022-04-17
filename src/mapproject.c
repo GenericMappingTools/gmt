@@ -176,6 +176,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
+	C->F.unit = 'e';	/* Default projected unit is meter */
 	C->G.unit = GMT_MAP_DIST_UNIT;	/* Default unit is meter */
 	C->G.sph = GMT_GREATCIRCLE;	/* Default is great-circle distances */
 	C->L.mode = GMT_MP_GIVE_CORD;	/* Default returns coordinates of nearest point */
@@ -546,7 +547,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->F.unit);
+				if (opt->arg[0]) Ctrl->F.unit = opt->arg[0];
 				will_need_RJ = true;	/* Since -F is used with projections only */
 				break;
 			case 'G':	/* Syntax. Old: -G[<lon0/lat0>][/[+|-]unit][+|-]  New: -G[<lon0/lat0>][+i][+a][+u<unit>][+v] */

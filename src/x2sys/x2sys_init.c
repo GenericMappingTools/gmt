@@ -211,7 +211,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 				break;
 			case 'G':	/* Geographical coordinates, set discontinuity */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->G.string);
+				if (opt->arg[0]) Ctrl->G.string = strdup (opt->arg);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);

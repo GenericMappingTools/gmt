@@ -77,6 +77,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
+	C->F.unit = 'e';	/* Default projected unit is meter */
 	return (C);
 }
 
@@ -173,7 +174,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct GMT
 				/* Intentionally fall through - to get -F */
 			case 'F':	/* Force specific unit */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->F.unit);
+				if (opt->arg[0]) Ctrl->F.unit = opt->arg[0];
 				break;
 			case 'G':	/* Output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
