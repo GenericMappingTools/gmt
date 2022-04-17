@@ -165,8 +165,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 			case 'A':	/* Boundary conditions -A[l|r]<bc>[/<w>|<m>/<f>]*/
 				both = false;	side = 0;
@@ -203,11 +202,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'p':
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[0]);
-						Ctrl->C.nu = atof (&opt->arg[1]);
+						n_errors += gmt_get_required_double (GMT, &opt->arg[1], opt->option, 0, &Ctrl->C.nu);
 						break;
 					case 'y':
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[1]);
-						Ctrl->C.E = atof (&opt->arg[1]);
+						n_errors += gmt_get_required_double (GMT, &opt->arg[1], opt->option, 0, &Ctrl->C.E);
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Unrecognized modifier %c\n", opt->arg[0]);
@@ -240,10 +239,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				break;
 			case 'F':	/* Horizontal end load */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.force = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->F.force);
 				break;
 			case 'L':	/* Variable restoring force */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'M':	/* Length units */
 				both = false;	side = 0;
@@ -259,10 +259,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 				break;
 			case 'S':	/* Compute curvatures also */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':	/* Preexisting deformation */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->T.file));
 				break;
 			case 'Q':	/* Load setting -Qn|q|t[/args] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
