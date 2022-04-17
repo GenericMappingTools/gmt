@@ -252,9 +252,8 @@ static int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct GM
 						n_errors++;
 					}
 				}
-				else {	/* Limits for each input point given in columns 4 and 5 */
+				else	/* Limits for each input point given in columns 4 and 5 */
 					Ctrl->A.mode = 2;
-				}
 				break;
 
 			case 'C':	/* Now done automatically in spotter_init */
@@ -291,8 +290,7 @@ static int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct GM
 
 			case 'F':	/* File with hotspot motion history */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file));
 				break;
 
 			case 'L':	/* Specify what kind of track to project */
@@ -325,29 +323,22 @@ static int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct GM
 
 			case 'N':	/* Extend oldest stage back to this time [no extension] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.t_upper = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->N.t_upper);
 				break;
 
 			case 'Q':	/* Fixed age for all points */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.t_fix = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->Q.t_fix);
 				break;
 
 			case 'S':	/* Set file stem for individual output files */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				if (opt->arg[0]) {
-					Ctrl->S.file = strdup (opt->arg);
-					Ctrl->S.active = true;
-				}
-				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Append a file stem\n");
-					n_errors++;
-				}
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->S.file);
 				break;
 
 			case 'T':	/* Current age [0 Ma] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.t_zero = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->T.t_zero);
 				break;
 
 			case 'W':	/* Report confidence ellipses */
