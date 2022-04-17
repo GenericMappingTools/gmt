@@ -232,7 +232,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 
 			case 'C':	/* Needed to report correctly */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.col = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->C.col);
 				break;
 			case 'E':	/* Which model to fit */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
@@ -266,7 +266,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.TAG = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->T.TAG);
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);

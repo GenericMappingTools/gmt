@@ -142,7 +142,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-A<pairs>");
 	GMT_Usage (API, -2, "Give file with list of track pairs to process [Default processes all combinations].");
 	GMT_Usage (API, 1, "\n-C[<fname>]");
-	GMT_Usage (API, -2, "Print run time for each pair. Optionally append <fname> to writem them to that file.");
+	GMT_Usage (API, -2, "Print run time for each pair. Optionally append <fname> to write them to that file.");
 	GMT_Usage (API, 1, "\n-D[S|N]");
 	GMT_Usage (API, -2, "Control geographic coordinate conversions. By default we automatically convert "
 		"lon,lat to polar coordinates if contained within one hemisphere. -D turns this off, while "
@@ -200,8 +200,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 
 			case 'A':	/* Get list of approved filepair combinations to check */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file));
 				break;
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
@@ -270,11 +269,11 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.TAG = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->T.TAG);
 				break;
 			case 'W':	/* Get new window half-width as number of points */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.width = atoi (opt->arg);
+				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->W.width);
 				break;
 			case 'Q':	/* Specify internal or external only */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
@@ -284,6 +283,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 				break;
 			case 'Z':	/* Return z1, z1 rather than (z1-z1) and 0.5 * (z1 + z2) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'J':
 				if (gmt_M_compat_check (GMT, 6)) {

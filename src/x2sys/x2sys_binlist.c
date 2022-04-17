@@ -121,13 +121,15 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, struct 
 
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.TAG = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->T.TAG);
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);

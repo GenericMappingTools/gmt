@@ -150,18 +150,21 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct GMT_
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'E':	/* Just accept and ignore (it was an option in GMT4 but the default in 5) */
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.flags = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->F.flags);
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
@@ -172,14 +175,15 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct GMT_
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.flags = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->N.flags);
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.TAG = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->T.TAG);
 				break;
 			case 'S':	/* Undocumented swap option for index.b reading */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);

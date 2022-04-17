@@ -18695,6 +18695,14 @@ unsigned int gmt_get_no_argument (struct GMT_CTRL *GMT, char *text, char option,
 	return (error);
 }
 
+unsigned int gmt_get_required_uint64 (struct GMT_CTRL *GMT, char *text, char option, char modifier, uint64_t *value) {
+	/* Convert the text arg to an unsigned 64-bit int and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*value = (uint64_t)atol (text);
+	return (err);
+}
+
 unsigned int gmt_get_required_uint (struct GMT_CTRL *GMT, char *text, char option, char modifier, unsigned int *value) {
 	/* Convert the text arg to an unsigned int and if no arg given we fuss and return error */
 	unsigned int err;
