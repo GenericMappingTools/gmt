@@ -704,7 +704,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 				break;
 			case 'M':	/* Viscoelastic Maxwell time [in year] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->M.maxwell_t);
+				Ctrl->M.maxwell_t = gmt_get_modeltime (opt->arg, &Ctrl->M.unit, &Ctrl->M.scale);
 				break;
 			case 'N':	/* FFT parameters */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
