@@ -59,11 +59,11 @@ struct PSSAC_CTRL {
 	} D;
 	struct PSSAC_E {    /* -Ea|b|d|k|n<n>|u<n> */
 		bool active;
-		char keys[GMT_LEN256];
+		char *keys;
 	} E;
 	struct PSSAC_F {    /* -Fiqr */
 		bool active;
-		char keys[GMT_LEN256];
+		char *keys;
 	} F;
 	struct PSSAC_G {    /* -G[p|n]+g<fill>+z<zero>+t<t0>/<t1> */
 		bool active[2];
@@ -127,6 +127,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSAC_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_freepen (GMT, &C->W.pen);
+	gmt_M_str_free (C->E.keys);
+	gmt_M_str_free (C->F.keys);
 	gmt_M_free (GMT, C);
 }
 
@@ -232,8 +234,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 			case '<':	/* Collect input files */
 				Ctrl->In.active = true;
 				if (n_alloc <= Ctrl->In.n) Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc += GMT_SMALL_CHUNK, char *);
-				Ctrl->In.file[Ctrl->In.n] = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n]))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n]));
 				Ctrl->In.n++;
 				break;
 
@@ -259,11 +260,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				strncpy(Ctrl->E.keys, &opt->arg[0], GMT_LEN256-1);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->E.keys);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				strncpy(Ctrl->F.keys, &opt->arg[0], GMT_LEN256-1);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->F.keys);
 				break;
 			case 'G':      /* phase painting */
 				switch (opt->arg[0]) {
@@ -331,6 +332,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
