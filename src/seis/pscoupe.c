@@ -884,9 +884,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'N':	/* Do not skip points outside border */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':	/* Switch of production of mechanism files */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Mechanisms : get format [and size] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
