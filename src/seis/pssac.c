@@ -222,7 +222,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 	 */
 
 	unsigned int n_errors = 0, pos = 0;
-	int j, k;
+	int i, j, k;
 	size_t n_alloc = 0, len;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -261,10 +261,23 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->E.keys);
-				break;
+				if (n_errors == 0 && strchr ("abdknu", Ctrl->E.keys[0]) == NULL) {
+					GMT_Report (API, GMT_MSG_ERROR, "Wrong choice of profile type: %c.  Select from d|k|a|b|n|u\n", Ctrl->E.keys[0]);
+					n_errors++;
+				}
+					break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->F.keys);
+				for (i = 0; Ctrl->F.keys && Ctrl->F.keys[i] != '\0'; i++) {
+					switch (Ctrl->F.keys[i]) {
+						case 'i': case 'q':   case 'r': break;	/* These are all supported */
+						default:
+							GMT_Report (API, GMT_MSG_ERROR, "Option F: Unrecognized directive %c\n", Ctrl->F.keys[i]);
+							n_errors++;
+							break;
+					}
+				}
 				break;
 			case 'G':      /* phase painting */
 				switch (opt->arg[0]) {
@@ -727,12 +740,12 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 		free (data);
 
 		/* -F: data preprocess */
-		for (i = 0; Ctrl->F.keys[i] != '\0'; i++) {
+		for (i = 0; Ctrl->F.keys && Ctrl->F.keys[i] != '\0'; i++) {
 			switch (Ctrl->F.keys[i]) {
 				case 'i': pssac_integral(y, hd.delta, hd.npts); hd.npts--; break;
 				case 'q':   pssac_sqr(y, hd.npts); break;
 				case 'r': pssac_rmean(y, hd.npts); break;
-				default: break;
+				default: break;	/* OK, we have already checked that only i,q,r were passed */
 			}
 		}
 
@@ -791,7 +804,7 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 			x0 = hd.b - tref;	/* the new begin time may not exactly match t1 */
 
 			/* determine Y0 */
-			if (Ctrl->E.active) {
+			if (Ctrl->E.active && Ctrl->E.keys) {
 				switch (Ctrl->E.keys[0]) {
 					case 'a':
 						if (floatAlmostEqualZero(hd.az, SAC_FLOAT_UNDEF)) {
@@ -825,18 +838,13 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 						y0 = n;
 						if (Ctrl->E.keys[1]!='\0') y0 += atof(&Ctrl->E.keys[1]);
 						break;
-					case 'u':  /* user0 to user9 */
+					case 'u': default:  /* user0 to user9 [Use default since we know only valid keys passed the parser */
 						if (Ctrl->E.keys[1] != '\0') user = atoi(&Ctrl->E.keys[1]);
 						y0 = *((float *) &hd + USERN + user);
 						if (floatAlmostEqualZero((float)y0, SAC_FLOAT_UNDEF)) {
 							GMT_Report (API, GMT_MSG_ERROR, "=> %s: user%d not defined in SAC header, skipped.\n", user, L[n].file);
 							continue;
 						}
-						break;
-					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Wrong choice of profile type (d|k|a|b|n) \n");
-						gmt_M_free(GMT, x);		gmt_M_free(GMT, y);		gmt_M_free (GMT, L);
-						Return(EXIT_FAILURE);
 						break;
 				}
 			}
