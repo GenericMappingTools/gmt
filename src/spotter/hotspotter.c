@@ -244,7 +244,7 @@ static int parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct GMT
 
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.value = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->D.value);
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
@@ -255,8 +255,7 @@ static int parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct GMT
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -264,13 +263,15 @@ static int parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct GMT
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.t_upper = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->N.t_upper);
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);

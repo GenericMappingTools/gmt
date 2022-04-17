@@ -249,14 +249,14 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
 				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'F':	/* Backwards helper for old non-C behavior */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
@@ -271,11 +271,11 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'm':
 				if (gmt_M_compat_check (GMT, 4))	/* Warn and fall through to 'I' on purpose */
@@ -306,10 +306,11 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.value = atoi (opt->arg);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->N.value);
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
@@ -317,14 +318,14 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				if ((sscanf (opt->arg, "%d", &Ctrl->T.value)) != 1) {
+				if (gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->T.value)) {
 					n_errors++;
 					GMT_Report (API, GMT_MSG_ERROR, "Option -T requires an output type 0-3.\n");
 				}
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				if ((sscanf (opt->arg, "%lf", &Ctrl->W.value)) != 1) {
+				if (gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->W.value)) {
 					n_errors++;
 					GMT_Report (API, GMT_MSG_ERROR, "Option -W requires a longitude >= 360.0.\n");
 				}

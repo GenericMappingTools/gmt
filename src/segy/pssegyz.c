@@ -208,8 +208,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OP
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
 				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
@@ -219,7 +218,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* trace clip */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.value = (float) atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->C.value);
 				break;
 			case 'D':	/* trace scaling */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
@@ -232,7 +231,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.value = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->E.value);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
@@ -243,17 +242,19 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.value = atoi (opt->arg);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->L.value);
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.value = atoi (opt->arg);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->M.value);
 				break;
 			case 'N':	/* trace norm. */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':
 				switch (opt->arg[0]) {
@@ -307,13 +308,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':	/* plot traces only at listed locations */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->T.file));
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */
@@ -323,8 +326,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OP
 	}
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify the -R option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.wesn[ZLO]  == GMT->common.R.wesn[ZHI], "Must specify z range in -R option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Option -T requires a file name\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && access (Ctrl->T.file, R_OK), "SCannot file file %s\n", Ctrl->T.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.value < 0.0, "Option -E: Slop cannot be negative\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "Must specify -F with -I\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && !Ctrl->W.active, "Must specify -F or -W\n");

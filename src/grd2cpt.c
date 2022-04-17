@@ -320,6 +320,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'H':	/* Modern mode only: write CPT to stdout */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'I':	/* Invert table */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -339,9 +340,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'M':	/* Override fore/back/NaN using GMT defaults */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Do not write F/B/N colors */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':	/* Logarithmic data */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
@@ -367,6 +370,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'Z':	/* Continuous colors */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */

@@ -462,6 +462,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 
 			case 'D':	/* Use -B, -C, -M -S, --MAP_*=value and gmt.conf for dimensions and spacing calculations but do not draw any frames or annotations */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'F':
@@ -649,7 +650,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 
 			case 'T':	/* Gave figure heading */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.title = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->T.title);
 				break;
 
 			default:	/* Report bad options */

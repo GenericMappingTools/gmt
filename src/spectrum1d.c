@@ -609,8 +609,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
@@ -635,7 +634,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.inc = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->D.inc);
 				break;
 			case 'L':	/* Leave trend alone */
 				/* To use next line we need to use modes 1 2 3 instead of relying on L.active */
@@ -676,9 +675,11 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 				break;
 			case 'T':	/* Turn off multicolumn single output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */

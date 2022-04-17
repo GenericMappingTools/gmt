@@ -453,7 +453,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct GM
 				break;
 			case 'D':	/* Columns to delete */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.file = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->D.file);
 				break;
 
 			case 'E':	/* character to generate no-string value */
@@ -463,6 +463,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct GM
 
 			case 'F':	/* Force mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'I':	/* Column attribute information */

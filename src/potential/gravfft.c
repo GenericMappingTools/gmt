@@ -203,8 +203,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 					GMT_Report (API, GMT_MSG_ERROR, "A maximum of two input grids may be processed\n");
 				}
 				else {
-					Ctrl->In.file[Ctrl->In.n_grids] = strdup (opt->arg);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_grids]))) n_errors++;;
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_grids]));
 					Ctrl->In.n_grids++;
 				}
 				break;
@@ -249,7 +248,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.n_terms = atoi (opt->arg);
+				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->E.n_terms);
 				if (Ctrl->E.n_terms > 10) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -E: n_terms must be <= 10\n");
 					n_errors++;
@@ -279,8 +278,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -327,10 +325,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				override_mode = GMT_FFT_REMOVE_MID;	/* Leave trend alone and remove mid value */
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);

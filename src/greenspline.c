@@ -566,7 +566,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				break;
 			case 'G':	/* Output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':	/* Table or grid spacings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -580,10 +580,11 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				break;
 			case 'L':	/* Leave trend alone */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'M':	/* Read or write list of Green's function forces [NOT IMPLEMENTED YET] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->M.file))) n_errors++;
 				break;
 			case 'N':	/* Output locations */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -609,7 +610,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				break;
 			case 'S':	/* Spline selection */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.arg = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->S.arg);
 				switch (opt->arg[0]) {
 					case 'l':	/*  Cartesian linear spline in 1-D or 2-D (bilinear) */
 						Ctrl->S.mode = LINEAR_1D;

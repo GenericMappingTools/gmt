@@ -1147,8 +1147,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
@@ -1166,18 +1165,19 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				sscanf (opt->arg, "%lf", &Ctrl->T.year);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->T.year);
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				sscanf (opt->arg, "%lf", &Ctrl->W.wid);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->W.wid);
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Z.file));
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);

@@ -215,11 +215,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 
 			case 'D':	/* Give grid information */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.information = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->D.information);
 				break;
 			case 'E':	/* Create or read an equidistant profile for slicing */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.lines = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->E.lines);
 				break;
 			case 'F':	/* Set the spline type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
@@ -239,14 +239,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 			case 'G':	/* Output file or name template */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->G.file = strdup (opt->arg);
-				if (strchr (Ctrl->G.file, '%') == NULL) {	/* Gave a fixed output file, can check */
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
-				}
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'T':	/* Set level sampling spacing */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->T.string);
 				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR | GMT_ARRAY_RANGE | GMT_ARRAY_UNIQUE, GMT_Z);
 				break;
 

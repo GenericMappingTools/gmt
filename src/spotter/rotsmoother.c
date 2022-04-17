@@ -157,18 +157,22 @@ static int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct GM
 
 			case 'A':	/* Output only an age-limited segment of the track */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'N':	/* Ensure all poles reported are in northern hemisphere */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'S':	/* Ensure all poles reported are in southern hemisphere */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'T':	/* New: -Tage, -Tmin/max/inc, -Tmin/max/n+, -Tfile */
@@ -221,9 +225,11 @@ static int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct GM
 
 			case 'W':	/* Use weights */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Z':	/* Report negative opening angles */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */

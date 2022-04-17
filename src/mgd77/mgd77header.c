@@ -136,7 +136,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77HEADER_CTRL *Ctrl, struct GM
 
 			case 'H':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->H.file));
 				break;
 
 			case 'M':

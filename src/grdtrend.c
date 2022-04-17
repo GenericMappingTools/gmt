@@ -197,16 +197,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.file));
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -221,8 +219,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->T.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->T.file));
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
@@ -234,7 +231,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 					Ctrl->W.mode = 1;
 				/* OK if this file doesn't exist; we always write to that file on output */
 				Ctrl->W.file = strdup (opt->arg);
-				if (!gmt_access (GMT, Ctrl->W.file, R_OK)) {	/* FOund the file */
+				if (!gmt_access (GMT, Ctrl->W.file, R_OK)) {	/* Found the file */
 					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->W.file))) n_errors++;
 				}
 				else {

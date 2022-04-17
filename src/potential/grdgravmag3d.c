@@ -90,6 +90,7 @@ struct GRDGRAVMAG3D_CTRL {
 		double	t_dec, t_dip, m_int, m_dec, m_dip, koningsberg;
 	} H;
 	struct GRDGRAVMAG3D_L {	/* -L */
+		bool active;
 		double zobs;
 	} L;
 	struct GRDGRAVMAG3D_Q {	/* -Q */
@@ -302,19 +303,20 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				Ctrl->D.z_dir = 1;
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.thickness = fabs(atof(opt->arg));
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->E.thickness);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.file = strdup(opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file));
 				break;
  			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.file = strdup(opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'H':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
@@ -388,7 +390,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				}
 				break;
 	 		case 'L':
-				Ctrl->L.zobs = atof (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->L.zobs);
 				break;
 			case 'M':
 				if (gmt_M_compat_check(GMT, 4)) {
@@ -423,7 +426,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				break;
 	 		case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.radius = atof(opt->arg) * 1000;
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->S.radius);
+				Ctrl->S.radius *= 1000;	/* Input is km, need meters */
 				break;
  			case 'T':
 				break;
@@ -454,12 +458,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 	                                "Error: Must specify either -Cdensity or -H<stuff>\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.active && Ctrl->H.active,
 	                                "Cannot specify both -C and -H options\n");
-	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file,
-	                                "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition(GMT, (Ctrl->H.got_maggrid || Ctrl->C.got_gravgrid) && !Ctrl->box.srcfile,
 	                                "Option -H+m or -C+d: Must specify source file\n");
-	n_errors += gmt_M_check_condition(GMT, Ctrl->F.active && gmt_access(GMT, Ctrl->F.file, R_OK),
-	                                "Option -F: Cannot read file %s!\n", Ctrl->F.file);
 	i += gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

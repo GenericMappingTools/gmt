@@ -253,9 +253,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'F':	/* World mapping format */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'G':	/* Force download of tiled grids if information is requested */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'I':	/* Increment rounding */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -290,9 +292,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'M':	/* Global extrema */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':	/* Expect cubes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':	/* CPT range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);

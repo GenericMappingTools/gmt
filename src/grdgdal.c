@@ -124,10 +124,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 			case '<':	/* Input file(s) */
 				Ctrl->fname_in = strdup(opt->arg);
 				n_files++;
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) {	/* No grid found */
-					if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) 	/* No dataset found */
-						n_errors++;
-				}
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in));
 				break;
 
 			case 'A':	/* GDAL prog name */
@@ -155,8 +152,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 
 			case 'G':	/* Output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 
 			case 'I':	/* Grid spacings */

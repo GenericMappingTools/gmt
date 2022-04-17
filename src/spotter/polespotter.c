@@ -152,34 +152,33 @@ static int parse (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *Ctrl, struct GM
 
 			case 'A':	/* File with abyssal hill traces */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file));
 				break;
 			case 'D':	/* Step length */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.length = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->D.length);
 				break;
 			case 'E':	/* Sigma of lines (store 1/sigma here) */
 				switch (opt->arg[0]) {
 					case 'a':
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active[0]);
-						Ctrl->A.weight = 1.0 / atof (&opt->arg[1]);
+						n_errors += gmt_get_required_double (GMT, &opt->arg[1], opt->option, 0, &Ctrl->A.weight);
+						Ctrl->A.weight = 1.0 / Ctrl->A.weight;
 						break;
 					case 'f':
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active[1]);
-						Ctrl->F.weight = 1.0 / atof (&opt->arg[1]);
+						n_errors += gmt_get_required_double (GMT, &opt->arg[1], opt->option, 0, &Ctrl->F.weight);
+						Ctrl->F.weight = 1.0 / Ctrl->F.weight;
 						break;
 				}
 				break;
 			case 'F':	/* File with fracture zone traces */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file));
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -187,6 +186,7 @@ static int parse (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *Ctrl, struct GM
 				break;
 			case 'N':	/* Normalize grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* modes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);

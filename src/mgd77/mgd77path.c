@@ -129,6 +129,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct GMT_
 
 			case 'D':	/* Show list of directories with MGD77 files */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'I':
