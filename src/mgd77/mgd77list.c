@@ -542,6 +542,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 
 			case 'E':	/* Exact parameter match */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'F':	/* Selected output fields */
@@ -620,7 +621,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 
 			case 'L':	/* Crossover correction table */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.file = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->L.file);
 				break;
 
 			case 'N':	/* Nautical units (knots, nautical miles) */
