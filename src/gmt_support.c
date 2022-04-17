@@ -18735,6 +18735,14 @@ unsigned int gmt_get_required_double (struct GMT_CTRL *GMT, char *text, char opt
 	return (err);
 }
 
+unsigned int gmt_get_required_char (struct GMT_CTRL *GMT, char *text, char option, char modifier, char *letter) {
+	/* Convert the text arg to a single letter and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*letter = text[0];
+	return (err);
+}
+
 unsigned int gmt_get_required_string (struct GMT_CTRL *GMT, char *text, char option, char modifier, char **string) {
 	/* Convert the text arg to an allocated string and if no arg given we fuss and return error */
 	unsigned int err;
