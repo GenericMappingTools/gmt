@@ -141,9 +141,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_
 
 			case 'C':	/* Get # of cells */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				sval = atoi (opt->arg);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &sval);
 				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -C: n_cells must be positive\n");
-				Ctrl->C.value = sval;
+				Ctrl->C.value = (unsigned int)sval;
 				break;
 			case 'D':	/* Dump info to file or stdout */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
@@ -151,8 +151,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_
 				break;
 			case 'G':	/* Output file for equalized grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'N':	/* Get normalized scores */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);

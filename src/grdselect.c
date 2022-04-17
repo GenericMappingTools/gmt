@@ -261,8 +261,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'C':	/* Point file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->C.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->C.file));
 				break;
 			case 'D':	/* Specified grid increments */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
@@ -282,8 +281,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				else if ((c = strstr (opt->arg, "+o")))
 					Ctrl->F.mode = GMT_OUTSIDE;
 				if (c) c[0] = '\0';	/* Temporarily chop off modifier */
-				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file));
 				if (c) c[0] = '\0';	/* Restore modifier */
 				break;
 			case 'I':	/* Invert selected tests */
@@ -313,8 +311,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'L':	/* Line file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				if (opt->arg[0]) Ctrl->L.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file));
 				break;
 			case 'M':	/* Extend the region */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
@@ -343,6 +340,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'Q':	/* Expect cubes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'W':	/* w range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
