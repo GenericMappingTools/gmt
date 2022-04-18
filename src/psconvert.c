@@ -805,7 +805,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'C':	/* Append extra custom GS options */
 				Ctrl->C.active = true;
-				strcat (Ctrl->C.arg, " ");
+				if (Ctrl->C.arg[0]) strcat (Ctrl->C.arg, " ");
 				strncat (Ctrl->C.arg, opt->arg, GMT_LEN256-1);	/* Append to list of extra GS options */
 				break;
 			case 'D':	/* Change output directory */
