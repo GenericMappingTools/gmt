@@ -324,7 +324,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'I':	/* Compute statistics only - no plot */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
+				if (!API->external) n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);	/* Externals already have output name in opt->arg */
 				break;
 			case 'L':	/* Override default labeling */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
