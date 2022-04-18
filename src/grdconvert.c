@@ -154,10 +154,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 			case '<':	/* Input and Output files */
 				/* Since grdconvert allowed output grid to be given without -G we must actually
 				 * check for two input files and assign the 2nd as the actual output file */
-				if (n_in == 0) {
-					Ctrl->In.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
-				}
+				if (n_in == 0)
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				else if (n_in == 1) {
 					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 					Ctrl->G.active = true;
