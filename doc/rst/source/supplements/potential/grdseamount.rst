@@ -226,10 +226,10 @@ Optional Arguments
 **-Q**\ *bmode*\ [/*fmode*]\ [**+d**]
     Set build modes. Can only be used in conjunction with **-T**. The default is **-Qc**\ /**g**; append
     alternative mode settings (separated by a slash if both are specified) to change that:
-    
+
         * The required *bmode* determines how we :ref:`construct <SMT_inc>` the surface: Specify **c** for cumulative
           volume through time or **i** for the incremental volume added for each time increment.
-    
+
         * The optional *fmode* determines the :ref:`volume flux curve <SMT_flux>` we use: Give **c** for a constant
           volume flux or **g** for a Gaussian volume flux [Default] between the start and stop times of each feature.
 
@@ -495,5 +495,5 @@ Reference
 ---------
 
 Smith, J. R.  and Wessel, P., 2000, Isostatic consequences of giant landslides on the Hawaiian Ridge,
-Pure Appl. Geophys., 157, 1097-1114, 
-`https://dx.doi.org/10.1007/s000240050019 <https://dx.doi.org/10.1007/s000240050019>`_.
+Pure Appl. Geophys., 157, 1097-1114,
+`https://doi.org/10.1007/s000240050019 <https://doi.org/10.1007/s000240050019>`_.
