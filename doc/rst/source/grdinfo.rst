@@ -20,7 +20,6 @@ Synopsis
 [ |-I|\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**] ]
 [ |-L|\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**] ]
 [ |-M| ]
-[ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |-T|\ [*dv*]\ [**+a**\ [*alpha*]]\ [**+s**] ]
 [ |SYN_OPT-V| ]
@@ -43,12 +42,13 @@ deviation, and/or the median, median absolute deviation (MAD) of *v*, and/or
 the mode (Least Median of Squares; LMS), LMS scale of *v*, and number of nodes set
 to NaN. We also report if the grid is pixel- or gridline-registered and
 if it is a Cartesian or Geographic data set (based on metadata in the file).
-With option **-Q** we can also report information for 3-D data cubes.
+We can also report information for 3-D netCDF data cubes, but note that
+data cubes are not compatible with options **-D**, **-E**, **-F**, and **-Ib**.
 
 Required Arguments
 ------------------
 
-.. |Add_ingrid| replace:: The name of one or several 2-D grid files. 
+.. |Add_ingrid| replace:: The name of one or several 2-D grid or 3-D cube files. **Note**: You cannot mix 2-D and 3-D files.
 .. include:: explain_grd_inout.rst_
     :start-after: ingrid-syntax-begins
     :end-before: ingrid-syntax-ends
@@ -63,7 +63,7 @@ Optional Arguments
     output is *name w e s n {b t} v0 v1 dx dy {dz} nx ny {nz}*\ [ *x0 y0 {z0} x1 y1 {z1}* ] [ *med
     scale* ] [*mean std rms*] [*n\_nan*] *registration gtype*. The data in brackets are
     output only if the corresponding options **-M**, **-L1**, **-L2**,
-    and **-M** are used, respectively, while the data in braces only apply if **-Q** is
+    and **-M** are used, respectively, while the data in braces only apply if
     used with 3-D data cubes. Use **-Ct** to place file *name*
     at the end of the output record or **-Cn** to only output numerical
     columns.  The *registration* is either 0 (gridline) or 1 (pixel),
@@ -146,14 +146,8 @@ Optional Arguments
     Find and report the location of min/max *v*-values, and count and
     report the number of nodes set to NaN, if any.
 
-.. _-Q:
-
-**-Q**
-    All input files must be data 3-D netCDF data cube files [all files are 2-D grids].
-    Not compatible with **-D**, **-E**, **-F**, and **-Ib**.
-
 .. |Add_-R| replace:: Using the **-R** option will select a subsection of the input grid(s). If this subsection
-    exceeds the boundaries of the grid, only the common region will be extracted. If **-Q** is used you must also
+    exceeds the boundaries of the grid, only the common region will be extracted. For cubes you must also
     append limits in the *z* dimension. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -201,7 +195,7 @@ Get the grid spacing in earth_relief_10m::
 
 To learn about the extreme values and coordinates in the 3-D data cube S362ANI_kmps.nc?vs::
 
-    gmt grdinfo -Q -M S362ANI_kmps.nc?vs
+    gmt grdinfo -M S362ANI_kmps.nc?vs
 
 See Also
 --------

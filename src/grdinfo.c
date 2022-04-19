@@ -83,9 +83,6 @@ struct GRDINFO_CTRL {
 		bool active;
 		unsigned int norm;
 	} L;
-	struct GRDINFO_Q {	/* -Q */
-		bool active;
-	} Q;
 	struct GRDINFO_T {	/* -T[s]<dv>  -T[<dv>][+s][+a[<alpha>]] */
 		bool active;
 		unsigned int mode;
@@ -114,12 +111,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s [-C[n|t]] [-D[<offx>[/<offy>]][+i]] [-E[x|y][+l|L|u|U]] [-F] [-G] [-I[<dx>[/<dy>]|b|i|r]] [-L[a|0|1|2|p]] "
-		"[-M] [-Q] [%s] [-T[<dv>][+a[<alpha>]][+s]] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
+		"[-M] [%s] [-T[<dv>][+a[<alpha>]][+s]] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	gmt_ingrid_syntax (API, 0, "Name of one or more grid files");
+	gmt_ingrid_syntax (API, 0, "Name of one or more grid or cube files");
+	GMT_Usage (API, 1, "\nNote: 3-D cubes are not compatible with -D, -E, -F and -Ib.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-C[n|t]");
 	GMT_Usage (API, -2, "Report information in fields on a single line using the format "
@@ -128,7 +126,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"and -Lp adds [mode LMSscale]). Ends with registration (0=gridline, 1=pixel) and type (0=Cartesian, 1=geographic). Optional directives:");
 	GMT_Usage (API, 3, "t: Place <file> at the end of the output record.");
 	GMT_Usage (API, 3, "n: Write only numerical columns.");
-	GMT_Usage (API, -2, "The items in {} are only output when -Q is used for 3-D data cubes.");
+	GMT_Usage (API, -2, "The items in {} are only output when used with 3-D data cubes.");
 	GMT_Usage (API, 1, "\n-D[<offx>[/<offy>]][+i]");
 	GMT_Usage (API, -2, "Report tile regions using tile size set in -I. Optionally, extend each tile region by <offx>/<offy> to add overlap. "
 		"Append +i to only report tiles if the subregion contains data (limited to one input grid). "
@@ -160,8 +158,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "a: All of the above.");
 	GMT_Usage (API, -2, "Note: If grid is geographic then we report area-weighted statistics.");
 	GMT_Usage (API, 1, "\n-M Search for the global min and max locations (x0,y0{,z0}) and (x1,y1{,z1}).");
-	GMT_Usage (API, 1, "\n-Q Input file(s) is 3-D data cube(s), not grid(s) [2-D grids]. "
-		"Not compatible with -D, -E, -F and -Ib.");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-T[<dv>][+a[<alpha>]][+s]");
 	GMT_Usage (API, -2, "Print global -Tvmin/vmax[/dv] (in rounded multiples of <dv>, if given). Optional modifiers:");
@@ -294,9 +290,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
-			case 'Q':	/* Expect cubes */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
+			case 'Q':	/* Expect cubes is no longer an option as we detect it automatically */
 				break;
 			case 'T':	/* CPT range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
@@ -365,16 +359,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 	                                   "Only one of -C, -F can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.o.active && !num_report,
 	                                   "The -o option requires -Cn\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->Q.active,
-	                                   "Option -D: Cannot be used with 3-D cubes (-Q)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->Q.active,
-	                                   "Option -E: Cannot be used with 3-D cubes (-Q)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->Q.active,
-	                                   "Option -F: Cannot be used with 3-D cubes (-Q)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->Q.active,
-	                                   "Option -L: Cannot be used with 3-D cubes (-Q)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_BOUNDBOX && Ctrl->Q.active,
-	                                   "Option -Ib: Cannot be used with 3-D cubes (-Q)\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -531,7 +515,7 @@ GMT_LOCAL void grdinfo_smart_increments (struct GMT_CTRL *GMT, double inc[], uns
 EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0, k_data, k_tile_id;
 	unsigned int n_grds = 0, n_cols = 0, col, level, i_status, gtype, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
-	unsigned int x_col_min, x_col_max, y_col_min, y_col_max, z_col_min, z_col_max, GMT_W = GMT_Z;
+	unsigned int x_col_min, x_col_max, y_col_min, y_col_max, z_col_min, z_col_max, GMT_W = GMT_Z, nc = 0, ng = 0;
 	bool subset, delay, num_report, is_cube;
 
 	uint64_t ij, n_nan = 0, n = 0;
@@ -573,8 +557,39 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 	/* OK, done parsing, now process all input grids in a loop */
 
+	/* First precheck if we are dealing with cubes or grids - no mixing though */
+
+	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
+
+		if (opt->option != '<') continue;	/* We are only processing filenames here */
+		if (gmt_nc_is_cube (API, opt->arg))	/* Determine if this file is a cube or not */
+			nc++;
+		else
+			ng++;
+	}
+
+	if (nc && ng) {
+		GMT_Report (API, GMT_MSG_WARNING, "Cannot give a mixed list of data cubes and data grids\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
+	if (nc) {	/* Got data cubes */
+		unsigned int n_errors = 0;
+		n_errors += gmt_M_check_condition (GMT, Ctrl->D.active,
+		                                   "Option -D: Cannot be used with 3-D cubes\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active,
+		                                   "Option -E: Cannot be used with 3-D cubes\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active,
+		                                   "Option -F: Cannot be used with 3-D cubes\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->L.active,
+		                                   "Option -L: Cannot be used with 3-D cubes\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_BOUNDBOX,
+		                                   "Option -Ib: Cannot be used with 3-D cubes\n");
+		is_cube = true;
+		if (n_errors) Return (GMT_PARSE_ERROR);
+	}
+
 	gmt_M_memset (wesn, 6, double);	/* Initialize */
-	if (Ctrl->Q.active) {
+	if (is_cube) {
 		x_col_min = 14; x_col_max = 17; y_col_min = 15; y_col_max = 18; z_col_min = 16; z_col_max = 19; GMT_W = 3;
 	}
 	else {	/* grid output */
@@ -596,10 +611,10 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active) {
 		/* w e s n {b t} w0 w1 dx dy {dz} n_columns n_rows {n_layers} [x0 y0 {z0} x1 y1 {z1}] [med scale] [mean std rms] [n_nan] */
-		n_cols = (Ctrl->Q.active) ? 8 : 6;	/* w e s n {b t} w0 w1 */
+		n_cols = (is_cube) ? 8 : 6;	/* w e s n {b t} w0 w1 */
 		if (!Ctrl->I.active) {
-			n_cols += (Ctrl->Q.active) ? 6 : 4;				/* Add dx dy {dz} n_columns n_rows {n_layers} */
-			if (Ctrl->M.active) n_cols += (Ctrl->Q.active) ? 7 : 5;	/* Add x0 y0 {z0} x1 y1 {z1} nnan */
+			n_cols += (is_cube) ? 6 : 4;				/* Add dx dy {dz} n_columns n_rows {n_layers} */
+			if (Ctrl->M.active) n_cols += (is_cube) ? 7 : 5;	/* Add x0 y0 {z0} x1 y1 {z1} nnan */
 			if (Ctrl->L.norm & 1) n_cols += 2;	/* Add median scale */
 			if (Ctrl->L.norm & 2) n_cols += 3;	/* Add mean stdev rms */
 			if (Ctrl->L.norm & 4) n_cols += 2;	/* Add mode lmsscale */
@@ -654,14 +669,6 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_set_geographic (GMT, GMT_IN);	/* Since this will be returned as a memory grid */
 		}
 
-		is_cube = gmt_nc_is_cube (API, opt->arg);	/* Determine if this file is a cube or not */
-		if (Ctrl->Q.active != is_cube) {
-			if (is_cube)
-				GMT_Report (API, GMT_MSG_WARNING, "Detected a data cube (%s) but -Q not set - skipping\n", opt->arg);
-			else
-				GMT_Report (API, GMT_MSG_WARNING, "Detected a data grid (%s) but -Q is set - skipping\n", opt->arg);
-			continue;
-		}
 		if (is_cube) {
 			if ((U = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {
 				Return (API->error);
@@ -1218,7 +1225,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 			global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 			global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
-			if (Ctrl->Q.active && !gmt_M_is_zero (U->z_inc)) {
+			if (is_cube && !gmt_M_is_zero (U->z_inc)) {
 				global_zmin = floor (global_zmin / U->z_inc) * U->z_inc;
 				global_zmax = ceil  (global_zmax / U->z_inc) * U->z_inc;
 			}
@@ -1249,7 +1256,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			out[XLO] = global_xmin;		out[XHI] = global_xmax;
 			out[YLO] = global_ymin;		out[YHI] = global_ymax;
 			col = 4;
-			if (Ctrl->Q.active) out[col++] = global_zmin;		out[col++] = global_zmax;
+			if (is_cube) out[col++] = global_zmin;		out[col++] = global_zmax;
 			out[col++] = global_vmin;		out[col++] = global_vmax;
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
@@ -1259,12 +1266,12 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_ascii_format_col (GMT, text, global_xmax, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
 			gmt_ascii_format_col (GMT, text, global_ymin, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
 			gmt_ascii_format_col (GMT, text, global_ymax, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
-			if (Ctrl->Q.active) {
+			if (is_cube) {
 				gmt_ascii_format_col (GMT, text, global_zmin, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
 				gmt_ascii_format_col (GMT, text, global_zmax, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
 			}
-			gmt_ascii_format_col (GMT, text, global_vmin, GMT_OUT, GMT_Z+Ctrl->Q.active);	strcat (record, text);	strcat (record, sep);
-			gmt_ascii_format_col (GMT, text, global_vmax, GMT_OUT, GMT_Z+Ctrl->Q.active);	strcat (record, text);
+			gmt_ascii_format_col (GMT, text, global_vmin, GMT_OUT, GMT_Z+is_cube);	strcat (record, text);	strcat (record, sep);
+			gmt_ascii_format_col (GMT, text, global_vmax, GMT_OUT, GMT_Z+is_cube);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 	}
@@ -1334,7 +1341,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 			global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 			global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
-			if (Ctrl->Q.active && !gmt_M_is_zero (U->z_inc)) {
+			if (is_cube && !gmt_M_is_zero (U->z_inc)) {
 				global_zmin = floor (global_zmin / U->z_inc) * U->z_inc;
 				global_zmax = ceil  (global_zmax / U->z_inc) * U->z_inc;
 			}
@@ -1366,7 +1373,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_ascii_format_col (GMT, text, global_xmax, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 			gmt_ascii_format_col (GMT, text, global_ymin, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
 			gmt_ascii_format_col (GMT, text, global_ymax, GMT_OUT, GMT_Y);	strcat (record, text);
-			if (Ctrl->Q.active) {
+			if (is_cube) {
 				strcat (record, "/");
 				gmt_ascii_format_col (GMT, text, global_zmin, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
 				gmt_ascii_format_col (GMT, text, global_zmax, GMT_OUT, GMT_Z);	strcat (record, text);
