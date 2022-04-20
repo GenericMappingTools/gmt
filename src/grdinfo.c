@@ -509,6 +509,8 @@ GMT_LOCAL void grdinfo_smart_increments (struct GMT_CTRL *GMT, double inc[], uns
 	}
 }
 
+EXTERN_MSC int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_set_pad (GMT, GMT_PAD_DEFAULT); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -562,10 +564,19 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
 
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
-		if (gmt_nc_is_cube (API, opt->arg))	/* Determine if this file is a cube or not */
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {
+			Return (API->error);
+		}
+		header = G->header;
+		if (gmtlib_is_nc_grid (GMT, header))	/* Not netCDF so must be grid */
+			ng++;
+		else if (gmt_nc_is_cube (API, opt->arg))	/* Determine if this netCDF file is a cube or not */
 			nc++;
 		else
 			ng++;
+		if (GMT_Destroy_Data (API, &G) != GMT_NOERROR){
+			Return (API->error);
+		}
 	}
 
 	if (nc && ng) {
