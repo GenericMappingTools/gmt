@@ -10485,10 +10485,18 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 					}
 					else if (p[1] == 'k') {	/* Custom symbol - separate file from size */
 						char *s = strrchr (p, '/');
-						strncpy (G->size, &s[1], GMT_LEN64-1);
-						s[0] = '\0';	/* Truncate size */
-						strncpy (G->symbol_code, &p[1], GMT_LEN64-1);
-						s[0] = '/';	/* Restore size */
+						if (s == NULL) {	/* No slash, no size */
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S~: Custom symbol %s not given any size\n", &p[2]);
+							bad++;
+						}
+						else {
+							strncpy (G->size, &s[1], GMT_LEN64-1);
+							s[0] = '\0';	/* Truncate size */
+							strncpy (G->symbol_code, &p[1], GMT_LEN64-1);
+							s[0] = '/';	/* Restore size */
+							if (gmtlib_invalid_symbolname (GMT, G->symbol_code))
+								bad++;
+						}
 					}
 					else {	/* Regular geometric symbol */
 						strncpy (G->size, &p[2], GMT_LEN64-1);
@@ -15539,6 +15547,18 @@ int gmt_flip_justify (struct GMT_CTRL *GMT, unsigned int justify) {
 	return (j);
 }
 
+bool gmtlib_invalid_symbolname (struct GMT_CTRL *GMT, char *name) {
+	/* Check that a symbol name only contains valid characters,
+	 * which are the alphanumerics plus / and . */
+	for (unsigned int k = 0; k < strlen (name); k++) {
+		if (!(isalnum (name[k]) || strchr ("/.", name[k]))) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Symbol name %s contains invalid character %c\n", name, name[k]);
+			return (true);
+		}
+	}
+	return (false);
+}
+
 /*! . */
 struct GMT_CUSTOM_SYMBOL * gmtlib_get_custom_symbol (struct GMT_CTRL *GMT, char *name) {
 	unsigned int i;
@@ -15549,6 +15569,10 @@ struct GMT_CUSTOM_SYMBOL * gmtlib_get_custom_symbol (struct GMT_CTRL *GMT, char 
 	for (i = 0; found == -1 && i < GMT->init.n_custom_symbols; i++) if (!strcmp (name, GMT->init.custom_symbol[i]->name)) found = i;
 
 	if (found >= 0) return (GMT->init.custom_symbol[found]);	/* Return a previously loaded symbol */
+
+	/* Check that symbol names is valid */
+
+	if (gmtlib_invalid_symbolname (GMT, name)) return (NULL);
 
 	/* Must load new symbol */
 
