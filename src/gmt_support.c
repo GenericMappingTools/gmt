@@ -10491,11 +10491,17 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 						}
 						else {
 							strncpy (G->size, &s[1], GMT_LEN64-1);
-							s[0] = '\0';	/* Truncate size */
-							strncpy (G->symbol_code, &p[1], GMT_LEN64-1);
-							s[0] = '/';	/* Restore size */
-							if (gmtlib_invalid_symbolname (GMT, G->symbol_code))
+							if (gmt_not_numeric (GMT, G->size)) {
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S~: Custom symbol %s not given a valid size\n", &p[2]);
 								bad++;
+							}
+							else {	/* Size seems OK */
+								s[0] = '\0';	/* Truncate size */
+								strncpy (G->symbol_code, &p[1], GMT_LEN64-1);
+								s[0] = '/';	/* Restore size */
+								if (gmtlib_invalid_symbolname (GMT, G->symbol_code))
+									bad++;
+							}
 						}
 					}
 					else {	/* Regular geometric symbol */
