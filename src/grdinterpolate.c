@@ -175,6 +175,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+l Select log10 spacing via <inc> = 1,2,3.");
 	GMT_Usage (API, 3, "+n Let <inc> mean the number of points instead. of increment");
 	GMT_Usage (API, -2, "Alternatively, give a <file> with output times in the first column, or a comma-separated <list>.");
+	GMT_Usage (API, -2, "Note: If -T is not given then we select all the input layers.");
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-Z[<levels>]");
 	GMT_Usage (API, -2, "Read or write 2-D grids that make up a virtual 3-D data cube. To read a series of 2-D grids, "
@@ -416,9 +417,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	if (got_cube && !(Ctrl->E.active || Ctrl->S.active || Ctrl->T.active)) {	/* If given a cube we requires other options */
-		GMT_Report (API, GMT_MSG_ERROR, "Data cube read but none of -E, -S -T were given\n");
-		Return (GMT_RUNTIME_ERROR);
+	if (got_cube && !(Ctrl->E.active || Ctrl->S.active || Ctrl->T.active)) {	/* No other options - do a 3-D grdcut */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Data cube read but none of -E, -S -T were given means we return all layers within -R\n");
 	}
 	/* Create output level array, if selected */
 	if (Ctrl->T.active && Ctrl->T.T.set != 2 && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) {
@@ -811,7 +811,10 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	GMT_Report (API, GMT_MSG_INFORMATION, "Interpolate %" PRIu64 " new layers (%g to %g in steps of %g).\n", Ctrl->T.T.n, Ctrl->T.T.array[0], Ctrl->T.T.array[Ctrl->T.T.n-1]);
+	if (Ctrl->T.active)
+		GMT_Report (API, GMT_MSG_INFORMATION, "Interpolate %" PRIu64 " new layers (%g to %g in steps of %g).\n", Ctrl->T.T.n, Ctrl->T.T.array[0], Ctrl->T.T.array[Ctrl->T.T.n-1]);
+	else
+		GMT_Report (API, GMT_MSG_INFORMATION, "Extract %" PRIu64 " layers (%g to %g).\n", C[GMT_IN]->header->n_bands, C[GMT_IN]->z[0], C[GMT_IN]->z[C[GMT_IN]->header->n_bands-1]);
 
 	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);	/* The 3rd dimension is not time in the grids, but we may have read time via -Z with -f2T */
 
@@ -819,15 +822,34 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	gmt_M_memcpy (wesn, C[GMT_IN]->header->wesn, 4, double);	/* This is the output common x/y region now */
 	inc[GMT_X] = C[GMT_IN]->header->inc[GMT_X];	inc[GMT_Y] = C[GMT_IN]->header->inc[GMT_Y];	/* And common x/y increments */
-	if (Ctrl->T.T.var_inc || Ctrl->T.T.n == 1) {	/* Not equidistant output levels selected via -T so must pass the number of output levels instead of increment */
-		dims[GMT_Z] = Ctrl->T.T.n;	/* Number of output levels */
-		this_dim = dims;	/* Pointer to the dims instead of NULL */
-		inc[GMT_Z] = 0.0;
+
+	if (Ctrl->T.active) {	/* Selected levels via -T for output */
+		n_layers = Ctrl->T.T.n;
+		level = Ctrl->T.T.array;
+		if (Ctrl->T.T.var_inc || Ctrl->T.T.n == 1) {	/* Not equidistant output levels selected via -T so must pass the number of output levels instead of increment */
+			dims[GMT_Z] = Ctrl->T.T.n;	/* Number of output levels */
+			this_dim = dims;	/* Pointer to the dims instead of NULL */
+			inc[GMT_Z] = 0.0;
+		}
+		else {	/* Normal equidistant output levels lets us pass z-inc */
+			inc[GMT_Z] = Ctrl->T.T.inc;
+			wesn[ZLO] = Ctrl->T.T.min;
+			wesn[ZHI] = Ctrl->T.T.max;
+		}
 	}
-	else {	/* Normal equidistant output levels lets us pass z-inc */
-		inc[GMT_Z] = Ctrl->T.T.inc;
-		wesn[ZLO] = Ctrl->T.T.min;
-		wesn[ZHI] = Ctrl->T.T.max;
+	else {	/* Implicitly selected all levels */
+		n_layers = C[GMT_IN]->header->n_bands;
+		level = C[GMT_IN]->z;
+		if (!equi_levels) {	/* Must pass dimension */
+			dims[GMT_Z] = n_layers;	/* Number of output levels */
+			this_dim = dims;	/* Pointer to the dims instead of NULL */
+			inc[GMT_Z] = 0.0;
+		}
+		else {	/* Normal equidistant output levels lets us pass z-inc */
+			inc[GMT_Z] = (n_layers) ? level[1] - level[0] : 0.0;
+			wesn[ZLO] = level[0];
+			wesn[ZHI] = level[n_layers-1];
+		}
 	}
 
 	if ((C[GMT_OUT] = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, this_dim, wesn, inc, C[GMT_IN]->header->registration, GMT_NOTSET, NULL)) == NULL)
@@ -839,12 +861,13 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	}
 
 	/* If not equidistant we must add in the level array manually */
-	if (C[GMT_OUT]->z == NULL && GMT_Put_Levels (API, C[GMT_OUT], Ctrl->T.T.array, Ctrl->T.T.n))
+	if (C[GMT_OUT]->z == NULL && GMT_Put_Levels (API, C[GMT_OUT], level, n_layers)) {
 		Return (API->error);
+	}
 
 	/* Allocate input and output arrays for the 1-D spline */
 	if ((i_value = gmt_M_memory (GMT, NULL, C[GMT_IN]->header->n_bands, double)) == NULL) Return (GMT_MEMORY_ERROR);
-	if ((o_value = gmt_M_memory (GMT, NULL, Ctrl->T.T.n, double)) == NULL) Return (GMT_MEMORY_ERROR);
+	if ((o_value = gmt_M_memory (GMT, NULL, n_layers, double)) == NULL) Return (GMT_MEMORY_ERROR);
 
 	/* Loop over all coregistered x/y nodes then drill through the cube to resample at new layer values */
 	for (row = 0; row < C[GMT_IN]->header->n_rows; row++) {
@@ -852,8 +875,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		for (col = 0; col < C[GMT_IN]->header->n_columns; col++, node++) {
 			for (k = 0; k < C[GMT_IN]->header->n_bands; k++)	/* For all available input levels, extract data[x,y,z(k)] */
 				i_value[k] = C[GMT_IN]->data[node+k*C[GMT_IN]->header->size];
-			gmt_intpol (GMT, C[GMT_IN]->z, i_value, NULL, C[GMT_IN]->header->n_bands, Ctrl->T.T.n, Ctrl->T.T.array, o_value, 0.0, int_mode);	/* Resample at requested output levels */
-			for (k = 0; k < Ctrl->T.T.n; k++)	/* For all output levels, place the interpolated values at this (x,y) across all levels */
+			gmt_intpol (GMT, C[GMT_IN]->z, i_value, NULL, C[GMT_IN]->header->n_bands, n_layers, level, o_value, 0.0, int_mode);	/* Resample at requested output levels */
+			for (k = 0; k < n_layers; k++)	/* For all output levels, place the interpolated values at this (x,y) across all levels */
 				C[GMT_OUT]->data[node+k*C[GMT_OUT]->header->size] = (float)o_value[k];
 		}
 	}
