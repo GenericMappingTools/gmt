@@ -371,7 +371,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     RMS        1 1  ");	GMT_Usage (API, -21, "Root-mean-square of A");
 	GMT_Message (API, GMT_TIME_NONE, "     RMSW       2 1  ");	GMT_Usage (API, -21, "Weighted Root-mean-square of A for weights in B");
 	GMT_Message (API, GMT_TIME_NONE, "     RPDF       1 1  ");	GMT_Usage (API, -21, "Rayleigh probability density function for z = A");
-	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclicly shifts the top A stack items by an amount B");
+	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclically shifts the top A stack items by an amount B");
 	GMT_Message (API, GMT_TIME_NONE, "     ROTX       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in x-direction");
 	GMT_Message (API, GMT_TIME_NONE, "     ROTY       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in y-direction");
 	GMT_Message (API, GMT_TIME_NONE, "     SDIST      2 1  ");	GMT_Usage (API, -21, "Spherical distance (in km) between grid nodes and stack lon,lat (A, B)");

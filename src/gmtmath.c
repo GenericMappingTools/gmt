@@ -654,7 +654,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     RINT       1 1  ");	GMT_Usage (API, -21, "rint (A) (round to integral value nearest to A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     RMS        1 1  ");	GMT_Usage (API, -21, "Root-mean-square of A"); 
 	GMT_Message (API, GMT_TIME_NONE, "     RMSW       2 1  ");	GMT_Usage (API, -21, "Weighted Root-mean-square of A for weights in B"); 
-	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclicly shifts the top A stack items by an amount B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclically shifts the top A stack items by an amount B"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ROTT       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in the t-direction"); 
 	GMT_Message (API, GMT_TIME_NONE, "     SEC        1 1  ");	GMT_Usage (API, -21, "sec (A) (A in radians)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     SECD       1 1  ");	GMT_Usage (API, -21, "sec (A) (A in degrees)"); 
