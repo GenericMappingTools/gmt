@@ -516,7 +516,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0, k_data, k_tile_id;
 	unsigned int n_grds = 0, n_cols = 0, col, level, i_status, gtype, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
 	unsigned int x_col_min, x_col_max, y_col_min, y_col_max, z_col_min, z_col_max, GMT_W = GMT_Z, nc = 0, ng = 0;
-	bool subset, delay, num_report, is_cube;
+	bool subset, delay, num_report, is_cube = false;
 
 	uint64_t ij, n_nan = 0, n = 0;
 
