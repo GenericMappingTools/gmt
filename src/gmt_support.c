@@ -15549,9 +15549,9 @@ int gmt_flip_justify (struct GMT_CTRL *GMT, unsigned int justify) {
 
 bool gmtlib_invalid_symbolname (struct GMT_CTRL *GMT, char *name) {
 	/* Check that a symbol name only contains valid characters,
-	 * which are the alphanumerics plus / and . */
+	 * which are the alphanumerics plus /, _, @ and . */
 	for (unsigned int k = 0; k < strlen (name); k++) {
-		if (!(isalnum (name[k]) || strchr ("/.", name[k]))) {
+		if (!(isalnum (name[k]) || strchr ("@_/.", name[k]))) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Symbol name %s contains invalid character %c\n", name, name[k]);
 			return (true);
 		}
