@@ -171,7 +171,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 
 			case '<':	/* Input files */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &(Ctrl->In.file));
 				if (do_file_check && GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 			break;
 
