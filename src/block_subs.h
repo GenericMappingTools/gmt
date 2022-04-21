@@ -204,7 +204,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
 	gmt_M_free (GMT, C);
 }
 
-GMT_LOCAL void BLK_strip_commas (const char *in, char out[]) {
+static void BLK_strip_commas (const char *in, char out[]) {
 	/* Remove the commas in the input and return the remaining characters via out */
 	size_t i, o = 0;
 	for (i = 0; in[i]; i++)
@@ -212,7 +212,7 @@ GMT_LOCAL void BLK_strip_commas (const char *in, char out[]) {
 	out[o] = '\0';	/* Terminate string */
 }
 
-GMT_LOCAL unsigned int BLK_parse_weight_opt (struct GMTAPI_CTRL *API, char *arg, bool weighted[], bool sigma[]) {
+static unsigned int BLK_parse_weight_opt (struct GMTAPI_CTRL *API, char *arg, bool weighted[], bool sigma[]) {
 	/* Common parser for the -W option in the three modules */
 	bool def_sigma = false;
 	char *c = NULL;

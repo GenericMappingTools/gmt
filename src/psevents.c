@@ -148,7 +148,7 @@ struct PSEVENTS_CTRL {
 };
 
 /* The names of the three external modules.  We skip first 2 letters if in modern mode */
-GMT_LOCAL char *coupe = "pscoupe", *meca = "psmeca", *velo = "psvelo";
+static char *coupe = "pscoupe", *meca = "psmeca", *velo = "psvelo";
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSEVENTS_CTRL *C;
