@@ -769,7 +769,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k, n_files = 0;
+	unsigned int n_errors = 0, k = 0, n_files = 0;
 	bool missing_equal = true;
 	char *c = NULL, *t_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
