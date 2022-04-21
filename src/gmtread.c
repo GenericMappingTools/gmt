@@ -104,25 +104,21 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREAD_CTRL *Ctrl, struct GMT_OP
 			case GMT_OPT_INFILE:	/* File args */
 				if (Ctrl->IO.active[GMT_OUT]) {	/* User gave output as ->outfile and it was found on the command line earlier */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->IO.active[GMT_IN]);
-					Ctrl->IO.active[GMT_IN] = true;
 					Ctrl->IO.file[GMT_IN] = strdup (opt->arg);
 				}
 				else if (n_files < 2) {	/* Encountered input file(s); the 2nd would be output */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->IO.active[n_files]);
-					Ctrl->IO.active[n_files] = true;
 					Ctrl->IO.file[n_files] = strdup (opt->arg);
 				}
 				n_files++;
 				break;
 			case GMT_OPT_OUTFILE:	/* Got specific output argument */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->IO.active[GMT_OUT]);
-				Ctrl->IO.active[GMT_OUT] = true;
 				Ctrl->IO.file[GMT_OUT] = strdup (opt->arg);
 				n_files++;
 				break;
 			case 'T':	/* Type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 't':
 						if (gmt_M_compat_check (GMT, 5))	/* There is no longer a T type but we will honor T from GMT5 */

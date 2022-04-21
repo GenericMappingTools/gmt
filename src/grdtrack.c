@@ -319,15 +319,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 			case '>':	/* Specified output file */
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change track resampling mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'f': Ctrl->A.mode = GMT_TRACK_FILL;   break;
 					case 'm': Ctrl->A.mode = GMT_TRACK_FILL_M; break;
@@ -340,7 +338,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'C':	/* Create cross profiles */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "adflrv"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'C', c, "adflrv", &pos, p, &n_errors) && n_errors == 0) {
@@ -380,17 +377,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'D':	/* Dump resampled lines */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.file));
 				break;
 			case 'E':	/* Create input tracks instead of reading tracks */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
-				Ctrl->E.lines = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->E.lines);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "bnrz"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'C', c, "bnrz", &pos, p, &n_errors) && n_errors == 0) {
@@ -462,7 +456,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':
 				if (opt->arg[0] == 0 && gmt_M_compat_check (GMT, 4)) {	/* Under COMPAT: Interpret -S (no args) as old-style -S option to skip output with NaNs */
@@ -473,7 +467,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 					break;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->S.mode = STACK_MEAN;   break;
 					case 'm': Ctrl->S.mode = STACK_MEDIAN; break;
@@ -506,7 +499,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				Ctrl->T.unit = 'X';	/* Cartesian units unless override later */
 				if ((c = strstr (opt->arg, "+p"))) {	/* Gave +p modifier */
 					Ctrl->T.mode = 1;	/* Report coordinates of non-NaN node instead of input coordinates */
@@ -520,7 +512,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */

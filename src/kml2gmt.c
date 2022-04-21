@@ -112,20 +112,18 @@ static int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OP
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
 				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'E':	/* Feature type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-		 		Ctrl->E.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
  				Ctrl->Z.active = true;	/* Needs this too */
 				break;
 			case 'F':	/* Feature type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-		 		Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 's':
 						Ctrl->F.mode = POINT;
@@ -146,7 +144,7 @@ static int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
- 				Ctrl->Z.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);

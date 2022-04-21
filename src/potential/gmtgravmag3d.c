@@ -279,34 +279,29 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 					GMT_Report (API, GMT_MSG_ERROR, "Option -H: Can't dechiper values\n");
 					n_errors++;
 				}
-				Ctrl->H.active = true;
 				Ctrl->C.active = false;
 				break;
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.rho = atof (opt->arg) * 6.674e-6;
-				Ctrl->C.active = true;
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->C.rho);
+				Ctrl->C.rho *= 6.674e-6;	/* Bake in Newton's constant with density contrast */
 				Ctrl->H.active = false;
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				Ctrl->D.dir = 1;
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
-				Ctrl->F.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file));
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
@@ -314,13 +309,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
-				Ctrl->L.zobs = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->L.zobs);
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
-
 				while (gmt_strtok (opt->arg, ",", &pos, p)) {		/* -M+cone,a/b/c+ellipe,a/b/c/d */
 					if (p[0] != '+' && p[1] != 's') {
 						GMT_Report (API, GMT_MSG_ERROR, "Model option must start with a +s<code> and not %s\n", p);
@@ -406,17 +398,16 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				}
 				break;
 	 		case 'E':
-				Ctrl->E.dz = atof (opt->arg);
-				Ctrl->E.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->E.dz);
 				break;
 	 		case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
-				Ctrl->S.radius = atof (opt->arg) * 1000;
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->S.radius);
+				Ctrl->S.radius *= 1000;	/* Expect km, convert to meters */
 				break;
 			case 'T': 		/* Selected input mesh format */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if (opt->arg[0] == 'p') {
 					char *pch;
 					Ctrl->T.xyz_file = strdup(&opt->arg[1]);
@@ -448,8 +439,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
-				Ctrl->Z.z0 = atof(opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->Z.z0);
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);
@@ -469,7 +459,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 ,
 	                                  "Must specify either -Cdensity or -H<stuff>\n");
-	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file, "Option -G: Must specify output file\n");
 	j = gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 	if (gmt_M_check_condition(GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
 		Ctrl->S.active = false;

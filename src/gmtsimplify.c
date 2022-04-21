@@ -114,14 +114,14 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct GM
 				break;
 			case '>':	/* Write to named output file instead of stdout */
 				Ctrl->Out.active = true;
-				if (n_files++ == 0 && opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
+				if (n_files++ > 0) { n_errors++; continue; }
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'T':	/* Set tolerance distance */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				Ctrl->T.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->T.tolerance), &(Ctrl->T.unit));
 				break;
 

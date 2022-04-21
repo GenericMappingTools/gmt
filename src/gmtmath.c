@@ -654,7 +654,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     RINT       1 1  ");	GMT_Usage (API, -21, "rint (A) (round to integral value nearest to A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     RMS        1 1  ");	GMT_Usage (API, -21, "Root-mean-square of A"); 
 	GMT_Message (API, GMT_TIME_NONE, "     RMSW       2 1  ");	GMT_Usage (API, -21, "Weighted Root-mean-square of A for weights in B"); 
-	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclicly shifts the top A stack items by an amount B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclically shifts the top A stack items by an amount B"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ROTT       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in the t-direction"); 
 	GMT_Message (API, GMT_TIME_NONE, "     SEC        1 1  ");	GMT_Usage (API, -21, "sec (A) (A in radians)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     SECD       1 1  ");	GMT_Usage (API, -21, "sec (A) (A in degrees)"); 
@@ -769,7 +769,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k, n_files = 0;
+	unsigned int n_errors = 0, k = 0, n_files = 0;
 	bool missing_equal = true;
 	char *c = NULL, *t_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -803,7 +803,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 
 			case 'A':	/* y(x) table for LSQFIT/SVDFIT operations */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;	k = 0;
 				if (opt->arg[0] == '-') {	/* Old-style leading hyphen to the filename has been replaced by modifier +r */
 					if (gmt_M_compat_check (GMT, 5)) {
 						GMT_Report (API, GMT_MSG_COMPAT, "The leading hyphen in -A is deprecated.  Append modifier +r instead.\n");
@@ -835,11 +834,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 					Ctrl->A.file = strdup (&opt->arg[k]);
 				break;
 			case 'C':	/* Processed in the main loop but not here; just skip */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				break;
 			case 'E':	/* Set minimum eigenvalue cutoff */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.eigen = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->E.eigen);
 				break;
 			case 'F':	/* Now obsolete, using -o instead */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -851,20 +849,18 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':	/* Reverse output order */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'L':	/* Apply operator per segment basis */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Sets no of columns and optionally the time column [0] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (sscanf (opt->arg, "%" PRIu64 "/%" PRIu64, &Ctrl->N.ncol, &Ctrl->N.tcol) == 1) Ctrl->N.tcol = 0;
 				break;
 			case 'Q':	/* Quick for -Ca -N1/0 -T0/0/1 */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'n')	/* Want no unit conversion on output */
 					Ctrl->Q.unit = GMT_INCH;	/* We do this which will convert from inch to inch, i.e., no change */
 				else if (opt->arg[0] && strchr (GMT_DIM_UNITS, opt->arg[0]))	/* Want a specific unit conversion from inch to this unit on output */
@@ -873,7 +869,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'S':	/* Only want one row (first or last) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'f': case 'F': case '\0':
 						Ctrl->S.mode = -1; break;
@@ -887,7 +882,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':	/* Either get a file with time coordinate or a min/max/dt setting */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				t_arg = opt->arg;
 				break;
 

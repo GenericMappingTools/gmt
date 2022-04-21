@@ -181,12 +181,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_O
 
 			case 'C':	/* Sets the clearance between frame and internal items */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if ((n = gmt_get_pair (GMT, opt->arg, GMT_PAIR_DIM_DUP, Ctrl->C.off)) < 0) n_errors++;
 				break;
 			case 'D':	/* Sets position and size of legend */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				if (strlen (opt->arg) < 5 || strchr ("jgn", opt->arg[0]) || gmt_found_modifier (GMT, opt->arg, "jlow")) {	/* New syntax: 	*/
 					if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg, 'D')) == NULL) {
 						n_errors++;	/* Failed basic parsing */
@@ -266,7 +264,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 					n_errors++;
@@ -292,34 +289,28 @@ static int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'L':	/* Sets linespacing in units of fontsize [1.1] */
 				GMT_Report (API, GMT_MSG_COMPAT, "Option -L is deprecated; -D...+l%s was set instead, use this in the future.\n", opt->arg);
-				Ctrl->D.spacing = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->D.spacing);
 				break;
 
 			case 'M':	/* Merge both hidden and explicit legend info */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'S':	/* Sets common symbol scale factor [1] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
-				Ctrl->S.scale = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->S.scale);
 				break;
 
 			case 'T':	/* Sets legendfile for saving the hidden file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
-				if (opt->arg[0])
-					Ctrl->T.file = strdup (opt->arg);
-				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -T requires a filename\n");
-					n_errors++;
-				}
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->T.file));
 				break;
 
 #ifdef DEBUG
 			case '+':	/* Dump temp files */
 				Ctrl->DBG.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 #endif
 

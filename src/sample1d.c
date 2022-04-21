@@ -199,15 +199,13 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change track resampling mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (opt->arg[0] != '+') {	/* Gave a mode */
 					switch (opt->arg[0]) {
 						case 'f': Ctrl->A.mode = GMT_TRACK_FILL;   break;
@@ -223,12 +221,11 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'l':
 						Ctrl->F.mode = GMT_SPLINE_LINEAR;
@@ -306,7 +303,6 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 				}
 				else {	/* Set output knots */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-					Ctrl->T.active = true;
 					t_arg = opt->arg;
 				}
 				break;
@@ -316,7 +312,6 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 					col = atoi (opt->arg);
 					n_errors += gmt_M_check_condition (GMT, col < 0, "Option -W: Column number cannot be negative\n");
 					Ctrl->W.col = col;
-					Ctrl->W.active = true;
 				}
 				else	/* Gave no argument */
 					n_errors++;

@@ -259,7 +259,7 @@ References
 ----------
 
 Comprehensive Modeling of the Geomagnetic Field, see
-`<https://onlinelibrary.wiley.com/doi/10.1111/j.1365-246X.2004.02421.x>`_
+`<https://doi.org/10.1111/j.1365-246X.2004.02421.x>`_.
 
 The International Geomagnetic Reference Field (IGRF), see
-`<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
+`<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_.

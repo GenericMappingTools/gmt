@@ -315,28 +315,24 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
-					n_errors++;
-				else
-					Ctrl->In.active = true;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
+				Ctrl->In.active = true;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Altitude mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				switch (opt->arg[1]) {
 					case 'x':
-						Ctrl->A.scale = atof (&opt->arg[2]);
+						n_errors += gmt_get_required_double (GMT, &opt->arg[2], opt->option, 'x', &Ctrl->A.scale);
 						Ctrl->A.get_alt = true;
 						break;
 					case '\0':
 						Ctrl->A.get_alt = true;
 						break;
 					default:
-						Ctrl->A.altitude = atof (&opt->arg[1]);
+						n_errors += gmt_get_required_double (GMT, &opt->arg[1], opt->option, 0, &Ctrl->A.altitude);
 						break;
 				}
 				switch (opt->arg[0]) {
@@ -357,19 +353,16 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* Color table */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Description file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				gmt_M_str_free (Ctrl->D.file);
-				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->D.file));
 				break;
 			case 'E':	/* Extrude feature down to the ground */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-			 	Ctrl->E.active = true;
 				if (strstr (opt->arg, "+s"))	/* Straight lines, turn off tessellation */
 				 	Ctrl->E.tessellate = false;
 				if (strstr (opt->arg, "+e"))	/* Straight lines, turn off tessellation */
@@ -379,7 +372,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'F':	/* Feature type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-		 		Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 's':
 						Ctrl->F.mode = POINT;
@@ -444,17 +436,16 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':	/* Custom icon */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-	 			Ctrl->I.active = true;
 				gmt_M_str_free (Ctrl->I.file);
-				if (opt->arg[0] == '+')
+				if (opt->arg[0] == '+') {
 					snprintf (buffer, GMT_LEN256, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
+					Ctrl->I.file = strdup (buffer);
+				}
 				else if (opt->arg[0])
-					strncpy (buffer, opt->arg, GMT_LEN256-1);
-				Ctrl->I.file = strdup (buffer);
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_LOCAL, &(Ctrl->I.file));
 				break;
 			case 'L':	/* Extended data */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
- 				Ctrl->L.active = true;
 				pos = Ctrl->L.n_cols = 0;
 				while ((gmt_strtok (opt->arg, ",", &pos, p))) {
 					if (Ctrl->L.n_cols == n_alloc) Ctrl->L.name = gmt_M_memory (GMT, Ctrl->L.name, n_alloc += GMT_TINY_CHUNK, char *);
@@ -463,7 +454,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'N':	/* Feature label */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (opt->arg[0] == '-') {	/* First non-coordinate field as label (Backwards compatible) */
 					Ctrl->N.mode = GET_COL_LABEL;
 					Ctrl->N.col = GMT_Z;
@@ -503,7 +493,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'S':	/* Scale for symbol (c) or text (n) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				if (opt->arg[0] == 'c')
 					Ctrl->S.scale[F_ID] = atof (&opt->arg[1]);
 				else if (opt->arg[0] == 'n')
@@ -515,7 +504,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':	/* Title [and folder] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if ((c = strchr (opt->arg, '/')) != NULL) {	/* Got both title and folder */
 					if (c[1]) Ctrl->T.folder = strdup (&c[1]);
 					*c = '\0';
@@ -526,7 +514,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'W':	/* Pen attributes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg[0] == '-' || (opt->arg[0] == '+' && opt->arg[1] != 'c')) {	/* Definitively old-style args */
 					if (gmt_M_compat_check (API->GMT, 5)) {	/* Sorry */
 						GMT_Report (API, GMT_MSG_COMPAT, "Your -W syntax is obsolete; see program usage.\n");
@@ -546,7 +533,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'Z':	/* Visibility control */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				pos = 0;
 				while ((gmt_strtok (&opt->arg[1], "+", &pos, p))) {
 					switch (p[0]) {

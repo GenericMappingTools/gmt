@@ -15,7 +15,7 @@ Synopsis
 **gmt x2sys_init** *TAG* |-D|\ *fmtfile*
 [ |-E|\ *suffix* ]
 [ |-F| ]
-[ |-G|\ **d**\|\ **g** ]
+[ |-G|\ [**d**\|\ **g**] ]
 [ |-I|\ *dx*\ [/*dy*] ]
 [ |-N|\ **d**\|\ **s**\ *unit* ]
 [ |SYN_OPT-R| ]
@@ -82,7 +82,7 @@ Optional Arguments
 
 .. _-G:
 
-**-Gd**\|\ **g**
+**-G**\ [**d**\|\ **g**]
     Selects geographical coordinates. Append **d** for discontinuity at
     the Dateline (makes longitude go from -180 to + 180) or **g** for
     discontinuity at Greenwich (makes longitude go from 0 to 360

@@ -372,29 +372,25 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 
 			case 'A':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				n_errors += psmeca_A_parse (GMT, Ctrl, opt->arg);
 				break;
 			case 'C':	/* Either modern -Ccpt option or a deprecated -C now served by -A */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				/* Change position [set line attributes] */
 				if (psmeca_is_old_C_option (GMT, opt->arg)) {	/* Need the -A parser for obsolete -C syntax */
 					Ctrl->A.active = true;
 					n_errors += psmeca_A_parse (GMT, Ctrl, opt->arg);
 				}
 				else {	/* Here we have the modern -C<cpt> parsing */
-					Ctrl->C.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 					if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				}
 				break;
 			case 'D':	/* Plot events between depmin and depmax deep */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->D.depmin, &Ctrl->D.depmax);
 				break;
 			case 'E':	/* Set color for extensive parts  */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (!opt->arg[0] || (opt->arg[0] && gmt_getfill (GMT, opt->arg, &Ctrl->E.fill))) {
 					gmt_fill_syntax (GMT, 'E', NULL, " ");
 					n_errors++;
@@ -469,7 +465,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'G':	/* Set color for compressive parts */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (!opt->arg[0] || (opt->arg[0] && gmt_getfill (GMT, opt->arg, &Ctrl->G.fill))) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
@@ -477,7 +472,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'H':		/* Overall symbol/pen scale column provided */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.active = true;
 				if (opt->arg[0]) {	/* Gave a fixed scale - no reading from file */
 					Ctrl->H.value = atof (opt->arg);
 					Ctrl->H.mode = PSMECA_CONST_SCALE;
@@ -485,7 +479,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'I':	/* Adjust symbol color via intensity */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (opt->arg[0])
 					Ctrl->I.value = atof (opt->arg);
 				else
@@ -493,7 +486,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'L':	/* Draw outline [set outline attributes] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
 					gmt_pen_syntax (GMT, 'L', NULL, " ", NULL, 0);
 					n_errors++;
@@ -509,11 +501,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'N':	/* Do not skip points outside border */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Get format and size */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				switch (opt->arg[0]) {	/* parse format */
 					case 'c':
 						Ctrl->S.readmode = READ_CMT;	Ctrl->S.n_cols = 11;
@@ -607,7 +598,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
 				if (strlen (opt->arg) > 2 && gmt_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
 					gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
@@ -616,7 +606,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'W':	/* Set line attributes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
@@ -626,7 +615,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				if (gmt_M_compat_check (GMT, 6)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-Z is deprecated from 6.2.0; use -C instead.\n");
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-					Ctrl->C.active = true;
 					if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				}
 				else {

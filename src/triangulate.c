@@ -206,21 +206,17 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* CURVE input slope grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
-				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->C.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->C.file));
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
 					case 'x': case 'X':
 						Ctrl->D.dir = GMT_X; break;
@@ -233,7 +229,6 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				break;
 			case 'F':	/* Previous grid input values used */
@@ -248,20 +243,16 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 					c[0] = '\0';	/* Temporarily chop off modifier */
 					Ctrl->F.mode = 1;
 				}
-				Ctrl->F.active = true;
 				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				if (c) c[0] = '+';	/* Restore chopped off modifier */
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'm':
@@ -274,15 +265,14 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 				/* Intentionally fall through */
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (strchr (opt->arg, 'n')) {
 					GMT_Report (API, GMT_MSG_INFORMATION, "-Qn is experimental and may be unstable.\n");
 					Ctrl->Q.mode |= 1;
@@ -290,15 +280,15 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */
@@ -312,14 +302,12 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 	n_errors += gmt_check_binary_io (GMT, 2);
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 ||
 	                                   GMT->common.R.inc[GMT_Y] <= 0.0), "Option -I: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Option -G: Must append file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Option -C: Must append slope grid file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (GMT->common.R.active[ISET] + GMT->common.R.active[RSET]) != 2,
 	                                   "Must specify -R, -I, -G for gridding\n");
 	(void)gmt_M_check_condition (GMT, !Ctrl->G.active && GMT->common.R.active[ISET], "Option -I: not needed when -G is not set\n");
 	(void)gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->Q.active) && GMT->common.R.active[RSET],
 	                             "Option -R not needed when -G or -Q are not set\n");
-	//n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->G.active, "Option -F: Cannot be used without -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->Q.active, "Option -S: Cannot be used with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Option -N: Only required with -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active[RSET], "Option -Q: Requires -R\n");

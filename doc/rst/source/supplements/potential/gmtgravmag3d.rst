@@ -172,6 +172,6 @@ See Also
 Reference
 ---------
 
-Okabe, M., Analytical expressions for gravity anomalies due to
+Okabe, M., 1979, Analytical expressions for gravity anomalies due to
 polyhedral bodies and translation into magnetic anomalies, *Geophysics*,
-44, (1979), p 730-741.
+44, 730-741.

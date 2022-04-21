@@ -210,7 +210,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 
 			case 'A':	/* Reporting unit */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'a':
 						Ctrl->A.mode = REPORT_PER_DATASET;
@@ -229,14 +228,14 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* Column output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case '0':	/* Hidden option to get 2 more columns back with column types */
 				Ctrl->C.extra = 2;	/* Need to report back x and y data types */
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':	/* Region adjustment Granularity */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				if (opt->arg[0]) {
 					if ((Ctrl->D.ncol = gmt_getincn (GMT, opt->arg, Ctrl->D.inc, GMT_MAX_COLUMNS)) < 0) n_errors++;
 					Ctrl->D.mode = 1;
@@ -244,7 +243,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'E':	/* Extrema reporting */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
 					case 'L':
 						Ctrl->E.abs = true;
@@ -267,7 +265,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'F':	/* Record/segment reporting only */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case '\0': case 'i': Ctrl->F.mode = GMT_INFO_TOTAL; break;
 					case 'd': Ctrl->F.mode = GMT_INFO_DATAINFO; break;
@@ -280,7 +277,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':	/* Granularity */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (strchr (opt->arg, '+')) n_errors += gmt_parse_region_extender (GMT, 'I', opt->arg, &(Ctrl->I.extend), Ctrl->I.delta);	/* Possibly extend the final region before reporting */
 				j = 1;
 				switch (opt->arg[0]) {
@@ -326,11 +322,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'L':	/* Detect limiting range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Error bar output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				j = 0;
 				while (opt->arg[j]) {
 					if (opt->arg[j] == 'x') Ctrl->S.xbar = true;
@@ -341,7 +336,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':	/* makecpt inc string */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if ((c = strchr (opt->arg, '/')) && gmt_M_compat_check (GMT, 5)) {	/* Let it slide for now */
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -T<inc>[/<col>] syntax is deprecated; use -T<inc>[%s][+c<col>] instead.\n", GMT_TIME_FIX_UNITS_DISPLAY);
 					j = sscanf (opt->arg, "%lf/%d", &Ctrl->T.inc, &Ctrl->T.col);

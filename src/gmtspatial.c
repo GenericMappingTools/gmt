@@ -886,14 +886,15 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				n_files[GMT_IN]++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files[GMT_OUT]++ == 0) Ctrl->Out.file = strdup (opt->arg);
+				if (n_files[GMT_OUT]++ > 0) { n_errors++; continue; }
+				Ctrl->Out.active = true;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Do nearest neighbor analysis */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (opt->arg[0] == 'a' || opt->arg[0] == 'A') {	/* Spatially average points until minimum NN distance is less than given distance */
 					Ctrl->A.mode = (opt->arg[0] == 'A') ? 2 : 1;	/* Slow mode is an undocumented test mode */
 					Ctrl->A.smode = gmt_get_distance (GMT, &opt->arg[1], &(Ctrl->A.min_dist), &(Ctrl->A.unit));
@@ -919,11 +920,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':	/* Clip to given region */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':	/* Look for duplications */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				pos = 0;
 				while (gmt_strtok (opt->arg, "+", &pos, p)) {
 					switch (p[0]) {
@@ -955,7 +955,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				break;
 			case 'E':	/* Orient polygons -E+n|p  (old -E-|+) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-			 	Ctrl->E.active = true;
 				if (opt->arg[0] == '-' || strstr (opt->arg, "+n"))
 					Ctrl->E.mode = GMT_POL_IS_CW;
 				else if (opt->arg[0] == '+' || strstr (opt->arg, "+p"))
@@ -965,12 +964,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				break;
 			case 'F':	/* Force polygon or line mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				Ctrl->F.geometry = (opt->arg[0] == 'l') ? GMT_IS_LINE : GMT_IS_POLY;
 				break;
 			case 'I':	/* Compute intersections between polygons */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (opt->arg[0] == 'i') Ctrl->I.mode = 1;
 				if (opt->arg[0] == 'I') Ctrl->I.mode = 2;
 				if (opt->arg[0] == 'e') Ctrl->I.mode = 4;
@@ -978,7 +975,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				break;
 			case 'L':	/* Remove tile lines */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 				if (n >= 1) Ctrl->L.s_cutoff = atof (txt_a);
 				if (n >= 2) Ctrl->L.path_noise = atof (txt_b);
@@ -986,7 +982,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				break;
 			case 'N':	/* Determine containing polygons for features */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if ((s = strchr (opt->arg, '+')) == NULL) {	/* No modifiers */
 					Ctrl->N.file = strdup (opt->arg);
 					continue;
@@ -1012,7 +1007,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				break;
 			case 'Q':	/* Measure area/length and handedness of polygons */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				s = opt->arg;
 				/* Handle +sa|d versus +s for deprecated ellipsoidal arc seconds */
 				if (s[0] && !strcmp (s, "+s") && (s[2] == '\0' || !strchr ("ad", s[2]))) {	/* Since [-|+] is deprecated as of GMT 6 we must assume this is +s[a] */
@@ -1084,7 +1078,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				break;
 			case 'S':	/* Spatial polygon operations */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				if (opt->arg[0] == 'u') {
 					Ctrl->S.mode = POL_UNION;
 					GMT_Report (API, GMT_MSG_ERROR, "Option -Su not implemented yet\n");
@@ -1118,14 +1111,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				break;
 			case 'T':	/* Truncate against polygon */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				Ctrl->C.active = Ctrl->S.active = true;
 				Ctrl->S.mode = POL_CLIP;
 				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
 				break;
 			case 'W':	/* Widen the line */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if ((s = strstr (opt->arg, "+f")))
 					Ctrl->W.extend[0] = true;	/* Only first point */
 				else if ((s = strstr (opt->arg, "+l")))

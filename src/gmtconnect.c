@@ -174,39 +174,33 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Separate closed from open segments  */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Write each segment to a separate output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				gmt_M_str_free (Ctrl->D.format);
 				if (opt->arg[0]) Ctrl->D.format = strdup (opt->arg);
 				break;
 			case 'L':	/* Write link information to file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				gmt_M_str_free (Ctrl->L.file);
 				if (opt->arg[0]) Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 'Q':	/* Write names of individual files to list(s) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				gmt_M_str_free (Ctrl->Q.file);
 				if (opt->arg[0]) Ctrl->Q.file = strdup (opt->arg);
 				break;
 			case 'T':	/* Set threshold distance */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[0]);
-				Ctrl->T.active[0] = true;
 				if (opt->arg[0]) {	/* Specified a distance */
 					char *c = NULL;
 					if ((c = strstr (opt->arg, "+s"))) {	/* Gave second distance via +s<dist> */
@@ -214,7 +208,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 						c[0] = '\0';	/* Temporarily chop off modifier */
 						Ctrl->T.mode = gmt_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
 						Ctrl->T.dist[1] = atof (&c[2]);
-						Ctrl->T.active[1] = true;
 						c[0] = '+';	/* Restore modifier */
 					}
 					else {	/* Only one distance but possibly old-style /dist */
@@ -223,7 +216,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 						if (n == 2) {	/* Gave second distance via /<dist> */
 							n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[1]);
 							Ctrl->T.dist[1] = atof (B);
-							Ctrl->T.active[1] = true;
 						}
 					}
 				}

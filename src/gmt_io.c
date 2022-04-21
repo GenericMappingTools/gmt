@@ -3416,7 +3416,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		gmtlib_reparse_i_option (GMT, col);
 
 	if (found_text) {	/* Determine record type */
-		if (GMT->current.io.trailing_text[GMT_IN]) ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
+		ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
 	}
 	else	/* No trailing text found, reset tpos */
 		*tpos = 0;
@@ -5550,8 +5550,10 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 
 	if (!filename || !filename[0]) return (GMT_NOTSET);		/* No file given */
 	if (gmt_M_file_is_memory (filename)) return (0);	/* Memory location always exists */
-	if (gmt_file_is_cache (GMT->parent, filename))			/* Must be a cache file */
+	if (gmt_file_is_cache (GMT->parent, filename)) {			/* Must be a cache file */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_access: Detected cache file %s - must check for need to download\n", filename);
 		first = gmt_download_file_if_not_found (GMT, filename, 0);
+	}
 
 	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], gmtlib_valid_filemodifiers (GMT))) == NULL) return (GMT_NOTSET);	/* Likely not a valid filename */
 	strncpy (file, cleanfile, PATH_MAX-1);

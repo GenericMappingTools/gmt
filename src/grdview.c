@@ -521,15 +521,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Cpt file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
@@ -541,12 +539,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 					/* Three r,g,b grids for draping */
 					char A[GMT_LEN256] = {""}, B[GMT_LEN256] = {""}, C[GMT_LEN256] = {""};
 					sscanf (opt->arg, "%[^,],%[^,],%s", A, B, C);
-					if (A[0]) Ctrl->G.file[0] = strdup (A);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[0]))) n_errors++;
-					if (B[0]) Ctrl->G.file[1] = strdup (B);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[1]))) n_errors++;
-					if (C[0]) Ctrl->G.file[2] = strdup (C);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[2]))) n_errors++;
+					n_errors += gmt_get_required_file (GMT, A, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[0]));
+					n_errors += gmt_get_required_file (GMT, B, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[1]));
+					n_errors += gmt_get_required_file (GMT, C, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file[2]));
 					Ctrl->G.n = 3;
 				}
 				else if (n_commas == 0 && Ctrl->G.n < 3) {	/* Just got another drape grid or image */
@@ -561,7 +556,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':	/* Use intensity from grid or constant or auto-compute it */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if ((c = strstr (opt->arg, "+d"))) {	/* Gave +d, so derive intensities from the input grid using default settings */
 					Ctrl->I.derive = true;
 					c[0] = '\0';	/* Chop off modifier */
@@ -610,10 +604,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'N':	/* Facade */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				if (opt->arg[0]) {
 					char colors[GMT_LEN64] = {""};
-					Ctrl->N.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 					if ((c = strstr (opt->arg, "+g")) != NULL) {	/* Gave modifier +g<fill> */
 						c[0] = '\0';	/* Truncate string temporarily */
 						if (opt->arg[0])
@@ -643,7 +636,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'Q':	/* Plot mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				q_set++;
 				if ((c = strstr (opt->arg, "+m")) != NULL) {
 					Ctrl->Q.monochrome = true;
@@ -705,14 +697,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'S':	/* Smoothing of contours */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
-				sval = atoi (opt->arg);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &sval);
 				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -S: smooth value must be positive\n");
 				Ctrl->S.value = sval;
 				break;
 			case 'T':	/* Tile plot -T[+s][+o<pen>] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;	/* Plot as tiles */
 				if (opt->arg[0] && (strchr (opt->arg, '+') || gmt_M_compat_check (GMT, 6))) {	/* New syntax */
 					if (strstr (opt->arg, "+s"))
 						Ctrl->T.skip = true;
@@ -740,7 +730,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'W':	/* Contour, mesh, or facade pens */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				j = (opt->arg[0] == 'm' || opt->arg[0] == 'c' || opt->arg[0] == 'f');
 				id = 0;
 				if (j == 1) {	/* First check that the c|f|m is not part of a color name instead */

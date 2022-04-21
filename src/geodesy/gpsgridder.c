@@ -256,7 +256,6 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 
 			case 'C':	/* Solve by SVD */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if (strchr (opt->arg, '/') && strstr (opt->arg, "+f") == NULL) {	/* Old-style file deprecated specification */
 					if (gmt_M_compat_check (API->GMT, 5)) {	/* OK */
 						sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, p);
@@ -309,7 +308,6 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 				break;
 			case 'E':	/* Evaluate misfit -E[<file>]*/
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (opt->arg[0]) {
 					Ctrl->E.file = strdup (opt->arg);
 					Ctrl->E.mode = GPSGRIDDER_MISFIT;
@@ -317,7 +315,6 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 				break;
 			case 'F':	/* Fudge factor  */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (opt->arg[0] == 'd') {	/* Specify the delta radius in user units */
 					Ctrl->F.mode = GPSGRIDDER_FUDGE_R;
 					Ctrl->F.fudge = atof (&opt->arg[1]);
@@ -333,31 +330,27 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 				break;
 			case 'G':	/* Output file name or grid template */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':	/* Grid spacings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':	/* Leave trend alone [Default removes LS plane] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Discrete output locations, no grid will be written */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (opt->arg[0]) Ctrl->N.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file))) n_errors++;
 				break;
 			case 'S':	/* Poission's ratio */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.nu = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->S.nu);
 				break;
 			case 'T':	/* Input mask grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->T.file)))
 					n_errors++;
@@ -377,7 +370,6 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':	/* Expect data weights in last two columns */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg[0] == 'w')	/* Deprecated syntax -Ww */
 					Ctrl->W.mode = GPSGRIDDER_GOT_W;	/* Got weights instead of sigmas */
 				else if (strstr (opt->arg, "+w"))
@@ -388,7 +380,7 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 #ifdef DEBUG
 			case 'Z':	/* Dump matrices */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 #endif
 			default:	/* Report bad options */

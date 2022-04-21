@@ -508,12 +508,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':	/* Dump the polygons to files */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-
 				if (gmt_M_compat_check (GMT, 4)) {
 					for (n_plus = -1, k = 0; opt->arg[k]; k++) {
 						if (opt->arg[k] == '+' && opt->arg[k+1] == 'n') {
@@ -532,7 +530,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'F':	/* Orient the clip contours */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case '\0': case 'l':
 						Ctrl->F.value = -1;
@@ -547,7 +544,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
@@ -555,12 +551,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				k = 0;
 				if (opt->arg[0] == '-')	/* Old style leading -<name> */
 					Ctrl->L.mode = PSMASK_INSIDE, k = 1;
@@ -579,21 +573,19 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
-				Ctrl->Q.min = atoi (opt->arg);
+				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->Q.min);
 				break;
 			case 'S':	/* Radius of influence */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */

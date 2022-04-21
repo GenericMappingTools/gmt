@@ -4975,7 +4975,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 
 	if ((type = gmt_locate_custom_symbol (GMT, in_name, name, path, &pos)) == 0) return GMT_RUNTIME_ERROR;
 
-	if (type == GMT_CUSTOM_EPS) {	/* Must replace EPS symbol with a simple 1-action custom symbl EPS command */
+	if (type == GMT_CUSTOM_EPS) {	/* Must replace EPS symbol with a simple 1-action custom symbol EPS command */
 		/* Single action with x=y=0, set size=1, and add in EPS loaded */
 		head = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
 		strncpy (head->name, basename (&name[pos]), GMT_LEN64-1);
@@ -9885,7 +9885,7 @@ unsigned int gmt_contour_C_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct 
 		gmt_M_str_free (A->file);
 		A->file = strdup (arg);
 	}
-	else if (!gmt_access (GMT, arg, R_OK) || gmt_file_is_cache (API, arg)) {	/* Gave a readable file (CPT or contour file) */
+	else if (!gmt_access (GMT, arg, R_OK)) {	/* Gave a readable file (CPT or contour file) */
 		int answer;
 		A->interval = 1.0;	/* This takes us past a check only */
 		if ((answer = gmtsupport_is_cpt_file (GMT, arg)) == -1)
@@ -10341,7 +10341,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 				error++;
 			}
 			break;
-		case 'f':	/* fixed points file */
+		case 'f':	/* Fixed points file */
 			L->fixed = true;
 			k = sscanf (&txt[1], "%[^/]/%lf", L->file, &L->slop);
 			if (k == 1) L->slop = GMT_CONV8_LIMIT;
@@ -10356,7 +10356,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_CONTOUR_XCURVE;
 			strncpy (L->file, &txt[1], PATH_MAX-1);
-			if (!gmt_file_is_cache (GMT->parent, L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
+			if (gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Cannot find/read crossing line file %s\n", L->flag, L->file);
 				error++;
 			}
@@ -10479,14 +10479,32 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 
 			case 's':	/* Symbol to place */
 				if (p[1]) {
-					if (p[1] == 'k') {	/* Custom symbol - separate file from size */
-						char *s = strrchr (p, '/');
-						strncpy (G->size, &s[1], GMT_LEN64-1);
-						s[0] = '\0';	/* Truncate size */
-						strncpy (G->symbol_code, &p[1], GMT_LEN64-1);
-						s[0] = '/';	/* Restore size */
+					if (strchr (GMT_DECORATE_SYMBOLS, p[1]) == NULL) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S~: Symbol +%s not allowed!\n", &p[1]);
+						bad++;
 					}
-					else {	/* Regular symbol */
+					else if (p[1] == 'k') {	/* Custom symbol - separate file from size */
+						char *s = strrchr (p, '/');
+						if (s == NULL) {	/* No slash, no size */
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S~: Custom symbol %s not given any size\n", &p[2]);
+							bad++;
+						}
+						else {
+							strncpy (G->size, &s[1], GMT_LEN64-1);
+							if (gmt_not_numeric (GMT, G->size)) {
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S~: Custom symbol %s not given a valid size\n", &p[2]);
+								bad++;
+							}
+							else {	/* Size seems OK */
+								s[0] = '\0';	/* Truncate size */
+								strncpy (G->symbol_code, &p[1], GMT_LEN64-1);
+								s[0] = '/';	/* Restore size */
+								if (gmtlib_invalid_symbolname (GMT, G->symbol_code))
+									bad++;
+							}
+						}
+					}
+					else {	/* Regular geometric symbol */
 						strncpy (G->size, &p[2], GMT_LEN64-1);
 						G->symbol_code[0] = p[1];
 					}
@@ -10571,11 +10589,11 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 				error++;
 			}
 			break;
-		case 'f':	/* fixed points file */
+		case 'f':	/* Fixed points file */
 			L->fixed = true;
 			k = sscanf (&txt[1], "%[^/]/%lf", L->file, &L->slop);
 			if (k == 1) L->slop = GMT_CONV8_LIMIT;
-			if (!gmt_file_is_cache (GMT->parent, L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
+			if (gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Cannot find/read fixed point file %s\n", L->file);
 				error++;
 			}
@@ -10586,7 +10604,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_DECORATE_XCURVE;
 			strncpy (L->file, &txt[1], PATH_MAX-1);
-			if (!gmt_file_is_cache (GMT->parent, L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
+			if (gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Cannot find/read crossing line file %s\n", L->file);
 				error++;
 			}
@@ -15535,6 +15553,26 @@ int gmt_flip_justify (struct GMT_CTRL *GMT, unsigned int justify) {
 	return (j);
 }
 
+bool gmtlib_invalid_symbolname (struct GMT_CTRL *GMT, char *name) {
+	/* Check that a symbol name only contains valid characters,
+	 * which are the alphanumerics plus /, _, @, - and . (and :, \ for Windows) */
+#ifdef WIN32
+#define CUSTOM_EXTRA_CHAR "@_-/.:~\\"
+#else
+#define CUSTOM_EXTRA_CHAR "@_-/."
+#endif
+
+	char *text = strrchr (name ,'/');	/* Only check name of symbol, not leading directory */
+	if (text == NULL) text = name;	/* No directory slash found - use entire name */
+	for (unsigned int k = 0; k < strlen (name); k++) {
+		if (!(isalnum (name[k]) || strchr (CUSTOM_EXTRA_CHAR, name[k]))) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Symbol name %s contains invalid character %c\n", name, name[k]);
+			return (true);
+		}
+	}
+	return (false);
+}
+
 /*! . */
 struct GMT_CUSTOM_SYMBOL * gmtlib_get_custom_symbol (struct GMT_CTRL *GMT, char *name) {
 	unsigned int i;
@@ -15545,6 +15583,10 @@ struct GMT_CUSTOM_SYMBOL * gmtlib_get_custom_symbol (struct GMT_CTRL *GMT, char 
 	for (i = 0; found == -1 && i < GMT->init.n_custom_symbols; i++) if (!strcmp (name, GMT->init.custom_symbol[i]->name)) found = i;
 
 	if (found >= 0) return (GMT->init.custom_symbol[found]);	/* Return a previously loaded symbol */
+
+	/* Check that symbol names is valid */
+
+	if (gmtlib_invalid_symbolname (GMT, name)) return (NULL);
 
 	/* Must load new symbol */
 
@@ -15619,30 +15661,33 @@ openmp_int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, doub
 	 * in the same units as the radius.  We also return the widest value in the d_col array via
 	 * the actual_max_d_col value.
 	 */
-	openmp_int max_d_col, row, *d_col = gmt_M_memory (GMT, NULL, G->header->n_rows, unsigned int);
+	openmp_int row, *d_col = gmt_M_memory (GMT, NULL, G->header->n_rows, unsigned int);
 	double dist_x, dist_y, lon, lat;
 
-	lon = G->header->wesn[XLO] + G->header->inc[GMT_X];
-
-	dist_y = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], G->header->wesn[XLO], G->header->wesn[YLO] + G->header->inc[GMT_Y]);
+	lon = G->header->wesn[XLO] + G->header->inc[GMT_X];	/* One step in from west */
+	/* Set limit on +/- delta cols */
 	if (mode) {	/* Input data is geographical, so circle widens with latitude due to cos(lat) effect */
-		max_d_col = urint (ceil (G->header->n_columns / 2.0) + 0.1);	/* Upper limit on +- halfwidth */
 		*actual_max_d_col = 0;
 		for (row = 0; row < (openmp_int)G->header->n_rows; row++) {
 			lat = gmt_M_grd_row_to_y (GMT, row, G->header);
-			/* Determine longitudinal width of one grid ell at this latitude */
+			/* Determine longitudinal width of one grid cell at this latitude */
 			dist_x = gmt_distance (GMT, G->header->wesn[XLO], lat, lon, lat);
-			d_col[row] = (fabs (lat) == 90.0) ? max_d_col : urint (ceil (radius / dist_x) + 0.1);
-			if (d_col[row] > max_d_col) d_col[row] = max_d_col;	/* Safety valve */
-			if (d_col[row] > (*actual_max_d_col)) *actual_max_d_col = d_col[row];
+			d_col[row] = (fabs (lat) == 90.0) ? G->header->n_columns : urint (ceil (radius / dist_x) + 0.1);
+			if (d_col[row] > G->header->n_columns) d_col[row] = G->header->n_columns;	/* No point exceeding the upper limit */
+			if (d_col[row] > (*actual_max_d_col)) *actual_max_d_col = d_col[row];	/* Update the max range so far */
 		}
 	}
-	else {	/* Plain Cartesian data with rectangular box */
+	else {	/* Plain Cartesian data with rectangular box and no latitude variation */
 		dist_x = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], lon, G->header->wesn[YLO]);
-		*actual_max_d_col = max_d_col = urint (ceil (radius / dist_x) + 0.1);
-		for (row = 0; row < (openmp_int)G->header->n_rows; row++) d_col[row] = max_d_col;
+		*actual_max_d_col = urint (ceil (radius / dist_x) + 0.1);
+		if (*actual_max_d_col > G->header->n_columns) *actual_max_d_col = G->header->n_columns;	/* No point exceeding the upper limit */
+		for (row = 0; row < (openmp_int)G->header->n_rows; row++) d_col[row] = *actual_max_d_col;	/* Constant array */
 	}
+
+	/* Set fixed limit on +/- delta rows */
+	dist_y = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], G->header->wesn[XLO], G->header->wesn[YLO] + G->header->inc[GMT_Y]);
 	*d_row = urint (ceil (radius / dist_y) + 0.1);	/* The constant half-width of nodes in y-direction */
+	if (*d_row > G->header->n_rows) *d_row = G->header->n_rows;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Max node-search half-widths are: half_x = %d, half_y = %d\n", *d_row, *actual_max_d_col);
 	return (d_col);		/* The (possibly variable) half-width of nodes in x-direction as function of y */
 }
@@ -18648,4 +18693,98 @@ double gmt_get_vector_shrinking (struct GMT_CTRL *GMT, struct GMT_VECT_ATTR *v, 
 	if (s < v->v_norm_limit) s = v->v_norm_limit;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Given vector value %g and shrink limit %g, returned scale = %g\n", val, v->v_norm, s);
 	return (s);
+}
+
+/* Helper functions to handle the parsing of option and modifier arguments that are required.
+ * If argument is missing then that is an error, otherwise we parse and return */
+
+unsigned int gmtsupport_print_and_err (struct GMT_CTRL *GMT, char *text, char option, char modifier) {
+	unsigned int error = GMT_NOERROR;
+	if (!text || !text[0]) {
+		if (modifier)
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument provided for modifier +%c\n", option, modifier);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument provided\n", option);
+		error = GMT_PARSE_ERROR;
+	}
+	return (error);
+}
+
+unsigned int gmt_get_required_file (struct GMT_CTRL *GMT, char *text, char option, char modifier, unsigned int family, unsigned int direction, unsigned int mode, char **string) {
+	/* Get required file name and do basic path checking */
+	unsigned int err;
+	if ((err = gmt_get_required_string (GMT, text, option, modifier, string))) return (err);
+	/* Got a name, check it */
+	if (GMT_Get_FilePath (GMT->parent, family, direction, mode, string))
+		err++;
+	return (err);
+}
+
+unsigned int gmt_get_no_argument (struct GMT_CTRL *GMT, char *text, char option, char modifier) {
+	/* Return error if an argument actually was given when none is expected */
+	unsigned int error = GMT_NOERROR;
+	if (text && text[0]) {
+		if (modifier)
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument expected for modifier +%c\n", option, modifier);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No argument expected\n", option);
+		error = GMT_PARSE_ERROR;
+	}
+	return (error);
+}
+
+unsigned int gmt_get_required_uint64 (struct GMT_CTRL *GMT, char *text, char option, char modifier, uint64_t *value) {
+	/* Convert the text arg to an unsigned 64-bit int and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*value = (uint64_t)atol (text);
+	return (err);
+}
+
+unsigned int gmt_get_required_uint (struct GMT_CTRL *GMT, char *text, char option, char modifier, unsigned int *value) {
+	/* Convert the text arg to an unsigned int and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*value = (unsigned int)atoi (text);
+	return (err);
+}
+
+unsigned int gmt_get_required_sint (struct GMT_CTRL *GMT, char *text, char option, char modifier, int *value) {
+	/* Convert the text arg to a signed int and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*value = atoi (text);
+	return (err);
+}
+
+unsigned int gmt_get_required_float (struct GMT_CTRL *GMT, char *text, char option, char modifier, float *value) {
+	/* Convert the text arg to a float and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*value = (float)atof (text);
+	return (err);
+}
+
+unsigned int gmt_get_required_double (struct GMT_CTRL *GMT, char *text, char option, char modifier, double *value) {
+	/* Convert the text arg to a double and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*value = atof (text);
+	return (err);
+}
+
+unsigned int gmt_get_required_char (struct GMT_CTRL *GMT, char *text, char option, char modifier, char *letter) {
+	/* Convert the text arg to a single letter and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*letter = text[0];
+	return (err);
+}
+
+unsigned int gmt_get_required_string (struct GMT_CTRL *GMT, char *text, char option, char modifier, char **string) {
+	/* Convert the text arg to an allocated string and if no arg given we fuss and return error */
+	unsigned int err;
+	if (!(err = gmtsupport_print_and_err (GMT, text, option, modifier)))
+		*string = strdup (text);
+	return (err);
 }

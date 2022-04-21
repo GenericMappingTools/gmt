@@ -240,36 +240,28 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 		switch (opt->option) {
 
 			case '<':	/* Input file */
-				if (n_files++ > 0) break;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
-					n_errors++;
-				else
-					Ctrl->In.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			case 'I':	/* Include file with settings used by all scripts */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
-				Ctrl->I.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file));
 				break;
 
 			case 'M':	/* Create a single job as well as batch (unless -Q is active) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
-				if (opt->arg[0])	/* Gave a job number */
+				if (opt->arg[0])	/* Gave a job number [0] */
 					Ctrl->M.job = atoi (opt->arg);
 				break;
 
 			case 'N':	/* Movie prefix and directory name */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
-				Ctrl->N.prefix = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->N.prefix);
 				break;
 
 			case 'Q':	/* Debug - leave temp files and directories behind; Use -Qs to only write scripts */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (opt->arg[0] == 's') Ctrl->Q.scripts = true;
 				break;
 
@@ -278,16 +270,16 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 					k = BATCH_PREFLIGHT;	/* postflight */
 				else if (opt->arg[0] == 'f')
 					k = BATCH_POSTFLIGHT;	/* preflight */
-				else {	/* Bad option */
+				else {	/* Bad directive */
 					n_errors++;
 					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Select -Sb or -Sf\n");
 					break;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S[k].active);
 				/* Got a valid f or b */
-				Ctrl->S[k].active = true;
-				Ctrl->S[k].file = strdup (&opt->arg[1]);
-				if ((Ctrl->S[k].fp = fopen (Ctrl->S[k].file, "r")) == NULL) {
+				if (gmt_get_required_file (GMT, &opt->arg[1], opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_LOCAL, &(Ctrl->S[k].file)))
+					n_errors++;
+				else if ((Ctrl->S[k].fp = fopen (Ctrl->S[k].file, "r")) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -S%c: Unable to open file %s\n", opt->arg[0], Ctrl->S[k].file);
 					n_errors++;
 				}
@@ -295,16 +287,15 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'T':	/* Number of jobs or the name of file with job information (note: file may not exist yet) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "psw"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'T', c, "psw", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'p':	/* Set a fixed precision in job naming ###### */
-								Ctrl->T.precision = atoi (&p[1]);
+								n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 'p', &Ctrl->T.precision);
 								break;
 							case 's':	/* Specify start job other than 0 */
-								Ctrl->T.start_job = atoi (&p[1]);
+								n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 's', &Ctrl->T.start_job);
 								break;
 							case 'w':	/* Split trailing text into words using any white space. */
 								Ctrl->T.split = true;
@@ -324,19 +315,17 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 					}
 					c[0] = '\0';
 				}
-				Ctrl->T.file = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->T.file);
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 
-			case 'W':	/* Work dir where data files may be found. If not given we make one up later */
+			case 'W':	/* Work directory where data files may be found. If not given we make one up later */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg[0]) Ctrl->W.dir = strdup (opt->arg);
 				break;
 
 			case 'Z':	/* Delete input scripts */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				break;
 
 			case 'x':
@@ -350,7 +339,7 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1 || Ctrl->In.file == NULL, "Must specify a main script file\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1 || Ctrl->In.file == NULL, "Must specify a single main script file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active || (Ctrl->N.prefix == NULL || strlen (Ctrl->N.prefix) == 0),
 					"Option -N: Must specify a batch prefix\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active,

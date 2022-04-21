@@ -148,39 +148,31 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, struct
 
 			case 'A':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
-				Ctrl->F.flags = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->F.flags);
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
-				if (opt->arg[0]) Ctrl->I.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file));
 				break;
 			case 'L':	/* Crossover correction table */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
-				if (opt->arg[0]) {
-					Ctrl->L.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
-				}
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file));
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
-				Ctrl->T.TAG = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->T.TAG);
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);

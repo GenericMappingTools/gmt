@@ -15,6 +15,16 @@
 #-------------------------------------------------------------------------------
 
 if (SPHINX_FOUND)
+	# Copy PS sources for gmt release
+	if (GIT_FOUND AND HAVE_GIT_VERSION)
+		add_custom_target (_scripts_images_release
+			COMMAND ${CMAKE_COMMAND} -E copy_directory
+			${CMAKE_CURRENT_SOURCE_DIR}/images/
+			${GMT_RELEASE_PREFIX}/doc/scripts/images
+			DEPENDS git_export_release)
+		add_depend_to_target (gmt_release _scripts_images_release)
+	endif (GIT_FOUND AND HAVE_GIT_VERSION)
+
 	# Convert PS to PNG
 	file (GLOB _scripts_ps2png RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/images/*.ps")
 	set (_scripts_png)

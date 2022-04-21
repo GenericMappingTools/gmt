@@ -409,6 +409,15 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC unsigned int gmt_get_no_argument (struct GMT_CTRL *GMT, char *text, char option, char modifier);
+EXTERN_MSC unsigned int gmt_get_required_uint64 (struct GMT_CTRL *GMT, char *text, char option, char modifier, uint64_t *value);
+EXTERN_MSC unsigned int gmt_get_required_uint (struct GMT_CTRL *GMT, char *text, char option, char modifier, unsigned int *value);
+EXTERN_MSC unsigned int gmt_get_required_sint (struct GMT_CTRL *GMT, char *text, char option, char modifier, int *value);
+EXTERN_MSC unsigned int gmt_get_required_float (struct GMT_CTRL *GMT, char *text, char option, char modifier, float *value);
+EXTERN_MSC unsigned int gmt_get_required_double (struct GMT_CTRL *GMT, char *text, char option, char modifier, double *value);
+EXTERN_MSC unsigned int gmt_get_required_char (struct GMT_CTRL *GMT, char *text, char option, char modifier, char *letter);
+EXTERN_MSC unsigned int gmt_get_required_string (struct GMT_CTRL *GMT, char *text, char option, char modifier, char **string);
+EXTERN_MSC unsigned int gmt_get_required_file (struct GMT_CTRL *GMT, char *text, char option, char modifier, unsigned int family, unsigned int direction, unsigned int mode, char **string);
 EXTERN_MSC void gmt_reset_array_time (struct GMT_CTRL *GMT, struct GMT_ARRAY *T);
 EXTERN_MSC double gmt_get_vector_shrinking (struct GMT_CTRL *GMT, struct GMT_VECT_ATTR *v, double magitude, double length);
 EXTERN_MSC unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, unsigned int mode, double *min, double *max);

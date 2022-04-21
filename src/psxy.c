@@ -796,7 +796,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 
 			case 'A':	/* Turn off draw_arc mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'm': case 'y': case 'r': Ctrl->A.mode = GMT_STAIRS_Y; break;
 					case 'p': case 'x': case 't': Ctrl->A.mode = GMT_STAIRS_X; break;
@@ -808,7 +807,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				break;
 			case 'C':	/* Vary symbol color with z */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
@@ -821,12 +819,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				else {
 					Ctrl->D.dx = gmt_M_to_inch (GMT, txt_a);
 					Ctrl->D.dy = (j == 2) ? gmt_M_to_inch (GMT, txt_b) : Ctrl->D.dx;
-					Ctrl->D.active = true;
 				}
 				break;
 			case 'E':	/* Get info for error bars and box-whisker bars */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (gmt_found_modifier (GMT, opt->arg, "aAcnpw")) {
 					/* New parser for -E[x|y|X|Y][+a|A][+cl|f][+n][+p<pen>][+w<capwidth>] */
 					char p[GMT_LEN64] = {""};
@@ -884,12 +880,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				n_errors += gmt_parse_segmentize (GMT, opt->option, opt->arg, 0, &(Ctrl->F.S));
 				break;
 			case 'G':		/* Set fill for symbols or polygon */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (strncmp (opt->arg, "+z", 2U) == 0)
 					Ctrl->G.set_color = true;
 				else if (!opt->arg[0] || gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
@@ -899,7 +893,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				break;
 			case 'H':		/* Overall symbol/pen scale column provided */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.active = true;
 				if (opt->arg[0]) {	/* Gave a fixed scale - no reading from file */
 					Ctrl->H.value = atof (opt->arg);
 					Ctrl->H.mode = PSXY_CONST_SCALE;
@@ -907,7 +900,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				break;
 			case 'I':	/* Adjust symbol color via intensity */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (opt->arg[0])
 					Ctrl->I.value = atof (opt->arg);
 				else
@@ -915,7 +907,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				break;
 			case 'L':		/* Close line segments */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if ((c = strstr (opt->arg, "+b")) != NULL)	/* Build asymmetric polygon from lower and upper bounds */
 					Ctrl->L.anchor = PSXY_POL_ASYMM_ENV;
 				else if ((c = strstr (opt->arg, "+d")) != NULL)	/* Build symmetric polygon from deviations about y(x) */
@@ -950,7 +941,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				break;
 			case 'N':		/* Do not skip points outside border */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (opt->arg[0] == 'r') Ctrl->N.mode = PSXY_NO_CLIP_REPEAT;
 				else if (opt->arg[0] == 'c') Ctrl->N.mode = PSXY_CLIP_NO_REPEAT;
 				else if (opt->arg[0] == '\0') Ctrl->N.mode = PSXY_NO_CLIP_NO_REPEAT;
@@ -961,16 +951,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				break;
 			case 'S':		/* Get symbol [and size] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				Ctrl->S.arg = strdup (opt->arg);
 				break;
 			case 'T':		/* Skip all input files */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'W':		/* Set line attributes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if ((c = strstr (opt->arg, "+z"))) {
 					Ctrl->W.set_color = true;
 					c[0] = '\0';	/* Chop off this modifier */
@@ -998,7 +986,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 
 			case 'Z':		/* Get value for CPT lookup */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				if (gmt_not_numeric (GMT, opt->arg) && !gmt_access (GMT, opt->arg, R_OK)) {	/* Got a file */
 					Ctrl->Z.file = strdup (opt->arg);
 					n_errors += gmt_M_check_condition (GMT, Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK),

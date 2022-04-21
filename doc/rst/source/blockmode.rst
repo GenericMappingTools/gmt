@@ -148,15 +148,15 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [**i**\|\ **o**][**+s**\|\ **w**]
-    Weighted modifier[s]. Unweighted input and output have 3 columns
-    *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
+    Compute weighted results. Unweighted input and output have 3 columns
+    *x*,\ *y*,\ *z*; weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
     Weights can be used in input to construct weighted modal values for each
-    block. Weight sums can be reported in output for later combining
+    block. Weight sums can be reported to output for later combining
     several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
-    input only, and **-Wo** for weighted output only. [Default uses unweighted i/o].
-    If your weights are actually uncertainties (one sigma)
-    then append **+s** and we compute weight = 1/sigma.  Otherwise (or via **+w**
-    we use the weights directly).
+    input only, and **-Wo** for weighted output only [Default uses
+    unweighted i/o]. If your weights are actually uncertainties (one sigma)
+    then append **+s** and we compute weight = 1/sigma.  Otherwise (or via
+    **+w**) we use the weights directly.
 
 .. include:: explain_-aspatial.rst_
 

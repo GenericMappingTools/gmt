@@ -169,7 +169,7 @@ References
 
 *  Treinish, L. A., and M. L. Gough, A software package for the
    data-independent management of multidimensional data, *EOS Trans.
-   AGU*, 68(28), 633–635, 1987. `doi:10.1029/EO068i028p00633 <https://dx.doi.org/10.1029/EO068i028p00633>`_.
+   AGU*, 68(28), 633–635, 1987. `doi:10.1029/EO068i028p00633 <https://doi.org/10.1029/EO068i028p00633>`_.
 
 
 Modern and Classic Mode

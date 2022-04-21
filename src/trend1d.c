@@ -598,12 +598,10 @@ static int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT_OP
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
-				Ctrl->C.value = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->C.value);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				for (j = 0; opt->arg[j]; j++) {
 					if (j < TREND1D_N_OUTPUT_CHOICES)
 						Ctrl->F.col[j] = opt->arg[j];
@@ -615,12 +613,10 @@ static int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (opt->arg[0]) Ctrl->I.value = atof (opt->arg);
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (gmt_parse_model (API->GMT, opt->option, opt->arg, 1U, &(Ctrl->N.M)) == -1) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -N: See usage for details.\n");
 					n_errors++;
@@ -628,7 +624,6 @@ static int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "sw", GMT_MSG_ERROR)) n_errors++;
 				Ctrl->W.mode = (strstr (opt->arg, "+s")) ? 2 : 1;
 				break;

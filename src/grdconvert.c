@@ -154,27 +154,21 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 			case '<':	/* Input and Output files */
 				/* Since grdconvert allowed output grid to be given without -G we must actually
 				 * check for two input files and assign the 2nd as the actual output file */
-				if (n_in == 0) {
-					Ctrl->In.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
-					n_in++;
-				}
+				if (n_in == 0)
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				else if (n_in == 1) {
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 					Ctrl->G.active = true;
-					Ctrl->G.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
-					n_in++;
 				}
 				else {
-					n_in++;
 					GMT_Report (API, GMT_MSG_ERROR, "Specify only one input file\n");
 					n_errors++;
 				}
+				n_in++;
 				break;
 			case '>':	/* Output file may be set this way from the external API */
 				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				n_in++;
 				break;
 
@@ -182,7 +176,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 
 			case 'C':	/* Control history output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				switch (opt->arg[0]) {
 					case 'b': Ctrl->C.mode = GMT_GRDHISTORY_BOTH;	break;
 					case 'c': Ctrl->C.mode = GMT_GRDHISTORY_NEW;	break;
@@ -196,7 +189,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (Ctrl->G.file) {
 					GMT_Report (API, GMT_MSG_ERROR, "Specify only one output file\n");
 					n_errors++;
@@ -209,12 +201,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'Z':	/* For scaling or phase data */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				n_errors += grdconvert_parse_Z_opt (GMT, opt->arg, Ctrl);
 				break;
 

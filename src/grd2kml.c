@@ -224,15 +224,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 			case '<':	/* Input files */
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Altitude mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'g': Ctrl->A.mode = 0; break;
 					case 's': Ctrl->A.mode = 1; break;
@@ -246,41 +244,34 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* CPT */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 			case 'D':	/* Debug options - may fade away when happy with the performance */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				if (strstr (opt->arg, "+s")) Ctrl->D.single = true;	/* Write all files in a single directory instead of one directory per level */
 				if (strstr (opt->arg, "+d")) Ctrl->D.dump = true;	/* Dump quadtree information to stdout */
 				break;
 			case 'E':	/* Remove URL for all contents but top driver kml */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				gmt_M_str_free (Ctrl->E.url);
 				Ctrl->E.url = strdup (opt->arg);
 				break;
 			case 'F':	/* Select filter type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
-				if (strchr ("bcgm", opt->arg[0]))
-					Ctrl->F.filter = opt->arg[0];
-				else {
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->F.filter);
+				if (strchr ("bcgm", Ctrl->F.filter) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -F: Choose among b, c, g, m!\n");
 					n_errors++;
 				}
 				break;
 			case 'H':	/* RIP at a higher dpi, then downsample in gs */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.active = true;
-				Ctrl->H.factor = atoi (opt->arg);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->H.factor);
 				break;
 			case 'I':	/* Here, intensity must be a grid file since we need to filter it */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (!strcmp (opt->arg, "+d"))	/* Gave +d only, so derive intensities from input grid using default settings */
 					Ctrl->I.derive = true;
 				else if ((c = gmt_first_modifier (GMT, opt->arg, "an"))) {	/* Want to control how grdgradient is run */
@@ -312,31 +303,27 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'L':	/* Tiles sizes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
+				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->L.size);
 				Ctrl->L.size = atoi (opt->arg);
 				break;
 			case 'N':	/* File name prefix */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				gmt_M_str_free (Ctrl->N.prefix);
-				Ctrl->N.prefix = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->N.prefix);
 				break;
 			case 'Q':	/* Deprecated colormasking option */
 				GMT_Report (API, GMT_MSG_ERROR, "Option -Q is deprecated as transparency is automatically detected\n");
 				break;
 			case 'S':	/* Extra levels */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				Ctrl->S.extra = (opt->arg[0]) ? atoi (opt->arg) : 1;
 				break;
 			case 'T':	/* Title */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if (opt->arg[0]) Ctrl->T.title = strdup (opt->arg);
 				break;
 			case 'W':	/* Contours and pens */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if ((c = strstr (opt->arg, "+s"))) {	/* Gave +s<scl> modifier to scale pen widths given via -C and optional cutoff pen width */
 					sscanf (&c[2], "%lf/%lg", &Ctrl->W.scale, &Ctrl->W.cutoff);
 					c[0] = '\0';	/* Temporarily chop off the modifier */

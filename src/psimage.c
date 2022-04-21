@@ -150,8 +150,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 			case '<':	/* Input files */
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_IMAGE, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_IMAGE, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
@@ -167,7 +166,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p, 'D')) == NULL) {	/* Failed basic parsing */
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Basic parsing of reference point in %s failed\n", opt->arg);
@@ -210,7 +208,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'F':	/* Specify frame pen */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (gmt_M_compat_check (GMT, 5) && opt->arg[0] != '+') /* Warn but process old -F<pen> */
 					sprintf (string, "+c0+p%s", opt->arg);
 				else
@@ -262,16 +259,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.set[ind]);
-				Ctrl->G.set[ind] = true;
 				if (p) p[0] = '+';	/* Restore modifier */
 				break;
 			case 'I':	/* Invert 1-bit images */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'M':	/* Monochrome image */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Replicate image */
 				GMT_Report (API, GMT_MSG_COMPAT, "-N option is deprecated; use -D modifier +n instead.\n");

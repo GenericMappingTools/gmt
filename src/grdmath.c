@@ -371,7 +371,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     RMS        1 1  ");	GMT_Usage (API, -21, "Root-mean-square of A");
 	GMT_Message (API, GMT_TIME_NONE, "     RMSW       2 1  ");	GMT_Usage (API, -21, "Weighted Root-mean-square of A for weights in B");
 	GMT_Message (API, GMT_TIME_NONE, "     RPDF       1 1  ");	GMT_Usage (API, -21, "Rayleigh probability density function for z = A");
-	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclicly shifts the top A stack items by an amount B");
+	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclically shifts the top A stack items by an amount B");
 	GMT_Message (API, GMT_TIME_NONE, "     ROTX       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in x-direction");
 	GMT_Message (API, GMT_TIME_NONE, "     ROTY       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in y-direction");
 	GMT_Message (API, GMT_TIME_NONE, "     SDIST      2 1  ");	GMT_Usage (API, -21, "Spherical distance (in km) between grid nodes and stack lon,lat (A, B)");
@@ -513,27 +513,24 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OP
 
 			case 'A':	/* Restrict GSHHS features */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.set = opt->arg[0];
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->D.set);
 				Ctrl->D.force = (opt->arg[1] == '+');
 				break;
 			case 'I':	/* Grid spacings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'M':	/* Map units */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Relax domain check */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Only checked later */
 				break;

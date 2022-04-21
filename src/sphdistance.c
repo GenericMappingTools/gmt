@@ -200,15 +200,14 @@ static int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct GM
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				switch (opt->arg[0]) {	/* Select output grid mode */
 					case 'n': Ctrl->E.mode = SPHD_NODES;  k = 1;	break;
 					case 'z': Ctrl->E.mode = SPHD_VALUES; k = 1;	break;
@@ -219,18 +218,14 @@ static int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct GM
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if (!(opt->arg && strchr (GMT_LEN_UNITS, opt->arg[0]))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
 					n_errors++;
@@ -240,12 +235,10 @@ static int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct GM
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				Ctrl->N.file = strdup (opt->arg);
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				Ctrl->Q.file = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */

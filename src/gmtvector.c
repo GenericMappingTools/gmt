@@ -189,7 +189,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 
 			case 'A':	/* Secondary vector */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (opt->arg[0] == 'm') {
 					Ctrl->A.mode = 1;
 					if (opt->arg[1]) Ctrl->A.conf = 0.01 * atof (&opt->arg[1]);
@@ -200,16 +199,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 			case 'C':	/* Cartesian coordinates on in|out */
 				if (opt->arg[0] == 'i') {
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[GMT_IN]);
-					Ctrl->C.active[GMT_IN] = true;
 				}
 				else if (opt->arg[0] == 'o') {
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[GMT_OUT]);
-					Ctrl->C.active[GMT_OUT] = true;
 				}
 				else if (opt->arg[0] == '\0') {
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[GMT_IN]);
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[GMT_OUT]);
-					Ctrl->C.active[GMT_IN] = Ctrl->C.active[GMT_OUT] = true;
 				}
 				else {
 					GMT_Report (API, GMT_MSG_ERROR, "Bad modifier given to -C (%s)\n", opt->arg);
@@ -218,15 +214,14 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 				break;
 			case 'E':	/* geodetic/geocentric conversion */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-			 	Ctrl->E.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Normalize vectors */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-			 	Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':	/* Selects transformation */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 'a':	/* Angle between vectors */
 						Ctrl->T.mode = DO_AVERAGE;
@@ -297,8 +292,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 				break;
 			case 'S':	/* Secondary vector */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
-				Ctrl->S.arg = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->S.arg);
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);

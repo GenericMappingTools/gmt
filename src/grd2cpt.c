@@ -243,14 +243,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files[GMT_OUT]++ == 0) Ctrl->Out.file = strdup (opt->arg);
+				if (n_files[GMT_OUT]++ > 0) { n_errors++; continue; }
+				Ctrl->Out.active = true;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Sets transparency [-A<transp>[+a]] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (opt->arg[0] == '+') {	/* Old syntax */
 					Ctrl->A.mode = 1;
 					Ctrl->A.value = 0.01 * atof (&opt->arg[1]);
@@ -266,18 +267,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* Get CPT */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Set fore/back-ground to match end-colors */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				Ctrl->D.mode = 1;
 				if (opt->arg[0] == 'i') Ctrl->D.mode = 2;
 				break;
 			case 'E':	/* Use n levels */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (opt->arg[0]) {	/* Got an argument */
 					if (gmt_validate_modifiers (GMT, opt->arg, 'E', "cf", GMT_MSG_ERROR)) n_errors++;
 					if ((c = gmt_first_modifier (GMT, opt->arg, "cf")) ) {
@@ -311,7 +309,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 					Ctrl->F.cat = true;
 					if (txt_a[0]) Ctrl->F.label = strdup (txt_a);
 				}
-				Ctrl->F.active = true;
 				switch (txt_a[0]) {
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
 					case 'h': Ctrl->F.model = GMT_HSV; break;
@@ -321,22 +318,19 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'G':	/* truncate incoming CPT */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				n_errors += gmt_get_limits (GMT, 'G', opt->arg, 0, &Ctrl->G.z_low, &Ctrl->G.z_high);
 				break;
 			case 'H':	/* Modern mode only: write CPT to stdout */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'I':	/* Invert table */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if ((Ctrl->I.mode = gmt_parse_inv_cpt (GMT, opt->arg)) == UINT_MAX)
 					n_errors++;
 				break;
 			case 'L':	/* Limit data range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if ((n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b)) != 2) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -L: Cannot decode two limits\n");
 					n_errors++;
@@ -348,15 +342,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'M':	/* Override fore/back/NaN using GMT defaults */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Do not write F/B/N colors */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':	/* Logarithmic data */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'o')	/* Input data is z, but take log10(z) before interpolation colors */
 					Ctrl->Q.mode = 2;
 				else			/* Input is log10(z) */
@@ -364,24 +357,22 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':	/* Sets sample range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				T_arg = opt->arg;
 				break;
 			case 'S':	/* Force symmetry */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				S_arg = opt->arg;
 				break;
 			case 'W':	/* Do not interpolate colors */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				if (opt->arg[0] == 'w')
+				if (opt->arg[0] == 'w') {
 					Ctrl->W.wrap = true;
-				else
-					Ctrl->W.active = true;
+					Ctrl->W.active = false;
+				}
 				break;
 			case 'Z':	/* Continuous colors */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */

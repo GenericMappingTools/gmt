@@ -319,7 +319,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Could not decode diameter %s\n", &p[1]);
 						n_errors++;
 					}
-					Ctrl->OLD_C.active = true;
 				}
 				else if (gmt_count_char (GMT, opt->arg, '/') == 1 && strstr (opt->arg, ".cpt") == NULL) {	/* Just old-style coordinates without modifiers */
 					if (gmt_M_compat_check (GMT, 6))
@@ -329,12 +328,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 						continue;
 					}
 					sscanf (opt->arg, "%lf/%lf", &Ctrl->OLD_C.lon2, &Ctrl->OLD_C.lat2);
-					Ctrl->OLD_C.active = true;
 				}
 				break;
 			case 'D':	/* Location for focal sphere placement, with optional alternate location */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				/* Now get map location to place the focal sphere plot */
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Could not extract lon/lat coordinates from location %s\n", opt->arg);
@@ -345,7 +342,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'E':	/* Set color for station in extensive part */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
 					gmt_fill_syntax (GMT, 'E', NULL, " ");
 					n_errors++;
@@ -353,7 +349,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'F':	/* Set background color of focal sphere */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->F.fill)) {
 					gmt_fill_syntax (GMT, 'F', NULL, " ");
 					n_errors++;
@@ -361,7 +356,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'G':	/* Set color for station in compressive part */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
@@ -432,7 +426,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'M':	/* Focal sphere size -M<scale>+m<magnitude>*/
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
 				sscanf(opt->arg, "%[^+]%s", txt_a, txt_b);
 				Ctrl->M.ech = gmt_M_to_inch (GMT, txt_a);
 				if ((p = strstr (txt_b, "+m")) != NULL && p[2]) {
@@ -444,11 +437,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'N':	/* Do not skip points outside border */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Get symbol [and size] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'a':	Ctrl->S.symbol = PSL_STAR;		break;
 					case 'c':	Ctrl->S.symbol = PSL_CIRCLE;	break;
@@ -468,7 +460,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':	/* Information about label printing */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if (strlen (opt->arg)) {
 					/* New syntax: -T+a<angle>+j<justify>+o<dx>/<dy>+f<font> */
 					if (gmt_found_modifier (GMT, opt->arg, "afjo")) {
@@ -499,7 +490,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'W':	/* Set line attributes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
