@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt filter1d** [ *table* ]
-|-F|\ *type<width>*\ [**+l**\|\ **u**]
+|-F|\ **type**\ *width*\ [**+h**]
 [ |-D|\ *increment* ]
 [ |-E| ]
 [ |-L|\ *lack\_width* ]
@@ -58,7 +58,7 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ **type**\ *width*\ [**+l**\|\ **u**]
+**-F**\ **type**\ *width*\ [**+h**]
     Sets the filter **type**. Choose among convolution and non-convolution
     filters. Append the filter code followed by the full filter
     *width* in same units as time column. By default we
