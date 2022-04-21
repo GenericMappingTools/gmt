@@ -1152,7 +1152,10 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 	if (file[0] == '@') {	/* Either a cache file or a remote data set */
 		if ((k_data = gmt_remote_dataset_id (API, file)) != GMT_NOTSET) {
 			/* Got a valid remote server data filename and we know the local path to those */
-			if (GMT->session.USERDIR == NULL) goto not_local;	/* Cannot have server data if no user directory created yet */
+			if (GMT->session.USERDIR == NULL) {
+				GMT_Report (API, GMT_MSG_DEBUG, "No user directory yet to store %s!\n", file);
+				goto not_local;	/* Cannot have server data if no user directory created yet */
+			}
 			snprintf (local_path, PATH_MAX, "%s", GMT->session.USERDIR);	/* This is the top-level directory for user data */
 			if (access (local_path, R_OK)) goto not_local;	/* Have not made a user directory yet, so cannot have the file yet either */
 			strcat (local_path, GMT->parent->remote_info[k_data].dir);	/* Append the subdir (/ or /server/earth/earth_relief/, etc) */
@@ -1161,7 +1164,10 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 		}
 		else if ((t_data = gmt_file_is_a_tile (API, file, GMT_LOCAL_DIR)) != GMT_NOTSET) {	/* Got a remote tile */
 			/* Got a valid remote server tile filename and we know the local path to those */
-			if (GMT->session.USERDIR == NULL) goto not_local;	/* Cannot have server data if no user directory created yet */
+			if (GMT->session.USERDIR == NULL) {
+				GMT_Report (API, GMT_MSG_DEBUG, "No user directory yet to store %s!\n", file);
+				goto not_local;	/* Cannot have server data if no user directory created yet */
+			}
 			snprintf (local_path, PATH_MAX, "%s", GMT->session.USERDIR);	/* This is the top-level directory for user data */
 			if (access (local_path, R_OK)) goto not_local;	/* Have not made a user directory yet, so cannot have the file yet either */
 			strcat (local_path, GMT->parent->remote_info[t_data].dir);	/* Append the subdir (/ or /server/earth/earth_relief/, etc) */
@@ -1181,7 +1187,10 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 			}
 		}
 		else {	/* Must be cache file */
-			if (GMT->session.CACHEDIR == NULL) goto not_local;	/* Cannot have cache data if no cache directory created yet */
+			if (GMT->session.CACHEDIR == NULL) {
+				GMT_Report (API, GMT_MSG_DEBUG, "No cache directory yet to store %s!\n", file);
+				goto not_local;	/* Cannot have cache data if no cache directory created yet */
+			}
 			clean_file = gmt_get_filename (API, file, gmtlib_valid_filemodifiers (GMT));	/* Strip off any file modifier or netCDF directives */
 			snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.CACHEDIR, &clean_file[1]);	/* This is where all cache files live */
 			if ((c = strchr (local_path, '=')) || (c = strchr (local_path, '?'))) {

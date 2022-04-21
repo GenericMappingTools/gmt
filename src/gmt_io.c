@@ -5550,8 +5550,10 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 
 	if (!filename || !filename[0]) return (GMT_NOTSET);		/* No file given */
 	if (gmt_M_file_is_memory (filename)) return (0);	/* Memory location always exists */
-	if (gmt_file_is_cache (GMT->parent, filename))			/* Must be a cache file */
+	if (gmt_file_is_cache (GMT->parent, filename)) {			/* Must be a cache file */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_access: Detected cache file %s - must check for need to download\n", filename);
 		first = gmt_download_file_if_not_found (GMT, filename, 0);
+	}
 
 	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], gmtlib_valid_filemodifiers (GMT))) == NULL) return (GMT_NOTSET);	/* Likely not a valid filename */
 	strncpy (file, cleanfile, PATH_MAX-1);
