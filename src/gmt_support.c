@@ -15557,7 +15557,7 @@ bool gmtlib_invalid_symbolname (struct GMT_CTRL *GMT, char *name) {
 	/* Check that a symbol name only contains valid characters,
 	 * which are the alphanumerics plus /, _, @, - and . (and :, \ for Windows) */
 #ifdef WIN32
-#define CUSTOM_EXTRA_CHAR "@_-/.:\\"
+#define CUSTOM_EXTRA_CHAR "@_-/.:~\\"
 #else
 #define CUSTOM_EXTRA_CHAR "@_-/."
 #endif
