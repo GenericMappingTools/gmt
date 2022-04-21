@@ -452,9 +452,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->Z.file));
 				break;
-			case 'W':	/* Dump out interpolated colors for debugging */
+			case 'W':	/* Multiply all z-values in the CPT by the provided scale. */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->W.scale);
+				break;
 #ifdef DEBUG
 			case 'd':	/* Dump out interpolated colors for debugging */
 				dump = true;
