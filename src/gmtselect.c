@@ -464,7 +464,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				}
 				Ctrl->N.mode = (j == 2);
 				break;
-			case 'Z':	/* Test column-ranges */
+			case 'Z':	/* Test column-ranges (repeatable) */
 				Ctrl->Z.active = true;
 				invert = false;
 				col = z_col++;	/* If no +c<col> given the we march from GMT_Z outwards */

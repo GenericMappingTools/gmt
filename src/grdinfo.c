@@ -273,7 +273,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 					}
 				}
 				break;
-			case 'L':	/* Selects norm */
+			case 'L':	/* Selects norm (repeatable) */
 				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case '\0': case '2':

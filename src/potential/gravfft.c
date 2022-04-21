@@ -196,7 +196,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 	for (opt = options; opt; opt = opt->next) {		/* Process all the options given */
 		switch (opt->option) {
 
-			case '<':	/* Input file */
+			case '<':	/* Input file (repeatable up to 2 times) */
 				Ctrl->In.active = true;
 				if (Ctrl->In.n_grids >= 2) {
 					n_errors++;

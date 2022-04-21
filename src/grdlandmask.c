@@ -152,7 +152,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct GM
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Input files */
+			case '<':	/* Input files not expected, will give error below */
 				n_files++;
 				break;
 
@@ -195,7 +195,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct GM
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* Mask values */
-				Ctrl->N.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				strncpy (line, opt->arg,  GMT_LEN256);
 				if (line[strlen(line)-1] == 'o' && gmt_M_compat_check (GMT, 4)) { /* Edge is considered outside */
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -N...o is deprecated; use -E instead\n");

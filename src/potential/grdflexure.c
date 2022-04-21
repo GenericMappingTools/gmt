@@ -598,15 +598,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 			case '<':	/* Input file */
 				if (n_files++ > 0) break;
 				if (strchr (opt->arg, '%')) {	/* File template given */
-					Ctrl->In.many = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->In.many);
 					Ctrl->In.file = strdup (opt->arg);
 				}
 				else if (opt->arg[0] == '=') {	/* List of files given */
-					Ctrl->In.list = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->In.list);
 					Ctrl->In.file = strdup (&opt->arg[1]);
 				}
 				else {
-					Ctrl->In.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
 					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				}
 				break;

@@ -464,7 +464,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 					n_errors++;
 				break;
 
-			case 'T':	/* Marker attributes */
+			case 'T':	/* Marker attributes (repeatable) */
 				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 'T':	/* New day marker */

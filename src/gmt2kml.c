@@ -313,7 +313,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 
 		switch (opt->option) {
 
-			case '<':	/* Input files */
+			case '<':	/* Input files (we only check one) */
 				if (n_files++ > 0) break;
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				Ctrl->In.active = true;

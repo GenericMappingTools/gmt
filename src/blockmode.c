@@ -145,8 +145,8 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 
 			/* Processes program-specific parameters */
 
-				case 'A':	/* Requires -G and selects which fields should be written as grids */
-				Ctrl->A.active = true;
+			case 'A':	/* Requires -G and selects which fields should be written as grids */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				BLK_strip_commas (opt->arg, arg);	/* Make local copy with any commas removed */
 				for (k = 0; arg[k] && Ctrl->A.n_selected < BLK_N_FIELDS; k++) {
 					switch (arg[k]) {	/* z,s,l,h,w */

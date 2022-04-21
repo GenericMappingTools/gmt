@@ -236,22 +236,21 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 	 */
 
 	bool q_active = false;
-	unsigned int n_errors = 0, n_files[2] = {0, 0}, n_categorical = 0;
+	unsigned int n_errors = 0, n_files = 0, n_categorical = 0;
 	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL, *keys = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
-	for (opt = options; opt; opt = opt->next) if (opt->option == 'Q') Ctrl->Q.active = true;;	/* If -T given before -Q we need to flag -T+l */
+	for (opt = options; opt; opt = opt->next) if (opt->option == 'Q') Ctrl->Q.active = true;	/* If -T given before -Q we need to flag -T+l */
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Input files (none expected so throw error ) */
-				n_files[GMT_IN]++;
+			case '<':	/* Input files (none expected so throw error below) */
+				n_files++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files[GMT_OUT]++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
@@ -415,7 +414,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file == NULL,
 			"Options -C: No CPT argument given\n");
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 0 && !(Ctrl->E.active || Ctrl->S.active),
+	n_errors += gmt_M_check_condition (GMT, n_files > 0 && !(Ctrl->E.active || Ctrl->S.active),
 	                                   "No input files expected unless -E or -S are used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
 	                                   "Options -W and -Z cannot be used simultaneously\n");
@@ -428,7 +427,6 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 			Ctrl->Z.active = false;
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 	                                   "Transparency in -A must be n 0-100 range [0 or opaque]\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Cannot combine -E with -T\n");

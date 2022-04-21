@@ -250,11 +250,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				n_files++;
 				break;
 			case '>':	/* Output file (probably for -A via external interface) */
-				Ctrl->Out.active = true;
-				if (Ctrl->Out.file == NULL)
-					Ctrl->Out.file = strdup (opt->arg);
-				else
-					n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_IMAGE, GMT_OUT, GMT_FILE_REMOTE, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
