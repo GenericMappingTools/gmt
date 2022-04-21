@@ -117,7 +117,7 @@ for apiprog in \
     testapi_usergrid \
     testapi_uservectors \
     testapi_vector \
-    testapiconv \
+    testapi_conv \
     testgrdio \
     testapi_imageshading \
     testapi_matrix_as_grid \
