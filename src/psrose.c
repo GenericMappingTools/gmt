@@ -47,7 +47,7 @@
 #define THIS_MODULE_MODERN_NAME	"rose"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot a polar histogram (rose, sector, windrose diagrams)"
-#define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X},>D),>DI,ID)"
+#define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X},>D),>DI"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehiopqstwxy" GMT_OPT("c")
 
