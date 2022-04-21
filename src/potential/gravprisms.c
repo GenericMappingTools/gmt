@@ -827,7 +827,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		if ((P = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
-		/* To avoid the need to loop over tables and segments, we extrac the data into a separate array and compute prism edges instead */
+		/* To avoid the need to loop over tables and segments, we extract the data into a separate array and compute prism edges instead */
 		for (k = 0; k < 7; k++) 
 			prism[k] = gmt_M_memory (GMT, NULL, P->n_records, double);
 

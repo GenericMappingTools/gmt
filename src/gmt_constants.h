@@ -345,7 +345,7 @@ enum GMT_time_period {
 /* Valid axis setting modifiers */
 #define GMT_AXIS_MODIFIERS "aefLlpsSu"
 
-/* Valid decoraded line symbols */
+/* Valid decorated line symbols */
 #define GMT_DECORATE_SYMBOLS "-+AaBbCcDdGgHhIikNnpSsTtxy"
 
 /* Settings for usage message indents and break/continue characters */

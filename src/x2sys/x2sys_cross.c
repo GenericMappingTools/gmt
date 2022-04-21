@@ -421,7 +421,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	double t_scale;				/* Scale to give time in seconds */
 	double plat[2] = {0.0, 0.0};		/* Pole latitude for polar reprojections */
 	double ymin[2] = {0.0, 0.0}, ymax[2] = {0.0, 0.0};	/* Latitude range of each file */
-	double delta_orientation;	/* Angle bewteen to intersecting tracks */
+	double delta_orientation;	/* Angle between two intersecting tracks */
 
 	clock_t tic = 0, toc = 0;
 

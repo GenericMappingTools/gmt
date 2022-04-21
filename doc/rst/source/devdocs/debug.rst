@@ -221,7 +221,7 @@ Getting started
 
 #. You will need to check the repository path in the pop-up window and click 'Yes, I trust the authors' in order to debug
    GMT with VSCode.
-#. Press command+shift+P to open the VSCode command pallette. Select 'C/C++: Edit Configurations (JSON)'. This will
+#. Press command+shift+P to open the VSCode command palette. Select 'C/C++: Edit Configurations (JSON)'. This will
    create a new ``.vscode`` directory that contains all VSCode project settings and a ``.vscode/c_cpp_properties.json``
    file. This new file should not be listed by ``git status`` if you properly completed the prerequisite steps.
    If needed, you can edit the compiler path or add header files to the intellisense includePath. You may need to update
@@ -268,7 +268,7 @@ Building GMT
           ]
       }
 
-#. Press command+shift+p to open the command pallette. Select ``Tasks: Run Task``, then select ``ninja build``, and finally
+#. Press command+shift+p to open the command palette. Select ``Tasks: Run Task``, then select ``ninja build``, and finally
    select ``Run without scanning the task output``.
 
 #. If you make changes to the source code and did not delete the ``vbuild`` directory, you can update by pressing
