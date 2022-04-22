@@ -476,7 +476,7 @@ EXTERN_MSC int GMT_grdhisteq (void *V_API, int mode, void *args) {
 		for (row = 0; row < S->n_rows; row++) {
 			S->data[GMT_X][row] = Cell[row].low;
 			S->data[GMT_Y][row] = Cell[row].high;
-			S->data[GMT_Z][row] = Cell[row].row;;
+			S->data[GMT_Z][row] = Cell[row].row;
 		}		
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, Ctrl->D.file, D) != GMT_NOERROR) {
 			Return (API->error);
