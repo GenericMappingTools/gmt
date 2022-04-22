@@ -186,7 +186,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 	 */
 
 	char *c = NULL;
-	unsigned int n_errors = 0, n_files = 0, j;
+	unsigned int n_errors = 0, j;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -195,8 +195,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 			/* Common parameters */
 
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
@@ -245,7 +244,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify an input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "Must specify an input grid file\n");
 	if (Ctrl->N.x_only || Ctrl->N.y_only)
 		n_errors += gmt_M_check_condition (GMT, Ctrl->N.value == 0 || Ctrl->N.value > 4, "Option -N: Specify 1-4 model parameters when +x or +y are active\n");
 	else

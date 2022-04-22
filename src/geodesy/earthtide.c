@@ -1325,7 +1325,7 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -1357,7 +1357,7 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 				}
 				else {
 					Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
 				}
 
 				if (!GMT->parent->external) {		/* Copy the name into the 3 slots to simplify the grid writing algo */

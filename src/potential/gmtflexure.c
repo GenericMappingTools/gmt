@@ -153,7 +153,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *C) {	/* Dea
 
 static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
-	unsigned int side, k, n_errors = 0, n_files = 0;
+	unsigned int side, k, n_errors = 0;
 	int n;
 	bool both;
 	struct GMT_OPTION *opt = NULL;
@@ -163,8 +163,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '>':	/* Got named output file */
-				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 			case 'A':	/* Boundary conditions -A[l|r]<bc>[/<w>|<m>/<f>]*/
@@ -300,7 +299,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Option -E: Must specify plate thickness or rigidity\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active, "Option -Q: Must specify load option\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.file && Ctrl->Q.mode == NO_LOAD && !Ctrl->Q.set_x, "Option -Q: Must specify equidistant min/max/inc setting\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

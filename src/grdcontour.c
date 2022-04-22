@@ -311,7 +311,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, id, reset = 0;
+	unsigned int n_errors = 0, id, reset = 0;
 	int j, k, n;
 	char txt_a[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -322,8 +322,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
@@ -488,7 +487,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 
 	if (Ctrl->A.info.interval > 0.0 && (!Ctrl->C.info.file && Ctrl->C.info.interval == 0.0)) Ctrl->C.info.interval = Ctrl->A.info.interval;
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "Must specify a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active,
 	                                 "Must specify a map projection with the -J option\n");
 #if 0

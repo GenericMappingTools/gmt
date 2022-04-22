@@ -875,7 +875,7 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 					default:	/* We already checked for this above so cannot get here */
 						break;
 				}
-				S->proj[k] = strdup (&p[2]);;
+				S->proj[k] = strdup (&p[2]);
 				break;
 
 			case 'R':	/* Dataset region */

@@ -1744,7 +1744,7 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 	int k_data, v_level = API->verbose;
 	struct GMT_GRID *G = NULL;
 	double *wesn = (region) ? region : API->tile_wesn;	/* Default to -R */
-	char grid[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""}, code = 0;;
+	char grid[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""}, code = 0;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	(void) gmt_file_is_tiled_list (API, file, NULL, &code, NULL);	/* Just get the code*/

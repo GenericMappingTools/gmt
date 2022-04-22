@@ -132,7 +132,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, n_class = 0;
+	unsigned int n_errors = 0, n_class = 0;
 	int n, n_to_expect;
 	size_t n_alloc = GMT_TINY_CHUNK;
 	char txt[GMT_LEN64] = {""};
@@ -144,8 +144,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
@@ -271,7 +270,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OP
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active, "Option -G is mandatory\n");
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "Must specify a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.mode, "Option -S: Must specify at least one of -Sa, -Sb, -Si, -Sr\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

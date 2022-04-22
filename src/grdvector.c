@@ -206,7 +206,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
-			case '<':	/* Input file (only one is accepted) */
+			case '<':	/* Input file (only two are accepted) */
 				Ctrl->In.active = true;
 				if (n_files >= 2) {n_errors++; continue; }
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[n_files]));

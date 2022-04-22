@@ -157,7 +157,7 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 			case 'M':	/* inset margins */
 				GMT_Report (API, GMT_MSG_COMPAT, "-M option is deprecated; use -C instead.\n");
 				/* Fall through on purpose */
-			case 'C':	/* Clearance/inside margins */
+			case 'C':	/* Clearance/inside margins (repeatable) */
 				Ctrl->C.active = true;
 				if (opt->arg[0] == 0) {	/* Gave nothing */
 					GMT_Report (API, GMT_MSG_ERROR, "Option -C: No clearance specified.\n");

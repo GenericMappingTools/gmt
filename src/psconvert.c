@@ -792,7 +792,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 			case '<':	/* Input files [Allow for file "=" under API calls] */
 				if (strstr (opt->arg, ".ps-")) halfbaked = true;
 				if (!(GMT->parent->external && !strncmp (opt->arg, "=", 1))) {	/* Can check if file is sane */
-					if (!halfbaked && GMT_Get_FilePath (API, GMT_IS_POSTSCRIPT, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+					if (!halfbaked && GMT_Get_FilePath (API, GMT_IS_POSTSCRIPT, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				}
 				Ctrl->In.n_files++;
 				break;
@@ -803,7 +803,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				n_errors += psconvert_parse_A_settings (GMT, opt->arg, Ctrl);
 				break;
-			case 'C':	/* Append extra custom GS options */
+			case 'C':	/* Append extra custom GS options (repeatable) */
 				Ctrl->C.active = true;
 				if (Ctrl->C.arg[0]) strcat (Ctrl->C.arg, " ");
 				strncat (Ctrl->C.arg, opt->arg, GMT_LEN256-1);	/* Append to list of extra GS options */
@@ -867,7 +867,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->P.active);
 				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
-			case 'Q':	/* Anti-aliasing settings */
+			case 'Q':	/* Anti-aliasing settings (repeatable) */
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'g')
 					mode = PSC_LINES;

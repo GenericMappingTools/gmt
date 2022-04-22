@@ -159,7 +159,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	int n = 0;
 	char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -169,11 +169,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
@@ -236,7 +235,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Binary input data (-bi) must have at least 2 columns\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Option -C cannot be used with -D!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Option -C cannot be used with -D!\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
