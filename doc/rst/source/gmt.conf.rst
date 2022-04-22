@@ -655,7 +655,9 @@ MAP Parameters
         :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_ANNOT_OBLIQUE**
-        This argument is a comma-separated list of up to seven keywords:
+        This setting applies to "oblique" projections, which in this context
+        means maps whose boundary is a rectangle not specified by meridians
+        and parallels.  We expect a comma-separated list of up to seven keywords:
         **separate** means longitudes will be annotated on the lower and upper
         boundaries only, and latitudes will be annotated on the left and right
         boundaries only; **anywhere** means annotations will occur wherever an
