@@ -3815,7 +3815,7 @@ void gmt_set_column_types (struct GMT_CTRL *GMT, unsigned int n_cols_start, bool
 	 * to affect. */
 	unsigned int j;
 
-	if (GMT->common.i.active) {	/* Must figure out correct pre-shuffle columns for the non-dimensional ones */
+	if (GMT->common.i.select) {	/* Must figure out correct pre-shuffle columns for the non-dimensional ones */
 		unsigned int i_col, pre_col;
 		/* First set them all to be dimensional */
 		for (j = n_cols_start; j < GMT->common.i.n_cols; j++) {	/* All columns beyond x,y and possibly z */
@@ -3823,7 +3823,7 @@ void gmt_set_column_types (struct GMT_CTRL *GMT, unsigned int n_cols_start, bool
 			gmt_set_column_type (GMT, GMT_IN, pre_col, GMT_IS_DIMENSION);
 		}
 		for (j = 0; j < S->n_nondim; j++) {	/* This is how many columns with non-dimensional data such as angles */
-			i_col = S->nondim_col[j] + rgb_from_z;	/* Column we expect to reset if -i were not used */
+			i_col = S->nondim_col[j] + rgb_from_z;	/* Column we expect to reset */
 			gmt_set_column_type (GMT, GMT_IN, i_col, GMT_IS_FLOAT);
 		}
 	}
