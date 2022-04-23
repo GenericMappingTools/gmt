@@ -3796,42 +3796,17 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 	return ((GMT->current.io.status) ? NULL : &GMT->current.io.record);	/* Pass back pointer to data array */
 }
 
-GMT_LOCAL unsigned int gmtio_pre_column (struct GMT_CTRL *GMT, unsigned int i_col) {
-	/* Return the pre-i column that matches the post-i column i_col */
-	for (unsigned int k = 0; k < GMT->common.i.n_cols; k++) {	/* Look for the one whose order matches i_col */
-		if (GMT->current.io.col[GMT_IN][k].order == i_col)	/* Found it, return the column number */
-			return (GMT->current.io.col[GMT_IN][k].col);
-	}
-	GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtio_pre_column: Should never get here - returning %u\n", i_col);
-	return (i_col);
-}
-
 void gmt_set_column_types (struct GMT_CTRL *GMT, unsigned int n_cols_start, bool rgb_from_z, unsigned int max, struct GMT_SYMBOL *S) {
-	/* In psxy[z], all columns beyond x,y and possibly z (for -C) are assumed to be dimensions.  However,
-	 * some are flagged as nondimensional and need to be reset to FLOAT before se start reading.
-	 * This is further complicated if -i is in effect since the columns we want to change back
-	 * to float (e.g., say column 3) are not necessarily column 3 in the input file but will become
-	 * column 3 thanks to -i.  Hence we must check if -i was set and then determine the right column
-	 * to affect. */
-	unsigned int j;
+	/* In psxy[z], all columns beyond x,y (and possibly z if -C) are assumed to be dimensions.
+	 * However, some symbols will flagged some columns as nondimensional and thus we need to
+	 * reset those to GMT_IS_FLOAT before we start reading. */
+	unsigned int col;
 
-	if (GMT->common.i.select) {	/* Must figure out correct pre-shuffle columns for the non-dimensional ones */
-		unsigned int i_col, pre_col;
-		/* First set them all to be dimensional */
-		for (j = n_cols_start; j < GMT->common.i.n_cols; j++) {	/* All columns beyond x,y and possibly z */
-			pre_col = gmtio_pre_column (GMT, j);
-			gmt_set_column_type (GMT, GMT_IN, pre_col, GMT_IS_DIMENSION);
-		}
-		for (j = 0; j < S->n_nondim; j++) {	/* This is how many columns with non-dimensional data such as angles */
-			i_col = S->nondim_col[j] + rgb_from_z;	/* Column we expect to reset */
-			gmt_set_column_type (GMT, GMT_IN, i_col, GMT_IS_FLOAT);
-		}
-	}
-	else {	/* No -i in effect so safe to do the basic loop */
-		for (j = n_cols_start; j < max; j++) gmt_set_column_type (GMT, GMT_IN, j, GMT_IS_DIMENSION);
-		for (j = 0; j < S->n_nondim; j++)	/* Since these are angles, not dimensions */
-			gmt_set_column_type (GMT, GMT_IN, S->nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);
-	}
+	/* First set all to be dimensional */
+	for (col = n_cols_start; col < max; col++) gmt_set_column_type (GMT, GMT_IN, col, GMT_IS_DIMENSION);
+	/* Then undo the ones that should not be set since they are angles, map distances, etc. */
+	for (col = 0; col < S->n_nondim; col++)
+		gmt_set_column_type (GMT, GMT_IN, S->nondim_col[col]+rgb_from_z, GMT_IS_FLOAT);
 }
 
 /*! . */
