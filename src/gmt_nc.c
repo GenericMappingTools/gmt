@@ -1984,6 +1984,7 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 			return GMT_GRDIO_NO_2DVAR;
 		}
 		z_id = ID;	/* Pick the higher dimensioned cube instead, get its name, and warn */
+		ndims = dim;	/* Recall the dimensions of this ID */
 		nc_inq_varname (ncid, z_id, varname);
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "No 3-D array in file %s.  Selecting first 3-D slice in the %d-D array %s\n", file, dim, varname);
 	}
