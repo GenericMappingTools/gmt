@@ -1040,6 +1040,47 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+GMT_LOCAL unsigned int psxy_pre_column (struct GMT_CTRL *GMT, unsigned int i_col) {
+	/* Return the pre-i column that matches the post-i column i_col */
+	for (unsigned int k = 0; k < GMT->common.i.n_cols; k++) {	/* Look for the one whose order matches i_col */
+		if (GMT->current.io.col[GMT_IN][k].order == i_col)	/* Found it, return the column number */
+			return (GMT->current.io.col[GMT_IN][k].col);
+	}
+	GMT_Report (GMT->parent, GMT_MSG_ERROR, "psxy_pre_column: Should never get here - returning %u\n", i_col);
+	return (i_col);
+}
+
+GMT_LOCAL void psxy_set_col_scales (struct GMT_CTRL *GMT, unsigned int n_cols_start, bool rgb_from_z, struct GMT_SYMBOL *S) {
+	/* ALl columns beyond x,y and possibly z (for -C) are assumed to be dimensions.  However,
+	 * some are flagged as nondimension and need to be reset to FLOAT before se start reading.
+	 * THis is further complicated if -i is in effect since the columns we want to change back
+	 * to float (e.g., say column 3) are not necessarily column 3 in the input file but will become
+	 * column 3 thanks to -i.  Hence we must check if -i was set and then determine the right column
+	 * to affect. */
+	unsigned int j;
+	/* First set all the columns from start and up to 6 to be dimensional */
+
+	if (GMT->common.i.active) {	/* Must figure out correct pre-shuffle columns for the non-dimensional ones */
+		unsigned int i_col, pre_col;
+		/* First set them all to dimensional */
+		for (j = n_cols_start; j < GMT->common.i.n_cols; j++) {	/* All columns beyond x,y and possibly z */
+			pre_col = psxy_pre_column (GMT, j);
+			gmt_set_column_type (GMT, GMT_IN, pre_col, GMT_IS_DIMENSION);
+		}
+		for (j = 0; j < S->n_nondim; j++) {	/* This is how many columns with non-dimensional data such as angles */
+			i_col = S->nondim_col[j] + rgb_from_z;	/* Column we expect to reset if -i were not used */
+			//pre_col = psxy_pre_column (GMT, i_col);
+			pre_col = i_col;
+			gmt_set_column_type (GMT, GMT_IN, pre_col, GMT_IS_FLOAT);
+		}
+	}
+	else {	/* No -i in effect so safe to do the basic loop */
+		for (j = n_cols_start; j < GMT->common.i.n_cols; j++) gmt_set_column_type (GMT, GMT_IN, j, GMT_IS_DIMENSION);
+		for (j = 0; j < S->n_nondim; j++)	/* Since these are angles, not dimensions */
+			gmt_set_column_type (GMT, GMT_IN, S->nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);
+	}
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -1227,8 +1268,9 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		xy_errors[GMT_Y] += (S.read_size + rgb_from_z);
 	}
 	else if (not_line)	/* Here we have the usual x y [z] [size] [other args] [symbol] record */
-		for (j = n_cols_start; j < 6; j++) gmt_set_column_type (GMT, GMT_IN, j, GMT_IS_DIMENSION);		/* Since these may have units appended */
-	for (j = 0; j < S.n_nondim; j++) gmt_set_column_type (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles, not dimensions */
+		psxy_set_col_scales (GMT, n_cols_start, rgb_from_z, &S);
+		//for (j = n_cols_start; j < 6; j++) gmt_set_column_type (GMT, GMT_IN, j, GMT_IS_DIMENSION);		/* Since these may have units appended */
+	//for (j = 0; j < S.n_nondim; j++) gmt_set_column_type (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles, not dimensions */
 
 	if (gmt_is_barcolumn (GMT, &S)) {
 		n_z = gmt_get_columbar_bands (GMT, &S);	/* > 0 for multiband, else 0 */
