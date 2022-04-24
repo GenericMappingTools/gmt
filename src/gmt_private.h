@@ -224,6 +224,8 @@ struct GMTAPI_CTRL {
 #define GMTAPI_OBJECT_FAMILY_START 15U	/* Start position of the encoded actual family in the virtual filename */
 #define GMTAPI_OBJECT_ID_START 21U		/* Start position of the encoded object ID in the virtual filename */
 #define gmt_M_file_is_memory(file) (file && !strncmp (file, "@GMTAPI@-", GMTAPI_PREFIX_LEN) && strlen (file) == GMTAPI_MEMFILE_LEN)
+#define gmt_M_memfile_is_grid(file) (gmt_M_file_is_memory(file) && file[GMTAPI_OBJECT_FAMILY_START] == 'G')
+#define gmt_M_memfile_is_cube(file) (gmt_M_file_is_memory(file) && file[GMTAPI_OBJECT_FAMILY_START] == 'U')
 
 #ifdef __cplusplus
 }
