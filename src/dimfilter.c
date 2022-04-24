@@ -440,14 +440,16 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 						break;
 					case 'p':	/* Mode */
 						Ctrl->N.filter = DIMSECTOR_MODE;
+						/* Check for +l but also deprecated trailing - */
 						if (strstr (opt->arg, "+l") || opt->arg[strlen(opt->arg)-1] == '-') Ctrl->N.mode = DIMFILTER_MODE_KIND_LOW;
 						else if (strstr (opt->arg, "+u")) Ctrl->N.mode = DIMFILTER_MODE_KIND_HIGH;
 						break;
 					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: Unrecognized directive %s", opt->arg);
 						n_errors++;
 						break;
 				}
-				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->N.n_sectors);
+				n_errors += gmt_get_required_uint (GMT, &opt->arg[1], opt->option, 0, &Ctrl->N.n_sectors);
 				set++;
 				break;
 			case 'Q':	/* entering the MAD error analysis mode */
