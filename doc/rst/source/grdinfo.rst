@@ -60,8 +60,11 @@ Optional Arguments
 
 **-C**\ [**n**\|\ **t**\]
     Formats the report using tab-separated fields on a single line. The
-    output is *name w e s n {b t} v0 v1 dx dy {dz} nx ny {nz}*\ [ *x0 y0 {z0} x1 y1 {z1}* ] [ *med
-    scale* ] [*mean std rms*] [*n\_nan*] *registration gtype*. The data in brackets are
+    output is:
+
+    *name w e s n {b t} v0 v1 dx dy {dz} nx ny {nz}* [*x0 y0 {z0} x1 y1 {z1}*] [*med scale*] [*mean std rms*] [*n\_nan*] *registration gtype*
+
+    The data in brackets are
     output only if the corresponding options **-M**, **-L1**, **-L2**,
     and **-M** are used, respectively, while the data in braces only apply if
     used with 3-D data cubes. Use **-Ct** to place file *name*
