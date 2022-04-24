@@ -1227,8 +1227,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		xy_errors[GMT_Y] += (S.read_size + rgb_from_z);
 	}
 	else if (not_line)	/* Here we have the usual x y [z] [size] [other args] [symbol] record */
-		for (j = n_cols_start; j < 6; j++) gmt_set_column_type (GMT, GMT_IN, j, GMT_IS_DIMENSION);		/* Since these may have units appended */
-	for (j = 0; j < S.n_nondim; j++) gmt_set_column_type (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles, not dimensions */
+		gmt_set_column_types (GMT, n_cols_start, rgb_from_z, 6, &S);	/* Handle the dimensional vs non-dimensional column types including if -i is used */
 
 	if (gmt_is_barcolumn (GMT, &S)) {
 		n_z = gmt_get_columbar_bands (GMT, &S);	/* > 0 for multiband, else 0 */

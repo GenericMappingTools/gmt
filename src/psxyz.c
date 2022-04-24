@@ -859,10 +859,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	}
 	else
 		n_needed = n_cols_start + S.n_required;
-	if (not_line) {
-		for (j = n_cols_start; j < 7; j++) gmt_set_column_type (GMT, GMT_IN, j, GMT_IS_DIMENSION);	/* Since these may have units appended */
-		for (j = 0; j < S.n_nondim; j++) gmt_set_column_type (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles or km, not dimensions */
-	}
+	if (not_line)
+		gmt_set_column_types (GMT, n_cols_start, rgb_from_z, 7, &S);	/* Handle the dimensional vs non-dimensional column types including if -i is used */
 	if (Ctrl->H.active && Ctrl->H.mode == PSXYZ_READ_SCALE) {
 		xcol = n_needed;
 		n_needed++;	/* Read scaling from data file */
