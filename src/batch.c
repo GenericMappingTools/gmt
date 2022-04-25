@@ -231,7 +231,7 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 	 * Any GMT common options will override values set previously by other commands.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, k, pos;
+	unsigned int n_errors = 0, k, pos;
 	char p[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -339,7 +339,7 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1 || Ctrl->In.file == NULL, "Must specify a single main script file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Must specify a single main script file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active || (Ctrl->N.prefix == NULL || strlen (Ctrl->N.prefix) == 0),
 					"Option -N: Must specify a batch prefix\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active,
@@ -357,7 +357,7 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 
 	/* Note: We open script files for reading below since we are changing cwd later and sometimes need to rewind and re-read */
 
-	if (n_files == 1) {	/* Determine scripting language from file extension and open the main script file */
+	if (Ctrl->In.file) {	/* Determine scripting language from file extension and open the main script file */
 		if (strstr (Ctrl->In.file, ".bash") || strstr (Ctrl->In.file, ".sh"))	/* Treat both as bash since sh is subset of bash */
 			Ctrl->In.mode = GMT_BASH_MODE;
 		else if (strstr (Ctrl->In.file, ".csh"))
