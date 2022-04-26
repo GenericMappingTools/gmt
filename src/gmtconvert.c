@@ -451,6 +451,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 	                                 "Only one of -Q and -S can be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->F.active,
 	                                 "The -N option cannot be used with -F\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Out.active && Ctrl->D.active,
+	                                 "The -D option cannot be used with ->\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && GMT->common.q.active[GMT_OUT],
 	                                 "The deprecated -Z option cannot be used with -qo\n");
 
@@ -810,7 +812,6 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	/* Now ready for output */
 
 	if (Ctrl->D.active) {	/* Set composite name and io-mode */
-		gmt_M_str_free (Ctrl->Out.file);
 		Ctrl->Out.file = strdup (Ctrl->D.name);
 		DHo->io_mode = Ctrl->D.mode;
 		if (Ctrl->D.origin) {	/* Update IDs */
