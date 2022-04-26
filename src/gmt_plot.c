@@ -3337,7 +3337,7 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	GMT->current.plot.r_theta_annot = false;	/* Just in case it was turned on in gmt_map.c */
 
 	mr->refpoint->x -= hh * (font_size[1] / 72.0 + off[1] + 2.0 * tlen[2]);	/* Any horizontal shifts we know exactly */
-	mr->refpoint->y -= vv * (font_size[1] / 72.0 + off[1] + 2.0 * tlen[2]);	/* Any vectical shifts we know exactly */
+	mr->refpoint->y -= vv * (font_size[1] / 72.0 + off[1] + 2.0 * tlen[2]);	/* Any vertical shifts we know exactly */
 
 	PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
 
