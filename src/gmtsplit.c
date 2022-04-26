@@ -59,6 +59,7 @@ struct SPLITXYZ_CTRL {
 	} F;
 	struct SPLITXYZ_N {	/* -N<namestem> */
 		bool active;
+		unsigned int n_formats;
 		char *name;
 	} N;
 	struct SPLITXYZ_Q {	/* -Q[<xyzdg>] */
@@ -147,7 +148,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-A<azimuth>/<tolerance>] [-C<course_change>] [-D<minimum_distance>] "
-		"[-F<xy_filter>/<z_filter>] [-N<template>] [-Q<flags>] [-S] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[-F<xy_filter>/<z_filter>] [-N[<template>]] [-Q<flags>] [-S] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -167,9 +168,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-F<xy_filter>/<z_filter>");
 	GMT_Usage (API, -2, "Filter the data: Give full widths of cosine arch filters for xy and z. "
 		"Use negative width for high-pass filter [Default is no filtering].");
-	GMT_Usage (API, 1, "\n-N<template>");
+	GMT_Usage (API, 1, "\n-N[<template>]");
 	GMT_Usage (API, -2, "Write individual segments to separate files [Default writes one "
-		"multisegment file to standard output].  Append file name template which MUST "
+		"multisegment file to standard output].  Optionally append file name template which MUST "
 		"contain a C-style format code for a long integer (e.g., %%d) that represents "
 		"a sequential segment number across all tables (if more than one table) "
 		"[Default uses gmtsplit_segment_%%d.txt (or .bin for binary)]. "
@@ -259,7 +260,15 @@ static int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				if (opt->arg[0]) Ctrl->N.name = strdup (opt->arg);
+				if (opt->arg[0]) {	/* Gave a filename template */
+					Ctrl->N.n_formats = 0;
+					Ctrl->N.name = strdup (opt->arg);
+					for (j = 0; Ctrl->N.name[j]; j++) if (Ctrl->N.name[j] == '%') Ctrl->N.n_formats++;
+					if (Ctrl->N.n_formats < 1 || Ctrl->N.n_formats > 2) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: Segment output filename template contains %d format statement(s). Only 1 or 2 are expected.\n", Ctrl->N.n_formats);
+						n_errors++;
+					}
+				}
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
@@ -294,13 +303,17 @@ static int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GMT_O
 		}
 	}
 
+	if (Ctrl->N.active && Ctrl->N.name == NULL) {	/* Supply default name template */
+		Ctrl->N.n_formats = 1;
+		Ctrl->N.name = (GMT->common.b.active[GMT_OUT]) ? strdup ("gmtsplit_segment_%d.bin") : strdup ("gmtsplit_segment_%d.txt");
+	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.value < 0.0, "Option -D: Minimum segment distance must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.value <= 0.0, "Option -C: Course change tolerance must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.tolerance < 0.0, "Option -A: Azimuth tolerance must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_OUT] && !Ctrl->N.name,
 	                                 "Binary output requires a namestem in -N\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->S.active) ? 5 : 3);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.name && !strstr (Ctrl->N.name, "%"),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !strstr (Ctrl->N.name, "%"),
 	                                 "Option -N: Output template must contain %%d\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -589,9 +602,7 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, " Split %" PRIu64 " data into %" PRIu64 " segments.\n", D[GMT_IN]->n_records, nprofiles);
 	if (Ctrl->N.active) {	/* Want tables or segments written to separate files */
-		int n_formats = 0;
-		for (k = 0; Ctrl->N.name[k]; k++) if (Ctrl->N.name[k] == '%') n_formats++;
-		io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
+		io_mode = (Ctrl->N.n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
 		/* The io_mode tells the i/o function to split segments into files */
 		gmt_M_str_free (Ctrl->Out.file);
 		Ctrl->Out.file = strdup (Ctrl->N.name);
