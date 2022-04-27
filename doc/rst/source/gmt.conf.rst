@@ -923,8 +923,7 @@ Projection Parameters
         doing the distance calculation. See also :term:`PROJ_MEAN_RADIUS`.
 
     **PROJ_ELLIPSOID**
-        The (case sensitive) name of the ellipsoid used for the map projections
-        [WGS-84]. Choose among:
+        The name of the ellipsoid used for the map projections [WGS-84]. Choose among:
 
         - *Airy*: Applies to Great Britain (1830)
         - *Airy-Ireland*: Applies to Ireland in 1965 (1830)
