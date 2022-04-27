@@ -569,21 +569,10 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			ng++;
 		else if (gmt_M_memfile_is_cube (opt->arg))	/* Can just check file name */
 			nc++;
-		else {	/* Must read file header (as if a grid) to figure it out */
-			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {
-				Return (API->error);
-			}
-			header = G->header;
-			if (gmtlib_is_nc_grid (GMT, header) || header->n_bands == 1)	/* Not netCDF or a single layer so must be grid */
-				ng++;
-			else if (gmt_nc_is_cube (API, opt->arg))	/* Determine if this netCDF file is a cube or not */
-				nc++;
-			else
-				ng++;
-			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR){
-				Return (API->error);
-			}
-		}
+		else if (gmt_nc_is_cube (API, opt->arg))	/* Determine if this file is a netCDF cube or not */
+			nc++;
+		else	/* Thus a grid */
+			ng++;
 	}
 
 	if (nc && ng) {
