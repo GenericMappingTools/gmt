@@ -1184,7 +1184,8 @@ PostScript Parameters
         PDF. Choose from **Color**, **ColorBurn**, **ColorDodge**, **Darken**,
         **Difference**, **Exclusion**, **HardLight**, **Hue**, **Lighten**,
         **Luminosity**, **Multiply**, **Normal**, **Overlay**, **Saturation**,
-        **SoftLight**, and **Screen** [default is **Normal**].
+        **SoftLight**, and **Screen** [default is **Normal**].  For more information,
+        see `blend modes <https://en.wikipedia.org/wiki/Blend_modes>`_.
 
 .. _Calendar/Time Parameters:
 
