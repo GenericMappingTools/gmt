@@ -203,7 +203,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 	}
 
 	if (nc && ng) {
-		GMT_Report (API, GMT_MSG_WARNING, "Cannot give a mixed list of data cubes and data grids\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot give a mixed list of data cubes and data grids\n");
 		n_errors++;
 		goto time_to_return;
 	}
