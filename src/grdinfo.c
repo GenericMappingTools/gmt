@@ -555,7 +555,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0, k_data, k_tile_id;
 	unsigned int n_grds = 0, n_cols = 0, col, level, i_status, gtype, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
 	unsigned int x_col_min, x_col_max, y_col_min, y_col_max, z_col_min, z_col_max, GMT_W = GMT_Z;
-	bool subset, delay, num_report;
+	bool subset, delay, num_report, is_cube;
 
 	uint64_t ij, n_nan = 0, n = 0;
 
@@ -596,8 +596,9 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 	/* OK, done parsing, now process all input grids in a loop */
 
+	is_cube = Ctrl->is_cube;	/* Shorthand */
 	gmt_M_memset (wesn, 6, double);	/* Initialize */
-	if (Ctrl->is_cube) {
+	if (is_cube) {
 		x_col_min = 14; x_col_max = 17; y_col_min = 15; y_col_max = 18; z_col_min = 16; z_col_max = 19; GMT_W = 3;
 	}
 	else {	/* grid output */
@@ -619,10 +620,10 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active) {
 		/* w e s n {b t} w0 w1 dx dy {dz} n_columns n_rows {n_layers} [x0 y0 {z0} x1 y1 {z1}] [med scale] [mean std rms] [n_nan] */
-		n_cols = (Ctrl->is_cube) ? 8 : 6;	/* w e s n {b t} w0 w1 */
+		n_cols = (is_cube) ? 8 : 6;	/* w e s n {b t} w0 w1 */
 		if (!Ctrl->I.active) {
-			n_cols += (Ctrl->is_cube) ? 6 : 4;				/* Add dx dy {dz} n_columns n_rows {n_layers} */
-			if (Ctrl->M.active) n_cols += (Ctrl->is_cube) ? 7 : 5;	/* Add x0 y0 {z0} x1 y1 {z1} nnan */
+			n_cols += (is_cube) ? 6 : 4;				/* Add dx dy {dz} n_columns n_rows {n_layers} */
+			if (Ctrl->M.active) n_cols += (is_cube) ? 7 : 5;	/* Add x0 y0 {z0} x1 y1 {z1} nnan */
 			if (Ctrl->L.norm & 1) n_cols += 2;	/* Add median scale */
 			if (Ctrl->L.norm & 2) n_cols += 3;	/* Add mean stdev rms */
 			if (Ctrl->L.norm & 4) n_cols += 2;	/* Add mode lmsscale */
@@ -677,7 +678,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_set_geographic (GMT, GMT_IN);	/* Since this will be returned as a memory grid */
 		}
 
-		if (Ctrl->is_cube) {
+		if (is_cube) {
 			if ((U = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {
 				Return (API->error);
 			}
@@ -700,23 +701,23 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		else if (header->ProjRefWKT && !Ctrl->C.active && !Ctrl->T.active && !Ctrl->I.active)
 			projStr = strdup (header->ProjRefWKT);
 
-		for (n = 0; n < GMT_Z + Ctrl->is_cube; n++)
+		for (n = 0; n < GMT_Z + is_cube; n++)
 			GMT->current.io.col_type[GMT_OUT][n] = gmt_M_type (GMT, GMT_IN, n);	/* Since grids may differ in types */
 
 		if (num_report && n_grds == 0) {	/* Need to prepare col_type for output */
 			if (Ctrl->M.active) {	/* Will write x,y[,z] min and max locations */
 				GMT->current.io.col_type[GMT_OUT][x_col_min] = GMT->current.io.col_type[GMT_OUT][x_col_max] = GMT->current.io.col_type[GMT_OUT][GMT_X];
 				GMT->current.io.col_type[GMT_OUT][y_col_min] = GMT->current.io.col_type[GMT_OUT][y_col_max] = GMT->current.io.col_type[GMT_OUT][GMT_Y];
-				if (Ctrl->is_cube) GMT->current.io.col_type[GMT_OUT][z_col_min] = GMT->current.io.col_type[GMT_OUT][z_col_max] = GMT->current.io.col_type[GMT_OUT][GMT_Z];
+				if (is_cube) GMT->current.io.col_type[GMT_OUT][z_col_min] = GMT->current.io.col_type[GMT_OUT][z_col_max] = GMT->current.io.col_type[GMT_OUT][GMT_Z];
 			}
-			if (Ctrl->is_cube) GMT->current.io.col_type[GMT_OUT][4] = GMT->current.io.col_type[GMT_OUT][5] = GMT->current.io.col_type[GMT_OUT][GMT_Z];
+			if (is_cube) GMT->current.io.col_type[GMT_OUT][4] = GMT->current.io.col_type[GMT_OUT][5] = GMT->current.io.col_type[GMT_OUT][GMT_Z];
 			GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT->current.io.col_type[GMT_OUT][GMT_Y];
 			GMT->current.io.col_type[GMT_OUT][1] = GMT->current.io.col_type[GMT_OUT][GMT_X];
 		}
 		n_grds++;
 
 		if (Ctrl->E.active || Ctrl->M.active || Ctrl->L.active || subset || Ctrl->D.mode || (Ctrl->T.mode & 2)) {	/* Need to read the data (all or subset) */
-			if (Ctrl->is_cube) {
+			if (is_cube) {
 				if (GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_DATA_ONLY, wesn, opt->arg, U) == NULL) {
 					Return (API->error);
 				}
@@ -781,7 +782,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
 			uint64_t ij_min, ij_max, here = 0, node;
 			unsigned int col, row;
-			gmt_grdfloat *data = (Ctrl->is_cube) ? U->data : G->data;
+			gmt_grdfloat *data = (is_cube) ? U->data : G->data;
 
 			v_min = DBL_MAX;	v_max = -DBL_MAX;
 			ij_min = ij_max = n = 0;
@@ -791,10 +792,10 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 						node = ij + here;
 						if (gmt_M_is_fnan (data[node])) continue;
 						if (data[node] < v_min) {
-							v_min = data[node];	ij_min = ij; if (Ctrl->is_cube) z_min = U->z[level];
+							v_min = data[node];	ij_min = ij; if (is_cube) z_min = U->z[level];
 						}
 						if (data[node] > v_max) {
-							v_max = data[node];	ij_max = ij; if (Ctrl->is_cube) z_max = U->z[level];
+							v_max = data[node];	ij_max = ij; if (is_cube) z_max = U->z[level];
 						}
 						n++;
 					}
@@ -869,7 +870,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_ascii_format_col (GMT, text, header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 			gmt_ascii_format_col (GMT, text, header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
 			gmt_ascii_format_col (GMT, text, header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
-			if (Ctrl->is_cube) {
+			if (is_cube) {
 				strcat (record, "/");
 				gmt_ascii_format_col (GMT, text, U->z_range[0], GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
 				gmt_ascii_format_col (GMT, text, U->z_range[1], GMT_OUT, GMT_Z);	strcat (record, text);
@@ -884,7 +885,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_INCREMENTS) {
 			sprintf (record, "-I");
 			grdinfo_smart_increments (GMT, header->inc, 2, text);	strcat (record, text);
-			if (Ctrl->is_cube) {
+			if (is_cube) {
 				strcat (record, "/");
 				gmt_ascii_format_col (GMT, text, U->z_inc, GMT_OUT, GMT_Z);	strcat (record, text);
 			}
@@ -908,13 +909,13 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				/* w e s n {b t} w0 w1 dx dy {dz} n_columns n_rows {n_layers} [x0 y0 {z0} x1 y1 {z1}] [med scale] [mean std rms] [n_nan] */
 				gmt_M_memcpy (out, header->wesn, 4, double);	/* Place the w/e/s/n limits */
 				col = 4;
-				if (Ctrl->is_cube) {out[ZLO] = U->z_range[0];		out[ZHI] = U->z_range[1]; col += 2; }
+				if (is_cube) {out[ZLO] = U->z_range[0];		out[ZHI] = U->z_range[1]; col += 2; }
 				out[col++] = header->z_min;			out[col++] = header->z_max;
-				out[col++] = header->inc[GMT_X];	out[col++] = header->inc[GMT_Y];	if (Ctrl->is_cube) out[col++] = U->z_inc;
-				out[col++] = header->n_columns;		out[col++] = header->n_rows;		if (Ctrl->is_cube) out[col++] = header->n_bands;
+				out[col++] = header->inc[GMT_X];	out[col++] = header->inc[GMT_Y];	if (is_cube) out[col++] = U->z_inc;
+				out[col++] = header->n_columns;		out[col++] = header->n_rows;		if (is_cube) out[col++] = header->n_bands;
 				if (Ctrl->M.active) {
-					out[col++] = x_min;	out[col++] = y_min;	if (Ctrl->is_cube) out[col++] = z_min;
-					out[col++] = x_max;	out[col++] = y_max;	if (Ctrl->is_cube) out[col++] = z_max;
+					out[col++] = x_min;	out[col++] = y_min;	if (is_cube) out[col++] = z_min;
+					out[col++] = x_max;	out[col++] = y_max;	if (is_cube) out[col++] = z_max;
 				}
 				if (Ctrl->L.norm & 1) {
 					out[col++] = z_median;	out[col++] = z_scale;
@@ -946,7 +947,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				strcat (record, text);	strcat (record, sep);
 				gmt_ascii_format_col (GMT, text, header->wesn[YHI], GMT_OUT, GMT_Y);
 				strcat (record, text);	strcat (record, sep);
-				if (Ctrl->is_cube) {
+				if (is_cube) {
 					gmt_ascii_format_col (GMT, text, U->z_range[0], GMT_OUT, GMT_Z);
 					strcat (record, text);	strcat (record, sep);
 					gmt_ascii_format_col (GMT, text, U->z_range[1], GMT_OUT, GMT_Z);
@@ -962,7 +963,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, header->inc[GMT_Y], GMT_OUT, GMT_Y);
 				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing SN flag here */
 				strcat (record, text);	strcat (record, sep);
-				if (Ctrl->is_cube) {
+				if (is_cube) {
 					gmt_ascii_format_col (GMT, text, U->z_inc, GMT_OUT, GMT_Z);
 					strcat (record, text);	strcat (record, sep);
 				}
@@ -970,17 +971,17 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				strcat (record, text);	strcat (record, sep);
 				gmt_ascii_format_col (GMT, text, (double)header->n_rows, GMT_OUT, GMT_W);
 				strcat (record, text);
-				if (Ctrl->is_cube) {
+				if (is_cube) {
 					gmt_ascii_format_col (GMT, text, (double)header->n_bands, GMT_OUT, GMT_W);
 					strcat (record, text);	strcat (record, sep);
 				}
 				if (Ctrl->M.active) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, x_min, GMT_OUT, GMT_X);	strcat (record, text);
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, y_min, GMT_OUT, GMT_Y);	strcat (record, text);
-					if (Ctrl->is_cube) { strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_min, GMT_OUT, GMT_Z);	strcat (record, text); }
+					if (is_cube) { strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_min, GMT_OUT, GMT_Z);	strcat (record, text); }
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, x_max, GMT_OUT, GMT_X);	strcat (record, text);
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, y_max, GMT_OUT, GMT_Y);	strcat (record, text);
-					if (Ctrl->is_cube) { strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_max, GMT_OUT, GMT_Z);	strcat (record, text); }
+					if (is_cube) { strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_max, GMT_OUT, GMT_Z);	strcat (record, text); }
 				}
 				if (Ctrl->L.norm & 1) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_median, GMT_OUT, GMT_Z);	strcat (record, text);
@@ -1092,7 +1093,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 					strcat (record, header->y_units);
 				sprintf (text, " n_rows: %d", header->n_rows);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-				if (Ctrl->is_cube) {
+				if (is_cube) {
 					sprintf (record, "%s: z_min: ", HH->name);
 					gmt_ascii_format_col (GMT, text, U->z_range[0], GMT_OUT, GMT_Z);	strcat (record, text);
 					strcat (record, " z_max: ");
@@ -1123,12 +1124,12 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, v_min, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, " at x = ");
 				gmt_ascii_format_col (GMT, text, x_min, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, " y = ");
 				gmt_ascii_format_col (GMT, text, y_min, GMT_OUT, GMT_Y);	strcat (record, text);
-				if (Ctrl->is_cube) { strcat (record, " z = "); gmt_ascii_format_col (GMT, text, z_min, GMT_OUT, GMT_Z);	strcat (record, text);}
+				if (is_cube) { strcat (record, " z = "); gmt_ascii_format_col (GMT, text, z_min, GMT_OUT, GMT_Z);	strcat (record, text);}
 				strcat (record, " v_max: ");
 				gmt_ascii_format_col (GMT, text, v_max, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, " at x = ");
 				gmt_ascii_format_col (GMT, text, x_max, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, " y = ");
 				gmt_ascii_format_col (GMT, text, y_max, GMT_OUT, GMT_Y);	strcat (record, text);
-				if (Ctrl->is_cube) { strcat (record, " z = "); gmt_ascii_format_col (GMT, text, z_max, GMT_OUT, GMT_Z);	strcat (record, text);}
+				if (is_cube) { strcat (record, " z = "); gmt_ascii_format_col (GMT, text, z_max, GMT_OUT, GMT_Z);	strcat (record, text);}
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 			else if (Ctrl->F.active) {
@@ -1209,16 +1210,16 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			if (header->wesn[XHI] > global_xmax) global_xmax = header->wesn[XHI];
 			if (header->wesn[YLO] < global_ymin) global_ymin = header->wesn[YLO];
 			if (header->wesn[YHI] > global_ymax) global_ymax = header->wesn[YHI];
-			if (Ctrl->is_cube) {
+			if (is_cube) {
 				if (U->z_range[0] < global_zmin) global_zmin = U->z_range[0];
 				if (U->z_range[1] > global_zmax) global_zmax = U->z_range[1];
 			}
 		}
 		if (!delay) {
-			if (Ctrl->is_cube && GMT_Destroy_Data (API, &U) != GMT_NOERROR) {
+			if (is_cube && GMT_Destroy_Data (API, &U) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			else if (!Ctrl->is_cube && GMT_Destroy_Data (API, &G) != GMT_NOERROR){
+			else if (!is_cube && GMT_Destroy_Data (API, &G) != GMT_NOERROR){
 				Return (API->error);
 			}
 		}
@@ -1233,7 +1234,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 			global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 			global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
-			if (Ctrl->is_cube && !gmt_M_is_zero (U->z_inc)) {
+			if (is_cube && !gmt_M_is_zero (U->z_inc)) {
 				global_zmin = floor (global_zmin / U->z_inc) * U->z_inc;
 				global_zmax = ceil  (global_zmax / U->z_inc) * U->z_inc;
 			}
@@ -1264,7 +1265,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			out[XLO] = global_xmin;		out[XHI] = global_xmax;
 			out[YLO] = global_ymin;		out[YHI] = global_ymax;
 			col = 4;
-			if (Ctrl->is_cube) out[col++] = global_zmin;		out[col++] = global_zmax;
+			if (is_cube) out[col++] = global_zmin;		out[col++] = global_zmax;
 			out[col++] = global_vmin;		out[col++] = global_vmax;
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
@@ -1274,12 +1275,12 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_ascii_format_col (GMT, text, global_xmax, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
 			gmt_ascii_format_col (GMT, text, global_ymin, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
 			gmt_ascii_format_col (GMT, text, global_ymax, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
-			if (Ctrl->is_cube) {
+			if (is_cube) {
 				gmt_ascii_format_col (GMT, text, global_zmin, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
 				gmt_ascii_format_col (GMT, text, global_zmax, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
 			}
-			gmt_ascii_format_col (GMT, text, global_vmin, GMT_OUT, GMT_Z+Ctrl->is_cube);	strcat (record, text);	strcat (record, sep);
-			gmt_ascii_format_col (GMT, text, global_vmax, GMT_OUT, GMT_Z+Ctrl->is_cube);	strcat (record, text);
+			gmt_ascii_format_col (GMT, text, global_vmin, GMT_OUT, GMT_Z+is_cube);	strcat (record, text);	strcat (record, sep);
+			gmt_ascii_format_col (GMT, text, global_vmax, GMT_OUT, GMT_Z+is_cube);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 	}
@@ -1288,7 +1289,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			size_t size = header->size * ((size_t)header->n_bands);
 			gmt_grdfloat *tmp_grid = NULL;
 			char *file_ptr = grdfile;	/* To avoid a warning */
-			if (Ctrl->is_cube) {
+			if (is_cube) {
 				if (gmt_M_file_is_memory (file_ptr)) {	/* Must operate on a copy since sorting is required */
 					tmp_grid = gmt_M_memory_aligned (GMT, NULL, size, gmt_grdfloat);
 					gmt_M_memcpy (tmp_grid, G->data, size, gmt_grdfloat);
@@ -1307,12 +1308,12 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_sort_array (GMT, tmp_grid, size, GMT_FLOAT);	/* Sort so we can find quantiles */
 			global_vmin = gmt_quantile_f (GMT, tmp_grid, Ctrl->T.alpha[XLO], size);		/* "Left" quantile */
 			global_vmax = gmt_quantile_f (GMT, tmp_grid, 100.0-Ctrl->T.alpha[XHI], size);	/* "Right" quantile */
-			if (Ctrl->is_cube && GMT_Destroy_Data (API, &U) != GMT_NOERROR) {
+			if (is_cube && GMT_Destroy_Data (API, &U) != GMT_NOERROR) {
 				if (gmt_M_file_is_memory (file_ptr))	/* Now free temp grid */
 					gmt_M_free (GMT, tmp_grid);
 				Return (API->error);
 			}
-			else if (!Ctrl->is_cube && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
+			else if (!is_cube && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 				if (gmt_M_file_is_memory (file_ptr))	/* Now free temp grid */
 					gmt_M_free (GMT, tmp_grid);
 				Return (API->error);
@@ -1349,7 +1350,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 			global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 			global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
-			if (Ctrl->is_cube && !gmt_M_is_zero (U->z_inc)) {
+			if (is_cube && !gmt_M_is_zero (U->z_inc)) {
 				global_zmin = floor (global_zmin / U->z_inc) * U->z_inc;
 				global_zmax = ceil  (global_zmax / U->z_inc) * U->z_inc;
 			}
@@ -1381,7 +1382,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_ascii_format_col (GMT, text, global_xmax, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 			gmt_ascii_format_col (GMT, text, global_ymin, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
 			gmt_ascii_format_col (GMT, text, global_ymax, GMT_OUT, GMT_Y);	strcat (record, text);
-			if (Ctrl->is_cube) {
+			if (is_cube) {
 				strcat (record, "/");
 				gmt_ascii_format_col (GMT, text, global_zmin, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
 				gmt_ascii_format_col (GMT, text, global_zmax, GMT_OUT, GMT_Z);	strcat (record, text);
@@ -1391,10 +1392,10 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	}
 
 	if (delay) {
-		if (Ctrl->is_cube && GMT_Destroy_Data (API, &U) != GMT_NOERROR) {
+		if (is_cube && GMT_Destroy_Data (API, &U) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		else if (!Ctrl->is_cube && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
+		else if (!is_cube && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
