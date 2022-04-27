@@ -49,7 +49,7 @@ which needs to be manually sourced from either ``~/.bash_completion`` or
 ``~/.bashrc``.
 
 Mac users should note that bash-completion >=2.0 requires bash >=4.1.
-However, OS X won't ship anything that's licensed under GPL version 3.
+However, macOS won't ship anything that's licensed under GPL version 3.
 The last version of bash available under the GPLv2 is 3.2 from 2006.
 It is recommended that *bash-completion* is installed together with
 *bash* via `MacPorts <http://www.macports.org/>`_,
