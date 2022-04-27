@@ -8,7 +8,7 @@ While GMT was ported to non-\ UNIX systems such as Windows, it is
 also true that one of the strengths of GMT lies its symbiotic
 relationship with UNIX. We therefore recommend that GMT be installed
 in a POSIX-compliant UNIX environment such as traditional
-UNIX-systems, Linux, or Mac OS X. If abandoning your
+UNIX-systems, Linux, or macOS. If abandoning your
 non-\ UNIX operating system is not an option, consider one of these
 solutions:
 
