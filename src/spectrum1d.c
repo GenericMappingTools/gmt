@@ -669,7 +669,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 				sval = atoi (opt->arg);
 				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -S: segment size must be positive\n");
 				Ctrl->S.size = sval;
-				while (window_test < Ctrl->S.size) {
+				while (window_test < Ctrl->S.size) {	/* If size is radix-2 then window_test will equal size after this loop ends */
 					window_test += window_test;
 				}
 				break;
@@ -688,7 +688,8 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, window_test != Ctrl->S.size, "Option -S: Segment size not radix 2.  Try %d or %d\n", (window_test/2), window_test);
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active, "Option -S: Must supply required segment size (which must be radix 2)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && window_test != Ctrl->S.size, "Option -S: Segment size is not radix 2.  Try %d or %d (or possibly smaller; see -S documentation).\n", (window_test/2), window_test/4);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.inc <= 0.0, "Option -D: Sampling interval must be positive\n");
 	n_errors += gmt_check_binary_io (GMT, Ctrl->C.active + 1);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
@@ -759,6 +760,11 @@ EXTERN_MSC int GMT_spectrum1d (void *V_API, int mode, void *args) {
 	if (Din->n_columns < (1 + C.y_given)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least %d are needed\n", (int)Din->n_columns, 1 + C.y_given);
 		Return (GMT_DIM_TOO_SMALL);
+	}
+
+	if (Din->n_records < Ctrl->S.size) {
+		GMT_Report (API, GMT_MSG_ERROR, "Option -S: Specified segment size (%u) exceeds data set size (%" PRIu64 ")\n", Ctrl->S.size, Din->n_records);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	spectrum1d_alloc_arrays (GMT, &C);
