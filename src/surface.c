@@ -24,7 +24,7 @@
  * surface.  T = 1 gives a harmonic surface.  Use T = 0.25
  * or so for potential data; something more for topography.
  *
- * Program includes overrelaxation for fast convergence and
+ * Program includes over-relaxation for fast convergence and
  * automatic optimal grid factorization.
  *
  * See reference Smith & Wessel (Geophysics, 3, 293-305, 1990) for details.
@@ -41,6 +41,11 @@
  * 3. It relies more on functions and macros from GMT to handle rows/cols/node calculations.
  *
  * Note on KEYS: DD(= means -D takes an optional input Dataset as argument which may be followed by optional modifiers.
+ *
+ * Update for 6.4.0: We help users get a better interpolation by selecting the most optimal -R to
+ * result in many intermediate grid spacings for the multigrid progression to provide the best
+ * convergence, then shrink back to the requested region upon output.  Experts who wishes to defeat this
+ * improvement can use -Qr which will honor the given -R exactly, even if prime.
  */
 
 #include "gmt_dev.h"
@@ -97,9 +102,10 @@ struct SURFACE_CTRL {
 		unsigned int value;
 	} N;
 	struct SURFACE_Q {	/* -Q[r] */
-		bool active;
-		bool as_is;
-		double wesn[4];
+		bool active;	/* Information sought */
+		bool as_is;		/* Use -R exactly as given */
+		bool adjusted;	/* Improved -R required pad changes */
+		double wesn[4];	/* Best improved -R for this operation */
 	} Q;
 	struct SURFACE_S {	/* -S<radius>[m|s] */
 		bool active;
@@ -246,6 +252,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	bool periodic;			/* true if geographic grid and west-east == 360 */
 	bool constrained;		/* true if set_limit[LO] or set_limit[HI] is true */
 	bool logging;			/* true if -W was specified */
+	bool adjusted;			/* true if -L grids need to be enlarged with pads */
 	double limit[2];		/* Low and high constrains on range of solution */
 	double inc[2];			/* Size of each grid cell for current grid factor */
 	double r_inc[2];		/* Reciprocal grid spacings  */
@@ -860,11 +867,15 @@ GMT_LOCAL int surface_load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INF
 		}
 		else {	/* Got a grid with a surface */
 			if ((C->Bound[end] = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, C->limit_file[end], NULL)) == NULL) return (API->error);	/* Get header only */
-			if (C->Bound[end]->header->n_columns != C->Grid->header->n_columns || C->Bound[end]->header->n_rows != C->Grid->header->n_rows) {
+			if (!C->adjusted && (C->Bound[end]->header->n_columns != C->Grid->header->n_columns || C->Bound[end]->header->n_rows != C->Grid->header->n_rows)) {
 				GMT_Report (API, GMT_MSG_ERROR, "%s limit file not of proper dimensions!\n", limit[end]);
 				return (GMT_RUNTIME_ERROR);
 			}
 			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, C->limit_file[end], C->Bound[end]) == NULL) return (API->error);
+			if (C->adjusted) {	/* Must adjust padding and region */
+				gmt_M_memcpy (C->Bound[end]->header->wesn, C->Grid->header->wesn, 4U, double);	/* Update region */
+				gmt_grd_pad_on (GMT, C->Bound[end], C->Grid->header->pad);	/* Add in the larger pad */
+			}
 		}
 		if (transform) {	/* Remove best-fitting plane and normalize the bounding values */
 			for (row = 0; row < C->Grid->header->n_rows; row++) {
@@ -891,15 +902,16 @@ GMT_LOCAL int surface_write_grid (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctr
 	char *limit[2] = {"lower", "upper"};
 	gmt_grdfloat *u = C->Grid->data;
 
-	if (!Ctrl->Q.active) {	/* Probably need to shrink region by increasing the pads */
+	if (!Ctrl->Q.active) {	/* Probably need to shrink region to the desired one by increasing the pads */
 		unsigned int del_pad[4] = {0, 0, 0, 0}, k, n = 0;
 		struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (C->Grid->header);
+		/* Determine the shifts inwards for each side */
 		del_pad[XLO] = irint ((C->wesn_orig[XLO] - C->Grid->header->wesn[XLO]) * HH->r_inc[GMT_X]);
 		del_pad[XHI] = irint ((C->Grid->header->wesn[XHI] - C->wesn_orig[XHI]) * HH->r_inc[GMT_X]);
 		del_pad[YLO] = irint ((C->wesn_orig[YLO] - C->Grid->header->wesn[YLO]) * HH->r_inc[GMT_Y]);
 		del_pad[YHI] = irint ((C->Grid->header->wesn[YHI] - C->wesn_orig[YHI]) * HH->r_inc[GMT_Y]);
-		for (k = 0; k < 4; k++) n += del_pad[k];
-		if (n) {
+		for (k = 0; k < 4; k++) n += del_pad[k];	/* See if any is needed */
+		if (n) {	/* Yep, must update pad and all meta data for this grid first */
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Increase pad by %d %d %d %d\n", del_pad[XLO], del_pad[XHI], del_pad[YLO], del_pad[YHI]);
 			for (k = 0; k < 4; k++) C->Grid->header->pad[k] += del_pad[k];	/* Increase pad to shrink region */
 			gmt_M_memcpy (C->Grid->header->wesn, C->wesn_orig, 4U, double);	/* Reset -R to what was requested */
@@ -914,7 +926,7 @@ GMT_LOCAL int surface_write_grid (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctr
 	if (GMT->common.R.registration == GMT_GRID_PIXEL_REG) {	/* Pixel registration request. Reset region to the original extent */
 		gmt_M_memcpy (C->Grid->header->wesn, C->wesn_orig, 4, double);
 		C->Grid->header->registration = GMT->common.R.registration;
-		/* Must reduce both n_columns,n_rows by 1 and make the eastmost column and northernmost row part of the grid pad */
+		/* Must reduce both n_columns,n_rows by 1 and make the easternmost column and northernmost row part of the grid pad */
 		C->Grid->header->n_columns--;	C->n_columns--;
 		C->Grid->header->n_rows--;	C->n_rows--;
 		C->Grid->header->pad[XHI]++;	/* Presumably increase pad from 2 to 3 */
@@ -1396,6 +1408,7 @@ GMT_LOCAL void surface_init_parameters (struct SURFACE_INFO *C, struct SURFACE_C
 	C->set_limit[HI]	= Ctrl->L.mode[HI];
 	C->limit[LO]		= Ctrl->L.limit[LO];
 	C->limit[HI]		= Ctrl->L.limit[HI];
+	C->adjusted			= Ctrl->Q.adjusted;
 	C->boundary_tension	= Ctrl->T.b_tension;
 	C->interior_tension	= Ctrl->T.i_tension;
 	C->alpha		= Ctrl->A.value;
@@ -1960,14 +1973,15 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Consider spherical gridding instead with greenspline or sphinterpolate.\n");
 	}
 
-	/* Determine if there is a better region that would be faster and converge more */
-	if (!Ctrl->Q.as_is) {
+	/* Determine if there is a better region that would allow more intermediate resolutions to converge better */
+	if (!Ctrl->Q.as_is) {	/* Meaning we did not give -Qr to insist on the given -R */
 		struct GMT_GRID *G = NULL;
 		if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL,
-	                GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+			GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 		if (surface_suggest_sizes (GMT, Ctrl, G, C.factors, G->header->n_columns-1, G->header->n_rows-1, GMT->common.R.registration == GMT_GRID_PIXEL_REG)) {	/* Yes, got one */
 			gmt_M_memcpy (wesn, Ctrl->Q.wesn, 4, double);		/* Save specified region */
 			GMT_Destroy_Data (API, &G);	/* Delete the old, recreate the grid */
+			Ctrl->Q.adjusted = true;	/* So we know we must do the same to any -L grids */
 		}
 	}
 
@@ -2021,7 +2035,6 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		struct GMT_DATASET *Lin = NULL;
 		char *file = (Ctrl->D.debug) ? Ctrl->D.file : NULL;
 		if (Ctrl->D.fix_z) {	/* Either provide a fixed z value or override whatever input file may supply with this value */
-			//GMT->common.b.ncol[GMT_IN] = 0;	/* So Set_Columns will work */
 			if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)	/* Only read 2 columns */
 				Return (GMT_RUNTIME_ERROR);
 		}
@@ -2049,7 +2062,10 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);	/* Clean up and return */
 	}
 
-	surface_load_constraints (GMT, &C, true);	/* Set lower and upper constraint grids, if requested */
+	if (surface_load_constraints (GMT, &C, true)) {	/* Set lower and upper constraint grids, if requested */
+		gmt_M_free (GMT, C.data);
+		Return (GMT_RUNTIME_ERROR);	/* Clean up and return */
+	}
 
 	/* Set up factors and reset current_stride to its initial (and largest) value  */
 
