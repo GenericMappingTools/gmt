@@ -191,7 +191,7 @@ static int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struct G
 			case 'E':	/* Convert to half-spreading stage rotations [NOW -M] */
 				if (gmt_M_compat_check (GMT, 5)) { /* Warn and fall through */
 					GMT_Report (API, GMT_MSG_COMPAT, "-E is deprecated; use -M instead.\n");
-					Ctrl->M.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 					if (opt->arg[0]) Ctrl->M.value = atof (opt->arg);
 				}
 				else {

@@ -510,6 +510,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			if (z_id < 0) {	/* No 2-D grid found, check if we found a higher dimension cube */
 				if (ID == GMT_NOTSET) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
 				z_id = ID;		/* Pick the higher dimensioned cube instead, get its name, and warn */
+				ndims = dim;	/* Recall the dimensions of this ID */
 				nc_inq_varname (ncid, z_id, HH->varname);
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, HH->varname);
 			}
@@ -1557,6 +1558,7 @@ int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		if (z_id < 0) {	/* No 2-D grid found, check if we found a higher dimension cube */
 			if (ID == GMT_NOTSET) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
 			z_id = ID;	/* Pick the higher dimensioned cube instead, get its name, and warn */
+			ndims = dim;	/* Recall the dimensions of this ID */
 			nc_inq_varname (ncid, z_id, varname);
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, varname);
 		}
@@ -1982,6 +1984,7 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 			return GMT_GRDIO_NO_2DVAR;
 		}
 		z_id = ID;	/* Pick the higher dimensioned cube instead, get its name, and warn */
+		ndims = dim;	/* Recall the dimensions of this ID */
 		nc_inq_varname (ncid, z_id, varname);
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "No 3-D array in file %s.  Selecting first 3-D slice in the %d-D array %s\n", file, dim, varname);
 	}

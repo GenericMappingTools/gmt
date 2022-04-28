@@ -136,7 +136,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -341,7 +341,7 @@ EXTERN_MSC int GMT_blockmean (void *V_API, int mode, void *args) {
 	if (Ctrl->W.weighted[GMT_IN] && ((Ctrl->W.sigma[GMT_IN] && use_xy) || Ctrl->E.active)) np = gmt_M_memory (GMT, NULL, Grid->header->size, uint64_t);
 
 	/* Specify input and output expected columns */
-	n_input = (Ctrl->S.mode == BLK_OUT_COUNT) ? 2 : 3;
+	n_input = (Ctrl->S.mode == BLK_OUT_COUNT && !Ctrl->E.active) ? 2 : 3;	/* Only need 2 for counts unless -E is set */
 	if ((error = GMT_Set_Columns (API, GMT_IN, n_input + Ctrl->W.weighted[GMT_IN], GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}

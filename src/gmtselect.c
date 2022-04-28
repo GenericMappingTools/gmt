@@ -331,7 +331,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -464,7 +464,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				}
 				Ctrl->N.mode = (j == 2);
 				break;
-			case 'Z':	/* Test column-ranges */
+			case 'Z':	/* Test column-ranges (repeatable) */
 				Ctrl->Z.active = true;
 				invert = false;
 				col = z_col++;	/* If no +c<col> given the we march from GMT_Z outwards */

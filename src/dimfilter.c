@@ -348,7 +348,7 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, set = 0;
+	unsigned int n_errors = 0, set = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 #ifdef OBSOLETE
@@ -359,9 +359,8 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) break;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
-				Ctrl->In.active = true;
 				set++;
 				break;
 
@@ -441,14 +440,16 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 						break;
 					case 'p':	/* Mode */
 						Ctrl->N.filter = DIMSECTOR_MODE;
+						/* Check for +l but also deprecated trailing - */
 						if (strstr (opt->arg, "+l") || opt->arg[strlen(opt->arg)-1] == '-') Ctrl->N.mode = DIMFILTER_MODE_KIND_LOW;
 						else if (strstr (opt->arg, "+u")) Ctrl->N.mode = DIMFILTER_MODE_KIND_HIGH;
 						break;
 					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: Unrecognized directive %s", opt->arg);
 						n_errors++;
 						break;
 				}
-				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->N.n_sectors);
+				n_errors += gmt_get_required_uint (GMT, &opt->arg[1], opt->option, 0, &Ctrl->N.n_sectors);
 				set++;
 				break;
 			case 'Q':	/* entering the MAD error analysis mode */

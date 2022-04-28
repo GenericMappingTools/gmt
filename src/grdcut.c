@@ -158,7 +158,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	 */
 
 	bool F_or_R_or_J, do_file_check = true;
-	unsigned int n_errors = 0, k, n_files = 0;
+	unsigned int n_errors = 0, k;
 	char za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -170,9 +170,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &(Ctrl->In.file));
 				if (do_file_check && GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 			break;
 
@@ -283,7 +282,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, (F_or_R_or_J + Ctrl->S.active + Ctrl->Z.active) != 1,
 	                                   "Must specify only one of the -F, -R, -S or the -Z options\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->D.active, "Option -G: Must specify output grid file\n");
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify one input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "Must specify one input grid file\n");
 	if (n_errors == 0) {
 		int ftype = gmt_raster_type (GMT, Ctrl->In.file, true);
 		if (ftype == GMT_IS_IMAGE)	/* Must read file as an image */

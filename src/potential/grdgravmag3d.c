@@ -278,7 +278,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Input file */
+			case '<':	/* Input file (one or two) */
 				Ctrl->In.active = true;
 				if (n_files == 0)
 					Ctrl->In.file[n_files++] = strdup(opt->arg);

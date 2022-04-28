@@ -769,7 +769,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k = 0, n_files = 0;
+	unsigned int n_errors = 0, k = 0;
 	bool missing_equal = true;
 	char *c = NULL, *t_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -784,16 +784,16 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 					missing_equal = false;
 					opt->option = GMT_OPT_OUTFILE;	/* Prevents further use later */
 					if (opt->next && (opt->next->option == GMT_OPT_INFILE || opt->next->option == GMT_OPT_OUTFILE)) {
-						Ctrl->Out.active = true;
-						if (opt->next->arg[0]) Ctrl->Out.file = strdup (opt->next->arg);
-						opt->next->option = GMT_OPT_OUTFILE;	/* Prevents further use later */
+						opt = opt->next;	/* Skip ahead */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+						if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);	/* Optional output file since stdout is default */
+						opt->option = GMT_OPT_OUTFILE;	/* Prevents further use later */
 					}
 				}
-				n_files++;
 				break;
-			case '>':	/* Output file specified via an API; set output file here */
-				opt->option = GMT_OPT_OUTFILE;
-				if (opt->arg[0] && !Ctrl->Out.file) Ctrl->Out.file = strdup (opt->arg);
+			case '>':	/* Output file specified via an API; set required output file here */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				missing_equal = false;
 				break;
 			case '#':	/* Skip numbers */

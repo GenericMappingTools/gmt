@@ -23,7 +23,6 @@ Synopsis
 [ |-L|\ *linefile* ]
 [ |-M|\ *margins* ]
 [ |-N|\ **l**\|\ **h**\ [*n*] ]
-[ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*wmin*\ /*wmax*] ]
@@ -49,7 +48,7 @@ is new in GMT 6.3.0 and is considered *experimental*.
 Required Arguments
 ------------------
 
-.. |Add_ingrid| replace:: The name of one or several 2-D grid, image or 3-D cube files. 
+.. |Add_ingrid| replace:: The name of one or several 2-D grid, image or 3-D cube files.  **Note**: You cannot mix 2-D and 3-D files.
 .. include:: explain_grd_inout.rst_
     :start-after: ingrid-syntax-begins
     :end-before: ingrid-syntax-ends
@@ -87,7 +86,7 @@ Optional Arguments
 
 **-E**\ [**b**]
     Formats an output data record using tab-separated fields on a single line. The
-    columns are *w e s n {b t} v0 v1*. The data in braces only apply if |-Q| is
+    columns are *w e s n {b t} v0 v1*. The data in braces only apply if **grdselect** is
     used with 3-D data cubes [Default outputs a single -Rw/e/s/n{/b/t} string].
     Alternatively, append directive **b** to output the region's closed polygon.
     **Note**: The *v0 v1* range reflects the full range of all data nodes that lie
@@ -122,7 +121,7 @@ Optional Arguments
     - **N** - select data sources *failing* the NaN criterion in |-N|.
     - **R** - select data sources *not* having any overlap with the region set in |-R|.
     - **W** - select data sources whose data range do *not* overlap the range specified by |-W|.
-    - **Z** - select cubes whose z-dimension range do *not* overlap the range specified by |-Z| (requires |-Q|).
+    - **Z** - select cubes whose z-dimension range do *not* overlap the range specified by |-Z|.
     - **r** - select data sources *not* having the specified registration specified by |-r|.
 
    If no argument is given then we reverse all the tests, i.e, the same as **-ICDFLNRWZr**.
@@ -149,12 +148,7 @@ Optional Arguments
     Only pass data sources that have a total number of NaNs that is either **l**\ ower or **h**\ igher than *n* [Default is 0].
     **Note**: Cannot be used with images.
 
-.. _-Q:
-
-**-Q**
-    All input files must be data 3-D netCDF data cube files [Default is all files are 2-D grids or images].
-
-.. |Add_-R| replace:: Using the **-R** option will in essence supply another region that will be included in the computation via |-A|, as well as limit the reading to that subset. If |-Q| is used you must also
+.. |Add_-R| replace:: Using the **-R** option will in essence supply another region that will be included in the computation via |-A|, as well as limit the reading to that subset. For 3-D cubes you must also
     append limits in the *z* dimension. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -170,7 +164,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ [*zmin*]\ /[*zmax*]
-    Requires |-Q|. Only pass cubes whose *z*-dimension range overlaps with the specified range.  If *zmin* is not
+    Only pass 3-D cubes whose *z*-dimension range overlaps with the specified range.  If *zmin* is not
     given it defaults to -infinity, while if *zmax* is not given it defaults to +infinity.
 
 .. |Add_-V| replace:: |Add_-V_links|

@@ -36,8 +36,7 @@
 
 struct XYZ2GRD_CTRL {
 	struct XYZ2GRD_In {
-		bool active;
-		char *file;
+		char *file;	/* Deprecated use with -E only */
 	} In;
 	struct XYZ2GRD_A {	/* -A[f|l|n|m|r|s|u|z] */
 		bool active;
@@ -162,20 +161,24 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 
 	unsigned int n_errors = 0, n_files = 0;
 	uint64_t n_req;
-	bool do_grid, b_only = false;
+	bool do_grid, b_only = false, got_E = false;
 	char *ptr_to_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	memset (io, 0, sizeof(struct GMT_Z_IO)); /* Initialize with zero */
 
+	for (opt = options; opt; opt = opt->next) {	/* Look for deprecated -E first */
+		if (opt->option == 'E') got_E = true;
+	}
+
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
-				Ctrl->In.active = true;
+				if (got_E)
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */

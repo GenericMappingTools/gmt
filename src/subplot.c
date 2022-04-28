@@ -439,7 +439,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				else if (strchr ("WESNwesnlrbt", opt->arg[0])) Bframe = opt;	/* Frame settings */
 				else Bxy = opt;	/* Shared by both x and y axes */
 				break;
-			case 'C':	/* Clearance/inside margins */
+			case 'C':	/* Clearance/inside margins (repeatable) */
 				Ctrl->C.active = true;
 				if (strchr ("wesnxy", opt->arg[0])) {	/* Gave a side directive */
 					switch (opt->arg[0]) {

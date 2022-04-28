@@ -235,7 +235,7 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	bool sec = false, min = false;
 	size_t L = 0;
 	struct GMT_OPTION *opt = NULL;
@@ -247,8 +247,7 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) break;
-				Ctrl->In.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
@@ -337,7 +336,6 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Must specify input imgfile name.\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "More than one world image file name given.\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option.\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI] || GMT->common.R.wesn[YLO] >= GMT->common.R.wesn[YHI]), "Must specify -R with west < east and south < north.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->D.min <= -90 || Ctrl->D.max >= 90.0 || Ctrl->D.max <= Ctrl->D.min), "Min/max latitudes are invalid.\n");

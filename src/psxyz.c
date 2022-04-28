@@ -388,7 +388,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, ztype, n_files = 0;
+	unsigned int n_errors = 0, ztype;
 	int n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -398,9 +398,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 
 		switch (opt->option) {
 
-			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
-				n_files++;
+			case '<':	/* Skip input files after checking they exist */
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -860,10 +859,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	}
 	else
 		n_needed = n_cols_start + S.n_required;
-	if (not_line) {
-		for (j = n_cols_start; j < 7; j++) gmt_set_column_type (GMT, GMT_IN, j, GMT_IS_DIMENSION);	/* Since these may have units appended */
-		for (j = 0; j < S.n_nondim; j++) gmt_set_column_type (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles or km, not dimensions */
-	}
+	if (not_line)
+		gmt_set_column_types (GMT, n_cols_start, rgb_from_z, 7, &S);	/* Handle the dimensional vs non-dimensional column types including if -i is used */
 	if (Ctrl->H.active && Ctrl->H.mode == PSXYZ_READ_SCALE) {
 		xcol = n_needed;
 		n_needed++;	/* Read scaling from data file */
@@ -1388,7 +1385,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						data[n].dim[2] = in[ex3];	/* radius */
 					}
 					else
-						data[n].dim[2] = S.factor;;	/* radius */
+						data[n].dim[2] = S.factor;	/* radius */
 					/* Intentionally fall through - to do the rest under regular rectangle */
 				case PSL_RECT:
 					if (S.n_required == 2) {	/* Got dimensions from input file */

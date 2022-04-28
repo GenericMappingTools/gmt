@@ -644,7 +644,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, mode = 0, pos = 0;
+	unsigned int n_errors = 0, mode = 0, pos = 0;
 	int sval;
 	size_t L;
 	char *c = NULL, *l_arg = NULL, *t_arg = NULL, *w_arg = NULL, p[GMT_BUFSIZ] = {""};
@@ -655,12 +655,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 
 		switch (opt->option) {
 
-			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+			case '<':	/* Skip input files after checking they exist */
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
@@ -877,7 +876,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, GMT->common.w.active && (Ctrl->N.selected[PSHISTOGRAM_L1] || Ctrl->N.selected[PSHISTOGRAM_LMS]), "Option -N: Only -N is supported when -w is selected.\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.w.active && Ctrl->N.selected[PSHISTOGRAM_L2] && Ctrl->Q.active, "Option -N: Cannot use -Q when -w is selected.\n");
 	n_errors += gmt_check_binary_io (GMT, 0);
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

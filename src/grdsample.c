@@ -104,7 +104,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	int n_errors = 0, n_files = 0, ii = 0, jj = 0;
+	int n_errors = 0, ii = 0, jj = 0;
 	char format[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -113,8 +113,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
@@ -173,7 +172,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, (n_files != 1), "Must specify a single input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "Must specify a single input grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[GSET] && Ctrl->T.active && !GMT->common.R.active[FSET],
 	                                   "Only one of -r, -T may be specified\n");

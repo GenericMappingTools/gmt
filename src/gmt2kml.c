@@ -66,10 +66,6 @@
 
 struct GMT2KML_CTRL {
 	double t_transp;
-	struct GMT2KML_In {
-		bool active;
-		char *file;
-	} In;
 	struct GMT2KML_A {	/* -A */
 		bool active;
 		bool get_alt;
@@ -180,7 +176,6 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->D.file);
 	gmt_M_str_free (C->I.file);
@@ -313,10 +308,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 
 		switch (opt->option) {
 
-			case '<':	/* Input files */
-				if (n_files++ > 0) break;
-				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
-				Ctrl->In.active = true;
+			case '<':	/* Input files are skipped after checking if they exist */
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */

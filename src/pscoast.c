@@ -306,7 +306,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
-			case 'C':	/* Lake colors */
+			case 'C':	/* Lake colors (repeatable) */
 				Ctrl->C.active = true;
 				if (gmt_M_compat_check (GMT, 5) && (opt->arg[0] == 'l' || opt->arg[0] == 'r') && opt->arg[1] == '/') {	/* Specific lake or river-lake fill [deprecated syntax] */
 					k = (opt->arg[0] == 'l') ? LAKE : RIVER;
@@ -378,7 +378,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 				break;
-			case 'I':
+			case 'I':	/* Select river attributes (repeatable) */
 				Ctrl->I.active = true;
 				if (!opt->arg[0]) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -I takes at least one argument\n");
@@ -444,7 +444,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				if (opt->arg[0] == 's') 	/* Write a single segment. Affects only external interfaces. */
 					Ctrl->M.single = true;
 				break;
-			case 'N':
+			case 'N':	/* Select border attributes (repeatable) */
 				Ctrl->N.active = true;
 				if (!opt->arg[0]) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -N takes at least one argument\n");
@@ -495,7 +495,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				n_errors += gmt_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
 				break;
-			case 'W':
+			case 'W':	/* Set shoreline pen attributes (repeatable) */
 				Ctrl->W.active = true;	/* Want to draw shorelines */
 				if ((opt->arg[0] >= '1' && opt->arg[0] <= '4') && opt->arg[1] == '/') {	/* Specific pen for this feature */
 					k = (int)(opt->arg[0] - '1');

@@ -220,7 +220,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int pos, n_errors = 0, k, n_files = 0;
+	unsigned int pos, n_errors = 0, k;
 	int n = 0;
 	int64_t value = 0;
 	char p[GMT_BUFSIZ] = {""}, *c = NULL;
@@ -231,11 +231,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
@@ -452,9 +451,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 	                                 "Only one of -Q and -S can be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->F.active,
 	                                 "The -N option cannot be used with -F\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Out.active && Ctrl->D.active,
+	                                 "The -D option cannot be used with ->\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && GMT->common.q.active[GMT_OUT],
 	                                 "The deprecated -Z option cannot be used with -qo\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -812,7 +812,6 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	/* Now ready for output */
 
 	if (Ctrl->D.active) {	/* Set composite name and io-mode */
-		gmt_M_str_free (Ctrl->Out.file);
 		Ctrl->Out.file = strdup (Ctrl->D.name);
 		DHo->io_mode = Ctrl->D.mode;
 		if (Ctrl->D.origin) {	/* Update IDs */

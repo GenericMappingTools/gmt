@@ -228,7 +228,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 	 */
 
 	int n;
-	unsigned int n_errors = 0, pos = 0, n_files[2] = {0, 0};
+	unsigned int n_errors = 0, pos = 0, n_files = 0;
 	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL;
 	char *T_arg = NULL, *S_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -237,14 +237,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Input files */
+			case '<':	/* Input files (repeatable - check if they exist) */
 				Ctrl->In.active = true;
-				n_files[GMT_IN]++;
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				n_files++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files[GMT_OUT]++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
@@ -452,7 +451,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file == NULL,
 			"Options -C: No CPT argument given\n");
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] < 1, "No grid name(s) specified.\n");
+	n_errors += gmt_M_check_condition (GMT, n_files < 1, "No grid name(s) specified.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
 					"Options -W and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.cat && Ctrl->Z.active,
@@ -466,7 +465,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->S.active || Ctrl->E.active),
 					"Option -T: Cannot be combined with -E nor -S option.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.file && !Ctrl->E.cdf, "Option -E modifier +f is only valid if +c is used\n");
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 					"Option -A: Transparency must be n 0-100 range [0 or opaque]\n");
 

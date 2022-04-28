@@ -168,7 +168,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_in, n_errors = 0, n_files = 0;
+	unsigned int n_in, n_errors = 0;
 	int n;
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -182,7 +182,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 				if (Ctrl->In.n_args++ == 0) Ctrl->In.arg = strdup (opt->arg);
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ == 0) Ctrl->Out.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
@@ -307,7 +308,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_in;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Binary input data (-bi) must have at least %d columns\n", n_in);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !gmt_access (GMT, Ctrl->S.arg, R_OK), "Option -S: Secondary vector cannot be a file!\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_args && Ctrl->A.active && Ctrl->A.mode == 0, "Cannot give input files and -A<vec> at the same time\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

@@ -364,7 +364,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -515,7 +515,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				}
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
-			case 'S':	/* -S[+a[<az1/az2>]][+d[<hc>]][+h<h1>/<h2>][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] */
+			case 'S':	/* -S[+a[<az1/az2>]][+d[<hc>]][+h<h1>/<h2>][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] (repeatable) */
 				Ctrl->S.active = true;
 				if (strchr (opt->arg, '+')) {	/* One or more slide settings */
 					Ctrl->S.slide = true;

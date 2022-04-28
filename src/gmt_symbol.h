@@ -203,7 +203,7 @@ struct GMT_MAP_ROSE {
 	unsigned int mode;	/* 0 for given width, 1 for percentage of map width [10%], 2 for offsets given */
 	unsigned int type;	/* 0 for plain directional rose, 1 for a fancy directional map rose, 2 for magnetic rose */
 	unsigned int kind;	/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
-	char label[4][GMT_LEN64];	/* User-changable labels for W, E, S, N point */
+	char label[4][GMT_LEN64];	/* User-changeable labels for W, E, S, N point */
 	char dlabel[GMT_LEN256];	/* Magnetic declination label */
 	struct GMT_PEN pen[2];	/* Pens for main and secondary magrose circle outline */
 	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */

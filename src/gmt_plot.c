@@ -3290,7 +3290,7 @@ GMT_LOCAL void gmtplot_northstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 #define TITLE_SCL	0.125	/* Title Font size is this fraction of rose size */
 #define LBL_SCL		0.07	/* Label Font size is this fraction of rose size */
 #define TITLE_OFF	0.2		/* Title offset is this fraction of rose size */
-#define SIZE_THRESHOLD	0.984251968504	/* Compass smaller than 2.5cm gets changed annotation intervals */
+#define SIZE_THRESHOLD	0.984251968504	/* Compass smaller than 2.5 cm gets changed annotation intervals */
 
 GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr) {
 	/* Magnetic compass rose */
@@ -3299,7 +3299,7 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	int hh = mr->justify % 4 - 2, vv = mr->justify / 4 - 1;	/* Horizontal and vertical shift indicators */
 	double ew_angle, angle, R[2], tlen[3], L, s, c, lon, lat, x[5], y[5], xp[5], yp[5];
 	double offset, t_angle, scale[2], base, v_angle, *val = NULL, dim[PSL_MAX_DIMS];
-	double font_size[2], off[2], txt_offset, title_size, lbl_size;
+	double font_size[2], off[2], txt_offset, title_size, lbl_size, factor = (mr->do_label) ? 1.0 : 0.0;
 	char label[GMT_LEN16], *type[2] = {"inner", "outer"}, *T_label = NULL;
 
 	struct GMT_FILL f;
@@ -3336,24 +3336,24 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	scale[GMT_ROSE_SECONDARY] = 1.0;
 	GMT->current.plot.r_theta_annot = false;	/* Just in case it was turned on in gmt_map.c */
 
-	mr->refpoint->x -= hh * (font_size[1] / 72.0 + off[1] + 2.0 * tlen[2]);	/* Any horizontal shifts we know exactly */
-	mr->refpoint->y -= vv * (font_size[1] / 72.0 + off[1] + 2.0 * tlen[2]);	/* Any vectical shifts we know exactly */
+	mr->refpoint->x -= hh * (font_size[1] / 72.0 + off[1] + factor * tlen[2]);	/* Any horizontal shifts we know exactly */
+	mr->refpoint->y -= vv * (font_size[1] / 72.0 + off[1] + factor * tlen[2]);	/* Any vertical shifts we know exactly */
 
 	PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
 
 	PSL_command (PSL, "V\n");	/* Place the rose under gsave/grestore */
 
-	if (hh) {	/* We need horizontal adjustments. Do label offset here and adjust for text size in PSL */
+	if (hh && mr->do_label) {	/* We need horizontal adjustments. Do label offset here and adjust for text size in PSL */
 		T_label = (hh == -1) ? mr->label[3] : mr->label[1];	/* Get the W or E text label */
-		if (T_label) {	/* Get width of label and use it to shift origin left or right */
+		if (T_label[0]) {	/* Get width of label and use it to shift origin left or right */
 			mr->refpoint->x -= hh * txt_offset;	/* Any horizontal shifts we know exactly */
 			PSL_deftextdim (PSL, "-w", title_size, T_label);	/* Get label width and place on PSL stack */
 			PSL_command (PSL, "%d mul 0 T\n", -hh);	/* Multiply by +1 or -1 and transform x-origin by that amount */
 		}
 	}
-	if (vv) {	/* We need vertical adjustments. Do label offset here and adjust for text size in PSL */
+	if (vv && mr->do_label) {	/* We need vertical adjustments. Do label offset here and adjust for text size in PSL */
 		T_label = (vv == -1) ? mr->label[0] : mr->label[2];	/* Get the S or N text label */
-		if (T_label) {	/* Get height of string and use it to shift origin up or down */
+		if (T_label[0]) {	/* Get height of string and use it to shift origin up or down */
 			mr->refpoint->y -= vv * txt_offset;	/* Any horizontal shifts we know exactly */
 			PSL_deftextdim (PSL, "-H", title_size, T_label);	/* Get label height and place on PSL stack */
 			PSL_command (PSL, "%d mul 0 exch T\n", -vv);	/* Multiply by +1 or -1 and transform y-origin by that amount */
@@ -3551,7 +3551,7 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 			char *T_label = NULL;
 			if (hh) {	/* We need horizontal adjustments. Do label offset here and adjust for text size in PSL */
 				T_label = (hh == -1) ? mr->label[3] : mr->label[1];	/* Get the W or E text label */
-				if (T_label) {	/* Get width of label and use it to shift origin left or right */
+				if (T_label[0]) {	/* Get width of label and use it to shift origin left or right */
 					mr->refpoint->x -= hh * txt_offset;	/* Any horizontal shifts we know exactly */
 					PSL_deftextdim (PSL, "-w", title_size, T_label);	/* Get label width and place on PSL stack */
 					PSL_command (PSL, "%d mul 0 T\n", -hh);	/* Multiply by +1 or -1 and transform x-origin by that amount */
@@ -3559,7 +3559,7 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 			}
 			if (vv) {	/* We need vertical adjustments. Do label offset here and adjust for text size in PSL */
 				T_label = (vv == -1) ? mr->label[0] : mr->label[2];	/* Get the S or N text label */
-				if (T_label) {	/* Get height of string and use it to shift origin up or down */
+				if (T_label[0]) {	/* Get height of string and use it to shift origin up or down */
 					mr->refpoint->y -= vv * txt_offset;	/* Any horizontal shifts we know exactly */
 					PSL_deftextdim (PSL, "-H", title_size, T_label);	/* Get label height and place on PSL stack */
 					PSL_command (PSL, "%d mul 0 exch T\n", -vv);	/* Multiply by +1 or -1 and transform y-origin by that amount */
