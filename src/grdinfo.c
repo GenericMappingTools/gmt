@@ -50,6 +50,7 @@ enum Opt_C_modes {
 
 struct GRDINFO_CTRL {
 	unsigned int n_files;	/* How many grids given */
+	bool is_cube;
 	struct GRDINFO_C {	/* -C[n|t] */
 		bool active;
 		unsigned int mode;
@@ -179,11 +180,34 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 	 */
 
 	bool no_file_OK, num_report;
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, nc = 0, ng = 0;
 	char text[GMT_LEN32] = {""}, *c = NULL;
 	static char *M[2] = {"minimum", "maximum"}, *V[3] = {"negative", "all", "positive"}, *T[2] = {"column", "row"};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
+
+	/* First precheck if we are dealing with cubes or grids - no mixing is allowed */
+
+	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
+
+		if (opt->option != '<') continue;	/* We are only processing filenames here */
+
+		if (gmt_M_memfile_is_grid (opt->arg))	/* Can just check file name */
+			ng++;
+		else if (gmt_M_memfile_is_cube (opt->arg))	/* Can just check file name */
+			nc++;
+		else if (gmt_nc_is_cube (API, opt->arg))	/* Determine if this file is a netCDF cube or not */
+			nc++;
+		else	/* Thus a grid */
+			ng++;
+	}
+
+	if (nc && ng) {
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot give a mixed list of data cubes and data grids\n");
+		n_errors++;
+		goto time_to_return;
+	}
+	Ctrl->is_cube = (nc > 0);
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -359,7 +383,20 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 	                                   "Only one of -C, -F can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.o.active && !num_report,
 	                                   "The -o option requires -Cn\n");
+	if (Ctrl->is_cube) {	/* Got data cube(s) - a few more checks */
+		n_errors += gmt_M_check_condition (GMT, Ctrl->D.active,
+		                                   "Option -D: Cannot be used with 3-D cubes\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active,
+		                                   "Option -E: Cannot be used with 3-D cubes\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active,
+		                                   "Option -F: Cannot be used with 3-D cubes\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->L.active,
+		                                   "Option -L: Cannot be used with 3-D cubes\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_BOUNDBOX,
+		                                   "Option -Ib: Cannot be used with 3-D cubes\n");
+	}
 
+time_to_return:
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -517,8 +554,8 @@ EXTERN_MSC int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0, k_data, k_tile_id;
 	unsigned int n_grds = 0, n_cols = 0, col, level, i_status, gtype, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
-	unsigned int x_col_min, x_col_max, y_col_min, y_col_max, z_col_min, z_col_max, GMT_W = GMT_Z, nc = 0, ng = 0;
-	bool subset, delay, num_report, is_cube = false;
+	unsigned int x_col_min, x_col_max, y_col_min, y_col_max, z_col_min, z_col_max, GMT_W = GMT_Z;
+	bool subset, delay, num_report, is_cube;
 
 	uint64_t ij, n_nan = 0, n = 0;
 
@@ -559,53 +596,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 	/* OK, done parsing, now process all input grids in a loop */
 
-	/* First precheck if we are dealing with cubes or grids - no mixing though */
-
-	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
-
-		if (opt->option != '<') continue;	/* We are only processing filenames here */
-
-		if (gmt_M_memfile_is_grid (opt->arg))	/* Can just check file name */
-			ng++;
-		else if (gmt_M_memfile_is_cube (opt->arg))	/* Can just check file name */
-			nc++;
-		else {	/* Must read file header (as if a grid) to figure it out */
-			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {
-				Return (API->error);
-			}
-			header = G->header;
-			if (gmtlib_is_nc_grid (GMT, header) || header->n_bands == 1)	/* Not netCDF or a single layer so must be grid */
-				ng++;
-			else if (gmt_nc_is_cube (API, opt->arg))	/* Determine if this netCDF file is a cube or not */
-				nc++;
-			else
-				ng++;
-			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR){
-				Return (API->error);
-			}
-		}
-	}
-
-	if (nc && ng) {
-		GMT_Report (API, GMT_MSG_WARNING, "Cannot give a mixed list of data cubes and data grids\n");
-		Return (GMT_RUNTIME_ERROR);
-	}
-	if (nc) {	/* Got data cubes */
-		unsigned int n_errors = 0;
-		n_errors += gmt_M_check_condition (GMT, Ctrl->D.active,
-		                                   "Option -D: Cannot be used with 3-D cubes\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active,
-		                                   "Option -E: Cannot be used with 3-D cubes\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active,
-		                                   "Option -F: Cannot be used with 3-D cubes\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->L.active,
-		                                   "Option -L: Cannot be used with 3-D cubes\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_BOUNDBOX,
-		                                   "Option -Ib: Cannot be used with 3-D cubes\n");
-		is_cube = true;
-		if (n_errors) Return (GMT_PARSE_ERROR);
-	}
-
+	is_cube = Ctrl->is_cube;	/* Shorthand */
 	gmt_M_memset (wesn, 6, double);	/* Initialize */
 	if (is_cube) {
 		x_col_min = 14; x_col_max = 17; y_col_min = 15; y_col_max = 18; z_col_min = 16; z_col_max = 19; GMT_W = 3;
