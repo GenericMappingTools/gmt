@@ -151,9 +151,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 	GMT_Option (API, "J-,K");
 	GMT_Usage (API, 1, "\n-M[<items>]");
-	GMT_Usage (API, 1, "\nControl how hidden and explicit legend information files are used (modern mode only).  Append one or both of:");
-	GMT_Usage (API, 3, "e: Select the explicit legend information given by <specfile>\n");
-	GMT_Usage (API, 3, "h: Select the hidden legend information built via -l\n");
+	GMT_Usage (API, -2, "Control how hidden and explicit legend information files are used (modern mode only).  Append one or both of:");
+	GMT_Usage (API, 3, "e: Select the explicit legend information given by <specfile>.");
+	GMT_Usage (API, 3, "h: Select the hidden legend information built via previous -l options.");
 	GMT_Usage (API, -2, "The order these are appended controls the read order [Default is he].");
 	GMT_Option (API, "O,P,R");
 	GMT_Usage (API, 1, "\n-S<scale>");
