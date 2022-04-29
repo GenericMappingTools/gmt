@@ -6,7 +6,7 @@ cat << EOF > legend.txt
 S - kvolcano 0.3c red - - Plot1
 S - kvolcano 0.3c green - - Plot2
 EOF
-gmt begin mixlegend png
+gmt begin mixlegend
 	gmt subplot begin 3x2 -R0/10/0/10 -Fs8c -A+jTR
 		gmt subplot set -A"No -M"
 		echo 2 2 | gmt plot -Sc0.2c -Gblack -lLABEL1
