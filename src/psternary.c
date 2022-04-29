@@ -463,9 +463,11 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		GMT->current.map.frame.paint[GMT_Z] = false;
 	}
 	/* Count how many of the three sides will be drawn */
-	if (GMT->current.map.frame.side[S_SIDE]) n_sides++;	/* The bottom (a) side */
-	if (GMT->current.map.frame.side[E_SIDE]) n_sides++;	/* The right (b) side */
-	if (GMT->current.map.frame.side[W_SIDE]) n_sides++;	/* The left (c) side */
+	if (GMT->common.B.active[GMT_PRIMARY]) {	/* -B was given */
+		if (GMT->current.map.frame.side[S_SIDE]) n_sides++;	/* The bottom (a) side */
+		if (GMT->current.map.frame.side[E_SIDE]) n_sides++;	/* The right (b) side */
+		if (GMT->current.map.frame.side[W_SIDE]) n_sides++;	/* The left (c) side */
+	}
 	if (n_sides) {	/* Draw some or all of the triangular sides */
 		PSL_comment (PSL, "Draw triangular frame sides\n");
 		gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
@@ -520,6 +522,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	if (reverse) {	/* Flip what is positive directions */
 		for (k = 0; k <= GMT_Z; k++) sign[k] = - sign[k];
 	}
+	if (n_sides == 0) gmt_M_memset (side, 3U, unsigned int);	/* No, nothing shall be drawn after all */
 
 	if (!Ctrl->S.active && (Ctrl->G.active || Ctrl->C.active)) {	/* Plot polygons before gridlines */
 		char vfile[GMT_VF_LEN] = {""};
@@ -575,7 +578,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	}
 
 	for (k = 0; k <= GMT_Z; k++) {
-		if (GMT_Free_Option (API, &boptions[k])) {
+		if (boptions[k] && GMT_Free_Option (API, &boptions[k])) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to free -B? option\n");
 			Return (API->error);
 		}
