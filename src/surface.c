@@ -556,7 +556,7 @@ GMT_LOCAL void surface_solve_Briggs_coefficients (struct SURFACE_INFO *C, gmt_gr
 GMT_LOCAL void surface_find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Determines the nearest data point per bin and sets the
 	 * Briggs parameters or, if really close, fixes the node value */
-	uint64_t k, last_index, node, briggs_index;
+	uint64_t k, last_index, node, briggs_index, node_final;
 	openmp_int row, col;
 	double xx, yy, x0, y0, dx, dy;
 	gmt_grdfloat z_at_node, *u = C->Grid->data;
@@ -598,11 +598,12 @@ GMT_LOCAL void surface_find_nearest_constraint (struct GMT_CTRL *GMT, struct SUR
 				 * This trend then is normalized by dividing by the z rms.*/
 
 	 			z_at_node = C->data[k].z + (gmt_grdfloat) (C->r_z_rms * C->current_stride * evaluate_trend (C, dx, dy));
-	 			if (C->constrained) {
-					if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node]) && z_at_node < C->Bound[LO]->data[node])
-						z_at_node = C->Bound[LO]->data[node];
-					else if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node]) && z_at_node > C->Bound[HI]->data[node])
-						z_at_node = C->Bound[HI]->data[node];
+	 			if (C->constrained) {	/* Must use final spacing node index to access the Bound grids */
+					node_final = gmt_M_ijp (C->Bh, C->current_stride * row, C->current_stride * col);
+					if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node_final]) && z_at_node < C->Bound[LO]->data[node_final])
+						z_at_node = C->Bound[LO]->data[node_final];
+					else if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node_final]) && z_at_node > C->Bound[HI]->data[node_final])
+						z_at_node = C->Bound[HI]->data[node_final];
 	 			}
 	 			u[node] = z_at_node;
 	 		}
@@ -1007,7 +1008,7 @@ GMT_LOCAL void surface_set_BCs (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, gm
 
 GMT_LOCAL uint64_t surface_iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode) {
 	/* Main finite difference solver */
-	uint64_t node, briggs_index, iteration_count = 0;
+	uint64_t node, briggs_index, iteration_count = 0, node_final;
 	unsigned int set, quadrant, current_max_iterations = C->max_iterations * C->current_stride;
 	int col, row, k, *d_node = C->offset;	/* Relative changes in node index from present node */
 	unsigned char *status = C->status;	/* Quadrant or status information for each node */
@@ -1059,9 +1060,9 @@ GMT_LOCAL uint64_t surface_iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 				}
 				/* We now apply the over-relaxation: */
 				u_00 = u_old[node] * C->relax_old + u_00 * C->relax_new;
-
 				if (C->constrained) {	/* Must check that we don't exceed any imposed limits.  */
-					uint64_t node_final = gmt_M_ijp (C->Bh, C->current_stride * row, C->current_stride * col);
+					/* Must use final spacing node index to access the Bound grids */
+					node_final = gmt_M_ijp (C->Bh, C->current_stride * row, C->current_stride * col);
 					if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node_final]) && u_00 < C->Bound[LO]->data[node_final])
 						u_00 = C->Bound[LO]->data[node_final];
 					else if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node_final]) && u_00 > C->Bound[HI]->data[node_final])
