@@ -216,7 +216,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	struct SURFACE_BRIGGS *Briggs;	/* Array with Briggs 6-coefficients per nearest active data constraint */
 	struct GMT_GRID *Grid;		/* The final grid */
 	struct GMT_GRID *Bound[2];	/* Optional grids for lower and upper limits on the solution */
-	struct GMT_GRID_HEADER *Bh;		/* Grid header for one of the limit grids [or NULL] */
+	struct GMT_GRID_HEADER *Bh;	/* Grid header for one of the limit grids [or NULL] */
 	struct SURFACE_SEARCH info;	/* Information needed by the compare function passed to qsort_r */
 	unsigned int n_factors;		/* Number of factors in common for the dimensions (n_rows-1, n_columns-1) */
 	unsigned int factors[32];	/* Array of these ommon factors */
@@ -1038,7 +1038,8 @@ GMT_LOCAL uint64_t surface_iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 
 		for (row = 0; row < C->current_ny; row++) {	/* Loop over rows */
 			node = C->node_nw_corner + row * C->current_mx;	/* Node at left side of this row */
-			for (col = 0; col < C->current_nx; col++, node++) {	/* Loop over all columns */
+			node_final = gmt_M_ijp (C->Bh, C->current_stride * row, 0);
+			for (col = 0; col < C->current_nx; col++, node++, node_final += C->current_stride) {	/* Loop over all columns */
 				if (status[node] == SURFACE_IS_CONSTRAINED) {	/* Data constraint fell exactly on the node, keep it as is */
 					continue;
 				}
@@ -1062,7 +1063,6 @@ GMT_LOCAL uint64_t surface_iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 				u_00 = u_old[node] * C->relax_old + u_00 * C->relax_new;
 				if (C->constrained) {	/* Must check that we don't exceed any imposed limits.  */
 					/* Must use final spacing node index to access the Bound grids */
-					node_final = gmt_M_ijp (C->Bh, C->current_stride * row, C->current_stride * col);
 					if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node_final]) && u_00 < C->Bound[LO]->data[node_final])
 						u_00 = C->Bound[LO]->data[node_final];
 					else if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node_final]) && u_00 > C->Bound[HI]->data[node_final])
