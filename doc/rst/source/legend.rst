@@ -79,7 +79,8 @@ Optional Arguments
     records begin with a unique character that is common to all records
     of the same kind. The order of the legend items is implied by the
     order of the records.  See **-M** for mixing legend items set by a
-    *specfile* and those set implicitly via **-l** by previous modules.
+    *specfile* and those set implicitly via **-l** by previous modules
+    under modern mode.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
