@@ -216,6 +216,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	struct SURFACE_BRIGGS *Briggs;	/* Array with Briggs 6-coefficients per nearest active data constraint */
 	struct GMT_GRID *Grid;		/* The final grid */
 	struct GMT_GRID *Bound[2];	/* Optional grids for lower and upper limits on the solution */
+	struct GMT_GRID_HEADER *Bh;		/* Grid header for one of the limit grids [or NULL] */
 	struct SURFACE_SEARCH info;	/* Information needed by the compare function passed to qsort_r */
 	unsigned int n_factors;		/* Number of factors in common for the dimensions (n_rows-1, n_columns-1) */
 	unsigned int factors[32];	/* Array of these ommon factors */
@@ -876,6 +877,7 @@ GMT_LOCAL int surface_load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INF
 			}
 		}
 		C->constrained = true;	/* At least one of the limits will be constrained */
+		if (C->Bh == NULL) C->Bh = C->Bound[end]->header;	/* Just pick either one of them */
 	}
 
 	return (0);
@@ -1059,10 +1061,11 @@ GMT_LOCAL uint64_t surface_iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 				u_00 = u_old[node] * C->relax_old + u_00 * C->relax_new;
 
 				if (C->constrained) {	/* Must check that we don't exceed any imposed limits.  */
-					if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node]) && u_00 < C->Bound[LO]->data[node])
-						u_00 = C->Bound[LO]->data[node];
-					else if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node]) && u_00 > C->Bound[HI]->data[node])
-						u_00 = C->Bound[HI]->data[node];
+					uint64_t node_final = gmt_M_ijp (C->Bh, C->current_stride * row, C->current_stride * col);
+					if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node_final]) && u_00 < C->Bound[LO]->data[node_final])
+						u_00 = C->Bound[LO]->data[node_final];
+					else if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node_final]) && u_00 > C->Bound[HI]->data[node_final])
+						u_00 = C->Bound[HI]->data[node_final];
 				}
 				u_change = fabs (u_00 - u_old[node]);		/* Change in node value between iterations */
 				u_new[node] = (gmt_grdfloat)u_00;			/* Our updated estimate at this node */
