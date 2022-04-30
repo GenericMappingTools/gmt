@@ -18,7 +18,7 @@ Synopsis
 [ |-C|\ *dx*/*dy* ]
 [ |-F|\ *box* ]
 [ |-J|\ *parameters* ]
-[ |-M| ]
+[ |-M|\ [*items*] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *scale* ]
 [ |-T|\ *file* ]
@@ -73,6 +73,15 @@ Required Arguments
 Optional Arguments
 ------------------
 
+*specfile*
+    This ASCII file contains instructions for the layout of items in the
+    legend. Each legend item is described by a unique record. All
+    records begin with a unique character that is common to all records
+    of the same kind. The order of the legend items is implied by the
+    order of the records.  See **-M** for mixing legend items set by a
+    *specfile* and those set implicitly via **-l** by previous modules
+    under modern mode.
+
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -103,11 +112,14 @@ Optional Arguments
 
 .. _-M:
 
-**-M**
-    Modern mode only: Read both (1) the hidden auto-generated legend information file created by
-    plotting-modules' **-l** option and (2) additional information from input file(s) given on the
-    command line (or via standard input) [hidden file only].  For classic mode an input file must be
-    given or else we will read from standard input.
+**-M**\ [*items*]
+    Modern mode only and pertains the the situation where there are **h**\ idden, auto-generated legend
+    information created by prior plotting-modules' **-l** option and **e**\ xplicitly given information
+    from input file(s) given on the command line (or via standard input).  Use **-M** to set which of
+    these should be used and in what order via directives **h** and **e** [Default is **he**, meaning
+    we will first place any hidden auto-generated legend items (if any) and then we append the explicitly
+    given information (if present).  **Note**: For classic mode an input file must be given or else we
+    will attempt read from standard input.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -151,13 +163,9 @@ Optional Arguments
 Legend Codes
 ------------
 
-*specfile*
-    This ASCII file contains instructions for the layout of items in the
-    legend. Each legend item is described by a unique record. All
-    records begin with a unique character that is common to all records
-    of the same kind. The order of the legend items is implied by the
-    order of the records. Fourteen different record types are recognized, and
-    the syntax for each of these records are presented below:
+Fourteen different record types are recognized, and
+the syntax for each of these records are presented below:
+
 **#** *comment*
     Records starting with # and blank lines are skipped.
 **A** *cptname*
