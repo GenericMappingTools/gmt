@@ -1404,10 +1404,12 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		if (dir == GMT_IO) {
 			gmt_set_cartesian (GMT, GMT_IN);
 			gmt_set_cartesian (GMT, GMT_OUT);
+			GMT->common.f.is_cart[GMT_IN] = GMT->common.f.is_cart[GMT_OUT] = true;
 		}
 		else {
 			col[GMT_X] = GMT_IS_FLOAT;
 			col[GMT_Y] = GMT_IS_FLOAT;
+			GMT->common.f.is_cart[dir] = true;
 		}
 		pos = 1;
 		start = stop = 1;
@@ -1416,10 +1418,12 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		if (dir == GMT_IO) {
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
+			GMT->common.f.is_geo[GMT_IN] = GMT->common.f.is_geo[GMT_OUT] = true;
 		}
 		else {
 			col[GMT_X] = GMT_IS_LON;
 			col[GMT_Y] = GMT_IS_LAT;
+			GMT->common.f.is_geo[dir] = true;
 		}
 		pos = 1;
 		start = stop = 1;
