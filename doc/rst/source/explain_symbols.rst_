@@ -378,8 +378,8 @@
                 :math:`\times` *frac* from the start of a line (and every
                 *dist* thereafter). If not given, *frac* defaults to 0.25.
 
-            **f**\ *ffile.txt*\ [/*slop*\ [**c**\|\ **i**\|\ **p**]]
-                Read the ASCII file *ffile.txt* and places labels at locations in the
+            **f**\ *file.txt*\ [/*slop*\ [**c**\|\ **i**\|\ **p**]]
+                Read the ASCII file *file.txt* and places labels at locations in the
                 file that best matches locations along the quoted lines. Labels will
                 only be placed if the coordinates match the line coordinates to
                 within a distance of *slop* (append desired unit or we use
@@ -563,8 +563,8 @@
                 :math:`\times` *frac* from the start of a line (and every
                 *dist* thereafter). If not given, *frac* defaults to 0.25.
 
-            **f**\ *ffile.txt*\ [/*slop*\ [**c**\|\ **i**\|\ **p**]]
-                Read the ASCII file *ffile.txt* and place symbols at locations in the
+            **f**\ *file.txt*\ [/*slop*\ [**c**\|\ **i**\|\ **p**]]
+                Read the ASCII file *file.txt* and place symbols at locations in the
                 file that matches locations along the decorated lines. Symbols will
                 only be placed if the coordinates match the line coordinates to
                 within a distance of *slop* (append desired unit or we use
