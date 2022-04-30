@@ -9427,8 +9427,8 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		PSL_setorigin (PSL, -x0, -y0, 0.0, PSL_FWD);
 	}
 
-    if (GMT->current.setting.map_logo)
-        gmtplot_timestamp (GMT, PSL, GMT->current.setting.map_logo_pos[GMT_X], GMT->current.setting.map_logo_pos[GMT_Y], GMT->current.setting.map_logo_justify, GMT->current.ps.map_logo_label);
+	if (GMT->current.setting.map_logo)
+		gmtplot_timestamp (GMT, PSL, GMT->current.setting.map_logo_pos[GMT_X], GMT->current.setting.map_logo_pos[GMT_Y], GMT->current.setting.map_logo_justify, GMT->current.ps.map_logo_label);
 
 	/* Check expected change of clip level to achieved one. Update overall clip level. Check for pending clips. */
 
