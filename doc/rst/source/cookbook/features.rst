@@ -864,9 +864,9 @@ point, as shown in Figures :ref:`Cap <Cap_settings>` and :ref:`Miter <Miter_sett
    .. literalinclude:: /_verbatim/GMT_joint.txt
 
 By default, line segments have rectangular ends, but this can
-change to give rounded ends. When :term:`PS_LINE_CAP` is set to round the
+change to give rounded ends. When :term:`PS_LINE_CAP` is set to round then
 a segment length of zero will appear as a circle. This can be used to
-created circular dotted lines, and by manipulating the phase shift in
+create circular dotted lines, and by manipulating the *phase* shift in
 the *style* attribute and plotting the same line twice one can even
 alternate the color of adjacent items.
 Figure :ref:`Line appearance <Line_appearance>` shows various lines made in this
