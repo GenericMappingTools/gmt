@@ -873,7 +873,7 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 		return NULL;
 	}
 	HH = gmt_get_H_hidden (Orig->header);
-	if (HH->has_NaNs) {
+	if (HH->has_NaNs == GMT_GRID_HAS_NANS) {
 		GMT_Report (API, GMT_MSG_ERROR, "Load grid %s has NaNs, cannot be used with FFTs - file skipped\n", file);
 		return NULL;
 	}

@@ -179,9 +179,9 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *zm*\ [*zl*]
+**-Z**\ *zm*\ [/*zl*]
     Moho [and swell] average compensation depths (in meters positive down – the depth). For the "load from
-    top" model you only have to provide *zm*, but for the "loading from below" don't forget *zl*.
+    top" model you only have to provide *zm*, but for the "loading from below" don't forget to supply *zl*.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_

@@ -608,11 +608,6 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 	if (Ctrl->D.variable) {	/* Read density contrast grid */
 		if ((Rho = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->D.file, NULL)) == NULL)
 			Return (API->error);
-		HH = gmt_get_H_hidden (Rho->header);
-		if (HH->has_NaNs) {
-			GMT_Report (API, GMT_MSG_ERROR, "Density grid %s has NaNs, cannot be used with FFTs\n", Ctrl->D.file);
-			Return (GMT_RUNTIME_ERROR);
-		}
 		if(Orig[0]->header->registration != Rho->header->registration) {
 			GMT_Report (API, GMT_MSG_ERROR, "Surface and density grids have different registrations!\n");
 			Return (GMT_RUNTIME_ERROR);
@@ -640,7 +635,7 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
                                       GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)	/* Get data only */
 			Return (API->error);
 		HH = gmt_get_H_hidden (Orig[k]->header);
-		if (HH->has_NaNs) {
+		if (HH->has_NaNs == GMT_GRID_HAS_NANS) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input grid %s has NaNs, cannot be used with FFTs\n", Ctrl->In.file[k]);
 			Return (GMT_RUNTIME_ERROR);
 		}
