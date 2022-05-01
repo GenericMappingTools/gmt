@@ -9,6 +9,9 @@ on:
 
 name: Lint Checker
 
+permissions:
+  contents: read
+
 jobs:
   lint-checker:
     name: Lint Checker

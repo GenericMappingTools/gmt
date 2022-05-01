@@ -9,6 +9,9 @@ on:
 
 name: Code Validator
 
+permissions:
+  contents: read
+
 jobs:
   code-validator:
     name: Code Validator

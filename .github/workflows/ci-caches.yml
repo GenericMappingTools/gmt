@@ -15,8 +15,13 @@ on:
   schedule:
     - cron: '0 12 * * 0'
 
+permissions:
+  contents: read
+
 jobs:
   data_cache:
+    permissions:
+      actions: write  # for styfle/cancel-workflow-action to cancel/stop running workflows
     name: Cache GMT data
     # We have to use macOS, because Linux/Windows agents may fail to download
     runs-on: macOS-latest
@@ -75,6 +80,9 @@ jobs:
             ~/.gmt/server
 
   vcpkg_cache:
+    permissions:
+      actions: write  # for styfle/cancel-workflow-action to cancel/stop running workflows
+      contents: read  # for actions/checkout to fetch code
     name: Cache vcpkg libraries
     runs-on: windows-latest
 
