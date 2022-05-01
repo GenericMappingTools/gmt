@@ -1008,7 +1008,7 @@ GMT_LOCAL void surface_set_BCs (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, gm
 
 GMT_LOCAL uint64_t surface_iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode) {
 	/* Main finite difference solver */
-	uint64_t node, briggs_index, iteration_count = 0, node_final;
+	uint64_t node, briggs_index, iteration_count = 0, node_final = 0;
 	unsigned int set, quadrant, current_max_iterations = C->max_iterations * C->current_stride;
 	int col, row, k, *d_node = C->offset;	/* Relative changes in node index from present node */
 	unsigned char *status = C->status;	/* Quadrant or status information for each node */
@@ -1038,7 +1038,7 @@ GMT_LOCAL uint64_t surface_iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 
 		for (row = 0; row < C->current_ny; row++) {	/* Loop over rows */
 			node = C->node_nw_corner + row * C->current_mx;	/* Node at left side of this row */
-			node_final = gmt_M_ijp (C->Bh, C->current_stride * row, 0);
+			if (C->constrained) node_final = gmt_M_ijp (C->Bh, C->current_stride * row, 0);
 			for (col = 0; col < C->current_nx; col++, node++, node_final += C->current_stride) {	/* Loop over all columns */
 				if (status[node] == SURFACE_IS_CONSTRAINED) {	/* Data constraint fell exactly on the node, keep it as is */
 					continue;
