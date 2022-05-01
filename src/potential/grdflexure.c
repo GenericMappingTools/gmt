@@ -848,6 +848,7 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 	double boost, mean_rho_l;
 	struct GMT_GRID *Grid = NULL, *Orig = NULL, *Rho = NULL;
 	struct GRDFLEXURE_GRID *G = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	if (this_time)
@@ -869,6 +870,11 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 	if ((Orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY |
  		GMT_GRID_IS_COMPLEX_REAL, NULL, file, Orig)) == NULL) {	/* Get data only */
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the data of file %s - file skipped\n", file);
+		return NULL;
+	}
+	HH = gmt_get_H_hidden (Orig->header);
+	if (HH->has_NaNs) {
+		GMT_Report (API, GMT_MSG_ERROR, "Load grid %s has NaNs, cannot be used with FFTs - file skipped\n", file);
 		return NULL;
 	}
 	/* Note: If input grid is read-only then we must duplicate it; otherwise Grid points to Orig */
@@ -902,6 +908,7 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 			GMT_Report (API, GMT_MSG_ERROR, "Failure to extract mean load density from %s - file skipped\n", rho);
 			return NULL;
 		}
+		/* Note: Density grid may have NaNs outside the feature since we are not taking FFT of the density grid */
 		if ((Rho = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY |
 	 		GMT_GRID_IS_COMPLEX_REAL, NULL, rho, Rho)) == NULL) {	/* Get header and data */
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the data of file %s - file skipped\n", rho);
