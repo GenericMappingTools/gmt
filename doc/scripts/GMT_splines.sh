@@ -12,7 +12,7 @@ cat << EOF > t.txt
 6	2.5
 EOF
 # Splines
-gmt begin doc_splines png
+gmt begin GMT_splines
   gmt basemap -R-0.1/6.1/-0.1/3.1 -JX15c/6c -Baf+l"u" -By+l"u(x)" -BWSne
   gmt sample1d t.txt -T0.01 -Fc	| gmt plot -W1p		  -l"Cubic spline (-Fc)"
   gmt sample1d t.txt -T0.01 -Fs1	| gmt plot -W1p,orange	  -l"Smooth cubic spline (-Fs1)"
