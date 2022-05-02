@@ -16406,7 +16406,7 @@ GMT_LOCAL int gmtinit_colon_pos (struct GMT_CTRL *GMT, char *text) {
 #else
 		if (text[j] == ':') colon = j;
 #endif
-		return (colon);
+	return (colon);
 }
 
 #define GMT_VECTOR_CODES "mMvV="	/* The vector symbol codes */
