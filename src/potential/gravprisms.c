@@ -801,8 +801,8 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 			for (k = 0; k < n_prisms; k++)	{ /* Unscramble edges to coordinates and dimensions and possibly convert Cartesian data back to km */
 				S->data[0][k] = 0.5 * (prism[1][k] + prism[0][k]) * i_scl_xy;	/* Get x */
 				S->data[1][k] = 0.5 * (prism[3][k] + prism[2][k]) * i_scl_xy;	/* Get y */
-				S->data[2][k] = prism[4][k] * i_scl_xy;	/* Get z_low */
-				S->data[3][k] = prism[5][k] * i_scl_xy;	/* Get z_high */
+				S->data[2][k] = prism[4][k] * i_scl_z;	/* Get z_low */
+				S->data[3][k] = prism[5][k] * i_scl_z;	/* Get z_high */
 				S->data[4][k] = (prism[1][k] - prism[0][k]) * i_scl_xy;	/* Get dx */
 				S->data[5][k] = (prism[3][k] - prism[2][k]) * i_scl_xy;	/* Get dy */
 			}
@@ -989,7 +989,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 					z_level = (S->n_columns == 3 && !Ctrl->Z.active) ? S->data[GMT_Z][row] : Ctrl->Z.level;	/* Default observation z level unless provided in input file */
 					GMT->hidden.mem_coord[GMT_X][row] = eval (S->data[GMT_X][row] * scl_xy, S->data[GMT_Y][row] * scl_xy, z_level * scl_z, n_prisms, prism, G0);
 				}
-				/* This loop is not under OpenMP */
+				/* This second loop is not under OpenMP control */
 				out[GMT_Z] = Ctrl->Z.level;	/* Default observation z level unless provided in input file */
 				for (row = 0; row < (int64_t)S->n_rows; row++) {	/* Loop over output locations */
 					out[GMT_X] = S->data[GMT_X][row];
