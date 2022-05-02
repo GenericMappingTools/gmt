@@ -16398,6 +16398,21 @@ double gmtinit_get_diameter (struct GMT_CTRL *GMT, char code, char *text, bool *
 	return (d);
 }
 
+GMT_LOCAL int gmtinit_colon_pos (struct GMT_CTRL *GMT, char *text) {
+	/* Quoted and decorated lines options separate directives from optional modifiers with a colon.
+	 * Because Bill uses the colon in hard paths (C:/badpath) we must be careful
+	 * in looking for the right colon. */
+	int j, colon = GMT_NOTSET;
+	gmt_M_unused (GMT);
+	for (j = 1; colon == GMT_NOTSET && text[j]; j++)
+#ifdef WIN32
+		if (text[j] == ':' && text[j+1] && !strchr ("/\\", text[j+1]) && !(isupper (text[j-1]) || islower (text[j-1]))) colon = j;
+#else
+		if (text[j] == ':') colon = j;
+#endif
+	return (colon);
+}
+
 #define GMT_VECTOR_CODES "mMvV="	/* The vector symbol codes */
 
 /*! . */
@@ -17129,7 +17144,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				break;
 			}
 			/* Determine the first colon as a separator between info and specs */
-			for (j = 1, colon = GMT_NOTSET; colon == GMT_NOTSET && text[j]; j++) if (text[j] == ':') colon = j;
+			colon = gmtinit_colon_pos (GMT, text);
 			if (colon != GMT_NOTSET) {	/* Gave :<labelinfo> */
 				text[colon] = 0;
 				gmt_contlabel_init (GMT, &p->G, 0);
@@ -17348,8 +17363,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->fq_parse = true;	/* This will be set to false once at least one header has been parsed */
 				break;
 			}
-			for (j = 1, colon = 0; text[j]; j++) if (text[j] == ':') colon = j;
-			if (colon) {	/* Gave :<symbolinfo> */
+			colon = gmtinit_colon_pos (GMT, text);
+			if (colon != GMT_NOTSET) {	/* Gave :<symbolinfo> */
 				text[colon] = 0;
 				gmtlib_decorate_init (GMT, &p->D, 0);
 				decode_error += gmtlib_decorate_info (GMT, 'S', &text[1], &p->D);
