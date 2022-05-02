@@ -16398,7 +16398,7 @@ double gmtinit_get_diameter (struct GMT_CTRL *GMT, char code, char *text, bool *
 	return (d);
 }
 
-GMT_LOCAL int gmtinit_colon_pos (struct GMT_CTRL *GMT, char *text) {
+int gmtlib_colon_pos (struct GMT_CTRL *GMT, char *text) {
 	/* Quoted and decorated lines options separate directives from optional modifiers with a colon.
 	 * Because Bill uses the colon in hard paths (C:/badpath) we must be careful
 	 * in looking for the right colon. */
@@ -17144,7 +17144,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				break;
 			}
 			/* Determine the first colon as a separator between info and specs */
-			colon = gmtinit_colon_pos (GMT, text);
+			colon = gmtlib_colon_pos (GMT, text);
 			if (colon != GMT_NOTSET) {	/* Gave :<labelinfo> */
 				text[colon] = 0;
 				gmt_contlabel_init (GMT, &p->G, 0);
@@ -17363,7 +17363,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->fq_parse = true;	/* This will be set to false once at least one header has been parsed */
 				break;
 			}
-			colon = gmtinit_colon_pos (GMT, text);
+			colon = gmtlib_colon_pos (GMT, text);
 			if (colon != GMT_NOTSET) {	/* Gave :<symbolinfo> */
 				text[colon] = 0;
 				gmtlib_decorate_init (GMT, &p->D, 0);

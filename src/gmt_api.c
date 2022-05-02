@@ -12981,8 +12981,8 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		/* Found the -S option, check if we requested quoted or decorated lines via fixed or crossing lines */
 		/* If not f|x then we don't want this at all and set type = ! */
 		type = (!strchr ("~q", opt->arg[0]) || !strchr ("fx", opt->arg[1])) ? '!' : 'D';  /* Only -S[~q][fx] will yield D */
-		strip_colon = (strchr (opt->arg, ':') != NULL); /* true if optional arguments beginning with colon, otherwise false */
-		strip_colon_opt = opt->option;    /* An option with (a possible) colon argument */
+		strip_colon = (gmtlib_colon_pos (API->GMT, opt->arg) != GMT_NOTSET); /* true if optional arguments beginning with colon, otherwise false */
+		strip_colon_opt = opt->option;    /* An option with (a possible) colon argument (if strip_colon is true, of course) */
 		if (strip_colon)
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Got quoted or decorate line and must strip argument %s from colon to end\n", opt->arg);
 	}

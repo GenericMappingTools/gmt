@@ -53,6 +53,7 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC int gmtlib_colon_pos (struct GMT_CTRL *GMT, char *text);
 EXTERN_MSC bool gmtlib_invalid_symbolname (struct GMT_CTRL *GMT, char *name);
 EXTERN_MSC void gmtlib_terminate_session ();
 EXTERN_MSC unsigned int gmtlib_pick_in_col_number (struct GMT_CTRL *GMT, unsigned int col, unsigned int *col_pos_in);
