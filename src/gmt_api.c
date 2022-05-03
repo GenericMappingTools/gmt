@@ -12730,7 +12730,7 @@ GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key,
 		strcpy (argument, inarg);	/* Any colon-string will be added back in GMT_Encode_Options */
 		gmt_M_str_free (inarg);
 		/* Also return 1 or 2, depending on -G vs -S */
-		*n_pre = (k >= 0 && key[k][K_MODIFIER] && isdigit (key[k][K_MODIFIER])) ? (int)(key[k][K_MODIFIER]-'0') : 0;
+		*n_pre = (k >= 0 && key[k][K_MODIFIER] > 0 && isdigit (key[k][K_MODIFIER])) ? (int)(key[k][K_MODIFIER]-'0') : 0;
 		return (0);
 	}
 
