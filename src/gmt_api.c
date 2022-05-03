@@ -12255,6 +12255,8 @@ GMT_LOCAL int gmtapi_fft_end_2d (void *V_API, struct GMT_GRID *G, unsigned int m
 	gmt_grdfloat *data = NULL;
 	gmt_M_unused (mode);
 
+	if (G->header->complex_mode == 0) return (GMT_NOERROR);  /* Nothing to do */
+
 	/* The following call may change layout but does not affect memory size */
 	if ((error = gmt_grd_layout (API->GMT, G->header, G->data, G->header->complex_mode, GMT_OUT)))  /* Undo complex layout */
 		return (gmtlib_report_error (API, error));
@@ -12485,12 +12487,32 @@ GMT_LOCAL int gmtapi_fft_2d (struct GMTAPI_CTRL *API, struct GMT_GRID *G, int di
 }
 
 /*! . */
+int GMT_FFT_Reset (void *V_API, void *X, unsigned int dim, unsigned int mode) {
+	/* Do the demux in the case when it was not done in GMT_FFT */
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (dim == 1) return (gmtapi_fft_end_1d (V_API, X, mode));
+	if (dim == 2) return (gmtapi_fft_end_2d (V_API, X, mode));
+	GMT_Report (V_API, GMT_MSG_ERROR, "GMT FFT only supports dimensions 1 and 2, not %u\n", dim);
+	return_error (V_API, (dim == 0) ? GMT_DIM_TOO_SMALL : GMT_DIM_TOO_LARGE);
+}
+
+#ifdef FORTRAN_API
+int GMT_FFT_Reset_ (void *X, int *direction, unsigned int *mode) {
+    /* Fortran version: We pass the global GMT_FORTRAN structure */
+    return (GMT_FFT_Reset (GMT_FORTRAN, X, *direction, *mode));
+}
+#endif
+
+
+/*! . */
 int GMT_FFT (void *V_API, void *X, int direction, unsigned int mode, void *v_K) {
 	/* The 1-D or 2-D FFT operating on GMT_DATASET or GMT_GRID arrays */
 	struct GMT_FFT_WAVENUMBER *K = gmtapi_get_fftwave_ptr (v_K);
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (K->dim == 1) return (gmtapi_fft_1d (V_API, X, direction, mode, K));
 	if (K->dim == 2) return (gmtapi_fft_2d (V_API, X, direction, mode, K));
-	else return (gmtapi_fft_1d (V_API, X, direction, mode, K));
+	GMT_Report (V_API, GMT_MSG_ERROR, "GMT FFT only supports dimensions 1 and 2, not %u\n", K->dim);
+	return_error (V_API, (K->dim == 0) ? GMT_DIM_TOO_SMALL : GMT_DIM_TOO_LARGE);
 }
 
 #ifdef FORTRAN_API
