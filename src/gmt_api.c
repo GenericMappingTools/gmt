@@ -5684,6 +5684,8 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 			GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating grid data to GMT_GRID memory location\n");
 			if (!S_obj->region) {	/* No subset, possibly same padding */
 				G_copy = gmt_duplicate_grid (API->GMT, G_obj, GMT_DUPLICATE_DATA);
+				if ((error = gmt_grd_layout (API->GMT, G_copy->header, G_copy->data, G_copy->header->complex_mode, GMT_OUT)))  /* Deal with complex layout */
+					return (gmtlib_report_error (API, error));
 				GH2 = gmt_get_G_hidden (G_copy);
 				GH2->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 				if (gmtapi_adjust_grdpadding (G_copy->header, GMT->current.io.pad))
@@ -5728,6 +5730,8 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 			if (S_obj->region) return (gmtlib_report_error (API, GMT_SUBSET_NOT_ALLOWED));
 			if (mode & GMT_CONTAINER_ONLY) return (gmtlib_report_error (API, GMT_NOT_A_VALID_MODE));
 			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing grid data to GMT_GRID memory location\n");
+			if ((error = gmt_grd_layout (API->GMT, G_obj->header, G_obj->data, G_obj->header->complex_mode, GMT_OUT)))  /* Deal with complex layout */
+				return (gmtlib_report_error (API, error));
 			gmt_grd_zminmax (GMT, G_obj->header, G_obj->data);	/* Must set zmin/zmax since we are not writing to file */
 			gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_OUT), "Grid memory")) return (gmtlib_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
