@@ -3323,6 +3323,10 @@ version of your data. The FFT is fully normalized so that calling
 forward followed by inverse yields the original data set. The information
 passed via ``K`` determines if a 1-D or 2-D transform takes place; the
 key work is done via ``GMT_FFT_1D`` or ``GMT_FFT_2D``, as explained below.
+**Note**: When ``direction``is ``GMT_FFT_INV`` we will remove the space for
+the temporary imaginary components so that the result is real-valued only;
+this is the most common use in spectral analysis.  However, you can add
+``GMT_FFT_NO_DEMUX`` to ``mode`` which will prevent this adjustment.
 
 Taking the 1-D FFT
 ------------------
