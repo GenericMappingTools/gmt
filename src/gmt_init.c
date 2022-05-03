@@ -16404,12 +16404,17 @@ int gmtlib_colon_pos (struct GMT_CTRL *GMT, char *text) {
 	 * in looking for the right colon. */
 	int j, colon = GMT_NOTSET;
 	gmt_M_unused (GMT);
-	for (j = 1; colon == GMT_NOTSET && text[j]; j++)
+	for (j = 1; colon == GMT_NOTSET && text[j]; j++) {
 #ifdef WIN32
-		if (text[j] == ':' && text[j+1] && !strchr ("/\\", text[j+1]) && !(isupper (text[j-1]) || islower (text[j-1]))) colon = j;
+		bool got_slash;
+		if (text[j] != ':') continue;	/* Not a colon, moving on */
+		if (text[j+1] == '\0') continue;	/* End of argument, moving on */
+		got_slash = !strchr ("/\\", text[j+1]);	/* True if next letter is a slash */
+		if (!got_slash || (got_slash && !(isupper (text[j-1]) || islower (text[j-1])))) colon = j;
 #else
 		if (text[j] == ':') colon = j;
 #endif
+	}
 	return (colon);
 }
 
