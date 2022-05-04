@@ -392,7 +392,7 @@ produce a true geotiff file::
 
 To create a Polar Stereographic geotiff file of Patagonia::
 
-    gmt coast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -Bg2 --MAP_FRAME_TYPE=inside -ps patagonia
+    gmt coast -JS-55/-60/15c -R-77/-55/-57.5/-48+r -Di -Gred -Bg2 --MAP_FRAME_TYPE=inside -ps patagonia
     gmt psconvert patagonia.ps -Tt -W+g -V
 
 To create a simple KML file for use in Google Earth, try::
