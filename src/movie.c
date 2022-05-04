@@ -1515,9 +1515,18 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		else if (err == 0 && S_ISDIR (S.st_mode)) {	/* Directory already exists */
-			GMT_Report (API, GMT_MSG_ERROR, "Working directory %s already exist and -Z was not specified - exiting\n", workdir);
-			movie_close_files (Ctrl);
-			Return (GMT_RUNTIME_ERROR);
+			if (Ctrl->Z.active) {	/* Zap it */
+				if (gmt_remove_dir (API, workdir, false)) {
+					movie_close_files (Ctrl);
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to remove old directlry %s - exiting\n", workdir);
+					Return (GMT_RUNTIME_ERROR);
+				}
+			}
+			else {	/* No can do */
+				GMT_Report (API, GMT_MSG_ERROR, "Working directory %s already exist and -Z was not specified - exiting\n", workdir);
+				movie_close_files (Ctrl);
+				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 	}
 
