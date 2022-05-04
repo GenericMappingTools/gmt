@@ -132,7 +132,7 @@ Optional Arguments
 
 .. include:: explain_-aspatial.rst_
 
-.. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns].
+.. |Add_-bi| replace:: [Default is 3 (or 4 if |-W| is set) columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code

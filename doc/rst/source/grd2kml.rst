@@ -104,8 +104,8 @@ Optional Arguments
 
 **-H**\ *scale*
     Improve the quality of rasterization by passing the sub-pixel smoothing scale
-    to psconvert (same as **-H** option in :doc:`psconvert`) [no sub-pixel smoothing].
-    Ignored when **-W** is not used.
+    to psconvert (same as |-H| option in :doc:`psconvert`) [no sub-pixel smoothing].
+    Ignored when |-W| is not used.
 
 .. _-I:
 
@@ -126,7 +126,7 @@ Optional Arguments
     Sets the fixed size of the image building blocks.  Must be an integer that
     is radix 2.  Typical values are 256 or 512 [256].  **Note**: For global
     grids (here meaning 360-degree longitude range), we will select a
-    *tilesize* of 360 if **-L** is not specified.
+    *tilesize* of 360 if |-L| is not specified.
 
 .. _-S:
 
@@ -151,9 +151,9 @@ Optional Arguments
 **-W**\ *cfile*\|\ *pen*\ [**+s**\ *scale*/*limit*]
     Supply a file with records each holding a contour value and a contour pen.
     We then overlay the selected contour lines on top of the image [no contours].
-    Consequently, **-W** triggers the tile creation via PostScript and thus is slower.
+    Consequently, |-W| triggers the tile creation via PostScript and thus is slower.
     If *cfile* is not a valid file we assume you instead gave a *pen* and want
-    to draw all the contours implied by the *cpt* specified in **-C**.  The contours
+    to draw all the contours implied by the *cpt* specified in |-C|.  The contours
     are overlain via calls to :doc:`grdcontour`.  **Note**: The contour pen width(s)
     refer to the highest tile level and are reduced by a factor of *scale* [sqrt(2)] for each
     lower level.  Contours with scaled pen widths < *limit* [0.1] points are skipped (except

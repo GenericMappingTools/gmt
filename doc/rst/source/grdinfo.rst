@@ -43,7 +43,7 @@ the mode (Least Median of Squares; LMS), LMS scale of *v*, and number of nodes s
 to NaN. We also report if the grid is pixel- or gridline-registered and
 if it is a Cartesian or Geographic data set (based on metadata in the file).
 We can also report information for 3-D netCDF data cubes, but note that
-data cubes are not compatible with options **-D**, **-E**, **-F**, and **-Ib**.
+data cubes are not compatible with options |-D|, |-E|, |-F|, and **-Ib**.
 
 Required Arguments
 ------------------
@@ -65,25 +65,25 @@ Optional Arguments
     *name w e s n {b t} v0 v1 dx dy {dz} nx ny {nz}* [*x0 y0 {z0} x1 y1 {z1}*] [*med scale*] [*mean std rms*] [*n\_nan*] *registration gtype*
 
     The data in brackets are
-    output only if the corresponding options **-M**, **-L1**, **-L2**,
-    and **-M** are used, respectively, while the data in braces only apply if
+    output only if the corresponding options |-M|, **-L1**, **-L2**,
+    and |-M| are used, respectively, while the data in braces only apply if
     used with 3-D data cubes. Use **-Ct** to place file *name*
     at the end of the output record or **-Cn** to only output numerical
     columns.  The *registration* is either 0 (gridline) or 1 (pixel),
     while *gtype* is either 0 (Cartesian) or 1 (geographic).
-    If the **-I** option is used, the
+    If the |-I| option is used, the
     output format is instead *NF w e s n {b t} v0 v1*, where *NF* is the total
     number of files read and *w e s n {b t}* are rounded off (see **-I**).
 
 .. _-D:
 
 **-D**\ [*xoff*\ [/*yoff*]][**+i**]
-    Divide a single grid's domain (or the **-R** domain, if no grid given)
+    Divide a single grid's domain (or the |-R| domain, if no grid given)
     into tiles of size *dx* times *dy* (set via **-I**).  You can specify
     overlap between tiles by appending *xoff*\ [/*yoff*].  If the single
     grid is given you may use the modifier **+i** to ignore tiles that
     have no data within each tile subregion.  Default output is text
-    region strings.  Use **-C** to instead report four columns with
+    region strings.  Use |-C| to instead report four columns with
     *xmin xmax ymin ymax* per tile, or use **-Ct** to also have the
     region string appended as trailing text.
 
@@ -95,13 +95,13 @@ Optional Arguments
     for each column.  Append **+l**\|\ **L** to look for minima instead.
     Upper case **+L** means we find the minimum of the positive values only, while
     upper case **+U** means we find the maximum of the negative values only [use all values].
-    We only allow one input grid when **-E** is selected.
+    We only allow one input grid when |-E| is selected.
 
 .. _-F:
 
 **-F**
     Report grid domain and x/y-increments in world mapping format
-    [Default is generic]. Does not apply to the **-C** option.
+    [Default is generic]. Does not apply to the |-C| option.
 
 .. _-G:
 
@@ -120,7 +120,7 @@ Optional Arguments
     then we return the actual grid region instead).  If no
     argument is given then we report the grid increment in the form
     **-I**\ *xinc*\ [/*yinc*]. If **-Ib** is given we write each grid's
-    bounding box polygon instead.  Finally, if **-D** is in effect then
+    bounding box polygon instead.  Finally, if |-D| is in effect then
     *dx* and *dy* are the dimensions of the desired tiles.
 
 .. _-L:
@@ -149,7 +149,7 @@ Optional Arguments
     Find and report the location of min/max *v*-values, and count and
     report the number of nodes set to NaN, if any.
 
-.. |Add_-R| replace:: Using the **-R** option will select a subsection of the input grid(s). If this subsection
+.. |Add_-R| replace:: Using the |-R| option will select a subsection of the input grid(s). If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. For cubes you must also
     append limits in the *z* dimension. |Add_-R_links|
 .. include:: explain_-R.rst_

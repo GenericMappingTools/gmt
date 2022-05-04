@@ -48,14 +48,14 @@ Description
 **triangulate** reads one or more ASCII [or binary] files (or standard
 input) containing x,y[,z] and performs Delaunay triangulation, i.e., it
 finds how the points should be connected to give the most equilateral
-triangulation possible. If a map projection (give **-R** and **-J**) is
+triangulation possible. If a map projection (give |-R| and **-J**) is
 chosen then it is applied before the triangulation is calculated. By
 default, the output is triplets of point id numbers that make up each
 triangle and is written to standard output. The id numbers refer to the
 points position (line number, starting at 0 for the first line) in the
 input file. As an option, you may choose to create a multiple segment
 file that can be piped through :doc:`plot` to draw the triangulation
-network. If **-G** **-I** are set a grid will be calculated based on the
+network. If |-G| **-I** are set a grid will be calculated based on the
 surface defined by the planar triangles. The actual algorithm used in
 the triangulations is either that of Watson [1982] [Default] or Shewchuk
 [1996] (if installed; type **triangulate -** to see which method is
@@ -82,20 +82,20 @@ Optional Arguments
     Read a slope grid (in degrees) and compute the propagated uncertainty in the
     bathymetry using the CURVE algorithm [Zambo et al, 2016].  Requires the **-G**
     option to specify the output grid.  Note that the *slpgrid* sets the domain
-    for the output grid so **-R**, **-I**, [|SYN_OPT-r|\ ] are not required.
-    Cannot be used in conjunction with **-D**, **-F**, **-M**, **-N**, **-Q**,
-    **-S** and **-T**.
+    for the output grid so |-R|, |-I|, [|SYN_OPT-r|\ ] are not required.
+    Cannot be used in conjunction with |-D|, |-F|, |-M|, |-N|, |-Q|,
+    |-S| and |-T|.
 
 .. _-D:
 
 **-Dx**\|\ **y**
     Take either the *x*- or *y*-derivatives of surface represented by
-    the planar facets (only used when **-G** is set).
+    the planar facets (only used when |-G| is set).
 
 .. _-E:
 
 **-E**\ *empty*
-    Set the value assigned to empty nodes when **-G** is set [NaN].
+    Set the value assigned to empty nodes when |-G| is set [NaN].
 
 .. _-G:
 
@@ -128,15 +128,15 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Used in conjunction with **-G** to also write the triplets of the
+    Used in conjunction with |-G| to also write the triplets of the
     ids of all the Delaunay vertices [Default only writes the grid].
 
 .. _-Q:
 
 **-Q**\ [**n**]
     Output the edges of the Voronoi cells instead [Default is Delaunay
-    triangle edges]. Requires **-R** and is only available if linked
-    with the Shewchuk [1996] library. Note that **-Z** is ignored on
+    triangle edges]. Requires |-R| and is only available if linked
+    with the Shewchuk [1996] library. Note that |-Z| is ignored on
     output. Optionally, append **n** for combining the edges into
     closed Voronoi polygons.
 
@@ -155,7 +155,7 @@ Optional Arguments
 
 **-T**
     Output edges or polygons even if gridding has been selected with
-    the **-G** option [Default will not output the triangulation or
+    the |-G| option [Default will not output the triangulation or
     Voronoi polygons is gridding is selected].
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -167,7 +167,7 @@ Optional Arguments
 
 **-Z**
     Controls whether we read (x,y) or (x,y,z) data and if z should be
-    output when **-M** or **-S** are used [Read (x,y) only].
+    output when |-M| or |-S| are used [Read (x,y) only].
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_

@@ -34,7 +34,7 @@ is defined by:
 
 The user must specify **-N**\ *n_model*, the number of model parameters
 to use; thus, **-N**\ *3* fits a bilinear trend, **-N**\ *6* a quadratic
-surface, and so on. Optionally, append **+r** to the **-N** option to
+surface, and so on. Optionally, append **+r** to the |-N| option to
 perform a robust fit. In this case, the program will iteratively
 reweight the data based on a robust scale estimate, in order to converge
 to a solution insensitive to outliers. This may be handy when separating
@@ -73,7 +73,7 @@ Optional Arguments
 **-D**\ *diff.nc*
     Write the difference (input data - trend) to the file *diff.nc*.
 
-.. |Add_-R| replace:: Using the **-R** option will select a subsection of the input grid. If this subsection
+.. |Add_-R| replace:: Using the |-R| option will select a subsection of the input grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -109,7 +109,7 @@ numerical advantage in the form of the matrix which must be inverted and
 allow more accurate solutions. NOTE: The model parameters listed with
 **-V** are Legendre polynomial coefficients; they are not numerically
 equivalent to the :math:`m_j` in the equation described above. The description
-above is to allow the user to match **-N** with the order of the
+above is to allow the user to match |-N| with the order of the
 polynomial surface. See :doc:`grdmath` if you need to evaluate the trend
 using the reported coefficients.
 

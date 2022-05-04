@@ -34,7 +34,7 @@ Description
 **grdvolume** reads a 2-D grid file and calculates the volume contained below the surface and above the plane specified
 by the given contour (or zero if not given) and reports the contour, area, volume, and maximum mean height (volume/area).
 Alternatively, specify a range of contours to be tried and **grdvolume** will determine the volume and area inside
-the contour for all contour values. Using **-T**, the contour that produced the maximum mean height (or maximum
+the contour for all contour values. Using |-T|, the contour that produced the maximum mean height (or maximum
 curvature of heights vs contour value) is reported as well. This feature may be used with :doc:`grdfilter`
 in designing an Optimal Robust Separator [*Wessel*, 1998; 2016].
 
@@ -113,7 +113,7 @@ Optional Arguments
 
 **-Z**\ *fact*\ [/*shift*]
     Optionally subtract *shift* before scaling data by *fact*. [Default
-    is no scaling]. (Numbers in **-C**, **-L** refer to values after
+    is no scaling]. (Numbers in |-C|, |-L| refer to values after
     this scaling has occurred).
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
@@ -178,7 +178,7 @@ Notes
    is set to search multiple contours) containing *contour area volume volume/area*.
    These records are written to standard output.
 #. For geographical grids we convert degrees to "Flat Earth" distances in
-   meter.  You can use **-S** to select another distance unit.  The
+   meter.  You can use |-S| to select another distance unit.  The
    area is then reported in this unit squared while the volume is reported
    in unit^2 * z_unit quantities.
 #. **grdvolume** distinguishes between gridline and pixel-registered grids.
@@ -186,9 +186,9 @@ Notes
    boundaries. That means that in the first case the grid cells on the
    boundary only contribute half their area (and volume), whereas in the
    second case all grid cells are fully used. The exception is when the
-   **-C** flag is used: since contours do not extend beyond the outermost
+   |-C| flag is used: since contours do not extend beyond the outermost
    grid point, both grid types are treated the same. That means the outer
-   rim in pixel oriented grids is ignored when using the **-C** flag.
+   rim in pixel oriented grids is ignored when using the |-C| flag.
 
 See Also
 --------

@@ -175,8 +175,8 @@ Optional Arguments
     Suggest grid dimensions which have a highly composite greatest
     common factor. This allows surface to use several intermediate steps
     in the solution, yielding faster run times and better results. The
-    sizes suggested by **-Q** can be achieved by altering **-R** and/or
-    **-I**. You can recover the **-R** and **-I** you want later by
+    sizes suggested by |-Q| can be achieved by altering |-R| and/or
+    |-I|. You can recover the |-R| and |-I| you want later by
     using :doc:`grdsample` or :doc:`grdcut` on the output of **surface**.
 
 .. _-S:
@@ -204,7 +204,7 @@ Optional Arguments
 
 .. |Add_-V| replace::
     **-V3** will report the convergence after each iteration;
-    **-V** will report only after each regional grid is converged. |Add_-V_links|
+    |-V| will report only after each regional grid is converged. |Add_-V_links|
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
@@ -302,7 +302,7 @@ with the number of you chosen unit per degree latitude, while for longitude we d
 *x*-increment by the number of such units per degree along the mid-parallel in your region. The
 resulting degree increments may therefore not exactly match the increments you entered explicitly.
 Hence, there may be rounding off in ways you don't want and cannot easily control, resulting in prime grid
-dimensions. You can handle the situation via **-Q** but with the never-ending decimals in some
+dimensions. You can handle the situation via |-Q| but with the never-ending decimals in some
 increments that is still a challenge.  Another approach is to *not* grid geographic data
 using length units as increments, due to the above conversion. It may be cleaner to specify
 grid intervals in spherical degrees, minutes or seconds. That way you can control the grid
@@ -329,7 +329,7 @@ double precision storage.
 
 Note that only gridline registration is possible with **surface**. If
 you need a pixel-registered grid you can resample a gridline registered
-grid using :doc:`grdsample` **-T**.
+grid using :doc:`grdsample` |-T|.
 
 See Also
 --------
