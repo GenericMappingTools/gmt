@@ -93,9 +93,9 @@ Optional Arguments
 
 **-C**\ *fill*\ [**+l**\|\ **+r**] :ref:`(more ...) <-Gfill_attrib>`
     Set the shade, color, or pattern for lakes and river-lakes [Default
-    is the fill chosen for "wet" areas (**-S**)]. Optionally, specify
+    is the fill chosen for "wet" areas (|-S|)]. Optionally, specify
     separate fills by appending **+l** for lakes or **+r** for
-    river-lakes, repeating the **-C** option as needed.
+    river-lakes, repeating the |-C| option as needed.
 
 .. _-D:
 
@@ -150,7 +150,7 @@ Optional Arguments
     - **+z** to place the country code in the segment headers via **-Z**\ *code* settings (for use with |-M|).
 
     One of **+c**\|\ **C**\|\ **g**\|\ **p** must be specified unless |-M| is in effect, in which case only one
-    **-E** option can be given. Otherwise, you may repeat **-E** to give different groups of items their own pen/fill
+    |-E| option can be given. Otherwise, you may repeat |-E| to give different groups of items their own pen/fill
     settings. If neither |-J| nor |-M| are set then we just print the **-R**\ *wesn* string.
 
 .. _-F:
@@ -179,7 +179,7 @@ Optional Arguments
     attributes [Default pen: width = default, color = black, style =
     solid].
 
-    Choose from the list of river types below; repeat option **-I** as
+    Choose from the list of river types below; repeat option |-I| as
     often as necessary.
 
     - 0 = Double-lined rivers (river-lakes)
@@ -212,10 +212,10 @@ Optional Arguments
 **-M**
     Dump a single multisegment ASCII (or binary, see
     **-bo**) file to standard output. No plotting
-    occurs. Specify one of **-E**, **-I**, **-N** or **-W**.
-    **Note**: If **-M** is used with **-E** then **-R** or the **+r** modifier
-    to **-E** are not required as we automatically determine the region
-    given the selected geographic entities.  If using **-W** and you want
+    occurs. Specify one of |-E|, |-I|, |-N| or |-W|.
+    **Note**: If |-M| is used with |-E| then |-R| or the **+r** modifier
+    to |-E| are not required as we automatically determine the region
+    given the selected geographic entities.  If using |-W| and you want
     just certain levels (1-4) then use the full syntax **-W**\ *level*/\ *pen*
     and repeat for each level (pen is not used but required to parse the level correctly).
 
@@ -226,7 +226,7 @@ Optional Arguments
     [optionally] append pen attributes [Default pen: width = default,
     color = black, style = solid].
 
-    Choose from the list of boundaries below. Repeat option **-N** as
+    Choose from the list of boundaries below. Repeat option |-N| as
     often as necessary.
 
     - 1 = National boundaries
@@ -267,8 +267,8 @@ Optional Arguments
     apply to all four levels. To set the pen for each level differently,
     prepend *level*/, where *level* is 1-4 and represent coastline,
     lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.
-    Repeat **-W** as needed. When specific level pens are set, those not
-    listed will not be drawn [Default draws all levels; but see **-A**].
+    Repeat |-W| as needed. When specific level pens are set, those not
+    listed will not be drawn [Default draws all levels; but see |-A|].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
@@ -295,7 +295,7 @@ DCW Collections
 
 .. _dcw-collections:
 
-The **-E** and **-R** options can be expanded to take the user's own custom collections
+The |-E| and |-R| options can be expanded to take the user's own custom collections
 and named regions.  Users can create a dcw.conf file and place it in their
 GMT user directory (typically ~/.gmt).  The format of the file is the same
 as the dcw-collections.txt file distributed with DCW 2.1.0 or later::
@@ -311,7 +311,7 @@ as the dcw-collections.txt file distributed with DCW 2.1.0 or later::
 
 Each *tag:* record must be immediately followed by either a *list:* or *region:* record.
 All tags should be at least 3 characters long. Either the *tag* or the *name* (if available)
-can be used to make selections in **-R** or **-E**. The **-E+n** option wil list the contents
+can be used to make selections in |-R| or |-E|. The **-E+n** option wil list the contents
 of the collection distributed with DCW as well as any contents in ~/.gmt/dcw.conf. The latter
 file is consulted first and can be used to override same-name tag selections in the system DCW file.
 
@@ -373,7 +373,7 @@ The desired file is then sought for in the alternate directories.
 Bugs
 ----
 
-The options to fill (**-C** **-G** **-S**) may not always work if the
+The options to fill (|-C| |-G| |-S|) may not always work if the
 Azimuthal equidistant projection is chosen (**-Je**\|\ **E**). If the
 antipole of the projection is in the oceans it will most likely work. If
 not, try to avoid using projection center coordinates that are even

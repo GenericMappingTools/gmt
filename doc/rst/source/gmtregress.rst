@@ -57,8 +57,8 @@ Required Arguments
 ------------------
 
 .. |Add_intables| replace:: The first two columns are expected to contain the required *x* and *y* data.  Depending on
-   your **-W** and **-E** settings we may expect an additional 1-3 columns with error estimates
-   of one of both of the data coordinates, and even their correlation (see **-W** for details).
+   your |-W| and |-E| settings we may expect an additional 1-3 columns with error estimates
+   of one of both of the data coordinates, and even their correlation (see |-W| for details).
 .. include:: explain_intables.rst_
 
 Optional Arguments
@@ -70,8 +70,8 @@ Optional Arguments
     There are two uses for this setting: (1) Instead of determining a best-fit regression
     we explore the full range of regressions. Examine all possible regression lines with slope
     angles between *min* and *max*, using steps of *inc* degrees [-90/+90/1].  For each slope,
-    the optimum intercept is determined based on your regression type (**-E**) and misfit norm
-    (**-N**) settings. For each data segment we report the four columns *angle*, *E*, *slope*,
+    the optimum intercept is determined based on your regression type (|-E|) and misfit norm
+    (|-N|) settings. For each data segment we report the four columns *angle*, *E*, *slope*,
     *intercept*, for the range of specified angles. The best model parameters within this range
     are written into the segment header and reported in verbose information mode (**-Vi**).
     (2) Except for **-N2**, append **+f** to force the best regression to
@@ -82,7 +82,7 @@ Optional Arguments
    :width: 500 px
    :align: center
 
-   Scanning slopes (**-A**) to see how the misfit for an fully orthogonal regression using the LMS (**-Nr**) criterion
+   Scanning slopes (|-A|) to see how the misfit for an fully orthogonal regression using the LMS (**-Nr**) criterion
    varies with the line angle.  Here we see the best solution gives a line angle of -78.3 degrees
    but there is another local minimum for an angle of 78.6 degrees that is almost as good.
 
@@ -90,7 +90,7 @@ Optional Arguments
 
 **-C**\ *level*
     Set the confidence level (in %) to use for the optional calculation of confidence bands
-    on the regression [95].  This is only used if **-F** includes the output column **c**.
+    on the regression [95].  This is only used if |-F| includes the output column **c**.
 
 .. _-E:
 
@@ -113,7 +113,7 @@ Optional Arguments
 **-F**\ *flags*
     Append a combination of the columns you wish returned; the output order will match the order specified.  Choose from
     **x** (observed *x*), **y** (observed *y*), **m** (model prediction), **r** (residual = data minus model),
-    **c** (symmetrical confidence interval on the regression; see **-C**
+    **c** (symmetrical confidence interval on the regression; see |-C|
     for specifying the level), **z** (standardized residuals or so-called *z-scores*) and **w** (outlier weights 0 or 1; for
     **-Nw** these are the Reweighted Least Squares weights) [**xymrczw**].
     As an alternative to evaluating the model, just give **-Fp** and we instead write a single record with the 12 model
@@ -135,7 +135,7 @@ Optional Arguments
 
 **-S**\ [**r**]
     Restricts which records will be output.  By default all data records will be output in the format specified
-    by **-F**.  Use **-S** to exclude data points identified as outliers by the regression.  Alternatively,
+    by |-F|.  Use |-S| to exclude data points identified as outliers by the regression.  Alternatively,
     use **-Sr** to reverse this and only output the outlier records.
 
 .. _-T:

@@ -97,10 +97,10 @@ Required Arguments
 .. _-N:
 
 **-N**\ *prefix*
-    Determines the name of the final movie file and a sub-directory with frame images (but see **-W**).
+    Determines the name of the final movie file and a sub-directory with frame images (but see |-W|).
     **Note**: If the subdirectory exist then we exit immediately.  You are therefore required to remove any
     old directory by that name first.  This is done to prevent the accidental loss of valuable data.
-    You can prevent this issue by using **-Z** to delete the directory after a successful run.
+    You can prevent this issue by using |-Z| to delete the directory after a successful run.
 
 .. _-T:
 
@@ -137,7 +137,7 @@ Optional Arguments
 **-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]
     Give a *titlepage* script that creates a static title page for the movie [no title].
     Alternatively, *titlepage* can be a *PostScript* or *EPS* plot (file extension .ps) of dimensions exactly matching
-    the canvas size set in **-C**. You control the duration of the title sequence with **+d** and specify
+    the canvas size set in |-C|. You control the duration of the title sequence with **+d** and specify
     the number of frames (or append **s** for a duration in seconds instead) [4s].
     Optionally, supply the fade length via **+f**\ *fade* (in frames or seconds [1s]) as well [no fading];
     Use **+fi** and/or **+fo** to specify one-sided fading or to give unequal fade intervals [Default is same
@@ -155,7 +155,7 @@ Optional Arguments
     optionally append how many times to repeat [infinite].  If either a *mp4* or *webm* product has been
     selected then you can limit the frames being used to make a GIF animation:  Append **+s**\ *stride*
     to only use every *stride* frame, with *stride* being one of a fixed set of strides: 2, 5, 10,
-    20, 50, 100, 200, and 500. No **-F** means no video products are created at all; this requires **-M**.
+    20, 50, 100, 200, and 500. No |-F| means no video products are created at all; this requires |-M|.
 
 .. _-G:
 
@@ -174,7 +174,7 @@ Optional Arguments
     by *scale*, rasterizes the frame, then down-samples the image by the same scale at the end.  The larger
     the *scale*, the smoother the transitions.  Because processing time increases with *scale* we suggest you
     try values in the 2-5 range.  Note that images can also suffer from quantizing when the original data have
-    much higher resolution than your final frame pixel dimensions.  The **-H** option may then be used to smooth the
+    much higher resolution than your final frame pixel dimensions.  The |-H| option may then be used to smooth the
     result to avoid aliasing [no downsampling].  This effect is called `subpixel <https://en.wikipedia.org/wiki/Subpixel_rendering>`_ rendering.
 
 .. _-I:
@@ -182,7 +182,7 @@ Optional Arguments
 **-I**\ *includefile*
     Insert the contents of *includefile* into the movie_init.sh script that is accessed by all movie scripts.
     This mechanism is used to add information (typically constant variable assignments) that the *mainscript*
-    and any optional **-S** scripts rely on.
+    and any optional |-S| scripts rely on.
 
 .. _-K:
 
@@ -244,7 +244,7 @@ Optional Arguments
     linear (axis-like) indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
     circular indicators and 60% of relevant canvas dimension for the linear indicators] and placement via **+j**\ *justify*
     [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
-    **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col*\ \|\ **t**\ *col* to indicate what should be annotated (see **-L**
+    **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col*\ \|\ **t**\ *col* to indicate what should be annotated (see |-L|
     for more information on what these are); append **+f** to use a specific *font* [:term:`FONT_ANNOT_SECONDARY` scaled as needed].
     Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [see below for defaults].
     Use **+p**\ *pen* to set moving item *pen*.  For setting the corresponding static fill and pen, use **+G** and **+P** instead.
@@ -283,7 +283,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [*dir*]
-    By default, all temporary files and frame PNG file are created in the subdirectory *prefix* set via **-N**.
+    By default, all temporary files and frame PNG file are created in the subdirectory *prefix* set via |-N|.
     You can override that selection by giving another *dir* as a relative or full directory path. If no
     path is given then we create a working directory in the system temp folder named *prefix*.  The main benefit
     of a working directory is to avoid endless syncing by agents like DropBox or TimeMachine, or to avoid
@@ -293,8 +293,8 @@ Optional Arguments
 
 **-Z**\ [**s**]
     Erase the entire *prefix* directory after assembling the final movie [Default leaves directory with all images;
-    the temporary script files, parameter files, and layer *PostScript* files are all removed (but see **-Q**)].
-    If your *mainscript* and all input scripts via **-E**, **-I**, and **-S** should be deleted as well then
+    the temporary script files, parameter files, and layer *PostScript* files are all removed (but see |-Q|)].
+    If your *mainscript* and all input scripts via |-E|, |-I|, and |-S| should be deleted as well then
     append **s**.
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
@@ -325,7 +325,7 @@ and those that change with the frame number.  The constants are accessible by al
 **MOVIE_DPU**\ : The current dots-per-unit,
 **MOVIE_RATE**\ : The current number of frames per second,
 **MOVIE_NFRAMES**\ : The total number of frames.
-Also, if **-I** was used then any static parameters listed there will be available to all the scripts as well.
+Also, if |-I| was used then any static parameters listed there will be available to all the scripts as well.
 In addition, the *mainscript* also has access to parameters that vary with the frame counter:
 **MOVIE_FRAME**\ : The current frame number (an integer, e.g., 136),
 **MOVIE_ITEM**\ : The formatted frame number (a string, e.g., 000136), and
@@ -333,14 +333,14 @@ In addition, the *mainscript* also has access to parameters that vary with the f
 Furthermore, if a *timefile* was given then variables **MOVIE_COL0**\ , **MOVIE_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
 be accessed via the variable **MOVIE_TEXT**, and if word-splitting was explicitly requested by **-T+w** or
-implicitly by selecting word labels in **-L** or **-P**) then
+implicitly by selecting word labels in |-L| or |-P|) then
 the trailing text is also split into individual word parameters **MOVIE_WORD0**\ , **MOVIE_WORD1**\ , etc.
 
 Data Files
 ----------
 
 The movie scripts will be able to find any files present in the starting directory when **movie** was initiated,
-as well as any new files produced by *mainscript* or the optional scripts set via **-S**.
+as well as any new files produced by *mainscript* or the optional scripts set via |-S|.
 No path specification is needed to access these files.  Other files may
 require full paths unless their directories were already included in the :term:`DIR_DATA` setting.
 
@@ -348,7 +348,7 @@ Custom gmt.conf files
 ---------------------
 
 If you have a gmt.conf file in the top directory with your main script prior to running **movie** then it will be
-used and shared across all the scripts created and executed *unless* your scripts use **-C** when starting a new
+used and shared across all the scripts created and executed *unless* your scripts use |-C| when starting a new
 modern mode session. The preferred ways of changing GMT defaults is via :doc:`gmtset` calls in your input scripts.
 **Note**: Each script is run in isolation (modern) mode so trying to create a gmt.conf file via the *preflight*
 script to be used by other scripts is futile.
@@ -361,7 +361,7 @@ either access a *different* data set as the frame counter changes, or you need t
 showing only the part that should be displayed in each frame.  There are several strategies you can use to
 accomplish these effects:
 
-#. Your *timefile* passed to **-T** may have names of specific data files and you simply have your *mainscript*
+#. Your *timefile* passed to |-T| may have names of specific data files and you simply have your *mainscript*
    use the relevant **MOVIE_TEXT** or **MOVIE_WORD?** to access the frame-specific file name.
 #. You have a single data table which includes absolute time for each record, and you wish to plot these *events* as time
    moves forward, yet not displaying events still in the future.  This effect is achieved via the module :doc:`events`.
@@ -380,10 +380,10 @@ Your Canvas
    :align: center
 
    The **MOVIE_WIDTH** and **MOVIE_HEIGHT** parameters reflect your canvas dimension.  You can use the
-   regular **-X** and **-Y** options to set a logical origin for your intended plot [72p, 72p] and use your
-   projection parameters (**-J**) to indicate the area selected for plotting (green).
+   regular |-X| and |-Y| options to set a logical origin for your intended plot [72p, 72p] and use your
+   projection parameters (|-J|) to indicate the area selected for plotting (green).
 
-As you can see from **-C**, unless you specified a custom format you are given a canvas size that is either 24 x 13.5 cm (16:9)
+As you can see from |-C|, unless you specified a custom format you are given a canvas size that is either 24 x 13.5 cm (16:9)
 or 24 x 18 cm (4:3).  If your :term:`PROJ_LENGTH_UNIT` setting is inch then the custom canvas sizes are just
 slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2"); this has no effect on the size of the movie
 frames but allow us to use good sizes that work well with the *dpu* chosen.  You should compose your plots using
@@ -399,7 +399,7 @@ exact canvas dimensions.
 External *PostScript* Layers
 ----------------------------
 
-Instead of passing GMT modern scripts to **-S** you can alternatively provide the name of *PostScript*
+Instead of passing GMT modern scripts to |-S| you can alternatively provide the name of *PostScript*
 plot layer files. Note that these must exactly match the canvas size.  As a simple example, if you are
 making a HD movie using the US unit dimensions then a background pink layer would be created by::
 
@@ -420,7 +420,7 @@ Transparent Images
 ------------------
 
 By default, **movie** will build *opaque* PNG images which can then be assembled into an animation.
-The vast majority of movies is likely to be made that way. Use the **-F** option's experimental modifier
+The vast majority of movies is likely to be made that way. Use the |-F| option's experimental modifier
 **+t** to make *transparent* PNG images.  Currently, very few video codecs support
 transparency.  It is claimed both H.265 (HECV) and VP9 (Webm) offer this capability; we have only been
 able to verify the latter by viewing a transparent webm movie in Chrome. Animated GIFs can be built from
@@ -438,9 +438,9 @@ from **-Sb** and computes needed data files and possibly a background layer), *m
 (optional since it derives from **-Sf** and builds a foreground layer), *movie_frame* (accepts a frame counter
 argument and builds the frame image), and *movie_cleanup* (removes temporary files at the end of the
 run). For each frame there is a separate *movie_params_######* script that provides frame-specific
-variables (e.g., frame number and anything given via **-T**).  The pre- and post-flight scripts have
+variables (e.g., frame number and anything given via |-T|).  The pre- and post-flight scripts have
 access to the information in *movie_init* while the frame script in addition has access to the frame-specific
-parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
+parameter file.  Using the |-Q| option will just produce these scripts which you can then examine.
 **Note**: The *mainscript* is duplicated per frame and each copy is run simultaneously on all available cores.
 Multi-treaded GMT modules will therefore be limited to a single core as well.
 
@@ -467,14 +467,14 @@ Composing movies is relatively simple but you have to think in terms of variable
 Examine the examples we have described.  Then, start by making a single plot script (your *mainscript*) and identify which
 things should change with time (i.e., with the frame number).  Create variables for these values. If they
 are among the listed parameters that **movie** creates then use those names.  Unless you only
-require the frame number you will need to make a file that you can pass to **-T**.  This file should
+require the frame number you will need to make a file that you can pass to |-T|.  This file should
 then have all the values you need, per frame (i.e., row), with values across all the columns you need.
 If you need to assign various fixed variables that do not change with time then your *mainscript*
-will look shorter and cleaner if you offload those assignments to a separate *includefile* (**-I**).
+will look shorter and cleaner if you offload those assignments to a separate *includefile* (|-I|).
 To test your movie, start by using options **-Q -M** to ensure your master frame page looks correct.
-This page shows you one frame of your movie (you can select which frame via the **-M** arguments).  Fix any
-issues with your use of variables and options until this works.  You can then try to remove **-Q**.
-We recommend you make a very short (i.e., **-T**) and small (i.e., **-C**) movie so you don't have to wait very
+This page shows you one frame of your movie (you can select which frame via the |-M| arguments).  Fix any
+issues with your use of variables and options until this works.  You can then try to remove |-Q|.
+We recommend you make a very short (i.e., |-T|) and small (i.e., |-C|) movie so you don't have to wait very
 long to see the result.  Once things are working you can beef up number of frames and movie quality.
 
 Color Table Usage
@@ -484,7 +484,7 @@ Because **movie** launches individual frame plots as separate sessions running i
 utilize the current CPT (i.e., the last CPT created directly by :doc:`makecpt` or :doc:`grd2cpt`, or
 indirectly by :doc:`grdimage` or  :doc:`grdview`).  Instead, you must create CPTs using explicit
 files and pass those names to the modules that require CPT information.  In modern mode, this means
-you need to use the **-H** option in :doc:`makecpt` or :doc:`grd2cpt` in order to redirect their output
+you need to use the |-H| option in :doc:`makecpt` or :doc:`grd2cpt` in order to redirect their output
 to named files.
 
 Progress Indicators
@@ -528,9 +528,9 @@ Title Sequence and Fading
    The fade-level (0 means black, 100 means normal visibility) for the complete movie, including
    an optional title sequence.
 
-The complete movie may have an optional leading title sequence (**-E**) of a given *duration*. A short section
+The complete movie may have an optional leading title sequence (|-E|) of a given *duration*. A short section
 at the beginning and/or end of this duration may be designated to fade in/out via the designated fade
-color [black].  The main animation sequence may also have an optional fade in and/or out section (**-K**). Here, you
+color [black].  The main animation sequence may also have an optional fade in and/or out section (|-K|). Here, you
 can choose to fade on top of the animation or you can "freeze" the first and/or last animation frame and only fade over
 those static images (via modifier **+p**) in order to preserve the whole animation sequence.
 

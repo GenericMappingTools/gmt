@@ -29,17 +29,17 @@ Description
 -----------
 
 **grdsample** reads a grid file and interpolates it to create a new grid
-file with either: a different registration (**-r** or **-T**); or, a new
-grid-spacing or number of nodes (**-I**), and perhaps also a new
-sub-region (**-R**). A bicubic [Default], bilinear, B-spline or
+file with either: a different registration (**-r** or |-T|); or, a new
+grid-spacing or number of nodes (|-I|), and perhaps also a new
+sub-region (|-R|). A bicubic [Default], bilinear, B-spline or
 nearest-neighbor interpolation is used; see **-n** for settings. Note
-that using **-R** only is equivalent to :doc:`grdcut` or :doc:`grdedit` **-S**.
+that using |-R| only is equivalent to :doc:`grdcut` or :doc:`grdedit` |-S|.
 **grdsample** safely creates a fine mesh from a coarse one; the converse
 may suffer aliasing unless the data are filtered using :doc:`grdfft` or :doc:`grdfilter`.
 
-When **-R** is omitted, the output grid will cover the same region as
-the input grid. When **-I** is omitted, the grid spacing of the output
-grid will be the same as the input grid. Either **-r** or **-T** can be
+When |-R| is omitted, the output grid will cover the same region as
+the input grid. When |-I| is omitted, the grid spacing of the output
+grid will be the same as the input grid. Either **-r** or |-T| can be
 used to change the grid registration. When omitted, the output grid will
 have the same registration as the input grid.
 
