@@ -98,6 +98,10 @@ enum GMT_mp_cols {	/* Index into the extra and ecol_type arrays */
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	bool used[8];	/* Used to keep track of which items are used by -A,G,L,Z */
+	struct SAMPLE1D_Out {	/* -> */
+		bool active;
+		char *file;
+	} Out;
 	struct MAPPROJECT_A {	/* -Ab|B|f|Fb|B|o|O<lon0>/<lat0> */
 		bool active;
 		bool azims;
@@ -195,6 +199,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->L.file);
 	gmt_M_free (GMT, C);
 }
@@ -478,6 +483,10 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 
 			case '<':	/* Skip input files */
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
+				break;
+			case '>':	/* Got named output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
@@ -1046,7 +1055,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			for (i = 1; i < (Ctrl->W.ny - 1); i++, k++)	/* max to min along left side */
 				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XLO], GMT->current.proj.rect[YHI]-i*dy);
 			S->data[GMT_X][k] = S->data[GMT_X][0];	S->data[GMT_Y][k] = S->data[GMT_Y][0];
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, NULL, D) != GMT_NOERROR)
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_NORMAL, NULL, Ctrl->Out.file, D) != GMT_NOERROR)
 				Return (API->error);
 			Return (GMT_NOERROR);
 		}
