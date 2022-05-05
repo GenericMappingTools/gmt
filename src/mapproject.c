@@ -1043,8 +1043,9 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO]+i*dy);
 			for (i = 1; i < Ctrl->W.nx; i++, k++)	/* max to min along top */
 				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XHI]-i*dx, GMT->current.proj.rect[YHI]);
-			for (i = 1; i < Ctrl->W.ny; i++, k++)	/* max to min along left side */
+			for (i = 1; i < (Ctrl->W.ny - 1); i++, k++)	/* max to min along left side */
 				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XLO], GMT->current.proj.rect[YHI]-i*dy);
+			S->data[GMT_X][k] = S->data[GMT_X][0];	S->data[GMT_Y][k] = S->data[GMT_Y][0];
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, NULL, D) != GMT_NOERROR)
 				Return (API->error);
 			Return (GMT_NOERROR);
