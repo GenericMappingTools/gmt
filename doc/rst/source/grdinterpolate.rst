@@ -66,7 +66,7 @@ Required Arguments
     If *outfile* contains a C-language format statement for a floating
     point number (e.g., layer_%6.6f.grd) then we write a series of 2-D
     grid files which will contain the values for each level [Default is
-    a 3-D data cube, unless only a single layer is implied by **-T**].
+    a 3-D data cube, unless only a single layer is implied by |-T|].
     Also see |-S| for a similar use to write individual level-series tables.
 
 Optional Arguments

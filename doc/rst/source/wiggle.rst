@@ -147,7 +147,7 @@ Optional Arguments
 
 **-I**\ *fix_az*
     Set a fixed azimuth projection for wiggles [Default uses track
-    azimuth, but see **-A**]. With this option, the calculated
+    azimuth, but see |-A|]. With this option, the calculated
     track-normal azimuths are overridden by *fixed_az*.
 
 .. _-T:

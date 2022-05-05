@@ -178,7 +178,7 @@ Optional Arguments
 
 **-N**
     Do NOT clip contours or image at the boundaries [Default will clip
-    to fit inside region **-R**].
+    to fit inside region |-R|].
 
 .. _-Q:
 

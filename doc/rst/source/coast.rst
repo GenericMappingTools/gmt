@@ -268,7 +268,7 @@ Optional Arguments
     prepend *level*/, where *level* is 1-4 and represent coastline,
     lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.
     Repeat |-W| as needed. When specific level pens are set, those not
-    listed will not be drawn [Default draws all levels; but see **-A**].
+    listed will not be drawn [Default draws all levels; but see |-A|].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_

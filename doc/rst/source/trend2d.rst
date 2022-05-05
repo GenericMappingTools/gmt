@@ -119,7 +119,7 @@ Optional Arguments
 .. |Add_-bi| replace:: [Default is 3 (or 4 if |-W| is set) input columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 1-6 columns as set by **-F**].
+.. |Add_-bo| replace:: [Default is 1-6 columns as set by |-F|].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code

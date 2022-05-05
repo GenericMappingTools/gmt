@@ -256,7 +256,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *symbol*\ [*size*]
-    Specify the symbol to use for the event [Default plots lines or polygons; see **-A**].
+    Specify the symbol to use for the event [Default plots lines or polygons; see |-A|].
     Optionally, append symbol *size* with unit from
     (**c**\|\ **i**\|\ **p**\ ).  If no *size* is given then we read an event-specific size
     from the data file's third column (fourth if |-C| is used). **Note**: Not all the symbols that
