@@ -73,13 +73,13 @@ Optional Arguments
     while *gtype* is either 0 (Cartesian) or 1 (geographic).
     If the |-I| option is used, the
     output format is instead *NF w e s n {b t} v0 v1*, where *NF* is the total
-    number of files read and *w e s n {b t}* are rounded off (see **-I**).
+    number of files read and *w e s n {b t}* are rounded off (see |-I|).
 
 .. _-D:
 
 **-D**\ [*xoff*\ [/*yoff*]][**+i**]
     Divide a single grid's domain (or the |-R| domain, if no grid given)
-    into tiles of size *dx* times *dy* (set via **-I**).  You can specify
+    into tiles of size *dx* times *dy* (set via |-I|).  You can specify
     overlap between tiles by appending *xoff*\ [/*yoff*].  If the single
     grid is given you may use the modifier **+i** to ignore tiles that
     have no data within each tile subregion.  Default output is text

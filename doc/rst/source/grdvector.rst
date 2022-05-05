@@ -172,7 +172,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    The theta grid provided contains azimuths rather than directions (implies **-A**).
+    The theta grid provided contains azimuths rather than directions (implies |-A|).
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -225,7 +225,7 @@ The scale given via |-S| may require some consideration. As explained in |-S|,
 it is specified in data-units per plot or distance unit. The plot or distance unit
 chosen will affect the type of vector you select. In all cases, we first compute
 the magnitude *r* of the user's data vectors at each selected node from the *x* and *y*
-components (unless you are passing *r*, *theta* grids directly with **-A**).  These
+components (unless you are passing *r*, *theta* grids directly with |-A|).  These
 magnitudes are given in whatever data units they come with.  Let us pretend our data
 grids record secular changes in the Earth's magnetic horizontal vector field in units
 of nTesla/year, and that at a particular node the magnitude is 28 nTesla/year (in some

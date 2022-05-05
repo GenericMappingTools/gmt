@@ -54,7 +54,7 @@ supplied increments given by |-I|. Such output will be in the text form
 **-R**\ *w/e/s/n*, which can be used directly on the command line for other
 modules (hence only *dx* and *dy* are needed).  If |-C| is combined with
 **-I** then the output will be in column form and rounded up/down for as many
-columns as there are increments provided in |-I|. A similar option (**-T**)
+columns as there are increments provided in |-I|. A similar option (|-T|)
 will provide a **-T**\ *zmin/zmax/dz* string for makecpt.
 
 Required Arguments
@@ -126,7 +126,7 @@ Optional Arguments
     to give grid dimensions for fastest results in programs using FFTs.
     Use **-Is**\ *dx*\ [/*dy*] to report an extended region optimized to
     give grid dimensions for fastest results in programs like surface.
-    Use **-Ib** to write the bounding box of the data table or segments (see **-A**)
+    Use **-Ib** to write the bounding box of the data table or segments (see |-A|)
     as a closed polygon segment. **Note**: For oblique projections you should
     use the **-Ap** option in :doc:`plot` to draw the box properly.
     If **-Ie** is given then the exact min/max of the input is given in the |-R| string.

@@ -174,7 +174,7 @@ Optional Arguments
     Append **+b** to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from extra columns 4-5.
     Append **+xl**\|\ **r**\|\ *x0* to connect first and last point to anchor points at either *xmin*, *xmax*, or *x0*, or
     append **+yb**\|\ **t**\|\ *y0* to connect first and last point to anchor points at either *ymin*, *ymax*, or *y0*.
-    Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
+    Polygon may be painted (|-G|) and optionally outlined by adding **+p**\ *pen* [no outline].
     All constructed polygons are assumed to have a constant *z* value.
     **Note**: When option |-Z| is passed via segment headers you will need |-L| to ensure
     your segments are interpreted as polygons, else they are seen as lines.
@@ -219,7 +219,7 @@ Optional Arguments
     Set pen attributes for lines or the outline of symbols [Defaults:
     width = default, color = black, style = solid]. If the modifier **+cl**
     is appended then the color of the line are taken from the CPT (see
-    **-C**). If instead modifier **+cf** is appended then the color from the cpt
+    |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill.  Use just **+c** for both effects.
     If |-Z| is set, then append **+z** to |-W| to assign pen color via **-C**\ *cpt* and the
     *z*-values obtained.  Finally, if pen *color* = *auto*\ [*-segment*] or *auto-table* then

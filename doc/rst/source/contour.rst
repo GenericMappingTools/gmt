@@ -235,7 +235,7 @@ Optional Arguments
     Regular contours use pen 0.25p,black. Normally, all contours are drawn
     with a fixed color determined by the pen setting. If the modifier **+cl** is appended
     then the color of the contour lines are taken from the CPT (see
-    **-C**). If instead modifier **+cf** is appended then the color from the cpt
+    |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to the contour annotations.  Select **+c** for both effects.
 
 .. |Add_-XY| replace:: |Add_-XY_links|
@@ -243,7 +243,7 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. Use 4-byte integer triplets for node ids (**-E**).
+.. |Add_-bi| replace:: [Default is 3 input columns]. Use 4-byte integer triplets for node ids (|-E|).
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is 3 output columns].

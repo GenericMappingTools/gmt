@@ -64,7 +64,7 @@ The input files should contain the following columns:
 *lon* *lat* [ *alt* ] [ *timestart* [ *timestop* ] ]
 
 where *lon* and *lat* are required for all features, *alt* is optional
-for all features (see also |-A| and **-C**), and *timestart* and
+for all features (see also |-A| and |-C|), and *timestart* and
 *timestop* apply to events and timespan features.   For wiggles,
 the *alt* column is required but is expected to represent an along-track
 data anomaly such as gravity, magnetics, etc.  These values will be
@@ -249,7 +249,7 @@ Optional Arguments
     Set pen attributes for lines, wiggles or polygon outlines. Append pen
     attributes to use [Defaults: width = default, color = black, style =
     solid]. If the modifier **+cl** is appended then the color of the line
-    are taken from the CPT (see **-C**). If instead modifier **+cf** is
+    are taken from the CPT (see |-C|). If instead modifier **+cf** is
     appended then the color from the cpt file is applied to symbol fill.
     Use just **+c** for both effects.  Note that for KML the pen width is
     given in (fractional) pixels and not in points (1/72 inch).
@@ -403,7 +403,7 @@ Kml Hierarchy
 GMT stores the different features in hierarchical folders by feature
 type (when using |-O|, |-K| or **-T/**\ *foldername*), by input file
 (if not standard input), and by line segment (using the name from the
-segment header, or **-N**). This makes it more easy in Google Earth to
+segment header, or |-N|). This makes it more easy in Google Earth to
 switch on or off parts of the contents of the Document. The following is
 a crude example:
 

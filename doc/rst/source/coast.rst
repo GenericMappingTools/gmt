@@ -93,7 +93,7 @@ Optional Arguments
 
 **-C**\ *fill*\ [**+l**\|\ **+r**] :ref:`(more ...) <-Gfill_attrib>`
     Set the shade, color, or pattern for lakes and river-lakes [Default
-    is the fill chosen for "wet" areas (**-S**)]. Optionally, specify
+    is the fill chosen for "wet" areas (|-S|)]. Optionally, specify
     separate fills by appending **+l** for lakes or **+r** for
     river-lakes, repeating the |-C| option as needed.
 
@@ -373,7 +373,7 @@ The desired file is then sought for in the alternate directories.
 Bugs
 ----
 
-The options to fill (**-C** |-G| **-S**) may not always work if the
+The options to fill (**-C** |-G| |-S|) may not always work if the
 Azimuthal equidistant projection is chosen (**-Je**\|\ **E**). If the
 antipole of the projection is in the oceans it will most likely work. If
 not, try to avoid using projection center coordinates that are even

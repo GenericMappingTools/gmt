@@ -118,7 +118,7 @@ Optional Arguments
 
 **-H**\ *scale*
     Given the finite dots-per-unit used to rasterize PostScript frames to rasters, the quantizing of features
-    to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings (**-Q**)
+    to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings (|-Q|)
     which affect lines and text only.  The given *scale* temporarily increases the effective dots-per-unit
     by *scale*, rasterizes the plot, then down-samples the image by the same scale at the end.  The larger
     the *scale*, the smoother the raster.  Because processing time increases with *scale* we suggest you

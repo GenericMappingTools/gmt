@@ -59,7 +59,7 @@ Required Arguments
 ------------------
 
 *table*
-    3 (or 4, see **-W**) column ASCII data table file(s) (or binary, see
+    3 (or 4, see |-W|) column ASCII data table file(s) (or binary, see
     **-bi**) holding (*x*,\ *y*,\ *z*\ [,\ *w*])
     data values, where [*w*] is an optional weight for the data.
     If no file is specified, **blockmedian** will read
@@ -82,9 +82,9 @@ Optional Arguments
 **-A**\ *fields*
     Select which fields to write to individual grids.  Requires |-G|.
     Append the codes for available fields: **z** (the median
-    data z, but see **-T**), **s** (the L1 scale of the median), **l** (lowest
+    data z, but see |-T|), **s** (the L1 scale of the median), **l** (lowest
     value), **q25** (the 25% quartile), **q75** (the 75% quartile), **h** (highest value),
-    and **w** (the output weight; requires **-W**).  Note **s**\|\ **l**\|\ **h**
+    and **w** (the output weight; requires |-W|).  Note **s**\|\ **l**\|\ **h**
     requires |-E|, while **l**\|\ **q25**\|\ **q75**\|\ **h** requires **-Eb**,
     and **Es**\|\ **r** cannot be used. [Default is just **z**].
 
@@ -92,7 +92,7 @@ Optional Arguments
 
 **-C**
     Use the center of the block as the output location [Default uses the
-    median x and median y as location (but see **-Q**)].
+    median x and median y as location (but see |-Q|)].
 
 .. _-E:
 

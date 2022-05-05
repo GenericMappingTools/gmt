@@ -115,12 +115,12 @@ Optional Arguments
     When no |-S| is given we expect to read lines or polygons.  Two different forms for input are
     supported and specified via the chosen |-A| directives: (1) Choose **-Ar** if your input data are *trajectories*, the data
     format is given as *x, y, time*, and the "event" is the portion of that trajectories limited by the current
-    time (*now*), event duration (via **-L**) and rise/fade periods (via **-Es**). If current time falls between
+    time (*now*), event duration (via |-L|) and rise/fade periods (via **-Es**). If current time falls between
     two points on the trajectory then we linearly interpolate to find the current end point. Alternatively, (2) choose **-As**
     to read each complete segment (i.e., a polygon or line with just *x, y* coordinates) from a multisegment
     file and get a common *time* for each segment via a required **-T**\ *string* specified in the segment
     header.  Here, the entire polygon or line is the "event" if inside the limits of current time (*now*), event
-    duration (via **-L**) and rise/fade periods (via **-Es**).  If **-L**\ [**t**] is set then the *string*
+    duration (via |-L|) and rise/fade periods (via **-Es**).  If **-L**\ [**t**] is set then the *string*
     must be either of the format *begin*/*length*\|\ *end* or *begin*,\ *length*\|\ *end*.  Use a comma to
     separate absolute time specifications, otherwise a slash is also supported. **Note**:
     Neither lines nor polygons allow for any labels to be placed. Finally, you can use **-Ar**\ *dpu* to
@@ -183,7 +183,7 @@ Optional Arguments
     text attributes (font, angle, and justification) directly on the command line. Use **+f**
     to set the font (size,fontname,color), **+a** to set the angle, and **+j** to set the justification.
     Normally, the text to be plotted is the trailing text.  Instead, use **+r** to use the
-    record number (counting up from *first* [0]) or **+z** to format incoming *z* values (requires **-C**)
+    record number (counting up from *first* [0]) or **+z** to format incoming *z* values (requires |-C|)
     to a string using the supplied *format* [use :term:`FORMAT_FLOAT_MAP`].
 
 .. _-G:
@@ -339,7 +339,7 @@ Optional Arguments
 The meaning of time
 -------------------
 
-While normally the meaning of "time" (e.g., such as in the argument to **-T**)
+While normally the meaning of "time" (e.g., such as in the argument to |-T|)
 is in fact the time of the phenomenon being plotted, it may also be any other monotonically
 increasing quantity of convenience, such as elapsed time, model time, frame number, or other physical
 quantities such as distance.  It all depends on the context of the movie.  The values

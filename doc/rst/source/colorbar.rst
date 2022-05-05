@@ -93,7 +93,7 @@ Optional Arguments
     is given then we read standard input.  By default all
     color changes are annotated. To use a subset, add an extra column to
     the CPT with a L, U, or B to annotate Lower, Upper, or Both
-    color segment boundaries (but see **-B**). Like :doc:`grdview`, we can understand
+    color segment boundaries (but see |-B|). Like :doc:`grdview`, we can understand
     pattern specifications in the CPT. For CPTs where the
     *z* range is in meters, it may be useful to change to another unit
     when plotting.  To do so, append **+U**\ *unit* to the file name.
@@ -177,7 +177,7 @@ Optional Arguments
 **-L**\ [**i**][*gap*]
 
     Gives equal-sized color rectangles. Default scales rectangles
-    according to the z-range in the CPT (Also see **-Z**). If
+    according to the z-range in the CPT (Also see |-Z|). If
     *gap* is appended and the CPT is discrete we will center each
     annotation on each rectangle, using the lower boundary z-value for
     the annotation. If **i** is prepended we annotate the interval range
@@ -249,7 +249,7 @@ Optional Arguments
 **-Z**\ *widthfile*
     File with colorbar-width per color entry. By default, width of entry
     is scaled to color range, i.e., z = 0-100 gives twice the width as z
-    = 100-150 (Also see **-L**). **Note**: The widths may be in plot distance
+    = 100-150 (Also see |-L|). **Note**: The widths may be in plot distance
     units or given as relative fractions and will be automatically scaled
     so that the sum of the widths equals the requested bar length.
 

@@ -94,7 +94,7 @@ Appendix :ref:`Chart-Octal-Codes-for-Chars` in the GMT Technical Reference and C
 
 Using the |-G| or |-W| options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
-characters, except in paragraph mode (**-M**)).
+characters, except in paragraph mode (|-M|)).
 
 Finally, you may typeset LaTeX expressions provided they are enclosed in @[ ... @[ or <math> ... </math>;
 see Chapter :doc:`/cookbook/gmt-latex` for more details.
@@ -156,7 +156,7 @@ Optional Arguments
     Optionally, use modifier **+t** to set the shape of the textbox when using |-G| and/or |-W|.
     Append lower case **o** to get a straight rectangle [Default].
     Append upper case **O** to get a rounded rectangle. In paragraph
-    mode (**-M**) you can also append lower case **c** to get a concave
+    mode (|-M|) you can also append lower case **c** to get a concave
     rectangle or append upper case **C** to get a convex rectangle.
 
 .. _-D:
@@ -199,7 +199,7 @@ Optional Arguments
     text as the most recent segment header or segment label, respectively in
     a multisegment input file, **+r** to use the record number (counting up from *first*),
     **+t**\ *text* to set a fixed text string (if *text* contains plus characters then the
-    **+t** modifier must be the last modifier in **-F**), or **+z** to format incoming *z* values
+    **+t** modifier must be the last modifier in |-F|), or **+z** to format incoming *z* values
     to a string using the supplied *format* [use :term:`FORMAT_FLOAT_MAP`].  **Note**: If |-Z| is
     in effect then the *z* value used for formatting is in the 4th, not 3rd column.
     If you only want a specific word from the trailing text and not the whole line,
@@ -210,7 +210,7 @@ Optional Arguments
 **-G**\ [*fill*][**+n**]
     Sets the shade or color used for filling the text box [Default is no
     fill]. Alternatively, give no *fill* to plot text and then use the
-    text dimensions (and **-C**) to build clip paths and turn clipping on.
+    text dimensions (and |-C|) to build clip paths and turn clipping on.
     This clipping can then be turned off later with :doc:`clip` |-C|.
     To **not** plot the text but activate clipping, use **-G+n** instead.
     **Note**: cannot be used with LaTeX expressions.
@@ -230,7 +230,7 @@ Optional Arguments
     remaining lines until next segment header). The information expected
     is (*x y* [*font angle justify*] *linespace parwidth parjust*),
     where *x y font angle justify* are defined above (the presence or
-    absence of *font*, *angle*, and *justify* are determined by **-F**), while *linespace* and
+    absence of *font*, *angle*, and *justify* are determined by |-F|), while *linespace* and
     *parwidth* are the linespacing and paragraph width, respectively.
     The justification of the text paragraph is governed by *parjust*
     which may be **l**\ (eft), **c**\ (enter), **r**\ (ight), or
@@ -273,7 +273,7 @@ Optional Arguments
 
 **-W**\ *pen*
     Sets the pen used to draw a rectangle around the text string (see
-    **-C**) [Default is width = default, color = black, style = solid].
+    |-C|) [Default is width = default, color = black, style = solid].
     **Note**: cannot be used with LaTeX expressions.
 
 .. |Add_-XY| replace:: |Add_-XY_links|

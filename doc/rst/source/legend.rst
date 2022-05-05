@@ -337,7 +337,7 @@ expected height. This is an exact calculation except in the case of
 legends that place paragraph text. Here we simply do a first-order
 estimate of how many typeset lines might appear. Without access to font
 metrics this estimate will occasionally be off by 1 line. If so, note
-the reported height (with **-V**) and specify a slightly larger or
+the reported height (with |-V|) and specify a slightly larger or
 smaller height in |-D|.
 
 Windows Remarks

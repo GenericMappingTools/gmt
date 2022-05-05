@@ -77,7 +77,7 @@ Optional Arguments
     *reliefgrid*. [Default determines colors from *reliefgrid*]. Note that **-Jz** and
     |-N| always refers to the *reliefgrid*. The *drapegrid* only
     provides the information pertaining to colors, which (if *drapegrid* is a grid) will be looked-up
-    via the CPT (see **-C**). Instead, you may give three grid files
+    via the CPT (see |-C|). Instead, you may give three grid files
     via separate |-G| options in the specified order. These files must contain the red, green, and
     blue colors directly (in 0-255 range) and no CPT is needed. The
     *drapegrid* may be of a different resolution than the *reliefgrid*.
@@ -127,7 +127,7 @@ Optional Arguments
     #. Specify **c**. Same as **-Qi** but will make nodes with z = NaN transparent, using the colormasking
        feature in PostScript Level 3 (the PS device must support PS Level 3).
 
-    **Note**: If the CPT is categorical then only **-Qm** is available (but see **-T**).
+    **Note**: If the CPT is categorical then only **-Qm** is available (but see |-T|).
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_

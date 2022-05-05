@@ -93,7 +93,7 @@ Optional Arguments
 
 **-N**
     Invert the sense of what is inside and outside the terminator.  Only
-    used with clipping (**-G**) and cannot be used together with |-B|.
+    used with clipping (|-G|) and cannot be used together with |-B|.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_

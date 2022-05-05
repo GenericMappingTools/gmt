@@ -70,8 +70,8 @@ Optional Arguments
     There are two uses for this setting: (1) Instead of determining a best-fit regression
     we explore the full range of regressions. Examine all possible regression lines with slope
     angles between *min* and *max*, using steps of *inc* degrees [-90/+90/1].  For each slope,
-    the optimum intercept is determined based on your regression type (**-E**) and misfit norm
-    (**-N**) settings. For each data segment we report the four columns *angle*, *E*, *slope*,
+    the optimum intercept is determined based on your regression type (|-E|) and misfit norm
+    (|-N|) settings. For each data segment we report the four columns *angle*, *E*, *slope*,
     *intercept*, for the range of specified angles. The best model parameters within this range
     are written into the segment header and reported in verbose information mode (**-Vi**).
     (2) Except for **-N2**, append **+f** to force the best regression to
@@ -82,7 +82,7 @@ Optional Arguments
    :width: 500 px
    :align: center
 
-   Scanning slopes (**-A**) to see how the misfit for an fully orthogonal regression using the LMS (**-Nr**) criterion
+   Scanning slopes (|-A|) to see how the misfit for an fully orthogonal regression using the LMS (**-Nr**) criterion
    varies with the line angle.  Here we see the best solution gives a line angle of -78.3 degrees
    but there is another local minimum for an angle of 78.6 degrees that is almost as good.
 

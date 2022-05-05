@@ -181,7 +181,7 @@ Optional Arguments (begin mode)
 .. _-T:
 
 **-T**\ *heading*
-    While individual subplots can have titles (see |-S| or **-B**), the entire figure may also have a
+    While individual subplots can have titles (see |-S| or |-B|), the entire figure may also have a
     overarching *heading* [no heading]. Font is determined by setting :term:`FONT_HEADING`.
 
 .. |Add_-V| replace:: |Add_-V_links|

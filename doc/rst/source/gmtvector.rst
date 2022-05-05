@@ -47,7 +47,7 @@ Cartesian three-vectors on the unit sphere. Otherwise we expect (r,
 theta) unless **-Ci** is in effect. If no file is found we expect a
 single vector to be given as argument to **-A**; this argument will also
 be interpreted as an x/y[/z], lon/lat, or r/theta vector. The input
-vectors (or the one provided via **-A**) are denoted the prime
+vectors (or the one provided via |-A|) are denoted the prime
 vector(s). Several standard vector operations (angle between vectors,
 cross products, vector sums, and vector rotations) can be selected; most
 require a single second vector, provided via |-S|. The output vectors

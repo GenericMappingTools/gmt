@@ -24,7 +24,7 @@ line. We look for the file in (1) the current directory,
 (2) in $GMT_USERDIR (if defined), (3) in $GMT_DATADIR (if defined), or
 (4) in $GMT_CACHEDIR (if defined). If
 found we print the path name to the file, just the directory (see
-**-D**), or a confirmation (see **-C**). The $GMT_USERDIR and
+|-D|), or a confirmation (see |-C|). The $GMT_USERDIR and
 $GMT_DATADIR environment variables can be comma-separated list of
 directories, and we search recursively down any directory that ends with
 / (i.e., /export/data is a single directory whereas /export/data/ will

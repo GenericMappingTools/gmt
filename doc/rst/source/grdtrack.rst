@@ -51,7 +51,7 @@ files) and a table (from file or standard input; but see |-E| for
 exception) with (x,y) [or (lon,lat)] positions in the first two columns
 (more columns may be present). It interpolates the grid(s) at the
 positions in the table and writes out the table with the interpolated
-values added as (one or more) new columns. Alternatively (**-C**), the
+values added as (one or more) new columns. Alternatively (|-C|), the
 input is considered to be line-segments and we create orthogonal
 cross-profiles at each data point or with an equidistant separation and
 sample the grid(s) along these profiles. A bicubic [Default], bilinear,
@@ -155,7 +155,7 @@ Optional Arguments
     which will connect segments with shared joints into a single segment.
     In addition to line coordinates, you can use Z-, Z+ to mean the global
     minimum and maximum locations in the grid (only available if a
-    single grid is given via **-G**). You may append
+    single grid is given via |-G|). You may append
     **+i**\ *inc* to set the sampling interval; if not given then
     we default to half the minimum grid interval.  For a *line* along parallels
     or meridians you can add **+g** to report degrees of longitude or latitude

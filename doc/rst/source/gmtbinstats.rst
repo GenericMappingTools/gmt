@@ -117,7 +117,7 @@ Optional Arguments
     **r**\ ectangular **h**\ exagonal binning. For **-Tr**, set bin sizes via |-I| and we write
     the computed statistics to the grid file named in |-G|.  For **-Th**, we write a table with
     the centers of the hexagons and the computed statistics to standard output (or to the file named
-    in **-G**).  Here, the |-I| setting is expected to set the *y* increment only and we compute
+    in |-G|).  Here, the |-I| setting is expected to set the *y* increment only and we compute
     the *x*-increment given the geometry. Because the horizontal spacing between hexagon centers in
     *x* and *y* have a ratio of :math:`\sqrt{3}`, we will automatically adjust *xmax* in |-R| to
     fit a whole number of hexagons. **Note**: Hexagonal tiling requires Cartesian data.

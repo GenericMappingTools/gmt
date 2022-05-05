@@ -132,7 +132,7 @@ Optional Arguments
     - **l** - select records NOT within the specified distance of any line.
     - **r** - select records NOT inside the specified rectangular region.
     - **s** - select records NOT considered inside as specified by **-N**
-      (and |-A|, **-D**).
+      (and |-A|, |-D|).
     - **z** - select records NOT within the range specified by |-Z|.
 
 .. |Add_-J| replace:: |Add_-J_links|

@@ -62,7 +62,7 @@ Optional Module Arguments
 -------------------------
 
 *-option*
-    Where *-option* is the one-letter option of the module in question (e.g, **-R**).
+    Where *-option* is the one-letter option of the module in question (e.g, |-R|).
     We then display the *module* documentation positioned at that specific option.  Note
     that this operation is only valid for an actual URL, hence we implicitly set
     |-S| when an option anchor is specified.

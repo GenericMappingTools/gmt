@@ -47,9 +47,9 @@ be organized with one or more layers representing the (common) *x* and *y* dimen
 while the 3rd dimension may represent distance or time; we refer to this
 dimension as the *level*.  The output layers may be written as a single 3-D cube
 or as a set of 2-D layers.  Alternatively, we interpolate the cube along the level-axis
-at one or more arbitrary (*x/y*) coordinates (**-S**), resulting in a data table with one or
+at one or more arbitrary (*x/y*) coordinates (|-S|), resulting in a data table with one or
 more level-series, or we slice the 3-D cube along an arbitrary vertical slice and write that
-2-D slice to a grid file (**-E**).
+2-D slice to a grid file (|-E|).
 
 Required Arguments
 ------------------

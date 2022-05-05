@@ -43,7 +43,7 @@ Description
 
 **grd2cpt** reads one or more grid files and writes a static color palette
 (CPT) file. In classic mode we write the CPT to standard output, while under
-modern mode we simply save the CPT as the current session CPT (but see **-H**).
+modern mode we simply save the CPT as the current session CPT (but see |-H|).
 The CPT is based on an existing dynamic
 master CPT of your choice, and the mapping from data value to
 colors is through the data's cumulative distribution function (CDF), so
@@ -269,7 +269,7 @@ Discrete versus Continuous CPT
 ------------------------------
 
 All CPTs can be stretched, but only continuous CPTs can be sampled
-at new nodes (i.e., by given an increment in **-T**).  We impose this
+at new nodes (i.e., by given an increment in |-T|).  We impose this
 limitation to avoid aliasing the original CPT.
 
 Examples

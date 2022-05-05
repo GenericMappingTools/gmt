@@ -48,7 +48,7 @@ Description
 **triangulate** reads one or more ASCII [or binary] files (or standard
 input) containing x,y[,z] and performs Delaunay triangulation, i.e., it
 finds how the points should be connected to give the most equilateral
-triangulation possible. If a map projection (give |-R| and **-J**) is
+triangulation possible. If a map projection (give |-R| and |-J|) is
 chosen then it is applied before the triangulation is calculated. By
 default, the output is triplets of point id numbers that make up each
 triangle and is written to standard output. The id numbers refer to the
@@ -191,7 +191,7 @@ Optional Arguments
 
 .. include:: explain_-qi.rst_
 
-.. |Add_nodereg| replace:: (Only valid with **-G**).
+.. |Add_nodereg| replace:: (Only valid with |-G|).
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_-s.rst_

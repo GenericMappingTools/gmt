@@ -162,8 +162,8 @@ Parameters
 Several parameters are automatically assigned and can be used when composing the *mainscript* and the
 optional *preflight* and *postflight* scripts. There are two sets of parameters: Those that are constants
 and those that change with the job number.  The constants are accessible by all the scripts:
-**BATCH_PREFIX**\ : The common prefix of the batch jobs (it is set with **-N**). **BATCH_NJOBS**\ : The
-total number of jobs (given or inferred from **-T**). Also, if |-I| was used then any static parameters
+**BATCH_PREFIX**\ : The common prefix of the batch jobs (it is set with |-N|). **BATCH_NJOBS**\ : The
+total number of jobs (given or inferred from |-T|). Also, if |-I| was used then any static parameters
 listed therein will be available to all the scripts as well. In addition, the *mainscript* also has access
 to parameters that vary with the job counter: **BATCH_JOB**\ : The current job number (an integer, e.g., 136),
 **BATCH_ITEM**\ : The formatted job number given the precision (a string, e.g., 000136), and **BATCH_NAME**\ :
@@ -221,7 +221,7 @@ The **batch** module creates several hidden script files that are used in the ge
 (optional since it derives from **-Sf** and processes files once all the batch job complete), *batch_job*
 (accepts a job counter argument and processes data for those parameters), and *batch_cleanup* (removes temporary
 files at the end of the process). For each job, there is a separate *batch_params_######* script that provides
-job-specific variables (e.g., job number and anything given via **-T**).  The *preflight* and *postflight* scripts
+job-specific variables (e.g., job number and anything given via |-T|).  The *preflight* and *postflight* scripts
 have access to the information in *batch_init*, while the *batch_job* script in addition has access to the job-specific
 parameter file.  Using the |-Q| option will just produce these scripts which you can then examine.
 **Note**: The *mainscript* is duplicated per job and many of these are run simultaneously on all available cores.
@@ -253,11 +253,11 @@ are among the listed parameters that **batch** creates automatically then use th
 require the job number you will need to make a file that you can pass via |-T|.  This file should
 then have all the values you need, per job (i.e., per row), with values across all the columns you need.
 If you need to assign various *fixed* variables that do not change with time, then your *mainscript*
-will look shorter and cleaner if you offload those assignments to a separate *includefile* (via **-I**).
+will look shorter and cleaner if you offload those assignments to a separate *includefile* (via |-I|).
 To test your *mainscript*, start by using options **-Q -M** to ensure that your master job results are correct.
 The |-M| option simply runs one job of your batch sequence (you can select which one via the **-M**
 arguments [0]).  Fix any issues with your use of variables and options until this works.  You can then try
-to remove |-Q|. We recommend you make a very short (i.e., via **-T**) and small batch sequence so you don't
+to remove |-Q|. We recommend you make a very short (i.e., via |-T|) and small batch sequence so you don't
 have to wait very long to see the result.  Once things are working you can beef up number of jobs.
 
 

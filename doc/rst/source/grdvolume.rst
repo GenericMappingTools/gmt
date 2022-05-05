@@ -97,7 +97,7 @@ Optional Arguments
     Determine the single contour that maximized the average height (=
     volume/area). Select **-Tc** to use the maximum curvature of heights
     versus contour value rather than the contour with the maximum height
-    to pick the best contour value (requires **-C**).
+    to pick the best contour value (requires |-C|).
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_

@@ -29,9 +29,9 @@ Description
 -----------
 
 **grdsample** reads a grid file and interpolates it to create a new grid
-file with either: a different registration (**-r** or **-T**); or, a new
-grid-spacing or number of nodes (**-I**), and perhaps also a new
-sub-region (**-R**). A bicubic [Default], bilinear, B-spline or
+file with either: a different registration (**-r** or |-T|); or, a new
+grid-spacing or number of nodes (|-I|), and perhaps also a new
+sub-region (|-R|). A bicubic [Default], bilinear, B-spline or
 nearest-neighbor interpolation is used; see **-n** for settings. Note
 that using |-R| only is equivalent to :doc:`grdcut` or :doc:`grdedit` |-S|.
 **grdsample** safely creates a fine mesh from a coarse one; the converse

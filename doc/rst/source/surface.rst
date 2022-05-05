@@ -279,7 +279,7 @@ Gridding Geographic Data: Boundary Conditions
 ---------------------------------------------
 
 The surface finite difference algorithm is Cartesian at heart, hence the *ad hoc*
-option to change the aspect ratio for a suitable mean latitude (**-A**). When
+option to change the aspect ratio for a suitable mean latitude (|-A|). When
 geographic data are supplied and the output grid has a 360 degree longitude range we will
 impose periodic boundary conditions in longitude.  However, no equivalent geographic
 boundary condition can be applied at the poles since the finite difference solution

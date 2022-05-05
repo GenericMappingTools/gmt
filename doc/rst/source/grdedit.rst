@@ -63,7 +63,7 @@ Optional Arguments
 
 **-A**
     If necessary, adjust the file's *x_inc*, *y_inc* to be compatible
-    with its domain (or a new domain set with **-R**). Older grid files
+    with its domain (or a new domain set with |-R|). Older grid files
     (i.e., created prior to GMT 3.1) often had excessive slop in
     *x_inc*, *y_inc* and an adjustment is necessary. Newer files are
     created correctly.
@@ -94,7 +94,7 @@ Optional Arguments
     **-Er** will rotate the grid 90 degrees clockwise (right),
     **-Et** will transpose the grid [Default],
     **-Ev** will flip the grid vertically (top-to-bottom).
-    Incompatible with the other options (except **-G**).
+    Incompatible with the other options (except |-G|).
 
 .. _-G:
 

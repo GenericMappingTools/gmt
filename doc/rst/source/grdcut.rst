@@ -33,7 +33,7 @@ Description
 
 **grdcut** will produce a new *outgrid* file which is a subregion of
 *ingrid*. The subregion may be specified with |-R| as in other programs;
-the specified range must not exceed the range of *ingrid* (but see **-N**).
+the specified range must not exceed the range of *ingrid* (but see |-N|).
 If in doubt, run :doc:`grdinfo` to check range. Alternatively, define the subregion
 indirectly via a range check on the node values or via distances from a
 fixed point. Finally, you can use |-J| for oblique projections to determine

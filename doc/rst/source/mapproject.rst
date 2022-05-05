@@ -138,11 +138,11 @@ Optional Arguments
 .. _-F:
 
 **-F**\ [**e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**\|\ **c**\|\ **i**\|\ **p**]
-    Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
+    Force 1:1 scaling, i.e., output (or input, see |-I|) data are in
     actual projected meters. To specify other units, append the desired
-    unit (see `Units`_). Without |-F|, the output (or input, see **-I**)
+    unit (see `Units`_). Without |-F|, the output (or input, see |-I|)
     are in the units specified by :term:`PROJ_LENGTH_UNIT` (but see
-    **-D**).
+    |-D|).
 
 .. _-G:
 
@@ -365,7 +365,7 @@ assuming a fixed speed of 12 knots.  We do this with
     gmt mapproject track.txt -G+un+a+i -Z12+a --TIME_UNIT=h > elapsed_time.txt
 
 where :term:`TIME_UNIT` is set to hour so that the speed is
-measured in nm (set by **-G**) per hour (set by :term:`TIME_UNIT`).
+measured in nm (set by |-G|) per hour (set by :term:`TIME_UNIT`).
 Elapsed times will be reported in hours (unless **+f** is added to **-Z**
 for ISO elapsed time).
 
