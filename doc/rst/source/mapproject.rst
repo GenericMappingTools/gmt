@@ -246,20 +246,20 @@ Optional Arguments
     *llx urx lly ury*) or use **O** to get the equivalent |-R| string as trailing
     text. To return the coordinates of the rectangular area encompassing the non-rectangular
     area defined by your **-R -J**, use **e**, or **E** for the trailing text string.
-    Alternatively (for **e** or **r**), append **+n** to set how many points you want along
-    each side for a closed polygon of the oblique area instead
+    Alternatively (for **e** or **r**), append **+n** to set how many points [100]
+    you want along each side for a closed polygon of the oblique area instead
     [Default returns the width and height of the map].
 
 .. figure:: /_images/GMT_obl_regions.*
-   :width: 400 px
+   :width: 600 px
    :align: center
 
    Comparing oblique (red outline) and regular (just meridians and parallels; black outline) regions.
    (left) Some domains are oblique (their perimeters are not following meridians and parallels).
-   We can use **-Wr**\ \|\ **R** to obtain the enclosing meridian/parallel box or the |R| string
+   We can use **-Wr**\ \|\ **R** to obtain the enclosing meridian/parallel box or the |-R| string
    for that region. (right) Other domains are not oblique but their enclosing rectangular box in
    the map projection will be  We can explore **-We**\ \|\ **E** to obtain the geographic coordinates
-   of the encompassing oblique rectangle or the |R| string for that region.
+   of the encompassing oblique rectangle or the |-R| string for that region.
 
 .. _-Z:
 

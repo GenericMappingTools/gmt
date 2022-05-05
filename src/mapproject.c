@@ -1027,8 +1027,8 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 		unsigned int wmode = 0, tmode = GMT_COL_FIX_NO_TEXT;
 		char key[3] = {""}, region[GMT_LEN256] = {""};
 
-		if (Ctrl->W.poly) {	/* Must generate a polygon via -We|r+n */
-			uint64_t dim[4] = {1, 1, 2*(Ctrl->W.nx+Ctrl->W.ny-2), 2};
+		if (Ctrl->W.poly) {	/* Must generate a closed polygon via -We|r+n */
+			uint64_t dim[4] = {1, 1, 2*(Ctrl->W.nx+Ctrl->W.ny)-3, 2};
 			double dx, dy;
 			struct GMT_DATASEGMENT *S = NULL;
 			struct GMT_DATASET *D = NULL;
@@ -1045,6 +1045,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XHI]-i*dx, GMT->current.proj.rect[YHI]);
 			for (i = 1; i < Ctrl->W.ny; i++, k++)	/* max to min along left side */
 				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XLO], GMT->current.proj.rect[YHI]-i*dy);
+			S->data[GMT_X][k] = S->data[GMT_X][0];	S->data[GMT_Y][k] = S->data[GMT_Y][0];	/* Close polygon */
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, NULL, D) != GMT_NOERROR)
 				Return (API->error);
 			Return (GMT_NOERROR);
