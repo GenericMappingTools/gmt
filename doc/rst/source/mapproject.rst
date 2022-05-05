@@ -245,7 +245,7 @@ Optional Arguments
     use **o** to return the diagonal corner coordinates in degrees (in the order
     *llx urx lly ury*) or use **O** to get the equivalent **-R** string as trailing
     text. To return the coordinates of the rectangular area encompassing the non-rectangular
-    area defined by your **-R -J**, use **e**, or **E** for the trailing text string.
+    area defined by your **-R -J**, use **e**, or **E** for the trailing text string
     [Default returns the width and height of the map].
 
 .. _-Z:
