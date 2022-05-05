@@ -93,6 +93,8 @@ enum GMT_mp_cols {	/* Index into the extra and ecol_type arrays */
 	MP_COL_N		/* How many extra items there are to choose from */
 };
 
+#define GMT_MP_NNODES	100	/* Default number of points on one polygon side in -We|r+n */
+
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	bool used[8];	/* Used to keep track of which items are used by -A,G,L,Z */
@@ -157,9 +159,11 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 		struct GMT_DATUM from;	/* Contains a, f, xyz[3] */
 		struct GMT_DATUM to;	/* Contains a, f, xyz[3] */
 	} T;
-	struct MAPPROJECT_W {	/* -W[w|h|j<code>|n<rx/ry>|g<lon/lat>|x<x/y>] */
+	struct MAPPROJECT_W {	/* -W[e|E|g<lon/lat>|h|j<code>|n<rx/ry>|o|O|r|R|w|x<x/y>[+n<nx/ny>] */
 		bool active;
+		bool poly;
 		unsigned int mode;	/* See GMT_mp_Wcodes above */
+		unsigned int nx, ny;
 		struct GMT_REFPOINT *refpoint;
 	} W;
 	struct MAPPROJECT_Z {	/* -Z[<speed>][+c][+f][+i][+t<epoch>] */
@@ -200,7 +204,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> %s %s [-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]] [-C[<dx></dy>][+m]] [-D%s] "
 		"[-E[<datum>]] [-F[<%s|%s>]] [-G[<lon0>/<lat0>][+a][+i][+u<unit>][+v]] [-I] [-L<table>[+p][+u<unit>]] "
-		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[e|E|g|h|j|n|o|O|r|R|w|x]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
+		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[e|E|g|h|j|n|o|O|r|R|w|x]][+n[<nx>[/<ny]]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_V_OPT,
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_p_OPT,
@@ -283,9 +287,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If <from> equals - we use WGS-84.  If /<to> is not given we assume WGS-84. "
 		"Note: -T can be used as pre- or post- (-I) processing for -J -R.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W[e|E|g|h|j|n|o|O|r|R|w|x]");
+	GMT_Usage (API, 1, "\n-W[e|E|g|h|j|n|o|O|r|R|w|x][+n[<nx>[/<ny]]]");
 	GMT_Usage (API, -2, "Print map width and/or height or a reference point. No input files are read. Select optional directive:");
-	GMT_Usage (API, 3, "e: Print oblique <llx>/<lly>/<urx>/<ury>+r coordinates and -R string for rectangular region encompassing the -R -J area.");
+	GMT_Usage (API, 3, "e: Print oblique <llx>/<lly>/<urx>/<ury>+r coordinates for rectangular region encompassing the -R -J area.");
 	GMT_Usage (API, 3, "E: Same as e but prints -Rw/s/e/n+r string as trailing text instead.");
 	GMT_Usage (API, 3, "g: Print map coordinates of reference point <gx/gy>.");
 	GMT_Usage (API, 3, "h: Print map height (See -D for plot units).");
@@ -296,7 +300,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "R: Same as r but prints -Rw/e/s/n string as trailing text instead.");
 	GMT_Usage (API, 3, "w: Print map width (See -D for plot units).");
 	GMT_Usage (API, 3, "x: Print map coordinates of reference point given in plot coordinates <px/py>.");
-	GMT_Usage (API, -2, "Default prints both map width and map height.");
+	GMT_Usage (API, -2, "Note: For -We|r you can use +n[<nx>[/<ny]] to output the enclosing polygon instead "
+		"by giving the number of nodes along the two sides [100]. Default (-W with no args) prints map width and map height.");
 	GMT_Usage (API, 1, "\n-Z[<speed>][+a][+i][+f][+t<epoch>]");
 	GMT_Usage (API, -2, "Compute travel times along track using specified speed. "
 		"Note: Requires -G for setting distance calculations. "
@@ -710,9 +715,22 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 					case 'r': Ctrl->W.mode = GMT_MP_M_REGION; break;
 					case 'R': Ctrl->W.mode = GMT_MP_M_RSTRING; break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Expected -W[g|h|j|n|o|O|r|R|w|x]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Expected -W[e|E|g|h|j|n|o|O|r|R|w|x]\n");
 						n_errors++;
 						break;
+				}
+				if ((p = strstr (opt->arg, "+n"))) {	/* Building polygon */
+					if (p[2] == '\0')	/* No args, set default nodes */
+						Ctrl->W.nx = Ctrl->W.ny = GMT_MP_NNODES;
+					else {	/* Scan and assign */
+						n = sscanf (&p[2], "%u/%u", &Ctrl->W.nx, &Ctrl->W.ny);
+						if (n == 1) Ctrl->W.ny = Ctrl->W.nx;
+					}
+					if (!(Ctrl->W.mode == GMT_MP_M_EREGION || Ctrl->W.mode == GMT_MP_M_REGION)) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Modifier +n is only allowed with directives e or r\n");
+						n_errors++;
+					}
+					Ctrl->W.poly = true;
 				}
 				will_need_RJ = true;	/* Since knowing the dimensions means region and projection */
 				break;
@@ -1002,12 +1020,36 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
-	Out = gmt_new_record (GMT, NULL, NULL);
+	if (!Ctrl->W.poly) Out = gmt_new_record (GMT, NULL, NULL);
 
 	if (Ctrl->W.active) {	/* Print map dimensions or reference point and exit */
 		double w_out[4] = {0.0, 0.0, 0.0, 0.0}, x_orig, y_orig;
 		unsigned int wmode = 0, tmode = GMT_COL_FIX_NO_TEXT;
 		char key[3] = {""}, region[GMT_LEN256] = {""};
+
+		if (Ctrl->W.poly) {	/* Must generate a polygon via -We|r+n */
+			uint64_t dim[4] = {1, 1, 2*(Ctrl->W.nx+Ctrl->W.ny-2), 2};
+			double dx, dy;
+			struct GMT_DATASEGMENT *S = NULL;
+			struct GMT_DATASET *D = NULL;
+			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
+				Return (API->error);
+			S = D->table[0]->segment[0];	/* The one and only segment */
+			dx = (GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]) / (Ctrl->W.nx - 1);
+			dy = (GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO]) / (Ctrl->W.ny - 1);
+			for (i = k = 0; i < Ctrl->W.nx; i++, k++)	/* min to max along bottom */
+				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XLO]+i*dx, GMT->current.proj.rect[YLO]);
+			for (i = 1; i < Ctrl->W.ny; i++, k++)	/* min to max along right side */
+				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO]+i*dy);
+			for (i = 1; i < Ctrl->W.nx; i++, k++)	/* max to min along top */
+				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XHI]-i*dx, GMT->current.proj.rect[YHI]);
+			for (i = 1; i < Ctrl->W.ny; i++, k++)	/* max to min along left side */
+				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XLO], GMT->current.proj.rect[YHI]-i*dy);
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, NULL, D) != GMT_NOERROR)
+				Return (API->error);
+			Return (GMT_NOERROR);
+		}
+
 		switch (Ctrl->W.mode) {
 			case GMT_MP_M_WIDTH:
 				GMT_Report (API, GMT_MSG_INFORMATION, "Reporting map width in %s\n", unit_name);

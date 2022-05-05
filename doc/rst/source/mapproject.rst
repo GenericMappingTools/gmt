@@ -27,7 +27,7 @@ Synopsis
 [ |-S| ]
 [ |-T|\ [**h**]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**] ]
+[ |-W|\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -230,7 +230,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**]
+**-W**\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**][**+n**\ [*nx*\ [/*ny*]]]
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
     To output the plot coordinates of a map point, give **g**\ *lon*/*lat*.
@@ -245,8 +245,21 @@ Optional Arguments
     use **o** to return the diagonal corner coordinates in degrees (in the order
     *llx urx lly ury*) or use **O** to get the equivalent |-R| string as trailing
     text. To return the coordinates of the rectangular area encompassing the non-rectangular
-    area defined by your **-R -J**, use **e**, or **E** for the trailing text string
+    area defined by your **-R -J**, use **e**, or **E** for the trailing text string.
+    Alternatively (for **e** or **r**), append **+n** to set how many points you want along
+    each side for a closed polygon of the oblique area instead
     [Default returns the width and height of the map].
+
+.. figure:: /_images/GMT_obl_regions.*
+   :width: 400 px
+   :align: center
+
+   Comparing oblique (red outline) and regular (just meridians and parallels; black outline) regions.
+   (left) Some domains are oblique (their perimeters are not following meridians and parallels).
+   We can use **-Wr**\ \|\ **R** to obtain the enclosing meridian/parallel box or the |R| string
+   for that region. (right) Other domains are not oblique but their enclosing rectangular box in
+   the map projection will be  We can explore **-We**\ \|\ **E** to obtain the geographic coordinates
+   of the encompassing oblique rectangle or the |R| string for that region.
 
 .. _-Z:
 
@@ -388,6 +401,12 @@ To determine the oblique region string (in degrees) that corresponds to a rectan
    ::
 
     gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -WO
+
+To instead get a closed polygon of the oblique area in geographical coordinates, try
+
+   ::
+
+    gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -Wr+n > polygon.txt
 
 To find the region string that corresponds to the rectangular region that encompasses
 the projected region defined by a stereographic projection, try
