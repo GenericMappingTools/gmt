@@ -1518,7 +1518,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if (Ctrl->Z.active) {	/* Zap it */
 				if (gmt_remove_dir (API, workdir, false)) {
 					movie_close_files (Ctrl);
-					GMT_Report (API, GMT_MSG_ERROR, "Unable to remove old directlry %s - exiting\n", workdir);
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to remove old directory %s - exiting\n", workdir);
 					Return (GMT_RUNTIME_ERROR);
 				}
 			}
