@@ -42,7 +42,7 @@ using standard error estimates from Bendat and Piersol.
 The output files have 3 columns: f or w, p, and e. f or w is the
 frequency or wavelength, p is the spectral density estimate, and e is
 the one standard deviation error bar size. These files are named based
-on *name_stem*. If the **-C** option is used, up to eight files are
+on *name_stem*. If the |-C| option is used, up to eight files are
 created; otherwise only one (xpower) is written. The files (which are
 ASCII unless **-bo** is set) are as follows:
 
@@ -122,7 +122,7 @@ Optional Arguments
 
 **-N**\ [*name\_stem*]
     Supply an alternate name stem to be used for each individual output file [Default = "spectrum"].
-    If **-N** is given with no argument then we disable the writing of individual
+    If |-N| is given with no argument then we disable the writing of individual
     output files and instead write a single composite results table to standard output.
 
 .. |Add_-V| replace:: |Add_-V_links|

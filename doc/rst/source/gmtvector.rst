@@ -50,7 +50,7 @@ be interpreted as an x/y[/z], lon/lat, or r/theta vector. The input
 vectors (or the one provided via **-A**) are denoted the prime
 vector(s). Several standard vector operations (angle between vectors,
 cross products, vector sums, and vector rotations) can be selected; most
-require a single second vector, provided via **-S**. The output vectors
+require a single second vector, provided via |-S|. The output vectors
 will be converted back to (lon, lat) or (r, theta) unless **-Co** is set
 which requests (x, y[, z]) Cartesian coordinates.
 
@@ -92,7 +92,7 @@ Optional Arguments
 **-E**
     Convert input geographic coordinates from geodetic to geocentric and
     output geographic coordinates from geocentric to geodetic. Ignored
-    unless **-fg** is in effect, and is bypassed if **-C** is selected.
+    unless **-fg** is in effect, and is bypassed if |-C| is selected.
 
 .. _-N:
 
@@ -104,7 +104,7 @@ Optional Arguments
 
 **-S**\ [*vector*]
     Specify a single, secondary vector in the same format as the first
-    vector. Required by operations in **-T** that need two vectors
+    vector. Required by operations in |-T| that need two vectors
     (average, bisector, dot product, cross product, and sum).
 
 .. _-T:
@@ -123,9 +123,9 @@ Optional Arguments
     for the same translation for all input points, or just append
     *unit* to read *azimuth* and *distance* (in specified *unit* [**e**])
     from the third and fourth data column in the file, and **x** for cross-product.
-    If **-T** is not given then no transformation takes place; the
-    output is determined by other options such as **-A**, **-C**,
-    **-E**, and **-N**. **Note**: For **-Tt** and geographic coordinates we will
+    If |-T| is not given then no transformation takes place; the
+    output is determined by other options such as |-A|, |-C|,
+    |-E|, and |-N|. **Note**: For **-Tt** and geographic coordinates we will
     perform a great circle calculation unless **-je** is selected.
 
 .. |Add_-V| replace:: |Add_-V_links|

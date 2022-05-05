@@ -46,7 +46,7 @@ Description
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output mode estimates of
 position and value for every non-empty block in a grid region defined by
-the **-R** and **-I** arguments. See **-G** for writing gridded output directly.
+the |-R| and |-I| arguments. See |-G| for writing gridded output directly.
 Either :doc:`blockmean`, :doc:`blockmedian`,
 or **blockmode** should be used as a pre-processor before running
 :doc:`surface` to avoid aliasing short wavelengths. These routines are also
@@ -79,18 +79,18 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *fields*
-    Select which fields to write to individual grids.  Requires **-G**.
+    Select which fields to write to individual grids.  Requires |-G|.
     Append the codes for available fields: **z** (the modal
     data z), **s** (the L1 scale of the mode), **l** (lowest
     value), **h** (highest value) and **w** (the output weight; requires **-W**).
-    Note **s**\|\ **l**\|\ **h** requires **-E**, and **Es**\|\ **r**
+    Note **s**\|\ **l**\|\ **h** requires |-E|, and **Es**\|\ **r**
     cannot be used. [Default is just **z**].
 
 .. _-C:
 
 **-C**
     Use the center of the block as the output location [Default uses the
-    modal xy location (but see **-Q**)]. **-C** overrides **-Q**.
+    modal xy location (but see **-Q**)]. |-C| overrides |-Q|.
 
 .. _-D:
 
@@ -112,14 +112,14 @@ Optional Arguments
     mode), **l**, the lowest value, and **h**, the high value for each
     block. Output order becomes
     *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
-    *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
+    *x*,\ *y*,\ *z*\ [,\ *w*]. See |-W| for *w* output.
 
 **-E**\ **r**\|\ **s**\ [**+l**\|\ **h**]
     Provide source id **s** or record number **r** output, i.e., append
     the source id or record number associated with the modal value. If
     tied then report the record number of the higher of the two values (i.e., **+h** is the default);
     append **+l** to instead report the record number of the lower value.
-    Note that **-E** may be repeated so that both both **-E** and
+    Note that |-E| may be repeated so that both both |-E| and
     **-E**\ **r**\ [**+l**\|\ **h**] may be specified.
     For **-E**\ **s** we expect input records of the form
     *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned integer
@@ -129,9 +129,9 @@ Optional Arguments
 
 **-G**\ *grdfile*
     Write one or more fields directly to grids; no table data are written to
-    standard output.  If more than one fields are specified via **-A** then
+    standard output.  If more than one fields are specified via |-A| then
     *grdfile* must contain the format flag %s so that we can embed the field
-    code in the file names.  **Note**: Options **-C** and **-Q** are irrelevant
+    code in the file names.  **Note**: Options |-C| and |-Q| are irrelevant
     and not allowed.
 
 .. _-Q:
@@ -152,7 +152,7 @@ Optional Arguments
     *x*,\ *y*,\ *z*; weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
     Weights can be used in input to construct weighted modal values for each
     block. Weight sums can be reported to output for later combining
-    several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
+    several runs, etc. Use |-W| for weighted i/o, **-Wi** for weighted
     input only, and **-Wo** for weighted output only [Default uses
     unweighted i/o]. If your weights are actually uncertainties (one sigma)
     then append **+s** and we compute weight = 1/sigma.  Otherwise (or via
@@ -163,7 +163,7 @@ Optional Arguments
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-Wi** is set)].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 3 (or 4 if **-Wo** is set)]. **-E** adds 3 additional columns.
+.. |Add_-bo| replace:: [Default is 3 (or 4 if **-Wo** is set)]. |-E| adds 3 additional columns.
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code

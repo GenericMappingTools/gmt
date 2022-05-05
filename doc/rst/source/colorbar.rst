@@ -47,7 +47,7 @@ and vertical scales are supported. For color palette tables (CPTs) with gradatio
 colors (i.e., the lower and upper boundary of an interval have different
 colors) we will interpolate to give a continuous scale.
 Variations in intensity due to shading/illumination may be displayed by
-setting the option **-I**. Colors may be spaced according to a linear
+setting the option |-I|. Colors may be spaced according to a linear
 scale, all be equal size, or by providing a file with individual tile
 widths. The font used for the annotations along the scale and optional
 units is specified by :term:`FONT_ANNOT_PRIMARY`.
@@ -73,22 +73,22 @@ Optional Arguments
 **-B**\ [**p**\|\ **s**]\ *parameters*
     Set annotation, tick, and gridline interval for the colorbar. The
     x-axis label will plot beneath a horizontal bar (or vertically to
-    the right of a vertical bar), except when using the **+m** modifier of the **-D** option. As an
+    the right of a vertical bar), except when using the **+m** modifier of the |-D| option. As an
     option, use the y-axis label to plot the data unit to the right of a
-    horizontal bar (and above a vertical bar). If **-B** is omitted, or no annotation intervals are
+    horizontal bar (and above a vertical bar). If |-B| is omitted, or no annotation intervals are
     provided (classic mode only), the default is to annotate every color level based on the
     numerical entries in the CPT (which may be overridden by ULB
     flags in the CPT). The exception to this rule is for CPT files that were scaled to fit the range
     of a grid exactly and thus have arbitrary color levels; these will trigger an automatic **-Baf** setting.
     To specify custom text annotations for
     intervals, you must append ;\ *annotation* to each z-slice in the CPT. **Note**: The **-B**
-    option relies on the **-R** and **-J** settings of the :ref:`given hierarchical level <cookbook/features:GMT Modern Mode Hierarchical Levels>`
-    to plot correctly. For standard **-B** operations, |Add_-B_links|
+    option relies on the |-R| and |-J| settings of the :ref:`given hierarchical level <cookbook/features:GMT Modern Mode Hierarchical Levels>`
+    to plot correctly. For standard |-B| operations, |Add_-B_links|
 
 .. _-C:
 
 **-C**\ [*cpt*]
-    *cpt* is the CPT to be used. If no *cpt* is appended or no **-C** is given
+    *cpt* is the CPT to be used. If no *cpt* is appended or no |-C| is given
     then we use the current CPT (modern mode only).  In classic mode, if no **-C**
     is given then we read standard input.  By default all
     color changes are annotated. To use a subset, add an extra column to
@@ -181,7 +181,7 @@ Optional Arguments
     *gap* is appended and the CPT is discrete we will center each
     annotation on each rectangle, using the lower boundary z-value for
     the annotation. If **i** is prepended we annotate the interval range
-    instead. If **-I** is used then each rectangle will have its
+    instead. If |-I| is used then each rectangle will have its
     constant color modified by the specified intensity.
 
 .. _-M:
@@ -215,12 +215,12 @@ Optional Arguments
 .. _-S:
 
 **-S**\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+s**][**+x**\ *label*][**+y**\ *unit*]
-    Control various aspects of color bar appearance when **-B** is *not* used.
+    Control various aspects of color bar appearance when |-B| is *not* used.
     Append **+a** to place annotations at the given *angle* [default is no slanting].
     Append **+c** to use custom labels if given in the CPT as annotations.
     Append **+n** to use numerical labels [Default].
     Append **+s** to skip drawing gridlines separating different color intervals [Default draws gridlines].
-    If **-L** is used then **-B** cannot be used, hence you may optionally set a bar label via **+x**\ *label*
+    If |-L| is used then |-B| cannot be used, hence you may optionally set a bar label via **+x**\ *label*
     and any unit (i.e., y-label) via **+y**\ *unit*.
 
 .. |Add_-U| replace:: |Add_-U_links|
@@ -253,7 +253,7 @@ Optional Arguments
     units or given as relative fractions and will be automatically scaled
     so that the sum of the widths equals the requested bar length.
 
-.. |Add_perspective| replace:: (Required **-R** and **-J** for proper functioning).
+.. |Add_perspective| replace:: (Required |-R| and |-J| for proper functioning).
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_

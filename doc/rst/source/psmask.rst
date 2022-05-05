@@ -44,7 +44,7 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-**psmask** **-C** [ **-K** ] [ **-O** ]
+**psmask** |-C| [ |-K| ] [ |-O| ]
 
 .. include:: mask.rst
     :start-after: .. module_common_begins

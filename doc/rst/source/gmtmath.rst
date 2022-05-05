@@ -48,7 +48,7 @@ syntax.  Arbitrarily complicated expressions may therefore be evaluated; the
 final result is written to an output file [or standard output]. Data
 operations are element-by-element, not matrix manipulations (except
 where noted). Some operators only require one operand (see below). If no
-data tables are used in the expression then options **-T**, **-N** can
+data tables are used in the expression then options |-T|, |-N| can
 be set (and optionally **-bo** to indicate the
 data type for binary tables). If STDIN is given, the standard input will
 be read and placed on the stack as if a file with that content had been
@@ -77,7 +77,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\|\ **w**]
-    Requires **-N** and will partially initialize a table with values
+    Requires |-N| and will partially initialize a table with values
     from the given file *t_f(t)* containing *t* and *f(t)* only. The *t* is
     placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
     (see **-N**).  Append **+r** to only place *f(t)* and leave the left
@@ -95,12 +95,12 @@ Optional Arguments
 
 **-C**\ *cols*
     Select the columns that will be operated on until next occurrence of
-    **-C**. List columns separated by commas; ranges like 1,3-5,7 are
+    |-C|. List columns separated by commas; ranges like 1,3-5,7 are
     allowed, plus -Cx can be used for -C0 and -Cy can be used for -C1.
-    **-C** (no arguments) resets the default action of using
+    |-C| (no arguments) resets the default action of using
     all columns except time column (see **-N**). **-Ca** selects all
     columns, including time column, while **-Cr** reverses (toggles) the
-    current choices.  When **-C** is in effect it also controls which
+    current choices.  When |-C| is in effect it also controls which
     columns from a file will be placed on the stack.
 
 .. _-E:
@@ -120,7 +120,7 @@ Optional Arguments
 **-N**\ *n_col*\ [/*t_col*]
     Select the number of columns and optionally the column number that
     contains the "time" variable [0]. Columns are numbered starting at 0
-    [2/0]. If input files are specified then **-N** will add any missing
+    [2/0]. If input files are specified then |-N| will add any missing
     columns.
 
 .. _-Q:
@@ -148,7 +148,7 @@ Optional Arguments
 **-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **i**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
     Required when no input files are given. Builds an array for
     the "time" column (see **-N**). If there is no time column
-    (i.e., your input has only data columns), give **-T** with
+    (i.e., your input has only data columns), give |-T| with
     no arguments; this also implies **-Ca**.
     For details on array creation, see `Generate 1D Array`_.
 
@@ -686,10 +686,10 @@ Notes On Operators
 #. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
    only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
    sRGB (x, y, z) conversions between all four color spaces.  These functions
-   behave differently whether **-Q** is used or not.  With **-Q** we expect
+   behave differently whether |-Q| is used or not.  With |-Q| we expect
    three input constants and we place three output results on the stack.  Since
    only the top stack item is printed, you must use operators such as **POP** and
-   **ROLL** to get to the item of interest.  Without **-Q**, these operators work
+   **ROLL** to get to the item of interest.  Without |-Q|, these operators work
    across the three columns and modify the three column entries, returning their
    result as a single three-column item on the stack.
 #. The **VPDF** operator expects angles in degrees.
@@ -725,16 +725,16 @@ restrict which columns are affected.
 To avoid unexpected results, note that if you issue a **-C**\ *cols* option *before* you load
 in the data then only those columns will be updated, hence the unspecified columns will be zero.
 On the other hand, if you load the file *first* and then issue **-C**\ *cols* then the unspecified
-columns will have been loaded but are then ignored until you undo the effect of **-C**.
+columns will have been loaded but are then ignored until you undo the effect of |-C|.
 
 Absolute Time Column(s)
 -----------------------
 
-If input data have more than one column and the "time" column (set via **-N** [0])
+If input data have more than one column and the "time" column (set via |-N| [0])
 contains absolute time, then the default output format for any *other* columns containing
 absolute time will be reset to relative time.  Likewise, in scalar mode (**-Q**) the
 time column will be operated on and hence it also will be formatted as relative
-time.  Finally, if **-C** is used to include "time" in the columns operated on then
+time.  Finally, if |-C| is used to include "time" in the columns operated on then
 we likewise will reset that column's format to relative time. The user can override this behavior with a
 suitable **-f** or **-fo** setting.  **Note**: We cannot guess what your operations on the
 time column will do, hence this default behavior.  As examples, if you are computing time differences
@@ -745,7 +745,7 @@ the output format for such columns to absolute time.
 Scalar math with units
 ----------------------
 
-If you use **-Q** to do simple calculations, please note that the support for dimensional units is
+If you use |-Q| to do simple calculations, please note that the support for dimensional units is
 limited to converting a number ending in **c**, **i**, or **p** to internal *inches*.  Thus, while you can run
 "gmt -Qc 1c 1c MUL =", you may be surprised that the output area is not 1 cm squared.  The reason is
 that **gmt math** cannot keep track of what unit any particular item on the stack might be so it will
@@ -821,7 +821,7 @@ trigonometric argument (2\*pi\*T/360):
     gmt math -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD @kT 3 MUL COS ADD = harmonics.txt
 
 To use **gmtmath** as a RPN Hewlett-Packard calculator on scalars (i.e., no
-input files) and calculate arbitrary expressions, use the **-Q** option.
+input files) and calculate arbitrary expressions, use the |-Q| option.
 As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) +
 cos (60)) and store the result in the shell variable z:
 
@@ -840,7 +840,7 @@ To use **gmtmath** as a general least squares equation solver, imagine
 that the current table is the augmented matrix [ A \| b ] and you want
 the least squares solution x to the matrix equation A \* x = b. The
 operator **LSQFIT** does this; it is your job to populate the matrix
-correctly first. The **-A** option will facilitate this. Suppose you
+correctly first. The |-A| option will facilitate this. Suppose you
 have a 2-column file ty.txt with *t* and *b(t)* and you would like to fit
 a the model y(t) = a + b\*t + c\*H(t-t0), where H is the Heaviside step
 function for a given t0 = 1.55. Then, you need a 4-column augmented
@@ -851,7 +851,7 @@ calculation becomes
 
     gmt math -N4/1 -Aty.txt -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.txt
 
-Note we use the **-C** option to select which columns we are working on,
+Note we use the |-C| option to select which columns we are working on,
 then make active all the columns we need (here all of them, with
 **-Ca**) before calling **LSQFIT**. The second and fourth columns (col
 numbers 1 and 3) are preloaded with t and y(t), respectively, the other
@@ -863,7 +863,7 @@ solution is simply
 
     gmt math -T lsqsys.txt LSQFIT = solution.txt
 
-Users must be aware that when **-C** controls which columns are to be
+Users must be aware that when |-C| controls which columns are to be
 active the control extends to placing columns from files as well.
 Contrast the different result obtained by these very similar commands:
 

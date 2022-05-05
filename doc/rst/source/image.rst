@@ -150,7 +150,7 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. |Add_perspective| replace:: (Requires **-R** and **-J** for proper functioning).
+.. |Add_perspective| replace:: (Requires |-R| and |-J| for proper functioning).
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_
@@ -160,7 +160,7 @@ Optional Arguments
 Notes
 -----
 
-The **-G** and **-I** options are for raster images only. They have
+The |-G| and |-I| options are for raster images only. They have
 no effect when placing Encapsulated *PostScript* files.
 
 .. module_common_ends

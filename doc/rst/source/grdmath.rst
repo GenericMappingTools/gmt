@@ -47,7 +47,7 @@ syntax.  Arbitrarily complicated expressions may therefore be evaluated; the
 final result is written to an output grid file. Grid operations are
 element-by-element, not matrix manipulations. Some operators only
 require one operand (see below). If no grid files are used in the
-expression then options **-R**, **-I** must be set (and optionally
+expression then options |-R|, |-I| must be set (and optionally
 |SYN_OPT-r|). The expression **=** *outgrid* can occur as many times as
 the depth of the stack allows in order to save intermediate results.
 Complicated or frequently occurring expressions may be coded as a macro
@@ -111,8 +111,8 @@ Optional Arguments
 **-S**
     Reduce (i.e., collapse) the entire stack to a single grid by applying the
     next operator to all co-registered nodes across the entire stack.  You
-    must specify **-S** *after* listing all of your grids.  **Note**: You can only
-    follow **-S** with a reducing operator, i.e., from the list ADD, AND, MAD,
+    must specify |-S| *after* listing all of your grids.  **Note**: You can only
+    follow |-S| with a reducing operator, i.e., from the list ADD, AND, MAD,
     LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB, VAR or XOR.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -146,7 +146,7 @@ Optional Arguments
 
 .. include:: explain_-n.rst_
 
-.. |Add_nodereg| replace:: Only used with **-R** **-I**.
+.. |Add_nodereg| replace:: Only used with |-R| **-I**.
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_core.rst_
@@ -693,7 +693,7 @@ Notes On Operators
 
    The operator **LDISTG** is a version of **LDIST** that operates on the
    GSHHG data. Instead of reading an ASCII file, it directly accesses one of
-   the GSHHG data sets as determined by the **-D** and **-A** options.
+   the GSHHG data sets as determined by the |-D| and |-A| options.
 
 #. The operator **POINT** reads a ASCII table, computes the mean x and mean
    y values and places these on the stack.  If geographic data then we use
@@ -848,7 +848,7 @@ geographic grid data.grd, run::
 
     gmt grdmath -Rdata.grd trace.txt LDIST = dist_from_line.grd
 
-To demonstrate the stack-reducing effect of **-S**, we compute the standard deviation
+To demonstrate the stack-reducing effect of |-S|, we compute the standard deviation
 per node of all the grids matching the name model_*.grd using::
 
     gmt grdmath model_*.grd -S STD = std_of_models.grd

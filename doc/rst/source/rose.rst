@@ -103,18 +103,18 @@ Optional Arguments
 **-E**\ **m**\|\ [**+w**]\ *mode_file*
     Plot vectors showing the principal directions given in the *mode_file*
     file. Alternatively, specify **-Em** to compute and plot mean direction. See
-    **-M** to control the vector attributes.  Finally, to instead save the
+    |-M| to control the vector attributes.  Finally, to instead save the
     computed mean direction and other statistics, use [**m**]\ **+w**\ *mode_file*.
     The eight items saved to a single record are:
     *mean_az, mean_r, mean_resultant, max_r, scaled_mean_r, length_sum, n, sign@alpha*,
     where the last term is 0 or 1 depending on whether the mean resultant is significant
-    at the level of confidence set via **-Q**.
+    at the level of confidence set via |-Q|.
 
 .. _-F:
 
 **-F**
     Do *not* draw the scale length bar [Default plots scale bar in lower right corner
-    provided **-B** is used. We use :term:`MAP_TICK_PEN_PRIMARY` to draw the scale and
+    provided |-B| is used. We use :term:`MAP_TICK_PEN_PRIMARY` to draw the scale and
     label it with :term:`FONT_ANNOT_PRIMARY`].
 
 .. _-G:
@@ -125,7 +125,7 @@ Optional Arguments
 .. _-I:
 
 **-I**
-    Inquire. Computes statistics needed to specify a useful **-R**. No
+    Inquire. Computes statistics needed to specify a useful |-R|. No
     plot is generated.  The following statistics are written to standard output:
     *n*, *mean az*, *mean r*, *mean resultant length*, *max bin sum*,
     *scaled mean*, and *linear length sum*. **Note**: You may use **-o**
@@ -143,17 +143,17 @@ Optional Arguments
     Specify labels for the 0, 90, 180, and 270 degree marks. For
     full-circle plot the default is WEST,EAST,SOUTH,NORTH and for
     half-circle the default is 90W,90E,-,0. A - in any entry disables
-    that label. Use **-L** with no argument to disable all four labels.
+    that label. Use |-L| with no argument to disable all four labels.
     Note that the :term:`GMT_LANGUAGE` setting will affect the words used.
 
 .. _-M:
 
 **-M**\ *parameters*
-    Used with **-E** to modify vector parameters. For vector heads,
+    Used with |-E| to modify vector parameters. For vector heads,
     append vector head *size* [Default is 0, i.e., a line]. See VECTOR
-    ATTRIBUTES for specifying additional attributes.  If **-E** is not
+    ATTRIBUTES for specifying additional attributes.  If |-E| is not
     given and the current plot mode is to draw a windrose diagram then
-    using **-M** will add vector heads to all individual directions
+    using |-M| will add vector heads to all individual directions
     using the supplied attributes.
 
 .. _-N:
@@ -189,7 +189,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ [**+a**]
-    Normalize input radii (or bin counts if **-A** is used) by the largest
+    Normalize input radii (or bin counts if |-A| is used) by the largest
     value so all radii (or bin counts) range from 0 to 1.  Optionally,
     further normalize rose plots for area (i.e., take :math:`sqrt(r)` before
     plotting [Default is no normalizations].
@@ -305,7 +305,7 @@ Bugs
 ----
 
 No default radial scale and grid settings for polar histograms. Users
-must run the module with **-I** to find max length in binned data set.
+must run the module with |-I| to find max length in binned data set.
 
 References
 ----------

@@ -75,14 +75,14 @@ Optional Arguments
 |-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b*
     Drape the image in *drapegrid* on top of the relief provided by
     *reliefgrid*. [Default determines colors from *reliefgrid*]. Note that **-Jz** and
-    **-N** always refers to the *reliefgrid*. The *drapegrid* only
+    |-N| always refers to the *reliefgrid*. The *drapegrid* only
     provides the information pertaining to colors, which (if *drapegrid* is a grid) will be looked-up
     via the CPT (see **-C**). Instead, you may give three grid files
-    via separate **-G** options in the specified order. These files must contain the red, green, and
+    via separate |-G| options in the specified order. These files must contain the red, green, and
     blue colors directly (in 0-255 range) and no CPT is needed. The
     *drapegrid* may be of a different resolution than the *reliefgrid*.
     Finally, *drapegrid* may be an image to be draped over the surface, in which
-    case the **-C** option is not required.
+    case the |-C| option is not required.
 
 .. _-I:
 
@@ -110,7 +110,7 @@ Optional Arguments
     the frontal facade between the plane and the data perimeter is
     colored. See **-Wf** for setting the pen used for the outline.
     If no *level* is set then we default to the minimum value in the
-    *reliefgrid*. However, if **-R** was used to set *zmin/zmax* then we
+    *reliefgrid*. However, if |-R| was used to set *zmin/zmax* then we
     use that value if it is less than the grid minimum value.
 
 .. _-Q:
@@ -153,7 +153,7 @@ Optional Arguments
     node-centered bin into a polygon which is then painted separately.
     Append **+s** to skip nodes with z = NaN. This option is suitable for
     categorical data where interpolating between values is meaningless
-    and a categorical CPT has been provided via **-C**.
+    and a categorical CPT has been provided via |-C|.
     Optionally, append **+o** to draw the tile outlines, and specify a
     custom pen if the default pen is not to your liking. As this option
     produces a flat surface it cannot be combined with **-JZ** or **-Jz**.
