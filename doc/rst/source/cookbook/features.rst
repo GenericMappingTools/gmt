@@ -207,7 +207,7 @@ modify the appearance of plots or affect the manipulation of data. When
 a new session starts (unless **-C** is given), it initializes all parameters to the
 GMT defaults [9]_, then tries to open the file ``gmt.conf`` in the current
 directory [10]_. If not found, it will look for that file in a
-sub-directory ``/.gmt`` of your home directory, and finally in your home directory
+sub-directory ``.gmt`` of your home directory, and finally in your home directory
 itself. If successful, the session will read the contents and set the
 default values to those provided in the file. By editing this file you
 can affect features such as pen thicknesses used for maps, fonts and
@@ -340,7 +340,7 @@ annotation font size will be computed as::
 
     size = (2/15) * (map_size_in_cm - 10) + 9 [in points]
 
-where :math:`map\_size\_in\_cm = sqrt(map\_height  x  map\_width)`.  All other
+where :math:`map\_size\_in\_cm = \sqrt(map\_height  \times  map\_width)`.  All other
 items will have their reference sizes scaled by :math:`scale = size / 10`. In
 modern mode, if you do nothing then all of the above dimensions will be
 automatically set based on your plot dimensions.  However, you are free to
@@ -352,23 +352,23 @@ font sizes and dimensions for a 10 x 1 cm plot. **Note**: The particular scaling
 relationship is experimental in 6.2 and we reserve the right to adjust it
 pending further experimentation and user feedback.
 
-For **MAP_POLAR_CAP**, **auto** will determine a suitable *pc_lat* for your
+For :term:`MAP_POLAR_CAP`, **auto** will determine a suitable *pc_lat* for your
 region for all azimuthal projections and a few others in which the geographic
 poles are plotted as points (Lambert Conic, Oblique Mercator, Hammer, Mollweide,
 Sinusoidal, and van der Grinten).
 
-For **MAP_FRAME_AXES**, **auto** will determine a suitable setting based on the
+For :term:`MAP_FRAME_AXES`, **auto** will determine a suitable setting based on the
 projection, type of plot, perspective, etc. For example, GMT will determine the
 position of different quadrants for perspective and polar plots and select the
 equivalent of **WrStZ**. The default for the Gnomonic and general perspective
 projections is **WESNZ**. The default for non-perspective, non-Gnomonic, and
 non-polar plots using **MAP_FRAME_AXES**\ =\ **auto** is **WrStZ**.
 
-For **MAP_LABEL_OFFSET, **auto** will scale the offset based on figure size if
-**MAP_LABEL_MODE** is set to **annot**, but will default to **32p** if
-**MAP_LABEL_MODE** is set to **axis**.
+For :term:`MAP_LABEL_OFFSET`, **auto** will scale the offset based on figure size if
+:term:`MAP_LABEL_MODE` is set to **annot**, but will default to **32p** if
+:term:MAP_LABEL_MODE` is set to **axis**.
 
-For **MAP_EMBELLISHMENT_MODE**, **auto** means we uses the given size of the
+For :term:`MAP_EMBELLISHMENT_MODE`, **auto** means we uses the given size of the
 embellishment to set relative sizes of ticks, texts and labels, and offsets.
 These are otherwise controlled by numerous default settings; see discussion
 under :ref:`Embellishments <GMT_Embellishments>`.
