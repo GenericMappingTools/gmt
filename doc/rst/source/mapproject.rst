@@ -258,7 +258,7 @@ Optional Arguments
    (left) Some domains are oblique (their perimeters are not following meridians and parallels).
    We can use **-Wr**\ \|\ **R** to obtain the enclosing meridian/parallel box or the |-R| string
    for that region. (right) Other domains are not oblique but their enclosing rectangular box in
-   the map projection will be  We can explore **-We**\ \|\ **E** to obtain the geographic coordinates
+   the map projection will be.  We can explore **-We**\ \|\ **E** to obtain the geographic coordinates
    of the encompassing oblique rectangle or the |-R| string for that region.
 
 .. _-Z:
