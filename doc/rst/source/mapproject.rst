@@ -27,7 +27,7 @@ Synopsis
 [ |-S| ]
 [ |-T|\ [**h**]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**] ]
+[ |-W|\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -230,7 +230,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**]
+**-W**\ [**e**\|\ **E**\|\ **g**\|\ **h**\|\ **j**\|\ **n**\|\ **o**\|\ **O**\|\ **r**\|\ **R**\|\ **w**\|\ **x**]
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
     To output the plot coordinates of a map point, give **g**\ *lon*/*lat*.
@@ -244,7 +244,9 @@ Optional Arguments
     oblique domain is set via **-R**\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
     use **o** to return the diagonal corner coordinates in degrees (in the order
     *llx urx lly ury*) or use **O** to get the equivalent **-R** string as trailing
-    text [Default returns the width and height of the map].
+    text. To return the coordinates of the rectangular area encompassing the non-rectangular
+    area defined by your **-R -J**, use **e**, or **E** for the trailing text string.
+    [Default returns the width and height of the map].
 
 .. _-Z:
 
@@ -386,6 +388,13 @@ To determine the oblique region string (in degrees) that corresponds to a rectan
    ::
 
     gmt mapproject -R-2800/2400/-570/630+uk -Joc190/25/266/68/1:1 -WO
+
+To find the region string that corresponds to the rectangular region that encompasses
+the projected region defined by a stereographic projection, try
+
+   ::
+
+    gmt mapproject -JS36/90/30c -R-15/60/68/90 -WE
 
 Restrictions
 ------------
