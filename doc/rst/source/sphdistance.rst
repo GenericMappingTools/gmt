@@ -120,7 +120,7 @@ Optional Arguments
     Append the name of a file with pre-calculated Voronoi polygons
     [Default performs the Voronoi construction on input data]. For
     binary data **-bi** you must specify the node
-    information separately (via **-N**).
+    information separately (via |-N|).
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

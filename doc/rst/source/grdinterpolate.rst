@@ -47,9 +47,9 @@ be organized with one or more layers representing the (common) *x* and *y* dimen
 while the 3rd dimension may represent distance or time; we refer to this
 dimension as the *level*.  The output layers may be written as a single 3-D cube
 or as a set of 2-D layers.  Alternatively, we interpolate the cube along the level-axis
-at one or more arbitrary (*x/y*) coordinates (**-S**), resulting in a data table with one or
+at one or more arbitrary (*x/y*) coordinates (|-S|), resulting in a data table with one or
 more level-series, or we slice the 3-D cube along an arbitrary vertical slice and write that
-2-D slice to a grid file (**-E**).
+2-D slice to a grid file (|-E|).
 
 Required Arguments
 ------------------
@@ -66,7 +66,7 @@ Required Arguments
     If *outfile* contains a C-language format statement for a floating
     point number (e.g., layer_%6.6f.grd) then we write a series of 2-D
     grid files which will contain the values for each level [Default is
-    a 3-D data cube, unless only a single layer is implied by **-T**].
+    a 3-D data cube, unless only a single layer is implied by |-T|].
     Also see |-S| for a similar use to write individual level-series tables.
 
 Optional Arguments
@@ -131,7 +131,7 @@ Optional Arguments
     columns appended, ending with the sampled cube value.  Use the optional
     **+h** modifier to append *header* to the trailing text of these input points.
     On output the trailing text will become the segment header for the series that originate
-    from each point.  By default, the table output is written to standard output.  Use **-G**
+    from each point.  By default, the table output is written to standard output.  Use |-G|
     to specify a file name.  Alternatively, if you wish each series to be written to its own
     data file, let the filename in |-G| have a C-format integer specifier (e.g., %d) and we
     will use the running point number to create unique file names.

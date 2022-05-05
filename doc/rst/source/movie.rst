@@ -97,7 +97,7 @@ Required Arguments
 .. _-N:
 
 **-N**\ *prefix*
-    Determines the name of the final movie file and a sub-directory with frame images (but see **-W**).
+    Determines the name of the final movie file and a sub-directory with frame images (but see |-W|).
     **Note**: If the subdirectory exist then we exit immediately.  You are therefore required to remove any
     old directory by that name first.  This is done to prevent the accidental loss of valuable data.
     You can prevent this issue by using |-Z| to delete the directory after a successful run.
@@ -244,7 +244,7 @@ Optional Arguments
     linear (axis-like) indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
     circular indicators and 60% of relevant canvas dimension for the linear indicators] and placement via **+j**\ *justify*
     [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
-    **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col*\ \|\ **t**\ *col* to indicate what should be annotated (see **-L**
+    **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col*\ \|\ **t**\ *col* to indicate what should be annotated (see |-L|
     for more information on what these are); append **+f** to use a specific *font* [:term:`FONT_ANNOT_SECONDARY` scaled as needed].
     Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [see below for defaults].
     Use **+p**\ *pen* to set moving item *pen*.  For setting the corresponding static fill and pen, use **+G** and **+P** instead.
@@ -293,7 +293,7 @@ Optional Arguments
 
 **-Z**\ [**s**]
     Erase the entire *prefix* directory after assembling the final movie [Default leaves directory with all images;
-    the temporary script files, parameter files, and layer *PostScript* files are all removed (but see **-Q**)].
+    the temporary script files, parameter files, and layer *PostScript* files are all removed (but see |-Q|)].
     If your *mainscript* and all input scripts via |-E|, |-I|, and |-S| should be deleted as well then
     append **s**.
 
@@ -333,7 +333,7 @@ In addition, the *mainscript* also has access to parameters that vary with the f
 Furthermore, if a *timefile* was given then variables **MOVIE_COL0**\ , **MOVIE_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
 be accessed via the variable **MOVIE_TEXT**, and if word-splitting was explicitly requested by **-T+w** or
-implicitly by selecting word labels in |-L| or **-P**) then
+implicitly by selecting word labels in |-L| or |-P|) then
 the trailing text is also split into individual word parameters **MOVIE_WORD0**\ , **MOVIE_WORD1**\ , etc.
 
 Data Files
@@ -381,7 +381,7 @@ Your Canvas
 
    The **MOVIE_WIDTH** and **MOVIE_HEIGHT** parameters reflect your canvas dimension.  You can use the
    regular |-X| and |-Y| options to set a logical origin for your intended plot [72p, 72p] and use your
-   projection parameters (**-J**) to indicate the area selected for plotting (green).
+   projection parameters (|-J|) to indicate the area selected for plotting (green).
 
 As you can see from |-C|, unless you specified a custom format you are given a canvas size that is either 24 x 13.5 cm (16:9)
 or 24 x 18 cm (4:3).  If your :term:`PROJ_LENGTH_UNIT` setting is inch then the custom canvas sizes are just
@@ -438,7 +438,7 @@ from **-Sb** and computes needed data files and possibly a background layer), *m
 (optional since it derives from **-Sf** and builds a foreground layer), *movie_frame* (accepts a frame counter
 argument and builds the frame image), and *movie_cleanup* (removes temporary files at the end of the
 run). For each frame there is a separate *movie_params_######* script that provides frame-specific
-variables (e.g., frame number and anything given via **-T**).  The pre- and post-flight scripts have
+variables (e.g., frame number and anything given via |-T|).  The pre- and post-flight scripts have
 access to the information in *movie_init* while the frame script in addition has access to the frame-specific
 parameter file.  Using the |-Q| option will just produce these scripts which you can then examine.
 **Note**: The *mainscript* is duplicated per frame and each copy is run simultaneously on all available cores.
@@ -470,11 +470,11 @@ are among the listed parameters that **movie** creates then use those names.  Un
 require the frame number you will need to make a file that you can pass to |-T|.  This file should
 then have all the values you need, per frame (i.e., row), with values across all the columns you need.
 If you need to assign various fixed variables that do not change with time then your *mainscript*
-will look shorter and cleaner if you offload those assignments to a separate *includefile* (**-I**).
+will look shorter and cleaner if you offload those assignments to a separate *includefile* (|-I|).
 To test your movie, start by using options **-Q -M** to ensure your master frame page looks correct.
 This page shows you one frame of your movie (you can select which frame via the |-M| arguments).  Fix any
 issues with your use of variables and options until this works.  You can then try to remove |-Q|.
-We recommend you make a very short (i.e., **-T**) and small (i.e., **-C**) movie so you don't have to wait very
+We recommend you make a very short (i.e., |-T|) and small (i.e., |-C|) movie so you don't have to wait very
 long to see the result.  Once things are working you can beef up number of frames and movie quality.
 
 Color Table Usage
@@ -528,9 +528,9 @@ Title Sequence and Fading
    The fade-level (0 means black, 100 means normal visibility) for the complete movie, including
    an optional title sequence.
 
-The complete movie may have an optional leading title sequence (**-E**) of a given *duration*. A short section
+The complete movie may have an optional leading title sequence (|-E|) of a given *duration*. A short section
 at the beginning and/or end of this duration may be designated to fade in/out via the designated fade
-color [black].  The main animation sequence may also have an optional fade in and/or out section (**-K**). Here, you
+color [black].  The main animation sequence may also have an optional fade in and/or out section (|-K|). Here, you
 can choose to fade on top of the animation or you can "freeze" the first and/or last animation frame and only fade over
 those static images (via modifier **+p**) in order to preserve the whole animation sequence.
 

@@ -48,7 +48,7 @@ Description
 
 **select** is a filter that reads (x, y) or (longitude, latitude) positions from the first 2 columns of *infiles*
 [or standard input] and uses a combination of 1-7 criteria to pass or reject the records. Records can be
-selected based on whether or not they are 1) inside a rectangular region (**-R** [and **-J**]), 2) within
+selected based on whether or not they are 1) inside a rectangular region (|-R| [and |-J|]), 2) within
 *dist* km of any point in *pointfile*, 3) within *dist* km of any line in *linefile*, 4) inside one of the
 polygons in the *polygonfile*, 5) inside geographical features (based on coastlines), 6) has z-values
 within a given range, or 7) inside bins of a grid mask whose nodes are non-zero. The sense of the tests can
@@ -131,8 +131,8 @@ Optional Arguments
     - **g** - pass records inside the cells with z equal zero of the grid mask in |-G|.
     - **l** - select records NOT within the specified distance of any line.
     - **r** - select records NOT inside the specified rectangular region.
-    - **s** - select records NOT considered inside as specified by **-N**
-      (and |-A|, **-D**).
+    - **s** - select records NOT considered inside as specified by |-N|
+      (and |-A|, |-D|).
     - **z** - select records NOT within the range specified by |-Z|.
 
 .. |Add_-J| replace:: |Add_-J_links|
@@ -266,7 +266,7 @@ This program has evolved over the years. Originally, the |-R| and
 **-J** were mandatory in order to handle geographic data, but now there
 is full support for spherical calculations. Thus, |-J| should only be
 used if you want the tests to be applied on projected data and not the
-original coordinates. If |-J| is used the distances given via **-C**
+original coordinates. If |-J| is used the distances given via |-C|
 and |-L| are projected distances.
 
 Note On Segments

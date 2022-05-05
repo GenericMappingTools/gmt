@@ -128,7 +128,7 @@ Optional Arguments
     Sets the column number of the weights to be used with a smoothing cubic
     spline.  Requires **-Fs**.
 
-.. |Add_-bi| replace:: [Default is 2 (or at least the number of columns implied by **-T**)].
+.. |Add_-bi| replace:: [Default is 2 (or at least the number of columns implied by |-T|)].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].

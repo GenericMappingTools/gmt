@@ -48,7 +48,7 @@ Optional Arguments
 
 **-D**\ [**u**\|\ **s**]
     Print the system GMT defaults settings to standard output. Append **u**
-    for US defaults or **s** for SI defaults. [**-D** alone gives the
+    for US defaults or **s** for SI defaults. [|-D| alone gives the
     version selected at compile time; If |-D| is omitted, the user's
     currently active defaults are printed.]
 

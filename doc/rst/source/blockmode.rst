@@ -59,7 +59,7 @@ Required Arguments
 ------------------
 
 *table*
-    3 (or 4, see **-W**) column ASCII data table file(s) (or binary, see
+    3 (or 4, see |-W|) column ASCII data table file(s) (or binary, see
     **-bi**) holding (*x*,\ *y*,\ *z*\ [,\ *w*])
     data values, where [*w*] is an optional weight for the data.
     If no file is specified, **blockmode** will read from standard input.
@@ -82,7 +82,7 @@ Optional Arguments
     Select which fields to write to individual grids.  Requires |-G|.
     Append the codes for available fields: **z** (the modal
     data z), **s** (the L1 scale of the mode), **l** (lowest
-    value), **h** (highest value) and **w** (the output weight; requires **-W**).
+    value), **h** (highest value) and **w** (the output weight; requires |-W|).
     Note **s**\|\ **l**\|\ **h** requires |-E|, and **Es**\|\ **r**
     cannot be used. [Default is just **z**].
 
@@ -90,7 +90,7 @@ Optional Arguments
 
 **-C**
     Use the center of the block as the output location [Default uses the
-    modal xy location (but see **-Q**)]. |-C| overrides |-Q|.
+    modal xy location (but see |-Q|)]. |-C| overrides |-Q|.
 
 .. _-D:
 

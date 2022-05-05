@@ -242,7 +242,7 @@ requires a resampling onto an equidistant Cartesian lattice that usually
 will result in such blending.  We do not know if a grid is categorical but
 if the CPT provided via |-C| is categorical we will override any **-n** setting you
 have chosen (perhaps implicitly) with **-nn+a** that turns *on* nearest neighbor
-gridding and turns *off* anti-aliasing.  Alternatively, use :doc:`grdview` **-T**
+gridding and turns *off* anti-aliasing.  Alternatively, use :doc:`grdview` |-T|
 instead to plot individual polygons centered on each node.
 
 Image formats recognized

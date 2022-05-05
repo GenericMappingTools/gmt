@@ -28,7 +28,7 @@ Description
 -----------
 
 Normally, **gmt get** will list the value of one or more specified GMT default parameters.
-Alternatively (with **-D**), it will instead download selected sets remote data from the
+Alternatively (with |-D|), it will instead download selected sets remote data from the
 current GMT data server.
 
 Optional Arguments
@@ -82,7 +82,7 @@ PARAMETER
 .. _-Q:
 
 **-Q**
-    Can be used in conjunction with |-D| (and **-I**) to provide a listing of
+    Can be used in conjunction with |-D| (and |-I|) to provide a listing of
     available datasets (no downloading takes place). The output is one record per
     dataset giving the information as *planet group dataset size nitems remark*.  For datasets
     that are tiled, the *size* is set to N/A (tile sizes vary but are usually just

@@ -118,7 +118,7 @@ Optional Arguments
 
 **-H**\ *scale*
     Given the finite dots-per-unit used to rasterize PostScript frames to rasters, the quantizing of features
-    to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings (**-Q**)
+    to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings (|-Q|)
     which affect lines and text only.  The given *scale* temporarily increases the effective dots-per-unit
     by *scale*, rasterizes the plot, then down-samples the image by the same scale at the end.  The larger
     the *scale*, the smoother the raster.  Because processing time increases with *scale* we suggest you
@@ -236,7 +236,7 @@ Optional Arguments
     The world file naming follows the convention of jamming a 'w' in the
     file extension. So, if output is tif **-Tt** the world file is a
     .tfw, for jpeg we have a .jgw and so on. **Note**: This option automatically
-    sets |-A| **-P**.  Append **+c** to *not* crop the image.
+    sets |-A| |-P|.  Append **+c** to *not* crop the image.
 
     Append **+k** to create a minimalist KML file that allows loading the
     image in GoogleEarth. Note that for this option to work it is necessary that the postscript
@@ -265,7 +265,7 @@ Optional Arguments
     **Note**: If any of your titles or names contain a plus symbol next to
     a letter it can be confused with an option modifier. Escape such
     plus signs by placing a backslash in front of it.  Alternatively,
-    enclose the string in double quotes and then the entire **-W**
+    enclose the string in double quotes and then the entire |-W|
     argument in single-quotes (or vice versa).
 
     Further notes on the creation of georeferenced rasters.
@@ -321,7 +321,7 @@ no effect on the creation of EPS files. Using the option **-Te** will
 remove setpagedevice commands from the PostScript file and will adjust the
 BoundingBox when the |-A| option is used. Note the original and
 required BoundingBox is limited to integer points, hence Adobe added the
-optional HiResBoundingBox to add more precision in sizing. The **-A**
+optional HiResBoundingBox to add more precision in sizing. The |-A|
 option calculates both and writes both to the EPS file and is subsequently
 used in any rasterization, if requested. When the **-TE** option is used, a
 new setpagedevice command is added that will indicate the actual pagesize for

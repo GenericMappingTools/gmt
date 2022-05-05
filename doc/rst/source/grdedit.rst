@@ -45,7 +45,7 @@ any]. As an option, global, geographical grids (with 360 degrees
 longitude range) can be rotated in the east-west direction, and
 individual nodal values can be replaced from a table of *x*, *y*, *z*
 values. **grdedit** only operates on files containing a grid header. **Note**:
-If it is important to retain the original data you should use **-G**
+If it is important to retain the original data you should use |-G|
 to save the modified grid to a new file.
 
 Required Arguments
@@ -63,7 +63,7 @@ Optional Arguments
 
 **-A**
     If necessary, adjust the file's *x_inc*, *y_inc* to be compatible
-    with its domain (or a new domain set with **-R**). Older grid files
+    with its domain (or a new domain set with |-R|). Older grid files
     (i.e., created prior to GMT 3.1) often had excessive slop in
     *x_inc*, *y_inc* and an adjustment is necessary. Newer files are
     created correctly.
@@ -94,7 +94,7 @@ Optional Arguments
     **-Er** will rotate the grid 90 degrees clockwise (right),
     **-Et** will transpose the grid [Default],
     **-Ev** will flip the grid vertically (top-to-bottom).
-    Incompatible with the other options (except **-G**).
+    Incompatible with the other options (except |-G|).
 
 .. _-G:
 

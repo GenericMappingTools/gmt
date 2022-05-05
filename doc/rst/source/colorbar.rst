@@ -81,7 +81,7 @@ Optional Arguments
     flags in the CPT). The exception to this rule is for CPT files that were scaled to fit the range
     of a grid exactly and thus have arbitrary color levels; these will trigger an automatic **-Baf** setting.
     To specify custom text annotations for
-    intervals, you must append ;\ *annotation* to each z-slice in the CPT. **Note**: The **-B**
+    intervals, you must append ;\ *annotation* to each z-slice in the CPT. **Note**: The |-B|
     option relies on the |-R| and |-J| settings of the :ref:`given hierarchical level <cookbook/features:GMT Modern Mode Hierarchical Levels>`
     to plot correctly. For standard |-B| operations, |Add_-B_links|
 
@@ -89,11 +89,11 @@ Optional Arguments
 
 **-C**\ [*cpt*]
     *cpt* is the CPT to be used. If no *cpt* is appended or no |-C| is given
-    then we use the current CPT (modern mode only).  In classic mode, if no **-C**
+    then we use the current CPT (modern mode only).  In classic mode, if no |-C|
     is given then we read standard input.  By default all
     color changes are annotated. To use a subset, add an extra column to
     the CPT with a L, U, or B to annotate Lower, Upper, or Both
-    color segment boundaries (but see **-B**). Like :doc:`grdview`, we can understand
+    color segment boundaries (but see |-B|). Like :doc:`grdview`, we can understand
     pattern specifications in the CPT. For CPTs where the
     *z* range is in meters, it may be useful to change to another unit
     when plotting.  To do so, append **+U**\ *unit* to the file name.
@@ -177,7 +177,7 @@ Optional Arguments
 **-L**\ [**i**][*gap*]
 
     Gives equal-sized color rectangles. Default scales rectangles
-    according to the z-range in the CPT (Also see **-Z**). If
+    according to the z-range in the CPT (Also see |-Z|). If
     *gap* is appended and the CPT is discrete we will center each
     annotation on each rectangle, using the lower boundary z-value for
     the annotation. If **i** is prepended we annotate the interval range
@@ -249,7 +249,7 @@ Optional Arguments
 **-Z**\ *widthfile*
     File with colorbar-width per color entry. By default, width of entry
     is scaled to color range, i.e., z = 0-100 gives twice the width as z
-    = 100-150 (Also see **-L**). **Note**: The widths may be in plot distance
+    = 100-150 (Also see |-L|). **Note**: The widths may be in plot distance
     units or given as relative fractions and will be automatically scaled
     so that the sum of the widths equals the requested bar length.
 
@@ -304,7 +304,7 @@ Notes
 #. When the CPT is discrete and no illumination is specified, the
    color bar will be painted using polygons. For all other cases we must
    paint with an image. Some color printers may give slightly different
-   colors for the two methods given identical RGB values.  See option **-N**
+   colors for the two methods given identical RGB values.  See option |-N|
    for affecting these decisions.  Also note that for years now, Apple's
    Preview insists on smoothing deliberately course CPT color images to a blur.
    Use another PDF viewer if this bothers you.

@@ -44,7 +44,7 @@ Description
 **blockmean** reads arbitrarily located (*x*,\ *y*,\ *z*) triples [or
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output a mean position and
-value for every non-empty block in a grid region defined by the **-R**
+value for every non-empty block in a grid region defined by the |-R|
 and |-I| arguments. See |-G| for writing gridded output directly.
 Either **blockmean**, :doc:`blockmedian`, or
 :doc:`blockmode` should be used as a pre-processor before running
@@ -58,7 +58,7 @@ Required Arguments
 ------------------
 
 *table*
-    3 (or 4, see **-W**) column ASCII data table file(s) (or binary, see
+    3 (or 4, see |-W|) column ASCII data table file(s) (or binary, see
     **-bi**) holding (*x*,\ *y*,\ *z*\ [,\ *w*])
     data values, where [*w*] is an optional weight for the data. If no file
     is specified, **blockmean** will read from standard input.
@@ -80,8 +80,8 @@ Optional Arguments
 **-A**\ *fields*
     Select which fields to write to individual grids.  Requires |-G|.
     Append the codes for available fields: **z** (the mean
-    data z, but see **-S**), **s** (standard deviation), **l** (lowest
-    value), **h** (highest value) and **w** (the output weight; requires **-W**).
+    data z, but see |-S|), **s** (standard deviation), **l** (lowest
+    value), **h** (highest value) and **w** (the output weight; requires |-W|).
     Note **s**\|\ **l**\|\ **h** requires |-E| [Default is just **z**].
 
 .. _-C:

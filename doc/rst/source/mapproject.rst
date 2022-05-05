@@ -101,7 +101,7 @@ Optional Arguments
     is given then we compute the azimuth (or back-azimuth) from the
     previous point.  Alternatively, append **+v** to obtain a
     *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
-    See `Output Order`_ for how |-A| affects the output record.  If **-R**
+    See `Output Order`_ for how |-A| affects the output record.  If |-R|
     and |-J| are given the we project the coordinates first and then
     compute Cartesian angles instead.
 
@@ -138,11 +138,11 @@ Optional Arguments
 .. _-F:
 
 **-F**\ [**e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**\|\ **c**\|\ **i**\|\ **p**]
-    Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
+    Force 1:1 scaling, i.e., output (or input, see |-I|) data are in
     actual projected meters. To specify other units, append the desired
-    unit (see `Units`_). Without |-F|, the output (or input, see **-I**)
+    unit (see `Units`_). Without |-F|, the output (or input, see |-I|)
     are in the units specified by :term:`PROJ_LENGTH_UNIT` (but see
-    **-D**).
+    |-D|).
 
 .. _-G:
 
@@ -218,7 +218,7 @@ Optional Arguments
     ID (see **-Qe**) or given as *a*\ [,\ *inv_f*], where *a* is the
     semi-major axis and *inv_f* is the inverse flattening (0 if
     omitted). If *datum* is - or not given we assume WGS-84. |-T| may
-    be used in conjunction with |-R| **-J** to change the datum before
+    be used in conjunction with |-R| |-J| to change the datum before
     coordinate projection (add |-I| to apply the datum conversion
     after the inverse projection). Make sure that the
     :term:`PROJ_ELLIPSOID` setting is correct for your case.
@@ -365,8 +365,8 @@ assuming a fixed speed of 12 knots.  We do this with
     gmt mapproject track.txt -G+un+a+i -Z12+a --TIME_UNIT=h > elapsed_time.txt
 
 where :term:`TIME_UNIT` is set to hour so that the speed is
-measured in nm (set by **-G**) per hour (set by :term:`TIME_UNIT`).
-Elapsed times will be reported in hours (unless **+f** is added to **-Z**
+measured in nm (set by |-G|) per hour (set by :term:`TIME_UNIT`).
+Elapsed times will be reported in hours (unless **+f** is added to |-Z|
 for ISO elapsed time).
 
 To determine the geographic coordinates of the mid-point of this transverse Mercator map, try

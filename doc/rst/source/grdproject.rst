@@ -112,12 +112,12 @@ Optional Arguments
 .. _-F:
 
 **-F**\ [**c**\|\ **i**\|\ **p**\|\ **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**]
-    Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
+    Force 1:1 scaling, i.e., output (or input, see |-I|) data are in
     actual projected meters [**e**]. To specify other units, append
     **f** (foot), **k** (km), **M** (statute mile), **n** (nautical
     mile), **u** (US survey foot), **i** (inch), **c** (cm), or **p**
-    (point). Without |-F|, the output (or input, see **-I**) are in
-    the units specified by :term:`PROJ_LENGTH_UNIT` (but see **-M**).
+    (point). Without |-F|, the output (or input, see |-I|) are in
+    the units specified by :term:`PROJ_LENGTH_UNIT` (but see |-M|).
 
 .. _-I:
 

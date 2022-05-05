@@ -140,10 +140,10 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. |Add_-bi| replace:: [Default is 2, 3, or 5 input columns as set by **-S**].
+.. |Add_-bi| replace:: [Default is 2, 3, or 5 input columns as set by |-S|].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 1-5 output columns as set by **-Q**].
+.. |Add_-bo| replace:: [Default is 1-5 output columns as set by |-Q|].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code

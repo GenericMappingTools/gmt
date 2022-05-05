@@ -42,7 +42,7 @@ Description
 
 **makecpt** is a module that will help you make static color palette tables
 (CPTs). In classic mode we write the CPT to standard output, while under
-modern mode we simply save the CPT as the current session CPT (but see **-H**).
+modern mode we simply save the CPT as the current session CPT (but see |-H|).
 You define an equidistant set of contour intervals or pass
 your own z-table or list, and create a new CPT based on an existing master (dynamic)
 CPT. The resulting CPT can be reversed relative to the master
@@ -92,7 +92,7 @@ Optional Arguments
 
 **-D**\ [**i**\|\ **o**]
     Select the back- and foreground colors to match the colors for
-    lowest and highest *z*-values in the output CPT [Default (**-D** or **-Do**)
+    lowest and highest *z*-values in the output CPT [Default (|-D| or **-Do**)
     uses the colors specified in the master file, or those defined by the
     parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
     :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and
@@ -264,7 +264,7 @@ Discrete versus Continuous CPT
 ------------------------------
 
 All CPTs can be stretched, but only continuous CPTs can be sampled
-at new nodes (i.e., by given an increment in **-T**).  We impose this
+at new nodes (i.e., by given an increment in |-T|).  We impose this
 limitation to avoid aliasing the original CPT.
 
 Examples

@@ -62,7 +62,7 @@ Optional Arguments
 
 **-A**
     Compute the area of the spherical triangles (**-Qd**) or polygons
-    (**-Qv**) and write the areas (in chosen units; see **-L**) in the
+    (**-Qv**) and write the areas (in chosen units; see |-L|) in the
     output segment headers [no areas calculated].
 
 .. _-C:
@@ -112,7 +112,7 @@ Optional Arguments
 **-T**
     Write the unique arcs of the construction [Default writes fillable
     triangles or polygons]. When used with |-A| we store arc length in
-    the segment header in chosen unit (see **-L**).
+    the segment header in chosen unit (see |-L|).
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

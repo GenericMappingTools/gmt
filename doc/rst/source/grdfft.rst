@@ -52,7 +52,7 @@ Required Arguments
 
 **-G**\ *outfile*
     Specify the name of the output grid file (see :ref:`Grid File Formats
-    <grd_inout_full>`) or the 1-D spectrum table (see **-E**).
+    <grd_inout_full>`) or the 1-D spectrum table (see |-E|).
 
 Optional Arguments
 ------------------
@@ -142,7 +142,7 @@ Optional Arguments
 .. _-G:
 
 **-G**\ *outfile*\|\ *table*
-    Filename for output netCDF grid file OR 1-D data table (see **-E**).
+    Filename for output netCDF grid file OR 1-D data table (see |-E|).
     This is optional for -E (spectrum written to standard output) but mandatory for
     all other options that require a grid output.
 

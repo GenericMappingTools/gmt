@@ -41,7 +41,7 @@ viewing level in the quadtree using a Gaussian filter, but other
 filters can be selected as well.
 Optionally, illumination may be added by providing a grid file with
 intensities in the (-1,+1) range or by giving instructions to derive intensities
-from the input data grid automatically (see **-I**). Values outside the (-1,+1) intensity range will be
+from the input data grid automatically (see |-I|). Values outside the (-1,+1) intensity range will be
 clipped. Map colors are specified via a color palette lookup table. Contour overlays are optional.
 If plain tiles are selected (i.e., no contours specified) then the PNG tiles are written directly from
 :doc:`grdimage`. Otherwise, we must first make a PostScript plot that is then converted to raster image via
@@ -189,7 +189,7 @@ Because each tile is a fixed size image (e.g., 512x512 pixels) but the amount of
 changes by factors of 4 for each new level, we cannot use a constant thickness contour pen for all
 levels.  Thus, the pen you supply must be considered the final pen applied to the highest resolution
 map overlays.  Furthermore, because the *dpi* here is very small compared to regular GMT plots, it is
-important to improve the appearance of the contours by using sub-pixel smoothing (**-H**). Both
+important to improve the appearance of the contours by using sub-pixel smoothing (|-H|). Both
 generating PostScript tiles and using sub-pixel smoothing adds considerable processing time over
 plain tiles.
 

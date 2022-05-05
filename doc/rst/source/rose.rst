@@ -55,7 +55,7 @@ Description
 
 **rose** reads (length, azimuth) pairs from *file* [or standard input]
 and plot a windrose diagram.  Add **-i**\ 0 if your file only has azimuth values.
-Optionally (with **-A**), polar histograms may be drawn (sector diagram
+Optionally (with |-A|), polar histograms may be drawn (sector diagram
 or rose diagram). Options include full circle and half circle plots. The
 outline of the windrose is drawn with the same color as :term:`MAP_DEFAULT_PEN`.
 
@@ -217,7 +217,7 @@ Optional Arguments
 **-W**\ *pen*
     Set pen attributes for sector outline or rose plot. [Default is no
     outline]. Use **-Wv**\ *pen* to change pen used to draw vector
-    (requires **-E**) [Default is same as sector outline].
+    (requires |-E|) [Default is same as sector outline].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_

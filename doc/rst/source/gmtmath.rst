@@ -53,7 +53,7 @@ be set (and optionally **-bo** to indicate the
 data type for binary tables). If STDIN is given, the standard input will
 be read and placed on the stack as if a file with that content had been
 given on the command line. By default, all columns except the "time"
-column are operated on, but this can be changed (see **-C**).
+column are operated on, but this can be changed (see |-C|).
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations.
 
@@ -80,7 +80,7 @@ Optional Arguments
     Requires |-N| and will partially initialize a table with values
     from the given file *t_f(t)* containing *t* and *f(t)* only. The *t* is
     placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
-    (see **-N**).  Append **+r** to only place *f(t)* and leave the left
+    (see |-N|).  Append **+r** to only place *f(t)* and leave the left
     hand side of the matrix equation alone.  If used with operators LSQFIT and SVDFIT you can
     optionally append the modifier **+e** which will instead evaluate
     the solution and write a data set with four columns: t, f(t), the
@@ -98,7 +98,7 @@ Optional Arguments
     |-C|. List columns separated by commas; ranges like 1,3-5,7 are
     allowed, plus -Cx can be used for -C0 and -Cy can be used for -C1.
     |-C| (no arguments) resets the default action of using
-    all columns except time column (see **-N**). **-Ca** selects all
+    all columns except time column (see |-N|). **-Ca** selects all
     columns, including time column, while **-Cr** reverses (toggles) the
     current choices.  When |-C| is in effect it also controls which
     columns from a file will be placed on the stack.
@@ -147,7 +147,7 @@ Optional Arguments
 
 **-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **i**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
     Required when no input files are given. Builds an array for
-    the "time" column (see **-N**). If there is no time column
+    the "time" column (see |-N|). If there is no time column
     (i.e., your input has only data columns), give |-T| with
     no arguments; this also implies **-Ca**.
     For details on array creation, see `Generate 1D Array`_.
@@ -732,7 +732,7 @@ Absolute Time Column(s)
 
 If input data have more than one column and the "time" column (set via |-N| [0])
 contains absolute time, then the default output format for any *other* columns containing
-absolute time will be reset to relative time.  Likewise, in scalar mode (**-Q**) the
+absolute time will be reset to relative time.  Likewise, in scalar mode (|-Q|) the
 time column will be operated on and hence it also will be formatted as relative
 time.  Finally, if |-C| is used to include "time" in the columns operated on then
 we likewise will reset that column's format to relative time. The user can override this behavior with a

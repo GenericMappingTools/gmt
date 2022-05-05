@@ -48,14 +48,14 @@ Description
 **triangulate** reads one or more ASCII [or binary] files (or standard
 input) containing x,y[,z] and performs Delaunay triangulation, i.e., it
 finds how the points should be connected to give the most equilateral
-triangulation possible. If a map projection (give |-R| and **-J**) is
+triangulation possible. If a map projection (give |-R| and |-J|) is
 chosen then it is applied before the triangulation is calculated. By
 default, the output is triplets of point id numbers that make up each
 triangle and is written to standard output. The id numbers refer to the
 points position (line number, starting at 0 for the first line) in the
 input file. As an option, you may choose to create a multiple segment
 file that can be piped through :doc:`plot` to draw the triangulation
-network. If |-G| **-I** are set a grid will be calculated based on the
+network. If |-G| |-I| are set a grid will be calculated based on the
 surface defined by the planar triangles. The actual algorithm used in
 the triangulations is either that of Watson [1982] [Default] or Shewchuk
 [1996] (if installed; type **triangulate -** to see which method is
@@ -80,7 +80,7 @@ Optional Arguments
 
 **-C**\ *slpfile*
     Read a slope grid (in degrees) and compute the propagated uncertainty in the
-    bathymetry using the CURVE algorithm [Zambo et al, 2016].  Requires the **-G**
+    bathymetry using the CURVE algorithm [Zambo et al, 2016].  Requires the |-G|
     option to specify the output grid.  Note that the *slpgrid* sets the domain
     for the output grid so |-R|, |-I|, [|SYN_OPT-r|\ ] are not required.
     Cannot be used in conjunction with |-D|, |-F|, |-M|, |-N|, |-Q|,
@@ -191,7 +191,7 @@ Optional Arguments
 
 .. include:: explain_-qi.rst_
 
-.. |Add_nodereg| replace:: (Only valid with **-G**).
+.. |Add_nodereg| replace:: (Only valid with |-G|).
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_-s.rst_

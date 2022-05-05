@@ -178,7 +178,7 @@ Optional Arguments
     two extra columns holding the spline estimate and the misfit. Alternatively,
     if |-C| is used and history is computed (via one or more of modifiers **+c**
     and **+i**), then we will instead write a table with eigenvalue number,
-    eigenvalue, percent of model variance explained, and rms misfit.  If **-W**
+    eigenvalue, percent of model variance explained, and rms misfit.  If |-W|
     is used we also append :math:`\chi^2`.
 
 .. _-I:
@@ -189,7 +189,7 @@ Optional Arguments
 .. _-L:
 
 **-L**
-    Do *not* remove a linear (1-D) or planer (2-D) trend when **-Z**
+    Do *not* remove a linear (1-D) or planer (2-D) trend when |-Z|
     selects mode 0-3 [For those Cartesian cases a least-squares line or
     plane is modeled and removed, then restored after fitting a spline
     to the residuals]. However, in mixed cases with both data values and
@@ -445,7 +445,7 @@ Considerations
    You can remedy this by preprocessing the data, e.g., by averaging
    closely spaced neighbors. Alternatively, you can improve stability by
    using the SVD solution and discard information associated with the
-   smallest eigenvalues (see **-C**).
+   smallest eigenvalues (see |-C|).
 
 #. The series solution implemented for **-Sq** was developed by
    Robert L. Parker, Scripps Institution of Oceanography, which we

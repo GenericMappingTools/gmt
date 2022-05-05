@@ -122,7 +122,7 @@ Optional Arguments
 .. |Add_-bi| replace:: [Default is 2 (or 3 if |-W| is set) columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 1-5 columns as given by **-F**].
+.. |Add_-bo| replace:: [Default is 1-5 columns as given by |-F|].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
