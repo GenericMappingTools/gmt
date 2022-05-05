@@ -55,7 +55,7 @@ triangle and is written to standard output. The id numbers refer to the
 points position (line number, starting at 0 for the first line) in the
 input file. As an option, you may choose to create a multiple segment
 file that can be piped through :doc:`plot` to draw the triangulation
-network. If |-G| **-I** are set a grid will be calculated based on the
+network. If |-G| |-I| are set a grid will be calculated based on the
 surface defined by the planar triangles. The actual algorithm used in
 the triangulations is either that of Watson [1982] [Default] or Shewchuk
 [1996] (if installed; type **triangulate -** to see which method is

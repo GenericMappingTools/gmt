@@ -218,7 +218,7 @@ Optional Arguments
     ID (see **-Qe**) or given as *a*\ [,\ *inv_f*], where *a* is the
     semi-major axis and *inv_f* is the inverse flattening (0 if
     omitted). If *datum* is - or not given we assume WGS-84. |-T| may
-    be used in conjunction with |-R| **-J** to change the datum before
+    be used in conjunction with |-R| |-J| to change the datum before
     coordinate projection (add |-I| to apply the datum conversion
     after the inverse projection). Make sure that the
     :term:`PROJ_ELLIPSOID` setting is correct for your case.

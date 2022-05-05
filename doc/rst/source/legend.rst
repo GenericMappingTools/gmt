@@ -179,7 +179,7 @@ the syntax for each of these records are presented below:
     Any of the modifiers
     [**+e**\ [**b**\|\ **f**][*length*]][**+h**][**+m**\ [**a**\|\ **c**\|\ **l**\|\ **u**]][**+n**\ [*txt*]] may be
     appended to the *height* argument, while other module options
-    |-B| **-I** |-L| **-M** |-N| **-S** |-Z| and **-p** may be appended as
+    |-B| |-I| |-L| |-M| |-N| |-S| |-Z| and **-p** may be appended as
     *optional arguments* at the end of the record.
     See :doc:`colorbar` for details on all modifiers and options.
 **C** *textcolor*
@@ -239,9 +239,9 @@ the syntax for each of these records are presented below:
     add a suitable |-F| panel option (see :doc:`basemap` for details
     on panels as well as map scale modifiers).
     All **+**\ *modifiers* must be appended to *length* to make a single
-    string argument.  If the |-R| **-J** supplied to the module is
+    string argument.  If the |-R| |-J| supplied to the module is
     different than the projection needed for the scale (or not given at
-    all, e.g., with **-Dx**), supply the two optional |-R| **-J** settings
+    all, e.g., with **-Dx**), supply the two optional |-R| |-J| settings
     as well.
 **N** [*ncolumns* or *relwidth1 relwidth2 ... relwidthn*]
     Change the number of columns in the legend [1]. This only affects
