@@ -244,7 +244,7 @@ Optional Arguments
     maps we must plot all symbols twice in case they are clipped by the repeating
     boundary. The |-N| will turn off clipping and not plot repeating symbols.
     Use **-Nr** to turn off clipping but retain the plotting of such repeating symbols, or
-    use **-Nc** to retain clipping but turn off plotting of repeating symbols. If set, **-N**
+    use **-Nc** to retain clipping but turn off plotting of repeating symbols. If set, |-N|
     will also apply to any labels.
 
 .. _-Q:

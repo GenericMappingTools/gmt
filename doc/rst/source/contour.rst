@@ -123,7 +123,7 @@ Optional Arguments
         are contoured, while the levels marked **A** (or **a**) are both contoured
         and annotated. If the annotation *angle* is present we will plot the label
         at that fixed angle [aligned with the contour].  Finally, a contour-
-        specific *pen* may be present and will override the pen set by **-W**
+        specific *pen* may be present and will override the pen set by |-W|
         for this contour level only. **Note**: Please specify *pen* in proper
         format so it can be distinguished from a plain number like *angle*.
         If only *cont-level* columns are present then we set type to **C**.
@@ -140,7 +140,7 @@ Optional Arguments
 
     If a file is given and |-T| is set, then only contours marked with
     upper case C or A will have tick-marks. In all cases the contour
-    values have the same units as the file.  Finally, if neither **-C**
+    values have the same units as the file.  Finally, if neither |-C|
     nor |-A| are set then we auto-compute suitable contour and annotation
     intervals from the data range, yielding approximately 10-20 contours.
 

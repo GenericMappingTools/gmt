@@ -101,7 +101,7 @@ Optional Arguments
     is given then we compute the azimuth (or back-azimuth) from the
     previous point.  Alternatively, append **+v** to obtain a
     *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
-    See `Output Order`_ for how |-A| affects the output record.  If **-R**
+    See `Output Order`_ for how |-A| affects the output record.  If |-R|
     and |-J| are given the we project the coordinates first and then
     compute Cartesian angles instead.
 
@@ -366,7 +366,7 @@ assuming a fixed speed of 12 knots.  We do this with
 
 where :term:`TIME_UNIT` is set to hour so that the speed is
 measured in nm (set by |-G|) per hour (set by :term:`TIME_UNIT`).
-Elapsed times will be reported in hours (unless **+f** is added to **-Z**
+Elapsed times will be reported in hours (unless **+f** is added to |-Z|
 for ISO elapsed time).
 
 To determine the geographic coordinates of the mid-point of this transverse Mercator map, try

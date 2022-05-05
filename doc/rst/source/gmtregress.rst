@@ -113,7 +113,7 @@ Optional Arguments
 **-F**\ *flags*
     Append a combination of the columns you wish returned; the output order will match the order specified.  Choose from
     **x** (observed *x*), **y** (observed *y*), **m** (model prediction), **r** (residual = data minus model),
-    **c** (symmetrical confidence interval on the regression; see **-C**
+    **c** (symmetrical confidence interval on the regression; see |-C|
     for specifying the level), **z** (standardized residuals or so-called *z-scores*) and **w** (outlier weights 0 or 1; for
     **-Nw** these are the Reweighted Least Squares weights) [**xymrczw**].
     As an alternative to evaluating the model, just give **-Fp** and we instead write a single record with the 12 model

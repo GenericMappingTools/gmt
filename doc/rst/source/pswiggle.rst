@@ -71,7 +71,7 @@ points, use
 
 and the positive anomalies will in general point in the north direction.
 We used |-D| to place a vertical scale bar indicating a 1000 nT anomaly.
-To instead enforce a fixed azimuth of 45 for the positive wiggles, we add **-I**
+To instead enforce a fixed azimuth of 45 for the positive wiggles, we add |-I|
 and obtain
 
    ::

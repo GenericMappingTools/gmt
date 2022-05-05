@@ -255,7 +255,7 @@ then have all the values you need, per job (i.e., per row), with values across a
 If you need to assign various *fixed* variables that do not change with time, then your *mainscript*
 will look shorter and cleaner if you offload those assignments to a separate *includefile* (via |-I|).
 To test your *mainscript*, start by using options **-Q -M** to ensure that your master job results are correct.
-The |-M| option simply runs one job of your batch sequence (you can select which one via the **-M**
+The |-M| option simply runs one job of your batch sequence (you can select which one via the |-M|
 arguments [0]).  Fix any issues with your use of variables and options until this works.  You can then try
 to remove |-Q|. We recommend you make a very short (i.e., via |-T|) and small batch sequence so you don't
 have to wait very long to see the result.  Once things are working you can beef up number of jobs.

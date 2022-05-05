@@ -265,7 +265,7 @@ Optional Arguments
     **Note**: If any of your titles or names contain a plus symbol next to
     a letter it can be confused with an option modifier. Escape such
     plus signs by placing a backslash in front of it.  Alternatively,
-    enclose the string in double quotes and then the entire **-W**
+    enclose the string in double quotes and then the entire |-W|
     argument in single-quotes (or vice versa).
 
     Further notes on the creation of georeferenced rasters.
@@ -321,7 +321,7 @@ no effect on the creation of EPS files. Using the option **-Te** will
 remove setpagedevice commands from the PostScript file and will adjust the
 BoundingBox when the |-A| option is used. Note the original and
 required BoundingBox is limited to integer points, hence Adobe added the
-optional HiResBoundingBox to add more precision in sizing. The **-A**
+optional HiResBoundingBox to add more precision in sizing. The |-A|
 option calculates both and writes both to the EPS file and is subsequently
 used in any rasterization, if requested. When the **-TE** option is used, a
 new setpagedevice command is added that will indicate the actual pagesize for

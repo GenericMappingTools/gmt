@@ -174,7 +174,7 @@ to go through a box and affect the integration domain and limits.
 Notes
 -----
 
-#. The output of **grdvolume** is one or more records (one per contour if **-C**
+#. The output of **grdvolume** is one or more records (one per contour if |-C|
    is set to search multiple contours) containing *contour area volume volume/area*.
    These records are written to standard output.
 #. For geographical grids we convert degrees to "Flat Earth" distances in

@@ -113,7 +113,7 @@ Optional Arguments
 
 **-I**\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**]
     Report the min/max of the region to the nearest multiple of *dx* and
-    *dy*, and output this in the form **-R**\ *w/e/s/n* (unless **-C**
+    *dy*, and output this in the form **-R**\ *w/e/s/n* (unless |-C|
     is set). To report the actual grid region, select **-Ir**. For a
     grid produced by the img supplement (a Cartesian Mercator grid),
     the exact geographic region is given with **-Ii** (if not found

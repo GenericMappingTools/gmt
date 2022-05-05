@@ -182,7 +182,7 @@ Optional Arguments
         **-Qsm** for meshlines to be drawn.
     **-Wf**
         Sets the pen attributes used for the facade. [Default: width =
-        0.25p, color = black, style = solid]. You must also select **-N**
+        0.25p, color = black, style = solid]. You must also select |-N|
         for the facade outline to be drawn.
 
 .. |Add_-XY| replace:: |Add_-XY_links|

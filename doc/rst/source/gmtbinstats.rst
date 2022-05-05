@@ -56,7 +56,7 @@ Required Arguments
 
 *table*
     A 2-4 column ASCII file(s) [or binary, see
-    **-bi**] holding (x,y[,z][,w]) data values. You must use **-W**
+    **-bi**] holding (x,y[,z][,w]) data values. You must use |-W|
     to indicate that you have weights.  Only **-Cn** will accept 2 columns only.
     If no file is specified, **gmtbinstats** will read from standard input.
 

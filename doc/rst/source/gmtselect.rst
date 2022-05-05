@@ -131,7 +131,7 @@ Optional Arguments
     - **g** - pass records inside the cells with z equal zero of the grid mask in |-G|.
     - **l** - select records NOT within the specified distance of any line.
     - **r** - select records NOT inside the specified rectangular region.
-    - **s** - select records NOT considered inside as specified by **-N**
+    - **s** - select records NOT considered inside as specified by |-N|
       (and |-A|, |-D|).
     - **z** - select records NOT within the range specified by |-Z|.
 
@@ -266,7 +266,7 @@ This program has evolved over the years. Originally, the |-R| and
 **-J** were mandatory in order to handle geographic data, but now there
 is full support for spherical calculations. Thus, |-J| should only be
 used if you want the tests to be applied on projected data and not the
-original coordinates. If |-J| is used the distances given via **-C**
+original coordinates. If |-J| is used the distances given via |-C|
 and |-L| are projected distances.
 
 Note On Segments

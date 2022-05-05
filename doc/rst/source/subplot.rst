@@ -123,7 +123,7 @@ Optional Arguments (begin mode)
     or **y** for both **s** and **n**.  No *side* means all sides. The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
     be accessed by modules that plot scales, bars, text, etc.  Settings specified under **begin** directive apply
-    to all subplots, while settings under **set** only apply to the selected (active) subplot.  **Note**: Common options **-X**
+    to all subplots, while settings under **set** only apply to the selected (active) subplot.  **Note**: Common options |-X|
     and |-Y| are not available during subplots; use |-C| instead.
 
 .. _-D:

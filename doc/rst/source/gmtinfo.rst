@@ -151,7 +151,7 @@ Optional Arguments
     and when later plotting with :doc:`plot` |-E|. **-Sx** leaves space
     for horizontal error bars using the values in third
     (2) column. **-Sy** leaves space for vertical error
-    bars using the values in fourth (3) column. **-S**
+    bars using the values in fourth (3) column. |-S|
     or **-Sxy** leaves space for both error bars using the values in
     third and fourth (2 and 3) columns.
 

@@ -131,7 +131,7 @@ Optional Arguments
     columns appended, ending with the sampled cube value.  Use the optional
     **+h** modifier to append *header* to the trailing text of these input points.
     On output the trailing text will become the segment header for the series that originate
-    from each point.  By default, the table output is written to standard output.  Use **-G**
+    from each point.  By default, the table output is written to standard output.  Use |-G|
     to specify a file name.  Alternatively, if you wish each series to be written to its own
     data file, let the filename in |-G| have a C-format integer specifier (e.g., %d) and we
     will use the running point number to create unique file names.

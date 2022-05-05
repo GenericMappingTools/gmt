@@ -127,7 +127,7 @@ Optional Arguments
     If |-S| is not set, then it expects the user to
     supply a multisegment file where each segment header contains a
     **-Z**\ *value* string. The *value* will control the color of the line or
-    polygon (if |-L| is set) via the CPT.  Alternatively, see the **-Z**
+    polygon (if |-L| is set) via the CPT.  Alternatively, see the |-Z|
     option for how to assign *z*-values. **Note**: If modern mode and no
     argument is given then we select the current CPT.
 

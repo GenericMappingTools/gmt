@@ -116,7 +116,7 @@ Optional Arguments
     *length* sets the full length of each cross-profile, while *ds* is
     the sampling spacing along each cross-profile. Optionally, append
     **/**\ *spacing* for an equidistant spacing between cross-profiles
-    [Default erects cross-profiles at the input coordinates]; see **-A**
+    [Default erects cross-profiles at the input coordinates]; see |-A|
     for how resampling the input track is controlled. By
     default, all cross-profiles have the same direction (left to right
     as we look in the direction of the input line segment). Append **+a**

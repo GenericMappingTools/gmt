@@ -44,7 +44,7 @@ Description
 **blockmean** reads arbitrarily located (*x*,\ *y*,\ *z*) triples [or
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output a mean position and
-value for every non-empty block in a grid region defined by the **-R**
+value for every non-empty block in a grid region defined by the |-R|
 and |-I| arguments. See |-G| for writing gridded output directly.
 Either **blockmean**, :doc:`blockmedian`, or
 :doc:`blockmode` should be used as a pre-processor before running

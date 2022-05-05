@@ -244,7 +244,7 @@ Optional Arguments
     linear (axis-like) indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
     circular indicators and 60% of relevant canvas dimension for the linear indicators] and placement via **+j**\ *justify*
     [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
-    **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col*\ \|\ **t**\ *col* to indicate what should be annotated (see **-L**
+    **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col*\ \|\ **t**\ *col* to indicate what should be annotated (see |-L|
     for more information on what these are); append **+f** to use a specific *font* [:term:`FONT_ANNOT_SECONDARY` scaled as needed].
     Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [see below for defaults].
     Use **+p**\ *pen* to set moving item *pen*.  For setting the corresponding static fill and pen, use **+G** and **+P** instead.
