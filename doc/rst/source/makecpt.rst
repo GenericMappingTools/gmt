@@ -92,7 +92,7 @@ Optional Arguments
 
 **-D**\ [**i**\|\ **o**]
     Select the back- and foreground colors to match the colors for
-    lowest and highest *z*-values in the output CPT [Default (**-D** or **-Do**)
+    lowest and highest *z*-values in the output CPT [Default (|-D| or **-Do**)
     uses the colors specified in the master file, or those defined by the
     parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
     :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and

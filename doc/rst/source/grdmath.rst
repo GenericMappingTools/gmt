@@ -70,7 +70,7 @@ Optional Arguments
 
 .. _-A:
 
-.. |Add_-A| replace:: (**-A** is only relevant to the **LDISTG** operator)
+.. |Add_-A| replace:: (|-A| is only relevant to the **LDISTG** operator)
 .. include:: explain_-A.rst_
 
 .. _-D:

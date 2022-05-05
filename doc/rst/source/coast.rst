@@ -373,7 +373,7 @@ The desired file is then sought for in the alternate directories.
 Bugs
 ----
 
-The options to fill (**-C** |-G| |-S|) may not always work if the
+The options to fill (|-C| |-G| |-S|) may not always work if the
 Azimuthal equidistant projection is chosen (**-Je**\|\ **E**). If the
 antipole of the projection is in the oceans it will most likely work. If
 not, try to avoid using projection center coordinates that are even
