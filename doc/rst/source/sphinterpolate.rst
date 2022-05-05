@@ -92,7 +92,7 @@ Optional Arguments
     Smooth interpolation with **g**\ lobal gradient estimates. You may
     optionally append *N*/*M*/*U*, where *N* is the number of
     iterations used to converge at solutions for gradients when variable
-    tensions are selected (e.g., **-T** only) [3], *M* is the number of
+    tensions are selected (e.g., |-T| only) [3], *M* is the number of
     Gauss-Seidel iterations used when determining the global gradients
     [10], and *U* is the maximum change in a gradient at the last
     iteration [0.01].
@@ -101,7 +101,7 @@ Optional Arguments
     squared error in a typical (scaled) data value, and *U* is Upper
     bound on weighted sum of squares of deviations from data. Here, *N* is the number of
     iterations used to converge at solutions for gradients when variable
-    tensions are selected (e.g., **-T** only) [3]
+    tensions are selected (e.g., |-T| only) [3]
 
 .. _-T:
 
@@ -170,7 +170,7 @@ Notes
 The STRIPACK algorithm and implementation expect that there are no duplicate points
 in the input.  It is best that the user ensures that this is the case.  GMT has tools,
 such as :doc:`blockmean` and others, to combine close points into single entries.
-Also, **sphinterpolate** has a **-D** option to determine and exclude duplicates, but
+Also, **sphinterpolate** has a |-D| option to determine and exclude duplicates, but
 it is a very brute-force yet exact comparison that is very slow for large data sets.
 A much quicker check involves appending a specific repeating longitude value.
 Detection of duplicates in the STRIPACK library will exit the module.

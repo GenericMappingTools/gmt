@@ -140,7 +140,7 @@ Optional Arguments
     wiggles [Default is no fill]. Optionally, append **+p** to fill
     positive areas (this is the default behavior). Append **+n** to fill
     negative areas. Append **+n+p** to fill both positive and negative
-    areas with the same fill.  **Note**: You will need to repeat the **-G** option
+    areas with the same fill.  **Note**: You will need to repeat the |-G| option
     to select different fills for the positive and negative wiggles.
 
 .. _-I:
@@ -237,7 +237,7 @@ points, use
                  -C32000 -Gred -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
 
 and the positive anomalies will in general point in the north direction.
-We used **-D** to place a vertical scale bar indicating a 1000 nT anomaly.
+We used |-D| to place a vertical scale bar indicating a 1000 nT anomaly.
 To instead enforce a fixed azimuth of 45 for the positive wiggles, we add **-I**
 and obtain
 

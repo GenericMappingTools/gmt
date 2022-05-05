@@ -55,9 +55,9 @@ Required Arguments
 
 *psfiles*
     Names of PostScript files to be converted. The output files will
-    have the same name (unless **-F** is used) but with the conventional
+    have the same name (unless |-F| is used) but with the conventional
     extension name associated to the raster format (e.g., .jpg for the
-    jpeg format). Use **-D** to redirect the output to a different
+    jpeg format). Use |-D| to redirect the output to a different
     directory.
 
 Optional Arguments
@@ -70,7 +70,7 @@ Optional Arguments
     by the image content. Append **+u** to first remove any GMT-produced time-stamps.
     Append **+r** to *round* the HighResBoundingBox instead of using the ``ceil`` function.
     This is going against Adobe Law but can be useful when creating very small images
-    where the difference of one pixel might matter. If **-V** is used we also report
+    where the difference of one pixel might matter. If |-V| is used we also report
     the dimensions of the final illustration.
 
 .. _-C:
@@ -112,7 +112,7 @@ Optional Arguments
     of the poor decision of embedding the bits on the gs exe name we
     cannot satisfy both the 32 and 64 bits Ghostscript executable names.
     So in case of 'get from registry' failure the default name (when no
-    **-G** is used) is the one of the 64 bits version, or gswin64c
+    |-G| is used) is the one of the 64 bits version, or gswin64c
 
 .. _-H:
 
@@ -123,7 +123,7 @@ Optional Arguments
     by *scale*, rasterizes the plot, then down-samples the image by the same scale at the end.  The larger
     the *scale*, the smoother the raster.  Because processing time increases with *scale* we suggest you
     try values in the 2-5 range.  Note that raster images can also suffer from quantizing when the original data
-    have much higher resolution than your raster pixel dimensions.  The **-H** option may then be used to smooth
+    have much higher resolution than your raster pixel dimensions.  The |-H| option may then be used to smooth
     the result to avoid aliasing [no downsampling].
 
 .. _-I:
@@ -137,7 +137,7 @@ Optional Arguments
     The default unit is set by :term:`PROJ_LENGTH_UNIT` but you can append a new
     unit and/or impose different width and height (**Note**: This may change the
     image aspect ratio). What happens here is that Ghostscript will do the re-interpolation
-    work and the final image will retain the DPI resolution set by **-E**.  Append **+sm**
+    work and the final image will retain the DPI resolution set by |-E|.  Append **+sm**
     to set a maximum size and the new *width* is only imposed if the original figure width
     exceeds it. Append /\ *height* to also impose a maximum height in addition to the width.
     Alternatively, append **+S**\ *scale* to scale the image by a constant factor.
@@ -200,7 +200,7 @@ Optional Arguments
     append **+q** to change JPEG quality in 0-100 range [90]. The EPS format can be
     combined with any of the other formats. For example, **-Tef**
     creates both an EPS and a PDF file. The **-TF** creates a multi-page
-    PDF file from the list of input PS or PDF files. It requires the **-F** option.
+    PDF file from the list of input PS or PDF files. It requires the |-F| option.
     See also **NOTES** below.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -214,8 +214,8 @@ Optional Arguments
     Write an ESRI type world file suitable to make .tif files be
     recognized as geotiff by software that know how to do it. Be aware,
     however, that different results are obtained depending on the image
-    contents and if the **-B** option has been used or not. The trouble
-    with the **-B** option is that it creates a frame and very likely
+    contents and if the |-B| option has been used or not. The trouble
+    with the |-B| option is that it creates a frame and very likely
     its annotations. That introduces pixels outside the map data extent,
     and therefore the map extents estimation will be wrong. To avoid
     this problem use **--MAP_FRAME_TYPE**\ =inside option which plots all
@@ -223,10 +223,10 @@ Optional Arguments
     compromise the coordinate computations. Pay attention also to the
     cases when the plot has any of the sides with whites only because
     than the algorithm will fail miserably as those whites will be eaten
-    by the Ghostscript. In that case you really must use **-B** or use a
+    by the Ghostscript. In that case you really must use |-B| or use a
     slightly off-white color.
 
-    Together with **-V** it prints on screen the *gdal_translate*
+    Together with |-V| it prints on screen the *gdal_translate*
     (*gdal_translate* is a command line tool from the `GDAL package <https://gdal.org/>`_)
     command that reads the raster + world file and creates a true
     geotiff file. Append **+g** to do a system call to *gdal_translate*
@@ -236,7 +236,7 @@ Optional Arguments
     The world file naming follows the convention of jamming a 'w' in the
     file extension. So, if output is tif **-Tt** the world file is a
     .tfw, for jpeg we have a .jgw and so on. **Note**: This option automatically
-    sets **-A** **-P**.  Append **+c** to *not* crop the image.
+    sets |-A| **-P**.  Append **+c** to *not* crop the image.
 
     Append **+k** to create a minimalist KML file that allows loading the
     image in GoogleEarth. Note that for this option to work it is necessary that the postscript
@@ -314,12 +314,12 @@ dpi value is recommended. **psconvert** uses the loss-less DEFLATE
 compression technique when creating PDF and PNG files and LZW compression
 for TIFF images.  For smaller dpi images, such as required for building
 animations, the use of **-Qt**\ 4 and **-Qg**\ 4 may help sharpen text and lines,
-as will the **-H** option.
+as will the |-H| option.
 
-EPS is a vector (not a raster) format. Therefore, the **-E** option has
+EPS is a vector (not a raster) format. Therefore, the |-E| option has
 no effect on the creation of EPS files. Using the option **-Te** will
 remove setpagedevice commands from the PostScript file and will adjust the
-BoundingBox when the **-A** option is used. Note the original and
+BoundingBox when the |-A| option is used. Note the original and
 required BoundingBox is limited to integer points, hence Adobe added the
 optional HiResBoundingBox to add more precision in sizing. The **-A**
 option calculates both and writes both to the EPS file and is subsequently
@@ -330,10 +330,10 @@ exists in a PostScript file that is included in another document, this can wreak
 havoc on the printing or viewing of the overall document. Hence, **-TE** should only
 be used for "standalone" PostScript files.
 
-Although PDF and SVG are also vector formats, the **-E** option has an effect on
+Although PDF and SVG are also vector formats, the |-E| option has an effect on
 the resolution of pattern fills and fonts that are stored as bitmaps in
 the document. **psconvert** therefore uses a larger default resolution
-when creating PDF and SVG files. **-E** also determines the resolution of the
+when creating PDF and SVG files. |-E| also determines the resolution of the
 boundingbox values used to indicate the size of the output PDF.
 In order to obtain high-quality PDF or SVG files, the
 */prepress* options are in effect, allowing only loss-less DEFLATE
@@ -411,8 +411,8 @@ Windows there is a version called **gswin32c**. Ghostscript accepts a
 rich selection of command-line options that modify its behavior. Many of
 these are set indirectly by the options available above. However,
 hard-core usage may require some users to add additional options to
-fine-tune the result. Use **-S** to examine the actual command used, and
-add custom options via one or more instances of the **-C** option. For
+fine-tune the result. Use |-S| to examine the actual command used, and
+add custom options via one or more instances of the |-C| option. For
 instance, to turn on image interpolation for all images, improving image
 quality for scaled images at the expense of speed, use
 **-C**-dDOINTERPOLATE. See https://www.ghostscript.com/ for complete
@@ -431,7 +431,7 @@ use it.
 Deprecations
 ------------
 
-- 6.3.0: Modifiers +m, +g et al of **-A** option are moved to **-I**, **-N**, or **-W** option. `#5583 <https://github.com/GenericMappingTools/gmt/pull/5583>`_
+- 6.3.0: Modifiers +m, +g et al of |-A| option are moved to |-I|, |-N|, or |-W| option. `#5583 <https://github.com/GenericMappingTools/gmt/pull/5583>`_
 
 See Also
 --------

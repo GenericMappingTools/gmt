@@ -74,7 +74,7 @@ Required Arguments (begin mode)
     For example **-Fs**\ 5c,8c/8c will make the first column 5 cm wide and the second column 8 cm wide, with
     all having a constant height of 8 cm. The number of values must either be one (constant across the rows or columns)
     or exactly match the number of rows (or columns). For geographic maps, the height of each subplot depends on
-    your map region and projection.  There are two options: (1) Specify both **-R** and **-J** and we use these
+    your map region and projection.  There are two options: (1) Specify both |-R| and |-J| and we use these
     to compute the height of each subplot.  All subplots must share the same region and projection and you specify
     a zero *height*, or (2) you can select *height* based on trial and error to suit your plot layout.
 
@@ -124,17 +124,17 @@ Optional Arguments (begin mode)
     on more than one side.  Such space will be left untouched by the main map plotting but can
     be accessed by modules that plot scales, bars, text, etc.  Settings specified under **begin** directive apply
     to all subplots, while settings under **set** only apply to the selected (active) subplot.  **Note**: Common options **-X**
-    and **-Y** are not available during subplots; use **-C** instead.
+    and |-Y| are not available during subplots; use |-C| instead.
 
 .. _-D:
 
 **-D**
     Use the prevailing defaults settings (via gmt.conf or **--PAR**\ =\ *value*) and the selections made
-    via **-B**, **-C**, **-M** and **-S** to determine the panel sizes (if using **-Ff**) and panel spacings only, but
+    via |-B|, |-C|, |-M| and |-S| to determine the panel sizes (if using **-Ff**) and panel spacings only, but
     do *not* draw and annotate any frames.  This option is useful if you wish to lay down a partial subplot
     with annotations and frames, but then want to plot data inside it separately later without redrawing
-    the frames.  With different **-B**, **-C**, **-M** and **-S** choices the two subplots may not align, but with
-    **-D** they will.  **Note**: It is assumed that **-F** stays the same [Draw and annotate frames as indicated].
+    the frames.  With different |-B|, |-C|, |-M| and |-S| choices the two subplots may not align, but with
+    |-D| they will.  **Note**: It is assumed that |-F| stays the same [Draw and annotate frames as indicated].
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -168,20 +168,20 @@ Optional Arguments (begin mode)
     Append **+l** if annotated *x*-axes should have a label [none]; optionally append the label if it is the same
     for the entire subplot. Optionally, use **+s** to set a separate (secondary) label.
     Append **+t** to make space for subplot titles for each row; use **+tc** for top row titles only [no subplot titles].
-    Labels and titles that depends on which row or column are specified as usual via a subplot's own **-B** setting.
+    Labels and titles that depends on which row or column are specified as usual via a subplot's own |-B| setting.
     Considerations for **-Sr**: Use when all subplots in a **r**\ ow share a common *y*-range. The first (i.e., **l**\ eft) and the last
     (i.e., **r**\ ight) columns will have *y*-annotations; append **l** or **r** to select only one of those two columns [both].
     Append **+l** if annotated *y*-axes will have a label [none]; optionally, append the label if it is the same
     for the entire subplot. Optionally, use **+s** to set a separate (secondary) label.
-    Append **+p** to make all annotations axis-parallel [horizontal]; if not used you may have to set **-C** to secure
+    Append **+p** to make all annotations axis-parallel [horizontal]; if not used you may have to set |-C| to secure
     extra space for long horizontal annotations.
-    Append **+w** to the **-F** argument to draw horizontal and vertical lines
+    Append **+w** to the |-F| argument to draw horizontal and vertical lines
     between interior panels using selected pen [no lines].
 
 .. _-T:
 
 **-T**\ *heading*
-    While individual subplots can have titles (see **-S** or **-B**), the entire figure may also have a
+    While individual subplots can have titles (see |-S| or **-B**), the entire figure may also have a
     overarching *heading* [no heading]. Font is determined by setting :term:`FONT_HEADING`.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -202,7 +202,7 @@ Synopsis (set mode)
 **gmt subplot set** [ *row,col*\|\ *index* ] [ **-A**\ *fixedtag*] [ **-C**\ *side*\ *clearance* ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot.
-**Note**: If any **-J** option is passed *without* the scale or width when you first are plotting
+**Note**: If any |-J| option is passed *without* the scale or width when you first are plotting
 inside the subplot, then the scale of the map is automatically determined by the subplot size and your region.
 For Cartesian plots: If you want the scale to apply *equally* to both dimensions
 then you must specify **-Jx** [The default projection of **-JX** will fill the subplot by using unequal scales].
@@ -212,18 +212,18 @@ Optional Arguments (set mode)
 
 *row,col*
     Sets the current subplot until further notice.  **Note**: First *row* or *col* is 0, not 1. If not given we go to the next subplot by order
-    specified via **-A**.  As an alternative, you may bypass the **set** mode and
+    specified via |-A|.  As an alternative, you may bypass the **set** mode and
     instead supply the common option **-c**\ [*row,col*] to the first plot command you issue in that subplot.
     GMT maintains information about the current figure and subplot. Also, you may give the one-dimensional
-    *index* instead which starts at 0 and follows the row or column order set via **-A**.
+    *index* instead which starts at 0 and follows the row or column order set via |-A|.
 
 .. _subplot_set-A:
 
 **-A**\ *fixedtag*
     Overrides the automatic labeling with the given string.  No modifiers are allowed.
-    Placement, justification, etc. are all inherited from how **-A** was specified by the
+    Placement, justification, etc. are all inherited from how |-A| was specified by the
     initial **subplot begin** command.  **Note**: Overriding means you initiate the tag
-    machinery with **-A** when **subplot begin** was called, otherwise the option is ignored.
+    machinery with |-A| when **subplot begin** was called, otherwise the option is ignored.
     To *not* set any tag for this panel, use **-A-**.
 
 .. _subplot_set-C2:
@@ -234,7 +234,7 @@ Optional Arguments (set mode)
     or **y** for both **s** and **n**.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
     be accessed by modules that plot scales, bars, text, etc.  This setting overrides the common
-    clearances set by **-C** during **subplot begin**.
+    clearances set by |-C| during **subplot begin**.
 
 .. _subplot_set-V:
 
@@ -246,9 +246,9 @@ Any number of plotting command can now take place and all output will be directe
 selected subplot.  There are a few other rules that need to be followed:
 (1) The subplot machinery expects the first plotting command in a new subplot window
 to take care of plotting the base frame.  The particulars of this frame may have been
-specified by the **-S** option in **subplot begin**.  In either case, should you need to set or override
-frame and axis parameters then you must specify these **-B** options with this first plot
-command.  (2) The subplot machinery automatically uses the **-X** and **-Y** options under
+specified by the |-S| option in **subplot begin**.  In either case, should you need to set or override
+frame and axis parameters then you must specify these |-B| options with this first plot
+command.  (2) The subplot machinery automatically uses the |-X| and |-Y| options under
 the hood so these options are not available while a subplot is active.
 
 Synopsis (end mode)

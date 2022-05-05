@@ -42,7 +42,7 @@ Synopsis
 .. _-D:
 
 **-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+s**\ *file*][**+t**][**+u**\ *unit*]\  \| **-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*][**+t**]
-    Draw a simple map inset box on the map.  Requires **-F**.  Specify the box in one of three ways:
+    Draw a simple map inset box on the map.  Requires |-F|.  Specify the box in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **r** if the coordinates instead are the lower left and
     upper right corners of the desired rectangle. (b) Give *xmin/xmax/ymin/ymax*
@@ -63,7 +63,7 @@ Synopsis
     its dimensions in the current map unit, use **+s**\ *file* to write this information
     to *file*.  Alternatively, you may append **+t** to translate the plot origin to
     the lower left corner of the map inset.
-    Specify inset box attributes via the **-F** option [outline only].
+    Specify inset box attributes via the |-F| option [outline only].
 
 Examples
 --------
@@ -315,7 +315,7 @@ degrees annotation/tick interval and 1 degree gridlines, run
 
 To make a 12-cm-wide stereographic basemap for Australia from an
 arbitrary view point (not the poles), and use a rectangular boundary, we
-must give the pole for the new projection and use the **-R** option to
+must give the pole for the new projection and use the |-R| option to
 indicate the lower left and upper right corners (in lon/lat) that will
 define our rectangle. We choose a pole at 130/-30 and use 100/-45 and
 160/-5 as our corners. The command becomes

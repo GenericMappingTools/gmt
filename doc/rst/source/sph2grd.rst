@@ -69,7 +69,7 @@ Optional Arguments
 **-D**\ [**g**\|\ **n**]
     Will evaluate a derived field from a geopotential model.  Choose
     between **Dg** which will compute the gravitational field or **Dn**
-    to compute the geoid [Add **-E** for anomalies on the ellipsoid].
+    to compute the geoid [Add |-E| for anomalies on the ellipsoid].
 
 .. _-E:
 

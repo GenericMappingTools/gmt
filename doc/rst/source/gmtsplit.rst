@@ -39,7 +39,7 @@ Description
 -----------
 
 **gmtsplit** reads a series of (x,y[,z]) records [or optionally
-(x,y[,z],d,h); see **-S** option] from standard input [or *xy[z][dh]file*]
+(x,y[,z],d,h); see |-S| option] from standard input [or *xy[z][dh]file*]
 and splits this into separate lists of (x,y[,z]) series, such that each
 series has a nearly constant azimuth through the x,y plane. There are
 options to choose only those series which have a certain orientation, to
@@ -55,7 +55,7 @@ Required Arguments
     One or more ASCII [or binary, see **-bi**]
     files with 2, 3, or 5 columns holding (x,y,[z[,d,h]])
     data values. To use (x,y,z,d,h) input, sorted so that d is
-    non-decreasing, specify the **-S** option; default expects (x,y,z)
+    non-decreasing, specify the |-S| option; default expects (x,y,z)
     only. If no files are specified, **gmtsplit** will read from
     standard input.
 

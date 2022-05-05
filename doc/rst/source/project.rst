@@ -112,7 +112,7 @@ back-azimuths or azimuths are better done using :doc:`mapproject` as
    the *p-q* coordinate system, defined by the center (**C**) and either the end-point
    (**E**) or azimuth (:math:`\alpha`), or for geographic data a rotation pole **T** (not shown).
    The blue point has projected coordinates (p,0) and is reported as (r,s) in the original
-   coordinate system.  Options **-L** (limit range of *p*) and **-W** (limit range of *q*)
+   coordinate system.  Options |-L| (limit range of *p*) and |-W| (limit range of *q*)
    can be used to exclude data outside the specified limits (light gray area).
 
 Required Arguments
@@ -187,7 +187,7 @@ Optional Arguments
 
 **-Q**
     Specify that  :math:`x`, :math:`y`, *r*, *s* are in degrees while *p*, *q*, *dist*, *lmin*, *lmax*, *wmin*,
-    *wmax* are in km. If **-Q** is not set, then all these are assumed to be in the same units.
+    *wmax* are in km. If |-Q| is not set, then all these are assumed to be in the same units.
 
 .. _-S:
 
