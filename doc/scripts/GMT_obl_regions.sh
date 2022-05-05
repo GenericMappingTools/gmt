@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Illustrate the functions of -Wr and -We in mapproject and
-# compare the enclosed versus circumescribed oblique retions
+# compare the enclosed versus circumscribed oblique regions
 
 gmt begin GMT_obl_regions
 	gmt set MAP_FRAME_TYPE plain MAP_ANNOT_OBLIQUE lat_horizontal,tick_normal,lon_horizontal FONT_ANNOT 8p
@@ -12,8 +12,8 @@ gmt begin GMT_obl_regions
 	gmt clip geo.txt -W1p,red
 	gmt coast -Gblack
 	gmt clip -C
-	# Stereographic region defined - find enclosing mn/max oblique rectangle
-	R=$(gmt mapproject -JS36/90/5c+dh -R-15/60/68/90 -WE)
+	# Stereographic region defined - find enclosing min/max oblique rectangle
+	R=$(gmt mapproject -R-15/60/68/90 -JS36/90/5c+dh -WE)
 	cat <<- EOF > geo.txt	# Build the geographic box
 	-15	68
 	60	68
