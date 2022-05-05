@@ -61,7 +61,7 @@ as symbol size. Symbols whose *size* is <= 0 are skipped. If no symbols
 are specified then the symbol code (see |-S| below) must be present as
 last column in the input. If |-S| is not used, a line connecting the
 data points will be drawn instead. To explicitly close polygons, use
-**-L**. Select a fill with |-G|. If |-G| is set, |-W| will control
+|-L|. Select a fill with |-G|. If |-G| is set, |-W| will control
 whether the polygon outline is drawn or not. If a symbol is selected,
 **-G** and |-W| determines the fill and outline/no outline,
 respectively.

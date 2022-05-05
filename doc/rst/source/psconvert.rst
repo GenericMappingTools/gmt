@@ -236,7 +236,7 @@ Optional Arguments
     The world file naming follows the convention of jamming a 'w' in the
     file extension. So, if output is tif **-Tt** the world file is a
     .tfw, for jpeg we have a .jgw and so on. **Note**: This option automatically
-    sets |-A| **-P**.  Append **+c** to *not* crop the image.
+    sets |-A| |-P|.  Append **+c** to *not* crop the image.
 
     Append **+k** to create a minimalist KML file that allows loading the
     image in GoogleEarth. Note that for this option to work it is necessary that the postscript

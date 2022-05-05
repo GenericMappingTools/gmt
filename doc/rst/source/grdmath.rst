@@ -146,7 +146,7 @@ Optional Arguments
 
 .. include:: explain_-n.rst_
 
-.. |Add_nodereg| replace:: Only used with |-R| **-I**.
+.. |Add_nodereg| replace:: Only used with |-R| |-I|.
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_core.rst_
