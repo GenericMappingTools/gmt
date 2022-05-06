@@ -1154,8 +1154,12 @@ void grdimage_reset_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *G, double
 	gmt_M_memcpy (G->header->wesn, new_wesn, 4, double);	/* Temporarily update the header */
 	for (k = 0; k < 4; k++) G->header->pad[k] += pad[k];	/* Temporarily change the pad */
 	gmt_set_grddim (GMT, G->header);	/* Change header items */
-	gmt_grd_zminmax (GMT, G->header, G->data);		/* Recompute the min/max */
-	*zmin = G->header->z_min;	*zmax = G->header->z_max;	/* These are then passed out */
+	if (G->header->nm) {	/* Still a grid left to examine after moving to actual -R */
+		gmt_grd_zminmax (GMT, G->header, G->data);		/* Recompute the min/max */
+		*zmin = G->header->z_min;	*zmax = G->header->z_max;	/* These are then passed out */
+	}
+	else	/* No nodes actually inside the chosen region */
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "No grid nodes inside selected region\n");
 	gmt_M_memcpy (G->header->wesn, old_wesn, 4, double);	/* Reset the header */
 	for (k = 0; k < 4; k++) G->header->pad[k] -= pad[k];	/* Reset the pad */
 	gmt_set_grddim (GMT, G->header);	/* Reset header items */

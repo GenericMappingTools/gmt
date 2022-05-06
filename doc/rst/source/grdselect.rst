@@ -65,7 +65,7 @@ Optional Arguments
     Optionally, append modifier **+i** and specify a rounding increment to be applied
     to the final region: Specify **l** for the lowest increment of all passed data
     sources, **h** for the highest increment, or *inc* to set a specific increment.
-    If **-A** is not used then we just list the names of the sources that passed
+    If |-A| is not used then we just list the names of the sources that passed
     (or not; see |-I|) any tests selected from |-C| |-D| |-F| |-L| |-N| |-R| |-W| |-Z| |-r|.
 
 .. _-C:
@@ -148,7 +148,7 @@ Optional Arguments
     Only pass data sources that have a total number of NaNs that is either **l**\ ower or **h**\ igher than *n* [Default is 0].
     **Note**: Cannot be used with images.
 
-.. |Add_-R| replace:: Using the **-R** option will in essence supply another region that will be included in the computation via |-A|, as well as limit the reading to that subset. For 3-D cubes you must also
+.. |Add_-R| replace:: Using the |-R| option will in essence supply another region that will be included in the computation via |-A|, as well as limit the reading to that subset. For 3-D cubes you must also
     append limits in the *z* dimension. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**

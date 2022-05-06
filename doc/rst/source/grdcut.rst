@@ -32,15 +32,15 @@ Description
 -----------
 
 **grdcut** will produce a new *outgrid* file which is a subregion of
-*ingrid*. The subregion may be specified with **-R** as in other programs;
-the specified range must not exceed the range of *ingrid* (but see **-N**).
+*ingrid*. The subregion may be specified with |-R| as in other programs;
+the specified range must not exceed the range of *ingrid* (but see |-N|).
 If in doubt, run :doc:`grdinfo` to check range. Alternatively, define the subregion
 indirectly via a range check on the node values or via distances from a
-fixed point. Finally, you can use **-J** for oblique projections to determine
-the corresponding rectangular **-R** setting that will give a subregion that fully
+fixed point. Finally, you can use |-J| for oblique projections to determine
+the corresponding rectangular |-R| setting that will give a subregion that fully
 covers the oblique domain.  **Note**: If the input grid is actually an image (gray-scale,
-RGB, or RGBA), then options **-N** and **-Z** are unavailable, while for multi-layer
-Geotiff files only options **-R**, **-S** and **-G** are supported, i.e., you can cut out
+RGB, or RGBA), then options |-N| and |-Z| are unavailable, while for multi-layer
+Geotiff files only options |-R|, |-S| and |-G| are supported, i.e., you can cut out
 a sub-region only (which we do via *gdal_translate* if you have multiple bands).
 Complementary to **grdcut** there is :doc:`grdpaste`, which will join together
 two grid files (not images) along a common edge.
@@ -72,7 +72,7 @@ Optional Arguments
 
 **-D**\ [**+t**]
     A "dry run": Simply report the region and increment of what would be the
-    extracted grid given the selected options.  No grid is created (**-G** is disallowed)
+    extracted grid given the selected options.  No grid is created (|-G| is disallowed)
     and instead we write a single data record with *west east south north xinc yinc*
     to standard output. The increments will reflect the input grid unless it is a
     remote gridded data set without implied resolution. Append **+t** to instead receive
@@ -94,7 +94,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [*nodata*]
-    Allow grid to be extended if new **-R** exceeds existing boundaries.
+    Allow grid to be extended if new |-R| exceeds existing boundaries.
     Append *nodata* value to initialize nodes outside current region [Default is NaN].
 
 .. _-S:

@@ -78,7 +78,7 @@ Optional Arguments
     legend. Each legend item is described by a unique record. All
     records begin with a unique character that is common to all records
     of the same kind. The order of the legend items is implied by the
-    order of the records.  See **-M** for mixing legend items set by a
+    order of the records.  See |-M| for mixing legend items set by a
     *specfile* and those set implicitly via **-l** by previous modules
     under modern mode.
 
@@ -103,7 +103,7 @@ Optional Arguments
 
     .. include:: explain_-F_box.rst_
 
-    **Note**: If legend *width* is not set via **-D** then modifier **+r** in **-F** is disabled.
+    **Note**: If legend *width* is not set via |-D| then modifier **+r** in |-F| is disabled.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -115,7 +115,7 @@ Optional Arguments
 **-M**\ [*items*]
     Modern mode only and pertains the the situation where there are **h**\ idden, auto-generated legend
     information created by prior plotting-modules' **-l** option and **e**\ xplicitly given information
-    from input file(s) given on the command line (or via standard input).  Use **-M** to set which of
+    from input file(s) given on the command line (or via standard input).  Use |-M| to set which of
     these should be used and in what order via directives **h** and **e** [Default is **he**, meaning
     we will first place any hidden auto-generated legend items (if any) and then we append the explicitly
     given information (if present).  **Note**: For classic mode an input file must be given or else we
@@ -179,7 +179,7 @@ the syntax for each of these records are presented below:
     Any of the modifiers
     [**+e**\ [**b**\|\ **f**][*length*]][**+h**][**+m**\ [**a**\|\ **c**\|\ **l**\|\ **u**]][**+n**\ [*txt*]] may be
     appended to the *height* argument, while other module options
-    **-B** **-I** **-L** **-M** **-N** **-S** **-Z** and **-p** may be appended as
+    |-B| |-I| |-L| |-M| |-N| |-S| |-Z| and **-p** may be appended as
     *optional arguments* at the end of the record.
     See :doc:`colorbar` for details on all modifiers and options.
 **C** *textcolor*
@@ -236,12 +236,12 @@ the syntax for each of these records are presented below:
     **r**\ (ight), **t**\ (op) , and **b**\ (ottom)).
     Apply **+u** to append the unit to all distance annotations along
     the scale. If you want to place a map panel behind the scale,
-    add a suitable **-F** panel option (see :doc:`basemap` for details
+    add a suitable |-F| panel option (see :doc:`basemap` for details
     on panels as well as map scale modifiers).
     All **+**\ *modifiers* must be appended to *length* to make a single
-    string argument.  If the **-R** **-J** supplied to the module is
+    string argument.  If the |-R| |-J| supplied to the module is
     different than the projection needed for the scale (or not given at
-    all, e.g., with **-Dx**), supply the two optional **-R** **-J** settings
+    all, e.g., with **-Dx**), supply the two optional |-R| |-J| settings
     as well.
 **N** [*ncolumns* or *relwidth1 relwidth2 ... relwidthn*]
     Change the number of columns in the legend [1]. This only affects
@@ -249,11 +249,11 @@ the syntax for each of these records are presented below:
     columns stay in effect until **N** is used again.  To get columns
     of unequal width, instead provide the relative width of each column
     separated by whitespace.  The sum of these widths are equated to the
-    legend width set via **-D**.  If no argument is given the we set
+    legend width set via |-D|.  If no argument is given the we set
     *n_columns* to 1.
 **P** *paragraph-mode-header-for-text*
     Start a new text paragraph by specifying all the parameters needed
-    (see :doc:`text` **-M** record description). Note that the module knows
+    (see :doc:`text` |-M| record description). Note that the module knows
     what all those values should be, so normally you can leave the
     entire record (after P) blank or leave it out all together. If you
     need to set at least one of the parameters directly, you must
@@ -332,13 +332,13 @@ Wedge: Angles are -30 and 30 degrees.
 Note On Legend Height
 ---------------------
 
-As **-D** suggests, leaving the *height* off forces a calculation of the
+As |-D| suggests, leaving the *height* off forces a calculation of the
 expected height. This is an exact calculation except in the case of
 legends that place paragraph text. Here we simply do a first-order
 estimate of how many typeset lines might appear. Without access to font
 metrics this estimate will occasionally be off by 1 line. If so, note
-the reported height (with **-V**) and specify a slightly larger or
-smaller height in **-D**.
+the reported height (with |-V|) and specify a slightly larger or
+smaller height in |-D|.
 
 Windows Remarks
 ---------------
@@ -410,11 +410,11 @@ In modern mode, some modules can access the **-l** option and build the legend
 label and allows optional modifiers **+d**, **+g**, **+n**, **+h**, **+j**, **+l**, and **+v**
 that follow the corresponding uppercase legend codes discussed above.  In addition,
 there is **+f** to set header (H) or label (L) font,  **+s** to set the symbol size (or line length)
-to use for the current entry, and **+x** to scale all symbols uniformly (see **-S** above).
+to use for the current entry, and **+x** to scale all symbols uniformly (see |-S| above).
 Some defaults are hardwired: We draw a white rectangular panel with
 a 1 point black outline offset from the justification point (**+j**) by 0.2 cm.  To use
 different settings you must call **legend** explicitly before :doc:`end` does so
-implicitly instead.  **Note**: With an explicit call to **legend** you can also use **-T** to
+implicitly instead.  **Note**: With an explicit call to **legend** you can also use |-T| to
 save the auto-generate *specfile*, make modification to it, and then pass that to **legend**
 directly.
 

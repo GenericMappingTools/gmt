@@ -28,7 +28,7 @@ Description
 -----------
 
 Normally, **gmt get** will list the value of one or more specified GMT default parameters.
-Alternatively (with **-D**), it will instead download selected sets remote data from the
+Alternatively (with |-D|), it will instead download selected sets remote data from the
 current GMT data server.
 
 Optional Arguments
@@ -61,7 +61,7 @@ PARAMETER
 .. _-I:
 
 **-I**\ *inc*\ [**m**\|\ **s**]
-    In conjunction with **-D**, limit the download of grids to those with grid
+    In conjunction with |-D|, limit the download of grids to those with grid
     spacing equal to or larger than *inc* [no limit].
 
 .. _-L:
@@ -74,7 +74,7 @@ PARAMETER
 .. _-N:
 
 **-N**
-    Used in conjunction with **-D** and disables the otherwise automatic conversion
+    Used in conjunction with |-D| and disables the otherwise automatic conversion
     of downloaded compressed JP2000 tiles to locally (compressed) netCDF grids.
     This speeds up the total data request and defers the conversion to when the
     tile is requested by a module.
@@ -82,7 +82,7 @@ PARAMETER
 .. _-Q:
 
 **-Q**
-    Can be used in conjunction with **-D** (and **-I**) to provide a listing of
+    Can be used in conjunction with |-D| (and |-I|) to provide a listing of
     available datasets (no downloading takes place). The output is one record per
     dataset giving the information as *planet group dataset size nitems remark*.  For datasets
     that are tiled, the *size* is set to N/A (tile sizes vary but are usually just
@@ -122,7 +122,7 @@ To get both the values of the parameter
 Downloading Data
 ----------------
 
-Be aware that the GMT data server hosts many tens of Gb of data sets.  The **-D** option
+Be aware that the GMT data server hosts many tens of Gb of data sets.  The |-D| option
 may require considerable free space on your local computer.  Data and cache directories
 may be removed by using the :doc:`clear` module.
 

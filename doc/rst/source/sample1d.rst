@@ -67,7 +67,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+d**][**+l**]
-    For track resampling (if **-T**...\ *unit* is set) we can select how
+    For track resampling (if |-T|...\ *unit* is set) we can select how
     this is to be performed. Append **f** to keep original points, but
     add intermediate points if needed; note this selection does not
     necessarily yield equidistant points [Default], **m** as **f**, but
@@ -136,7 +136,7 @@ Optional Arguments
     Sets the column number of the weights to be used with a smoothing cubic
     spline.  Requires **-Fs**.
 
-.. |Add_-bi| replace:: [Default is 2 (or at least the number of columns implied by **-T**)].
+.. |Add_-bi| replace:: [Default is 2 (or at least the number of columns implied by |-T|)].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].
