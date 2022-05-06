@@ -491,13 +491,78 @@ GMT_LOCAL void grdfill_nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In
 	gmt_M_free (GMT, ys);
 }
 
+GMT_LOCAL int grdfill_sample (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct GMT_GRID *Out, char *file) {
+	/* 1. Create x,y arrays of NaN locations in the grid and an empty z array
+	 * 2. Call grdtrack with virtual input and virtual output
+	 * 3. Fill in the holes in the grid with these values
+	 */
+	openmp_int row, col, k;
+	uint64_t dim[4] = {0, 0, 0, 0}, node, n_NaNs = 0, n_alloc = 0;
+	char input[GMT_VF_LEN] = {""}, output[GMT_VF_LEN] = {""}, args[GMT_LEN256] = {""};
+	double *data[3] = {NULL, NULL, NULL};
+	struct GMT_VECTOR *V_in = NULL, *V_out = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;	/* Shorthand */
+
+	/* Build array list of node coordinates where we have NaNs */
+	gmt_M_grd_loop (GMT, In, row, col, node) {
+		if (!gmt_M_is_fnan (In->data[node])) continue;	/* Not part of a hole */
+		if (n_NaNs >= n_alloc) {	/* Allocate more memory (including the first time) */
+			if (n_alloc == 0) n_alloc = GMT_INITIAL_MEM_ROW_ALLOC; else n_alloc *= 2;
+			for (k = 0; k < 2; k++) data[k] = gmt_M_memory (GMT, data[k], n_alloc, double);
+		}
+		/* Keep the coordinates of the NaN node */
+		data[GMT_X][n_NaNs] = In->x[col];
+		data[GMT_Y][n_NaNs] = In->y[row];
+		n_NaNs++;	/* Number of NaNs so far */
+	}
+	if (n_NaNs == 0) {	/* Well, that was a waste of our time */
+		GMT_Report (API, GMT_MSG_WARNING, "There are no NaNs in your grid - returning the input grid as output\n");
+		for (k = 0; k < 2; k++) gmt_M_free (GMT, data[k]);
+		return (GMT_NOERROR);
+	}
+	/* Finalize the memory allocation (and z for the first time) */
+	for (k = 0; k < 3; k++) data[k] = gmt_M_memory (GMT, data[k], n_NaNs, double);
+	/* Allocate two vector containers for input and output separately */
+	dim[0] = 2;	/* Want two input columns but let length be 0 - this signals that no vector allocations should take place */
+	if ((V_in = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (API->error);
+	dim[0] = 3;	/* Want three output columns [we will share the first two with input] */
+	if ((V_out = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (API->error);
+	V_in->n_rows = V_out->n_rows = n_NaNs;	/* Must specify how many input points we have */
+	/* Hook these up to our containers, reusing x,y as both in and out x/y vectors */
+	GMT_Put_Vector (API, V_in,  GMT_X, GMT_DOUBLE, data[GMT_X]);
+	GMT_Put_Vector (API, V_in,  GMT_Y, GMT_DOUBLE, data[GMT_Y]);
+	GMT_Put_Vector (API, V_out, GMT_X, GMT_DOUBLE, data[GMT_X]);
+	GMT_Put_Vector (API, V_out, GMT_Y, GMT_DOUBLE, data[GMT_Y]);
+	GMT_Put_Vector (API, V_out, GMT_Z, GMT_DOUBLE, data[GMT_Z]);
+	if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, V_in, input)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to use vectors as a virtual dataset!\n");
+		return (API->error);
+	}
+	if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, V_out, output)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to use vectors as a virtual dataset!\n");
+		return (API->error);
+	}
+	sprintf (args, "-G%s %s > %s", file, input, output);	/* Build grdtrack command */
+	if (GMT_Call_Module (API, "grdtrack", GMT_MODULE_CMD, args)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Run-time error from grdtrack\n");
+		return (API->error);
+	}
+	n_NaNs = 0;	/* Rewind and march through the grid again */
+	gmt_M_grd_loop (GMT, In, row, col, node) {
+		if (!gmt_M_is_fnan (In->data[node])) continue;	/* Not part of a hole */
+		Out->data[node] = data[GMT_Z][n_NaNs++];	/* Replace the values at NaN-nodes */
+	}
+	for (k = 0; k < 3; k++) gmt_M_free (GMT, data[k]);	/* Free the temp memory */
+	return (GMT_NOERROR);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 	char *ID = NULL, *RG_orig_hist = NULL;
 	int error = 0, RG_id = 0;
-	openmp_int row, col, k;
+	openmp_int row, col;
 	unsigned int hole_number = 0, limit[4], n_nodes;
 	uint64_t node, offset;
 	int64_t off[4];
@@ -572,61 +637,16 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->A.mode == ALG_GRID) {	/* Basically a grdtrack exercise */
-		/* 1. Create x,y list of NaN locations in the grid
-		 * 2. Call grdtrack with virtual input and virtual output
-		 * 3. Fill in the holes
-		 */
-		uint64_t dim[4] = {0, 0, 0, 0}, n_NaNs = 0, n_alloc = 0;
-		char input[GMT_VF_LEN] = {""}, output[GMT_VF_LEN] = {""}, args[GMT_LEN256] = {""};
-		double *data[3] = {NULL, NULL, NULL};
-		struct GMT_VECTOR *V_in = NULL, *V_out = NULL;
-		struct GMT_GRID *Out = NULL;
-		gmt_M_grd_loop (GMT, Grid, row, col, node) {	/* Build array list of node coordinates where we have NaNs */
-			if (!gmt_M_is_fnan (Grid->data[node])) continue;	/* Not part of a hole */
-			if (n_NaNs >= n_alloc) {
-				if (n_alloc == 0) n_alloc = GMT_INITIAL_MEM_ROW_ALLOC; else n_alloc *= 2;
-				for (k = 0; k < 3; k++) data[k] = gmt_M_memory (GMT, data[k], n_alloc, double);
-			}
-			data[GMT_X][n_NaNs] = Grid->x[col];
-			data[GMT_Y][n_NaNs] = Grid->y[row];
-			n_NaNs++;
-		}
-		for (k = 0; k < 3; k++) data[k] = gmt_M_memory (GMT, data[k], n_NaNs, double);
-		/* Allocate two vector containers for input and output separately */
-		dim[0] = 2;	/* Want two input columns but let length be 0 - this signals that no vector allocations should take place */
-		if ((V_in = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
-		dim[0] = 3;	/* Want three output columns [we will share the first two with input] */
-		if ((V_out = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
-		V_in->n_rows = V_out->n_rows = n_NaNs;	/* Must specify how many input points we have */
-		/* Hook these up to our containers, reusing x,y as both in and out x/y vectors */
-		GMT_Put_Vector (API, V_in,  GMT_X, GMT_DOUBLE, data[GMT_X]);
-		GMT_Put_Vector (API, V_in,  GMT_Y, GMT_DOUBLE, data[GMT_Y]);
-		GMT_Put_Vector (API, V_out, GMT_X, GMT_DOUBLE, data[GMT_X]);
-		GMT_Put_Vector (API, V_out, GMT_Y, GMT_DOUBLE, data[GMT_Y]);
-		GMT_Put_Vector (API, V_out, GMT_Z, GMT_DOUBLE, data[GMT_Z]);
-		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, V_in, input)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failed to use vectors as a virtual dataset!\n");
-			Return (API->error);
-		}
-		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, V_out, output)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Failed to use vectors as a virtual dataset!\n");
-			Return (API->error);
-		}
-		sprintf (args, "-G%s %s > %s", Ctrl->A.file, input, output);
-		if (GMT_Call_Module (API, "grdtrack", GMT_MODULE_CMD, args)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Run-time error from grdtrack\n");
-			Return (API->error);
-		}
-		if (gmt_set_outgrid (GMT, Ctrl->In.file, false, 0, Grid, &Out))	/* true if input is a read-only array */
-			gmt_M_memcpy (Out->data, Grid->data, Out->header->size, gmt_grdfloat);	/* First duplicate all */
-		n_NaNs = 0;	/* Rewind and march to the grid again */
-		gmt_M_grd_loop (GMT, Grid, row, col, node) {	/* Replace the values at NaN-nodes */
-			if (!gmt_M_is_fnan (Grid->data[node])) continue;	/* Not part of a hole */
-			Out->data[node] = data[GMT_Z][n_NaNs++];
-		}
-		for (k = 0; k < 3; k++) gmt_M_free (GMT, data[k]);
+		struct GMT_GRID *New = NULL;
 
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out)) {
+		if (gmt_set_outgrid (GMT, Ctrl->In.file, false, 0, Grid, &New))	/* true if input is a read-only array */
+			gmt_M_memcpy (New->data, Grid->data, New->header->size, gmt_grdfloat);	/* First duplicate all nodes to the new grid */
+
+		if ((error = grdfill_sample (GMT, Grid, New, Ctrl->A.file)))
+			Return (error);	/* Not a happy ending */
+
+		/* Output the filled-in grid */
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, New)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to write output grid!\n");
 			Return (API->error);
 		}
