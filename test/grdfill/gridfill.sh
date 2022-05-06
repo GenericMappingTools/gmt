@@ -1,24 +1,19 @@
 #!/usr/bin/env bash
 # Test the -Ag algorithm in grdfill
+# The commented step are the commands making the file now in the cache
 # Pull out a small piece of 20m DEM
-gmt grdcut -R0/10/0/10 @earth_relief_20m -Gdata.grd
+# gmt grdcut -R0/10/0/10 @earth_relief_20m -Gdata.grd
 # Make a mask for two holes
-gmt grdmath -Rdata.grd 4 6 SDIST 250 GE 0 NAN 7 1.5 SDIST 100 GE 0 NAN ADD 2 DIV = mask.grd
+# gmt grdmath -Rdata.grd 4 6 SDIST 250 GE 0 NAN 7 1.5 SDIST 100 GE 0 NAN ADD 2 DIV = mask.grd
 # Combine to get data with the holes
-gmt grdmath data.grd mask.grd MUL = holes.grd
+# gmt grdmath data.grd mask.grd MUL = earth_relief_20m_holes.grd
 # Try filling in the holes via sampling from a coarser 1d grid
-gmt grdfill holes.grd -Ag@earth_relief_01d -Gnew.grd
-# Compute difference with original
-gmt grdmath data.grd new.grd SUB = diff.grd
 gmt begin gridfill
 	gmt makecpt -Cgeo
-	gmt subplot begin 3x2 -R0/10/0/10 -JQ6c -Fs6c -Sc -Sr -A1+gwhite+r
-		gmt grdimage data.grd -c
-		gmt grdimage mask.grd -c
-		gmt grdimage holes.grd -c
-		gmt grdimage holes.grd -Q -c
+	gmt grdfill @earth_relief_20m_holes.grd -Ag@earth_relief_01d -Gnew.grd
+	gmt subplot begin 2x1 -R0/10/0/10 -JQ10c -Fs10c -Sc -Sr -A1+gwhite+r
+		gmt grdimage earth_relief_20m_holes.grd -c
 		gmt grdimage new.grd -c
-		gmt grdimage diff.grd -Cpolar+h0 -c
 	gmt subplot end
 	gmt colorbar -Baf -DJBC
 gmt end show
