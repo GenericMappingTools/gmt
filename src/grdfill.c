@@ -46,7 +46,7 @@ struct GRDFILL_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct GRDFILL_A {	/* -A<algo>[<options>] */
+	struct GRDFILL_A {	/* -Ac|g|n|s[<options>] */
 		bool active;
 		unsigned int mode;
 		double value;
@@ -98,7 +98,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-Ac|n|s[<arg>]");
 	GMT_Usage (API, -2, "Specify algorithm and any required parameters for in-fill:");
 	GMT_Usage (API, 3, "c: Fill in NaN holes with the given constant <value>.");
-	GMT_Usage (API, 3, "g: Fill in NaN holes by sampling the gridfile we appended.");
+	GMT_Usage (API, 3, "g: Fill in NaN holes by sampling the gridfile whose name is appended.");
 	GMT_Usage (API, 3, "n: Fill in NaN holes with nearest neighbor values; "
 		"append <max_radius> nodes for the outward search "
 		"[Default radius is sqrt(nx^2+ny^2), with (nx,ny) the dimensions of the grid].");
@@ -110,7 +110,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"No grid fill takes place and -G is ignored. "
 		"Optionally, append p to write polygons corresponding to these regions.");
 	GMT_Usage (API, 1, "\n-N<value>");
-	GMT_Usage (API, -2, "Set alternate node <value> to indicate a hole [Default looks for NaN-nodes].");
+	GMT_Usage (API, -2, "Set alternate node <value> to indicate a on input hole [Default looks for NaN-nodes].");
 	GMT_Option (API, "R,V,f,.");
 
 	return (GMT_MODULE_USAGE);
@@ -148,9 +148,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT_OP
 						Ctrl->A.mode = ALG_CONSTANT;
 						Ctrl->A.value = atof (&opt->arg[1]);
 						break;
-					case 'g':	/* Sample a coarser(?) grid */
+					case 'g':	/* Sample a (coarser?) grid */
 						Ctrl->A.mode = ALG_GRID;
-						n_errors += gmt_get_required_file (GMT, &opt->arg[1], opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->A.file));
+						n_errors += gmt_get_required_file (GMT, &opt->arg[1], opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file));
 						break;
 					case 'n':	/* Nearest neighbor fill */
 						Ctrl->A.mode = ALG_NN;
@@ -492,12 +492,13 @@ GMT_LOCAL void grdfill_nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In
 }
 
 GMT_LOCAL int grdfill_sample (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct GMT_GRID *Out, char *file) {
+	/* Algorithm 3: Replace NaNs with values sampled from another grid */
 	/* 1. Create x,y arrays of NaN locations in the grid and an empty z array
 	 * 2. Call grdtrack with virtual input and virtual output
 	 * 3. Fill in the holes in the grid with these values
 	 */
 	openmp_int row, col, k;
-	uint64_t dim[4] = {0, 0, 0, 0}, node, n_NaNs = 0, n_alloc = 0;
+	uint64_t dim[4] = {0, 0, 0, 0}, node, n_NaNs = 0, n_bad = 0, n_alloc = 0;
 	char input[GMT_VF_LEN] = {""}, output[GMT_VF_LEN] = {""}, args[GMT_LEN256] = {""};
 	double *data[3] = {NULL, NULL, NULL};
 	struct GMT_VECTOR *V_in = NULL, *V_out = NULL;
@@ -551,7 +552,11 @@ GMT_LOCAL int grdfill_sample (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct 
 	gmt_M_grd_loop (GMT, In, row, col, node) {
 		if (!gmt_M_is_fnan (In->data[node])) continue;	/* Not part of a hole */
 		Out->data[node] = data[GMT_Z][n_NaNs++];	/* Replace the values at NaN-nodes */
+		if (gmt_M_is_fnan (Out->data[node])) n_bad++;	/* Oh-oh, not getting a clean output grid */
 	}
+	if (n_bad)
+		GMT_Report (API, GMT_MSG_WARNING, "There are still %" PRIu64 " NaNs remaining after -Ag sampling!\n", n_bad);
+
 	for (k = 0; k < 3; k++) gmt_M_free (GMT, data[k]);	/* Free the temp memory */
 	return (GMT_NOERROR);
 }
@@ -629,14 +634,14 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 		}
 		grdfill_nearest_interp (GMT, Grid, New, radius);	/* Perform the NN replacements */
 
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, New)) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, New)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to write output grid!\n");
 			Return (API->error);
 		}
 		Return (GMT_NOERROR);
 	}
 
-	if (Ctrl->A.mode == ALG_GRID) {	/* Basically a grdtrack exercise */
+	if (Ctrl->A.mode == ALG_GRID) {	/* Basically a grdtrack virtual file exercise */
 		struct GMT_GRID *New = NULL;
 
 		if (gmt_set_outgrid (GMT, Ctrl->In.file, false, 0, Grid, &New))	/* true if input is a read-only array */
@@ -646,7 +651,7 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 			Return (error);	/* Not a happy ending */
 
 		/* Output the filled-in grid */
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, New)) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, New)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to write output grid!\n");
 			Return (API->error);
 		}
