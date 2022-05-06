@@ -73,7 +73,7 @@ Optional Arguments
 **-Cb**\|\ **c**\|\ **n**\|\ **p**
     Normally, output grids store the current module's command-line history.
     Use |-C| to specify what the output grid's command history should be:
-    Append directive **b** to write both the previous and the current module's 
+    Append directive **b** to write both the previous and the current module's
     command histories, **c** to only write the current module's command
     history, **n** to save no history whatsoever [Default], or select **p**
     to instead save only the previous command history.
@@ -192,7 +192,7 @@ the limits would be -180/180/-72/72, use::
     gmt grdedit world.nc -R-180/180/-72/72 -S
 
 The file junk.nc was created prior to GMT 3.1 with incompatible
-**-R** and |-I| arguments. To reset the x- and y-increments we run::
+**-R** and **-I** arguments. To reset the x- and y-increments we run::
 
     gmt grdedit junk.nc -A
 
@@ -217,8 +217,8 @@ We can exchange the two dimension by running::
 
     gmt grdedit bad.nc -Ee -Gnew.nc
 
-Notes:
-------
+Notes
+-----
 
 This module is not a general editor for netCDF files.  If your netCDF file
 contains more than one 2-D (or higher dimension) data layer, then only the
