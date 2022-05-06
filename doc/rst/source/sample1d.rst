@@ -101,6 +101,14 @@ Optional Arguments
     You may optionally evaluate the first or second derivative of the spline
     by appending **+d1** or **+d2**, respectively.
 
+.. figure:: /_images/GMT_splines.*
+   :width: 500 px
+   :align: center
+
+   The |-F| option lets you choose among several interpolators, including
+   one that is approximate (the smoothing spline).  You can also specify
+   that you actually need a derivative of the solution instead of the value.
+
 .. _-N:
 
 **-N**\ *col*
