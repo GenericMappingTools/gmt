@@ -49,9 +49,9 @@ Optional Arguments
 **-A**\ **c**\|\ **g**\|\ **n**\|\ **s**\ [*arg*]
     Specify the hole-filling algorithm to use.  Choose among **c** for constant
     fill (and append the constant fill *value*), **g** to sample the (possibly coarser)
-    grid *arg* at the nodes in the holes, **n** for nearest neighbor (and optionally
-    append a search *radius* in pixels [default radius is :math:`r = \sqrt{X^2 + Y^2}`,
-    where (*X,Y*) are the node dimensions of the grid]), or
+    grid *arg* at the nodes making up the holes, **n** for nearest neighbor (and optionally
+    append a search *radius* in pixels [default radius is :math:`r = \sqrt{n^2 + m^2}`,
+    where (*n,m*) are the node dimensions of the grid]), or
     **s** for bicubic spline (optionally append a *tension* parameter [no tension]).
 
 .. _-G:
@@ -119,7 +119,7 @@ To replace all NaN values in the file data.grd with a spline interpolation using
 
     gmt grdfill data.grd -As0.2 -Gno_NaNs_spline_data.grd
 
-To replace all NaN values in the file data.grd by sampling another grid background.grd, try::
+To replace all NaN values in the file data.grd by sampling another grid named background.grd, try::
 
     gmt grdfill data.grd -Agbackground.grd -Gno_NaNs_sampled_data.grd
 
