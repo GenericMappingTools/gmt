@@ -1404,10 +1404,12 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		if (dir == GMT_IO) {
 			gmt_set_cartesian (GMT, GMT_IN);
 			gmt_set_cartesian (GMT, GMT_OUT);
+			GMT->common.f.is_cart[GMT_IN] = GMT->common.f.is_cart[GMT_OUT] = true;
 		}
 		else {
 			col[GMT_X] = GMT_IS_FLOAT;
 			col[GMT_Y] = GMT_IS_FLOAT;
+			GMT->common.f.is_cart[dir] = true;
 		}
 		pos = 1;
 		start = stop = 1;
@@ -1416,10 +1418,12 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		if (dir == GMT_IO) {
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
+			GMT->common.f.is_geo[GMT_IN] = GMT->common.f.is_geo[GMT_OUT] = true;
 		}
 		else {
 			col[GMT_X] = GMT_IS_LON;
 			col[GMT_Y] = GMT_IS_LAT;
+			GMT->common.f.is_geo[dir] = true;
 		}
 		pos = 1;
 		start = stop = 1;
@@ -16394,6 +16398,26 @@ double gmtinit_get_diameter (struct GMT_CTRL *GMT, char code, char *text, bool *
 	return (d);
 }
 
+int gmtlib_colon_pos (struct GMT_CTRL *GMT, char *text) {
+	/* Quoted and decorated lines options separate directives from optional modifiers with a colon.
+	 * Because Bill uses the colon in hard paths (C:/badpath) we must be careful
+	 * in looking for the right colon. */
+	int j, colon = GMT_NOTSET;
+	gmt_M_unused (GMT);
+	for (j = 1; colon == GMT_NOTSET && text[j]; j++) {
+#ifdef WIN32
+		bool got_slash;
+		if (text[j] != ':') continue;	/* Not a colon, moving on */
+		if (text[j+1] == '\0') continue;	/* End of argument, moving on */
+		got_slash = (strchr ("/\\", text[j+1]) != NULL); /* True if next letter is a slash */
+		if (!got_slash || (got_slash && !(isupper (text[j-1]) || islower (text[j-1])))) colon = j;
+#else
+		if (text[j] == ':') colon = j;
+#endif
+	}
+	return (colon);
+}
+
 #define GMT_VECTOR_CODES "mMvV="	/* The vector symbol codes */
 
 /*! . */
@@ -17125,7 +17149,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				break;
 			}
 			/* Determine the first colon as a separator between info and specs */
-			for (j = 1, colon = GMT_NOTSET; colon == GMT_NOTSET && text[j]; j++) if (text[j] == ':') colon = j;
+			colon = gmtlib_colon_pos (GMT, text);
 			if (colon != GMT_NOTSET) {	/* Gave :<labelinfo> */
 				text[colon] = 0;
 				gmt_contlabel_init (GMT, &p->G, 0);
@@ -17344,8 +17368,8 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->fq_parse = true;	/* This will be set to false once at least one header has been parsed */
 				break;
 			}
-			for (j = 1, colon = 0; text[j]; j++) if (text[j] == ':') colon = j;
-			if (colon) {	/* Gave :<symbolinfo> */
+			colon = gmtlib_colon_pos (GMT, text);
+			if (colon != GMT_NOTSET) {	/* Gave :<symbolinfo> */
 				text[colon] = 0;
 				gmtlib_decorate_init (GMT, &p->D, 0);
 				decode_error += gmtlib_decorate_info (GMT, 'S', &text[1], &p->D);

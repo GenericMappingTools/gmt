@@ -257,7 +257,7 @@ the central meridian. A UTM basemap for Indo-China can be plotted as
 
    ::
 
-    gmt basemap -R95/5/108/20r -Ju46/1:10000000 -Bafg -B+tUTM -pdf utm
+    gmt basemap -R95/5/108/20+r -Ju46/1:10000000 -Bafg -B+tUTM -pdf utm
 
 Cylindrical Equal-Area
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -390,7 +390,7 @@ define our rectangle. We choose a pole at 130/-30 and use 100/-45 and
 
    ::
 
-    gmt basemap -R100/-45/160/-5r -JS130/-30/12c -Bafg -B+t"General Stereographic View" -pdf stereo2
+    gmt basemap -R100/-45/160/-5+r -JS130/-30/12c -Bafg -B+t"General Stereographic View" -pdf stereo2
 
 Miscellaneous Map Projections
 -----------------------------

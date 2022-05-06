@@ -29,8 +29,8 @@ Description
 
 **grdfill** reads a grid that presumably has unfilled holes that the user
 wants to fill in some fashion.  Holes are identified by NaN values but
-this criteria can be changed via **-N**.  There are several different algorithms that
-can be used to replace the hole values.  **Note**: One of **-A** or **-L** is required,
+this criteria can be changed via |-N|.  There are several different algorithms that
+can be used to replace the hole values.  **Note**: One of |-A| or |-L| is required,
 and if no holes are found we output the original unchanged grid.
 
 Required Arguments
@@ -74,7 +74,7 @@ Optional Arguments
 
 **-L**\ [**p**]
     Just list the rectangular subregions west east south north of each hole.
-    No grid fill takes place and **-G** is ignored. Optionally, append **p**
+    No grid fill takes place and |-G| is ignored. Optionally, append **p**
     to instead write closed polygons for all subregions.
 
 .. |Add_-V| replace:: |Add_-V_links|

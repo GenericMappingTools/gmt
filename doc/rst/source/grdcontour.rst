@@ -70,8 +70,8 @@ Optional Arguments
 
 **-A**\ [**n**\|\ *contours*][*labelinfo*]
     *contours* is annotation interval in data units; it is ignored if
-    contour levels are given in a file via **-C**. [Default is no annotations]. Prepend
-    **n** to disable all annotations implied by **-C**. To just select a few specific
+    contour levels are given in a file via |-C|. [Default is no annotations]. Prepend
+    **n** to disable all annotations implied by |-C|. To just select a few specific
     contours give them as a comma-separated string; if only a single contour please add
     a trailing comma so it is seen as a list and not a contour interval. The optional
     *labelinfo* controls the specifics of the label formatting and consists
@@ -103,7 +103,7 @@ Optional Arguments
         are contoured, while the levels marked **A** (or **a**) are both contoured
         and annotated. If the annotation *angle* is present we will plot the label
         at that fixed angle [aligned with the contour].  Finally, a contour-
-        specific *pen* may be present and will override the pen set by **-W**
+        specific *pen* may be present and will override the pen set by |-W|
         for this contour level only. **Note**: Please specify *pen* in proper
         format so it can be distinguished from a plain number like *angle*.
         If only *cont-level* columns are present then we set type to **C**.
@@ -111,17 +111,17 @@ Optional Arguments
     (3) If *contours* is a string with comma-separated values it is interpreted
         as those specific contours only.  To indicate a single specific contour
         you must append a trailing comma to separate it from a contour interval.
-        The **-A** option offers the same list choice so they may be used together
+        The |-A| option offers the same list choice so they may be used together
         to plot only specific annotated and non-annotated contours.
 
     (4) If no argument is given in modern mode then we select the current CPT.
 
     (5) Otherwise, *contours* is interpreted as a constant contour interval.
 
-    If a file is given and **-T** is set, then only inner-most contours marked with
+    If a file is given and |-T| is set, then only inner-most contours marked with
     upper case **C** or **A** will have tick-marks. In all cases the contour
-    values have the same units as the grid.  Finally, if neither **-C**
-    nor **-A** are set then we auto-compute suitable contour and annotation
+    values have the same units as the grid.  Finally, if neither |-C|
+    nor |-A| are set then we auto-compute suitable contour and annotation
     intervals from the data range, yielding approximately 10-20 contours.
 
 .. _-D:
@@ -144,7 +144,7 @@ Optional Arguments
 **-F**\ [**l**\|\ **r**]
     Force dumped contours to be oriented so that higher z-values are to the
     left (**-Fl** [Default]) or right (**-Fr**) as we move along the contour
-    [Default is arbitrary orientation]. Requires **-D**.
+    [Default is arbitrary orientation]. Requires |-D|.
 
 .. _-G:
 
@@ -164,9 +164,9 @@ Optional Arguments
 
 **-N**\ [*cpt*]
     Fill the area between contours using the discrete color table given by *cpt*.
-    Then, **-C** and **-A** can be used as well to control the contour lines and
+    Then, |-C| and |-A| can be used as well to control the contour lines and
     annotations.  If no *cpt* is appended then a discrete color table must be given
-    via **-C** instead.
+    via |-C| instead.
 
 .. _-Q:
 
@@ -206,7 +206,7 @@ Optional Arguments
     and + as the labels. Appending exactly two characters, e.g., **+l**\ *LH*,
     will plot the two characters (here, L and H) as labels. For more elaborate
     labels, separate the low and high label strings with a comma (e.g.,
-    **+l**\ *lo*,\ *hi*). If a file is given by **-C** and **-T** is set,
+    **+l**\ *lo*,\ *hi*). If a file is given by |-C| and |-T| is set,
     then only contours marked with upper case C or A will have tick marks
     [and annotations].  **Note**: The labeling of local highs and lows may plot sometimes
     outside the innermost contour since only the mean value of the contour coordinates
@@ -231,7 +231,7 @@ Optional Arguments
     Regular contours use pen 0.25p,black. Normally, all contours are drawn
     with a fixed color determined by the pen setting. If the modifier **+cl** is appended
     then the color of the contour lines are taken from the CPT (see
-    **-C**). If instead modifier **+cf** is appended then the color from the cpt
+    |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to the contour annotations.  Select **+c** for both effects.
 
 .. |Add_-XY| replace:: |Add_-XY_links|
@@ -243,8 +243,8 @@ Optional Arguments
 
 **-Z**\ [**+o**\ *shift*][**+p**][**+s**\ *factor*]
     Use to subtract *shift* from the data and multiply the results by
-    *factor* before contouring starts [+o0+s1]. (Numbers in **-A**, **-C**,
-    **-L** refer to values after this scaling has occurred.) Append
+    *factor* before contouring starts [+o0+s1]. (Numbers in |-A|, |-C|,
+    |-L| refer to values after this scaling has occurred.) Append
     **+p** to indicate that this grid file contains z-values that are
     periodic in 360 degrees (e.g., phase data, angular distributions)
     and that special precautions must be taken when determining
@@ -285,9 +285,9 @@ Notes
 
 The angle of a contour is computed as an average over *n* points along the contour.
 If you obtain poor angles you can play with two variables: Change *n* via the **+w**
-modifier to **-A**, and/or resample the contour via **-S**.  For a fixed *n* the
+modifier to |-A|, and/or resample the contour via |-S|.  For a fixed *n* the
 **-S** will localize the calculation, while the opposite is true if you increase *n*
-for a constant **-S**.
+for a constant |-S|.
 
 .. module_note_ends
 
