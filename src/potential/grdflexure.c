@@ -1263,7 +1263,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		/* 4d. APPLY SCALING AND OFFSET */
 		gmt_scale_and_offset_f (GMT, Out->data, Out->header->size, 1.0, -Ctrl->Z.zm);
 
-		/* 4d. WRITE OUTPUT GRID */
+		/* 4e. WRITE OUTPUT GRID */
 		if (Ctrl->T.active) { /* Separate output grid since there are many time steps */
 			char remark[GMT_GRID_REMARK_LEN160] = {""};
 			gmt_modeltime_name (GMT, zfile, Ctrl->G.file, &Ctrl->T.time[t_eval]);
@@ -1281,8 +1281,8 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY |
-			GMT_GRID_IS_COMPLEX_REAL, NULL, zfile, Out) != GMT_NOERROR) {	/* This demuxes the grid before writing! */
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY,
+			NULL, zfile, Out) != GMT_NOERROR) {
 				if (retain_original) gmt_M_free (GMT, orig_load);
 				Return (API->error);
 		}
