@@ -232,6 +232,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	unsigned int max_iterations;	/* Max iterations per call to iterate */
 	unsigned int converge_mode; 	/* BY_PERCENT if -C set fractional convergence limit [BY_VALUE] */
 	unsigned int p[5][4];		/* Arrays with four nodes as function of quadrant in constrained fit */
+	unsigned int q_pad[4];		/* Extra padding needed for constrain grids if wesn is extended */
 	int current_stride;		/* Current node spacings relative to final spacing  */
 	int previous_stride;		/* Previous node spacings relative to final spacing  */
 	int n_columns;				/* Number of nodes in x-dir. (Final grid) */
@@ -847,6 +848,36 @@ GMT_LOCAL int surface_read_data (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	return (0);
 }
 
+GMT_LOCAL void surface_set_NaN (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int r0, unsigned int r1, unsigned int c0, unsigned int c1) {
+	/* Set a subset of a grid to NaN based on rows and columns specified, inclusive.
+	 * e.g, in Matlab this would be G->data(r0:r1,c0:c1) = NaN */
+	uint64_t ij = gmt_M_ijp (G->header, r0, c0);	/* Top left node in block */
+	unsigned int r, c;	/* Row and column loop variables */
+	for (r = r0; r <= r1; r++)	/* For all the rows to work on: r0 up to and including r1 */
+		for (c = c0; c <= c1; c++)	/* For all the columns to work on: c0 up top and including c1 */
+			G->data[ij+(r-r0)*G->header->mx+(c-c0)] = GMT->session.f_NaN;
+}
+
+GMT_LOCAL void surface_enlarge_constraint_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_GRID *G) {
+	/* We must enlarge the grid region after having read the grid as is.  Then we need to set the new nodes
+	 * not part of the constraint file to NaN. */
+
+	gmt_grd_pad_on (GMT, G, C->q_pad);	/* First add in the larger pad to adjust the size of the grid */
+	gmt_M_memcpy (G->header->wesn, C->Grid->header->wesn, 4U, double);	/* Next enlarge the region in the header */
+	gmt_M_grd_setpad (GMT, G->header, C->Grid->header->pad);	/* Reset to standard pad (2/2/2/2) */
+	gmt_set_grddim (GMT, G->header);	/* Update all dimensions to reflect the revised region and pad*/
+	/* Now the grid has the right shape as the interior surface solution grid.  We now need to set the new
+	 * nodes to NaN - to do this we consult C->q_pad[side] > 2 */
+	if (C->q_pad[XLO] > 2)	/* We extended the grid westwards so need to set the first columns on the left to NaN */
+		surface_set_NaN (GMT, G, 0, G->header->n_rows - 1, 0, C->q_pad[XLO] - 3);
+	if (C->q_pad[XHI] > 2)	/* We extended the grid eastwards so need to set the last columns on the right to NaN */
+		surface_set_NaN (GMT, G, 0, G->header->n_rows - 1, G->header->n_columns - C->q_pad[XHI] + 2, G->header->n_columns - 1);
+	if (C->q_pad[YLO] > 2)	/* We extended the grid southwards so need to set the last rows on the bottom to NaN */
+		surface_set_NaN (GMT, G, G->header->n_rows - C->q_pad[YLO] + 2, G->header->n_rows - 1, 0, G->header->n_columns - 1);
+	if (C->q_pad[YHI] > 2) 	/* We extended the grid northwards so need to set the first rows on the top to NaN */
+		surface_set_NaN (GMT, G, 0, C->q_pad[YHI] - 3, 0, G->header->n_columns - 1);
+}
+
 GMT_LOCAL int surface_load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transform) {
 	/* Deal with the constants or grids supplied via -L.  Note: Because we remove a
 	 * best-fitting plane from the data, even a simple constant constraint will become
@@ -874,10 +905,8 @@ GMT_LOCAL int surface_load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INF
 				return (GMT_RUNTIME_ERROR);
 			}
 			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, C->limit_file[end], C->Bound[end]) == NULL) return (API->error);
-			if (C->adjusted) {	/* Must adjust padding and region */
-				gmt_M_memcpy (C->Bound[end]->header->wesn, C->Grid->header->wesn, 4U, double);	/* Update region */
-				gmt_grd_pad_on (GMT, C->Bound[end], C->Grid->header->pad);	/* Add in the larger pad */
-			}
+			if (C->adjusted)	/* Must adjust padding and region and set new nodes to NaN */
+				surface_enlarge_constraint_grid (GMT, C, C->Bound[end]);
 		}
 		if (transform) {	/* Remove best-fitting plane and normalize the bounding values */
 			for (row = 0; row < C->Grid->header->n_rows; row++) {
@@ -1984,8 +2013,16 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 			GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 		if (surface_suggest_sizes (GMT, Ctrl, G, C.factors, G->header->n_columns-1, G->header->n_rows-1, GMT->common.R.registration == GMT_GRID_PIXEL_REG)) {	/* Yes, got one */
 			gmt_M_memcpy (wesn, Ctrl->Q.wesn, 4, double);		/* Save specified region */
-			GMT_Destroy_Data (API, &G);	/* Delete the old, recreate the grid */
 			Ctrl->Q.adjusted = true;	/* So we know we must do the same to any -L grids */
+			if (Ctrl->L.mode[LO] == SURFACE || Ctrl->L.mode[HI] == SURFACE) {
+				/* Compute extra padding needed when reading -L files */
+				struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
+				C.q_pad[XLO] = 2 + urint ((C.wesn_orig[XLO] - wesn[XLO]) * HH->r_inc[GMT_X]);
+				C.q_pad[XHI] = 2 + urint ((wesn[XHI] - C.wesn_orig[XHI]) * HH->r_inc[GMT_X]);
+				C.q_pad[YLO] = 2 + urint ((C.wesn_orig[YLO] - wesn[YLO]) * HH->r_inc[GMT_Y]);
+				C.q_pad[YHI] = 2 + urint ((wesn[YHI] - C.wesn_orig[YHI]) * HH->r_inc[GMT_Y]);
+			}
+			GMT_Destroy_Data (API, &G);	/* Delete the old, recreate the grid */
 		}
 	}
 
