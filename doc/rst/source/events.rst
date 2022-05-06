@@ -102,9 +102,9 @@ Required Arguments
 .. _-T:
 
 **-T**\ *now*
-    Set the current plot time. The time shifts and increments set in **-E** are all *relative* to this
+    Set the current plot time. The time shifts and increments set in |-E| are all *relative* to this
     current time.  If an absolute time is given you will need to use :term:`TIME_UNIT` to indicate
-    the unit of the values given in options like **-E** and **-L**.
+    the unit of the values given in options like |-E| and |-L|.
 
 Optional Arguments
 ------------------
@@ -112,22 +112,22 @@ Optional Arguments
 .. _-A:
 
 **-A**\ **r**\ [*dpu*\ [**c**\|\ **i**][**+z**\ [*z*]]]\|\ **s**
-    When no **-S** is given we expect to read lines or polygons.  Two different forms for input are
-    supported and specified via the chosen **-A** directives: (1) Choose **-Ar** if your input data are *trajectories*, the data
+    When no |-S| is given we expect to read lines or polygons.  Two different forms for input are
+    supported and specified via the chosen |-A| directives: (1) Choose **-Ar** if your input data are *trajectories*, the data
     format is given as *x, y, time*, and the "event" is the portion of that trajectories limited by the current
-    time (*now*), event duration (via **-L**) and rise/fade periods (via **-Es**). If current time falls between
+    time (*now*), event duration (via |-L|) and rise/fade periods (via **-Es**). If current time falls between
     two points on the trajectory then we linearly interpolate to find the current end point. Alternatively, (2) choose **-As**
     to read each complete segment (i.e., a polygon or line with just *x, y* coordinates) from a multisegment
     file and get a common *time* for each segment via a required **-T**\ *string* specified in the segment
     header.  Here, the entire polygon or line is the "event" if inside the limits of current time (*now*), event
-    duration (via **-L**) and rise/fade periods (via **-Es**).  If **-L**\ [**t**] is set then the *string*
+    duration (via |-L|) and rise/fade periods (via **-Es**).  If **-L**\ [**t**] is set then the *string*
     must be either of the format *begin*/*length*\|\ *end* or *begin*,\ *length*\|\ *end*.  Use a comma to
     separate absolute time specifications, otherwise a slash is also supported. **Note**:
     Neither lines nor polygons allow for any labels to be placed. Finally, you can use **-Ar**\ *dpu* to
     perform no plotting but instead convert your *x, y*\ [, *zcols* ], *time* data into *densely sampled points* so that
     later calls to **events** may use this sampled data set instead and plot it as circles with **-Sc**\ [*width*].
     This way you can plot "lines" that can have variable pen color and fixed or variable pen width as well as
-    taking advantage of the full machinery of **-Es** and **-Et** and all the effects controlled by **-M** for symbols.
+    taking advantage of the full machinery of **-Es** and **-Et** and all the effects controlled by |-M| for symbols.
     The *dpu* must match the intended dpu when running :doc:`movie`. Note *dpu* means pixels per cm if you are using
     SI units and pixels per inch if you are using US units (hence it depends on your :term:`PROJ_LENGTH_UNIT` setting).
     Alternatively, append **c** or **i** to set the unit used explicitly. Also note that if your movie involves
@@ -183,7 +183,7 @@ Optional Arguments
     text attributes (font, angle, and justification) directly on the command line. Use **+f**
     to set the font (size,fontname,color), **+a** to set the angle, and **+j** to set the justification.
     Normally, the text to be plotted is the trailing text.  Instead, use **+r** to use the
-    record number (counting up from *first* [0]) or **+z** to format incoming *z* values (requires **-C**)
+    record number (counting up from *first* [0]) or **+z** to format incoming *z* values (requires |-C|)
     to a string using the supplied *format* [use :term:`FORMAT_FLOAT_MAP`].
 
 .. _-G:
@@ -210,8 +210,8 @@ Optional Arguments
 **-L**\ [*length*\|\ **t**]
     Specify the length (i.e., duration) of the event.  Append a *length* if all events have the same length,
     append **t** if end-times instead of lengths are given in the file after the *time* column,
-    or leave blank if lengths can be read from the input file after the *time* column.  If **-L** is not
-    given we assume events have an infinite duration. See **-A** for how duration is handled for lines and
+    or leave blank if lengths can be read from the input file after the *time* column.  If |-L| is not
+    given we assume events have an infinite duration. See |-A| for how duration is handled for lines and
     polygons.
 
 .. _-M:
@@ -224,7 +224,7 @@ Optional Arguments
     or the **z** data value (to change symbol color via CPT lookup) during the *rise* interval.
     [Defaults for these four attributes are 1, 1, 100, and 0 respectively].  These values all represent
     maximum amplitudes that is scaled by the corresponding time-function created by **-Es** (see `The four time-functions`_).
-    Option **-M** is repeatable for the different attributes. Optionally, for finite-duration events
+    Option |-M| is repeatable for the different attributes. Optionally, for finite-duration events
     (that should remain visible for all times after their event time has been reached) you
     may append **+c** to set the corresponding terminal value during the coda [Defaults are 0, 0, 100 and 0, 
     respectively, meaning the symbols are not plotted unless you change these attributes with one or more **+c** modifiers].
@@ -233,7 +233,7 @@ Optional Arguments
     The size setting (**s**) is a magnifying factor that temporarily changes the size of the symbol by the factor *val1*.
     The transparency setting (**t**) affects temporary changes to the symbol's transparency. Finally, the  z-data setting
     (**z**) temporarily adds *val1* to the data set's *z*-values, scaled by the corresponding time function, and thus
-    can change the symbol's *color* via the CPT (hence **-C** is a required option for **-Mz**).
+    can change the symbol's *color* via the CPT (hence |-C| is a required option for **-Mz**).
     **Note**: Polygons can only use **-Mt** setting.
 
 .. _-N:
@@ -242,9 +242,9 @@ Optional Arguments
     Do NOT clip symbols that fall outside map border [Default plots points
     whose coordinates are strictly inside the map border only]. For periodic (360-longitude)
     maps we must plot all symbols twice in case they are clipped by the repeating
-    boundary. The **-N** will turn off clipping and not plot repeating symbols.
+    boundary. The |-N| will turn off clipping and not plot repeating symbols.
     Use **-Nr** to turn off clipping but retain the plotting of such repeating symbols, or
-    use **-Nc** to retain clipping but turn off plotting of repeating symbols. If set, **-N**
+    use **-Nc** to retain clipping but turn off plotting of repeating symbols. If set, |-N|
     will also apply to any labels.
 
 .. _-Q:
@@ -256,15 +256,15 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *symbol*\ [*size*]
-    Specify the symbol to use for the event [Default plots lines or polygons; see **-A**].
+    Specify the symbol to use for the event [Default plots lines or polygons; see |-A|].
     Optionally, append symbol *size* with unit from
     (**c**\|\ **i**\|\ **p**\ ).  If no *size* is given then we read an event-specific size
-    from the data file's third column (fourth if **-C** is used). **Note**: Not all the symbols that
+    from the data file's third column (fourth if |-C| is used). **Note**: Not all the symbols that
     are available in :doc:`plot` can be used here.  At the moment we only support the basic
     symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
     be specified.  Symbols sizes read from a data file will be assumed to be in the unit controlled
     by :term:`PROJ_LENGTH_UNIT` unless they have **c**, **i**, or **p** appended.  If you are only
-    plotting labels then **-S** is not required.
+    plotting labels then |-S| is not required.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
@@ -295,9 +295,9 @@ Optional Arguments
     :doc:`/supplements/seis/meca`, or :doc:`/supplements/geodesy/velo`.
     The quoted *command* must start with one of these module names, then
     supply all the module-specific options that the selected module requires to
-    normally define a plot, excluding any of **-C**, **-G**, **-J**, **-N**, **-R**, and
-    **-W** (those options may be required by **events** though).  Also, you may
-    not use the **-I** or **-t** options since these will be set automatically
+    normally define a plot, excluding any of |-C|, |-G|, |-J|, |-N|, |-R|, and
+    |-W| (those options may be required by **events** though).  Also, you may
+    not use the |-I| or **-t** options since these will be set automatically
     as part of the variations imposed by **-Mi** and **-Mt**.  As an example, the
     custom command to plot a beachball may be **-Z**\ "meca -Sa5c+f0", while
     displaying a crossection of one may require the more elaborate command
@@ -339,17 +339,17 @@ Optional Arguments
 The meaning of time
 -------------------
 
-While normally the meaning of "time" (e.g., such as in the argument to **-T**)
+While normally the meaning of "time" (e.g., such as in the argument to |-T|)
 is in fact the time of the phenomenon being plotted, it may also be any other monotonically
 increasing quantity of convenience, such as elapsed time, model time, frame number, or other physical
 quantities such as distance.  It all depends on the context of the movie.  The values
-given for delays, fades, etc. in **-E** are assumed to be in the same unit as the
-given *time* argument to **-T**.  Thus, if *time* is a monotonically increasing frame
-counter then the values in **-E** and **-L** refer to number of frames.  A special
+given for delays, fades, etc. in |-E| are assumed to be in the same unit as the
+given *time* argument to |-T|.  Thus, if *time* is a monotonically increasing frame
+counter then the values in |-E| and |-L| refer to number of frames.  A special
 situation occurs when *time* is in fact actual calendar time given by date/clock markers.
-Here, the unit of the arguments in **-E** and **-L** is determined by the :term:`TIME_UNIT`
+Here, the unit of the arguments in |-E| and |-L| is determined by the :term:`TIME_UNIT`
 setting [second].  You will need to specify the desired time unit that should be used when
-interpreting your **-E** and **-L** arguments.  The example below for seismicity uses
+interpreting your |-E| and |-L| arguments.  The example below for seismicity uses
 actual earthquake times but we use days as the unit as second is too small.
 
 The four time-functions
@@ -402,7 +402,7 @@ Figure below illustrates how transparency may vary through time.
    at the event begin time, finally fading to a near-invisible stage after reaching
    its length.
 
-Finally, instead of selecting a fixed color for a symbol you can use **-C** to set a
+Finally, instead of selecting a fixed color for a symbol you can use |-C| to set a
 color table that we will use to modulate the color of the symbol.  It is done by adding
 a variable fraction of *dz* to the data's *z*-column and hence the CPT lookup will
 return different colors at different times. The amplitude is controlled with the **-Mz**
@@ -421,7 +421,7 @@ accordingly if using coda). Figure below illustrates how *dz* may vary through t
    CPT-lookup occurs.
 
 While shown in these examples, the rise, plateau, fade, and coda periods are all optional
-and can be selected or ignored as you wish via **-E**.  You can choose to specify any or none
+and can be selected or ignored as you wish via |-E|.  You can choose to specify any or none
 of the three time histories.  By default the symbol size is constant, there is no intensity
 variation, and all symbols are opaque.
 
@@ -443,10 +443,10 @@ fade period (where the text fades out).  The figure below illustrate the setup:
 Sorting the data
 ----------------
 
-While only the events that should be visible will be plotted at the given time set via **-T**,
+While only the events that should be visible will be plotted at the given time set via |-T|,
 the order of plotting is simply given by the order of records in the file.  Thus, if the
 file is *not* sorted into ascending time then later events might plot *beneath* earlier events.
-To prevent this, you can sort your file into ascending order via the :doc:`gmtconvert` **-N** option.
+To prevent this, you can sort your file into ascending order via the :doc:`gmtconvert` |-N| option.
 
 Drawing trajectories
 --------------------

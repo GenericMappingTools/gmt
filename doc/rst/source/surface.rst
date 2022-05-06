@@ -175,8 +175,8 @@ Optional Arguments
     Suggest grid dimensions which have a highly composite greatest
     common factor. This allows surface to use several intermediate steps
     in the solution, yielding faster run times and better results. The
-    sizes suggested by **-Q** can be achieved by altering **-R** and/or
-    **-I**. You can recover the **-R** and **-I** you want later by
+    sizes suggested by |-Q| can be achieved by altering |-R| and/or
+    |-I|. You can recover the |-R| and |-I| you want later by
     using :doc:`grdsample` or :doc:`grdcut` on the output of **surface**.
     Alternatively, append **r** to have **surface** use the specified
     **-R** setting exactly as given in the calculations [Default will
@@ -208,7 +208,7 @@ Optional Arguments
 
 .. |Add_-V| replace::
     **-V3** will report the convergence after each iteration;
-    **-V** will report only after each regional grid is converged. |Add_-V_links|
+    |-V| will report only after each regional grid is converged. |Add_-V_links|
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
@@ -291,7 +291,7 @@ Gridding Geographic Data: Boundary Conditions
 ---------------------------------------------
 
 The surface finite difference algorithm is Cartesian at heart, hence the *ad hoc*
-option to change the aspect ratio for a suitable mean latitude (**-A**). When
+option to change the aspect ratio for a suitable mean latitude (|-A|). When
 geographic data are supplied and the output grid has a 360 degree longitude range we will
 impose periodic boundary conditions in longitude.  However, no equivalent geographic
 boundary condition can be applied at the poles since the finite difference solution
@@ -314,7 +314,9 @@ but ultimately is a great-circle approximation. For latitude we divide your *y*-
 with the number of you chosen unit per degree latitude, while for longitude we divide your
 *x*-increment by the number of such units per degree along the mid-parallel in your region. The
 resulting degree increments may therefore not exactly match the increments you entered explicitly.
-Another approach is to *not* grid geographic data
+Hence, there may be rounding off in ways you don't want and cannot easily control, resulting in prime grid
+dimensions. You can handle the situation via |-Q| but with the never-ending decimals in some
+increments that is still a challenge.  Another approach is to *not* grid geographic data
 using length units as increments, due to the above conversion. It may be cleaner to specify
 grid intervals in spherical degrees, minutes or seconds. That way you can control the grid
 dimensions directly and avoid the round-off. Alternatively, if your region is far from Equator

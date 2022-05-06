@@ -50,11 +50,11 @@ shown. To determine what is inside or outside the clipping path,
 we use the even-odd rule. When a ray drawn from any point,
 regardless of direction, crosses the clipping path segments an odd
 number of times, the point is inside the clipping path. If the number is
-even, the point is outside. The **-N** option, reverses the sense of
+even, the point is outside. The |-N| option, reverses the sense of
 what is the inside and outside of the paths by plotting a clipping path
 along the map boundary. After subsequent plotting, which will be clipped
 against these paths, the clipping may be deactivated by running
-the module a second time with the **-C** option only.
+the module a second time with the |-C| option only.
 
 Required Arguments
 ------------------
@@ -66,7 +66,7 @@ Required Arguments
 
 **-C**\ [*n*]
     Mark end of existing clip path(s). No input file will be processed.
-    No projection information is needed unless **-B** has been selected
+    No projection information is needed unless |-B| has been selected
     as well. With no arguments we terminate all active clipping paths.
     Experts may restrict the termination to just *n* of the active
     clipping path by passing that as the argument.
@@ -91,7 +91,7 @@ Optional Arguments
 
 **-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**]
     By default, geographic line segments are connected as great circle arcs. To connect them as
-    straight lines, use the **-A** flag. Alternatively, add **m** to connect
+    straight lines, use the |-A| flag. Alternatively, add **m** to connect
     the line by first following a meridian, then a parallel. Or append **p**
     to start following a parallel, then a meridian. (This can be practical
     to connect lines along parallels, for example).
@@ -110,15 +110,15 @@ Optional Arguments
 **-N**
     Invert the sense of what is inside and outside. For example, when
     using a single path, this means that only points outside that path
-    will be shown. Cannot be used together with **-B**.
+    will be shown. Cannot be used together with |-B|.
 
 .. _-T:
 
 **-T**
     Rather than read any input files, simply turn on clipping for the
-    current map region. Basically, **-T** is a convenient way to run
-    the module with the arguments **-N** /dev/null (or, under Windows,
-    **-N** NUL). Cannot be used together with **-B**.
+    current map region. Basically, |-T| is a convenient way to run
+    the module with the arguments |-N| /dev/null (or, under Windows,
+    |-N| NUL). Cannot be used together with |-B|.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_

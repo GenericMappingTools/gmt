@@ -8902,9 +8902,12 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				}
 			}
 			if ((GMT->current.map.width > GMT->current.map.height) && (((GMT->current.map.width + GMT->current.setting.map_origin[GMT_X]) * 72) > media_size[GMT_X]) && GMT->current.setting.ps_orientation == PSL_PORTRAIT) {
-				GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Changing to PostScript landscape orientation based on your plot and paper dimensions, but we cannot be 100%% sure.\n");
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Use PS_MEDIA and/or PS_PAGE_ORIENTATION to specify correct paper dimensions and/or orientation if our guesses are inadequate.\n");
+				char *env = getenv ("GMT_MOVIE");	/* Are we building a movie right now? */
+				if (env == NULL || strcmp (env, "YES")) {      /* Not building a movie, do the change */
+					GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Changing to PostScript landscape orientation based on your plot and paper dimensions, but we cannot be 100%% sure.\n");
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Use PS_MEDIA and/or PS_PAGE_ORIENTATION to specify correct paper dimensions and/or orientation if our guesses are inadequate.\n");
+				}
 			}
 		}
 		else if (!O_active) {	/* Not desiring PS output so we can add safety margin of paper_margin inches for initial layer unless PS_MEDIA was set */
@@ -9427,8 +9430,8 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		PSL_setorigin (PSL, -x0, -y0, 0.0, PSL_FWD);
 	}
 
-    if (GMT->current.setting.map_logo)
-        gmtplot_timestamp (GMT, PSL, GMT->current.setting.map_logo_pos[GMT_X], GMT->current.setting.map_logo_pos[GMT_Y], GMT->current.setting.map_logo_justify, GMT->current.ps.map_logo_label);
+	if (GMT->current.setting.map_logo)
+		gmtplot_timestamp (GMT, PSL, GMT->current.setting.map_logo_pos[GMT_X], GMT->current.setting.map_logo_pos[GMT_Y], GMT->current.setting.map_logo_justify, GMT->current.ps.map_logo_label);
 
 	/* Check expected change of clip level to achieved one. Update overall clip level. Check for pending clips. */
 

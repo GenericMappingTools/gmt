@@ -49,12 +49,7 @@ sub-surface load (appropriate for hot spot modeling - if you believe
 them). In both cases, the model parameters are set with **-T** and
 **-Z** options. Mode 3: compute the admittance or coherence between
 two grids. The output is the average in the radial direction.
-Optionally, the model admittance may also be calculated. The horizontal
-dimensions of the grids are assumed to be in meters. Geographical
-grids may be used by specifying the |SYN_OPT-f| option that scales degrees
-to meters. If you have grids with dimensions in km, you could change
-this to meters using :doc:`grdedit </grdedit>` or scale the output with
-:doc:`grdmath </grdmath>`.
+Optionally, the model admittance may also be calculated.
 Given the number of choices this program offers, is difficult to state
 what are options and what are required arguments. It depends on what you
 are doing; see the examples for further guidance.
@@ -179,9 +174,9 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *zm*\ [*zl*]
+**-Z**\ *zm*\ [/*zl*]
     Moho [and swell] average compensation depths (in meters positive down – the depth). For the "load from
-    top" model you only have to provide *zm*, but for the "loading from below" don't forget *zl*.
+    top" model you only have to provide *zm*, but for the "loading from below" don't forget to supply *zl*.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
