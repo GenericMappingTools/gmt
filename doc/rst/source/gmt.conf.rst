@@ -1233,7 +1233,8 @@ Calendar/Time Parameters
         Controls if a time-stamp should be issued at start of all progress
         reports.  Choose among **clock** (absolute time stamp),
         **elapsed** (time since start of session), or **none**
-        [default is **none**].
+        [default is **none**].  The format of the timer is controlled by
+        :term:`FORMAT_TIME_STAMP`.
 
     **TIME_SYSTEM**
         Shorthand for a combination of :term:`TIME_EPOCH` and :term:`TIME_UNIT`,
