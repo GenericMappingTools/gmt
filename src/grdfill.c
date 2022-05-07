@@ -110,7 +110,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"No grid fill takes place and -G is ignored. "
 		"Optionally, append p to write polygons corresponding to these regions.");
 	GMT_Usage (API, 1, "\n-N<value>");
-	GMT_Usage (API, -2, "Set alternate node <value> to indicate a on input hole [Default looks for NaN-nodes].");
+	GMT_Usage (API, -2, "Set alternate node <value> to indicate a hole [Default looks for NaN-nodes].");
 	GMT_Option (API, "R,V,f,.");
 
 	return (GMT_MODULE_USAGE);
