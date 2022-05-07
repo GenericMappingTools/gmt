@@ -17,12 +17,12 @@ Synopsis
 |-N|\ *prefix*
 |-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
 [ |-D|\ *displayrate* ]
-[ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*] ]
+[ |-E|\ *titlepage*\ [**+d**\ [*duration*\ [**s**]]][**+f**\ [**i**\|\ **o**]\ [*fade*\ [**s**]]]\ [**+g**\ *fill*] ]
 [ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**] ]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
 [ |-H|\ *scale*]
 [ |-I|\ *includefile* ]
-[ |-K|\ [**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
+[ |-K|\ [**+f**\ [**i**\|\ **o**]\ [*fade*\ [**s**]]]\ [**+g**\ *fill*]\ [**+p**\ [**i**\|\ **o**]] ]
 [ |-L|\ *labelinfo* ]
 [ |-M|\ [*frame*],[*format*][**+r**\ *dpu*] ]
 [ |-P|\ *progress* ]
@@ -105,24 +105,27 @@ Required Arguments
 .. _-T:
 
 **-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
-    Either specify how many image frames to make, create a one-column data set width values from
-    *min* to *max* every *inc* (append **+n** if *inc* is number of frames instead), or supply a file with a set of parameters,
-    one record (i.e., row) per frame.  The values in the columns will be available to the
-    *mainscript* as named variables **MOVIE_COL0**, **MOVIE_COL1**, etc., while any trailing text
-    can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to split the trailing
-    string into individual words that can be accessed via variables **MOVIE_WORD0**, **MOVIE_WORD1**,
-    etc. By default we look for either tabs or spaces to separate words.  Append *str* to select other character(s)
-    as the valid separator(s) instead. To just use TAB as the only valid separator use **+W** instead.
-    The number of records equals the number of frames. Note that the *background* script is allowed to create *timefile*,
-    hence we check for its existence both before *and* after the background script has completed.  Normally,
-    the frame numbering starts at 0; you can change this by appending a different starting frame
-    number via **+s**\ *first*.  **Note**: All frames are still included; this modifier only affects
-    the numbering of the given frames.  Finally, **+p** can be used to set the tag *width* of the format
-    used in naming frames.  For instance, name_000010.png has a tag width of 6.  By default, this
-    is automatically set but if you are splitting large jobs across several computers then you
-    must use the same tag width for all names. **Note**: If just *nframes* is given then only **MOVIE_FRAME**
-    is available as no data file is available.  For details on array creation, see `Generate 1D Array`_.
+    Either specify how many image frames to make, create a one-column data set width values from *min*
+    to *max* every *inc* , or supply a file with a set of parameters, one record (i.e., row) per frame.
+    The values in the columns will be available to the *mainscript* as named variables **MOVIE_COL0**,
+    **MOVIE_COL1**, etc., while any trailing text can be accessed via the variable **MOVIE_TEXT**. The
+    number of records equals the number of frames. Note that the *background* script is allowed to create
+    *timefile*, hence we check for its existence both before *and* after the background script has completed.
+    **Note**: If just *nframes* is given then only **MOVIE_FRAME** is available as no data file is available.
+    For details on array creation, see `Generate 1D Array`_.  Several modifiers are also available:
 
+    - **+n** indicates that *inc* is the desired *number* of frames instead of an increment.
+    - **+p** can be used to set the tag *width* of the frame number format used in naming frames.  For
+      instance, name_000010.png has a tag width of 6.  By default, this width is automatically set, but
+      if you are splitting large jobs across several computers (via **+s**) then you must ensure the same
+      tag width for all frame names.
+    - **+s** starts the output frame numbering at *first* instead of 0. **Note**: All frames are still
+      included; this modifier only affects the *numbering* of the specific frames on output.  
+    - **+w** will split the trailing text string into individual words that can be accessed via variables
+      **MOVIE_WORD0**, **MOVIE_WORD1**, etc. By default we look for either tabs or spaces to separate the
+      words.  Append *str* to select other character(s) as the valid separator(s) instead. To just use TAB
+      as the *only* valid separator, use modifier **+W** instead.
+ 
 
 Optional Arguments
 ------------------
@@ -134,28 +137,33 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]
-    Give a *titlepage* script that creates a static title page for the movie [no title].
-    Alternatively, *titlepage* can be a *PostScript* or *EPS* plot (file extension .ps) of dimensions exactly matching
-    the canvas size set in |-C|. You control the duration of the title sequence with **+d** and specify
-    the number of frames (or append **s** for a duration in seconds instead) [4s].
-    Optionally, supply the fade length via **+f**\ *fade* (in frames or seconds [1s]) as well [no fading];
-    Use **+fi** and/or **+fo** to specify one-sided fading or to give unequal fade intervals [Default is same
-    duration for both]. The fading affects the beginning and end of the title page *duration*. We fade from and
-    to black by default; append **+g**\ *fill* to use another terminal fade color.
+**-E**\ *titlepage*\ [**+d**\ [*duration*\ [**s**]]][**+f**\ [**i**\|\ **o**]\ [*fade*\ [**s**]]]\ [**+g**\ *fill*]
+    Give a *titlepage* script that creates a static title page for the movie [no title sequence].
+    Alternatively, *titlepage* can be a *PostScript* or *EPS* plot (with file extension .ps) of dimensions
+    exactly matching the canvas size set in |-C|. Modifiers control the attributes of the title sequence:
+
+    - **+d** sets the duration of the title sequence. Append the number of frames or give a duration in seconds
+      by appending **s** [Default is 4s].
+    - **+f** adds fading. Append the *fade* length in frames or seconds (append **s**) [1s]. Use **+fi**
+      and/or **+fo** to specify one-sided fading or to give two unequal fade intervals [Default is the same
+      duration for both]. The fading affects the beginning and end of the title page *duration*.
+    - **+g**\ *fill* sets an alternate terminal fade color [black].
 
 .. _-F:
 
 **-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**]
     Select a video product.  Repeatable to make more than one product.  Choose from *gif* (animated GIF),
-    *mp4* (MPEG-4 movie), *webm* (WebM movie) or just *png* images (implied by all the others).  You may optionally
-    add additional FFmpeg encoding settings for *mp4* and *webm* via the **+o** modifier (in quotes if more
-    than one word). Choose **+t** to generate transparent PNG images [opaque]. If just *png* is chosen then no
-    animation will be assembled.  For *gif* you may consider using modifier **+l** for turning on looping and
-    optionally append how many times to repeat [infinite].  If either a *mp4* or *webm* product has been
-    selected then you can limit the frames being used to make a GIF animation:  Append **+s**\ *stride*
-    to only use every *stride* frame, with *stride* being one of a fixed set of strides: 2, 5, 10,
-    20, 50, 100, 200, and 500. No |-F| means no video products are created at all; this requires |-M|.
+    *mp4* (MPEG-4 movie), *webm* (WebM movie) or just *png* images (implied by all the others).  If just
+    *png* is chosen then no animation will be assembled. No |-F| means no video products are created at
+    all; this requires |-M|.  Several modifiers are available:
+
+    - **+o** may be used to add additional FFmpeg encoding settings for *mp4* and *webm* (in quotes if more
+      than one word).
+    - **+t** selects generation of transparent PNG images [opaque].
+    - **+l** turns on looping for *gif* animations; optionally append how many times to repeat [infinite].
+    - **+s** creates a crude animated *gif* provided either a *mp4* or *webm* product has been selected. You
+      can limit the frames being used to make a GIF animation by appending *stride* to only use every *stride*
+      frame, with *stride* being one of a fixed set of strides: 2, 5, 10, 20, 50, 100, 200, and 500.
 
 .. _-G:
 
@@ -187,54 +195,62 @@ Optional Arguments
 .. _-K:
 
 
-**-K**\ [**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
-    Add fading in and out for the main animation sequence [no fading]. Append
-    the length of the fading in number of frames (or seconds by appending **s**) [1s].
-    Use **+fi** and/or **+fo** to specify one-sided fading or to give unequal fade
-    intervals [Default is same duration for both].  Normally, fading will be overlaid on the
-    first and last *fade* frames of the main animation.  Append **+p** to *preserve*
-    these frames by fading over only the first and last (repeated) animation frames instead.
-    Append **i** or **o** to only preserve the frame involved during the fade in or fade out instead.
-    We fade from and to black by default; append **+g**\ *fill* to use another terminal fade color.
+**-K**\ [**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**\ [**i**\|\ **o**]] ]
+    Add fading in and out for the main animation sequence [no fading]. Modifiers can be used to change
+    the attributes of the fading:
+    
+    - **+f** sets the fading attributes. Append the *fade* length in frames or seconds (append **s**)
+      [Default is 1s]. Use **+fi** and/or **+fo** to specify one-sided fading or to give two unequal 
+      fade intervals [Default is the same duration for both].
+    - **p** preserves all frames.  Normally, fading will be overlaid on the first and last *fade*
+      frames of the main animation.  Use **+p** to *preserve* these frames by fading over the repeated
+      first and last animation frames instead. Append **i** or **o** to only preserve the frame involved
+      during the fade in or fade out, respectively.
+    - **+g**\ *fill* sets an alternate terminal fade color [black].
 
 .. _-L:
 
 **-L**\ *labelinfo*\ [*modifiers*]
     Automatic labeling of individual frames [Default is running frame number (f)].
     Repeatable up to 32 labels.  Places the chosen label at the frame perimeter:
-    **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
-    in seconds of each frame [Default is 1/*framerate*],
-    **s**\ *string* uses the fixed text *string* as the label,
-    **f** selects the running frame number as the label, **p** selects the percentage of progress so far,
-    **c**\ *col* uses the value in column
-    number *col* of *timefile* as label (first column is 0), while **t**\ *col* uses word number
-    *col* from the trailing text in *timefile* (first word is 0).  **Note**: If you use **-Lc**
-    with an absolute time column, then the format of the timestamp will depend on the two default settings
-    :term:`FORMAT_DATE_MAP` and :term:`FORMAT_CLOCK_MAP`.  By default,
+
+    - **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
+      in seconds of each frame [Default is 1/*framerate*].
+    - **s**\ *string* uses the fixed text *string* as the label.
+    - **f** selects the running frame number as the label.
+    - **p** selects the percentage of progress so far.
+    - **c**\ *col* uses the value in column number *col* of *timefile* as label (first column is 0).
+    - **t**\ *col* uses word number *col* from the trailing text in *timefile* (first word is 0).
+
+    **Note**: If you use **-Lc** with an absolute time column, then the format of the timestamp will depend
+    on the two default settings :term:`FORMAT_DATE_MAP` and :term:`FORMAT_CLOCK_MAP`.  By default,
     both *date* and *time* are displayed (with a space between); set one of the settings to "-" to skip that component.
-    Append **+c**\ *dx*\ [/*dy*] for the clearance between label and bounding box; only
-    used if **+g** or **+p** are set.  Append units **c**\|\ **i**\|\ **p** or % of the font size [15%].
-    Append **+f** to use a specific *font* [:term:`FONT_TAG`].
-    Append **+g** to fill the label bounding box with *fill* color [no fill].
-    Append **+h**\ [*dx*/*dy*/][*shade*] to place drop-down shade behind the label bounding box. You can
-    adjust the offset with *dx*/*dy* [4p/-4p] and shade color [gray50]; requires **+g** [no shade].
-    Use **+j**\ *refpoint* to specify where the label should be plotted [TL].
-    Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*. Append units
-    **c**\|\ **i**\|\ **p** or % of the font size [20% of font size].
-    Append **+p** to draw the outline of the bounding box using selected *pen* [no outline].
-    Append **+r** in conjunction with **+g** or **+p** to select a rounded rectangular label box [straight].
-    Append **+t** to provide a *format* statement to be used with the label item selected [no special formatting].
-    If **-Lt** is used then the format statement must contain a %s-like format, else it may have an integer (%d)
-    or floating point  (%e, %f, %g) format specification.
+    Several modifiers control the appearance of the label:
+
+    - **+c**\ *dx*\ [/*dy*] sets the clearance between label and bounding box; only used if **+g** or **+p** are set.
+      Append units **c**\|\ **i**\|\ **p** or % of the font size [15%].
+    - **+f** seelcts a specific *font* [:term:`FONT_TAG`].
+    - **+g** will fill the label bounding box with *fill* color [no fill].
+    - **+h**\ [*dx*/*dy*/][*shade*] will place drop-down shade behind the label bounding box. You can
+      adjust the offset with *dx*/*dy* [4p/-4p] and shade color [gray50]; requires **+g** [no shade].
+    - **+j**\ *refpoint* specifies where the label should be plotted [TL].
+    - **+o**\ *dx*\ [/*dy*] will offset the label in direction implied by *justify*. Append units
+      **c**\|\ **i**\|\ **p** or % of the font size [20% of font size].
+    - **+p** will draw the outline of the bounding box using selected *pen* [no outline].
+    - **+r** in conjunction with **+g** or **+p** will select a rounded rectangular label box [straight].
+    - **+t** sets a *format* statement to be used with the label item selected [no special formatting].
+    
+    **Note**: If **-Lt** is used then the format statement must contain a %s-like format, else it may have an
+    integer (%d) or floating point  (%e, %f, %g) format specification (see C language `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_ syntax).
 
 .. _-M:
 
 **-M**\ [*frame*\|\ **f**\|\ **m**\|\ **l**],[*format*][**+r**\ *dpu*]
     In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
-    be written to the current directory with name *prefix.format*, where *format* can one of the
+    be written to the current directory with name *prefix.format*, where *format* can be one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].  Instead of a frame number
     we also recognize the codes **f**\ irst, **m**\ iddle, and **l**\ ast frame. **Note**: For raster frame formats
-    you may optionally specify the *dpu* of that frame via the **+r** modifier [same dpu as the movie frames].
+    you may optionally specify an alternate *dpu* of that frame via the **+r** modifier [same dpu as the movie frames].
 
 .. _-P:
 
