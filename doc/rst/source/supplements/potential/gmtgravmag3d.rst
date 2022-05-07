@@ -40,7 +40,7 @@ Required Arguments (not all)
 .. _-C:
 
 **-C**\ *density*
-    Sets body density in SI. This option is mutually exclusive with **-H**.
+    Sets body density in SI. This option is mutually exclusive with |-H|.
 
 .. _-H:
 
@@ -53,7 +53,7 @@ Required Arguments (not all)
 
 **-F**\ *xy_file*
     Provide locations where the anomaly will be computed. Note this
-    option is mutually exclusive with **-G**.
+    option is mutually exclusive with |-G|.
 
 .. _-G:
 
@@ -97,9 +97,9 @@ Required Arguments (not all)
     Gives names of a xyz and vertex (**-Tv**\ *vert_file*) files defining a close surface.
     The file formats correspond to the output of the :doc:`triangulate </triangulate>` program.
     The *xyz* file can have 3, 4, 5, 6 or 8 columns. In first case (3 columns) the magnetization (or density) are
-    assumed constant (controlled by **-C** or **-H**). Following cases are: 4 columns -> 4rth col magnetization intensity;
+    assumed constant (controlled by |-C| or |-H|). Following cases are: 4 columns -> 4rth col magnetization intensity;
     5 columns: mag, mag dip; 6 columns: mag, mag dec, mag dip; 8 columns: field dec, field dip, mag, mag dec, mag dip.
-    When n columns > 3 the third argument of the **-H** option is ignored. A *raw* format (selected by the **-Tr** option)
+    When n columns > 3 the third argument of the |-H| option is ignored. A *raw* format (selected by the **-Tr** option)
     is a file with N rows (one per triangle) and 9 columns corresponding to the x,y,x coordinates of each of the three
     vertex of each triangle. Alternatively, the **-Ts** option indicates that the surface file is in the ASCII STL
     (Stereo Lithographic) format. These two type of files are used to provide a closed surface.

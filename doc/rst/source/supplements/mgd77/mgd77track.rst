@@ -138,7 +138,7 @@ Optional Arguments
     the same day, and **d** for distance markers). For each of these you
     can specify the 5 comma-separated attributes *markersize*,
     *markercolor*, *markerfontsize*, *markerfont*, and
-    *markerfontcolor*. Repeat the **-T** option for each marker type.
+    *markerfontcolor*. Repeat the |-T| option for each marker type.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_

@@ -48,7 +48,7 @@ Description
 Plot observations from a single earthquake observed at various stations
 at different azimuths and distances on the lower hemisphere of the focal
 sphere.  The focal sphere is typically plotted at the location of the earthquake,
-specified via **-D**. Reads data values from *files* [or standard input].
+specified via |-D|. Reads data values from *files* [or standard input].
 
 Parameters are expected to be in the following columns:
 

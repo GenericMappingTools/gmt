@@ -15,7 +15,7 @@ Synopsis
 **gmt segyz** *SEGYfile* |-J|\ *parameters*
 |-J|\ **z**\|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
-|-D|\ *deviation* |-F|\ [*color*] **-W**
+|-D|\ *deviation* |-F|\ [*color*] |-W|
 [ |-C|\ *clip* ]
 [ |-I| ] [ |-L|\ *nsamp* ]
 [ |-M|\ *ntrace* ]
@@ -93,7 +93,7 @@ Required Arguments
 **-W**
     Draw wiggle trace.
 
-You *must* specify at least one of **-W** and **-F**.
+You *must* specify at least one of |-W| and |-F|.
 
 Optional Arguments
 ------------------

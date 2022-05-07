@@ -158,7 +158,7 @@ The argument *abbrev* is one of the abbreviations for columns known to
 this TAG. However, it can also be one of the three auxiliary terms
 **dist** (for along-track distances), **azim** for along-track azimuths,
 and **vel** (for along-track speed); these are all sensitive to the
-**-C** and **-N** settings used when defining the TAG; furthermore,
+**-C** and |-N| settings used when defining the TAG; furthermore,
 **vel** requires **time** to be present in the data. If *origin* is
 given as **T** it means that we should replace it with the value of
 *abbrev* for the very first record in the file (this is usually only
