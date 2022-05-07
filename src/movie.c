@@ -1308,7 +1308,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	int (*run_script)(const char *);	/* pointer to system function or a dummy */
 
 	unsigned int n_values = 0, n_frames = 0, n_data_frames, first_fade_out_frame = 0, frame, i_frame, col, p_width, p_height, k, T;
-	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_frame = 0, data_frame, n_cores_unused, n_fade_frames = 0;
+	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_i_frame = 0, data_frame, n_cores_unused, n_fade_frames = 0;
 	unsigned int dd, hh, mm, ss, start, flavor[2] = {0, 0};
 
 	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false}, has_conf = false;
@@ -2506,7 +2506,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Finally, we can run all the frames in a controlled loop, launching new parallel jobs as cores become available */
 
-	i_frame = first_frame = 0; n_frames_not_started = n_frames;
+	i_frame = first_i_frame = 0; n_frames_not_started = n_frames;
 	frame = Ctrl->T.start_frame;
 	n_cores_unused = MAX (1, Ctrl->x.n_threads - 1);			/* Remove one for the main movie module thread */
 	status = gmt_M_memory (GMT, NULL, n_frames, struct MOVIE_STATUS);	/* Used to keep track of frame status */
@@ -2531,7 +2531,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				error = GMT_RUNTIME_ERROR;
 				goto out_of_here;
 			}
-			status[frame].started = true;	/* We have now launched this frame job */
+			status[i_frame].started = true;	/* We have now launched this frame job */
 			frame++;			/* Advance to next frame for next launch */
 			i_frame++;			/* Advance to next frame for next launch */
 			n_frames_not_started--;		/* One less frame remaining */
@@ -2540,7 +2540,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				script_file = main_file;
 		}
 		gmt_sleep (MOVIE_WAIT_TO_CHECK);	/* Wait 0.01 second - then check for completion of the PNG images */
-		for (k = first_frame; k < i_frame; k++) {	/* Only loop over the range of frames that we know are currently in play */
+		for (k = first_i_frame; k < i_frame; k++) {	/* Only loop over the range of frames that we know are currently in play */
 			if (status[k].completed) continue;	/* Already finished with this frame */
 			if (!status[k].started) continue;	/* Not started this frame yet */
 			/* Here we can check if the frame job has completed by looking for the PNG product */
@@ -2552,8 +2552,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			percent = 100.0 * n_frames_completed / n_frames;
 			GMT_Report (API, GMT_MSG_INFORMATION, "Frame %*.*d of %d completed [%5.1f %%]\n", precision, precision, k, n_frames, percent);
 		}
-		/* Adjust first_frame, if needed */
-		while (first_frame < n_frames && status[first_frame].completed) first_frame++;
+		/* Adjust first_i_frame, if needed */
+		while (first_i_frame < n_frames && status[first_i_frame].completed) first_i_frame++;
 		if (n_frames_completed == n_frames) done = true;	/* All frames completed! */
 	}
 	/* END PARALLEL EXECUTION OF FRAME SCRIPTS */
