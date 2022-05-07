@@ -76,7 +76,7 @@ Required Arguments
 *table*
     The file describing the prisms with record format *x y z_lo z_hi* [ *dx dy* ] [ *rho* ],
     where the optional items are controlled by options |-E| and |-D|, respectively.
-    Density contrasts can be given in kg/m^3 of g/cm^3. **Note**: If |-C| is used then
+    Density contrasts can be given in :math:`\mbox{kg/m}^3` of :math:`\mbox{g/cm}^3`. **Note**: If |-C| is used then
     no *table* will be read.
 
 .. _-I:
@@ -112,9 +112,9 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *density*
-    Sets a fixed density contrast that overrides any individual prism settings in the prisms file, in kg/m^3 of g/cm^3. Alternatively, give name of an input grid with spatially varying, vertically-averaged
+    Sets a fixed density contrast that overrides any individual prism settings in the prisms file, in :math:`\mbox{kg/m}^3` of :math:`\mbox{g/cm}^3`. Alternatively, give name of an input grid with spatially varying, vertically-averaged
     prism densities. This requires |-C| and the grid must be co-registered with the grid provided by |-S|
-    (or **L** and |-T|).
+    (or |-L| and |-T|).
 
 .. _-E:
 
@@ -144,7 +144,7 @@ Optional Arguments
 
 **-H**\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
     Set reference seamount parameters for an *ad-hoc* variable radial density function with depth. Give
-    the low and high seamount densities in kg/m^3 or g/cm^3 and the fixed reference height *H* in meters.
+    the low and high seamount densities in :math:`\mbox{kg/m}^3` or :math:`\mbox{g/cm}^3` and the fixed reference height *H* in meters.
     Use modifiers **+d** and **+p** to change the water-pressure-driven flank density increase over the
     full reference height [0] and the variable density profile exponent *power* [1, i.e., a linear change].
     Requires |-S| to know the full height of the seamount.
@@ -244,7 +244,7 @@ A quick view of the 3-D model can be had via::
     gmt plot3d -R-30/30/-30/30/0/7000 -JX12c -JZ3c -Ggray -So1q+b @prisms.txt -B -Wfaint -p200/20 -pdf smt
 
 To compute the free-air anomalies on a grid over the set of prisms given in @prisms.txt,
-using 1700 kg/m^3 as a fixed density contrast, with horizontal distances in km and
+using 1700 :math:`\mbox{kg/m}^3` as a fixed density contrast, with horizontal distances in km and
 vertical distances in meters, observed at 7000 m, try::
 
     gmt gravprisms -R-40/40/-40/40 -I1 -Mh -G3dgrav.nc @prisms.txt -D1700 -Ff -Z7000
