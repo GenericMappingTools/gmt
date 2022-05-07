@@ -69,7 +69,7 @@ Required Arguments
     set of preset formats (see Table :ref:`Presets <tbl-presets>`) or specify a custom layout.
     **Note**: Your :term:`PROJ_LENGTH_UNIT` setting determines if **movie** sets
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
-    request a custom format directly by giving *width*\ x\ *height*\ x\ *dpu*,
+    request a custom format directly by giving *width*\ **x**\ *height*\ **x**\ *dpu*,
     where *dpu* is the dots-per-unit pixel density (pixel density is set automatically for the named formats).
     
     .. _tbl-presets:
@@ -114,7 +114,7 @@ Required Arguments
     **Note**: If just *nframes* is given then only **MOVIE_FRAME** is available as no data file is available.
     For details on array creation, see `Generate 1D Array`_.  Several modifiers are also available:
 
-    - **+n** indicates that *inc* is the desired *number* of frames instead of an increment.
+    - **+n** indicates that *inc* is the desired *number* of frames from *min* to *max* instead of an increment.
     - **+p** can be used to set the tag *width* of the frame number format used in naming frames.  For
       instance, name_000010.png has a tag width of 6.  By default, this width is automatically set, but
       if you are splitting large jobs across several computers (via **+s**) then you must ensure the same
@@ -149,6 +149,8 @@ Optional Arguments
       duration for both]. The fading affects the beginning and end of the title page *duration*.
     - **+g**\ *fill* sets an alternate terminal fade color [black].
 
+    See `Fading`_ for more details on fading (which also involves |-K|).
+
 .. _-F:
 
 **-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**]
@@ -157,13 +159,13 @@ Optional Arguments
     *png* is chosen then no animation will be assembled. No |-F| means no video products are created at
     all; this requires |-M|.  Several modifiers are available:
 
+    - **+l** turns on looping for *gif* animations; optionally append how many times to repeat [infinite].
     - **+o** may be used to add additional FFmpeg encoding settings for *mp4* and *webm* (in quotes if more
       than one word).
-    - **+t** selects generation of transparent PNG images [opaque].
-    - **+l** turns on looping for *gif* animations; optionally append how many times to repeat [infinite].
     - **+s** creates a crude animated *gif* provided either a *mp4* or *webm* product has been selected. You
       can limit the frames being used to make a GIF animation by appending *stride* to only use every *stride*
       frame, with *stride* being one of a fixed set of strides: 2, 5, 10, 20, 50, 100, 200, and 500.
+    - **+t** selects generation of transparent PNG images [opaque]; see `Transparency`_ for more details.
 
 .. _-G:
 
@@ -202,22 +204,23 @@ Optional Arguments
     - **+f** sets the fading attributes. Append the *fade* length in frames or seconds (append **s**)
       [Default is 1s]. Use **+fi** and/or **+fo** to specify one-sided fading or to give two unequal 
       fade intervals [Default is the same duration for both].
-    - **p** preserves all frames.  Normally, fading will be overlaid on the first and last *fade*
+    - **+g**\ *fill* sets an alternate terminal fade color [black].
+    - **+p** preserves all frames.  Normally, fading will be overlaid on the first and last *fade*
       frames of the main animation.  Use **+p** to *preserve* these frames by fading over the repeated
       first and last animation frames instead. Append **i** or **o** to only preserve the frame involved
       during the fade in or fade out, respectively.
-    - **+g**\ *fill* sets an alternate terminal fade color [black].
+
+    See `Fading`_ for more details on fading (which may also involve |-E|).
 
 .. _-L:
 
 **-L**\ *labelinfo*\ [*modifiers*]
-    Automatic labeling of individual frames [Default is running frame number (f)].
-    Repeatable up to 32 labels.  Places the chosen label at the frame perimeter:
+    Automatic labeling of individual frames. Repeatable up to 32 labels.  Places the chosen label at the frame perimeter:
 
     - **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
       in seconds of each frame [Default is 1/*framerate*].
     - **s**\ *string* uses the fixed text *string* as the label.
-    - **f** selects the running frame number as the label.
+    - **f** selects the running frame number as the label [Default].
     - **p** selects the percentage of progress so far.
     - **c**\ *col* uses the value in column number *col* of *timefile* as label (first column is 0).
     - **t**\ *col* uses word number *col* from the trailing text in *timefile* (first word is 0).
@@ -255,15 +258,23 @@ Optional Arguments
 .. _-P:
 
 **-P**\ *progress*\ [*modifiers*]
-    Automatic placement of progress indicator(s). Repeatable up to 32 indicators.  Places the chosen indicator at the frame perimeter.
-    Select from six indicators called a-f [a].  Indicators a-c are different types of circular indicators while d-f are
-    linear (axis-like) indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
-    circular indicators and 60% of relevant canvas dimension for the linear indicators] and placement via **+j**\ *justify*
-    [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
-    **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col*\ \|\ **t**\ *col* to indicate what should be annotated (see |-L|
-    for more information on what these are); append **+f** to use a specific *font* [:term:`FONT_ANNOT_SECONDARY` scaled as needed].
-    Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [see below for defaults].
-    Use **+p**\ *pen* to set moving item *pen*.  For setting the corresponding static fill and pen, use **+G** and **+P** instead.
+    Automatic placement of progress indicator(s). Repeatable up to 32 indicators.  Places the chosen indicator at the
+    frame perimeter according to the justification selected. Select from six indicators called **a**-**f** [**a**].
+    Indicators **a**-**c** are different types of circular indicators while **d**-**f** are linear (axis-like)
+    indicators. See `Progress_indicators`_ for details. Several modifiers control their appearance:
+    
+    - **+a** enables annotation for some progress indicators: Indicators **b**-**f** can optionally add annotations; append
+      one of **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col*\ \|\ **t**\ *col* to indicate what should be annotated (see |-L|
+      for more information on what these are).
+    - **+f** selects a specific *font* [:term:`FONT_ANNOT_SECONDARY` scaled as needed].
+    - **+g** sets the moving item *fill* color [see below for defaults].
+    - **+G** sets the static item *fill* color [see below for defaults].
+    - **+j**\ *justify* sets the placement on the canvas [TR for circular and BC for axes]. 
+    - **+o**\ *dx*\ [/*dy*] offsets the indicator in direction implied by *justify*.
+    - **+p**\ *pen* sets the moving item *pen*.
+    - **+P**\ *pen* sets the static item *pen*.
+    - **+w**\ *width* sets the dimension of the indicator [5% of max canvas dimension for circular indicators and
+      60% of relevant canvas dimension (height or width depending on **+j**) for the linear indicators].
 
 .. _-Q:
 
@@ -279,7 +290,7 @@ Optional Arguments
     The optional GMT modern mode *background* (written in the same scripting language as *mainscript*) can be
     used for one or two purposes: (1) It may create files (such as *timefile*) that will be needed by *mainscript*
     to make the movie, and (2) It may make a static background plot that should form the background for all frames.
-    If a plot is generated the script must make sure it uses the same positioning (i.e., **-X -Y**) as the main script
+    If a plot is generated the script must make sure it uses the same positioning (i.e., |-X| and |-Y|) as the main script
     so that the layered plot will stack correctly (unless you actually want a different offset).  Alternatively,
     *background* can be a *PostScript* or *EPS* plot layer of dimensions exactly matching the canvas size.
 
@@ -288,7 +299,7 @@ Optional Arguments
 **-Sf**\ *foreground*
     The optional GMT modern mode *foreground* (written in the same scripting language as *mainscript*) can be
     used to make a static foreground plot that should be overlain on all frames.  Make sure the script uses the same
-    positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.  Alternatively,
+    positioning (i.e., |-X| and |-Y|) as the main script so that the layers will stack correctly.  Alternatively,
     *foreground* can be a *PostScript* or *EPS* plot layer of dimensions exactly matching the canvas size.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -404,9 +415,9 @@ or 24 x 18 cm (4:3).  If your :term:`PROJ_LENGTH_UNIT` setting is inch then the 
 slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2"); this has no effect on the size of the movie
 frames but allow us to use good sizes that work well with the *dpu* chosen.  You should compose your plots using
 the given canvas size, and **movie** will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
-to use **-X -Y** to allow for suitable margins and any positioning of items on the canvas.  To minimize processing time it is
-recommended that any static part of the movie be considered either a static background (to be made once by *background*) and/or
-a static foreground (to be made once by *foreground*); **movie** will then assemble these layers per frame.  Also, any computation of
+to use |-X| and |-Y| to allow for suitable margins and any positioning of items on the canvas.  To minimize processing time it is
+recommended that any static part of the movie be considered either a static background (to be made once by *background*; see **-Sb**) and/or
+a static foreground (to be made once by *foreground*; see **-Sf**); **movie** will then assemble these layers per frame.  Also, any computation of
 static data files to be used in the loop over frames can be produced by *background*.  Any data or variables that depend on the
 frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.  **Note**: Using
 the variables **MOVIE_WIDTH** or **MOVIE_HIGHT** to set plot dimensions may lead to clipping against the canvas since these are also the
@@ -431,6 +442,8 @@ Some map projections will by default draw a *fancy* map frame; this feature is u
 However, whether a *fancy* or *plain* frame is actually drawn also depends on the projection center *latitude*.
 Thus, if your movie varies the projection center latitude by changing the view, you should set the frame
 setting to *plain* as part of your setup.
+
+.. _Transparency:
 
 Transparent Images
 ------------------
@@ -487,7 +500,7 @@ require the frame number you will need to make a file that you can pass to |-T|.
 then have all the values you need, per frame (i.e., row), with values across all the columns you need.
 If you need to assign various fixed variables that do not change with time then your *mainscript*
 will look shorter and cleaner if you offload those assignments to a separate *includefile* (|-I|).
-To test your movie, start by using options **-Q -M** to ensure your master frame page looks correct.
+To test your movie, start by using options |-Q| and |-M| to ensure your master frame page looks correct.
 This page shows you one frame of your movie (you can select which frame via the |-M| arguments).  Fix any
 issues with your use of variables and options until this works.  You can then try to remove |-Q|.
 We recommend you make a very short (i.e., |-T|) and small (i.e., |-C|) movie so you don't have to wait very
@@ -503,6 +516,8 @@ files and pass those names to the modules that require CPT information.  In mode
 you need to use the |-H| option in :doc:`makecpt` or :doc:`grd2cpt` in order to redirect their output
 to named files.
 
+.. _Progress_indicators:
+
 Progress Indicators
 -------------------
 
@@ -513,26 +528,29 @@ Progress Indicators
    The six types of movie progress indicators.  All have default sizes, placements, colors and pens (shown)
    but these can be overridden by the corresponding modifiers (see below).
 
-The letters a-f select one of the six progress indicators shown above.
-Indicator a) needs a static [lightgreen] and moving [lightred]
-*fill* (set via **+G** and **+g**); there is no label option.
-Indicator b) takes a static [lightblue] and moving [blue] *pen* (set via **+P** and **+p**),
-and if **+a** is set we place a centered label with a font size scaled to 30%
-of indicator size (unless **+f** was set which is used as given).
-Indicator c) takes a static [dashed darkred, pen width is 1% of indicator size] and moving [red]
-*pen* (default pen width is 5% of indicator size) for a circular arrow (head size is 20% of indicator size), with a central
-label (if given **+a**) with a font size 30% of indicator size (unless **+f** was set which we will honor).
-Indicator d) takes a static [black] and moving [yellow, width 0.5% of length] *pen* for a rounded line with a cross-mark. If
-label is requested (**+a**) we use a font size that is twice the static pen thickness (unless **+f** was set).
-Indicator e) takes a static [red] and moving [lightgreen] *pen*. If labels are requested (**+a**) we
-use a font size that is twice the static pen thickness (unless **+f** was set).
-Finally, indicator f) takes a *pen* for the static axis [black] and a *fill* for the moving triangle [red];
-the triangle size is scaled to twice the axis width (see below), and a font size scaled to thrice the axis width.
-Note for indicators d-f: If percentage labels are selected (**+ap**), then the axes display a unit label,
-otherwise no unit label is supplied.  The indicators d-f are horizontal for all *justify* codes except for **ML** and **MR**.
+The letters **a**-**f** select one of the six progress indicators shown above; each has default attributes that can
+be changed via modifiers:
+
+- **a** needs a static [lightgreen] and moving [lightred] *fill* (set via **+G** and **+g**); there is no label option.
+- **b** takes a static [lightblue] and moving [blue] *pen* (set via **+P** and **+p**), and if **+a** is set we place
+  a centered label with a font size scaled to 30% of indicator size (unless **+f** was set which is used as given).
+- **c** takes a static [dashed darkred, pen width is 1% of indicator size] and moving [red] *pen* (default pen width is
+  5% of indicator size) for a circular arrow (head size is 20% of indicator size), with a central label (if given **+a**)
+  with a font size 30% of indicator size (unless **+f** was set which we will honor).
+- **d** takes a static [black] and moving [yellow, width 0.5% of length] *pen* for a rounded line with a cross-mark. If
+  label is requested (**+a**) we use a font size that is twice the static pen thickness (unless **+f** was set).
+- **e** takes a static [red] and moving [lightgreen] *pen*. If labels are requested (**+a**) we use a font size that is
+  twice the static pen thickness (unless **+f** was set).
+- **f** takes a *pen* for the static axis [black] and a *fill* for the moving triangle [red]; the triangle size is scaled
+  to twice the axis width (see below), and a font size scaled to thrice the axis width.
+
+Note for indicators **d**-**f**: If percentage labels are selected (**+ap**), then the axes display a unit label,
+otherwise no unit label is supplied.  These indicators are horizontal for all *justify* codes except for **ML** and **MR**.
 The default pen thickness for the linear static lines is the smallest of 2.5% of their lengths and 8p (1.5% and 3p for f).
 If no size is specified (**+w**) then we default to 5% of canvas width for the three circular indicators and
-60% of the relevant canvas dimension for the linear indicators.
+60% of the relevant canvas dimension (height or width, depending on **+j**) for the linear indicators.
+
+.. _Fading:
 
 Title Sequence and Fading
 -------------------------
