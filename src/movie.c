@@ -171,7 +171,7 @@ struct MOVIE_CTRL {
 		bool active;
 		double framerate;
 	} D;
-	struct MOVIE_E {	/* -E<title>[+d<duration>[s]][+f[i|o]<fade>[s]][+g<fill>] */
+	struct MOVIE_E {	/* -E<title>[+d<duration>[s]][+f[i|o][<fade>[s]]][+g<fill>] */
 		bool active;
 		bool PS;		/* true if we got a plot instead of a script */
 		char *file;		/* Name of title script */
@@ -180,7 +180,7 @@ struct MOVIE_CTRL {
 		unsigned int fade[2];	/* Duration of fade title in, fade title out [none]*/
 		FILE *fp;			/* Open file pointer to title script */
 	} E;
-	struct MOVIE_F {	/* -F<videoformat>[+o<options>][+t] */
+	struct MOVIE_F {	/* -F<videoformat>[+l<n>][+o<options>][+s<stride>][+t] - repeatable */
 		bool active[MOVIE_N_FORMATS];
 		bool transparent;
 		bool loop;
@@ -205,7 +205,7 @@ struct MOVIE_CTRL {
 		char *file;	/* Name of include script */
 		FILE *fp;	/* Open file pointer to include script */
 	} I;
-	struct MOVIE_K {	/* -K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]] */
+	struct MOVIE_K {	/* -K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]] */
 		bool active;
 		bool preserve[2];	/* Preserve first and last frames */
 		char *fill;		/* Fade color [black] */
@@ -227,7 +227,7 @@ struct MOVIE_CTRL {
 		bool active;
 		char *prefix;	/* Movie prefix and also name of working directory (but see -W) */
 	} N;
-	struct MOVIE_P {	/* Repeatable: -P[kind][+wwidth][+ppen1][+Ppen2][+gfill1][+Gfill2][+ooffset][+j<justify>][+a[e|f|c#|t#|s<string>][+t<fmt>][+s<scl>] */
+	struct MOVIE_P {	/* Repeatable: -P[<kind>][+w<width>][+p<pen1>][+P<pen2>][+g<fill1>][+G<fill2>][+o<offset>][+j<justify>][+a[e|f|c#|t#|s<string>][+t<fmt>][+s<scl>] */
 		bool active;
 	} P;
 	struct MOVIE_Q {	/* -Q[s] */
@@ -321,8 +321,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <mainscript> -C<canvas>|<width>x<height>x<dpu> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W] "
-		"[-D<rate>] [-E<titlepage>[+d<duration>[s]][+f[i|o]<fade>[s]][+g<fill>]] [-Fgif|mp4|webm|png[+l[<n>]][+o<opts>][+s<stride>][+t]] [-G[<fill>][+p<pen>]] [-H<scale>] "
-		"[-I<includefile>] [-K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>][+r<dpu>]] [-P<progressinfo>] [-Q[s]] [-Sb<background>] "
+		"[-D<rate>] [-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]] [-Fgif|mp4|webm|png[+l[<n>]][+o<opts>][+s<stride>][+t]] [-G[<fill>][+p<pen>]] [-H<scale>] "
+		"[-I<includefile>] [-K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>][+r<dpu>]] [-P<progressinfo>] [-Q[s]] [-Sb<background>] "
 		"[-Sf<foreground>] [%s] [-W[<dir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -372,7 +372,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-D<rate>");
 	GMT_Usage (API, -2, "Set movie display frame rate in frames/second [24].");
-	GMT_Usage (API, 1, "\n-E<titlepage>[+d<duration>[s]][+f[i|o]<fade>[s]][+g<fill>]");
+	GMT_Usage (API, 1, "\n-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]");
 	GMT_Usage (API, -2, "Give name of optional <titlepage> script to build title page displayed before the animation [no title page]. "
 		"Alternatively, give PostScript file of correct canvas size that will be the title page.");
 	GMT_Usage (API, 3, "+d Set duration of the title frames (append s for seconds) [4s].");
@@ -401,7 +401,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-I<includefile>");
 	GMT_Usage (API, -2, "Include a script file to be inserted into the movie_init.sh script [none]. "
 		"Used to add constant variables needed by all movie scripts.");
-	GMT_Usage (API, 1, "\n-K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]]");
+	GMT_Usage (API, 1, "\n-K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]]");
 	GMT_Usage (API, -2, "Fade in and out over the main animation via black [no fading]:");
 	GMT_Usage (API, 3, "+f Set duration of fading in frames (append s for seconds) [1s]. "
 		"Use +fi and/or +fo to set unequal fade times or to just select one of them.");
@@ -450,7 +450,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Debugging: Leave all intermediate files and directories behind for inspection. "
 		"Append s to only create the work scripts but none will be executed (except for background script).");
 	GMT_Usage (API, 1, "\n-Sb<background>");
-	GMT_Usage (API, -2, "Append name of background GMT modern script that may pre-compute "
+	GMT_Usage (API, -2, "Append name of background GMT modern script that may compute "
 		"files needed by <mainscript> and/or build a static background plot layer. "
 		"If a plot is generated then the script must be in GMT modern mode. "
 		"Alternatively, give PostScript file of correct canvas size that will be the background.");
@@ -837,12 +837,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					c[0] = '\0';	/* Chop off modifiers */
 				}
 				if (Ctrl->E.duration == 0) Ctrl->E.duration = movie_get_n_frames (GMT, NULL, Ctrl->D.framerate, "4s");
-				if (opt->arg[0])
-					Ctrl->E.file = strdup (opt->arg);
-				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -E: No title script or PostScript file given\n");
-					n_errors++;					
-				}
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->E.file));
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 
@@ -953,7 +948,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file));
 				break;
 
-			case 'K':	/* Fade from/to a black background -K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]] */
+			case 'K':	/* Fade from/to a black background -K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->K.active);
 				frames = 0;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "fgp"))) {	/* Process any modifiers */
@@ -995,7 +990,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 
-			case 'L':	/* Label frame and get attributes */
+			case 'L':	/* Label frame and get attributes (repeatable) */
 				Ctrl->L.active = Ctrl->item_active[MOVIE_ITEM_IS_LABEL] = true;
 				if ((T = Ctrl->n_items[MOVIE_ITEM_IS_LABEL]) == GMT_LEN32) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -L: Cannot handle more than %d tags\n", GMT_LEN32);
@@ -1053,7 +1048,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->N.prefix);
 				break;
 
-			case 'P':	/* Movie progress bar(s) */
+			case 'P':	/* Movie progress bar(s) (repeatable) */
 				Ctrl->P.active = Ctrl->item_active[MOVIE_ITEM_IS_PROG_INDICATOR] = true;
 				if ((T = Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR]) == GMT_LEN32) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -P: Cannot handle more than %d progress indicators\n", GMT_LEN32);
