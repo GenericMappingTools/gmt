@@ -94,6 +94,7 @@ const char *gmt_get_full_name (struct GMTAPI_CTRL *API, const char *module) {
 
 	/* Look for classic modules that now have a different modern mode name */
 	if      (!strcmp (module, "2kml"))      return "gmt2kml";
+	else if (!strcmp (module, "binstats"))  return "gmtbinstats";
 	else if (!strcmp (module, "connect"))   return "gmtconnect";
 	else if (!strcmp (module, "convert"))   return "gmtconvert";
 	else if (!strcmp (module, "defaults"))  return "gmtdefaults";
