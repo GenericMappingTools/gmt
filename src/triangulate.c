@@ -46,6 +46,9 @@ struct TRIANGULATE_CTRL {
 		bool active;
 		char *file;
 	} Out;
+	struct TRIANGULATE_A {	/* -A */
+		bool active;
+	} A;
 	struct TRIANGULATE_C {	/* -C<input_slope_grid> */
 		bool active;
 		char *file;
@@ -135,12 +138,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef NNN_MODE
-	GMT_Usage (API, 0, "usage: %s [<table>] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G%s] [%s] [%s] [-M] [-N] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G%s] [%s] [%s] [-M] [-N] "
 		"[-Q[n]] [%s] [-S] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, 
 		GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 #else
-	GMT_Usage (API, 0, "usage: %s [<table>] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G%s] [%s] [%s] [-M] [-N] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G%s] [%s] [%s] [-M] [-N] "
 		"[-Q] [%s] [-S] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, 
 		GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -151,6 +154,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Compute and print triangle areas in header records (requires -S).");
 	GMT_Usage (API, 1, "\n-C<slopegrid>");
 	GMT_Usage (API, -2, "Compute propagated uncertainty via CURVE algorithm. Give name of input slope grid. The slope "
 		"grid (in degrees) also sets -R -I [-r]. Expects (x,y,h,v) or (x,y,z,h,v) on input. Requires -G and cannot be "
@@ -210,6 +214,9 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 
 			/* Processes program-specific parameters */
 
+			case 'A':	/* Calculate triangle areas and add to header in -S */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				break;
 			case 'C':	/* CURVE input slope grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->C.file));
@@ -301,6 +308,8 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 	n_errors += gmt_check_binary_io (GMT, 2);
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 ||
 	                                   GMT->common.R.inc[GMT_Y] <= 0.0), "Option -I: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->S.active, "Option -A: Requires -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->Q.active, "Option -A: Not compatible with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Option -C: Must append slope grid file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (GMT->common.R.active[ISET] + GMT->common.R.active[RSET]) != 2,
 	                                   "Must specify -R, -I, -G for gridding\n");
@@ -825,15 +834,24 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (Ctrl->S.active)  {	/* Write triangle polygons */
+			char area_txt[GMT_LEN64] = {""}, a_format[GMT_LEN128] = {""};
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POLY) != GMT_NOERROR) {	/* Sets output geometry */
 				error = API->error;	goto time_to_let_go;
 			}
 			gmt_set_segmentheader (GMT, GMT_OUT, true);
+			if (Ctrl->A.active)	/* Initialize the area format string */
+				sprintf (a_format, " Area: %s", GMT->current.setting.format_float_out);
+
 			if (triplets[GMT_OUT]) {
 				double z_mean;
 				for (i = ij = 0; i < np; i++, ij += 3) {
 					z_mean = (zz[link[ij]] + zz[link[ij+1]] + zz[link[ij+2]]) / 3;
 					sprintf (record, "Polygon %d-%d-%d -Z%.8g", link[ij], link[ij+1], link[ij+2], z_mean);
+					if (Ctrl->A.active) {	/* Compute and report area */
+						double area = 0.5 * ((xx[link[ij]] - xx[link[ij+2]]) * (yy[link[ij+1]] - yy[link[ij]]) - (xx[link[ij]] - xx[link[ij+1]]) * (yy[link[ij+2]] - yy[link[ij]]));
+						sprintf (area_txt, a_format, area);
+						strcat (record, area_txt);
+					}
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 					for (k = 0; k < 3; k++) {	/* Three vertices */
 						out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];	out[GMT_Z] = zz[link[ij+k]];
@@ -847,6 +865,11 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 			else {
 				for (i = ij = 0; i < np; i++, ij += 3) {
 					sprintf (record, "Polygon %d-%d-%d -Z%" PRIu64, link[ij], link[ij+1], link[ij+2], i);
+					if (Ctrl->A.active) {	/* Compute and report area */
+						double area = 0.5 * ((xx[link[ij]] - xx[link[ij+2]]) * (yy[link[ij+1]] - yy[link[ij]]) - (xx[link[ij]] - xx[link[ij+1]]) * (yy[link[ij+2]] - yy[link[ij]]));
+						sprintf (area_txt, a_format, area);
+						strcat (record, area_txt);
+					}
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 					for (k = 0; k < 3; k++) {	/* Three vertices */
 						out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];
