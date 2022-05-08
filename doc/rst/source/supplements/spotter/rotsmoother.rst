@@ -55,8 +55,8 @@ Optional Arguments
 **-A**
     Use opening angles as a proxy for time.  Suitable when no time can be assigned to the
     rotations.  In this case, input is expected to contain *lon lat angle* [*weight*] records
-    and **-T** settings refer to angles instead of time.
-    [Default expects *lon lat time angle* [*weight*] and **-T** refers to time].
+    and |-T| settings refer to angles instead of time.
+    [Default expects *lon lat time angle* [*weight*] and |-T| refers to time].
 
 .. _-C:
 

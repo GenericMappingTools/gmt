@@ -62,7 +62,7 @@ Required Arguments
 **-D**\ *fmtfile*
     Format definition file prefix for this data set [See Format Definition Files below
     for more information]. Specify full path if the file is not in the
-    current directory. If **-D** is not given then we default to *TAG*\ .fmt.
+    current directory. If |-D| is not given then we default to *TAG*\ .fmt.
     **Note**: Deprecated extension .def will work but consider renaming the file.
 
 Optional Arguments
@@ -72,7 +72,7 @@ Optional Arguments
 
 **-E**\ *suffix*
     Specifies the file extension (suffix) for these data files. If not
-    given we use the format definition file prefix as the suffix (see **-D**).
+    given we use the format definition file prefix as the suffix (see |-D|).
 
 .. _-F:
 
@@ -105,7 +105,7 @@ Optional Arguments
     userdist/usertime), **e** (meters or m/s), **f** (feet or feet/s),
     **k** (km or kms/hr), **m** (miles or miles/hr), **n** (nautical
     miles or knots) or **u** (survey feet or survey feet/s). [Default is
-    **-Ndk** **-Nse** (km and m/s) if **-G** is set and **-Ndc** and
+    **-Ndk** **-Nse** (km and m/s) if |-G| is set and **-Ndc** and
     **-Nsc** otherwise (Cartesian units)].
 
 .. _-R:
@@ -152,7 +152,7 @@ to skip (when reading ASCII files) or the number of bytes to skip (when
 reading native binary files). Not used with netCDF files.
 
 **GEO** indicates that these files are geographic data sets, with
-periodicities in the *x*-coordinate (longitudes). Alternatively, use **-G**.
+periodicities in the *x*-coordinate (longitudes). Alternatively, use |-G|.
 
 **MULTISEG** means each track consists of multiple segments separated by
 a GMT segment header. Not used with netCDF files.
@@ -244,7 +244,7 @@ LINE_paths.txt) and stick the full paths to your data directories
 there. All TAG-related files (format definition files, tag files, and track
 data bases created) will be expected to be in the directory pointed to
 by **$X2SYS_HOME**/*TAG* (in our case **$X2SYS_HOME**/LINE). Note that
-the argument to **-D** must contain the full path if the \*.fmt file is
+the argument to |-D| must contain the full path if the \*.fmt file is
 not in the current directory. **x2sys_init** will copy this file to the
 **$X2SYS_HOME**/*TAG* directory where all other x2sys tools will expect
 to find it.
@@ -254,7 +254,7 @@ to find it.
     two-step process to populate them. First we run :doc:`x2sys_binlist`
     on all our track files to create one (or more) multisegment track
     bin-index files (tbf). These contain information on which 1 x 1
-    degree bins (or any other blocksize; see **-I**) each track has
+    degree bins (or any other blocksize; see |-I|) each track has
     visited and which observations (in your case obs1, obs2, obs3) were
     actually observed (not all tracks may have all three kinds of
     observations everywhere). For instance, if your tracks are listed in
@@ -286,7 +286,7 @@ to find it.
     Format definition files already exist for MGD77 files (both standard ASCII
     and enhanced netCDF-based MGD77+ files) and the old \*.gmt files
     manipulated by the mgg supplements; for these data sets the **-j**
-    and **-N** will default to great circle distance calculation in km
+    and |-N| will default to great circle distance calculation in km
     and speed in m/s. There are also format definition files for plain x,y[,z]
     and lon,lat[,z] tracks. To initiate new track databases to be used
     with MGD77 data from NCEI, try

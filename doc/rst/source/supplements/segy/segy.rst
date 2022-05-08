@@ -91,7 +91,7 @@ Required Arguments
 **-W**
     Draw wiggle trace.
 
-You *must* specify at least one of **-W** and **-F**.
+You *must* specify at least one of |-W| and |-F|.
 
 Optional Arguments
 ------------------
@@ -112,7 +112,7 @@ Optional Arguments
 
 **-E**\ *error*
     Allow *error* difference between requested and actual trace
-    locations when using **-T** option.
+    locations when using |-T| option.
 
 .. _-I:
 

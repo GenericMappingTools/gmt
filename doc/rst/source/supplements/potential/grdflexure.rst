@@ -63,19 +63,19 @@ Required Arguments
 *topogrd*
     2-D binary grid file with the topography of the load (in meters);
     (See :ref:`Grid File Formats <grd_inout_full>`).
-    If **-T** is used, *topogrd* may be a filename template with a
+    If |-T| is used, *topogrd* may be a filename template with a
     floating point format (C syntax) and a different load file name
     will be set and loaded for each time step.  The load times thus
-    coincide with the times given via **-T** (but not all times need
+    coincide with the times given via |-T| (but not all times need
     to have a corresponding file).  Alternatively, give *topogrd* as
     =\ *flist*, where *flist* is an ASCII table with one *topogrd* filename
     and load time per record (e.g., as produced by
-    :doc:`grdseamount </supplements/potential/grdseamount>` **-M**).
+    :doc:`grdseamount </supplements/potential/grdseamount>` |-M|).
     These load times can be different from
-    the evaluation times given via **-T**.  For load time format, see
-    **-T**. **Note**: If *flist* has an optional third column it will be
+    the evaluation times given via |-T|.  For load time format, see
+    |-T|. **Note**: If *flist* has an optional third column it will be
     interpreted as a load density and used for that layer instead of
-    the fixed *rl* setting in **-D**.
+    the fixed *rl* setting in |-D|.
 
 .. _-D:
 
@@ -90,11 +90,11 @@ Required Arguments
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
     a flexural rigidity *D* (by default, *D* is computed from *Te*, Young's
-    modulus, and Poisson's ratio; see **-C** to change these values).
-    If just **-E** is given and **-F** is used it means no plate is given
+    modulus, and Poisson's ratio; see |-C| to change these values).
+    If just |-E| is given and |-F| is used it means no plate is given
     and we will return a purely viscous response with or without an asthenospheric layer.
     Select a general linear viscoelastic response by supplying both an initial and
-    final elastic thickness *Te2*; this response also requires **-M**.
+    final elastic thickness *Te2*; this response also requires |-M|.
 
 .. _-G:
 
@@ -129,28 +129,28 @@ Optional Arguments
 
 **-F**\ *nu_a*\ [\ /*h_a*\ [**k**]/*nu_m*]
     Specify a firmoviscous model in conjunction with an elastic plate
-    thickness specified via **-E**.  Just give one viscosity (*nu_a*)
+    thickness specified via |-E|.  Just give one viscosity (*nu_a*)
     for an elastic plate over a viscous half-space, or also append
     the thickness of the asthenosphere (*h_a*) and the lower mantle
     viscosity (*nu_m*), with the first viscosity now being that of
     the asthenosphere. Give viscosities in Pa·s. If used, give the
     thickness of the asthenosphere in meter; append **k** for km.
-    Cannot be used in conjunctions with **-M**.
+    Cannot be used in conjunctions with |-M|.
 
 .. _-H:
 
 **-H**\ *rhogrid*
     Supply optional variable load density grid.  It can be a single
     grid or a grid name template, i.e., same as for *topogrd*. Requires
-    *rho_l* be set to - in **-D**.  **Note**: If *topogrd* is given as
+    *rho_l* be set to - in |-D|.  **Note**: If *topogrd* is given as
     a list file then the optional density grids must be given as part of
-    the list and not via **-H**.
+    the list and not via |-H|.
 
 .. _-L:
 
 **-L**\ *list*
     Write the names and evaluation times of all grids that were created
-    to the text file *list*. Requires **-T**.
+    to the text file *list*. Requires |-T|.
 
 .. _-N:
 
@@ -160,9 +160,9 @@ Optional Arguments
 
 **-M**\ *tm*
     Specify a viscoelastic model in conjunction with a plate
-    thickness specified via **-E**.  Append the Maxwell time *tm* for the
+    thickness specified via |-E|.  Append the Maxwell time *tm* for the
     viscoelastic model (in years); add **k** for kyr and **M** for Myr.
-    Cannot be used in conjunctions with **-F**.
+    Cannot be used in conjunctions with |-F|.
 
 .. _-Q:
 
@@ -199,7 +199,7 @@ Optional Arguments
 
 **-W**\ *wd*\ [**k**]
     Set reference water depth for the undeformed flexed surface in m.  Must be positive. [0].  Append **k** to indicate
-    km.  If **-W** is used and your load exceeds this depth then we scale the subaerial part of the
+    km.  If |-W| is used and your load exceeds this depth then we scale the subaerial part of the
     load to account for the change in surrounding density (air vs water).
 
 .. _-Z:
@@ -234,7 +234,7 @@ setup instead; you can always project it back to geographic using :doc:`grdproje
 Transfer Functions
 ------------------
 
-If **-Q** is given we perform no actual flexure calculations and no input data file is required.
+If |-Q| is given we perform no actual flexure calculations and no input data file is required.
 Instead, we write the chosen transfer functions :math:`\Phi(\mathbf{k},t)` to 7 separate files for
 7 different Te values (1, 2, 5, 10, 20, 50, and 100 km). The first two columns are
 always wavelength in km and wavenumber (in 1/m) for a 1:1:3000 km range. The transfer
@@ -258,7 +258,7 @@ for a 10 km thick plate with typical densities, try::
 
     gmt grdflexure smt.nc -Gflex.nc -E10k -D2700/3300/1035
 
-To see how in-plane stresses affect the result, we use **-A**.  Remember that we need to depth-
+To see how in-plane stresses affect the result, we use |-A|.  Remember that we need to depth-
 integrated forces, not pressures, hence we try::
 
     gmt grdflexure smt.nc -Gflex.nc -E10k -D2700/3300/1035 -A-4e11/2e11/-1e12

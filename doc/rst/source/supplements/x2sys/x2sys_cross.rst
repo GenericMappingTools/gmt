@@ -54,7 +54,7 @@ Optional Arguments
 **-A**\ *pairs*
     Only process the pair-combinations found in the file *pairs*
     [Default process all possible combinations among the specified
-    files]. The file *pairs* can be created by :doc:`x2sys_get` **-L** option
+    files]. The file *pairs* can be created by :doc:`x2sys_get` |-L| option
 
 .. _-C:
 
@@ -72,7 +72,7 @@ Optional Arguments
     Control how geographic coordinates are handled (Cartesian data are unaffected).
     By default, we determine if the data are closer to one pole than the other, and
     then we use a cylindrical polar conversion to avoid problems with longitude jumps.
-    You can turn this off entirely with **-D** and then the calculations uses the
+    You can turn this off entirely with |-D| and then the calculations uses the
     original data (we have protections against longitude jumps).  However, you can
     force the selection of the pole for the projection by appending **S** or **N**
     for the south or north pole, respectively.  The conversion is used because the
@@ -163,7 +163,7 @@ fields written out are x, y, time along track #1 and #2, distance along
 track #1 and #2, heading along track #1 and #2, velocity along track #1
 and #2, and then pairs of columns for each selected observable. These
 are either pairs of (COE, average value) for each data type (or
-track-values #1 and #2; see **-Z**). It is recommended that the Akima
+track-values #1 and #2; see |-Z|). It is recommended that the Akima
 spline is used instead of the natural cubic spline, since it is less
 sensitive to outliers that tend to introduce wild oscillations in the
 interpolation.

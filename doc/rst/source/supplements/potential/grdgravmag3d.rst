@@ -49,13 +49,13 @@ Required Arguments
 
 **-C**\ *density*
     Sets body density in SI. Append either a constant or the name of a grid file with variable densities.
-    This option is mutually exclusive with **-H**
+    This option is mutually exclusive with |-H|
 
 .. _-F:
 
 **-F**\ *xy_file*
     Provide locations where the anomaly will be computed. Note this
-    option is mutually exclusive with **-G**.
+    option is mutually exclusive with |-G|.
 
 .. _-G:
 
@@ -114,13 +114,13 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ [**n**\ *n_pad*]\|\ [*pad_dist*]\|\ [*region*]
-    Extend the domain of computation with respect to output **-R** region.
+    Extend the domain of computation with respect to output |-R| region.
       **-Qn**\ *n_pad* artificially extends the width of the outer rim of
       cells to have a fake width of *n_pad* * dx[/dy].
 
       **-Q**\ *pad_dist* extend the region by west-pad, east+pad, etc.
 
-      **-Q**\ *region* Same syntax as **-R**.
+      **-Q**\ *region* Same syntax as |-R|.
 
 .. |Add_-R| replace:: **Note**: This overrides the source grid region (Default: use same region as input) |Add_-R_links|
 .. include:: ../../explain_-R.rst_
@@ -130,7 +130,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *radius*
-    Set search radius in km (valid only in the two grids mode OR when **-E**) [Default = 30 km].
+    Set search radius in km (valid only in the two grids mode OR when |-E|) [Default = 30 km].
     This option serves to speed up the computation by not computing the effect of prisms that
     are further away than *radius* from the current node.
 

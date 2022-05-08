@@ -84,7 +84,7 @@ Optional Arguments
 **-M**\ [*fact*]
     Scale opening angles by *fact* on output [0.5].
     Typically used to get half-rates needed for flowlines.
-    Requires stage pole output (see **-F**).
+    Requires stage pole output (see |-F|).
 
 .. _-N:
 

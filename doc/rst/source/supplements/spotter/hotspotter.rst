@@ -93,7 +93,7 @@ Optional Arguments
 .. _-T:
 
 **-T**
-    Truncate seamount ages exceeding the upper age set with **-N** [no
+    Truncate seamount ages exceeding the upper age set with |-N| [no
     truncation].
 
 .. |Add_-V| replace:: |Add_-V_links|
