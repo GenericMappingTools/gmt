@@ -198,7 +198,7 @@ Optional Arguments
     - **+r** will use the record number (counting up from *first* [0]) as the text label.
     - **+z** will format incoming *z* value and use it as the text label (requires |-C| and
       the optional *format* [:term:`FORMAT_FLOAT_MAP`]).
-   
+
 .. _-G:
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
@@ -255,7 +255,7 @@ Optional Arguments
     Optionally, for finite-duration events that should remain visible for all times *after* their event end time has
     been reached you must append **+c** (for coda) to set the corresponding terminal value during the coda. If **+c**
     is not given then the defaults are 0 (intensity), 0 (size), 100 (transparency) and 0 (value), meaning the symbols
-    are not plotted unless you change these attributes with one or more **+c** modifiers (one per directive). 
+    are not plotted unless you change these attributes with one or more **+c** modifiers (one per directive).
 
    **Note**: Polygons can only use **-Mt** setting.
 
