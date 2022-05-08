@@ -13,6 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt triangulate** [ *table* ]
+[ |-A| ]
 [ |-C|\ *slpfile* ]
 [ |-D|\ **x**\|\ **y** ]
 [ |-E|\ *empty* ]
@@ -75,6 +76,13 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-A:
+
+**-A**
+    Compute the area of the Cartesian triangles and append the areas in the
+    output segment headers [no areas calculated].  Requires |-S| and is not
+    compatible with |-Q|.
 
 .. _-C:
 
