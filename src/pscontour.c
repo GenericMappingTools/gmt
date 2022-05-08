@@ -1128,8 +1128,10 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 				gmt_strlshift (copy.label, (size_t)(p - GMT->common.l.item.label)+1);	/* Remove the leading annotated contour label first */
 				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_CONT]), &copy);	/* Place the second regular contour entry */
 			}
-			else	/* Got a single entry for annotated contours */
+			else if (Ctrl->A.active)	/* Got a single entry for annotated contours */
 				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_ANNOT]), &(GMT->common.l.item));
+			else	/* Got a single entry for plain contours */
+				gmt_add_legend_item (API, NULL, false, NULL, true, &(Ctrl->W.pen[PEN_CONT]), &(GMT->common.l.item));
 		}
 	}
 
