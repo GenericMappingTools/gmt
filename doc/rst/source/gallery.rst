@@ -1,3 +1,5 @@
+:orphan:
+
 .. _example_gallery:
 
 Example Gallery

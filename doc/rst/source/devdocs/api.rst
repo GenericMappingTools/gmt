@@ -1,3 +1,5 @@
+:orphan:
+
 .. set default highlighting language for this document:
 .. highlight:: c
 

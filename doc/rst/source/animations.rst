@@ -1,3 +1,5 @@
+:orphan:
+
 Animations
 ==========
 
@@ -40,7 +42,7 @@ full-featured movie with thousands of frames at HD or 4k resolution.
      :width: 100%
 
   :doc:`/animations/anim04`
-  
+
 - .. youtube:: 7NQa4TORA3E
      :width: 100%
 
