@@ -187,7 +187,7 @@ Optional Arguments
     For a logarithmic time scale, append **+l** and specify *n* steps instead of *dt*.
     Alternatively, give a *file* with the desired times in the first column (these times
     may have individual units appended, otherwise we assume year).
-    We then write a separate model grid file for each given time step; see *-G** for output
+    We then write a separate model grid file for each given time step; see |-G| for output
     file template format.
 
 .. |Add_-V| replace:: |Add_-V_links|
