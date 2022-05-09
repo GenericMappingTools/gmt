@@ -397,23 +397,32 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 					}
 				}
 				break;
-			case 'G':	/* Input grid file */
+			case 'G':	/* Input grid file(s) */
 				if (ng == MAX_GRIDS) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Too many grids (max = %d)\n", MAX_GRIDS);
 					n_errors++;
 					break;
 				}
 				if ((c = strstr (opt->arg, "+l"))) {	/* Gave +l<listofgrids> */
-					FILE *fp = NULL;
 					char file[PATH_MAX] = {""};
-					if ((fp = gmt_fopen (GMT, &c[2], "r")) == NULL) {
-						GMT_Report (API, GMT_MSG_WARNING, "Error opening list file %s\n", &c[2]);
+					struct GMT_DATASET *L = NULL;
+					struct GMT_DATASEGMENT *S = NULL;
+					uint64_t row;
+					if (c[2] == '\0') {	/* No list file given */
+						GMT_Report (API, GMT_MSG_ERROR, "Option -G: No listfile appended after modifier +l\n");
 						n_errors++;
 						break;
 					}
-					/* Process all the grids listed in this text table */
-					while (fgets (file, PATH_MAX, fp)) {
-						if (file[0] == '#') continue;	/* Skip all headers */
+					if ((L = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &c[2], NULL)) == NULL) {
+						GMT_Report (API, GMT_MSG_WARNING, "Error reading list file %s\n", &c[2]);
+						n_errors++;
+						break;
+					}
+					/* Process all the grids listed in this table's first trailing word */
+					S = L->table[0]->segment[0];	/* Shorthand to the single segment expected */
+					for (row = 0; row < S->n_rows; row++) {
+						if (S->text == NULL || S->text[0] == NULL) continue;	/* Skip all blank trailing text */
+						sscanf (S->text[row], "%s", file);	/* Get the first word */
 						if (grdtrack_process_one (GMT, file, Ctrl, ng) == 0)
 							n_errors++;
 						else
@@ -423,7 +432,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 							n_errors++;
 						}
 					}
-					fclose (fp);
+					if (GMT_Destroy_Data (API, &L) != GMT_NOERROR) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -G: Unable to destroy list table\n");
+						n_errors++;
+					}
 				}
 				else {	/* Got a single grid */
 					if (grdtrack_process_one (GMT, opt->arg, Ctrl, ng) == 0)
