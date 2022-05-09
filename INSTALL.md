@@ -3,6 +3,7 @@
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
 ![Ubuntu package](https://img.shields.io/ubuntu/v/gmt)
 ![Debian package](https://img.shields.io/debian/v/gmt)
+![Fedora package](https://img.shields.io/fedora/v/GMT)
 ![homebrew version](https://img.shields.io/homebrew/v/gmt)
 ![Conda](https://img.shields.io/conda/v/conda-forge/gmt)
 
