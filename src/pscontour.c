@@ -848,47 +848,12 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 	if (convert) for (i = 0; i < n; i++) gmt_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
 
 	if (Ctrl->E.active) {	/* Read precalculated triangulation indices */
-		uint64_t seg, row, col;
-		unsigned int save_col_type[3];
-		double d_n = (double)n - 0.5;	/* So we can use > in test near line 806 */
-		struct GMT_DATASET *Tin = NULL;
-		struct GMT_DATATABLE *T = NULL;
-
-  		/* Must switch to Cartesian input and save whatever original input type we have since we are reading integer triplets */
-  		for (k = 0; k < 3; k++) {
-  			save_col_type[k] = gmt_M_type (GMT, GMT_IN, k);	/* Remember what we have */
-			gmt_set_column_type (GMT, GMT_IN, (unsigned int)k, GMT_IS_FLOAT);	/* And temporarily set to FLOAT */
-  		}
-		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->E.file, NULL)) == NULL) {
-			Return (API->error);
-		}
-		for (k = 0; k < 3; k++) gmt_set_column_type (GMT, GMT_IN, (unsigned int)k, save_col_type[k]);	/* Undo the damage above */
-
- 		if (Tin->n_columns < 3) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_ERROR, "Option -E: %s does not have at least 3 columns with indices\n", Ctrl->E.file);
-			if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {
-				Return (API->error);
-			}
+		int64_t s_np;
+		if ((s_np = gmt_read_triangulation (GMT, 'E', Ctrl->E.file, n, &ind)) == GMT_NOTSET) {
+			GMT_Report (API, GMT_MSG_ERROR, "Error reading triangulation indices from file %s\n", Ctrl->E.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		T = Tin->table[0];	/* Since we only have one table here */
-		np = T->n_records;
-		ind = gmt_M_memory (GMT, NULL, 3 * np, int);	/* Allocate the integer index array */
-		for (seg = ij = n_skipped = 0; seg < T->n_segments; seg++) {
-			for (row = 0; row < T->segment[seg]->n_rows; row++) {
-				if (T->segment[seg]->data[0][row] > d_n || T->segment[seg]->data[1][row] > d_n || T->segment[seg]->data[2][row] > d_n)
-					n_skipped++;	/* Outside point range */
-				else {
-					for (col = 0; col < 3; col++) ind[ij++] = irint (T->segment[seg]->data[col][row]);
-				}
-			}
-		}
-		np = ij / 3;	/* The actual number of vertices passing the test */
-		if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {
-			Return (API->error);
-		}
-		GMT_Report (API, GMT_MSG_INFORMATION, "Read %d indices triplets from %s.\n", np, Ctrl->E.file);
-		if (n_skipped) GMT_Report (API, GMT_MSG_WARNING, "Found %d indices triplets exceeding range of known vertices - skipped.\n", n_skipped);
+		np = (uint64_t) s_np;		
 	}
 	else {	/* Do our own Delaunay triangulation */
 		np = gmt_delaunay (GMT, x, y, n, &ind);
