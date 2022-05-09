@@ -2249,7 +2249,7 @@ GMT_LOCAL int gmtio_scanf_clock (struct GMT_CTRL *GMT, char *s, double *val) {
 	then we should also allow 86401.  A value exceeding 86401 is an error.
 	*/
 
-	int k, hh, mm, add_noon = 0, hh_limit = 24;	/* ISO std allows 24:00:00  */
+	int k = 0, hh, mm, add_noon = 0, hh_limit = 24;	/* ISO std allows 24:00:00  */
 	double ss, x;
 	char *p = NULL;
 
@@ -2270,11 +2270,12 @@ GMT_LOCAL int gmtio_scanf_clock (struct GMT_CTRL *GMT, char *s, double *val) {
 				break;
 		}
 	}
-	if (GMT->current.io.clock_input.delimiter[0][0])	/* hh mm ss separated by delimiters */
+	if (strchr (s, ':'))	/* hh mm ss separated by delimiters regardless of what format may say */
+		k = sscanf (s, "%2d:%2d:%lf", &hh, &mm, &ss);
+	else if (GMT->current.io.clock_input.delimiter[0][0])	/* hh mm ss separated by delimiters */
 		k = sscanf (s, GMT->current.io.clock_input.format, &hh, &mm, &ss);
 	else {	/* No delimiters, i.e., FORTRAN punchcard style, must do one by one */
 		char item[GMT_LEN32] = {""};
-		k = 0;
 		strncpy (item, s, 2U);			if (item[0]) hh = atoi (item), k++;
 		strncpy (item, &s[2], 2U);		if (item[0]) mm = atoi (item), k++;
 		strncpy (item, &s[4], GMT_LEN32);	if (item[0]) ss = atof (item), k++;
