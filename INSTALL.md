@@ -1,9 +1,9 @@
 # Installing GMT
 
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
-![homebrew version](https://img.shields.io/homebrew/v/gmt)
 ![Ubuntu package](https://img.shields.io/ubuntu/v/gmt)
 ![Debian package](https://img.shields.io/debian/v/gmt)
+![homebrew version](https://img.shields.io/homebrew/v/gmt)
 ![Conda](https://img.shields.io/conda/v/conda-forge/gmt)
 
 GMT is available on Windows, macOS, Linux and FreeBSD.
