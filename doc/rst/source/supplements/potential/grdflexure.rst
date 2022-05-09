@@ -150,7 +150,9 @@ Optional Arguments
 
 **-L**\ *list*
     Write the names and evaluation times of all grids that were created
-    to the text file *list*. Requires |-T|.
+    to the text file *list*. Requires |-T|.  The leading numerical column
+    will be time in years, while the last trailing text word is formatted time. 
+    The output records thus contain *time flexuregrid timetag*.
 
 .. _-N:
 

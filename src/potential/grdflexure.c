@@ -1191,8 +1191,8 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	/* Here, Load[] contains all the input load grids and their load times, ready to go as H(kx,ky) */
 
-	if (Ctrl->L.active) {	/* Must create a dataset to hold names of all output grids */
-		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_eval_times, 0};
+	if (Ctrl->L.active) {	/* Must create a dataset to hold times and names of all output grids */
+		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_eval_times, 1};
 		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while creating text set for file %s\n", Ctrl->L.file);
@@ -1200,6 +1200,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		L->table[0]->segment[0]->n_rows = Ctrl->T.n_eval_times;
+		/* Extract the time format statement from the -G file name as we will use it to write time tags via -L output */
 		for (k = j = 0; Ctrl->G.file[k] && Ctrl->G.file[k] != '%'; k++);	/* Find first % */
 		while (Ctrl->G.file[k] && !strchr ("efg", Ctrl->G.file[k])) time_fmt[j++] = Ctrl->G.file[k++];
 		time_fmt[j++] = Ctrl->G.file[k];
@@ -1291,22 +1292,20 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 			gmt_grd_mux_demux (GMT, Out->header, Out->data, GMT_GRID_IS_INTERLEAVED);
 		}
 
-		if (Ctrl->L.active) {	/* Add filename and evaluation time to list */
+		if (Ctrl->L.active) {	/* Add filename and evaluation time to dataset */
 			char record[GMT_BUFSIZ] = {""}, tmp[GMT_LEN64] = {""};
-			if (Ctrl->T.active) {
-				sprintf (record, "%s\t", zfile);
-				sprintf (tmp, time_fmt, Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, Ctrl->T.time[t_eval].unit);
-				strcat (record, tmp);
-			}
-			else
-				sprintf (record, "%s", zfile);
+			/* Add formatted time tag after file name */
+			sprintf (record, "%s\t", zfile);
+			sprintf (tmp, time_fmt, Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, Ctrl->T.time[t_eval].unit);
+			strcat (record, tmp);
+			L->table[0]->segment[0]->data[GMT_X][t_eval] = Ctrl->T.time[t_eval].value;	/* In years */
 			L->table[0]->segment[0]->text[t_eval] = strdup (record);
 		}
 	}
 
 	error = GMT_NOERROR;
 	if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, Ctrl->L.file, L) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_ERROR, "Failure while writing list of grid files to %s\n", Ctrl->L.file);
+		GMT_Report (API, GMT_MSG_ERROR, "Failure while writing list of grid tiles and file names to %s\n", Ctrl->L.file);
 		error = API->error;
 	}
 
