@@ -4194,7 +4194,7 @@ int64_t gmt_read_triangulation (struct GMT_CTRL *GMT, char option, char *file, u
 	}
 	GMT_Report (API, GMT_MSG_INFORMATION, "Read %d triplets of triangulation indices from %s.\n", np, file);
 	if (n_skipped) GMT_Report (API, GMT_MSG_WARNING, "Found %d indices triplets exceeding range of known vertices - skipped.\n", n_skipped);
-	if (n_bad) GMT_Report (API, GMT_MSG_WARNING, "Found %d indices triplets with negative indices - skipped.\n", n_bad);
+	if (n_bad) GMT_Report (API, GMT_MSG_WARNING, "Found %d triplets with negative indices - skipped.\n", n_bad);
 
 	*link = ind;	/* Pass the array back out */
 	return (np);	/* Number of triplets returned */
