@@ -339,6 +339,7 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Option -N: Only required with -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active[RSET], "Option -Q: Requires -R\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->L.active, "Option -L: Cannot be used with -Q\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->M.active + Ctrl->N.active + Ctrl->S.active) > 1, "Can only use one of -M, -N, -S at the same time since all write to stdout\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON,
 	                                   "Option -Q: Requires Shewchuk triangulation algorithm\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] ||
@@ -378,7 +379,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 	struct GMT_GRID *Grid = NULL, *F = NULL, *Slopes = NULL;
 	struct GMT_DATASET *V = NULL;
 	struct GMT_DATASEGMENT *P = NULL;
-	struct GMT_RECORD *In = NULL, *Out = NULL;
+	struct GMT_RECORD *In = NULL;
 
 	struct TRIANGULATE_EDGE *edge = NULL;
 	struct TRIANGULATE_CTRL *Ctrl = NULL;
@@ -425,7 +426,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 	n_output = (Ctrl->N.active || Ctrl->Z.active) ? 3 : 2;
 	if (Ctrl->M.active && Ctrl->Z.active) n_output = 3;
 	triplets[GMT_OUT] = (n_output == 3);
-	if (Ctrl->G.active && !Ctrl->T.active && !Ctrl->N.active) do_output = false;	/* If gridding then we require -T to also output the spatial files or -N for indices */
+	if (Ctrl->G.active && !Ctrl->S.active && !Ctrl->T.active && !Ctrl->N.active) do_output = false;	/* If gridding then we require S, -T or -N to do output */
 	if ((error = GMT_Set_Columns (API, GMT_OUT, n_output, GMT_COL_FIX_NO_TEXT)) != 0) Return (error);
 	n_input = (Ctrl->G.active || Ctrl->Z.active) ? 3 : 2;
 	if (n_output > n_input) triplets[GMT_OUT] = false;	/* No can do. */
@@ -806,9 +807,9 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 		}
 	}
 
-	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	if (do_output && (Ctrl->M.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->N.active)) {	/* Requires output to stdout */
 
+		struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 		if (!Ctrl->Q.active) {	/* Still record-by-record output */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 				error = API->error;	goto time_to_let_go;
@@ -918,16 +919,14 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 		}
+		gmt_M_free (GMT, Out);
 		if (!Ctrl->Q.active && GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			error = API->error;	goto time_to_let_go;
 		}
 	}
 
-
-
 time_to_let_go:
 
-	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, xx);
 	gmt_M_free (GMT, yy);
 	if (zpol) gmt_M_free (GMT, zpol);
