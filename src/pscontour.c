@@ -857,7 +857,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.active) {	/* Read precalculated triangulation indices */
 		int64_t s_np;	/* Need a signed 64-bit integer here */
-		if ((s_np = gmt_read_triangulation (GMT, 'E', Ctrl->E.file, n, Ctrl->E.binary, &ind)) == GMT_NOTSET) {
+		if ((s_np = gmt_read_triangulation (GMT, 'E', Ctrl->E.file, Ctrl->E.binary, n, &ind)) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_ERROR, "Error reading triangulation indices from file %s\n", Ctrl->E.file);
 			Return (GMT_RUNTIME_ERROR);
 		}

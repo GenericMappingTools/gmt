@@ -583,7 +583,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->L.active) {	/* Read precalculated triangulation indices instead */
 		int64_t s_np;	/* Need a signed 64-bit integer here */
-		if ((s_np = gmt_read_triangulation (GMT, 'L', Ctrl->L.file, n, Ctrl->L.binary, &link)) == GMT_NOTSET) {
+		if ((s_np = gmt_read_triangulation (GMT, 'L', Ctrl->L.file, Ctrl->L.binary, n, &link)) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_ERROR, "Error reading triangulation indices from file %s\n", Ctrl->L.file);
 			Return (GMT_RUNTIME_ERROR);
 		}

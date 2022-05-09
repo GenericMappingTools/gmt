@@ -4144,7 +4144,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_watson (struct GMT_CTRL *GMT, 
 }
 
 /*! . */
-int64_t gmt_read_triangulation (struct GMT_CTRL *GMT, char option, char *file, uint64_t n, bool binary, int **link) {
+int64_t gmt_read_triangulation (struct GMT_CTRL *GMT, char option, char *file, bool binary, uint64_t n, int **link) {
 	/* Read precalculated triangulation indices from file. Returns -1 if any trouble, else the number of triangles
 	 * with the triangle vertex indices in the array link. Pass binary = true to read binary triplets (as per -bi). */
 	int *ind = NULL;	/* Must be an int due to triangle */
