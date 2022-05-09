@@ -1,3 +1,5 @@
+:orphan:
+
 .. index:: ! debug
 
 ************************
@@ -342,6 +344,6 @@ and ``args`` settings for the ``gmt basemap`` task in ``tasks.json``. The first 
 remaining arguments to the gmt module are provided as a comma separated list. Any files required by the command should
 be placed in ``vbuild/debug``.
 
-You can skip debugging ``gmt begin``, ``gmt end``, or other GMT commands by opening a terminal, adding 
+You can skip debugging ``gmt begin``, ``gmt end``, or other GMT commands by opening a terminal, adding
 ``vbuild/gmt6/bin`` to your path, exporting ``GMT_SESSION_NAME=vscodedebug``, and then mixing VSCode
 debugging with CLI commands.
