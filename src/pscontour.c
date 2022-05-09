@@ -52,8 +52,9 @@ struct PSCONTOUR_CTRL {
 		bool active;
 		char *file;
 	} D;
-	struct PSCONTOUR_E {	/* -E<indexfile> */
+	struct PSCONTOUR_E {	/* -E<indexfile>[+b] */
 		bool active;
+		bool binary;
 		char *file;
 	} E;
 	struct PSCONTOUR_G {	/* -G[d|f|n|l|L|x|X]<params> */
@@ -387,7 +388,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> %s %s [-A[n|<contours>][<labelinfo>]] [%s] [-C<contours>] [-D<template>] "
-		"[-E<indextable>] [%s] [-I] %s[-L<pen>] [-N] %s%s[-Q[<n>][+z]] [-S[p|t]] [%s] [%s] [-W[a|c]<pen>[+c[l|f]]] "
+		"[-E<indextable>[+b]] [%s] [-I] %s[-L<pen>] [-N] %s%s[-Q[<n>][+z]] [-S[p|t]] [%s] [%s] [-W[a|c]<pen>[+c[l|f]]] "
 		"%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 	     name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_CONTG, API->K_OPT, API->O_OPT, API->P_OPT, GMT_CONTT, GMT_U_OPT,
 	     GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT, API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
@@ -431,9 +432,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"the desired number of output files (e.g., just %%c gives two files, just %%f would. "
 		"separate segments into one file per contour level, and %%d would write all segments. "
 		"to individual files; see module documentation for more examples.");
-	GMT_Usage (API, 1, "\n-E<indextable>");
+	GMT_Usage (API, 1, "\n-E<indextable>[+b]");
 	GMT_Usage (API, -2, "File with triplets of point indices for each triangle "
-		"[Default performs the Delaunay triangulation on <table>].");
+		"[Default performs the Delaunay triangulation on <table>].  Append +b to read this file using "
+		"the same binary settings as for the primary input file [Read as ASCII].");
 	GMT_Usage (API, 1, "\n%s", GMT_CONTG);
 	GMT_Usage (API, -2, "Control placement of labels along contours.  Choose among five algorithms:");
 	gmt_cont_syntax (API->GMT, 2, 0);
@@ -520,7 +522,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct GMT_
 				break;
 			case 'E':	/* Triplet file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				if ((c = strstr (opt->arg, "+b"))) {
+					Ctrl->E.binary = true;
+					c[0] = '\0';
+				}
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->E.file));
+				if (c) c[0] = '+';	/* Restore chopped off modifier */
 				break;
 			case 'G':	/* contour annotation settings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
@@ -664,6 +671,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->C.info.file, "Option -I: Must specify a color palette table via -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.cptmode && !Ctrl->C.info.cpt, "Option -W: Modifier +c only valid if -C sets a CPT\n");
 	n_errors += gmt_check_binary_io (GMT, 3);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.binary && !GMT->common.b.active[GMT_IN], "Option -E: Cannot imply binary node input if main input is not also binary (see -bi)\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -848,12 +856,12 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 	if (convert) for (i = 0; i < n; i++) gmt_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
 
 	if (Ctrl->E.active) {	/* Read precalculated triangulation indices */
-		int64_t s_np;
-		if ((s_np = gmt_read_triangulation (GMT, 'E', Ctrl->E.file, n, &ind)) == GMT_NOTSET) {
+		int64_t s_np;	/* Need a signed 64-bit integer here */
+		if ((s_np = gmt_read_triangulation (GMT, 'E', Ctrl->E.file, Ctrl->E.binary, n, &ind)) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_ERROR, "Error reading triangulation indices from file %s\n", Ctrl->E.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		np = (uint64_t) s_np;		
+		np = (uint64_t) s_np;	/* Set number of points as unsigned 64-bit int */	
 	}
 	else {	/* Do our own Delaunay triangulation */
 		np = gmt_delaunay (GMT, x, y, n, &ind);
