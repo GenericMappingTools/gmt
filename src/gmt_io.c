@@ -2270,8 +2270,15 @@ GMT_LOCAL int gmtio_scanf_clock (struct GMT_CTRL *GMT, char *s, double *val) {
 				break;
 		}
 	}
-
-	k = sscanf (s, GMT->current.io.clock_input.format, &hh, &mm, &ss);
+	if (GMT->current.io.clock_input.delimiter[0][0])	/* hh mm ss separated by delimiters */
+		k = sscanf (s, GMT->current.io.clock_input.format, &hh, &mm, &ss);
+	else {	/* No delimiters, i.e., FORTRAN punchcard style, must do one by one */
+		char item[GMT_LEN32] = {""};
+		k = 0;
+		strncpy (item, s, 2U);				if (item[0]) hh = atoi (item), k++;
+		strncpy (item, &s[2], 2U);			if (item[0]) mm = atoi (item), k++;
+		strncpy (item, &s[4], GMT_LEN32);	if (item[0]) ss = atof (item), k++;
+	}
 	if (k == 0) return (GMT_NOTSET);
 	if (hh < 0 || hh > hh_limit) return (GMT_NOTSET);
 
