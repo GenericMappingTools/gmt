@@ -73,6 +73,11 @@ struct TRIANGULATE_CTRL {
 	struct TRIANGULATE_I {	/* -I (for checking only) */
 		bool active;
 	} I;
+	struct TRIANGULATE_L {	/* -L<indexfile> */
+		bool active;
+		bool binary;
+		char *file;
+	} L;
 	struct TRIANGULATE_M {	/* -M */
 		bool active;
 	} M;
@@ -138,12 +143,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef NNN_MODE
-	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G%s] [%s] [%s] [-M] [-N] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G%s] [%s] [%s] [-L<indextable>[+b]] [-M] [-N] "
 		"[-Q[n]] [%s] [-S] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, 
 		GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 #else
-	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G%s] [%s] [%s] [-M] [-N] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G%s] [%s] [%s] [-L<indextable>[+b]] [-M] [-N] "
 		"[-Q] [%s] [-S] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, 
 		GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -169,6 +174,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Use -Qn for natural nearest neighbors [Default is linear triangulation]");
 #endif
 	GMT_Option (API, "I,J-");
+	GMT_Usage (API, 1, "\n-L<indextable>[+b]");
+	GMT_Usage (API, -2, "File with triplets of point indices for each triangle "
+		"[Default performs the Delaunay triangulation on <table>]. Append +b to read this file using "
+		"the same binary settings as for the primary input file [Read as ASCII].");
 	GMT_Usage (API, 1, "\n-M Output triangle edges as multiple segments separated by segment headers. [Default is to "
 		"output the indices of vertices for each Delaunay triangle].");
 	GMT_Usage (API, 1, "\n-N Write indices of vertices to standard output when -G is used [only write the grid].");
@@ -261,6 +270,15 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
+			case 'L':	/* Triplet file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				if ((c = strstr (opt->arg, "+b"))) {
+					Ctrl->L.binary = true;
+					c[0] = '\0';
+				}
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file));
+				if (c) c[0] = '+';	/* Restore chopped off modifier */
+				break;
 			case 'm':
 				if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through on purpose */
 					GMT_Report (API, GMT_MSG_COMPAT, "-m option is deprecated and reverted back to -M.\n");
@@ -306,6 +324,7 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 	n_errors += gmt_add_R_if_modern_and_true (GMT, THIS_MODULE_NEEDS, (Ctrl->G.active && !Ctrl->C.active) || Ctrl->Q.active);
 
 	n_errors += gmt_check_binary_io (GMT, 2);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.binary && !GMT->common.b.active[GMT_IN], "Option -L: Cannot imply binary node input if main input is not also binary (see -bi)\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 ||
 	                                   GMT->common.R.inc[GMT_Y] <= 0.0), "Option -I: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->S.active, "Option -A: Requires -S\n");
@@ -319,6 +338,7 @@ static int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->Q.active, "Option -S: Cannot be used with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Option -N: Only required with -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active[RSET], "Option -Q: Requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->L.active, "Option -L: Cannot be used with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON,
 	                                   "Option -Q: Requires Shewchuk triangulation algorithm\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] ||
@@ -544,7 +564,7 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 				error = GMT_RUNTIME_ERROR;	goto time_to_let_go;
 			}
 		}
-		else
+		else if (!Ctrl->L.active)
 			np = gmt_delaunay (GMT, xxp, yyp, n, &link);
 
 		gmt_M_free (GMT, xxp);	/* Cannot do this if we are doing NN gridding since we need xxp, yyp */
@@ -558,8 +578,16 @@ EXTERN_MSC int GMT_triangulate (void *V_API, int mode, void *args) {
 				error = GMT_RUNTIME_ERROR;	goto time_to_let_go;
 			}
 		}
-		else
+		else if (!Ctrl->L.active)
 			np = gmt_delaunay (GMT, xx, yy, n, &link);
+	}
+	if (Ctrl->L.active) {	/* Read precalculated triangulation indices instead */
+		int64_t s_np;
+		if ((s_np = gmt_read_triangulation (GMT, 'L', Ctrl->L.file, n, Ctrl->L.binary, &link)) == GMT_NOTSET) {
+			GMT_Report (API, GMT_MSG_ERROR, "Error reading triangulation indices from file %s\n", Ctrl->L.file);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		np = (uint64_t) s_np;		
 	}
 
 	if (Ctrl->Q.active) {
@@ -908,7 +936,8 @@ time_to_let_go:
 		gmt_M_free (GMT, hh);
 		gmt_M_free (GMT, vv);
 	}
-	if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
+	if (Ctrl->L.active) gmt_M_free (GMT, link);
+	else if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
 
 	Return (error);
 }

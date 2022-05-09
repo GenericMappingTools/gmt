@@ -20,7 +20,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *contours* ]
 [ |-D|\ [*template*] ]
-[ |-E|\ *indexfile* ]
+[ |-E|\ *indexfile*\ [**+b**] ]
 [ |-G|\ [**d**\|\ **f**\|\ **n**\|\ **l**\|\ **L**\|\ **x**\|\ **X**]\ *params* ]
 [ |-I| ]
 [ |-J|\ **z**\|\ **Z**\ *parameters* ]
@@ -152,10 +152,13 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *indexfile*
+**-E**\ *indexfile*\ [**+b**]
     Give name of file with network information. Each record must contain
     triplets of node numbers for a triangle [Default computes these
-    using Delaunay triangulation (see :doc:`triangulate`)].
+    using Delaunay triangulation (see :doc:`triangulate`)]. If the
+    *indexfile* is binary and can be read the same way as the binary
+    input *table* then you can append **+b** to spead up the reading
+    [Default reads nodes as ASCII].
 
 .. _-G:
 
