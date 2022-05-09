@@ -163,7 +163,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 					n_errors += gmt_getinset (GMT, 'D', opt->arg, &Ctrl->D.inset);
 				}
 				else {
-					GMT_Report (API, GMT_MSG_COMPAT, "Option -D is not available in modern mode - see inset instead\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -D is not available in modern mode - see inset instead\n");
 					n_errors++;
 				}
 				break;
