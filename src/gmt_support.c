@@ -4144,11 +4144,9 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_watson (struct GMT_CTRL *GMT, 
 }
 
 /*! . */
-<<<<<<< Updated upstream
-=======
 int64_t gmt_read_triangulation (struct GMT_CTRL *GMT, char option, char *file, uint64_t n, bool binary, int **link) {
 	/* Read precalculated triangulation indices from file. Returns -1 if any trouble, else the number of triangles
-	 * with the triangle vertex indices in the array link. */
+	 * with the triangle vertex indices in the array link. Pass binary = true to read binary triplets (as per -bi). */
 	int *ind = NULL;	/* Must be an int due to triangle */
 	unsigned int k;
 	uint64_t seg, row, col, ij, n_skipped, n_bad;
@@ -4208,7 +4206,6 @@ int64_t gmt_read_triangulation (struct GMT_CTRL *GMT, char option, char *file, u
 }
 
 /*! . */
->>>>>>> Stashed changes
 GMT_LOCAL int gmtsupport_ensure_new_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *in_text, char *text, char *panel_txt) {
 	/* Recasts any old syntax using new syntax and gives a warning.
  	   Assumes text and panel_text are blank and have adequate space */
