@@ -1313,7 +1313,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	error = GMT_NOERROR;
 	if (Ctrl->L.active) {	/* Write out list of times and flexure grids */
-		char *header = "Time(yr)\tFlexgrid\tTimeTag";
+		char *header = "Time(yr)\tFlexgrid\tTimetag";
 		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, L)) Return (API->error);
 		if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, Ctrl->L.file, L) != GMT_NOERROR) {
 			if (Ctrl->L.file)
