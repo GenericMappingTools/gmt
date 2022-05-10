@@ -71,12 +71,13 @@ Required Arguments
       coincide with the times given via |-T| (but not all times need
       to have a corresponding file). 
     - A file list given as *flist*\ **+l**, where *flist* is an ASCII
-      table with one load time  and topography grid filename per record (e.g.,
+      table with one load time and topography grid filename per record (e.g.,
       as produced by :doc:`grdseamount </supplements/potential/grdseamount>` |-M|).
       These load times can be different from the evaluation times given
       via |-T|.  For load time format, see |-T|. **Note**: If *flist* has
-      two trailing words the the second will be interpreted as a load density grid and
-      used for that layer instead of the fixed *rl* setting in |-D|.
+      three trailing words the the second will be interpreted as a load density grid and
+      used for that layer instead of the fixed *rl* setting in |-D|. The last
+      trailing word is a formatted age string.
     - A file list with extension ".lis" does not need the **+l** modifier
       and will be automatically recognized as a file list.
 
