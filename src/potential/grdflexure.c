@@ -61,7 +61,7 @@ struct GMT_MODELTIME {	/* Hold info about time */
 };
 
 struct GRDFLEXURE_CTRL {
-	struct GRDFLEXURE_In {	/* Input load file, template, or =flist */
+	struct GRDFLEXURE_In {	/* Input load file, template, <list>+l or <list>.lis (i.e. with .lis extension) */
 		bool active, many, list;
 		char *file;
 	} In;
@@ -588,24 +588,30 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 
 	unsigned int n_errors = 0, n_files = 0;
 	int k, n;
-	char A[GMT_LEN16] = {""};
+	char A[GMT_LEN16] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {		/* Process all the options given */
 		switch (opt->option) {
 
-			case '<':	/* Input file */
+			case '<':	/* Input file(s) */
 				if (n_files++ > 0) break;
-				if (strchr (opt->arg, '%')) {	/* File template given */
+				if (strchr (opt->arg, '%')) {	/* Grid file template given */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->In.many);
-					Ctrl->In.file = strdup (opt->arg);
+					n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->In.file);
 				}
-				else if (opt->arg[0] == '=') {	/* List of files given */
+				else if ((c = strstr (opt->arg, "+l"))) {	/* File with list of load files given, marked with modifier +l */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->In.list);
-					Ctrl->In.file = strdup (&opt->arg[1]);
+					c[0] = '\0';	/* Hide the modifier */
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
+					c[0] = '+';	/* Restore modifier */
 				}
-				else {
+				else if ((c = strrchr (opt->arg, '.')) && !strcmp (c, ".lis")) {	/* File with list of load files given, identified via .lis extension */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->In.list);
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
+				}
+				else {	/* Single grid file for a static load */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
 					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				}
@@ -774,21 +780,23 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E[<te>[k][/<te2>[k]]] -G%s [-A<Nx/Ny/Nxy>] [-Cp|y<value] [-F<nu_a>[/<h_a>[k]/<nu_m>]] "
+	GMT_Usage (API, 0, "usage: %s <input> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E[<te>[k][/<te2>[k]]] -G%s [-A<Nx/Ny/Nxy>] [-Cp|y<value] [-F<nu_a>[/<h_a>[k]/<nu_m>]] "
 		"[-H<rhogrid>] [-L<list>] [-M<tm>[k|M]] [-N%s] [-Q] [-S<beta>] [-T<t0>[/<t1>/<dt>[+l]]|<file>] [%s] [-W<wd>[k]] [-Z<zm>[k]] [-fg] [%s]\n",
 		name, GMT_OUTGRID, GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<topogrid> is the input grdfile with topography (load) values, in meters. If -T is used, "
-		"<topogrid> may be a filename template with a floating point format (C syntax) and "
-		"a different load file name will be set and loaded for each time step. "
-		"Time steps with no corresponding load file are allowed. "
-		"Alternatively, give =<flist> where <flist> contains a list of load grids and load times.");
+	GMT_Usage (API, 1, "\n<input> gives information about the topographic load(s) in any of these formats:");
+	GMT_Usage (API, 3, "%s A single static topography grid, in meters.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s A grid filename template with a floating point format (C syntax). "
+		"Requires -T so a different load file name will be set and used for each time step "
+		"(time steps with no corresponding load file are allowed).", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s A table <list>+l, where <list> records have load times and grids from grdseamount -M.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s A table <list>.lis, again with records from grdseamount -M.", GMT_LINE_BULLET);
 	GMT_Usage (API, 1, "\n-D<rhom>/<rhol>[/<rhoi>]/<rhow>");
 	GMT_Usage (API, -2, "Set density of mantle, load(crust), optional moat infill [same as load], and water|air in kg/m^3 or g/cm^3. "
-		"Set <rhol> to - if <flist> contains variable density grid names.");
+		"Set <rhol> to - if <list> contains variable density grid names.");
 	GMT_Usage (API, 1, "\n-E[<te>[k][/<te2>[k]]]");
 	GMT_Usage (API, -2, "Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted n"
 		"as the flexural rigidity [Default computes D from Te, Young's modulus, and Poisson's ratio]. "

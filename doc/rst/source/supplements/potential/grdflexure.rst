@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdflexure** *topogrd*
+**gmt grdflexure** *input*
 |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw*
 |-E|\ [*Te*\ [**k**][/*Te2*\ [**k**]]]
 |-G|\ *outgrid*
@@ -60,22 +60,25 @@ rheology and related constants, including in-plate forces.
 Required Arguments
 ------------------
 
-*topogrd*
-    2-D binary grid file with the topography of the load (in meters);
-    (See :ref:`Grid File Formats <grd_inout_full>`).
-    If |-T| is used, *topogrd* may be a filename template with a
-    floating point format (C syntax) and a different load file name
-    will be set and loaded for each time step.  The load times thus
-    coincide with the times given via |-T| (but not all times need
-    to have a corresponding file).  Alternatively, give *topogrd* as
-    =\ *flist*, where *flist* is an ASCII table with one *topogrd* filename
-    and load time per record (e.g., as produced by
-    :doc:`grdseamount </supplements/potential/grdseamount>` |-M|).
-    These load times can be different from
-    the evaluation times given via |-T|.  For load time format, see
-    |-T|. **Note**: If *flist* has an optional third column it will be
-    interpreted as a load density and used for that layer instead of
-    the fixed *rl* setting in |-D|.
+*input*
+    Supplies the topographic load information in one of many forms:
+
+    - A single 2-D binary grid file with the topography of the load
+      (in meters); (See :ref:`Grid File Formats <grd_inout_full>`).
+    - If |-T| is used, *input* may be a filename *template* with a
+      floating point format (C syntax) and a different load file name
+      will be set and loaded for each time step.  The load times thus
+      coincide with the times given via |-T| (but not all times need
+      to have a corresponding file). 
+    - A file list given as *flist*\ **+l**, where *flist* is an ASCII
+      table with one topography grid filename and load time per record (e.g.,
+      as produced by :doc:`grdseamount </supplements/potential/grdseamount>` |-M|).
+      These load times can be different from the evaluation times given
+      via |-T|.  For load time format, see |-T|. **Note**: If *flist* has
+      an optional third column it will be interpreted as a load density and
+      used for that layer instead of the fixed *rl* setting in |-D|.
+    - A file list with extension ".lis" does not need the **+l** modifier
+      and will be automatically recognized as a file list.
 
 .. _-D:
 
@@ -141,8 +144,8 @@ Optional Arguments
 
 **-H**\ *rhogrid*
     Supply optional variable load density grid.  It can be a single
-    grid or a grid name template, i.e., same as for *topogrd*. Requires
-    *rho_l* be set to - in |-D|.  **Note**: If *topogrd* is given as
+    grid or a grid name template, i.e., same as for *input*. Requires
+    *rho_l* be set to - in |-D|.  **Note**: If *input* is given as
     a list file then the optional density grids must be given as part of
     the list and not via |-H|.
 
