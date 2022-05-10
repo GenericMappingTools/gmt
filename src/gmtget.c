@@ -91,7 +91,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Note: Run \"gmt docs data\" to learn about available data sets.");
 	GMT_Usage (API, 1, "\n-G<defaultsfile>");
 	GMT_Usage (API, -2, "Set name of specific %s file to process "
-		"Default looks for file in current directory.  If not found, n"
+		"Default looks for file in current directory.  If not found, "
 		"it looks in the home directory, if not found it uses the GMT defaults].", GMT_SETTINGS_FILE);
 	GMT_Usage (API, 1, "\n-I<inc>");
 	GMT_Usage (API, -2, "Limit the download of data sets to grid spacing of <inc> or larger [0].");

@@ -205,7 +205,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"The <dpu> must be the same as the intended <dpu> for the movie frames. "
 		"Append i if dpi and c if dpc [Default will consult GMT_LENGTH_UNIT setting, currently %s]. "
 		"Optionally, append +v[<value>] to insert a z-column into the point data with values <z> [0].", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Usage (API, 3, "s: Read whole segments (lines or polygons) with no time column. n"
+	GMT_Usage (API, 3, "s: Read whole segments (lines or polygons) with no time column. "
 		"Time is set via segment header -T<start>, -T<start>,<end>, or -T<start>,<duration (see -L).");
 	GMT_Usage (API, 1, "\n-C<cpt>");
 	GMT_Usage (API, -2, "Give <cpt> and obtain symbol color via z-value in 3rd data column.");
