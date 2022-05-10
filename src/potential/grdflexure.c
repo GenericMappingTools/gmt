@@ -1273,7 +1273,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		gmt_scale_and_offset_f (GMT, Out->data, Out->header->size, 1.0, -Ctrl->Z.zm);
 
 		/* 4e. WRITE OUTPUT GRID */
-		if (Ctrl->T.active) { /* Separate output grid since there are many time steps */
+		if (Ctrl->T.active) { /* Separate and unique output grid names from time since there are many time steps */
 			char remark[GMT_GRID_REMARK_LEN160] = {""};
 			gmt_modeltime_name (GMT, zfile, Ctrl->G.file, &Ctrl->T.time[t_eval]);
 			sprintf (remark, "Solution for t = %g %s", Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale,
@@ -1283,7 +1283,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
-		else	/* Single output grid */
+		else	/* Single output grid (no -T set) */
 			strcpy (zfile, Ctrl->G.file);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) {
 			if (retain_original) gmt_M_free (GMT, orig_load);
@@ -1300,13 +1300,14 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 			gmt_grd_mux_demux (GMT, Out->header, Out->data, GMT_GRID_IS_INTERLEAVED);
 		}
 
-		if (Ctrl->L.active) {	/* Add filename and evaluation time to dataset */
+		if (Ctrl->L.active) {	/* Add filename and evaluation time to list dataset */
+			/* Output will be: <numerical-time> <flexgridname> <timetag> */
 			char record[GMT_BUFSIZ] = {""}, tmp[GMT_LEN64] = {""};
+			sprintf (record, "%s\t", zfile);	/* Flexure output grid for this time */
 			/* Add formatted time tag after file name */
-			sprintf (record, "%s\t", zfile);
 			sprintf (tmp, time_fmt, Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, Ctrl->T.time[t_eval].unit);
 			strcat (record, tmp);
-			L->table[0]->segment[0]->data[GMT_X][t_eval] = Ctrl->T.time[t_eval].value;	/* In years */
+			L->table[0]->segment[0]->data[GMT_X][t_eval] = Ctrl->T.time[t_eval].value;	/* Output time in years */
 			L->table[0]->segment[0]->text[t_eval] = strdup (record);
 		}
 	}
