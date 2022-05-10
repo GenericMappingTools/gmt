@@ -67,7 +67,7 @@ Required Arguments
     - A single 2-D binary grid file with the topography of the load
       (in meters); (See :ref:`Grid File Formats <grd_inout_full>`).
     - If |-T| is used, *input* may be a filename *template* (See
-      `File Template`_ for details).  The load times will thus
+      `Name Template`_ for details).  The load times will thus
       coincide with the times given via |-T| (but not all times need
       to have a corresponding file). 
     - A file list given as *flist*\ **+l**, where *flist* is an ASCII
@@ -103,7 +103,7 @@ Required Arguments
 .. _-G:
 
 .. |Add_outgrid| replace:: If |-T| is set then *outgrid* must be a filename template
-    (See `File Template`_ for details).
+    (See `Name Template`_ for details).
 .. include:: /explain_grd_inout.rst_
     :start-after: outgrid-syntax-begins
     :end-before: outgrid-syntax-ends
@@ -142,7 +142,7 @@ Optional Arguments
 
 **-H**\ *rhogrid*
     Supply optional variable load density grid.  It can be a single
-    grid or a grid name template (see `File Template`_ for details). Requires
+    grid or a grid name template (see `Name Template`_ for details). Requires
     *rho_l* be set to - in |-D|.  **Note**: If *input* is given as
     a list file then the optional density grids must be given as part of
     the list and not via |-H|.
@@ -191,7 +191,7 @@ Optional Arguments
     Alternatively, give a *file* with the desired times in the first column (these times
     may have individual units appended, otherwise we assume year).
     We then write a separate model grid file for each given time step; see |-G| for output
-    and `File Template`_ for the file template format.
+    and `Name Template`_ for the file template format.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
@@ -221,9 +221,9 @@ Optional Arguments
 
 .. include:: ../../explain_help.rst_
 
-.. _File Template:
+.. _Name Template:
 
-File Template
+Name Template
 -------------
 
 The format statements allowed in grid file templates require you to follow these rules:
@@ -236,6 +236,9 @@ The format statements allowed in grid file templates require you to follow these
       names like smt_001.1M.grd names.  The times will be scaled to match the unit.
     - If you do not want any units then simply give a template with just one floating point
       format, e.g., smt_%05.1f_name.grd.  The times will be used as is (i.e, unscaled).
+
+For details on the format statements, see `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_ 
+C language format syntax.
 
 Grid Distance Units
 -------------------

@@ -381,7 +381,8 @@ The format statements allowed in grid file templates require you to follow these
     - If you do not want any units then simply give a template with just one floating point
       format, e.g., smt_%05.1f_name.grd.  The times will be used as is (i.e, unscaled).
 
-For details on the format statements, see `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_  C language format syntax).
+For details on the format statements, see `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_ 
+C language format syntax.
 
 Slide simulation specifics
 --------------------------
