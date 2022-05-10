@@ -1663,7 +1663,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		/* 1. SET THE CURRENT TIME VALUE (IF USED) */
 		if (Ctrl->T.active) {	/* Set the current time in user units as well as years */
 			this_user_time = Ctrl->T.time[t].value;	/* In years */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Evaluating bathymetry for time %g %s\n", Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
+			GMT_Report (API, GMT_MSG_INFORMATION, "Evaluating bathymetry for time %s\n", Ctrl->T.time[t].tag);
 		}
 		if (Ctrl->Q.bmode == SMT_INCREMENTAL || exact)
 			gmt_M_memset (Grid->data, Grid->header->size, gmt_grdfloat);	/* Wipe clean for next increment */
@@ -1934,8 +1934,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		}
 		prev_user_time = this_user_time;	/* Make this the previous time */
 		if (empty_grid && Ctrl->T.active) {	/* No contribution made */
-			GMT_Report (API, GMT_MSG_INFORMATION, "No contribution made for time %g %s\n",
-			            Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
+			GMT_Report (API, GMT_MSG_INFORMATION, "No contribution made for time %s\n", Ctrl->T.time[t].tag);
 			if (exact && !exact_increments) gmt_M_memcpy (Grid->data, current, Grid->header->size, float);	/* Nothing new added so same cumulative surface as last step */
 		}
 
