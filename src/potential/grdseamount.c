@@ -37,6 +37,7 @@
  * */
 
 #include "gmt_dev.h"
+#include "modeltime.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdseamount"
 #define THIS_MODULE_MODERN_NAME	"grdseamount"
@@ -67,14 +68,6 @@
 #define BETA_DEFAULT	1	/* Default psi(tau) beta power parameter */
 #define MAX_ITERATIONS	1000	/* Max tries to improve an estimate in a loop */
 #define RHO_GRID_INC	0.005	/* Fixed grid spacing for the normalized model rho grid (-K) */
-
-struct GMT_MODELTIME {	/* Hold info about modeling time */
-	double value;	/* Time in year */
-	double scale;	/* Scale factor from year to given user unit */
-	char unit;		/* Either M (Myr), k (kyr), or blank (implies y) */
-	unsigned int u;	/* For labeling: Either 0 (yr), 1 (kyr), or 2 (Myr) */
-
-};
 
 struct SLIDE {	/* Hold information for one slide */
 	/* Input parameters (some have defaults): */
@@ -210,11 +203,6 @@ struct GRDSEAMOUNT_CTRL {
 		double value;
 	} Z;
 };
-
-EXTERN_MSC double gmt_get_modeltime (char *A, char *unit, double *scale);
-EXTERN_MSC unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, struct GMT_MODELTIME **T_array);
-EXTERN_MSC char *gmt_modeltime_unit (unsigned int u);
-EXTERN_MSC void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *format, struct GMT_MODELTIME *T);
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDSEAMOUNT_CTRL *C = NULL;
@@ -426,6 +414,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 			case 'G':	/* Output file name or name template */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
+				n_errors += gmt_modeltime_validate (GMT, 'G', Ctrl->G.file);
 				break;
 			case 'H':	/* Reference seamount density parameters */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
@@ -624,6 +613,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 			case 'W':	/* Output file name for average density grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->W.file));
+				n_errors += gmt_modeltime_validate (GMT, 'W', Ctrl->W.file);
 				break;
 			case 'Z':	/* Background relief level (or NaN) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
@@ -1468,7 +1458,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	uint64_t node, n_smts, smt;
 
-	char gfile[PATH_MAX] = {""}, wfile[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
+	char gfile[PATH_MAX] = {""}, wfile[PATH_MAX] = {""};
 
 	gmt_grdfloat *data = NULL, *current = NULL, *previous = NULL, *rho_weight = NULL, *prev_z = NULL;
 
@@ -1592,18 +1582,12 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	if (Ctrl->M.active) {	/* Must create dataset to hold names of all output times and corresponding grids */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_times, 1};
-		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Failure while creating text set for file %s\n", Ctrl->M.file);
 			API->error = GMT_RUNTIME_ERROR;
 			goto wrap_up;
 		}
 		L->table[0]->segment[0]->n_rows = Ctrl->T.n_times;
-		for (k = j = 0; Ctrl->G.file[k] && Ctrl->G.file[k] != '%'; k++);	/* Find first % */
-		while (Ctrl->G.file[k] && !strchr ("efg", Ctrl->G.file[k])) time_fmt[j++] = Ctrl->G.file[k++];
-		time_fmt[j++] = Ctrl->G.file[k];
-		strcat (time_fmt, "%c");	/* Append the unit */
-		GMT_Report (API, GMT_MSG_DEBUG, "Format for time will be %s\n", time_fmt);
 	}
 	/* Calculate the area, volume, height for each shape; if -L then also write the results */
 
@@ -1679,7 +1663,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		/* 1. SET THE CURRENT TIME VALUE (IF USED) */
 		if (Ctrl->T.active) {	/* Set the current time in user units as well as years */
 			this_user_time = Ctrl->T.time[t].value;	/* In years */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Evaluating bathymetry for time %g %s\n", Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
+			GMT_Report (API, GMT_MSG_INFORMATION, "Evaluating bathymetry for time %s\n", Ctrl->T.time[t].tag);
 		}
 		if (Ctrl->Q.bmode == SMT_INCREMENTAL || exact)
 			gmt_M_memset (Grid->data, Grid->header->size, gmt_grdfloat);	/* Wipe clean for next increment */
@@ -1950,8 +1934,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		}
 		prev_user_time = this_user_time;	/* Make this the previous time */
 		if (empty_grid && Ctrl->T.active) {	/* No contribution made */
-			GMT_Report (API, GMT_MSG_INFORMATION, "No contribution made for time %g %s\n",
-			            Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
+			GMT_Report (API, GMT_MSG_INFORMATION, "No contribution made for time %s\n", Ctrl->T.time[t].tag);
 			if (exact && !exact_increments) gmt_M_memcpy (Grid->data, current, Grid->header->size, float);	/* Nothing new added so same cumulative surface as last step */
 		}
 
@@ -1968,15 +1951,14 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->M.active) {	/* Write list of grids to file */
 			/* Output will be: <numerical-time> <topogridname> [<densgridname>] <timetag> */
-			char record[GMT_BUFSIZ] = {""}, tmp[GMT_LEN64] = {""};
+			char record[GMT_BUFSIZ] = {""};
 			sprintf (record, "%s\t", gfile);	/* First word in trailing text is increment/cumulative grid name */
 			if (Ctrl->W.active) {	/* Optional second word holds a density grid name */
 				strcat (record, wfile);
 				strcat (record, "\t");
 			}
 			/* Final word is the formatted time tag with unit information */
-			sprintf (tmp, time_fmt, Ctrl->T.time[t].value * Ctrl->T.time[t].scale, Ctrl->T.time[t].unit);
-			strcat (record, tmp);
+			strcat (record, Ctrl->T.time[t].tag);
 			L->table[0]->segment[0]->data[GMT_X][t_use] = Ctrl->T.time[t].value;
 			L->table[0]->segment[0]->text[t_use++] = strdup (record);
 			L->table[0]->segment[0]->n_rows++;

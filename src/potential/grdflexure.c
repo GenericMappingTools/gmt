@@ -31,6 +31,7 @@
  * */
 
 #include "gmt_dev.h"
+#include "modeltime.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdflexure"
 #define THIS_MODULE_MODERN_NAME	"grdflexure"
@@ -52,13 +53,6 @@
 
 #define TE_INIT	0
 #define TE_END	1
-
-struct GMT_MODELTIME {	/* Hold info about time */
-	double value;	/* Time as given by user (e.g., 1, 1k, 1M are all 1) */
-	double scale;	/* Scale factor from user time to year */
-	char unit;	/* Either M (Myr), k (kyr), or blank (implies y) */
-	unsigned int u;	/* For labeling: Either 0 (yr), 1 (kyr), or 2 (Myr) */
-};
 
 struct GRDFLEXURE_CTRL {
 	struct GRDFLEXURE_In {	/* Input load file, template, <list>+l or <list>.lis (i.e. with .lis extension) */
@@ -203,6 +197,30 @@ double gmt_get_modeltime (char *A, char *unit, double *scale) {
 	return (atof (A) / (*scale));
 }
 
+GMT_LOCAL unsigned int grdflexure_modeltime_tag (struct GMT_CTRL *GMT, struct GMT_MODELTIME *T, unsigned int n, char *format) {
+	/* Determine a suitable format statement for the time tags in grdseamount and grdflexure.
+	 * These use the most compact time unit and are consistent in the number of decimals */
+	char unit[2] = {""};	/* Unless we have unit times there is no unit in the time tag */
+	int n_dec;
+	unsigned int u = 0;
+	double this_inc, inc = (n == 1) ? T[0].value : DBL_MAX;
+	for (unsigned int t = 0; t < (n-1); t++) {	/* Look at all intervals */
+		this_inc = T[t].value - T[t+1].value;	/* Current time increment */
+		if (this_inc < inc) inc = this_inc;		/* Keep the smallest time increment in years */
+	}
+	this_inc = (n == 1) ? inc : T[0].value - T[n-1].value;	/* Now holds duration of construction */
+	if (this_inc >= 1.0e6)	/* Use Myr if duration exceeds 1 Myr  */
+		inc /= 1.0e6,	unit[0] = 'M', u = 2;
+	else if (this_inc >= 1.0e3)	/* Use kyr if duration exceeds 1kyr */
+		inc /= 1.0e3,	unit[0] = 'k', u = 1;
+	/* else we use time as is - probably dummy times */
+	n_dec = MAX (0, -irint (floor (log10 (inc))));	/* For increments >= 1 we want 0 decimals */
+	sprintf (format, "%%.%df", n_dec);	/* Numerical part of the format */
+	if (unit[0]) strcat (format, unit);	/* Optionally append a unit */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Format for time tags will be %s based on smallest increment %g and duration %g\n", format, inc, this_inc);
+	return (u);	/* Returns 0, 1 or 2 */
+}
+
 GMT_LOCAL int grdflexure_compare_modeltimes (const void *time_1v, const void *time_2v) {
 	/*  Routine for qsort to sort model times array so old times (large t) will be first in list. */
 	const struct GMT_MODELTIME *time_1 = time_1v, *time_2 = time_2v;
@@ -219,9 +237,10 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 	 * If a log-equidistant range is specified via +l we set *log to true, else false.  The function
 	 * returns the number of times in T_array.
 	 */
-	char *p = NULL, s_unit;
+	char *p = NULL, s_unit, time_fmt[GMT_LEN64] = {""};
+	char unit[3] = {'\0', 'k', 'M'};
 	unsigned int n_eval_times = 0, k, u = 0;
-	double s_time, s_scale;
+	double s_time, s_scale, scale[3] = {1.0, 1.0e-3, 1.0e-6};
 	struct GMTAPI_CTRL *API = GMT->parent;
 	struct GMT_MODELTIME *T = NULL;
 
@@ -306,20 +325,53 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 		}
 	}
 	if (*log) p[0] = '+';	/* Restore the +l modifier */
+	/* Now must find consistent unit for time tags since input may be a mix of kyr and Myr */
+	u = grdflexure_modeltime_tag (GMT, T, n_eval_times, time_fmt);	/* Get suitable format given all increments */
+	for (k = 0; k < n_eval_times; k++) {	/* Create the time tags */
+		T[k].unit = unit[u];
+		T[k].scale = scale[u];
+		if (T[k].unit)	/* Need trailing unit */
+			sprintf (T[k].tag, time_fmt, T[k].value * T[k].scale, T[k].unit);
+		else
+			sprintf (T[k].tag, time_fmt, T[k].value * T[k].scale);
+	}
 	*T_array = T;
 	return (n_eval_times);
 }
 
-char *gmt_modeltime_unit (unsigned int u) {
+GMT_LOCAL char *grdflexure_modeltime_unit (unsigned int u) {
 	static char *names[3] = {"yr", "kyr", "Myr"};
 	return (names[u]);
+}
+
+int gmt_modeltime_validate (struct GMT_CTRL *GMT, char option, char *file) {
+	/* Make sure any template names pass muster */
+	unsigned int n_percent;
+	if (file == NULL) return (GMT_NOERROR);	/* Not a filename */
+	if (strchr (file, '%') == NULL) return (GMT_NOERROR);	/* Not a template */
+	n_percent = gmt_count_char (GMT, file, '%');
+	if (strstr (file, "%s") && n_percent > 1) {	/* Want tag but gave more than one format */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: To use a formatted time tag, only %%s is allowed in the template\n", option);
+		return (GMT_PARSE_ERROR);
+	}
+	else if (strstr (file, "%c")) {	/* Want unit appended */
+		if (n_percent != 2) {	/* Want unit appended but did not give two formats */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: To use appended time unit, the template must have a leading %% format for a floating point value and then the %%c\n", option);
+			return (GMT_PARSE_ERROR);
+		}
+	}
+	else if (n_percent != 1) {	/* Just numerical but gave more than one */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Only a single %% format for a floating point value is expected\n", option);
+		return (GMT_PARSE_ERROR);
+	}
+	return (GMT_NOERROR);
 }
 
 void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *format, struct GMT_MODELTIME *T) {
 	/* Creates a filename from the format.  If %s is included we scale and append time units */
 	gmt_M_unused(GMT);
-	if (strstr (format, "%s"))	/* Want unit name */
-		sprintf (file, format, T->value*T->scale, gmt_modeltime_unit (T->u));
+	if (strstr (format, "%s"))	/* Want tag */
+		sprintf (file, format, T->tag);
 	else if (strstr (format, "%c"))	/* Want unit letter */
 		sprintf (file, format, T->value*T->scale, T->unit);
 	else	/* Just use time in years */
@@ -600,6 +652,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 				if (strchr (opt->arg, '%')) {	/* Grid file template given */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->In.many);
 					n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->In.file);
+					n_errors += gmt_modeltime_validate (GMT, '<', Ctrl->In.file);
 				}
 				else if ((c = strstr (opt->arg, "+l"))) {	/* File with list of load files given, marked with modifier +l */
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->In.list);
@@ -696,10 +749,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 			case 'G':	/* Output file name or template */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
+				n_errors += gmt_modeltime_validate (GMT, 'G', Ctrl->G.file);
 				break;
 			case 'H':	/* Input density grid name or template */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_LOCAL, &(Ctrl->H.file));
+				n_errors += gmt_modeltime_validate (GMT, 'H', Ctrl->H.file);
 				if (strchr (opt->arg, '%'))	/* Got a filename template */
 					Ctrl->H.many = true;
 				break;
@@ -853,14 +908,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT, struct GMT_OPTION *options, struct GRDFLEXURE_CTRL *Ctrl, char *file, char *rho, struct GMT_MODELTIME *this_time) {
 	uint64_t node;
-	double boost, mean_rho_l;
+	double boost = 1.0, mean_rho_l = 0.0;
 	struct GMT_GRID *Grid = NULL, *Orig = NULL, *Rho = NULL;
 	struct GRDFLEXURE_GRID *G = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	if (this_time)
-		GMT_Report (API, GMT_MSG_INFORMATION, "Prepare load file %s for time %g %s\n", file, this_time->value * this_time->scale, gmt_modeltime_unit (this_time->u));
+		GMT_Report (API, GMT_MSG_INFORMATION, "Prepare load file %s for time %g %s\n", file, this_time->value * this_time->scale, grdflexure_modeltime_unit (this_time->u));
 	else
 		GMT_Report (API, GMT_MSG_INFORMATION, "Prepare load file %s\n", file);
 
@@ -907,8 +962,8 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the header of file %s - file skipped\n", rho);
 			return NULL;
 		}
-		if (strstr (Rho->header->remark, "Mean Load Density:")) {	/* Got the remark about density */
-			char *c = strchr (Rho->header->remark, ':');	/* Get to start of comma */
+		if (strstr (Rho->header->remark, "Mean Load Density:")) {	/* Got the remark about mean load density */
+			char *c = strchr (Rho->header->remark, ':');	/* Get pointer to start of colon: and next allow for 1 space */
 			mean_rho_l = atof (&c[1]);	/* Get the mean load density */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Extracted mean load density of %lg from file %s\n", mean_rho_l, rho);
 		}
@@ -1078,7 +1133,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	bool retain_original;
 	gmt_grdfloat *orig_load = NULL;
 	double fixed_rho_load;
-	char zfile[PATH_MAX] = {""}, rfile[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
+	char zfile[PATH_MAX] = {""}, rfile[PATH_MAX] = {""};
 
 	struct GMT_FFT_WAVENUMBER *K = NULL;
 	struct GRDFLEXURE_RHEOLOGY *R = NULL;
@@ -1136,9 +1191,9 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->In.list) {	/* Must read a list of files and their load times (format: filename [rhofile] loadtime) */
 		struct GMT_DATASET *Tin = NULL;
-		struct GMT_MODELTIME this_time = {0.0, 0.0, 0, 0};
+		struct GMT_DATASEGMENT *S = NULL;
+		struct GMT_MODELTIME this_time = {0.0, 0.0, 0, "", 0};
 		int ns;
-		uint64_t seg, row;
 		double s_time, s_scale;
 		char t_arg[GMT_LEN256] = {""}, r_arg[GMT_LEN64] = {""}, s_unit;
 		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->In.file, NULL)) == NULL) {
@@ -1148,15 +1203,20 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		/* Read the file successfully */
 		n_load_times = (unsigned int)Tin->n_records;
 		Load = gmt_M_memory (GMT, NULL, n_load_times, struct GRDFLEXURE_GRID *);		/* Allocate load grid array structure */
-		for (seg = 0, t_load = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
-			for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++, t_load++) {
+		for (uint64_t seg = 0, t_load = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
+			S = Tin->table[0]->segment[seg];	/* Shorthand for readability */
+			for (uint64_t row = 0; row < S->n_rows; row++, t_load++) {
 				if (Ctrl->D.var_rhol)
-					ns = sscanf (Tin->table[0]->segment[seg]->text[row], "%s %s %s", zfile, r_arg, t_arg);
+					ns = sscanf (S->text[row], "%s %s %s", zfile, r_arg, t_arg);
 				else
-					ns = sscanf (Tin->table[0]->segment[seg]->text[row], "%s %s %s", zfile, t_arg, r_arg);
-				s_time = gmt_get_modeltime (t_arg, &s_unit, &s_scale);
-				this_time.value = s_time;
-				this_time.scale = s_scale;
+					ns = sscanf (S->text[row], "%s %s %s", zfile, t_arg, r_arg);
+				this_time.value = S->data[GMT_X][row];	/* Time in years from the numerical part of the list */
+				s_time = gmt_get_modeltime (t_arg, &s_unit, &s_scale);	/* Also returns time in years - we will check */
+				if (!doubleAlmostEqualZero (this_time.value, s_time)) {	/* These should be the same after accounting for units and scale */
+					GMT_Report (API, GMT_MSG_ERROR, "Time mismatch between numerical and time tag for record % "PRIu64 " while reading load file list %s\n", row, Ctrl->In.file);
+					Return (API->error);
+				}
+				this_time.scale = s_scale;	/* Get formatted time scale and unit from t_arg */
 				this_time.unit  = s_unit;
 				this_time.u = (s_unit == 'M') ? 2 : ((s_unit == 'k') ? 1 : 0);
 				Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, zfile, r_arg, &this_time);
@@ -1201,19 +1261,12 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	if (Ctrl->L.active) {	/* Must create a dataset to hold times and names of all output grids */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_eval_times, 1};
-		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while creating text set for file %s\n", Ctrl->L.file);
 			if (retain_original) gmt_M_free (GMT, orig_load);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		L->table[0]->segment[0]->n_rows = Ctrl->T.n_eval_times;
-		/* Extract the time format statement from the -G file name as we will use it to write time tags via -L output */
-		for (k = j = 0; Ctrl->G.file[k] && Ctrl->G.file[k] != '%'; k++);	/* Find first % */
-		while (Ctrl->G.file[k] && !strchr ("efg", Ctrl->G.file[k])) time_fmt[j++] = Ctrl->G.file[k++];
-		time_fmt[j++] = Ctrl->G.file[k];
-		strcat (time_fmt, "%c");	/* Append the unit */
-		GMT_Report (API, GMT_MSG_DEBUG, "Format for time will be %s\n", time_fmt);
 	}
 
 	for (t_eval = 0; t_eval < Ctrl->T.n_eval_times; t_eval++) {	/* For each time step (i.e., at least once) */
@@ -1221,7 +1274,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		/* 4a. SET THE CURRENT TIME VALUE (IF USED) */
 		if (Ctrl->T.active) {	/* Set the current time in user units as well as years */
 			R->eval_time_yr = Ctrl->T.time[t_eval].value;		/* In years */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Evaluating flexural deformation for time %g %s\n", Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, gmt_modeltime_unit (Ctrl->T.time[t_eval].u));
+			GMT_Report (API, GMT_MSG_INFORMATION, "Evaluating flexural deformation for time %%s\n", Ctrl->T.time[t_eval].tag);
 		}
 
 		if (retain_original) gmt_M_memset (Out->data, Out->header->size, gmt_grdfloat);	/* Reset output grid to zero; not necessary when we only get here once */
@@ -1230,20 +1283,18 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 			This_Load = Load[t_load];	/* Short-hand for current load */
 			if (This_Load == NULL) continue;	/* Quietly skip times with no load */
 			if (Ctrl->T.active && Ctrl->T.time && This_Load->Time) {	/* Has both load time and evaluation time so can check some more */
-				if (This_Load->Time->value < Ctrl->T.time[t_eval].value) continue;	/* Skip future loads */
+				if (This_Load->Time->value < Ctrl->T.time[t_eval].value) continue;	/* Skip loads in the future */
 			}
 			if (Ctrl->T.active && This_Load->Time) {	/* Has time so we can report on what is happening */
 				R->load_time_yr = This_Load->Time->value;	/* In years */
 				R->relative = false;	/* Absolute times are given */
 				if (This_Load->Time->u == Ctrl->T.time[t_eval].u) {	/* Same time units even */
 					double dt = This_Load->Time->value * This_Load->Time->scale - Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale;
-					GMT_Report (API, GMT_MSG_INFORMATION, "  Accumulating flexural deformation for load emplaced at time %g %s [Loading time = %g %s]\n",
-						This_Load->Time->value * This_Load->Time->scale, gmt_modeltime_unit (This_Load->Time->u),
-						dt, gmt_modeltime_unit (This_Load->Time->u));
+					GMT_Report (API, GMT_MSG_INFORMATION, "  Accumulating flexural deformation for load emplaced at time %s [Loading time = %g %s]\n",
+						This_Load->Time->tag, dt, grdflexure_modeltime_unit (This_Load->Time->u));
 				}
 				else {	/* Just state load time */
-					GMT_Report (API, GMT_MSG_INFORMATION, "  Accumulating flexural deformation for load emplaced at time %g %s\n",
-						This_Load->Time->value * This_Load->Time->scale, gmt_modeltime_unit (This_Load->Time->u));
+					GMT_Report (API, GMT_MSG_INFORMATION, "  Accumulating flexural deformation for load emplaced at time %s\n", This_Load->Time->tag);
 				}
 			}
 			else {
@@ -1276,8 +1327,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		if (Ctrl->T.active) { /* Separate and unique output grid names from time since there are many time steps */
 			char remark[GMT_GRID_REMARK_LEN160] = {""};
 			gmt_modeltime_name (GMT, zfile, Ctrl->G.file, &Ctrl->T.time[t_eval]);
-			sprintf (remark, "Solution for t = %g %s", Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale,
-				gmt_modeltime_unit (Ctrl->T.time[t_eval].u));
+			sprintf (remark, "Solution for t = %s", Ctrl->T.time[t_eval].tag);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK|GMT_COMMENT_IS_RESET, remark, Out)) {
 				if (retain_original) gmt_M_free (GMT, orig_load);
 				Return (API->error);
@@ -1302,11 +1352,10 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 		if (Ctrl->L.active) {	/* Add filename and evaluation time to list dataset */
 			/* Output will be: <numerical-time> <flexgridname> <timetag> */
-			char record[GMT_BUFSIZ] = {""}, tmp[GMT_LEN64] = {""};
+			char record[GMT_BUFSIZ] = {""};
 			sprintf (record, "%s\t", zfile);	/* Flexure output grid for this time */
 			/* Add formatted time tag after file name */
-			sprintf (tmp, time_fmt, Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale, Ctrl->T.time[t_eval].unit);
-			strcat (record, tmp);
+			strcat (record, Ctrl->T.time[t_eval].tag);
 			L->table[0]->segment[0]->data[GMT_X][t_eval] = Ctrl->T.time[t_eval].value;	/* Output time in years */
 			L->table[0]->segment[0]->text[t_eval] = strdup (record);
 		}
