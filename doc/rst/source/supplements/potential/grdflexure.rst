@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ *wd*]\ [**k**]
 [ |-Z|\ *zm*]\ [**k**]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
 
@@ -75,9 +76,9 @@ Required Arguments
       as produced by :doc:`grdseamount </supplements/potential/grdseamount>` |-M|).
       These load times can be different from the evaluation times given
       via |-T|.  For load time format, see |-T|. **Note**: If *flist* has
-      three trailing words the the second will be interpreted as a load density grid and
-      used for that layer instead of the fixed *rl* setting in |-D|. The last
-      trailing word is a formatted age string.
+      three trailing words the the second will be interpreted as a load
+      density grid name and used for that layer instead of the fixed *rl*
+      setting in |-D|. The last trailing word is a formatted age string.
     - A file list with extension ".lis" does not need the **+l** modifier
       and will be automatically recognized as a file list.
 
@@ -218,6 +219,9 @@ Optional Arguments
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_help.rst_
 
