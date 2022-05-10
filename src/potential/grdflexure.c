@@ -197,7 +197,7 @@ double gmt_get_modeltime (char *A, char *unit, double *scale) {
 	return (atof (A) / (*scale));
 }
 
-unsigned int gmt_modeltime_tag (struct GMT_CTRL *GMT, struct GMT_MODELTIME *T, unsigned int n, char *format) {
+GMT_LOCAL unsigned int grdflexure_modeltime_tag (struct GMT_CTRL *GMT, struct GMT_MODELTIME *T, unsigned int n, char *format) {
 	/* Determine a suitable format statement for the time tags in grdseamount and grdflexure.
 	 * These use the most compact time unit and are consistent in the number of decimals */
 	char unit[2] = {""};	/* Unless we have unit times there is no unit in the time tag */
@@ -326,7 +326,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 	}
 	if (*log) p[0] = '+';	/* Restore the +l modifier */
 	/* Now must find consistent unit for time tags since input may be a mix of kyr and Myr */
-	u = gmt_modeltime_tag (GMT, T, n_eval_times, time_fmt);	/* Get suitable format given all increments */
+	u = grdflexure_modeltime_tag (GMT, T, n_eval_times, time_fmt);	/* Get suitable format given all increments */
 	for (k = 0; k < n_eval_times; k++) {	/* Create the time tags */
 		T[k].unit = unit[u];
 		T[k].scale = scale[u];
@@ -339,7 +339,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 	return (n_eval_times);
 }
 
-char *gmt_modeltime_unit (unsigned int u) {
+GMT_LOCAL char *grdflexure_modeltime_unit (unsigned int u) {
 	static char *names[3] = {"yr", "kyr", "Myr"};
 	return (names[u]);
 }
@@ -915,7 +915,7 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	if (this_time)
-		GMT_Report (API, GMT_MSG_INFORMATION, "Prepare load file %s for time %g %s\n", file, this_time->value * this_time->scale, gmt_modeltime_unit (this_time->u));
+		GMT_Report (API, GMT_MSG_INFORMATION, "Prepare load file %s for time %g %s\n", file, this_time->value * this_time->scale, grdflexure_modeltime_unit (this_time->u));
 	else
 		GMT_Report (API, GMT_MSG_INFORMATION, "Prepare load file %s\n", file);
 
@@ -1291,7 +1291,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 				if (This_Load->Time->u == Ctrl->T.time[t_eval].u) {	/* Same time units even */
 					double dt = This_Load->Time->value * This_Load->Time->scale - Ctrl->T.time[t_eval].value * Ctrl->T.time[t_eval].scale;
 					GMT_Report (API, GMT_MSG_INFORMATION, "  Accumulating flexural deformation for load emplaced at time %s [Loading time = %g %s]\n",
-						This_Load->Time->tag, dt, gmt_modeltime_unit (This_Load->Time->u));
+						This_Load->Time->tag, dt, grdflexure_modeltime_unit (This_Load->Time->u));
 				}
 				else {	/* Just state load time */
 					GMT_Report (API, GMT_MSG_INFORMATION, "  Accumulating flexural deformation for load emplaced at time %s\n", This_Load->Time->tag);

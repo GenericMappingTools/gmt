@@ -34,9 +34,7 @@ struct GMT_MODELTIME {  /* Hold info about time */
 };
 
 EXTERN_MSC void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *format, struct GMT_MODELTIME *T);
-EXTERN_MSC char *gmt_modeltime_unit (unsigned int u);
 EXTERN_MSC unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, struct GMT_MODELTIME **T_array);
-EXTERN_MSC unsigned int gmt_modeltime_tag (struct GMT_CTRL *GMT, struct GMT_MODELTIME *T, unsigned int n, char *format);
 EXTERN_MSC int gmt_modeltime_validate (struct GMT_CTRL *GMT, char option, char *file);
 EXTERN_MSC double gmt_get_modeltime (char *A, char *unit, double *scale);
 
