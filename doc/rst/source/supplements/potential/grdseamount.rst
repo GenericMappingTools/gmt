@@ -212,7 +212,7 @@ Optional Arguments
 **-M**\ [*list*]
     Write the times and names of all relief grids (and density grids if |-W| is set) that were created
     to the text file *list*. Requires |-T|.  If no *list* file is given then we write to standard output.
-    The leading numerical column will be time in years, while the last trailing text word is formatted time.
+    The leading single numerical column will be time in years, while the last trailing text word is formatted time.
     The output listing is suitable as input to :doc:`grdflexure </supplements/potential/grdflexure>`.
     **Note**: The output records thus contain *time reliefgrid* [ *densitygrid* ] *timetag*.
 
