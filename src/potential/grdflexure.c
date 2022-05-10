@@ -38,7 +38,7 @@
 #define THIS_MODULE_PURPOSE	"Compute flexural deformation of 3-D surfaces for various rheologies"
 #define THIS_MODULE_KEYS	"<G{,GG},LD),TD("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-Vf"
+#define THIS_MODULE_OPTIONS "-Vfh"
 
 #define GMT_FFT_DIM	2	/* Dimension of FFT needed */
 
@@ -781,8 +781,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <input> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E[<te>[k][/<te2>[k]]] -G%s [-A<Nx/Ny/Nxy>] [-Cp|y<value] [-F<nu_a>[/<h_a>[k]/<nu_m>]] "
-		"[-H<rhogrid>] [-L<list>] [-M<tm>[k|M]] [-N%s] [-Q] [-S<beta>] [-T<t0>[/<t1>/<dt>[+l]]|<file>] [%s] [-W<wd>[k]] [-Z<zm>[k]] [-fg] [%s]\n",
-		name, GMT_OUTGRID, GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
+		"[-H<rhogrid>] [-L<list>] [-M<tm>[k|M]] [-N%s] [-Q] [-S<beta>] [-T<t0>[/<t1>/<dt>[+l]]|<file>] [%s] [-W<wd>[k]] [-Z<zm>[k]] [-fg] [%s] [%s]\n",
+		name, GMT_OUTGRID, GMT_FFT_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -844,7 +844,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-Z<zm>[k]");
 	GMT_Usage (API, -2, "Specify reference depth to flexed surface in m; append k for km.  Must be positive.");
 	GMT_Usage (API, 1, "\n-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.");
-	GMT_Option (API, ".");
+	GMT_Option (API, "h,.");
 	return (GMT_MODULE_USAGE);
 }
 
@@ -1312,9 +1312,16 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	}
 
 	error = GMT_NOERROR;
-	if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, Ctrl->L.file, L) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_ERROR, "Failure while writing list of grid tiles and file names to %s\n", Ctrl->L.file);
-		error = API->error;
+	if (Ctrl->L.active) {	/* Write out list of times and flexure grids */
+		char *header = "Time(yr)\tFlexgrid\tTimeTag";
+		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, L)) Return (API->error);
+		if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, Ctrl->L.file, L) != GMT_NOERROR) {
+			if (Ctrl->L.file)
+				GMT_Report (API, GMT_MSG_ERROR, "Failure while writing list of output times and flexure grid file names to %s\n", Ctrl->L.file);
+			else
+				GMT_Report (API, GMT_MSG_ERROR, "Failure while writing list of output times and flexure grid file names to standard output\n");
+			error = API->error;
+		}
 	}
 
 	/* 5. FREE ALL GRIDS AND ARRAYS */
