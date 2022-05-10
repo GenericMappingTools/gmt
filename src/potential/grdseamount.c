@@ -1590,7 +1590,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	/* 0. DETERMINE THE NUMBER OF TIME STEPS */
 
-	if (Ctrl->M.active) {	/* Must create dataset to hold names of all output grids */
+	if (Ctrl->M.active) {	/* Must create dataset to hold names of all output times and corresponding grids */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_times, 1};
 		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
@@ -1967,23 +1967,16 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 				strcpy (wfile, Ctrl->W.file);
 		}
 		if (Ctrl->M.active) {	/* Write list of grids to file */
+			/* Output will be: <numerical-time> <topogridname> [<densgridname>] <timetag> */
 			char record[GMT_BUFSIZ] = {""}, tmp[GMT_LEN64] = {""};
-			if (Ctrl->T.active) {
-				sprintf (record, "%s\t", gfile);	/* First word is increment/cumulative grid name */
-				if (Ctrl->W.active) {	/* Second word holds density grid name */
-					strcat (record, wfile);
-					strcat (record, "\t");
-				}
-				sprintf (tmp, time_fmt, Ctrl->T.time[t].value * Ctrl->T.time[t].scale, Ctrl->T.time[t].unit);
-				strcat (record, tmp);
+			sprintf (record, "%s\t", gfile);	/* First word in trailing text is increment/cumulative grid name */
+			if (Ctrl->W.active) {	/* Optional second word holds a density grid name */
+				strcat (record, wfile);
+				strcat (record, "\t");
 			}
-			else {	/* Just one file since no time-stepping */
-				strcpy (record, gfile);	/* First word holds the relief grid name */
-				if (Ctrl->W.active) {	/* Second word holds density grid name */
-					strcat (record, "\t");
-					strcat (record, wfile);
-				}
-			}
+			/* Final word is the formatted time tag with unit information */
+			sprintf (tmp, time_fmt, Ctrl->T.time[t].value * Ctrl->T.time[t].scale, Ctrl->T.time[t].unit);
+			strcat (record, tmp);
 			L->table[0]->segment[0]->data[GMT_X][t_use] = Ctrl->T.time[t].value;
 			L->table[0]->segment[0]->text[t_use++] = strdup (record);
 			L->table[0]->segment[0]->n_rows++;
@@ -2032,10 +2025,17 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	if (Ctrl->M.active) L->table[0]->n_records = L->table[0]->segment[0]->n_rows = t_use;
-	if (Ctrl->M.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, Ctrl->M.file, L) != GMT_NOERROR) {
-		GMT_Report (API, GMT_MSG_ERROR, "Failure while writing list of grid files to %s\n", Ctrl->M.file);
-		goto wrap_up;
+	if (Ctrl->M.active) {	/* Write the list of times and loads */
+		char header[GMT_LEN128] = {""};
+		sprintf (header, "Time(yr)\tTopogrid\t");
+		if (Ctrl->W.active) strcat (header, "Rhogrid\t");
+		strcat (header, "Timetag");
+		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, L)) Return (API->error);
+		L->table[0]->n_records = L->table[0]->segment[0]->n_rows = t_use;	/* Finalize count */
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, Ctrl->M.file, L) != GMT_NOERROR) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failure while writing list of grid files to %s\n", Ctrl->M.file);
+			goto wrap_up;
+		}
 	}
 
 wrap_up:
