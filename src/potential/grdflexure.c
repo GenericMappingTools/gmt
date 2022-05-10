@@ -798,7 +798,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set density of mantle, load(crust), optional moat infill [same as load], and water|air in kg/m^3 or g/cm^3. "
 		"Set <rhol> to - if <list> contains variable density grid names.");
 	GMT_Usage (API, 1, "\n-E[<te>[k][/<te2>[k]]]");
-	GMT_Usage (API, -2, "Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted n"
+	GMT_Usage (API, -2, "Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted "
 		"as the flexural rigidity [Default computes D from Te, Young's modulus, and Poisson's ratio]. "
 		"Default of 0 km may be used with -F for a pure viscous response (no plate rigidity). "
 		"Select General Linear Viscoelastic model by giving initial and final elastic thicknesses (requires -M).");
