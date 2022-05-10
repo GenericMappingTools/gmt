@@ -26,11 +26,11 @@
 /* Miscellaneous model time structure and external functions used in grdseamount and grdflexure */
 
 struct GMT_MODELTIME {  /* Hold info about time */
-    double value;   /* Time as given by user (e.g., 1, 1k, 1M are all 1) */
-    double scale;   /* Scale factor from user time to year */
+    double value;   /* Time as given by user in years */
+    double scale;   /* Scale factor from years to formatted unit time */
     char unit;  /* Either M (Myr), k (kyr), or blank (implies y) */
     char tag[GMT_LEN32];    /* Formatted time tag probably with unit */
-    unsigned int u; /* For labeling: Either 0 (yr), 1 (kyr), or 2 (Myr) */
+    unsigned int u; /* For custom labeling: Either 0 (yr), 1 (kyr), or 2 (Myr) */
 };
 
 EXTERN_MSC void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *format, struct GMT_MODELTIME *T);
