@@ -1336,7 +1336,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 			error = API->error;	goto cleanup_time;
 		}
 
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY,
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_GRID_IS_COMPLEX_REAL,
 			NULL, zfile, Out) != GMT_NOERROR) {
 			error = API->error;	goto cleanup_time;
 		}
