@@ -1226,7 +1226,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		}
 		if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while destroying load file list after processing\n");
-			Return (API->error);
+			error = API->error;	goto cleanup_time;
 		}
 	}
 	else {	/* Just read the single load grid (and optionally rho grid) */
@@ -1250,8 +1250,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		orig_load = gmt_M_memory (GMT, NULL, Load[0]->Grid->header->size, gmt_grdfloat);	/* Single temporary storage to hold one original H(kx,ky) grid */
 		/* We must also allocate a separate output grid */
 		if ((Out = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Load[0]->Grid)) == NULL) {
-			gmt_M_free (GMT, orig_load);
-			Return (API->error);	/* Output grid of same size as input */
+			error = API->error;	goto cleanup_time;
 		}
 	}
 	else	/* With a single load -> flexure operation we can just recycle the input grid for the output */
@@ -1263,8 +1262,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_eval_times, 1};
 		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while creating text set for file %s\n", Ctrl->L.file);
-			if (retain_original) gmt_M_free (GMT, orig_load);
-			Return (GMT_RUNTIME_ERROR);
+			error = API->error;	goto cleanup_time;
 		}
 		L->table[0]->segment[0]->n_rows = Ctrl->T.n_eval_times;
 	}
@@ -1315,9 +1313,9 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 		/* 4c. TAKE THE INVERSE FFT TO GET w(x,y) */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Inverse FFT\n");
-		if (GMT_FFT (API, Out, GMT_FFT_INV, GMT_FFT_COMPLEX, K)) {
-			if (retain_original) gmt_M_free (GMT, orig_load);
-			Return (GMT_RUNTIME_ERROR);
+		/* Passing the no_demux flag since we are doing it manually given the loops and reuse of Out */
+		if (GMT_FFT (API, Out, GMT_FFT_INV, GMT_FFT_COMPLEX|GMT_FFT_NO_DEMUX, K)) {
+			error = GMT_RUNTIME_ERROR;	goto cleanup_time;
 		}
 
 		/* 4d. APPLY SCALING AND OFFSET */
@@ -1329,21 +1327,18 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 			gmt_modeltime_name (GMT, zfile, Ctrl->G.file, &Ctrl->T.time[t_eval]);
 			sprintf (remark, "Solution for t = %s", Ctrl->T.time[t_eval].tag);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK|GMT_COMMENT_IS_RESET, remark, Out)) {
-				if (retain_original) gmt_M_free (GMT, orig_load);
-				Return (API->error);
+				error = API->error;	goto cleanup_time;
 			}
 		}
 		else	/* Single output grid (no -T set) */
 			strcpy (zfile, Ctrl->G.file);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) {
-			if (retain_original) gmt_M_free (GMT, orig_load);
-			Return (API->error);
+			error = API->error;	goto cleanup_time;
 		}
 
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY,
 			NULL, zfile, Out) != GMT_NOERROR) {
-				if (retain_original) gmt_M_free (GMT, orig_load);
-				Return (API->error);
+			error = API->error;	goto cleanup_time;
 		}
 		if (t_eval < (Ctrl->T.n_eval_times-1)) {	/* Must put the total grid back into interleave mode */
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Re-multiplexing complex grid before accumulating new increments.\n");
@@ -1375,6 +1370,8 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	}
 
 	/* 5. FREE ALL GRIDS AND ARRAYS */
+
+cleanup_time:
 
 	for (t_load = 0; t_load < n_load_times; t_load++) {	/* Free up grid structures */
 		This_Load = Load[t_load];			/* Short-hand for current load */
