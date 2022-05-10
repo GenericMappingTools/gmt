@@ -81,10 +81,7 @@ Required Arguments (if |-L| is not given)
 .. _-G:
 
 .. |Add_outgrid| replace:: Give the name of the output grid file. If |-T| is set then *outgrid* must be
-    a filename template that contains a floating point format to hold the output time (C language syntax).
-    If the filename template also contains either %s (for unit name) or %c (for unit letter) then we use
-    the corresponding time (in units specified in |-T|) to generate the individual file names, otherwise
-    we use time in years with no unit included.
+    a filename template (See `File Template`_ for details).
 .. include:: /explain_grd_inout.rst_
     :start-after: outgrid-syntax-begins
     :end-before: outgrid-syntax-ends
@@ -334,10 +331,8 @@ Optional Arguments
 
 **-W**\ *avedensity*
     Give the name of the vertically averaged density grid file. If |-T| is set then *avedensity* must
-    be a filename template that contains a floating point format (C syntax; see |-G| for details).  If the filename
-    template also contains either %s (for unit name) or %c (for unit letter) then we use the corresponding
-    time (in units specified in |-T|) to generate the individual file names, otherwise we use time in years
-    with no unit. Requires |-H| to define the density model.
+    be a filename template (See `File Template`_ for details). 
+    Requires |-H| to define the density model.
 
 .. _-Z:
 
@@ -370,6 +365,23 @@ Optional Arguments
 
 .. include:: ../../explain_distunits.rst_
 
+.. _File Template:
+
+File Template
+-------------
+
+The format statements allowed in grid file templates require you to follow these rules:
+
+    - To use the formatted time-tag as part of the file name you must use just a single %s
+      format as part of the template (e.g., smt_%s.grd).
+    - If you want to control the numerical formatting of the names but still have the common
+      time unit appended then you must compose a template that has a floating point format
+      before a later %c format for the unit.  For example, smt_%05.1f%c.grd will create
+      names like smt_001.1M.grd names.  The times will be scaled to match the unit.
+    - If you do not want any units then simply give a template with just one floating point
+      format, e.g., smt_%05.1f_name.grd.  The times will be used as is (i.e, unscaled).
+
+For details on the format statements, see `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_  C language format syntax).
 
 Slide simulation specifics
 --------------------------
