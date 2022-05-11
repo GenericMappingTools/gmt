@@ -15045,7 +15045,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 * Note: 1. If no -J can be found in the history we provide either -JQ15c (geographic data) or -JX15c (Cartesian).
 	 *
 	 * Modules like pslegend has "rj" since -R -J are not required if -Dx is used but required for other settings.
-	 * Modules like blockmean, surface has "R" since it is never cool to autodetermine grid domains as this also
+	 * Modules like blockmean, surface has "R" since it is never cool to auto-determine grid domains as this also
 	 *  depends on grid spacing, for instance.
 	 * Modules like grdview has "g" since they always have a grid domain to fall back on in the absence of -R.
 	 * Modules like psxy has "d" so we can make a quick map without specifying -R.
