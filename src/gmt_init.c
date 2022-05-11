@@ -14170,7 +14170,7 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 	else if (!strncmp (name, "pscontour", 9U)) {	/* Check for -D option */
 		if ((opt = GMT_Find_Option (API, 'D', options))) return false;	/* -D writes dataset */
 	}
-	else if (!strncmp (name, "psevents", 8U)) {	/* Check for -D option */
+	else if (!strncmp (name, "psevents", 8U)) {	/* Check for -A option */
 		if ((opt = GMT_Find_Option (API, 'A', options)) == NULL) return true;	/* All but -A is guaranteed to write PS */
 		if (opt->arg[0] == 'r' && opt->arg[1] && isdigit (opt->arg[1])) return false;	/* This is just preparing an densely sampled file */
 		return true;	/* Any other case gets here and makes PS */
@@ -15065,10 +15065,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	gmt_M_unused(this_module_kw);
 	#endif
 
+	is_PS = gmtinit_is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
+
 	/* First handle any half-hearted naming of remote datasets where _g or _p should be appended */
 
 	if (options) {
-		if (!strcmp (mod_name, "grdtrack")) API->use_gridline_registration = true;	/* Override API default since grdtrack is a data processor */
+		if (!is_PS) API->use_gridline_registration = true;	/* Override API default since module is a data processor */
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 			if (!gmtinit_might_be_remotefile (opt->arg)) continue;
 			if (remote_first) {
@@ -15184,7 +15186,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 
-	is_PS = gmtinit_is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
 	if (is_PS) {
 		if (gmtinit_set_modern_mode_if_oneliner (API, options))	/* Look out for modern -png mymap and similar specs */
 			return NULL;
