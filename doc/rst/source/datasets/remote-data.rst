@@ -62,7 +62,7 @@ Data Registration
 
 Optionally, you can append _\ **g** or _\ **p** to specifically get the gridline-registered or
 pixel-registered version (if they both exist).  If *reg* is not specified then the behavior
-depends on whether you are making a plot or processing/extracting a subset of a grid:
+depends on whether you are making a plot or processing/extracting a subset of the data:
 
     - For plots we will return the pixel-registered version unless only the gridline-registered file is available.
     - For grid processing modules we will return the gridline-registered version unless only the pixel-registered

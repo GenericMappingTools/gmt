@@ -15067,10 +15067,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	is_PS = gmtinit_is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
 
-	/* First handle any half-hearted naming of remote datasets where _g or _p should be appended */
+	/* First handle any halfhearted naming of remote datasets where _g or _p should be appended */
 
 	if (options) {
-		if (!is_PS) API->use_gridline_registration = true;	/* Override API default since module is a data processor */
+		if (!is_PS) {	/* Override API default since module is a data processor */
+			API->use_gridline_registration = true;
+		}
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 			if (!gmtinit_might_be_remotefile (opt->arg)) continue;
 			if (remote_first) {
