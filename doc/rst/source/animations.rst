@@ -1,7 +1,7 @@
 :orphan:
 
-Animations
-==========
+Animation Gallery
+=================
 
 Here we will explore what is involved in creating animations (i.e., movies).
 Of course, an animation is nothing more than a series of individual images
