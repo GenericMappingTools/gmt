@@ -871,7 +871,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (!Ctrl->C.active && Ctrl->Q.cpt && Ctrl->G.n != 3)
+	if (!Ctrl->C.active && (Ctrl->Q.cpt || Ctrl->T.active) && Ctrl->G.n != 3)
 		Ctrl->C.active = true;	/* Use default CPT (GMT->current.setting.cpt) and auto-stretch or under modern reuse current CPT */
 
 	/* Determine what wesn to pass to map_setup */
