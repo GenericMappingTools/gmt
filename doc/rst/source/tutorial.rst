@@ -1,8 +1,8 @@
 :orphan:
 
-########
-Tutorial
-########
+################
+Tutorial in Bash
+################
 
 .. set default highlighting language for this document:
 
