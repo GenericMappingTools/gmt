@@ -38,12 +38,8 @@ and standardized their file names.  In GMT, you may access such data
    @remote_name_\ *rr*\ *u*\ [_\ *reg*\ ]
 
 where the leading @ symbol identifies the file as a remote data set, the *remote_name_* is specific
-to the dataset and the *rr* code is a 2-digit integer specifying the grid/image
-resolution in the unit *u*, where *u* is either **d**, **m** or **s** for arc degree, arc minute or
-arc second, respectively. Optionally, you can append _\ **g** or _\ **p** to specifically get the
-gridline-registered or pixel-registered version (if they both exist).  If *reg* is not specified we
-will return the pixel-registered version unless only the gridline-registered file is available.  If you
-do specify a specific registration and that version is not available you will get an error message.
+to the dataset and the *rr* code is a 2-digit integer specifying the grid/image resolution in the
+unit *u*, where *u* is either **d**, **m** or **s** for arc degree, arc minute or arc second, respectively.
 The codes for *rr*\ *u* and the optional *reg* that are supported will be listed in the sections
 below describing each of the available data sets.
 
@@ -60,6 +56,20 @@ Details about the remote datasets currently provided by GMT can be found at
 
 Many of the remote datasets have a preferred, default color table that will be used unless you
 override that default by giving your desired CPT information.
+
+Data Registration
+-----------------
+
+Optionally, you can append _\ **g** or _\ **p** to specifically get the gridline-registered or
+pixel-registered version (if they both exist).  If *reg* is not specified then the behavior
+depends on whether you are making a plot or processing/extracting a subset of a grid:
+
+    - For plots we will return the pixel-registered version unless only the gridline-registered file is available.
+    - For grid processing modules we will return the gridline-registered version unless only the pixel-registered
+      file is available.  We will also issue a warning since for calculations you should ideally know and
+      specify exactly what you want.
+
+If you do specify a specific registration and that version is not available you will get an error message.
 
 Controlling the Process
 -----------------------
