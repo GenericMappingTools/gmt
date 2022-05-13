@@ -1753,6 +1753,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"beyond that (i.e. makes a 3x3 neighborhood), and so on.");
 	GMT_Usage (API, 1, "\n-N<n_iterations>");
 	GMT_Usage (API, -2, "Set maximum number of iterations in the final cycle; default = %d.", SURFACE_MAX_ITERATIONS);
+	GMT_Usage (API, 1, "\n-Q[r]");
+	GMT_Usage (API, -2, "Query for grid sizes that might run faster than your selected -R -I, then exit. "
+		"Append r to instead use the specified -R exactly as given in the calculations.");
 	GMT_Usage (API, 1, "\n-S<search_radius>[m|s]");
 	GMT_Usage (API, -2, "Set <search_radius> to initialize grid; default = 0 will skip this step. "
 		"This step is slow and not needed unless grid dimensions are pathological; "
@@ -1767,8 +1770,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "b: Set tension in boundary conditions only.");
 	GMT_Usage (API, 3, "i: Set tension in interior equations only.n");
 	GMT_Usage (API, -2, "Note: Without a directive we set tension for both to same value.");
-	GMT_Usage (API, 1, "\n-Q Query for grid sizes that might run faster than your selected -R -I, then exit. "
-		"Append r to instead use the specified -R exactly as given in the calculations.");
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-W[<logfile>]");
 	GMT_Usage (API, -2, "Write convergence information to a log file [surface_log.txt].");

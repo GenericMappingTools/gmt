@@ -22,7 +22,7 @@ Synopsis
 [ |-L|\ **l**\ *lower* ] [ |-L|\ **u**\ *upper* ]
 [ |-M|\ *max_radius* ]
 [ |-N|\ *max_iterations* ]
-[ |-Q|\ **r** ]
+[ |-Q|\ [**r**] ]
 [ |-S|\ *search_radius*\ [**m**\|\ **s**] ]
 [ |-T|\ [**b**\|\ **i**]\ *tension_factor* ]
 [ |SYN_OPT-V| ]
@@ -171,7 +171,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**
+**-Q**\ [**r**]
     Suggest grid dimensions which have a highly composite greatest
     common factor. This allows surface to use several intermediate steps
     in the solution, yielding faster run times and better results. The
@@ -180,7 +180,7 @@ Optional Arguments
     using :doc:`grdsample` or :doc:`grdcut` on the output of **surface**.
     Alternatively, append **r** to have **surface** use the specified
     **-R** setting exactly as given in the calculations [Default will
-    seek a slightly larger region that allows for more intermediate
+    seek a slightly larger region it that allows for more intermediate
     steps to ensure better convergence].
 
 .. _-S:
