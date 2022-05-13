@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-Rz|
 |-T|\ *now*
 [ *table* ]
-[ |-A|\ **r**\ [*dpu*\ [**c**\|\ **i**][**+z**\ [*z*]]]\|\ **s** ]
+[ |-A|\ **r**\ [*dpu*\ [**c**\|\ **i**][**+v**\ [*value*]]]\|\ **s** ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**j**\|\ **J**]\ *dx*\ [/*dy*][**+v**\ [*pen*]] ]
@@ -26,7 +26,7 @@ Synopsis
 [ |-G|\ *color* ]
 [ |-H|\ *labelbox* ]
 [ |-L|\ [*length*\|\ **t**] ]
-[ |-M|\ **i**\|\ **s**\|\ **t**\|\ **z**\ *val1*\ [**+c**\ *val2*] ]
+[ |-M|\ **i**\|\ **s**\|\ **t**\|\ **v**\ *val1*\ [**+c**\ *val2*] ]
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-Q|\ *prefix* ]
 [ |-S|\ *symbol*\ [*size*] ]
@@ -111,29 +111,34 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **r**\ [*dpu*\ [**c**\|\ **i**][**+z**\ [*z*]]]\|\ **s**
+**-A**\ **r**\ [*dpu*\ [**c**\|\ **i**][**+v**\ [*value*]]]\|\ **s**
     When no |-S| is given we expect to read lines or polygons.  Two different forms for input are
-    supported and specified via the chosen |-A| directives: (1) Choose **-Ar** if your input data are *trajectories*, the data
-    format is given as *x, y, time*, and the "event" is the portion of that trajectories limited by the current
-    time (*now*), event duration (via |-L|) and rise/fade periods (via **-Es**). If current time falls between
-    two points on the trajectory then we linearly interpolate to find the current end point. Alternatively, (2) choose **-As**
-    to read each complete segment (i.e., a polygon or line with just *x, y* coordinates) from a multisegment
-    file and get a common *time* for each segment via a required **-T**\ *string* specified in the segment
-    header.  Here, the entire polygon or line is the "event" if inside the limits of current time (*now*), event
-    duration (via |-L|) and rise/fade periods (via **-Es**).  If **-L**\ [**t**] is set then the *string*
-    must be either of the format *begin*/*length*\|\ *end* or *begin*,\ *length*\|\ *end*.  Use a comma to
-    separate absolute time specifications, otherwise a slash is also supported. **Note**:
-    Neither lines nor polygons allow for any labels to be placed. Finally, you can use **-Ar**\ *dpu* to
+    supported and specified via the chosen |-A| directives:
+
+    - Choose **-Ar** if your input data are *trajectories* (for more details, see `Trajectories`_), the data
+      format is given as *x, y, time*, and the "event" is the portion of that trajectories limited by the current
+      time (*now*), event duration (via |-L|) and rise/fade periods (via **-Es**). If current time falls between
+      two points on the trajectory then we linearly interpolate to find the current end point.
+    - Choose **-As** to read each complete segment (i.e., a polygon or line with just *x, y* coordinates)
+      from a multisegment file and get a common *time* for each segment via a required **-T**\ *string* specified
+      in the segment header.  Here, the entire polygon or line is the "event" if inside the limits of current time
+      (*now*), event duration (via |-L|) and rise/fade periods (via **-Es**).  If **-L**\ [**t**] is set then the *string*
+      must be either of the format *begin*/*length*\|\ *end* or *begin*,\ *length*\|\ *end*.  Use a comma to
+      separate absolute time specifications, otherwise a slash is also supported.
+
+    **Note**: Neither lines nor polygons allow for any labels to be placed.
+
+    Alternatively, you can use **-Ar**\ *dpu* to
     perform no plotting but instead convert your *x, y*\ [, *zcols* ], *time* data into *densely sampled points* so that
-    later calls to **events** may use this sampled data set instead and plot it as circles with **-Sc**\ [*width*].
+    a later call to **events** may use this sampled data set instead and plot it as circles with **-Sc**\ [*width*].
     This way you can plot "lines" that can have variable pen color and fixed or variable pen width as well as
     taking advantage of the full machinery of **-Es** and **-Et** and all the effects controlled by |-M| for symbols.
-    The *dpu* must match the intended dpu when running :doc:`movie`. Note *dpu* means pixels per cm if you are using
+    The *dpu* must match the intended dpu when running :doc:`movie`. Note that *dpu* means pixels per cm if you are using
     SI units and pixels per inch if you are using US units (hence it depends on your :term:`PROJ_LENGTH_UNIT` setting).
     Alternatively, append **c** or **i** to set the unit used explicitly. Also note that if your movie involves
     changes to the region or the map projection then you may need to run the **-Ar**\ *dpu* as part of the main script.
-    Finally, use **+z**\ [*z*] to insert a *z*-column (initialized to zero unless another *z* value is appended) in
-    the dense point data file for use with **-Mz**.
+    Finally, you can use **+v**\ [*value*] to insert a *z*-column (initialized to zero unless another *z* value is appended) in
+    the dense point data file for use with **-Mv**.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
@@ -161,30 +166,38 @@ Optional Arguments
 .. _-E:
 
 **-E**\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*]
-    Set the relative time knots for the **s**\ ymbol or **t**\ ext time-functions (see `The four time-functions`_).  Append
-    **+o** to shift the event start and end times by a constant offset (basically shifting
-    the event in time by *dt*\ ; or use **+O** to only shift the start time, effectively shortening
-    the duration of the event), **+r** to indicate the
-    duration of the rise phase, **+p** to set the duration of the plateau phase, **+d**
-    to specify the duration of the decay phase, and **+f** to set the duration of the
-    fade phase.  These are all optional [and default to zero], and can be set separately for symbols and texts.
-    If neither **s** or **t** is given then we set the time knots for both features. **Note 1**: The **+l** modifier is
-    restricted to **-Et** and specifies an alternative duration (visibility) of the text [same duration as symbol].
-    Furthermore, the **+p** and **+d** periods do not apply to text labels.  **Note 2**: The **-Et** option is
-    required if you wish to plot labels [plot symbols only].  **Note 3**: For lines or polygons the **+p**
-    and **+d** periods do not apply, and for lines none of the modifiers are allowed.
+    Set the relative time knots for the **s**\ ymbol or **t**\ ext time-functions (see `The four time-functions`_) via
+    these modifiers:
+
+    - **+o** will shift both the event start and end times by a constant offset (basically delaying
+      the event in time by *dt*.
+    - **+O** is similar to **+o** but will only shift the start time, effectively shortening
+      the duration of the event).
+    - **+l** specifies an alternative duration (visibility) of the text (**-Et** only) [same duration as symbol].
+    - **+r** sets the duration of the rise phase.
+    - **+p** sets the duration of the plateau phase.
+    - **+d** sets the duration of the decay phase.
+    - **+f** sets the duration of the fade phase.
+
+    These are all optional [and default to zero], and can be set separately for symbols and texts.
+    If neither the **s** or **t** directive is given then we set the time knots for both features.
+    **Note 1**: The **+p** and **+d** periods do not apply to text labels, lines or polygons.
+    **Note 2**: The **-Et** option is required if you wish to plot labels [Default plots symbols only].
+    **Note 3**: None of the modifiers are allowed for lines.
 
 .. _-F:
 
 **-F**\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+r**\ [*first*]\|\ **z**\ [*format*]]
-    By default, event label text will be placed horizontally, using the primary
-    annotation font attributes (:term:`FONT_ANNOT_PRIMARY`), and centered
-    on the data point. Use this option to override these defaults by specifying up to three
-    text attributes (font, angle, and justification) directly on the command line. Use **+f**
-    to set the font (size,fontname,color), **+a** to set the angle, and **+j** to set the justification.
-    Normally, the text to be plotted is the trailing text.  Instead, use **+r** to use the
-    record number (counting up from *first* [0]) or **+z** to format incoming *z* values (requires |-C|)
-    to a string using the supplied *format* [use :term:`FORMAT_FLOAT_MAP`].
+    By default, event label text will be placed horizontally, using the primary annotation font
+    attributes, and centered on the data point. Normally, the text to be plotted is the trailing text.
+    Use this option's modifiers to override these defaults by specifying alternative attributes:
+
+    - **+f** sets the font (size,fontname,color) [:term:`FONT_ANNOT_PRIMARY`].
+    - **+a** sets the angle of the baseline relative to the horizontal [0].
+    - **+j** sets the justification of the label relative to the coordinates given [CM].
+    - **+r** will use the record number (counting up from *first* [0]) as the text label.
+    - **+z** will format incoming *z* value and use it as the text label (requires |-C| and
+      the optional *format* [:term:`FORMAT_FLOAT_MAP`]).
 
 .. _-G:
 
@@ -195,13 +208,14 @@ Optional Arguments
 
 **-H**\ [**+c**\ *dx*/*dy*][**+g**\ *fill*][**+p**\ [*pen*]][**+r**][**+s**\ [[*dx*/*dy*/][*shade*]]]
     Enable bounding boxes around text labels and provide one or more of these specific parameters:
-    Add **+c** to adjust the clearance between the text and the surrounding box [15% of font size].
-    Add **+p** to draw the box outline with :term:`MAP_DEFAULT_PEN` or append a different pen.
-    Add **+g**\ *fill* to fill the text box [no fill].
-    Append **+r** to use a rounded rectangular box instead of straight rectangular box.
-    Append **+s** to place an offset, background shaded box behind the text box. Here, *dx*/*dy*
-    indicates the shift relative to the foreground text box [4\ **p**/-4\ **p**] and *shade* changes
-    the fill used for shading [gray50]. **Note**: Modifier **+s** requires **+g** as well.
+
+    - **+c** adjusts the clearance between the text and the surrounding box [15% of font size].
+    - **+g**\ *fill* will fill the text box [no fill].
+    - **+p** draws the box outline with :term:`MAP_DEFAULT_PEN` or append a different pen.
+    - **+r** will use a rounded rectangular box [straight rectangular box].
+    - **+s** places an offset, background shaded box behind the text box. Here, *dx*/*dy*
+      indicates the shift relative to the foreground text box [4\ **p**/-4\ **p**] and *shade* changes
+      the fill used for shading [gray50]. **Note**: Modifier **+s** requires **+g** as well.
 
 .. include:: explain_-Jz.rst_
 
@@ -216,25 +230,34 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ **i**\|\ **s**\|\ **t**\|\ **z**\ *val1*\ [**+c**\ *val2*]
+**-M**\ **i**\|\ **s**\|\ **t**\|\ **v**\ *val1*\ [**+c**\ *val2*]
 
-    Controls how each symbol's four attributes should change from when the symbol first appears,
-    during its active duration, and optionally its fate as time moves past its end time.
-    Modify the initial **i**\ ntensity of the color, the **s**\ ize of the symbol, its **t**\ ransparency
-    or the **z** data value (to change symbol color via CPT lookup) during the *rise* interval.
-    [Defaults for these four attributes are 1, 1, 100, and 0 respectively].  These values all represent
-    maximum amplitudes that is scaled by the corresponding time-function created by **-Es** (see `The four time-functions`_).
-    Option |-M| is repeatable for the different attributes. Optionally, for finite-duration events
-    (that should remain visible for all times after their event time has been reached) you
-    may append **+c** to set the corresponding terminal value during the coda [Defaults are 0, 0, 100 and 0, 
-    respectively, meaning the symbols are not plotted unless you change these attributes with one or more **+c** modifiers].
-    The intensity setting (**i**\ ; normally with *val1* in the range ±1, with 0 having no effect) is used to brighten
-    (*val1* > 0) or darken (*val1* < 0) the symbol color during this period (the hue is kept fixed).
-    The size setting (**s**) is a magnifying factor that temporarily changes the size of the symbol by the factor *val1*.
-    The transparency setting (**t**) affects temporary changes to the symbol's transparency. Finally, the  z-data setting
-    (**z**) temporarily adds *val1* to the data set's *z*-values, scaled by the corresponding time function, and thus
-    can change the symbol's *color* via the CPT (hence |-C| is a required option for **-Mz**).
-    **Note**: Polygons can only use **-Mt** setting.
+    Controls how each symbol's four attributes (**i**\ ntensity, **s**\ ize, **t**\ ransparency, and **v**\ alue)
+    should change from when the symbol first appears, during its active duration, and optionally its fate as time
+    moves past its end time. First supply the directive [default *val1* values are given in brackets]:
+
+    - **i** will modify the intensity of the color [1].
+    - **s** will modify the relative size of the symbol [1].
+    - **t** will modify the transparency [100].
+    - **v** will modify the data value (to change symbol color via CPT lookup) during the *rise* interval [0].
+
+    The appended *val1* represents the maximum amplitude that is scaled by the corresponding time-function
+    created by **-Es** (see `The four time-functions`_). Option |-M| is repeatable for the different directives;
+    here are some further guidelines:
+
+    - The intensity directive (**i**\ ; normally with *val1* in the range ±1, with 0 having no effect) is used to brighten
+      (*val1* > 0) or darken (*val1* < 0) the symbol color during this period (the hue is kept fixed).
+    - The size directive (**s**) is a magnifying factor that temporarily changes the size of the symbol by the factor *val1*.
+    - The transparency directive (**t**) affects temporary changes to the symbol's transparency.
+    - The value directive (**v**) temporarily adds *val1* to the data set's *z*-values, scaled by the corresponding time
+      function, and thus can change the symbol's *color* via the CPT (hence |-C| is a required option for **-Mv**).
+
+    Optionally, for finite-duration events that should remain visible for all times *after* their event end time has
+    been reached you must append **+c** (for coda) to set the corresponding terminal value during the coda. If **+c**
+    is not given then the defaults are 0 (intensity), 0 (size), 100 (transparency) and 0 (value), meaning the symbols
+    are not plotted unless you change these attributes with one or more **+c** modifiers (one per directive).
+
+   **Note**: Polygons can only use **-Mt** setting.
 
 .. _-N:
 
@@ -300,10 +323,10 @@ Optional Arguments
     not use the |-I| or **-t** options since these will be set automatically
     as part of the variations imposed by **-Mi** and **-Mt**.  As an example, the
     custom command to plot a beachball may be **-Z**\ "meca -Sa5c+f0", while
-    displaying a crossection of one may require the more elaborate command
+    displaying beachballs in a crossection may require the more elaborate command
     **-Z**\ "coupe -Q -L -Sc3c -Ab128/11/120/250/90/400/0/100+f -Fa0.1i/cc".
     **Note**: If you are running a simple classic command then you must use
-    classic module names.
+    the corresponding classic module names.
 
 .. include:: explain_-aspatial.rst_
 
@@ -405,7 +428,7 @@ Figure below illustrates how transparency may vary through time.
 Finally, instead of selecting a fixed color for a symbol you can use |-C| to set a
 color table that we will use to modulate the color of the symbol.  It is done by adding
 a variable fraction of *dz* to the data's *z*-column and hence the CPT lookup will
-return different colors at different times. The amplitude is controlled with the **-Mz**
+return different colors at different times. The amplitude is controlled with the **-Mv**
 option which will create *dz* values in the range 0-*val1* [Default is 0-1]. In most
 cases the data set will have a zero z-value and hence the CPT will be set up for the
 0-1 range (but note that the coda *val2* value may be negative so compose your CPT
@@ -447,6 +470,8 @@ While only the events that should be visible will be plotted at the given time s
 the order of plotting is simply given by the order of records in the file.  Thus, if the
 file is *not* sorted into ascending time then later events might plot *beneath* earlier events.
 To prevent this, you can sort your file into ascending order via the :doc:`gmtconvert` |-N| option.
+
+.. _Trajectories:
 
 Drawing trajectories
 --------------------

@@ -208,7 +208,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Alternatively, specify <lower>/<upper> intensity values.");
 	GMT_Option (API, "J-Z,K");
 	GMT_Usage (API, 1, "\n-L[i][<gap>]");
-	GMT_Usage (API, -2, "Select equal-sized color rectangles. The -B option cannot be used. n"
+	GMT_Usage (API, -2, "Select equal-sized color rectangles. The -B option cannot be used. "
 		"Append i to annotate the interval range instead of lower/upper. "
 		"If <gap> is appended, we separate each rectangle by <gap> units and center each "
 		"lower (z0) annotation on the rectangle.  Ignored if not a discrete CPT. "

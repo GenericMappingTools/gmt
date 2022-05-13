@@ -61,7 +61,7 @@ Optional Arguments
     Convert geographic data to a cylindrical equal-area projection prior
     to binning. Basically, we apply the projection
     **-JY**\ *lon0*/37:04:17.166076/360, where *lon0* is the
-    mid-longitude of the region. Requires **-D**, geographical data, and
+    mid-longitude of the region. Requires |-D|, geographical data, and
     a global region (e.g., **-Rg** or **-Rd**). This option is useful
     for statistics related to track-line density but should not be used
     when preparing bin-index files for the x2sys track data bases.

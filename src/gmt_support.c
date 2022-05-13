@@ -4144,6 +4144,68 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_watson (struct GMT_CTRL *GMT, 
 }
 
 /*! . */
+int64_t gmt_read_triangulation (struct GMT_CTRL *GMT, char option, char *file, bool binary, uint64_t n, int **link) {
+	/* Read precalculated triangulation indices from file. Returns -1 if any trouble, else the number of triangles
+	 * with the triangle vertex indices in the array link. Pass binary = true to read binary triplets (as per -bi). */
+	int *ind = NULL;	/* Must be an int due to triangle */
+	unsigned int k;
+	uint64_t seg, row, col, ij, n_skipped, n_bad;
+	int64_t np;
+	unsigned int save_col_type[3];
+	double d_n = (double)n - 0.5;	/* So we can use > in test for range below */
+	struct GMT_DATASET *Tin = NULL;
+	struct GMT_DATATABLE *T = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
+
+	/* Must switch to Cartesian input and save whatever original input type we have since we are reading integer triplets */
+	for (k = 0; k < 3; k++) {
+		save_col_type[k] = gmt_M_type (GMT, GMT_IN, k);	/* Remember what we have */
+		gmt_set_column_type (GMT, GMT_IN, k, GMT_IS_FLOAT);	/* And temporarily set to float */
+	}
+	if (binary)
+		GMT_Report (API, GMT_MSG_INFORMATION, "Read triangulation indices from %s as binary triplets\n", file);
+	else
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading this file */
+	if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
+		return (GMT_NOTSET);
+	}
+	if (!binary) gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+	for (k = 0; k < 3; k++) gmt_set_column_type (GMT, GMT_IN, k, save_col_type[k]);	/* Undo the damage above */
+
+	if (Tin->n_columns < 3) {	/* Trouble */
+		GMT_Report (API, GMT_MSG_ERROR, "Option -%c: %s does not have at least 3 columns with indices\n", option, file);
+		if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {	/* Even more trouble */
+			return (GMT_NOTSET);
+		}
+		return (GMT_NOTSET);
+	}
+	T = Tin->table[0];	/* Since we only have one table here */
+	ind = gmt_M_memory (GMT, NULL, 3 * T->n_records, int);	/* Allocate the integer index array */
+	for (seg = ij = n_skipped = n_bad = 0; seg < T->n_segments; seg++) {
+		for (row = 0; row < T->segment[seg]->n_rows; row++) {
+			if (T->segment[seg]->data[0][row] > d_n || T->segment[seg]->data[1][row] > d_n || T->segment[seg]->data[2][row] > d_n)
+				n_skipped++;	/* Outside valid point range */
+			else if (T->segment[seg]->data[0][row] < -GMT_CONV8_LIMIT || T->segment[seg]->data[1][row] < -GMT_CONV8_LIMIT || T->segment[seg]->data[2][row] < -GMT_CONV8_LIMIT)
+				n_bad++;
+			else {	/* Convert to integer values */
+				for (col = 0; col < 3; col++) ind[ij++] = irint (T->segment[seg]->data[col][row]);
+			}
+		}
+	}
+	np = ij / 3;	/* The actual number of vertices passing the test */
+	if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {	/* That's too bad... */
+		gmt_M_free (GMT, ind);
+		return (GMT_NOTSET);
+	}
+	GMT_Report (API, GMT_MSG_INFORMATION, "Read %d triplets of triangulation indices from %s.\n", np, file);
+	if (n_skipped) GMT_Report (API, GMT_MSG_WARNING, "Found %d indices triplets exceeding range of known vertices - skipped.\n", n_skipped);
+	if (n_bad) GMT_Report (API, GMT_MSG_WARNING, "Found %d triplets with negative indices - skipped.\n", n_bad);
+
+	*link = ind;	/* Pass the array back out */
+	return (np);	/* Number of triplets returned */
+}
+
+/*! . */
 GMT_LOCAL int gmtsupport_ensure_new_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *in_text, char *text, char *panel_txt) {
 	/* Recasts any old syntax using new syntax and gives a warning.
  	   Assumes text and panel_text are blank and have adequate space */

@@ -46,7 +46,7 @@ isostatic model.  The available
 models are the "loading from top", or elastic plate model, and the
 "loading from below" which accounts for the plate's response to a
 sub-surface load (appropriate for hot spot modeling - if you believe
-them). In both cases, the model parameters are set with **-T** and
+them). In both cases, the model parameters are set with |-T| and
 **-Z** options. Mode 3: compute the admittance or coherence between
 two grids. The output is the average in the radial direction.
 Optionally, the model admittance may also be calculated.
@@ -90,7 +90,7 @@ Optional Arguments
     Sets density contrast across surface. Used, for example, to compute
     the gravity attraction of the water layer that can later be combined
     with the free-air anomaly to get the Bouguer anomaly. In this case
-    do not use **-T**. It also implicitly sets **-N+h**.  Alternatively,
+    do not use |-T|. It also implicitly sets **-N+h**.  Alternatively,
     specify a co-registered grid with density contrasts if a variable
     density contrast is required.  **Note**: Any NaNs found in the density
     grid will be replaced with the minimum density found.
@@ -142,8 +142,8 @@ Optional Arguments
 
 **-Q**
     Writes out a grid with the flexural topography (with z positive up)
-    whose average depth was set by **-Z**\ *zm* and model parameters by **-T**
-    (and output by **-G**). That is the "gravimetric Moho". **-Q**
+    whose average depth was set by **-Z**\ *zm* and model parameters by |-T|
+    (and output by |-G|). That is the "gravimetric Moho". |-Q|
     implicitly sets **-N+h**
 
 .. _-S:
@@ -151,7 +151,7 @@ Optional Arguments
 **-S**
     Computes predicted gravity or geoid grid due to a subplate load
     produced by the current bathymetry and the theoretical model. The
-    necessary parameters are set within **-T** and **-Z** options. The
+    necessary parameters are set within |-T| and |-Z| options. The
     number of powers in Parker expansion is restricted to 1.
     See an example further down.
 
@@ -161,10 +161,10 @@ Optional Arguments
     Compute the isostatic compensation from the topography load (input grid file) on
     an elastic plate of thickness *te*. Also append densities for load, mantle,
     water and infill in SI units. If *ri* is not provided it defaults to *rl*.
-    Give average mantle depth via **-Z**. If the elastic thickness
+    Give average mantle depth via |-Z|. If the elastic thickness
     is > 1e10 it will be interpreted as the flexural rigidity (by default it is
     computed from *te* and Young modulus). Optionally, append *+m* to write a grid
-    with the Moho's geopotential effect (see **-F**) from model selected by **-T**.
+    with the Moho's geopotential effect (see |-F|) from model selected by |-T|.
     If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
 
 .. _-W:

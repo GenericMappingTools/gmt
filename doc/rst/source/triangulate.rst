@@ -13,12 +13,14 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt triangulate** [ *table* ]
+[ |-A| ]
 [ |-C|\ *slpfile* ]
 [ |-D|\ **x**\|\ **y** ]
 [ |-E|\ *empty* ]
 [ |-G|\ *outgrid* ]
 [ |SYN_OPT-I| ]
 [ |-J|\ *parameters* ]
+[ |-L|\ *indexfile*\ [**+b**] ]
 [ |-M| ]
 [ |-N| ]
 [ |-Q|\ [**n**] ]
@@ -76,6 +78,13 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
+**-A**
+    Compute the area of the Cartesian triangles and append the areas in the
+    output segment headers [no areas calculated].  Requires |-S| and is not
+    compatible with |-Q|.
+
 .. _-C:
 
 **-C**\ *slpfile*
@@ -118,6 +127,15 @@ Optional Arguments
 .. include:: explain_-J.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. _-L:
+
+**-L**\ *indexfile*\ [**+b**]
+    Give name of file with previously computed Delaunay information. Each record must contain
+    triplets of node numbers for a triangle in the input *table* [Default computes these
+    using Delaunay triangulation]. If the *indexfile* is binary and can be read the same way
+    as the binary input *table* then you can append **+b** to spead up the reading
+    [Default reads nodes as ASCII].
 
 .. _-M:
 

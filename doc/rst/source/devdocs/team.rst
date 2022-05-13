@@ -1,3 +1,5 @@
+:orphan:
+
 .. title:: Team
 
 Team Gallery

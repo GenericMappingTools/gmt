@@ -571,7 +571,7 @@ GMT_LOCAL void grdtrend_load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID 
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdtrend (void *V_API, int mode, void *args) {
-	/* High-level function that implements the grdcontour task */
+	/* High-level function that implements the grdtrend task */
 
 	bool trivial, weighted, set_ones = true;
 	int error = 0;
@@ -703,7 +703,7 @@ EXTERN_MSC int GMT_grdtrend (void *V_API, int mode, void *args) {
 	yval[G->header->n_rows - 1] = 1.0;
 	/* In the above cases, this will cause the existence of a bad last row (or col)
 	   but cannot set it to zero because: "grdtrend [ERROR]: Gauss returns error code 3".
-	   Leaving last value assugned to a value, even if 1e-15, results in a bad last line. 
+	   Leaving last value assigned to a value, even if 1e-15, results in a bad last line. 
 	   The solution is to call the grdtrend_fix_trend function, which is done in grdtrend_compute_trend
 	*/
 	xval[G->header->n_columns - 1] = yval[G->header->n_rows - 1] = 1.0;

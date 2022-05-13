@@ -96,7 +96,7 @@ Required Arguments
         The arrow will be drawn with the pen attributes specified by the |-W| option and arrow-head can be colored via |-G|.
         The ellipse will be filled with the color or shade specified by the |-E| option [default is transparent],
         and its outline will be drawn if |-L| is selected using the pen selected (by |-W| if not given by |-L|).
-        **Note**: If *confidence* is nonzero and neither **-L** nor **-E** are set then we use **-W** (or default) to draw ellipse outlines.
+        **Note**: If *confidence* is nonzero and neither |-L| nor |-E| are set then we use |-W| (or default) to draw ellipse outlines.
         Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -114,7 +114,7 @@ Required Arguments
 
         Anisotropy bars. The *barscale* sets the scaling of the bars.
         If *barscale* is not given the we read it from the data file as an extra column.
-        Unless **-A** is used to change it via modifier **+h**\ *shape*, the vector shape defaults to 0.1.
+        Unless |-A| is used to change it via modifier **+h**\ *shape*, the vector shape defaults to 0.1.
         Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -131,7 +131,7 @@ Required Arguments
         The arrow will be drawn with the pen attributes specified by the |-W| option and arrow-head can be colored via |-G|.
         The ellipse will be filled with the color or shade specified by the |-E| option [default is transparent],
         and its outline will be drawn if |-L| is selected using the pen selected (by |-W| if not given by |-L|).
-        **Note**: If *confidence* is nonzero and neither **-L** nor **-E** are set then we use **-W** (or default) to draw ellipse outlines.
+        **Note**: If *confidence* is nonzero and neither |-L| nor |-E| are set then we use |-W| (or default) to draw ellipse outlines.
         Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -196,7 +196,7 @@ Optional Arguments
 
 **-C**\ *cpt*
     Give a CPT and let symbol color normally set by |-G| be
-    determined from the magnitude.  See **-Z** for other selections.
+    determined from the magnitude.  See |-Z| for other selections.
 
 .. _-D:
 
@@ -209,23 +209,23 @@ Optional Arguments
 **-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Sets the color or shade used for filling uncertainty wedges
     (**-Sw**) or velocity error ellipses (**-Se** or **-Sr**). If
-    **-E** is not specified, the uncertainty regions will be transparent.
-    **Note**: Using **-C** and **-Z+e** will update the uncertainty fill
-    color based on the selected measure in **-Z** [magnitude error].
+    |-E| is not specified, the uncertainty regions will be transparent.
+    **Note**: Using |-C| and **-Z+e** will update the uncertainty fill
+    color based on the selected measure in |-Z| [magnitude error].
 
 .. _-G:
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Select color or pattern for filling of symbols [Default is no fill].
-    **Note**: Using **-C** (and optionally **-Z**) will update the symbol fill
-    color based on the selected measure in **-Z** [magnitude].
+    **Note**: Using |-C| (and optionally |-Z|) will update the symbol fill
+    color based on the selected measure in |-Z| [magnitude].
 
 .. _-H:
 
 **-H**\ [*scale*]
     Scale symbol sizes and pen widths on a per-record basis using the *scale* read from the
     data set, given as the first column after the (optional) *z* and *size* columns [no scaling].
-    The symbol size is either provided by **-S** or via the input *size* column.  Alternatively,
+    The symbol size is either provided by |-S| or via the input *size* column.  Alternatively,
     append a constant *scale* that should be used instead of reading a scale column.
 
 .. _-I:
@@ -234,16 +234,16 @@ Optional Arguments
     Use the supplied *intens* value (nominally in the -1 to +1 range) to
     modulate the symbol fill color by simulating illumination [none].
     If no intensity is provided we will instead read *intens* from an extra
-    data column after the required input columns determined by **-S**.
+    data column after the required input columns determined by |-S|.
 
 .. _-L:
 
 **-L**\ [*pen*\ [**+c**\ [**f**\|\ **l**]]]
     Draw lines. Ellipses and rotational wedges will have their outlines drawn
-    using current pen (see **-W**).  Alternatively, append a separate pen to
+    using current pen (see |-W|).  Alternatively, append a separate pen to
     use for the error outlines.
     If the modifier **+cl** is appended then the color of the pen are updated from the CPT (see
-    **-C**). If instead modifier **+cf** is appended then the color from the cpt
+    |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to error fill only [Default].  Use just **+c** to set both
     pen and fill color.
 
@@ -251,7 +251,7 @@ Optional Arguments
 
 **-N**
     Do **NOT** skip symbols that fall outside the frame boundary
-    specified by **-R**. [Default plots symbols inside frame only].
+    specified by |-R|. [Default plots symbols inside frame only].
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
@@ -269,7 +269,7 @@ Optional Arguments
     Set pen attributes for velocity arrows, ellipse circumference and
     fault plane edges. [Defaults: width = default, color = black, style = solid].
     If the modifier **+cl** is appended then the color of the pen are updated from the CPT (see
-    **-C**). If instead modifier **+cf** is appended then the color from the cpt
+    |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill only [Default].  Use just **+c** to set both
     pen and fill color.
 
@@ -281,7 +281,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ [**m**\|\ **e**\|\ **n**\|\ **u**\ ][**+e**]
-    Select the quantity that will be used with the CPT given via **-C** to
+    Select the quantity that will be used with the CPT given via |-C| to
     set the fill color.  Choose from **m**\ agnitude (vector magnitude or
     rotation magnitude), **e**\ ast-west velocity, **n**\ orth-south velocity,
     or **u**\ ser-supplied data column (supplied after the required columns).
@@ -313,9 +313,9 @@ Optional Arguments
 Data Column Order
 -----------------
 
-The **-S** option determines how many data columns are required to generate
-the selected symbol.  In addition, your use of options **-H**,  **-I** and **-t** will
-require extra columns, as will a **-S** option without the *size* or a user-column
+The |-S| option determines how many data columns are required to generate
+the selected symbol.  In addition, your use of options |-H|,  |-I| and **-t** will
+require extra columns, as will a |-S| option without the *size* or a user-column
 selected via **-Zu** for color lookup purposes.  The order of the data record
 is fixed regardless of option order, even if not all items may be activated.
 We expect data columns to come in the following order::

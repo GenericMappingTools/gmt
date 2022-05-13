@@ -63,7 +63,7 @@ Optional Arguments
 
 **-C**
     Convert from NCEI two-file data sets \*.h77, \*.a77 to single file
-    \*.mgd77. No other options (except **-V**) are allowed. Give one or
+    \*.mgd77. No other options (except |-V|) are allowed. Give one or
     more names of \*.h77 files, \*.a77 files, or just the file prefixes.
 
 .. _-D:

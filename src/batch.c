@@ -407,7 +407,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	int (*run_script)(const char *);	/* pointer to system function or a dummy */
 
 	unsigned int n_values = 0, n_jobs = 0, job, i_job, col, k, n_cores_unused, n_to_run;
-	unsigned int n_jobs_not_started = 0, n_jobs_completed = 0, first_job = 0, data_job;
+	unsigned int n_jobs_not_started = 0, n_jobs_completed = 0, first_i_job = 0, data_job;
 
 	bool done = false, n_written = false, has_text = false, is_classic = false, has_conf = false, issue_col0_par = false;
 
@@ -903,7 +903,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	/* Finally, we can run all the jobs in a controlled loop, launching new parallel jobs as cores become available */
 
-	i_job = first_job = 0; n_jobs_not_started = n_jobs;
+	i_job = first_i_job = 0; n_jobs_not_started = n_jobs;
 	job = Ctrl->T.start_job;
 	n_cores_unused = MAX (1, Ctrl->x.n_threads - 1);	/* Save one core for the main batch module thread */
 	status = gmt_M_memory (GMT, NULL, n_jobs, struct BATCH_STATUS);	/* Used to keep track of job status */
@@ -926,14 +926,14 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Running script %s returned error %d - aborting.\n", cmd, error);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			status[job].started = true;	/* We have now launched this job job */
+			status[i_job].started = true;	/* We have now launched this job job */
 			job++;			/* Advance to next job for next launch */
 			i_job++;			/* Advance to next job for next launch */
 			n_jobs_not_started--;		/* One less job remaining */
 			n_cores_unused--;		/* This core is now busy */
 		}
 		gmt_sleep (BATCH_WAIT_TO_CHECK);	/* Wait 0.01 second - then check for the completion file */
-		for (k = first_job; k < i_job; k++) {	/* Only loop over the range of jobs that we know are currently in play */
+		for (k = first_i_job; k < i_job; k++) {	/* Only loop over the range of jobs that we know are currently in play */
 			if (status[k].completed) continue;	/* Already finished with this job */
 			if (!status[k].started) continue;	/* Not started this job yet */
 			/* Here we can check if the job job has completed by looking for the completion file */
@@ -946,8 +946,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			(void) gmt_remove_file (GMT, completion_file);	/* Delete the completion file */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Job %*.*d of %d completed [%5.1f %%]\n", precision, precision, k+1, n_jobs, percent);
 		}
-		/* Adjust first_job, if needed */
-		while (first_job < n_jobs && status[first_job].completed) first_job++;
+		/* Adjust first_i_job, if needed */
+		while (first_i_job < n_jobs && status[first_i_job].completed) first_i_job++;
 		if (n_jobs_completed == n_jobs) done = true;	/* All jobs completed! */
 	}
 	/* END PARALLEL EXECUTION OF JOB SCRIPTS */

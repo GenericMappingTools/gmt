@@ -60,7 +60,7 @@ Optional Arguments
 
 **-G**
     Report data flags (Y or N) for the entire track rather than just for
-    the portion that is inside the region set by **-R** [Default].
+    the portion that is inside the region set by |-R| [Default].
 
 .. _-L:
 
@@ -72,7 +72,7 @@ Optional Arguments
     the data base. Append the name of a file with a list of tracks if
     you want to limit the output to those pairs that involve at least
     one of the track names in your list. The output is suitable for the
-    **-A** option in :doc:`x2sys_cross`. By default, only external
+    |-A| option in :doc:`x2sys_cross`. By default, only external
     crossover pairs are listed. Append **+i** to include internal pairs in the list.
 
 .. _-N:
@@ -121,7 +121,7 @@ Note
 The tracks that are returned all have the requested data (**-F**) within
 the specified region (**-R**). Furthermore, the columns of Y and N for
 other data types also reflect the content of the track portion within
-the selected region, unless **-G** is set.
+the selected region, unless |-G| is set.
 
 .. include:: x2sys_refs.rst_
 

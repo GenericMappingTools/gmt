@@ -1,3 +1,5 @@
+:orphan:
+
 .. set default highlighting language for this document:
 .. highlight:: c
 
@@ -777,6 +779,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     | GMT_FFT_Option_          | Explain the FFT options and modifiers                 |
     +--------------------------+-------------------------------------------------------+
     | GMT_FFT_Parse_           | Parse argument with FFT options and modifiers         |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_FFT_Reset_           | Manually demultiplex output of inverse FFT            |
     +--------------------------+-------------------------------------------------------+
     | GMT_FFT_Wavenumber_      | Return wavenumber given data index                    |
     +--------------------------+-------------------------------------------------------+
@@ -3323,6 +3327,10 @@ version of your data. The FFT is fully normalized so that calling
 forward followed by inverse yields the original data set. The information
 passed via ``K`` determines if a 1-D or 2-D transform takes place; the
 key work is done via ``GMT_FFT_1D`` or ``GMT_FFT_2D``, as explained below.
+**Note**: When ``direction`` is ``GMT_FFT_INV`` we will remove the space for
+the temporary imaginary components so that the result is real-valued only;
+this is the most common use in spectral analysis.  However, you can add
+``GMT_FFT_NO_DEMUX`` to ``mode`` which will prevent this adjustment.
 
 Taking the 1-D FFT
 ------------------
@@ -3424,6 +3432,22 @@ differently), and set up the loop this way:
         Grid->data[im] *= 2.0 * wave;
     }
 
+Manual demultiplexing
+---------------------
+
+For almost all applications this step will be done automatically for you when you
+take the inverse FFT.  However, if you need to have the result of the inverse
+transform still occupy a real/imaginary layout you will need to pass the special
+mode flag ``GMT_FFT_NO_DEMUX`` to ``GMT_FFT`` and then call
+
+.. _GMT_FFT_Reset:
+
+  ::
+
+    int GMT_FFT_Reset (void *API, void *data, unsigned int dim, unsigned int mode);
+
+which does the delayed demultiplexing of the data.
+
 Destroying the FFT machinery
 ----------------------------
 
@@ -3433,7 +3457,7 @@ When done you terminate the FFT machinery with
 
   ::
 
-    double GMT_FFT_Destroy (void *API, void *K);
+    int GMT_FFT_Destroy (void *API, void *K);
 
 which simply frees up the memory allocated by the FFT machinery with GMT_FFT_Create_.
 
