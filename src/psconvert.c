@@ -2486,7 +2486,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				Ctrl->T.device = GS_DEV_PDF;
 				/* After conversion, we convert the tmp PDF file to desired format via a 2nd gs call */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Convert to intermediate PDF...\n");
-				strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
+				strncat (out_file, ps_file, (size_t)pos_ext);
 				strcat (out_file, "_intermediate");
 			}
 			else {	/* Output is the final result */
