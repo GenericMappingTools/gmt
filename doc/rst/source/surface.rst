@@ -179,9 +179,10 @@ Optional Arguments
     |-I|. You can recover the |-R| and |-I| you want later by
     using :doc:`grdsample` or :doc:`grdcut` on the output of **surface**.
     Alternatively, append **r** to have **surface** use the specified
-    **-R** setting exactly as given in the calculations [Default will
-    seek a slightly larger region it that allows for more intermediate
-    steps to ensure better convergence].
+    **-R** setting exactly as given in the calculations [Default automatically
+    seeks a slightly larger region if that allows for more intermediate
+    steps to ensure the best possible convergence; the region is then trimmed
+    back to what was requested in |-R| upon output].
 
 .. _-S:
 
