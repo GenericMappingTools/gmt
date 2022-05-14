@@ -102,7 +102,7 @@ Optional Arguments
 .. _-L:
 
 **-L**\ [*flag*]
-    Output closest approach for nearest hotspot only (ignores **-S**).
+    Output closest approach for nearest hotspot only (ignores |-S|).
     Choose **-Lt** for (*time*, *dist*, *z*) [Default], **-Lw** for
     (*omega*, *dist*, *z*), and **-Ll** for (lon, lat, time, dist, z).
     Normally, *dist* is in km; use upper case modifiers **TWL** to get
@@ -127,7 +127,7 @@ Optional Arguments
 .. _-T:
 
 **-T**
-    Truncate seamount ages exceeding the upper age set with **-N** [no truncation].
+    Truncate seamount ages exceeding the upper age set with |-N| [no truncation].
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_

@@ -69,6 +69,7 @@ enum GRDSELECT {	/* Indices for the various tests */
 
 struct GRDSELECT_CTRL {
 	unsigned int n_files;	/* How many data sources given */
+	bool is_cube;
 	struct GRDSELECT_A {	/* -A[i|u][+il|h|arg>]*/
 		bool active;
 		bool round;		/* True if +i is used to set rounding */
@@ -113,9 +114,6 @@ struct GRDSELECT_CTRL {
 		unsigned int mode;
 		uint64_t n_nans;	/* Limit on nans [0] */
 	} N;
-	struct GRDSELECT_Q {	/* -Q */
-		bool active;
-	} Q;
 	struct GRDSELECT_W {	/* -Wwmin/wmax */
 		bool active;
 		double w_min, w_max;
@@ -149,7 +147,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s source1 source2 ... [-Ai|u[+il|h|<inc>]] [-C<pointtable>] [-D<inc>] [-E[b]] [-F<polygontable>[+i|o]] [-G] [-I%s] "
-		" [-L<linetable>] [-M<margins>] [-Nl|h[<n>]] [-Q] [%s] [-W[<min>]/[<max>]] [-Z[<min>]/[<max>]] [%s] [%s] [%s] [%s] [%s]\n",
+		" [-L<linetable>] [-M<margins>] [-Nl|h[<n>]] [%s] [-W[<min>]/[<max>]] [-Z[<min>]/[<max>]] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GRDSELECT_STRING, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -198,7 +196,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Only consider data sources that satisfy a NaN-condition [Consider all input data sources]:");
 	GMT_Usage (API, 3, "l: Only data sources with lower than <n> NaNs will pass [0].");
 	GMT_Usage (API, 3, "h: Only data sources with higher than <n>  NaNs will pass [0].");
-	GMT_Usage (API, 1, "\n-Q Input file(s) is 3-D data cube(s), not grid(s) [2-D grids].");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-W[<min>]/[<max>]");
 	GMT_Usage (API, -2, "Only consider data sources that have data-values in the given range [Consider all input data sources]. "
@@ -221,10 +218,33 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k = 0;
+	unsigned int n_errors = 0, k = 0, nc = 0, ng = 0;
 	char string[GMT_LEN128] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
+
+	/* First precheck if we are dealing with cubes or grids - no mixing is allowed */
+
+	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
+
+		if (opt->option != '<') continue;	/* We are only processing filenames here */
+
+		if (gmt_M_memfile_is_grid (opt->arg))	/* Can just check file name */
+			ng++;
+		else if (gmt_M_memfile_is_cube (opt->arg))	/* Can just check file name */
+			nc++;
+		else if (gmt_nc_is_cube (API, opt->arg))	/* Determine if this file is a netCDF cube or not */
+			nc++;
+		else	/* Thus a grid */
+			ng++;
+	}
+
+	if (nc && ng) {
+		GMT_Report (API, GMT_MSG_ERROR, "Cannot give a mixed list of data cubes and data grids\n");
+		n_errors++;
+		goto time_to_return;
+	}
+	Ctrl->is_cube = (nc > 0);
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -242,7 +262,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 
 			case 'A':	/* Area comparisons */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'u': Ctrl->A.mode = GRDSELECT_UNION; k = 1; break;
 					case 'i': Ctrl->A.mode = GRDSELECT_INTERSECTION; k = 1; break;
@@ -262,13 +281,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'C':	/* Point file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
-				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->C.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->C.file));
 				break;
 			case 'D':	/* Specified grid increments */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				if (opt->arg[0] && gmt_getinc (GMT, opt->arg, Ctrl->D.inc)) {
 					gmt_inc_syntax (GMT, 'D', 1);
 					n_errors++;
@@ -276,24 +292,20 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'E':	/* Column format */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (opt->arg[0] == 'b') Ctrl->E.box = true;
 				break;
 			case 'F':	/* Polygon file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if ((c = strstr (opt->arg, "+i")))
 					Ctrl->F.mode = GMT_INSIDE;
 				else if ((c = strstr (opt->arg, "+o")))
 					Ctrl->F.mode = GMT_OUTSIDE;
 				if (c) c[0] = '\0';	/* Temporarily chop off modifier */
-				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file));
 				if (c) c[0] = '\0';	/* Restore modifier */
 				break;
 			case 'I':	/* Invert selected tests */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (opt->arg[0] == '\0') {   /* If -I is given then all tests are reversed */
 					for (k = 0; k < GRD_SELECT_N_TESTS; k++) Ctrl->I.pass[k] = false;
 				}
@@ -319,13 +331,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'L':	/* Line file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
-				if (opt->arg[0]) Ctrl->L.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file));
 				break;
 			case 'M':	/* Extend the region */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
 				k = GMT_Get_Values (GMT->parent, opt->arg, Ctrl->M.margin, 4);
 				if (k == 1)	/* Same increments in all directions */
 					Ctrl->M.margin[XHI] = Ctrl->M.margin[YLO] = Ctrl->M.margin[YHI] = Ctrl->M.margin[XLO];
@@ -340,7 +349,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'N':	/* NaN condition */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
 					case 'l':	Ctrl->N.mode = GRDSELECT_LESS_NANS;	break;
 					case 'h':	Ctrl->N.mode = GRDSELECT_MORE_NANS;	break;
@@ -350,20 +358,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				}
 				if (opt->arg[1]) Ctrl->N.n_nans = atoi (&opt->arg[1]);
 				break;
-			case 'Q':	/* Expect cubes */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
+			case 'Q':	/* Expect cubes is no longer an option as we detect it automatically */
+				break;
+			case 'W':	/* w range */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				n_errors += gmt_get_limits (GMT, 'W', opt->arg, 1, &Ctrl->W.w_min, &Ctrl->W.w_max);
 				break;
 			case 'Z':	/* z range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				n_errors += gmt_get_limits (GMT, 'Z', opt->arg, 1, &Ctrl->Z.z_min, &Ctrl->Z.z_max);
-				break;
-
-			case 'W':	/* w range */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
-				n_errors += gmt_get_limits (GMT, 'W', opt->arg, 1, &Ctrl->W.w_min, &Ctrl->W.w_max);
 				break;
 
 			default:	/* Report bad options */
@@ -382,9 +385,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 	                                   "The -o option requires -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.n_nans < 0,
 	                                   "The -N option argument cannot be negative\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->Q.active,
-	                                   "The -Z option requires -Q since the limits applies to the 3-D z-dimension (see -W for data range limits)\n");
-
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->is_cube,
+	                                   "The -Z option requires 3-D cubes since the limits applies to the 3-D z-dimension (see -W for data range limits)\n");
+time_to_return:
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -464,6 +467,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 	gmt_M_memset (wesn, 8, double);	/* Initialize */
 	gmt_M_memset (out, 8, double);	/* Initialize */
 	use = gmt_M_memory (GMT, NULL, Ctrl->n_files, bool);
+	is_cube = Ctrl->is_cube;	/* Shorthand */
 
 	if (Ctrl->E.active) {
 		if (Ctrl->E.box) {	/* Write polygon */
@@ -472,7 +476,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			geometry = GMT_IS_POLYGON;
 		}
 		else {
-			n_cols = (Ctrl->Q.active) ? 8 : 6;	/* w e s n [z0 z1] [w0 w1] */
+			n_cols = (is_cube) ? 8 : 6;	/* w e s n [z0 z1] [w0 w1] */
 			cmode = GMT_COL_FIX_NO_TEXT;
 			geometry = GMT_IS_NONE;
 		}
@@ -530,14 +534,6 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			gmt_set_geographic (GMT, GMT_IN);	/* Since this will be returned as a memory grid */
 		}
 
-		is_cube = gmt_nc_is_cube (API, opt->arg);	/* Determine if this file is a cube or not */
-		if (Ctrl->Q.active != is_cube) {
-			if (is_cube)
-				GMT_Report (API, GMT_MSG_WARNING, "Detected a data cube (%s) but -Q not set - skipping\n", opt->arg);
-			else
-				GMT_Report (API, GMT_MSG_WARNING, "Detected a data grid (%s) but -Q is set - skipping\n", opt->arg);
-			continue;
-		}
 		if (is_cube) {
 			if ((U = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {
 				Return (API->error);
@@ -739,7 +735,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			first_r = false;
 		}
 		if (first) {	/* This is the first grid/cube */
-			if (Ctrl->Q.active) {	/* Cube: Keep track of z-dimension range */
+			if (is_cube) {	/* Cube: Keep track of z-dimension range */
 				wesn[ZLO] = U->z[0];
 				wesn[ZHI] = U->z[header->n_bands-1];
 			}
@@ -824,6 +820,9 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 	}
+
+	if (gmt_M_is_geographic (GMT, GMT_IN))	/* Turn on geo for GMT_OUT as well */
+		gmt_set_geographic (GMT, GMT_OUT);	/* Mostly so --FORMAT_GEO_OUT will work as expected */
 
 	if (Ctrl->A.active) {	/* Finalize region via rounding/padding, then report it */
 		if (Ctrl->A.round) {	/* Must round the region via the increments */

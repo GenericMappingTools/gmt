@@ -11,8 +11,8 @@ cat << EOF > mask.cpt
 4	black	5	- ;K
 EOF
 # Instead of add another file I just swap the ID values for polygons 1 and 2 so we can test all modes
-gmt which @multihole.gmt -Gl
-awk '{ if (NR == 10) {print "# @D2|\"polygon #1\""} else if (NR == 40) {print "# @D1|\"polygon #2\""} else {print $0}}' multihole.gmt  > modes.gmt
+data=$(gmt which -Gc @multihole.gmt)
+awk '{ if (NR == 10) {print "# @D2|\"polygon #1\""} else if (NR == 40) {print "# @D1|\"polygon #2\""} else {print $0}}' ${data}  > modes.gmt
 gmt grdmask -R-3/8/-4/7 -I0.1 -r modes.gmt -aZ=ID -Nz -Gf.nc -fg -Cf
 gmt grdmask -R-3/8/-4/7 -I0.1 -r modes.gmt -aZ=ID -Nz -Go.nc -fg -Co
 gmt grdmask -R-3/8/-4/7 -I0.1 -r modes.gmt -aZ=ID -Nz -Gl.nc -fg -Cl

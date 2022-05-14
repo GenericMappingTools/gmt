@@ -88,7 +88,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [*norm*]
-    Gaussian output. Use with **-G** to make an output grid with
+    Gaussian output. Use with |-G| to make an output grid with
     standard normal scores. Append *norm* to force the scores to fall in
     the ±\ *norm* range [Default is standard normal scores].
 
@@ -97,7 +97,7 @@ Optional Arguments
 **-Q**
     Quadratic output. Selects quadratic histogram equalization. [Default is linear].
 
-.. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
+.. |Add_-R| replace:: Using the |-R| option will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -150,7 +150,7 @@ Notes
    dark, you should take the output of **grdhisteq** and rescale it using
    :doc:`grdmath` and multiplying by something less than 1.0, to shrink the
    range of the values, thus bringing more than 68% of the image into the
-   range [-1, 1]. Alternatively, supply a normalization factor with **-N**.
+   range [-1, 1]. Alternatively, supply a normalization factor with |-N|.
 
 See Also
 --------

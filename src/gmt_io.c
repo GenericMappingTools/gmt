@@ -875,7 +875,7 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 					default:	/* We already checked for this above so cannot get here */
 						break;
 				}
-				S->proj[k] = strdup (&p[2]);;
+				S->proj[k] = strdup (&p[2]);
 				break;
 
 			case 'R':	/* Dataset region */
@@ -2249,7 +2249,7 @@ GMT_LOCAL int gmtio_scanf_clock (struct GMT_CTRL *GMT, char *s, double *val) {
 	then we should also allow 86401.  A value exceeding 86401 is an error.
 	*/
 
-	int k, hh, mm, add_noon = 0, hh_limit = 24;	/* ISO std allows 24:00:00  */
+	int k = 0, hh, mm, add_noon = 0, hh_limit = 24;	/* ISO std allows 24:00:00  */
 	double ss, x;
 	char *p = NULL;
 
@@ -2270,8 +2270,16 @@ GMT_LOCAL int gmtio_scanf_clock (struct GMT_CTRL *GMT, char *s, double *val) {
 				break;
 		}
 	}
-
-	k = sscanf (s, GMT->current.io.clock_input.format, &hh, &mm, &ss);
+	if (strchr (s, ':'))	/* hh mm ss separated by delimiters regardless of what format may say */
+		k = sscanf (s, "%2d:%2d:%lf", &hh, &mm, &ss);
+	else if (GMT->current.io.clock_input.delimiter[0][0])	/* hh mm ss separated by delimiters */
+		k = sscanf (s, GMT->current.io.clock_input.format, &hh, &mm, &ss);
+	else {	/* No delimiters, i.e., FORTRAN punchcard style, must do one by one */
+		char item[GMT_LEN32] = {""};
+		strncpy (item, s, 2U);			if (item[0]) hh = atoi (item), k++;
+		strncpy (item, &s[2], 2U);		if (item[0]) mm = atoi (item), k++;
+		strncpy (item, &s[4], GMT_LEN32);	if (item[0]) ss = atof (item), k++;
+	}
 	if (k == 0) return (GMT_NOTSET);
 	if (hh < 0 || hh > hh_limit) return (GMT_NOTSET);
 
@@ -3416,7 +3424,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		gmtlib_reparse_i_option (GMT, col);
 
 	if (found_text) {	/* Determine record type */
-		if (GMT->current.io.trailing_text[GMT_IN]) ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
+		ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
 	}
 	else	/* No trailing text found, reset tpos */
 		*tpos = 0;
@@ -3514,6 +3522,7 @@ GMT_LOCAL inline int gmtio_reached_EOF (struct GMT_CTRL *GMT) {
 /*! This is the lowest-most input function in GMT.  All ASCII table data are read via
  * gmt_ascii_input.  Changes here affect all programs that read such data. */
 GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
+	unsigned int decode_type, decode_type2;
 	uint64_t pos, col_no = 0, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
 	uint64_t n_cols_this_record = GMT_MAX_COLUMNS;
 	int64_t in_col;
@@ -3702,7 +3711,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			}
 			else				/* Default column order */
 				col_pos = col_no;
-			n_convert = gmt_scanf (GMT, token, gmt_M_type (GMT, GMT_IN, col_pos), &val);
+			decode_type = gmt_M_type (GMT, GMT_IN, col_pos);
+			n_convert = gmt_scanf (GMT, token, decode_type, &val);
 			if (n_convert != GMT_IS_NAN && gmt_input_col_is_nan_proxy (GMT, val, col_pos))	/* Input matched no-data setting, so change to NaN */
 				n_convert = GMT_IS_NAN;
 			if (n_convert == GMT_IS_NAN) {	/* Got a NaN or it failed to decode the string */
@@ -3727,6 +3737,10 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 					/* This input column is requested more than once */
 					col_pos = GMT->current.io.col[GMT_IN][col_no].order;	/* The data column that will receive this value */
 					GMT->current.io.curr_rec[col_pos] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
+					decode_type2 = gmt_M_type (GMT, GMT_IN, col_pos);
+					if (decode_type2 == GMT_IS_DIMENSION && decode_type != GMT_IS_DIMENSION) {	/* Must apply the dimensional scaling after already sscanf as non-dimensional */
+						GMT->current.io.curr_rec[col_pos] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+					}
 					col_no++;
 					n_ok++;
 				}
@@ -3788,6 +3802,19 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 	}
 	GMT->current.io.has_previous_rec = true;
 	return ((GMT->current.io.status) ? NULL : &GMT->current.io.record);	/* Pass back pointer to data array */
+}
+
+void gmt_set_column_types (struct GMT_CTRL *GMT, unsigned int n_cols_start, bool rgb_from_z, unsigned int max, struct GMT_SYMBOL *S) {
+	/* In psxy[z], all columns beyond x,y (and possibly z if -C) are assumed to be dimensions.
+	 * However, some symbols will flagged some columns as nondimensional and thus we need to
+	 * reset those to GMT_IS_FLOAT before we start reading. */
+	unsigned int col;
+
+	/* First set all to be dimensional */
+	for (col = n_cols_start; col < max; col++) gmt_set_column_type (GMT, GMT_IN, col, GMT_IS_DIMENSION);
+	/* Then undo the ones that should not be set since they are angles, map distances, etc. */
+	for (col = 0; col < S->n_nondim; col++)
+		gmt_set_column_type (GMT, GMT_IN, S->nondim_col[col]+rgb_from_z, GMT_IS_FLOAT);
 }
 
 /*! . */
@@ -5550,8 +5577,10 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 
 	if (!filename || !filename[0]) return (GMT_NOTSET);		/* No file given */
 	if (gmt_M_file_is_memory (filename)) return (0);	/* Memory location always exists */
-	if (gmt_file_is_cache (GMT->parent, filename))			/* Must be a cache file */
+	if (gmt_file_is_cache (GMT->parent, filename)) {			/* Must be a cache file */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_access: Detected cache file %s - must check for need to download\n", filename);
 		first = gmt_download_file_if_not_found (GMT, filename, 0);
+	}
 
 	if ((cleanfile = gmt_get_filename (GMT->parent, &filename[first], gmtlib_valid_filemodifiers (GMT))) == NULL) return (GMT_NOTSET);	/* Likely not a valid filename */
 	strncpy (file, cleanfile, PATH_MAX-1);

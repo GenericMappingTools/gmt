@@ -98,7 +98,7 @@ GMT_LOCAL size_t gmtgrdio_grd_get_size (struct GMT_GRID_HEADER *h) {
 	return ((((h->complex_mode & GMT_GRID_IS_COMPLEX_MASK) > 0) + 1ULL) * h->mx * h->my);
 }
 
-GMT_LOCAL int gmtgrdio_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, unsigned int complex_mode, unsigned int direction) {
+int gmt_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, unsigned int complex_mode, unsigned int direction) {
 	/* Checks or sets the array arrangement for a complex array */
 	size_t needed_size;	/* Space required to hold both components of a complex grid */
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
@@ -1518,7 +1518,7 @@ int gmt_update_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADE
 	return ((*GMT->session.updateinfo[header->type]) (GMT, header));
 }
 
-int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double *wesn, unsigned int *pad, int complex_mode) {
+int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header, gmt_grdfloat *pgrid, double *wesn, unsigned int *pad, int complex_mode) {
 	/* file:	- IGNORED -
 	 * header:	grid structure header
 	 * grid:	array with final grid
@@ -1533,6 +1533,7 @@ int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *h
 	int err = GMT_OK;		/* Implied by gmt_M_err_trap */
 	struct GRD_PAD P;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
+	gmt_grdfloat *grid = pgrid + HH->data_offset;	/* This can be nonzero when grdpaste is reading */
 
 	complex_mode &= GMT_GRID_IS_COMPLEX_MASK;	/* Remove any non-complex flags */
 	/* If we are reading a 2nd grid (e.g., real, then imag) we must update info about the file since it will be a different file */
@@ -1540,7 +1541,7 @@ int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *h
 
 	expand = gmtgrdio_padspace (GMT, header, wesn, false, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
 
-	if ((err = gmtgrdio_grd_layout (GMT, header, grid, complex_mode & GMT_GRID_IS_COMPLEX_MASK, GMT_IN)))	/* Deal with complex layout */
+	if ((err = gmt_grd_layout (GMT, header, grid, complex_mode & GMT_GRID_IS_COMPLEX_MASK, GMT_IN)))	/* Deal with complex layout */
 		return err;
 
 	gmt_M_err_trap ((*GMT->session.readgrd[header->type]) (GMT, header, grid, P.wesn, P.pad, complex_mode));
@@ -1576,7 +1577,7 @@ int gmtlib_write_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *
 	gmtgrdio_pack_grid (GMT, header, grid, k_grd_pack); /* scale and offset */
 	gmtgrdio_grd_xy_scale (GMT, header, GMT_OUT);	/* Possibly scale wesn,inc */
 
-	if ((err = gmtgrdio_grd_layout (GMT, header, grid, complex_mode, GMT_OUT)))	/* Deal with complex layout */
+	if ((err = gmt_grd_layout (GMT, header, grid, complex_mode, GMT_OUT)))	/* Deal with complex layout */
 		return (err);
 	gmtgrdio_grd_check_consistency (GMT, header, grid);			/* Fix east repeating columns and polar values */
 	err = (*GMT->session.writegrd[header->type]) (GMT, header, grid, wesn, pad, complex_mode);
@@ -2269,7 +2270,7 @@ void gmt_change_grid_history (struct GMTAPI_CTRL *API, unsigned int mode, struct
 			break;
 		case GMT_GRDHISTORY_NEW:	/* Only keep new command history */
 			cmd = GMT_Create_Cmd (API, API->GMT->current.options);
-			snprintf (command, GMT_BUFSIZ, "%s %s", API->GMT->init.module_name, cmd);
+			snprintf (command, GMT_BUFSIZ, "gmt %s %s", API->GMT->init.module_name, cmd);
 			break;
 		case GMT_GRDHISTORY_BOTH:	/* Only keep old command history */
 			if (HH->command)	/* Extra long previous command history */
@@ -2280,6 +2281,7 @@ void gmt_change_grid_history (struct GMTAPI_CTRL *API, unsigned int mode, struct
 			cmd = GMT_Create_Cmd (API, API->GMT->current.options);
 			/* Append this module command string to the existing history */
 			strncat (command, "; ", L);
+			strncat (command, "gmt ", L);	L -= 4;
 			strncat (command, API->GMT->init.module_name, L);	L -= strlen (API->GMT->init.module_name) + 1;
 			strncat (command, " ", L);
 			strncat (command, cmd, L);
@@ -3836,4 +3838,56 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	gmt_BC_init (GMT, I->header);	/* Initialize image interpolation and boundary condition parameters */
 
 	return (GMT_NOERROR);
+}
+
+unsigned int gmt_grid_perimeter (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double **x, double **y) {
+	/* Return arrays that outlines the grid perimeter */
+	unsigned int k = 0, start, col, row, n = 2 * (h->n_columns + h->n_rows) - 3;	/* Number of points for gridline-registered grids */
+	double *xx = NULL, *yy = NULL, *gx = NULL, *gy = NULL;
+	gx = gmt_grd_coord (GMT, h, GMT_X);	/* Get array of x coordinates */
+	gy = gmt_grd_coord (GMT, h, GMT_Y);	/* Get array of y coordinates */
+	if (h->registration == GMT_GRID_PIXEL_REG) n += 8;	/* Since we will add the corners */
+	xx = gmt_M_memory (GMT, NULL, n, double);
+	yy = gmt_M_memory (GMT, NULL, n, double);
+
+	if (h->registration == GMT_GRID_PIXEL_REG) {	/* Must add the LL corner for pixel grids */
+		xx[k] = h->wesn[XLO];	yy[k] = h->wesn[YLO];	k++;
+	}
+	gmt_M_memcpy (&xx[k], gx, h->n_columns, double);	/* Can always use the x-coordinates along south or north */
+	for (col = 0; col < h->n_columns; col++, k++)
+		yy[k] = h->wesn[YLO];	/* But must set y from header */
+	if (h->registration == GMT_GRID_PIXEL_REG) {	/* Must add the LR corner for pixel grids */
+		xx[k] = h->wesn[XHI];	yy[k] = h->wesn[YLO];	k++;
+		start = 1;	/* Need all points from the gy array */
+	}
+	else
+		start = 2;	/* Skip duplicate first point from gy array */
+	for (row = start; row <= h->n_rows; row++, k++) {	/* Can always use the y-coordinates along east or west */
+		xx[k] = h->wesn[XHI];	yy[k] = gy[h->n_rows - row];	/* But must set x from header */
+	}
+	if (h->registration == GMT_GRID_PIXEL_REG) {	/* Must add the TR corner for pixel grids */
+		xx[k] = h->wesn[XHI];	yy[k] = h->wesn[YHI];	k++;
+		start = 1;	/* Need all points from the gx array */
+	}
+	else
+		start = 2;	/* Skip duplicate last point from gx array */
+	for (col = start; col <= h->n_columns; col++, k++) {	/* Can always use the x-coordinates along south or north */
+		xx[k] = gx[h->n_columns-col];	yy[k] = h->wesn[YHI];	/* But must set y from header */
+	}
+	if (h->registration == GMT_GRID_PIXEL_REG) {	/* Must add the TL corner for pixel grids */
+		xx[k] = h->wesn[XLO];	yy[k] = h->wesn[YHI];	k++;
+		start = 0;	/* Need all points from the gy array */
+	}
+	else
+		start = 1;	/* SKip first duplicate point from the gy array */
+	gmt_M_memcpy (&yy[k], &gy[start], h->n_rows-start, double);	/* Can always use the y-coordinates along east or west */
+	for (row = start; row < h->n_rows; row++, k++)
+		xx[k] = h->wesn[XLO];	/* But must set x from header */
+	if (h->registration == GMT_GRID_PIXEL_REG) {	/* Must add the BL corner for pixel grids to close the polygon */
+		xx[k] = h->wesn[XLO];	yy[k] = h->wesn[YLO];	k++;
+	}
+	gmt_M_free (GMT, gx);	gmt_M_free (GMT, gy);
+
+	*x = xx;	*y = yy;
+	return (n);
 }

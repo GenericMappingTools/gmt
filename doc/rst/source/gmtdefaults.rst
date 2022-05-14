@@ -19,11 +19,11 @@ Synopsis
 Description
 -----------
 
-**defaults** lists all the GMT parameter defaults if the option **-D** is used.
+**defaults** lists all the GMT parameter defaults if the option |-D| is used.
 There are three ways to change some of the settings: (1) use the command
 :doc:`gmtset`, (2) use any text editor to edit the file :doc:`gmt.conf` in your
 home, ~/.gmt or current directory (if you do not have this file, run
-:doc:`gmtdefaults` **-D** > gmt.conf to get one with the system default
+:doc:`gmtdefaults` |-D| > gmt.conf to get one with the system default
 settings), or (3) override any parameter by specifying one or more
 **-**\ **-PARAMETER**\ =\ *VALUE* statements on the command line of any GMT
 command (**PARAMETER** and *VALUE* are any combination in :doc:`gmt.conf`). In
@@ -48,8 +48,8 @@ Optional Arguments
 
 **-D**\ [**u**\|\ **s**]
     Print the system GMT defaults settings to standard output. Append **u**
-    for US defaults or **s** for SI defaults. [**-D** alone gives the
-    version selected at compile time; If **-D** is omitted, the user's
+    for US defaults or **s** for SI defaults. [|-D| alone gives the
+    version selected at compile time; If |-D| is omitted, the user's
     currently active defaults are printed.]
 
 .. include:: explain_help.rst_

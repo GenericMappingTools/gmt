@@ -193,7 +193,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -202,36 +202,29 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) break;
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Swap data */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = !Ctrl->A.active;
 				break;
 			case 'C':	/* trace clip */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
-				Ctrl->C.value = (float) atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->C.value);
 				break;
 			case 'D':	/* trace scaling */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.value = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->D.value);
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
-				Ctrl->E.value = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->E.value);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (gmt_getrgb (GMT, opt->arg, Ctrl->F.rgb)) {
 					n_errors++;
 					gmt_rgb_syntax (GMT, 'F', " ");
@@ -239,54 +232,48 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
+				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->L.value);
 				Ctrl->L.value = atoi (opt->arg);
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->M.value);
 				Ctrl->M.value = atoi (opt->arg);
 				break;
 			case 'N':	/* trace norm. */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':
 				switch (opt->arg[0]) {
 					case 'b':	/* Trace bias */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[B_ID]);
-						Ctrl->Q.active[B_ID] = true;
 						Ctrl->Q.value[B_ID] = atof (&opt->arg[1]);
 						break;
 					case 'i':	/* Image dpi */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[I_ID]);
-						Ctrl->Q.active[I_ID] = true;
 						Ctrl->Q.value[I_ID] = atof (&opt->arg[1]);
 						break;
 					case 'u':	/* reduction velocity application */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[U_ID]);
-						Ctrl->Q.active[U_ID] = true;
 						Ctrl->Q.value[U_ID] = atof (&opt->arg[1]);
 						break;
 					case 'x': /* over-rides of header info */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[X_ID]);
-						Ctrl->Q.active[X_ID] = true;
 						Ctrl->Q.value[X_ID] = atof (&opt->arg[1]);
 						break;
 					case 'y': /* over-rides of header info */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Y_ID]);
-						Ctrl->Q.active[Y_ID] = true;
 						Ctrl->Q.value[Y_ID] = atof (&opt->arg[1]);
 						break;
 				}
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'o':
 						Ctrl->S.mode = PLOT_OFFSET;
@@ -301,16 +288,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'T':	/* plot traces only at listed locations */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
-				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->T.file));
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */
@@ -318,9 +304,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPT
 				break;
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Option -T requires a file name\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && access (Ctrl->T.file, R_OK),
-	                                 "Cannot find file %s\n", Ctrl->T.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.value < 0.0, "Option -E: Slop cannot be negative\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "Must specify -F with -I\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && !Ctrl->W.active, "Must specify -F or -W\n");

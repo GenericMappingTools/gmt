@@ -59,11 +59,11 @@ struct PSSAC_CTRL {
 	} D;
 	struct PSSAC_E {    /* -Ea|b|d|k|n<n>|u<n> */
 		bool active;
-		char keys[GMT_LEN256];
+		char *keys;
 	} E;
 	struct PSSAC_F {    /* -Fiqr */
 		bool active;
-		char keys[GMT_LEN256];
+		char *keys;
 	} F;
 	struct PSSAC_G {    /* -G[p|n]+g<fill>+z<zero>+t<t0>/<t1> */
 		bool active[2];
@@ -127,6 +127,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSAC_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_freepen (GMT, &C->W.pen);
+	gmt_M_str_free (C->E.keys);
+	gmt_M_str_free (C->F.keys);
 	gmt_M_free (GMT, C);
 }
 
@@ -220,7 +222,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 	 */
 
 	unsigned int n_errors = 0, pos = 0;
-	int j, k;
+	int i, j, k;
 	size_t n_alloc = 0, len;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -232,8 +234,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 			case '<':	/* Collect input files */
 				Ctrl->In.active = true;
 				if (n_alloc <= Ctrl->In.n) Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc += GMT_SMALL_CHUNK, char *);
-				Ctrl->In.file[Ctrl->In.n] = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n]))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n]));
 				Ctrl->In.n++;
 				break;
 
@@ -241,7 +242,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if ((j = sscanf (opt->arg, "%lf/%lf", &Ctrl->C.t0, &Ctrl->C.t1)) != 2) {
 					Ctrl->C.t0 = GMT->common.R.wesn[XLO];
 					Ctrl->C.t1 = GMT->common.R.wesn[XHI];
@@ -254,20 +254,30 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 					n_errors++;
 				}
 				else {
-					Ctrl->D.active = true;
 					Ctrl->D.dx = gmt_M_to_inch (GMT, txt_a);
 					Ctrl->D.dy = (j == 2) ? gmt_M_to_inch (GMT, txt_b) : Ctrl->D.dx;
 				}
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
-				strncpy(Ctrl->E.keys, &opt->arg[0], GMT_LEN256-1);
-				break;
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->E.keys);
+				if (n_errors == 0 && strchr ("abdknu", Ctrl->E.keys[0]) == NULL) {
+					GMT_Report (API, GMT_MSG_ERROR, "Wrong choice of profile type: %c.  Select from d|k|a|b|n|u\n", Ctrl->E.keys[0]);
+					n_errors++;
+				}
+					break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
-				strncpy(Ctrl->F.keys, &opt->arg[0], GMT_LEN256-1);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->F.keys);
+				for (i = 0; Ctrl->F.keys && Ctrl->F.keys[i] != '\0'; i++) {
+					switch (Ctrl->F.keys[i]) {
+						case 'i': case 'q':   case 'r': break;	/* These are all supported */
+						default:
+							GMT_Report (API, GMT_MSG_ERROR, "Option F: Unrecognized directive %c\n", Ctrl->F.keys[i]);
+							n_errors++;
+							break;
+					}
+				}
 				break;
 			case 'G':      /* phase painting */
 				switch (opt->arg[0]) {
@@ -276,7 +286,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 					default : j = 0, k = 0; break;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[k]);
-				Ctrl->G.active[k] = true;
 				pos = j;
 				while (gmt_getmodopt (GMT, 'G', opt->arg, "gtz", &pos, p, &n_errors) && n_errors == 0) {
 					switch (p[0]) {
@@ -302,7 +311,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
 				j = sscanf(opt->arg, "%[^/]/%s", txt_a, txt_b);
 				if (j == 1) { /* -Msize */
 					Ctrl->M.norm = true;
@@ -337,11 +345,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				len = strlen (opt->arg) - 1;
 				j = (opt->arg[0] == 'i') ? 1 : 0;
 				if (strchr(GMT_DIM_UNITS, (int)opt->arg[len])) /* Recognized unit character */
@@ -373,7 +380,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				pos = 0;
-				Ctrl->T.active = true;
 				Ctrl->T.shift = 0.0;  /* default no shift */
 				while (gmt_getmodopt (GMT, 'T', opt->arg, "trs", &pos, p, &n_errors) && n_errors == 0) {
 					switch (p[0]) {
@@ -394,7 +400,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				break;
 			case 'W':		/* Set line attributes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, &opt->arg[0], &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 3);
 					n_errors++;
@@ -735,12 +740,12 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 		free (data);
 
 		/* -F: data preprocess */
-		for (i = 0; Ctrl->F.keys[i] != '\0'; i++) {
+		for (i = 0; Ctrl->F.keys && Ctrl->F.keys[i] != '\0'; i++) {
 			switch (Ctrl->F.keys[i]) {
 				case 'i': pssac_integral(y, hd.delta, hd.npts); hd.npts--; break;
 				case 'q':   pssac_sqr(y, hd.npts); break;
 				case 'r': pssac_rmean(y, hd.npts); break;
-				default: break;
+				default: break;	/* OK, we have already checked that only i,q,r were passed */
 			}
 		}
 
@@ -799,7 +804,7 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 			x0 = hd.b - tref;	/* the new begin time may not exactly match t1 */
 
 			/* determine Y0 */
-			if (Ctrl->E.active) {
+			if (Ctrl->E.active && Ctrl->E.keys) {
 				switch (Ctrl->E.keys[0]) {
 					case 'a':
 						if (floatAlmostEqualZero(hd.az, SAC_FLOAT_UNDEF)) {
@@ -833,18 +838,13 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 						y0 = n;
 						if (Ctrl->E.keys[1]!='\0') y0 += atof(&Ctrl->E.keys[1]);
 						break;
-					case 'u':  /* user0 to user9 */
+					case 'u': default:  /* user0 to user9 [Use default since we know only valid keys passed the parser */
 						if (Ctrl->E.keys[1] != '\0') user = atoi(&Ctrl->E.keys[1]);
 						y0 = *((float *) &hd + USERN + user);
 						if (floatAlmostEqualZero((float)y0, SAC_FLOAT_UNDEF)) {
 							GMT_Report (API, GMT_MSG_ERROR, "=> %s: user%d not defined in SAC header, skipped.\n", user, L[n].file);
 							continue;
 						}
-						break;
-					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Wrong choice of profile type (d|k|a|b|n) \n");
-						gmt_M_free(GMT, x);		gmt_M_free(GMT, y);		gmt_M_free (GMT, L);
-						Return(EXIT_FAILURE);
 						break;
 				}
 			}

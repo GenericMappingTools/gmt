@@ -83,7 +83,7 @@ Optional Arguments
 
 **-G**\ *fill*
     Sets color or shade for vector interiors [Default is no fill].
-    Alternatively, the fill may be set via **-Q**.
+    Alternatively, the fill may be set via |-Q|.
 
 .. _-I:
 
@@ -127,7 +127,7 @@ Optional Arguments
     **-Si** if it is simpler to give the reciprocal scale in plot length or distance units
     per data unit.  Alternatively, use **-Sl**\ *length* to set a fixed plot length for all
     vectors. To report the minimum, maximum, and mean data and plot vector lengths
-    of all vectors plotted, use **-V**. If an automatic legend entry is desired via **-l**,
+    of all vectors plotted, use |-V|. If an automatic legend entry is desired via **-l**,
     or or two modifiers will be required:
 
     - **+c**\ [[*slon*/]\ *slat*] controls where on a geographic map a geovector's *refsize*
@@ -172,7 +172,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    The theta grid provided contains azimuths rather than directions (implies **-A**).
+    The theta grid provided contains azimuths rather than directions (implies |-A|).
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -221,11 +221,11 @@ using a length scale of 200 km per data unit and only plot every 3rd node in eit
 Vector scaling and unit effects
 -------------------------------
 
-The scale given via **-S** may require some consideration. As explained in **-S**,
+The scale given via |-S| may require some consideration. As explained in |-S|,
 it is specified in data-units per plot or distance unit. The plot or distance unit
 chosen will affect the type of vector you select. In all cases, we first compute
 the magnitude *r* of the user's data vectors at each selected node from the *x* and *y*
-components (unless you are passing *r*, *theta* grids directly with **-A**).  These
+components (unless you are passing *r*, *theta* grids directly with |-A|).  These
 magnitudes are given in whatever data units they come with.  Let us pretend our data
 grids record secular changes in the Earth's magnetic horizontal vector field in units
 of nTesla/year, and that at a particular node the magnitude is 28 nTesla/year (in some
@@ -260,12 +260,12 @@ when providing the inverse of the scale is simpler. In the Cartesian case above,
 could instead give **-Si**\ 0.1c which would directly imply a plot scale of 0.1 cm per
 nTesla/year. Likewise, for geographic distances we could give **-Si**\ 2k for 2 km per
 nTesla/year scale as well. As the **-Si** argument increases, the plotted vector length
-increases as well, while for plain **-S** the plot length decreases with increasing scale.
+increases as well, while for plain |-S| the plot length decreases with increasing scale.
 
 Notes
 -----
 
-Be aware that using **-I** may lead to aliasing unless
+Be aware that using |-I| may lead to aliasing unless
 your grid is smoothly varying over the new length increments.
 It is generally better to filter your grids and resample at a
 larger grid increment and use these grids instead of the originals.

@@ -59,18 +59,22 @@ COLOR Parameters
 
     **COLOR_BACKGROUND**
         Color used for the background of images (i.e., when z < lowest color
-        table entry) [default is **black**].
+        table entry) [default is **black**].  **Note**: If the current CPT
+        has a specification for background color then that takes precedence.
 
     **COLOR_FOREGROUND**
         Color used for the foreground of images (i.e., when z > highest
-        color table entry) [default is **white**].
+        color table entry) [default is **white**].  **Note**: If the current CPT
+        has a specification for foreground color then that takes precedence.
 
     **COLOR_CPT**
-        Default CPT table when none is selected [default is **turbo**].
+        Default CPT table when none is selected [default is **turbo**].  **Note**:
+        Grids with a default CPT in the header will ignore this setting.
 
     **COLOR_HSV_MAX_S**
         Maximum saturation (0-1) assigned for most positive intensity value
-        [default is **0.1**].
+        [default is **0.1**]. **Note**: The default is most suitable for paper
+        printing.  Use 0 for all digital imagery.
 
     **COLOR_HSV_MIN_S**
         Minimum saturation (0-1) assigned for most negative intensity value
@@ -82,7 +86,8 @@ COLOR Parameters
 
     **COLOR_HSV_MIN_V**
         Minimum value (0-1) assigned for most negative intensity value
-        [default is **0.3**].
+        [default is **0.3**]. **Note**: The default is most suitable for paper
+        printing.  Use 0 for all digital imagery.
 
     **COLOR_MODEL**
         Selects in which color space a CPT should be interpolated.
@@ -91,12 +96,13 @@ COLOR Parameters
         directly on the HSV values better preserves those hues. The choices
         are: **none** (use whatever the **COLOR_MODEL** setting in the
         CPT demands), **rgb** (force interpolation in RGB),
-        **hsv** (force interpolation in HSV), **cmyk** (assumes colors are
+        **hsv** (force interpolation in HSV), or **cmyk** (assumes colors are
         in CMYK but interpolates in RGB) [default is **none**].
 
     **COLOR_NAN**
         Color used for the non-defined areas of images (i.e., where z = NaN)
-        [default is **128**].
+        [default is **128**].  **Note**: If the current CPT has a color
+        specification for NaN values then that takes precedence.
 
     **COLOR_SET**
         Default comma-separated list of colors (or a *categorical* CPT name) for
@@ -111,7 +117,7 @@ DIR Parameters
 .. glossary::
 
     **DIR_CACHE**
-        Cache directory where we save remote filenames starting in **@**
+        Cache directory where we save remote cache filenames starting in **@**
         (e.g., @hotspots.txt) [default is **~/.gmt/cache**].
 
     **DIR_DATA**
@@ -406,12 +412,12 @@ GMT Miscellaneous Parameters
         shared modules.
 
     **GMT_FFT**
-        Determines which Fast Fourier Transform (FFT) should be used among
+        Determines which Fast Fourier Transform (FFT) library should be used among
         those that have been configured during installation. Choose from
         **auto** (pick the most suitable for the task among available
         algorithms), **fftw**\ [,\ *planner_flag*] (The Fastest Fourier
         Transform in the West), **accelerate** (Use the Accelerate Framework
-        under OS X; Note, that the number of samples to be processed must be
+        under macOS; Note, that the number of samples to be processed must be
         a base 2 exponent), **kiss**, (Kiss FFT), **brenner** Brenner Legacy
         FFT [default is **auto**].
         FFTW can "learn" how to optimally compute Fourier transforms on the
@@ -429,7 +435,7 @@ GMT Miscellaneous Parameters
 
     **GMT_GRAPHICS_DPU**
         Default target dots-per-unit for images when a remote gridded data
-        set is requested without specifyin a resolution (e.g., @earth_relief).
+        set is requested without specifying a resolution (e.g., @earth_relief).
         Append "i" to indicate the DPU is dots-per-inches and "c" for dots-per-cm.
         [default is 300i].
 
@@ -443,9 +449,9 @@ GMT Miscellaneous Parameters
         gmt.history file, only read, or not use the file at all [default is **true**].
 
     **GMT_INTERPOLANT**
-        Determines if linear (**linear**), Akima's spline (**akima**), natural cubic
-        spline (**cubic**) or no interpolation (**none**) should be used for 1-D
-        interpolations in various programs [default is **akima**].
+        Determines if linear (**linear**), `Akima's <https://en.wikipedia.org/wiki/Akima_spline>`_
+        spline (**akima**), natural cubic spline (**cubic**) or no interpolation (**none**)
+        should be used for 1-D interpolations in various programs [default is **akima**].
 
     **GMT_LANGUAGE**
         Language to use when plotting calendar and map items such as months and
@@ -596,8 +602,8 @@ I/O Parameters
         the **z** variable. Very large chunk sizes and sizes smaller than
         128 should be avoided because they can lead to unexpectedly bad
         performance. Note that a chunk of a single precision floating point
-        variable of size 2896x2896 completely fills the chunk cache of
-        32 MiB. Specify the chunk size for each dimension separated by a
+        variable of size 2896 x 2896 completely fills the chunk cache of
+        32 Mb. Specify the chunk size for each dimension separated by a
         comma, or **a**\ uto for optimally chosen chunk sizes in the range
         [128,256). Setting :term:`IO_NC4_CHUNK_SIZE` will produce netCDF version 4
         files, which can only be read with the netCDF 4 library, unless all
@@ -655,7 +661,9 @@ MAP Parameters
         :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_ANNOT_OBLIQUE**
-        This argument is a comma-separated list of up to seven keywords:
+        This setting applies to "oblique" projections, which in this context
+        means maps whose boundary is a rectangle not specified by meridians
+        and parallels.  We expect a comma-separated list of up to seven keywords:
         **separate** means longitudes will be annotated on the lower and upper
         boundaries only, and latitudes will be annotated on the left and right
         boundaries only; **anywhere** means annotations will occur wherever an
@@ -738,7 +746,7 @@ MAP Parameters
         where the projected x and y directions parallel the longitude and
         latitude directions (e.g., rectangular projections, polar projections).
         For situations where all boundary ticks and annotations must be inside
-        the maps (e.g., for preparing geotiffs), chose **inside**.  Finally,
+        the maps (e.g., for preparing GeoTIFF output), chose **inside**.  Finally,
         for Cartesian plots you can also choose **graph**\ , which adds a vector
         to the end of each axis. This works best when you reduce the number of
         axes plotted to one per dimension.  By default, the vector tip extends
@@ -921,8 +929,7 @@ Projection Parameters
         doing the distance calculation. See also :term:`PROJ_MEAN_RADIUS`.
 
     **PROJ_ELLIPSOID**
-        The (case sensitive) name of the ellipsoid used for the map projections
-        [WGS-84]. Choose among:
+        The name of the ellipsoid used for the map projections [WGS-84]. Choose among:
 
         - *Airy*: Applies to Great Britain (1830)
         - *Airy-Ireland*: Applies to Ireland in 1965 (1830)
@@ -1183,7 +1190,8 @@ PostScript Parameters
         PDF. Choose from **Color**, **ColorBurn**, **ColorDodge**, **Darken**,
         **Difference**, **Exclusion**, **HardLight**, **Hue**, **Lighten**,
         **Luminosity**, **Multiply**, **Normal**, **Overlay**, **Saturation**,
-        **SoftLight**, and **Screen** [default is **Normal**].
+        **SoftLight**, and **Screen** [default is **Normal**].  For more information,
+        see `blend modes <https://en.wikipedia.org/wiki/Blend_modes>`_.
 
 .. _Calendar/Time Parameters:
 
@@ -1225,7 +1233,8 @@ Calendar/Time Parameters
         Controls if a time-stamp should be issued at start of all progress
         reports.  Choose among **clock** (absolute time stamp),
         **elapsed** (time since start of session), or **none**
-        [default is **none**].
+        [default is **none**].  The format of the timer is controlled by
+        :term:`FORMAT_TIME_STAMP`.
 
     **TIME_SYSTEM**
         Shorthand for a combination of :term:`TIME_EPOCH` and :term:`TIME_UNIT`,

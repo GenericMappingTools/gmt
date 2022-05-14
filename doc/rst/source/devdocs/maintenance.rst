@@ -1,3 +1,5 @@
+:orphan:
+
 Maintainers Guide
 =================
 
@@ -24,7 +26,7 @@ build and place the executables, including the supplements, with::
    cmake --build . --target install
 
 
-and then create the package with either one of these:: 
+and then create the package with either one of these::
 
    cmake --build . --target package
    cpack -G TGZ|TBZ2|Bundle|ZIP|NSIS

@@ -19,7 +19,7 @@
  * Date:	7-JUN-2016
  * Version:	6 API
  *
- * Brief synopsis: testapiconv tests GMT_Convert_Data function.
+ * Brief synopsis: testapi_conv tests GMT_Convert_Data function.
  *
  */
 

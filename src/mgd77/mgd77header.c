@@ -136,13 +136,11 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77HEADER_CTRL *Ctrl, struct GM
 
 			case 'H':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.active = true;
-				Ctrl->H.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->H.file));
 				break;
 
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
 				if (opt->arg[0] == 'f') {
 					Ctrl->M.mode = FORMATTED_HEADER;
 					sval = MGD77_Select_Header_Item (GMT, M, &opt->arg[1]);

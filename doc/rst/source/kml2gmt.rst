@@ -52,7 +52,7 @@ Optional Arguments
 **-E**
     Get the altitude from the *ExtendData* property; *z* coordinates are then ignored. KML provides
     more than one mechanism to store information via *ExtendData* but here we only implemented the
-    *<SimpleData name="string">* variation. Implicitly sets **-Z**
+    *<SimpleData name="string">* variation. Implicitly sets |-Z|
 
 .. _-F:
 

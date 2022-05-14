@@ -33,6 +33,8 @@
 # are true.  Thus it does not matter whether you use TRUE and FALSE, ON and
 # OFF, or YES and NO for your booleans.
 
+# set (CMAKE_OSX_DEPLOYMENT_TARGET "12.3")
+
 ##
 ## Section 1: Installation paths
 ##

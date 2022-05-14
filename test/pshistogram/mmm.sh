@@ -2,7 +2,7 @@
 # Test all the ways of labeling the bars with -D
 ps=mmm.ps
 # Use blockmean to compute the mean
-data=`gmt which -G @Pacific_Depths.txt`
+data=`gmt which -Gc @Pacific_Depths.txt`
 mean=`awk '{print 0,0,$1}' $data | gmt blockmean -R-1/1/-1/1 -I2 -r -o2`
 # Use blockmedian to compute the median
 median=`awk '{print 0,0,$1}' $data | gmt blockmedian -R-1/1/-1/1 -I2 -r -o2`

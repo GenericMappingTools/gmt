@@ -1,3 +1,5 @@
+:orphan:
+
 .. set default highlighting language for this document:
 .. highlight:: c
 
@@ -777,6 +779,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     | GMT_FFT_Option_          | Explain the FFT options and modifiers                 |
     +--------------------------+-------------------------------------------------------+
     | GMT_FFT_Parse_           | Parse argument with FFT options and modifiers         |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_FFT_Reset_           | Manually demultiplex output of inverse FFT            |
     +--------------------------+-------------------------------------------------------+
     | GMT_FFT_Wavenumber_      | Return wavenumber given data index                    |
     +--------------------------+-------------------------------------------------------+
@@ -2785,19 +2789,23 @@ API or GMT default settings you can do so via
 where ``keyword`` is one such keyword (e.g., :term:`PROJ_LENGTH_UNIT`) and
 ``value`` must be a character string long enough to hold the answer.  In
 addition to the long list of GMT defaults you can also inquire about the
-API parameters ``API_PAD`` (the current pad setting), ``API_IMAGE_LAYOUT`` (the
-order and structure of image memory storage), ``API_GRID_LAYOUT`` (order of
-grid memory storage), ``API_VERSION`` (the API version string),
-``API_CORES`` (the number of cores seen by the API),
-``API_BINDIR`` (the API (GMT) executable path),
-``API_SHAREDIR`` (the API (GMT) shared directory path),
-``API_DATADIR`` (the API (GMT) data directory path), and
-``API_PLUGINDIR`` (the API (GMT) plugin path).
+following API parameters:
+
+  - ``API_PAD`` - the current pad setting
+  - ``API_IMAGE_LAYOUT`` - the order and structure of image memory storage
+  - ``API_GRID_LAYOUT`` - order of grid memory storage
+  - ``API_VERSION`` - the API version string
+  - ``API_CORES`` - the number of cores seen by the API
+  - ``API_BINDIR`` - the API (GMT) executable path
+  - ``API_SHAREDIR`` - the API (GMT) shared directory path
+  - ``API_DATADIR`` - the API (GMT) data directory path
+  - ``API_PLUGINDIR`` - the API (GMT) plugin path
+  - ``API_BIN_VERSION`` - the API version string with Git commit information
+
 Depending on what parameter you selected you could further convert it to
 a numerical value with GMT_Get_Values_ or just use it in a text comparison.
 
-To change any of the API or
-GMT default settings programmatically you would use
+To change any of the API or GMT default settings programmatically you would use
 
 .. _GMT_Set_Default:
 
@@ -3319,6 +3327,10 @@ version of your data. The FFT is fully normalized so that calling
 forward followed by inverse yields the original data set. The information
 passed via ``K`` determines if a 1-D or 2-D transform takes place; the
 key work is done via ``GMT_FFT_1D`` or ``GMT_FFT_2D``, as explained below.
+**Note**: When ``direction`` is ``GMT_FFT_INV`` we will remove the space for
+the temporary imaginary components so that the result is real-valued only;
+this is the most common use in spectral analysis.  However, you can add
+``GMT_FFT_NO_DEMUX`` to ``mode`` which will prevent this adjustment.
 
 Taking the 1-D FFT
 ------------------
@@ -3420,6 +3432,22 @@ differently), and set up the loop this way:
         Grid->data[im] *= 2.0 * wave;
     }
 
+Manual demultiplexing
+---------------------
+
+For almost all applications this step will be done automatically for you when you
+take the inverse FFT.  However, if you need to have the result of the inverse
+transform still occupy a real/imaginary layout you will need to pass the special
+mode flag ``GMT_FFT_NO_DEMUX`` to ``GMT_FFT`` and then call
+
+.. _GMT_FFT_Reset:
+
+  ::
+
+    int GMT_FFT_Reset (void *API, void *data, unsigned int dim, unsigned int mode);
+
+which does the delayed demultiplexing of the data.
+
 Destroying the FFT machinery
 ----------------------------
 
@@ -3429,7 +3457,7 @@ When done you terminate the FFT machinery with
 
   ::
 
-    double GMT_FFT_Destroy (void *API, void *K);
+    int GMT_FFT_Destroy (void *API, void *K);
 
 which simply frees up the memory allocated by the FFT machinery with GMT_FFT_Create_.
 

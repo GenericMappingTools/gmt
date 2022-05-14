@@ -48,11 +48,11 @@ Description
 
 **select** is a filter that reads (x, y) or (longitude, latitude) positions from the first 2 columns of *infiles*
 [or standard input] and uses a combination of 1-7 criteria to pass or reject the records. Records can be
-selected based on whether or not they are 1) inside a rectangular region (**-R** [and **-J**]), 2) within
+selected based on whether or not they are 1) inside a rectangular region (|-R| [and |-J|]), 2) within
 *dist* km of any point in *pointfile*, 3) within *dist* km of any line in *linefile*, 4) inside one of the
 polygons in the *polygonfile*, 5) inside geographical features (based on coastlines), 6) has z-values
 within a given range, or 7) inside bins of a grid mask whose nodes are non-zero. The sense of the tests can
-be reversed for each of these 7 criteria by using the **-I** option. See option **-:** on how to read
+be reversed for each of these 7 criteria by using the |-I| option. See option **-:** on how to read
 (y,x) or (latitude,longitude) files (this option affects all module input data).  **Note**: If no projection
 information is used then you must supply **-fg** to tell **select** that your data are geographical.
 
@@ -67,7 +67,7 @@ Optional Arguments
 
 .. _-A:
 
-.. |Add_-A| replace:: Ignored unless **-N** is set.
+.. |Add_-A| replace:: Ignored unless |-N| is set.
 .. include:: explain_-A.rst_
 
 .. _-C:
@@ -80,7 +80,7 @@ Optional Arguments
     *lon*/*lat* instead of *pointfile*.  Distances are Cartesian and in
     user units; specify **-fg** to indicate spherical distances and
     append a distance unit, even if the distance specified is 0.
-    (see `Units`_). Alternatively, if **-R** and **-J** are used then
+    (see `Units`_). Alternatively, if |-R| and |-J| are used then
     geographic coordinates are projected to map coordinates (in cm,
     inch, or points, as determined by :term:`PROJ_LENGTH_UNIT`) before
     Cartesian distances are compared to *dist*.
@@ -88,7 +88,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *resolution*\ [**+f**]
-    Ignored unless **-N** is set. Selects the resolution of the
+    Ignored unless |-N| is set. Selects the resolution of the
     coastline data set to use ((**f**)ull, (**h**)igh,
     (**i**)ntermediate, (**l**)ow, or (**c**)rude). The resolution drops
     off by ~80% between data sets. [Default is **l**]. Append (**+f**) to
@@ -103,7 +103,7 @@ Optional Arguments
     Specify how points exactly on a polygon boundary should be
     considered. By default, such points are considered to be inside the
     polygon. Append **f** and/or **n** to change this behavior for the
-    **-F** and/or **-N** options, respectively, so that boundary points are
+    |-F| and/or |-N| options, respectively, so that boundary points are
     considered to be outside.
 
 .. _-F:
@@ -128,12 +128,12 @@ Optional Arguments
 
     - **c** - select records NOT inside any point's circle of influence.
     - **f** - select records NOT inside any of the polygons.
-    - **g** - pass records inside the cells with z equal zero of the grid mask in **-G**.
+    - **g** - pass records inside the cells with z equal zero of the grid mask in |-G|.
     - **l** - select records NOT within the specified distance of any line.
     - **r** - select records NOT inside the specified rectangular region.
-    - **s** - select records NOT considered inside as specified by **-N**
-      (and **-A**, **-D**).
-    - **z** - select records NOT within the range specified by **-Z**.
+    - **s** - select records NOT considered inside as specified by |-N|
+      (and |-A|, |-D|).
+    - **z** - select records NOT within the range specified by |-Z|.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -149,7 +149,7 @@ Optional Arguments
     embedded **-D**\ *dist* setting that sets each line's individual
     distance value. Distances are Cartesian and in user units; specify
     **-fg** to indicate spherical distances append a distance unit (see
-    `Units`_). Alternatively, if **-R** and **-J** are used then geographic
+    `Units`_). Alternatively, if |-R| and |-J| are used then geographic
     coordinates are projected to map coordinates (in cm, inch, m, or
     points, as determined by :term:`PROJ_LENGTH_UNIT`) before Cartesian
     distances are compared to *dist*. Append **+p** to ensure only points
@@ -196,7 +196,7 @@ Optional Arguments
     you may use these modifiers as well: **+a** passes any record that passes at least
     one of your *z* tests [Default is all tests must pass], and **+i** reverses the
     tests to pass record with *z* value NOT in the given range.  Finally, if **+c** is
-    not used then it is automatically incremented for each new **-Z** option, starting
+    not used then it is automatically incremented for each new |-Z| option, starting
     with 2.
 
 .. include:: explain_-aspatial.rst_
@@ -256,18 +256,18 @@ not, comments, and other non-numerical content.
 Note On Distances
 -----------------
 
-If options **-C** or **-L** are selected then distances are Cartesian
+If options |-C| or |-L| are selected then distances are Cartesian
 and in user units; use **-fg** to imply spherical distances in km and
-geographical (lon, lat) coordinates. Alternatively, specify **-R** and
+geographical (lon, lat) coordinates. Alternatively, specify |-R| and
 **-J** to measure projected Cartesian distances in map units (cm, inch,
 or points, as determined by :term:`PROJ_LENGTH_UNIT`).
 
-This program has evolved over the years. Originally, the **-R** and
+This program has evolved over the years. Originally, the |-R| and
 **-J** were mandatory in order to handle geographic data, but now there
-is full support for spherical calculations. Thus, **-J** should only be
+is full support for spherical calculations. Thus, |-J| should only be
 used if you want the tests to be applied on projected data and not the
-original coordinates. If **-J** is used the distances given via **-C**
-and **-L** are projected distances.
+original coordinates. If |-J| is used the distances given via |-C|
+and |-L| are projected distances.
 
 Note On Segments
 ----------------

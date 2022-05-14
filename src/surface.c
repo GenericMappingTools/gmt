@@ -216,6 +216,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	struct SURFACE_BRIGGS *Briggs;	/* Array with Briggs 6-coefficients per nearest active data constraint */
 	struct GMT_GRID *Grid;		/* The final grid */
 	struct GMT_GRID *Bound[2];	/* Optional grids for lower and upper limits on the solution */
+	struct GMT_GRID_HEADER *Bh;	/* Grid header for one of the limit grids [or NULL] */
 	struct SURFACE_SEARCH info;	/* Information needed by the compare function passed to qsort_r */
 	unsigned int n_factors;		/* Number of factors in common for the dimensions (n_rows-1, n_columns-1) */
 	unsigned int factors[32];	/* Array of these ommon factors */
@@ -555,7 +556,7 @@ GMT_LOCAL void surface_solve_Briggs_coefficients (struct SURFACE_INFO *C, gmt_gr
 GMT_LOCAL void surface_find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Determines the nearest data point per bin and sets the
 	 * Briggs parameters or, if really close, fixes the node value */
-	uint64_t k, last_index, node, briggs_index;
+	uint64_t k, last_index, node, briggs_index, node_final;
 	openmp_int row, col;
 	double xx, yy, x0, y0, dx, dy;
 	gmt_grdfloat z_at_node, *u = C->Grid->data;
@@ -597,11 +598,12 @@ GMT_LOCAL void surface_find_nearest_constraint (struct GMT_CTRL *GMT, struct SUR
 				 * This trend then is normalized by dividing by the z rms.*/
 
 	 			z_at_node = C->data[k].z + (gmt_grdfloat) (C->r_z_rms * C->current_stride * evaluate_trend (C, dx, dy));
-	 			if (C->constrained) {
-					if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node]) && z_at_node < C->Bound[LO]->data[node])
-						z_at_node = C->Bound[LO]->data[node];
-					else if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node]) && z_at_node > C->Bound[HI]->data[node])
-						z_at_node = C->Bound[HI]->data[node];
+	 			if (C->constrained) {	/* Must use final spacing node index to access the Bound grids */
+					node_final = gmt_M_ijp (C->Bh, C->current_stride * row, C->current_stride * col);
+					if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node_final]) && z_at_node < C->Bound[LO]->data[node_final])
+						z_at_node = C->Bound[LO]->data[node_final];
+					else if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node_final]) && z_at_node > C->Bound[HI]->data[node_final])
+						z_at_node = C->Bound[HI]->data[node_final];
 	 			}
 	 			u[node] = z_at_node;
 	 		}
@@ -876,6 +878,7 @@ GMT_LOCAL int surface_load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INF
 			}
 		}
 		C->constrained = true;	/* At least one of the limits will be constrained */
+		if (C->Bh == NULL) C->Bh = C->Bound[end]->header;	/* Just pick either one of them */
 	}
 
 	return (0);
@@ -1005,7 +1008,7 @@ GMT_LOCAL void surface_set_BCs (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, gm
 
 GMT_LOCAL uint64_t surface_iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode) {
 	/* Main finite difference solver */
-	uint64_t node, briggs_index, iteration_count = 0;
+	uint64_t node, briggs_index, iteration_count = 0, node_final = 0;
 	unsigned int set, quadrant, current_max_iterations = C->max_iterations * C->current_stride;
 	int col, row, k, *d_node = C->offset;	/* Relative changes in node index from present node */
 	unsigned char *status = C->status;	/* Quadrant or status information for each node */
@@ -1035,7 +1038,8 @@ GMT_LOCAL uint64_t surface_iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 
 		for (row = 0; row < C->current_ny; row++) {	/* Loop over rows */
 			node = C->node_nw_corner + row * C->current_mx;	/* Node at left side of this row */
-			for (col = 0; col < C->current_nx; col++, node++) {	/* Loop over all columns */
+			if (C->constrained) node_final = gmt_M_ijp (C->Bh, C->current_stride * row, 0);
+			for (col = 0; col < C->current_nx; col++, node++, node_final += C->current_stride) {	/* Loop over all columns */
 				if (status[node] == SURFACE_IS_CONSTRAINED) {	/* Data constraint fell exactly on the node, keep it as is */
 					continue;
 				}
@@ -1057,12 +1061,12 @@ GMT_LOCAL uint64_t surface_iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 				}
 				/* We now apply the over-relaxation: */
 				u_00 = u_old[node] * C->relax_old + u_00 * C->relax_new;
-
 				if (C->constrained) {	/* Must check that we don't exceed any imposed limits.  */
-					if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node]) && u_00 < C->Bound[LO]->data[node])
-						u_00 = C->Bound[LO]->data[node];
-					else if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node]) && u_00 > C->Bound[HI]->data[node])
-						u_00 = C->Bound[HI]->data[node];
+					/* Must use final spacing node index to access the Bound grids */
+					if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node_final]) && u_00 < C->Bound[LO]->data[node_final])
+						u_00 = C->Bound[LO]->data[node_final];
+					else if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node_final]) && u_00 > C->Bound[HI]->data[node_final])
+						u_00 = C->Bound[HI]->data[node_final];
 				}
 				u_change = fabs (u_00 - u_old[node]);		/* Change in node value between iterations */
 				u_new[node] = (gmt_grdfloat)u_00;			/* Our updated estimate at this node */
@@ -1727,14 +1731,13 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (opt->arg[0] == 'm')
 					Ctrl->A.mode = 1;
 				else
@@ -1742,7 +1745,6 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				Ctrl->C.value = atof (opt->arg);
 				if (strchr (opt->arg, '%')) {	/* Gave convergence in percent */
 					Ctrl->C.mode = BY_PERCENT;
@@ -1760,7 +1762,6 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 					if (c[2]) Ctrl->D.z = atof (&c[2]);	/* Get the constant z-value [0] */
 					Ctrl->D.fix_z = true;
 				}
-				Ctrl->D.active = true;
 				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->D.file))) n_errors++;
 				if (c) c[0] = '+';	/* Restore original string */
@@ -1768,26 +1769,21 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'J':			/* We have this gal here be cause it needs to be processed separately (after -R) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->J.active);
-				Ctrl->J.active = true;
-				Ctrl->J.projstring = strdup(opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &(Ctrl->J.projstring));
 				break;
 			case 'L':	/* Set limits */
 				switch (opt->arg[0]) {
 					case 'l': case 'u':	/* Lower or upper limits  */
 						end = (opt->arg[0] == 'l') ? LO : HI;	/* Which one it is */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active[end]);
-						Ctrl->L.active[end] = true;
 						n_errors += gmt_M_check_condition (GMT, opt->arg[1] == 0, "Option -L%c: No argument given\n", opt->arg[0]);
 						Ctrl->L.file[end] = strdup (&opt->arg[1]);
 						if (!gmt_access (GMT, Ctrl->L.file[end], F_OK))	/* File exists */
@@ -1806,21 +1802,18 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
-				Ctrl->M.arg = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &(Ctrl->M.arg));
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
-				Ctrl->N.value = atoi (opt->arg);
+				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->N.value);
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				Ctrl->S.radius = atof (opt->arg);
 				Ctrl->S.unit = opt->arg[strlen(opt->arg)-1];
 				if (Ctrl->S.unit == 'c' && gmt_M_compat_check (GMT, 4)) {
@@ -1834,7 +1827,6 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				k = 0;
 				if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 syntax allowed for upper case */
 					modifier = opt->arg[strlen(opt->arg)-1];
@@ -1863,7 +1855,6 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg[0]) {	/* Specified named log file */
 					gmt_M_str_free (Ctrl->W.file);
 					Ctrl->W.file = strdup (opt->arg);
@@ -1871,8 +1862,7 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
-				Ctrl->Z.value = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->Z.value);
 				break;
 
 			default:	/* Report bad options */

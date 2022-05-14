@@ -18,7 +18,7 @@ Synopsis
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
 [ |-T|\ *min*\ /*max*\ /\ *inc*\ [**+i**\|\ **n**]\ \|\ *file*\|\ *list* ]
-[ |-Z|\ *level*\ [*ymin*\ /*ymax*] ]
+[ |-Z|\ *level*\ [/*ymin*\ /*ymax*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-d| ]
@@ -38,9 +38,9 @@ Description
 This file contains cross-sections of one or more 2-D bodies, with one polygon
 per segment.  The segment header must contain the parameter *density*, which
 states the the density of this body (individual body
-densities may be overridden by a fixed constant density contrast given via an optional **-D**).
+densities may be overridden by a fixed constant density contrast given via an optional |-D|).
 We can compute anomalies on an equidistant lattice (by specifying a lattice with
-**-T**) or provide arbitrary output points specified in a file via **-N**.
+**-T**) or provide arbitrary output points specified in a file via |-N|.
 Choose between free-air anomalies, vertical gravity gradient anomalies, or geoid anomalies.
 Options are available to control axes units and direction.
 
@@ -52,8 +52,8 @@ Required Arguments
     One or more ASCII files describing cross-sectional polygons of one or more bodies.  Polygons
     will be automatically closed if not already closed, and repeated vertices will
     be eliminated.  The segment header for each body will be examined for a density
-    parameter in kg/m^3; see **-D** for overriding this value.  If no *table* is given then we
-    read standard input.
+    parameter in :math:`\mbox{kg/m}^3` or :math:`\mbox{g/cm}^3`; see |-D| for overriding this value.  If no *table* is
+    given then we read standard input.
 
 Optional Arguments
 ------------------
@@ -66,7 +66,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *density*
-    Sets a fixed density contrast that overrides any per-body settings in the model file, in kg/m^3.
+    Sets a fixed density contrast that overrides any per-body settings in the model file, in :math:`\mbox{kg/m}^3` or :math:`\mbox{g/cm}^3`.
 
 .. _-F:
 
@@ -85,7 +85,7 @@ Optional Arguments
 
 **-N**\ *trackfile*
     Specifies locations where we wish to compute the predicted value.  When this option
-    is used you cannot use **-T** to set an equidistant lattice. The output data records are written to
+    is used you cannot use |-T| to set an equidistant lattice. The output data records are written to
     standard output (see **-bo** for binary output).
 
 .. _-T:
@@ -101,7 +101,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *level*\ [*ymin*\ /*ymax*]
+**-Z**\ *level*\ [/*ymin*\ /*ymax*]
     Set a constant observation level [0].  Optionally, and for gravity anomalies only (**-Ff**),
     append the finite extent limits of a 2.5-D body.
 
@@ -135,7 +135,7 @@ Examples
 --------
 
 To compute the free-air anomalies on an equidistant profile over a 2-D body that has been contoured
-and saved to body2d.txt, using 1700 kg/m^3 as a constant density contrast, with all distances in meters,
+and saved to body2d.txt, using 1700 :math:`\mbox{kg/m}^3` as a constant density contrast, with all distances in meters,
 try
 
 ::
@@ -177,7 +177,7 @@ Chapman, M. E., 1979, Techniques for interpretation of geoid anomalies,
 
 Kim, S.-S., and P. Wessel, 2016, New analytic solutions for modeling vertical
 gravity gradient anomalies, *Geochem. Geophys. Geosyst., 17*,
-`https://dx.doi.org/10.1002/2016GC006263 <https://dx.doi.org/10.1002/2016GC006263>`_.
+`https://doi.org/10.1002/2016GC006263 <https://doi.org/10.1002/2016GC006263>`_.
 
 Talwani, M., J. L. Worzel, and M. Landisman, 1959, Rapid gravity computations for
 two-dimensional bodies with application to the Mendocino submarine fracture zone,

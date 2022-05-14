@@ -246,23 +246,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 			case '<':	/* Input file (only one or three is accepted) */
 				Ctrl->In.active = true;
 				if (n_files >= 3) {n_errors++; continue; }
-				file[n_files] = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(file[n_files]))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(file[n_files]));
 				n_files++;
 				break;
 			case '>':	/* Output file (probably for -A via external interface) */
-				Ctrl->Out.active = true;
-				if (Ctrl->Out.file == NULL)
-					Ctrl->Out.file = strdup (opt->arg);
-				else
-					n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_IMAGE, GMT_OUT, GMT_FILE_REMOTE, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Get image file name plus driver name to write via GDAL */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (API->external) {	/* External interface only */
 					if ((n = strlen (opt->arg)) > 0) {
 						GMT_Report (API, GMT_MSG_ERROR, "Option -A: No output argument allowed\n");
@@ -313,7 +308,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 
 			case 'C':	/* CPT */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
@@ -323,12 +317,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				if (!API->external)			/* For externals we actually still need the -D */
 					GMT_Report (API, GMT_MSG_COMPAT,
 					            "Option -D is deprecated; images are detected automatically\n");
-				Ctrl->D.active = true;
 				Ctrl->D.mode = (opt->arg[0] == 'r');
 				break;
 			case 'E':	/* Sets dpi */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (opt->arg[0] == 'i')	/* Interpolate image to device resolution */
 					Ctrl->E.device_dpi = true;
 				else if (opt->arg[0] == '\0')
@@ -338,7 +330,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'G':	/* -G<color>[+b|f] 1-bit fore- or background color for transparent masks (was -G[f|b]<color>) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if ((c = strstr (opt->arg, "+b"))) {	/* Background color */
 					ind = GMT_BGD;	off = GMT_FGD;	k = 0;	c[0] = '\0';
 				}
@@ -363,7 +354,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'I':	/* Use intensity from grid or constant or auto-compute it */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if ((c = strstr (opt->arg, "+d"))) {	/* Gave +d, so derive intensities from the input grid using default settings */
 					Ctrl->I.derive = true;
 					c[0] = '\0';	/* Chop off modifier */
@@ -405,15 +395,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'M':	/* Monochrome image */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Do not clip at map boundary */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':	/* PS3 colormasking */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if ((c = strstr (opt->arg, "+z"))) {	/* Gave a z-value */
 					if (c[2]) {
 						Ctrl->Q.value = atof (&c[2]);
@@ -437,7 +426,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'W':	/* Warn if no image, usually when called from grd2kml */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */
@@ -1165,8 +1154,12 @@ void grdimage_reset_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *G, double
 	gmt_M_memcpy (G->header->wesn, new_wesn, 4, double);	/* Temporarily update the header */
 	for (k = 0; k < 4; k++) G->header->pad[k] += pad[k];	/* Temporarily change the pad */
 	gmt_set_grddim (GMT, G->header);	/* Change header items */
-	gmt_grd_zminmax (GMT, G->header, G->data);		/* Recompute the min/max */
-	*zmin = G->header->z_min;	*zmax = G->header->z_max;	/* These are then passed out */
+	if (G->header->nm) {	/* Still a grid left to examine after moving to actual -R */
+		gmt_grd_zminmax (GMT, G->header, G->data);		/* Recompute the min/max */
+		*zmin = G->header->z_min;	*zmax = G->header->z_max;	/* These are then passed out */
+	}
+	else	/* No nodes actually inside the chosen region */
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "No grid nodes inside selected region\n");
 	gmt_M_memcpy (G->header->wesn, old_wesn, 4, double);	/* Reset the header */
 	for (k = 0; k < 4; k++) G->header->pad[k] -= pad[k];	/* Reset the pad */
 	gmt_set_grddim (GMT, G->header);	/* Reset header items */

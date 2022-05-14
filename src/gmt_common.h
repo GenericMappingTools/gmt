@@ -108,6 +108,7 @@ struct GMT_COMMON {
 		bool active[4];	/* RSET = 0: -R, ISET = 1: inc, GSET = 2: -r, FSET = 3: read grid */
 		bool oblique;	/* true when -R...r was given (oblique map, probably), else false (map borders are meridians/parallels) */
 		bool via_polygon;	/* Got -R<countrycode> so w/e/s/n may not perfectly fit a grid spacing, for instance */
+		int aspect;	/* -1/+1 when we get -R from a grid whose x and y coordinates are the same units, else 0 */
 		uint32_t registration;	/* Registration mode of a grid given via -r or -Rgrid */
 		int row_order;	/* Order of rows in NetCDF output: 0 (not set) or k_nc_start_north or k_nc_start_south */
 		unsigned int mode;	/* For modern mode only: 0 = get exact region from data, 1 = rounded region from data */
@@ -173,6 +174,8 @@ struct GMT_COMMON {
 	} e;
 	struct f {	/* -f[i|o]<col>|<colrange>[t|T|g],.. */
 		bool active[2];	/* For GMT_IN|OUT */
+		bool is_geo[2];	/* true if -f[i|o]g was set to force a Cartesian grid to be seen as geographic */
+		bool is_cart[2];	/* true if -f[i|o]c was set to force a geographic grid to be seen as Cartesian */
 		char string[GMT_LEN64];
 	} f;
 	struct g {	/* -g[+]x|x|y|Y|d|Y<gap>[unit]  */
