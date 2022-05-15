@@ -43,7 +43,7 @@ double quotes.
 .. description-ends
 .. ingrid-syntax-begins
 
-*ingrid*\ [=\ *ID*\|\ ?\ *varname*][**+b**\ *band*][**+d**\ *divisor*][**+n**\ *invalid*]
+*ingrid*\ [=\ *ID*\|\ ?\ *varname*][**+b**\ *band*][**+d**\ *divisor*][**+n**\ *invalid*]\
 [**+o**\ *offset*][**+s**\ *scale*]
 
     |Add_ingrid| Optionally, append =\ *ID* for reading a specific file
@@ -63,8 +63,8 @@ double quotes.
 .. ingrid-syntax-ends
 .. outgrid-syntax-begins
 
-**-G**\ *outgrid*\ [=\ *ID*][**+d**\ *divisor*][**+n**\ *invalid*]
-[**+o**\ *offset*\|\ **a**][**+s**\ *scale*\|\ **a**]
+**-G**\ *outgrid*\ [=\ *ID*][**+d**\ *divisor*][**+n**\ *invalid*]\
+[**+o**\ *offset*\|\ **a**][**+s**\ *scale*\|\ **a**]\
 [:*driver*\ [*dataType*][**+c**\ *options*]]
 
     |Add_outgrid| Optionally, append =\ *ID* for writing a specific file format
