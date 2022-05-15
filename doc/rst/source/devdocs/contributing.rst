@@ -347,7 +347,7 @@ Setting up your local environment for dvc
 #. If you will need to push baseline images to the remote, ask a GMT maintainer to add you as a collaborator on
    `DAGsHub <https://dagshub.com/GenericMappingTools/gmt>`_.
 #. If you will need to push baseline imaged to the remote, set up
-   `authentication for the DVC remote <https://dagshub.com/docs/reference/dagshub_storage/#pushing-files-or-using-a-private-repo>`_.
+   `authentication for the DVC remote <https://dagshub.com/docs/feature_guide/dagshub_storage/#pushing-files-or-using-a-private-repo>`_.
 
 Pulling files from the remote for testing
 *****************************************
