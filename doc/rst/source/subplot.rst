@@ -124,7 +124,8 @@ Optional Arguments (begin mode)
     on more than one side.  Such space will be left untouched by the main map plotting but can
     be accessed by modules that plot scales, bars, text, etc.  Settings specified under **begin** directive apply
     to all subplots, while settings under **set** only apply to the selected (active) subplot.  **Note**: Common options |-X|
-    and |-Y| are not available during subplots; use |-C| instead.
+    and |-Y| are not available during subplots; use |-C| instead.  Also note that |-C| does not affect
+    the positioning of panel tags via |-A|.
 
 .. _-D:
 

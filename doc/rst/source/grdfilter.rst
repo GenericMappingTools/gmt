@@ -120,7 +120,7 @@ Required Arguments
     - (**l**) Lower: Return the minimum of all values.
     - (**L**) Lower: Return minimum of all positive values only.
     - (**u**) Upper: Return maximum of all values.
-    - (**U**) Upper: Return maximum or all negative values only.
+    - (**U**) Upper: Return maximum of all negative values only.
 
     In the case of **L**\|\ **U** it is possible that no data passes
     the initial sign test; in that case the filter will return NaN.
