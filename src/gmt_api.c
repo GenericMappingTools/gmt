@@ -12797,15 +12797,16 @@ GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key,
 	}
 
 	if (k >= 0 && key[k][K_EQUAL] == '=') {	/* Special handling */
+        size_t L = strlen (key[k]);
 		*takes_mod = 1;	/* Flag that KEY was special */
-		*n_pre = (strlen (key[k]) >= 5 && key[k][K_MODIFIER] && isdigit (key[k][K_MODIFIER])) ? (int)(key[k][K_MODIFIER]-'0') : 0;
+		*n_pre = (L >= 5 && key[k][K_MODIFIER] && isdigit (key[k][K_MODIFIER])) ? (int)(key[k][K_MODIFIER]-'0') : 0;
 		if ((*n_pre || key[k][K_MODIFIER] == 0) && (c = strchr (inarg, '+'))) {	/* Strip off trailing +<modifiers> */
 			c[0] = 0;
 			strcpy (argument, inarg);
 			c[0] = '+';
 			if (!argument[0]) *takes_mod = 2;	/* Flag that option is missing the arg and needs it later */
 		}
-		else if (strlen (key[k]) >= 5 && key[k][K_MODIFIER]) {	/* Look for a specific +<mod> in the option */
+		else if (L >= 5 && key[k][K_MODIFIER]) {	/* Look for a specific +<mod> in the option */
 			char code[3] = {"+?"};
 			code[1] = key[k][K_MODIFIER];
 			if ((c = strstr (inarg, code))) {	/* Found +<modifier> */
