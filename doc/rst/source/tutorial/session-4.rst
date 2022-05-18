@@ -228,7 +228,11 @@ we prefer to use the **-Ne** option; the value of
 
      gmt grdgradient @tut_relief.nc -Ne0.8 -A100 -fg -Gus_i.nc
 
-Given the CPT and the two gridded data sets we can
+However, for most maps relying on the remote data sets we do not actually
+need to extract subsets and run :doc:`/grdgradient` manually.  Instead, we let :doc:`/grdimage`
+create the gradients directly from the subset of the global grid, passing the
+arguments to :doc:`/grdgradient` via the **-I** option of :doc:`/grdimage`.  
+Given the previous CPT and our chosen :doc:`/grdgradient` arguments we can
 create the shaded relief image:
 
 .. literalinclude:: /_verbatim/GMT_tut_16.txt
@@ -241,16 +245,14 @@ Your plot should look like :ref:`our example 16 below <gmt_tut_16>`
    :width: 400 px
    :align: center
 
-   Result of GMT Tutorial example 16.  **Note**: Because we extracted data to
-   calculate intensities we must ensure the registrations are the same by selecting
-   the pixel-registered data with grdcut.
+   Result of GMT Tutorial example 16.
 
 
 Exercises:
 
 #. Force a gray-shade image.
 
-#. Rerun :doc:`/grdgradient` with **-N**\ 1.
+#. Rerun the example with **-I+a**\ 30\ **+n**\ 1.
 
 Multi-dimensional maps
 ----------------------
@@ -334,7 +336,7 @@ Option                    Purpose
 ========================= =============================================================================================================
 **-C**\ *cpt*             The *cpt* is required for color-coded surfaces and for contoured mesh plots
 **-G**\ *drape\_file*     Assign colors using *drape\_file* instead of *relief\_file*
-**-I**\ *intens\_file*    File with illumination intensities
+**-I**\ *intens\_file*    File with illumination intensities or arguments to :doc:`/grdgradient`
 **-Qm**                   Selects mesh plot
 **-Qs**\ [**+m**]         Surface plot using polygons; append **+m** to show mesh.  This option allows for **-W**
 **-Qi**\ *dpi*\ [**g**]   Image by scan-line conversion.  Specify *dpi*; append **g** to force gray-shade image.  **-B** is disabled.
@@ -368,7 +370,7 @@ Color-coded view
 ~~~~~~~~~~~~~~~~
 
 We will make a perspective, color-coded view of the US Rockies
-from the southeast.  This is done using
+from the southeast.  Similar to the :doc:`/grdimage` examples, this is done using
 
 .. literalinclude:: /_verbatim/GMT_tut_19.txt
 
@@ -380,8 +382,7 @@ Your plot should look like :ref:`our example 19 below <gmt_tut_19>`
    :width: 400 px
    :align: center
 
-   Result of GMT Tutorial example 19. **Note**: We again specify the
-   pixel-registered version when extracting a subset first.
+   Result of GMT Tutorial example 19.
 
 This plot is pretty crude since we selected 50 dpi but it is fast
 to render and allows us to try alternate values for vantage point
@@ -392,6 +393,6 @@ Exercises:
 
 #. Choose another vantage point and scaling.
 
-#. Redo :doc:`/grdgradient` with another illumination direction and plot again.
+#. Examine the :doc:`/grdgradient` options and select another illumination direction in **-I** and plot again.
 
 #. Select a higher *dpi*, e.g., 200.
