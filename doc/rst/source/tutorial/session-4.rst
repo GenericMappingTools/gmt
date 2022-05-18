@@ -241,7 +241,9 @@ Your plot should look like :ref:`our example 16 below <gmt_tut_16>`
    :width: 400 px
    :align: center
 
-   Result of GMT Tutorial example 16
+   Result of GMT Tutorial example 16.  **Note**: Because we extracted data to
+   calculate intensities we must ensure the registrations are the same by selecting
+   the pixel-registered data with grdcut.
 
 
 Exercises:
