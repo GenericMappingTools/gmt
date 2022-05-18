@@ -380,7 +380,8 @@ Your plot should look like :ref:`our example 19 below <gmt_tut_19>`
    :width: 400 px
    :align: center
 
-   Result of GMT Tutorial example 19
+   Result of GMT Tutorial example 19. **Note**: We again specify the
+   pixel-registered version when extracting a subset first.
 
 This plot is pretty crude since we selected 50 dpi but it is fast
 to render and allows us to try alternate values for vantage point
