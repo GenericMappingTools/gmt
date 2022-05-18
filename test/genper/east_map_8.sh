@@ -19,6 +19,6 @@ Height=30.0
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+
 
 gmt makecpt -Cglobe > t.cpt
-gmt grdcut -R275/290/30/45 @earth_relief_02m -Getopo2-chesapeake.nc=ns
+gmt grdcut -R275/290/30/45 @earth_relief_02m_p -Getopo2-chesapeake.nc=ns
 gmt grdimage ${GMT_VERBOSE} etopo2-chesapeake.nc -P -Xc -Yc $REGION $PROJ -Ct.cpt -K > $ps
 gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -B5g5 -B+t${TITLE} -Ia -Na -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
