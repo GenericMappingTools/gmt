@@ -101,12 +101,16 @@ Required Arguments
 
             **1**,\ **2**:
             longitude, latitude of station (**-:** option interchanges order)
+
             **3**,\ **4**:
             eastward, northward velocity (**-:** option interchanges order)
+
             **5**,\ **6**:
             uncertainty of eastward, northward velocities (1-sigma) (**-:** option interchanges order)
+
             **7**:
             correlation between eastward and northward components
+
             **Trailing text**:
             name of station (optional).
 
@@ -119,6 +123,7 @@ Required Arguments
 
             **1**,\ **2**:
             longitude, latitude of station (**-:** option interchanges order)
+
             **3**,\ **4**:
             eastward, northward components of anisotropy vector (**-:** option interchanges order)
 
@@ -136,12 +141,16 @@ Required Arguments
 
             **1**,\ **2**:
             longitude, latitude, of station (**-:** option interchanges order)
+
             **3**,\ **4**:
             eastward, northward velocity (**-:** option interchanges order)
+
             **5**,\ **6**:
             semi-major, semi-minor axes
+
             **7**:
             counter-clockwise angle, in degrees, from horizontal axis to major axis of ellipse.
+
             **Trailing text**:
             name of station (optional)
 
@@ -157,8 +166,10 @@ Required Arguments
 
             **1**,\ **2**:
             longitude, latitude, of station (**-:** option interchanges order)
+
             **3**:
             rotation in radians
+
             **4**:
             rotation uncertainty in radians
 
@@ -170,11 +181,14 @@ Required Arguments
 
             **1**,\ **2**:
             longitude, latitude, of station (**-:** option interchanges order)
+
             **3**:
             eps1, the most extensional eigenvalue of strain tensor, with
             extension taken positive.
+
             **4**:
             eps2, the most compressional eigenvalue of strain tensor, with extension taken positive.
+
             **5**:
             azimuth of eps2 in degrees CW from North.
 
