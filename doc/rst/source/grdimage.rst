@@ -213,8 +213,6 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
-.. include:: earth_relief.rst_
-
 .. module_common_ends
 
 .. module_note_begins
