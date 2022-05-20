@@ -14146,6 +14146,7 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 	options = *in_options;
 
 	if (!strncmp (name, "gmtinfo", 7U)) return false;	/* Does not ever produce PS */
+	if (!strncmp (name, "grdfill", 7U)) return false;	/* Does not ever produce PS */
 	if (!strncmp (name, "gmtread", 7U)) return false;	/* Does not ever produce PS */
 	if (!strncmp (name, "gmtwrite", 8U)) return false;	/* Does not ever produce PS */
 	if (!strncmp (name, "gmtbinstats", 11U)) return false;	/* Does not ever return PS */
@@ -15066,13 +15067,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	#endif
 
 	is_PS = gmtinit_is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
+	if (!is_PS)	/* Override API default since module is a data processor */
+		API->use_gridline_registration = true;
 
 	/* First handle any halfhearted naming of remote datasets where _g or _p should be appended */
 
 	if (options) {
-		if (!is_PS) {	/* Override API default since module is a data processor */
-			API->use_gridline_registration = true;
-		}
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 			if (!gmtinit_might_be_remotefile (opt->arg)) continue;
 			if (remote_first) {
@@ -15081,7 +15081,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 			gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
 		}
-		API->use_gridline_registration = false;	/* Reset API default setting */
 	}
 
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
@@ -15858,6 +15857,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	bool pass_changes_back;
 	struct GMT_DEFAULTS saved_settings;
 	double spacing[2];
+
+	GMT->parent->use_gridline_registration = false;	/* Reset API default setting on grid registration */
 
 	gmt_M_memcpy (spacing, GMT->current.plot.gridline_spacing, 2U, double);	/* Remember these so they can survive the end of the module */
 

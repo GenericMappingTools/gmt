@@ -543,7 +543,8 @@ GMT_LOCAL int grdfill_sample (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct 
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to use vectors as a virtual dataset!\n");
 		return (API->error);
 	}
-	sprintf (args, "-G%s %s > %s", file, input, output);	/* Build grdtrack command */
+	sprintf (args, "-G%s -R%.16g/%.16g/%.16g/%.16g %s > %s", file, In->header->wesn[XLO], In->header->wesn[XHI],
+		In->header->wesn[YLO], In->header->wesn[YHI], input, output);	/* Build grdtrack command and limit with -R */
 	if (GMT_Call_Module (API, "grdtrack", GMT_MODULE_CMD, args)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Run-time error from grdtrack\n");
 		return (API->error);
