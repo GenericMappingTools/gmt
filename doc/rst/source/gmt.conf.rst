@@ -313,15 +313,15 @@ FORMAT Parameters
         [default is **%.12g**]. To give some columns a separate format,
         supply one or more comma-separated *cols*:*format* specifications,
         where *cols* can be specific columns (e.g., 5 for 6th since 0 is the first)
-        or a range of columns (e.g.,3-7).
+        or a range of columns (e.g., 3-7).
         The last specification without column information will override the format for all other columns.
-        Alternatively, you canlist N space-separated formats and these apply to the first N columns.
+        Alternatively, you can list N space-separated formats and these apply to the first N columns.
 
         The printf syntax is ``%[minimum width].[precision]type``,
         where **type** may be **f**, **e**, **E**, **g** or **G**.
         The default is ``%.12g``, i.e. no minimum width and 12 digit precision.
 
-        See table below for examples. Input is pi (3.14159265359).
+        See table below for examples. Input is π (3.14159265359).
 
         ======   =============
         Format   Output
