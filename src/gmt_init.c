@@ -14146,6 +14146,7 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 	options = *in_options;
 
 	if (!strncmp (name, "gmtinfo", 7U)) return false;	/* Does not ever produce PS */
+	if (!strncmp (name, "grdfill", 7U)) return false;	/* Does not ever produce PS */
 	if (!strncmp (name, "gmtread", 7U)) return false;	/* Does not ever produce PS */
 	if (!strncmp (name, "gmtwrite", 8U)) return false;	/* Does not ever produce PS */
 	if (!strncmp (name, "gmtbinstats", 11U)) return false;	/* Does not ever return PS */
@@ -14170,7 +14171,7 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 	else if (!strncmp (name, "pscontour", 9U)) {	/* Check for -D option */
 		if ((opt = GMT_Find_Option (API, 'D', options))) return false;	/* -D writes dataset */
 	}
-	else if (!strncmp (name, "psevents", 8U)) {	/* Check for -D option */
+	else if (!strncmp (name, "psevents", 8U)) {	/* Check for -A option */
 		if ((opt = GMT_Find_Option (API, 'A', options)) == NULL) return true;	/* All but -A is guaranteed to write PS */
 		if (opt->arg[0] == 'r' && opt->arg[1] && isdigit (opt->arg[1])) return false;	/* This is just preparing an densely sampled file */
 		return true;	/* Any other case gets here and makes PS */
@@ -15045,7 +15046,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	 * Note: 1. If no -J can be found in the history we provide either -JQ15c (geographic data) or -JX15c (Cartesian).
 	 *
 	 * Modules like pslegend has "rj" since -R -J are not required if -Dx is used but required for other settings.
-	 * Modules like blockmean, surface has "R" since it is never cool to autodetermine grid domains as this also
+	 * Modules like blockmean, surface has "R" since it is never cool to auto-determine grid domains as this also
 	 *  depends on grid spacing, for instance.
 	 * Modules like grdview has "g" since they always have a grid domain to fall back on in the absence of -R.
 	 * Modules like psxy has "d" so we can make a quick map without specifying -R.
@@ -15065,10 +15066,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	gmt_M_unused(this_module_kw);
 	#endif
 
-	/* First handle any half-hearted naming of remote datasets where _g or _p should be appended */
+	is_PS = gmtinit_is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
+	if (!is_PS)	/* Override API default since module is a data processor */
+		API->use_gridline_registration = true;
+
+	/* First handle any halfhearted naming of remote datasets where _g or _p should be appended */
 
 	if (options) {
-		if (!strcmp (mod_name, "grdtrack")) API->use_gridline_registration = true;	/* Override API default since grdtrack is a data processor */
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 			if (!gmtinit_might_be_remotefile (opt->arg)) continue;
 			if (remote_first) {
@@ -15077,7 +15081,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 			gmt_set_unspecified_remote_registration (API, &(opt->arg));	/* If argument is a remote file name then this handles any missing registration _p|_g */
 		}
-		API->use_gridline_registration = false;	/* Reset API default setting */
 	}
 
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
@@ -15184,7 +15187,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 
-	is_PS = gmtinit_is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
 	if (is_PS) {
 		if (gmtinit_set_modern_mode_if_oneliner (API, options))	/* Look out for modern -png mymap and similar specs */
 			return NULL;
@@ -15855,6 +15857,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	bool pass_changes_back;
 	struct GMT_DEFAULTS saved_settings;
 	double spacing[2];
+
+	GMT->parent->use_gridline_registration = false;	/* Reset API default setting on grid registration */
 
 	gmt_M_memcpy (spacing, GMT->current.plot.gridline_spacing, 2U, double);	/* Remember these so they can survive the end of the module */
 

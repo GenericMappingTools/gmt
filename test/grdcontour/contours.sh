@@ -16,7 +16,7 @@ color_contour () {
 	done
 }
 
-gmt grdcut @earth_relief_02m -R204/206/19/21 -GBigIsland.nc
+gmt grdcut @earth_relief_02m_p -R204/206/19/21 -GBigIsland.nc
 gmt makecpt -Cseis -T0/1 > contour.cpt
 
 # The bottom map will have contours oriented so that as you move along
