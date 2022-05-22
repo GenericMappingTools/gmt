@@ -76,7 +76,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *resolution*\ [**+f**]
-    Selects the resolution of the data set to use with the operator LDISTG
+    Selects the resolution of the data set to use with the operator **LDISTG**
     ((**f**)ull, (**h**)igh, (**i**)ntermediate, (**l**)ow, and (**c**)rude). The
     resolution drops off by 80% between data sets [Default is **l**].
     Append **+f** to automatically select a lower resolution should the one
@@ -112,8 +112,9 @@ Optional Arguments
     Reduce (i.e., collapse) the entire stack to a single grid by applying the
     next operator to all co-registered nodes across the entire stack.  You
     must specify |-S| *after* listing all of your grids.  **Note**: You can only
-    follow |-S| with a reducing operator, i.e., from the list ADD, AND, MAD,
-    LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB, VAR or XOR.
+    follow |-S| with a reducing operator, i.e., from the list **ADD**, **AND**, **MAD**,
+    **LMSSCL**, **MAX**, **MEAN**, **MEDIAN**, **MIN**, **MODE**, **MUL**, **RMS**,
+    **STD**, **SUB**, **VAR** or **XOR**.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -633,33 +634,33 @@ The following symbols have special meaning:
 +-------------+-------------------------------------------------+
 | **EPS_F**   | 1.192092896e-07 (single precision epsilon       |
 +-------------+-------------------------------------------------+
-| **XMIN**    | Minimum x value                                 |
+| **XMIN**    | Minimum *x* value                               |
 +-------------+-------------------------------------------------+
-| **XMAX**    | Maximum x value                                 |
+| **XMAX**    | Maximum *x* value                               |
 +-------------+-------------------------------------------------+
-| **XRANGE**  | Range of x values                               |
+| **XRANGE**  | Range of *x* values                             |
 +-------------+-------------------------------------------------+
-| **XINC**    | x increment                                     |
+| **XINC**    | The *x* increment                               |
 +-------------+-------------------------------------------------+
-| **NX**      | The number of x nodes                           |
+| **NX**      | The number of *x* nodes                         |
 +-------------+-------------------------------------------------+
-| **YMIN**    | Minimum y value                                 |
+| **YMIN**    | Minimum *y* value                               |
 +-------------+-------------------------------------------------+
-| **YMAX**    | Maximum y value                                 |
+| **YMAX**    | Maximum *y* value                               |
 +-------------+-------------------------------------------------+
-| **YRANGE**  | Range of y values                               |
+| **YRANGE**  | Range of *y* values                             |
 +-------------+-------------------------------------------------+
-| **YINC**    | y increment                                     |
+| **YINC**    | The *y* increment                               |
 +-------------+-------------------------------------------------+
-| **NY**      | The number of y nodes                           |
+| **NY**      | The number of *y* nodes                         |
 +-------------+-------------------------------------------------+
-| **X**       | Grid with x-coordinates                         |
+| **X**       | Grid with *x*-coordinates                       |
 +-------------+-------------------------------------------------+
-| **Y**       | Grid with y-coordinates                         |
+| **Y**       | Grid with *y*-coordinates                       |
 +-------------+-------------------------------------------------+
-| **XNORM**   | Grid with normalized [-1 to +1] x-coordinates   |
+| **XNORM**   | Grid with normalized [-1 to +1] *x*-coordinates |
 +-------------+-------------------------------------------------+
-| **YNORM**   | Grid with normalized [-1 to +1] y-coordinates   |
+| **YNORM**   | Grid with normalized [-1 to +1] *y*-coordinates |
 +-------------+-------------------------------------------------+
 | **XCOL**    | Grid with column numbers 0, 1, ..., NX-1        |
 +-------------+-------------------------------------------------+
@@ -700,15 +701,15 @@ Notes On Operators
    the mean 3-D vector to determine the mean location.
 
 #. The operator **PLM** calculates the associated Legendre polynomial
-   of degree L and order M (0 <= M <= L), and its argument is the sine of
+   of degree *L* and order *M* (:math:`0 \leq M \leq L)`, and its argument is the sine of
    the latitude. **PLM** is not normalized and includes the Condon-Shortley
-   phase (-1)^M. **PLMg** is normalized in the way that is most commonly
-   used in geophysics. The C-S phase can be added by using -M as argument.
+   phase :math:`(-1)^M`. **PLMg** is normalized in the way that is most commonly
+   used in geophysics. The Condon-Shortley phase can be added by using *-M* as argument.
    **PLM** will overflow at higher degrees, whereas **PLMg** is stable
    until ultra high degrees (at least 3000).
 
 #. The operators **YLM** and **YLMg** calculate normalized spherical
-   harmonics for degree L and order M (0 <= M <= L) for all positions in
+   harmonics for degree *L* and order *M* (:math:`0 \leq M \leq L)` for all positions in
    the grid, which is assumed to be in degrees. **YLM** and **YLMg** return
    two grids, the real (cosine) and imaginary (sine) component of the
    complex spherical harmonic. Use the **POP** operator (and **EXCH**) to
@@ -718,8 +719,8 @@ Notes On Operators
    physics and seismology. The square of **YLM** integrates to 1 over a
    sphere. In geophysics, **YLMg** is normalized to produce unit power when
    averaging the cosine and sine terms (separately!) over a sphere (i.e.,
-   their squares each integrate to 4 pi). The Condon-Shortley phase (-1)^M
-   is not included in **YLM** or **YLMg**, but it can be added by using -M
+   their squares each integrate to 4 pi). The Condon-Shortley phase :math:`(-1)^M`
+   is not included in **YLM** or **YLMg**, but it can be added by using *-M*
    as argument.
 
 #. All the derivatives are based on central finite differences, with
@@ -755,8 +756,8 @@ Notes On Operators
    For 3-D vector they are all unit vectors to begin with.
 
 #. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
-   only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
-   sRGB (x, y, z) conversions between all four color spaces.
+   only *r,g,b* and *h,s,v* triplet conversions, but also *l,a,b* (CIE L a b ) and
+   sRGB (*x,y,z*) conversions between all four color spaces.
 
 #. The **DAYNIGHT** operator returns a grid with ones on the side facing the given
    sun location at (A,B).  If the transition width (C) is zero then we get
