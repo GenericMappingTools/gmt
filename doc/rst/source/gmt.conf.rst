@@ -196,8 +196,6 @@ FORMAT Parameters
     **FORMAT_CLOCK_IN**
         Formatting template that indicates how a clock string is formatted.
         This template is then used to guide the reading of clock strings in data fields.
-        To use a floating point format for the smallest unit (e.g., seconds), append **.xxx**, where the number of x indicates the desired precision.
-        If no floating point is indicated then the smallest specified unit will be rounded off to nearest integer.
         For 12-hour clocks, append **am**, **AM**, **a.m.**, or **A.M.** (GMT will replace a|A with p|P for pm).
         As examples, try hh:mm, hh:mm:ssAM, hh:mm:ss.xxxx etc. [default is **hh:mm:ss**].
 
@@ -212,6 +210,8 @@ FORMAT Parameters
         In addition, for output we can also start the template with a leading hyphen (**-**).
         Then each integer item (y,m,d) will be printed without leading zeros (default uses fixed width formats).
         If the format is simply **-** then no clock is output and the ISO T divider between date and clock is omitted.
+        To use a floating point format for the smallest unit (e.g., seconds), append **.xxx**, where the number of x indicates the desired precision.
+        If no floating point is indicated then the smallest specified unit will be rounded off to nearest integer.
         **Note**: When high-precision time-series are written to ASCII output the default format may not be adequate.
         Many modules automatically handle this by extending the format, but you should be alert of unusual situations where data may appear truncated to nearest second.
 
