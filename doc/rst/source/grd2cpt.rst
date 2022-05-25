@@ -309,6 +309,26 @@ Here, cdf.txt would be the cumulative hypsometric curve for the Earth.
 
 .. include:: cpt_notes.rst_
 
+Restriction on CPT Output Names
+-------------------------------
+
+Since **grd2cpt** will also interpolate from any existing CPT you
+may have in your directory, you should never use one of the master CPT names
+as an output filename; hence the my_gebco.cpt in the example.  If you
+do create a CPT of such a name, e.g., rainbow.cpt, then **grd2cpt** will
+read that file first and not look for the master CPT in the shared GMT
+directory. For instance, the command::
+
+    gmt grd2cpt my_grid.grd -Crainbow > rainbow.cpt
+
+will return error messages like this::
+
+    grd2cpt [ERROR]: Color palette table rainbow.cpt is empty
+
+since the redirection will first create an empty file rainbow.cpt before
+**grd2cpt** even has started and it will then try to read it and it is all
+downhill from there.
+
 See Also
 --------
 
