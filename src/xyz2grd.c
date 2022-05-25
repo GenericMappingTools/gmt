@@ -480,7 +480,10 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 		n_left = Grid->header->nm;
 
-		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, gmt_grdfloat);
+		if ((Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, gmt_grdfloat)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate grid memory\n");
+			Return (GMT_MEMORY_ERROR);
+		}
 		/* ESRI grids are scanline oriented (top to bottom), as are the GMT grids */
 		row = col = 0;
 		if (fscanf (fp, "%s", line) != 1) {
@@ -539,7 +542,10 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	/* For Amode = 'd' or 'S' we need a second grid, and also require a minimum of 2 points per grid */
 	if (Amode == 'd' || Amode == 'S') {
-		data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, gmt_grdfloat);
+		if ((data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, gmt_grdfloat)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate secondary data memory\n");
+			Return (GMT_MEMORY_ERROR);
+		}
 		n_min = 2;
 	}
 
@@ -576,7 +582,11 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	}
 	else {
 		zcol = GMT_Z;
-		flag = gmt_M_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* No padding needed for flag array */
+		if ((flag = gmt_M_memory (GMT, NULL, Grid->header->nm, unsigned int)) == NULL) {	/* No padding needed for flag array */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate flag memory\n");
+			gmt_M_free (GMT, data);
+			Return (GMT_MEMORY_ERROR);
+		}
 		gmt_M_memset (Grid->header->pad, 4, unsigned int);	/* Algorithm below expects no padding; we repad at the end */
 		GMT->current.setting.io_nan_records = false;	/* Cannot have x,y as NaNs here */
 	}
