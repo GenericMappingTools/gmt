@@ -10,7 +10,7 @@ set (GSHHG_ROOT "$ENV{COASTLINEDIR}/gshhg")
 set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
 
 set (GMT_USE_THREADS TRUE)
-set (GMT_ENABLE_OPENMP TRUE)
+# set (GMT_ENABLE_OPENMP TRUE)
 
 # recommended even for release build
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
