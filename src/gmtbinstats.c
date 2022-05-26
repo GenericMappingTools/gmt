@@ -33,7 +33,7 @@
 #define THIS_MODULE_PURPOSE	"Bin spatial data and determine statistics per bin"
 #define THIS_MODULE_KEYS	"<D{,>?}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVabdefghinqrw"
+#define THIS_MODULE_OPTIONS "-:RVabdefghiqrw"
 
 enum gmtbinstats_types {
 	GMTBINSTATS_LOWER = 1,
