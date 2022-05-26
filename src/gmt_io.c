@@ -5463,12 +5463,23 @@ char *gmt_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 	 * Looks for file stem in current directory, $GMT_USERDIR (default ~/.gmt), $GMT_SHAREDIR/subdir and $GMT_SHAREDIR.
 	 */
 
-	/* First look in the current working directory */
+	/* First look in the current working directory, but must be nonzero size */
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 0. Will try to find subdir=%s stem = %s suffix=%s\n", subdir, stem, suffix);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 1. gmt_getsharepath trying current dir\n");
 	sprintf (path, "%s%s", stem, suffix);
-	if (!access (path, mode)) return (path);	/* Yes, found it in current directory */
+
+	if (!access (path, mode)) {	/* Yes, found it in current directory */
+		/* But is it nonzero size? */
+		struct stat S;
+		if (stat (path, &S) == 0 && S.st_size == 0) {	/* Got empty file to skip */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_getsharepath: Skip empty file %s in current directory\n", path);
+			goto try_other_paths;
+		}
+		return (path);	/* Success! Found a nonzero sized file */
+	}
+
+try_other_paths:
 
 	/* Do not continue when full pathname is given */
 
