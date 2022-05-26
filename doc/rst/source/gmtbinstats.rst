@@ -30,7 +30,6 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
-[ |SYN_OPT-n| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-w| ]
@@ -157,13 +156,6 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
-
-**-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*][**+t**\ *threshold*]
-   Append **+b**\ *BC* to set any boundary conditions to be used,
-   adding **g** for geographic, **p** for periodic, or **n** for
-   natural boundary conditions. For the latter two you may append **x**
-   or **y** to specify just one direction, otherwise both are assumed.
-   [Default is geographic if grid is geographic].
 
 .. include:: explain_-qi.rst_
 
