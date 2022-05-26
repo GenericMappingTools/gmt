@@ -447,6 +447,9 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Removed inset file\n");
 		gmt_reload_history (API->GMT);
 		gmt_reload_settings (API->GMT);
+		/* Undo any shrink scaling memory */
+		API->inset_shrink_scale = 1.0;
+		API->inset_shrink = false;
 	}
 
 	gmt_plotend (GMT);
