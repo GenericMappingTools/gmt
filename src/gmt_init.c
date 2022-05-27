@@ -13753,6 +13753,9 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	gmt_M_free (GMT, GMT->parent->remote_info);
 	/* Free snapshot of GMT common option structure */
 	gmt_M_free (GMT, GMT->parent->common_snapshot);	/* Free snapshot */
+	/* Undo any inset shrink scaling memory */
+	GMT->parent->inset_shrink_scale = 1.0;
+	GMT->parent->inset_shrink = false;
 
 #ifdef MEMDEBUG
 	gmt_memtrack_report (GMT);

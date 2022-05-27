@@ -2195,6 +2195,10 @@ GMT_LOCAL void gmtmap_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, dou
 		}
 		update_parameters = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map for inset by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, I->dx, I->dy);
+		if (fx < 1.0) {	/* Need this for modules called within the inset */
+			GMT->parent->inset_shrink = true;
+			GMT->parent->inset_shrink_scale = fx;
+		}
 	}
 	else if (P->active && no_scaling == 0)	{	/* Must rescale to fit inside subplot dimensions and set dx,dy for centering */
 		gmtmap_adjust_panel_for_gaps (GMT, P);	/* Deal with any gaps requested via subplot -C: shrink w/h and adjust origin */
@@ -2218,6 +2222,12 @@ GMT_LOCAL void gmtmap_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, dou
 			GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_LAT_PARALLEL;	/* Plot latitude parallel to frame for geo maps */
 		}
 	}
+	else if (GMT->parent->inset_shrink) {	/* We are in a module called inside a map inset call which may have had to adjust the scale */
+		update_parameters = true;
+		fx = fy = GMT->parent->inset_shrink_scale;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling projection scale inside inset by factors fx = %g\n", fx);
+	}
+
 	if (update_parameters) {	/* Scale the parameters due to inset or subplot adjustments */
 		/* Update all projection parameters given the reduction factors fx, fy */
 		GMT->current.proj.scale[GMT_X] *= fx;
