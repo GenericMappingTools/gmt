@@ -6075,7 +6075,7 @@ uint64_t gmt_read_list (struct GMT_CTRL *GMT, char *file, char ***list) {
 		return (0);
 	}
 
-	p = gmt_M_memory (GMT, NULL, n_alloc, char *);
+	if ((p = gmt_M_memory (GMT, NULL, n_alloc, char *)) == NULL) return (0);
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		gmt_chop (line);	/* Remove trailing CR or LF */
@@ -6227,7 +6227,7 @@ uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern, char ***li
 	char **p = NULL, **file = NULL;
 	if ((p = gmtlib_get_dir_list (GMT, ".", NULL)) == NULL) return 0;
 
-	file = gmt_M_memory (GMT, NULL, n_alloc, char *);
+	if ((file = gmt_M_memory (GMT, NULL, n_alloc, char *)) == NULL) return 0;
 
 	while (p[k]) {	/* A NULL marks the end for us */
 		if (gmtsupport_matchwild (p[k], pattern)) {	/* Found a match */
@@ -7639,6 +7639,7 @@ struct GMT_PALETTE * gmtlib_create_palette (struct GMT_CTRL *GMT, uint64_t n_col
 	/* Makes an empty palette table with a blank hidden struct */
 	struct GMT_PALETTE *P = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE);
 	struct GMT_PALETTE_HIDDEN *PH = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE_HIDDEN);
+	if (P == NULL || PH == NULL) return NULL;
 	P->hidden = PH;
 	if (n_colors > 0) P->data = gmt_M_memory (GMT, NULL, n_colors, struct GMT_LUT);
 	P->n_colors = (unsigned int)n_colors;
@@ -7821,6 +7822,7 @@ char ** gmt_cat_cpt_strings (struct GMT_CTRL *GMT, char *in_label, unsigned int 
 	char all_items[12*GMT_LEN16] = {""};
 	char *label = NULL, **Clabel = gmt_M_memory (GMT, NULL, n, char *);
 
+	if (Clabel == NULL) return NULL;
 	if (n == 12 && !strcmp (in_label, "M")) {	/* Create a month-list from current defaults */
 		gmtlib_set_case_and_kind (GMT, GMT->current.setting.format_time[GMT_PRIMARY], &upper, &kind);
 		strcpy (all_items, GMT->current.language.month_name[kind][0]);
@@ -9675,6 +9677,8 @@ int gmtlib_akima (struct GMT_CTRL *GMT, double *x, double *y, uint64_t nx, doubl
 int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c) {
 	uint64_t i, k;
 	double ip, s, dx1, i_dx2, *u = gmt_M_memory (GMT, NULL, n, double);
+
+	if (u == NULL) return GMT_MEMORY_ERROR;
 
 	/* Assumes that n >= 4 and x is monotonically increasing */
 

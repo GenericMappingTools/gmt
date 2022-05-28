@@ -69,10 +69,7 @@ GMT_LOCAL int gmtvector_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int
 
 	/* allocate work space */
 
-	if ((rv1 = gmt_M_memory (GMT, NULL, n, double)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_svdcmp: Unable to allocate memory\n");
-		return (GMT_MEMORY_ERROR);
-	}
+	if ((rv1 = gmt_M_memory (GMT, NULL, n, double)) == NULL) return (GMT_MEMORY_ERROR);
 
 	/* do householder reduction to bidiagonal form */
 
@@ -514,14 +511,8 @@ GMT_LOCAL uint64_t gmtvector_resample_path_spherical (struct GMT_CTRL *GMT, doub
 	}
 	n_out++;	/* Since number of points = number of segments + 1 */
 
-	if ((lon_out = gmt_M_memory (GMT, NULL, n_out, double)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtvector_resample_path_spherical: Unable to allocate memory\n");
-		return (GMT_MEMORY_ERROR);
-	}
-	if ((lat_out = gmt_M_memory (GMT, NULL, n_out, double)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtvector_resample_path_spherical: Unable to allocate memory\n");
-		return (GMT_MEMORY_ERROR);
-	}
+	if ((lon_out = gmt_M_memory (GMT, NULL, n_out, double)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((lat_out = gmt_M_memory (GMT, NULL, n_out, double)) == NULL) return (GMT_MEMORY_ERROR);
 
 	lon_out[0] = lon_in[0];	lat_out[0] = lat_in[0];	/* Start at same origin */
 	for (row_in = row_out = 1; row_out < n_out; row_out++) {	/* For remaining output points */
@@ -620,14 +611,8 @@ GMT_LOCAL uint64_t gmtvector_resample_path_cartesian (struct GMT_CTRL *GMT, doub
 	}
 	n_out++;	/* Since number of points = number of segments + 1 */
 
-	if ((x_out = gmt_M_memory (GMT, NULL, n_out, double)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtvector_resample_path_cartesian: Unable to allocate memory\n");
-		return (GMT_MEMORY_ERROR);
-	}
-	if ((y_out = gmt_M_memory (GMT, NULL, n_out, double)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtvector_resample_path_cartesian: Unable to allocate memory\n");
-		return (GMT_MEMORY_ERROR);
-	}
+	if ((x_out = gmt_M_memory (GMT, NULL, n_out, double)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((y_out = gmt_M_memory (GMT, NULL, n_out, double)) == NULL) return (GMT_MEMORY_ERROR);
 
 	x_out[0] = x_in[0];	y_out[0] = y_in[0];	/* Start at same origin */
 	for (row_in = row_out = 1; row_out < n_out; row_out++) {	/* For remaining output points */
@@ -1077,10 +1062,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	lwork = -1;
 	dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, &wkopt, &lwork, &info );
 	lwork = (int)wkopt;
-	if ((work = gmt_M_memory (GMT, NULL, lwork, double)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_svdcmp: Unable to allocate memory\n");
-		return (GMT_MEMORY_ERROR);
-	}
+	if ((work = gmt_M_memory (GMT, NULL, lwork, double)) == NULL) return (GMT_MEMORY_ERROR);
 	/* Solve eigenproblem */
 	dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, work, &lwork, &info );
 	/* Check for convergence */
@@ -1113,10 +1095,7 @@ struct GMT_SINGULAR_VALUE * gmt_sort_svd_values (struct GMT_CTRL *GMT, double *w
 	/* Store the eigenvalues in a structure and sort it so that the array is
 	 * sorted from large to small values while the order reflects the original position in w */
 	struct GMT_SINGULAR_VALUE *eigen = gmt_M_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
-	if (eigen == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_sort_svd_values: Unable to allocate memory\n");
-		return (NULL);
-	}
+	if (eigen == NULL) return (NULL);
 	for (unsigned int i = 0; i < n; i++) {	/* Load in original order from |w| */
 		eigen[i].value = fabs (w[i]);
 		eigen[i].order = i;
@@ -1140,10 +1119,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 #ifdef HAVE_LAPACK
 	gmt_M_unused(v);	/* Not used when we solve via Lapack */
 #endif
-	if (tmp == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_solve_svd: Unable to allocate memory\n");
-		return (0);
-	}
+	if (tmp == NULL) return (0);
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_solve_svd: Evaluate solution\n");
 
 	/* Find maximum singular value.  Assumes w[] may have negative eigenvalues */
