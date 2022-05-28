@@ -304,7 +304,7 @@ FORMAT Parameters
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax, see :term:`FORMAT_FLOAT_OUT`) to be used when plotting double
         precision floating point numbers along plot frames and contours [default is **%.12g**].
-        For geographic coordinates, see :term:`FORMAT_GEO_MAP`. 
+        For geographic coordinates, see :term:`FORMAT_GEO_MAP`.
 
     **FORMAT_FLOAT_OUT**
         Format (C language `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_ syntax)
@@ -716,7 +716,7 @@ MAP Parameters
         Determines if map embellishments like directional or magnetic compasses,
         map scales or vertical data scales should have attributes that scale with
         the size of the feature (**auto**) or use the settings as is (**manual**).
-   
+
     **MAP_FRAME_AXES**
         Sets which axes to draw and annotate. Combine any uppercase **W**,
         **E**, **S**, **N**, **Z** to draw and annotate west, east, south,
@@ -1261,8 +1261,8 @@ Calendar/Time Parameters
     **TIME_UNIT**
         Specifies the units of relative time data since epoch (see
         :term:`TIME_EPOCH`). Choose **y** (year - assumes all years are 365.2425
-        days), **o** (month - assumes all months are of equal length y/12), *ww*
-        (week) **d** (day), **h** (hour), **m** (minute), or **s** (second) [default is **s**].
+        days), **o** (month - assumes all months are of equal length y/12), **w**
+        (week), **d** (day), **h** (hour), **m** (minute), or **s** (second) [default is **s**].
 
     **TIME_WEEK_START**
         When weeks are indicated on time axes, this parameter determines the
