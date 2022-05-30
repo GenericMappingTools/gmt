@@ -2055,7 +2055,7 @@ void gmt_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, d
 		return;
 	}
 
-	dev = gmt_M_memory (GMT, NULL, n, double);
+	if ((dev = gmt_M_memory (GMT, NULL, n, double)) == NULL) return;
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
 	gmt_sort_array (GMT, dev, n, GMT_DOUBLE);
 	/* Eliminate any NaNs which would have congregated at the end of the array */
@@ -2081,7 +2081,7 @@ void gmt_getmad_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, uint64_t n, double loc
 		*scale = 0.0;
 		return;
 	}
-	dev = gmt_M_memory (GMT, NULL, n, double);
+	if ((dev = gmt_M_memory (GMT, NULL, n, double)) == NULL) return;
 	for (i = 0; i < n; i++) dev[i] = (gmt_grdfloat) fabs (x[i] - location);
 	gmt_sort_array (GMT, dev, n, GMT_FLOAT);
 	for (i = n; i > 0 && gmt_M_is_fnan (dev[i-1]); i--);
@@ -2584,6 +2584,7 @@ double gmt_grd_median (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 	if (W) {	/* Weights provided */
 		openmp_int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
+		if (pair == NULL) return 0.0;
 		/* 1. Create array of value,weight pairs, skipping NaNs */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
 			if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_dnan (W->data[node]))
@@ -2618,6 +2619,7 @@ double gmt_grd_mad (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W
 	if (W) {	/* Weights provided */
 		openmp_int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
+		if (pair == NULL) return 0.0;
 		if (median) {	/* Already have the median */
 			wmed = *median;
 			/* 3. Compute the absolute deviations from this median */
@@ -2675,6 +2677,7 @@ double gmt_grd_mode (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *
 	if (W) {	/* Weights provided */
 		openmp_int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
+		if (pair == NULL) return 0.0;
 		/* 1. Create array of value,weight pairs, skipping NaNs */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
 			if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_dnan (W->data[node]))
@@ -2711,6 +2714,7 @@ double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 	if (W) {	/* Weights provided */
 		openmp_int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
+		if (pair == NULL) return 0.0;
 		if (mode) {	/* Already got the mode */
 			wmode = *mode;
 			/* 3. Compute the absolute deviations from this mode */

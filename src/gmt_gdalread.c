@@ -448,7 +448,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* Get some metadata for each band. */
 	/* ------------------------------------------------------------------------- */
 
-	Ctrl->band_field_names = gmt_M_memory(GMT, NULL, raster_count, struct GDAL_BAND_FNAMES);
+	if ((Ctrl->band_field_names = gmt_M_memory(GMT, NULL, raster_count, struct GDAL_BAND_FNAMES)) == NULL) return GMT_NOTSET;
 
 	/* ==================================================================== */
 	/*      Loop over bands.                                                */
@@ -536,7 +536,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		&& (hTable = GDALGetRasterColorTable(hBand)) != NULL) {
 
 		Ctrl->nIndexedColors = GDALGetColorEntryCount(hTable);
-		Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int);
+		if ((Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int)) == NULL) return GMT_NOTSET;
 		for (i = 0; i < Ctrl->nIndexedColors; i++) {
 			GDALGetColorEntryAsRGB(hTable, i, &sEntry);
 			gmt_M_set_rgba (Ctrl->ColorMap, i, 0, Ctrl->nIndexedColors, sEntry.c1);
@@ -554,7 +554,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		if (pszNBits && !strcmp(pszNBits, "1")) {
 			/* Create a two-color index table for black and white only */
 			Ctrl->nIndexedColors = 2;
-			Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int);
+			if ((Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int)) == NULL) return GMT_NOTSET;
 			for (j = 0; j < 3; j++) {	/* For R, G, B */
 				gmt_M_set_rgba (Ctrl->ColorMap, 0, j, Ctrl->nIndexedColors, 0);
 				gmt_M_set_rgba (Ctrl->ColorMap, 1, j, Ctrl->nIndexedColors, 255);

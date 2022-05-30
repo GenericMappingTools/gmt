@@ -1,12 +1,3 @@
-#!/usr/bin/env bash
-#
-# Testing gmt pslegend capabilities for tables with colors
-
-ps=table.ps
-
-gmt set FONT_ANNOT_PRIMARY 12p  FONT_LABEL 12p
-
-cat <<EOF > table.txt
 # Legend test for gmt pslegend
 # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,
 #
@@ -96,27 +87,3 @@ T have hosted the Olympics (OL).  The rest is just some basic information
 T about each city, such as climate and population.  Of course, this is all
 T an excuse to demonstrate variable-width tables and coloring.
 G 0.1i
-EOF
-cat << EOF > t.cpt
-1	red
-2	orange
-3	yellow
-4	green
-5	blue
-6	cyan
-7	magenta
-8	white
-EOF
-gmt pscoast -R130W/50W/10N/55N -JM5.6i -Bf -P -K -Gbisque -N1/1p,darkred -Wfaint -Sazure1 -A1000 -Xc -Y1.1i --MAP_FRAME_TYPE=plain > $ps
-gmt psxy -R -J -O -K -Sc0.1i -Ct.cpt -W0.25p -: << EOF >> $ps
-19.4333N, 99.1333W	1
-40.7127N, 74.0059W	2
-34.0500N, 118.2500W	3
-43.7000N, 79.4000W	4
-41.8819N, 87.6278W	5
-29.7628N, 95.3831W	6
-23.1333N, 82.3833W	7
-45.5000N, 73.5667W	8
-EOF
-gmt pslegend -R0/6/0/8 -Jx1i -Dx3i/4.2i+w5.6i+jBC+l1.2 -C0.05i -F+p+gsnow1 -B0 -X-0.2i -Y-0.1i -O table.txt >> $ps
-#rm -f table.txt t.cpt
