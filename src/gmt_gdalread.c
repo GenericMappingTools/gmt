@@ -775,7 +775,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	gmt_M_memset (anSrcWin, 4, int);
 
 	if (prhs->B.active) {		/* We have a selected bands request */
-		whichBands = gmt_M_memory (GMT, NULL, 128, int);		/* 128 is huge enough */
+		if ((whichBands = gmt_M_memory (GMT, NULL, 128, int)) == NULL) return GMT_NOTSET;		/* 128 is huge enough */
 		nReqBands = gdal_decode_columns (GMT, prhs->B.bands, whichBands);
 	}
 	else if (prhs->f_ptr.active) {
@@ -1057,8 +1057,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		case GDT_Byte:
 			if (prhs->c_ptr.active)	/* We have a pointer with already allocated memory ready to use */
 				Ctrl->UInt8.data = prhs->c_ptr.grd;
-			else
-				Ctrl->UInt8.data = gmt_M_memory (GMT, NULL, n_alloc, uint8_t); /* aka unsigned char */
+			else if ((Ctrl->UInt8.data = gmt_M_memory (GMT, NULL, n_alloc, uint8_t)) == NULL)
+				return GMT_NOTSET; /* aka unsigned char */
 
 			if (do_BIP) {
 				if (nBands == 4)	/* Assume fourth band holds the alpha channel */
@@ -1074,8 +1074,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				Ctrl->Float.data = prhs->f_ptr.grd;
 			else if (prhs->c_ptr.active) 	/* Use the previously allocated pointer */
 				Ctrl->Int16.data = (int16_t *)prhs->c_ptr.grd;
-			else
-				Ctrl->Int16.data = gmt_M_memory (GMT, NULL, n_alloc, int16_t);
+			else if ((Ctrl->Int16.data = gmt_M_memory (GMT, NULL, n_alloc, int16_t)) == NULL)
+					return GMT_NOTSET;
 			break;
 		case GDT_UInt16:
 			if (prhs->f_ptr.active) {	/* Use the previously allocated float pointer */
@@ -1086,24 +1086,24 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				Ctrl->UInt16.data = (uint16_t *)prhs->c_ptr.grd;
 				Ctrl->UInt16.active = true;		/* In case it was not set yet */
 			}
-			else
-				Ctrl->UInt16.data = gmt_M_memory (GMT, NULL, n_alloc, uint16_t);
+			else if ((Ctrl->UInt16.data = gmt_M_memory (GMT, NULL, n_alloc, uint16_t)) == NULL)
+				return GMT_NOTSET;
 			break;
 		case GDT_Int32:
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
 			else if (prhs->c_ptr.active) 	/* Use the previously allocated pointer */
 				Ctrl->Int32.data = (int32_t *)prhs->c_ptr.grd;
-			else
-				Ctrl->Int32.data = gmt_M_memory (GMT, NULL, n_alloc, int32_t);
+			else if ((Ctrl->Int32.data = gmt_M_memory (GMT, NULL, n_alloc, int32_t)) == NULL)
+				return GMT_NOTSET;
 			break;
 		case GDT_UInt32:
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
 			else if (prhs->c_ptr.active) 	/* Use the previously allocated pointer */
 				Ctrl->UInt32.data = (uint32_t *)prhs->c_ptr.grd;
-			else
-				Ctrl->UInt32.data = gmt_M_memory (GMT, NULL, n_alloc, uint32_t);
+			else if ((Ctrl->UInt32.data = gmt_M_memory (GMT, NULL, n_alloc, uint32_t)) == NULL)
+				return GMT_NOTSET;
 			break;
 		case GDT_Float32:
 		case GDT_Float64:
@@ -1114,6 +1114,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					Ctrl->Float.data = gmt_M_memory (GMT, NULL, n_alloc, float);
 				else
 					Ctrl->Float.data = gmt_M_memory (GMT, NULL, 2 * n_alloc, float);
+				if (Ctrl->Float.data == NULL)
+					return GMT_NOTSET;
 			}
 			break;
 		default:
@@ -1152,8 +1154,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		}
 
 		/* Can't find why but have to multiply by nRGBA otherwise it crashes in win32 builds */
-		rowVec = gmt_M_memory(GMT, NULL, (nRowsPerBlock * nRGBA) * nBlocks, size_t);
-		colVec = gmt_M_memory(GMT, NULL, (nX[piece]+pad_w[piece]+pad_e[piece]) * nRGBA, size_t);	/* For now this will be used only to select BIP ordering */
+		if ((rowVec = gmt_M_memory(GMT, NULL, (nRowsPerBlock * nRGBA) * nBlocks, size_t)) == NULL) return GMT_NOTSET;
+		if ((colVec = gmt_M_memory(GMT, NULL, (nX[piece]+pad_w[piece]+pad_e[piece]) * nRGBA, size_t)) == NULL) return GMT_NOTSET;	/* For now this will be used only to select BIP ordering */
 		for (i = 0; i < nBands; i++) {
 			if (!nReqBands)		/* No band selection, read them sequentially */
 				hBand = GDALGetRasterBand(hDataset, i+1);
