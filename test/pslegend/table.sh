@@ -119,4 +119,4 @@ gmt psxy -R -J -O -K -Sc0.1i -Ct.cpt -W0.25p -: << EOF >> $ps
 45.5000N, 73.5667W	8
 EOF
 gmt pslegend -R0/6/0/8 -Jx1i -Dx3i/4.2i+w5.6i+jBC+l1.2 -C0.05i -F+p+gsnow1 -B0 -X-0.2i -Y-0.1i -O table.txt >> $ps
-#rm -f table.txt t.cpt
+rm -f table.txt t.cpt
