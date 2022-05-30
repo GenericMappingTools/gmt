@@ -2271,7 +2271,7 @@ GMT_LOCAL bool gmtapi_adjust_grdpadding (struct GMT_GRID_HEADER *h, unsigned int
 /*! . */
 struct GMT_GRID_HEADER * gmt_get_header (struct GMT_CTRL *GMT) {
 	struct GMT_GRID_HEADER *h = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
-    if (h == NULL) return NULL;
+	if (h == NULL) return NULL;
 	if ((h->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_HEADER_HIDDEN)) == NULL) return NULL;
 	return (h);
 }
@@ -3855,7 +3855,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				if ((D_obj->table[D_obj->n_tables] = gmt_get_table (GMT)) == NULL) return NULL;
 				if ((D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *)) == NULL) return NULL;
 				S = D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, smode, M_obj->n_rows, n_columns, NULL, NULL);
-                if(S == NULL) return NULL;
+				if (S == NULL) return NULL;
 				if ((GMT_2D_to_index = gmtapi_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL)) == NULL)
 					return_null (API, GMT_WRONG_MATRIX_SHAPE);
 				if ((api_get_val = gmtapi_select_get_function (API, M_obj->type)) == NULL)
@@ -3927,7 +3927,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				if ((D_obj->table[D_obj->n_tables] = gmt_get_table (GMT)) == NULL) return NULL;
 				if ((D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *)) == NULL) return NULL;
 				S = D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, smode, V_obj->n_rows, n_columns, NULL, NULL);
-                if (S == NULL) return NULL;
+				if (S == NULL) return NULL;
 				for (col = 1, diff_types = false; !diff_types && col < V_obj->n_columns; col++) if (V_obj->type[col] != V_obj->type[col-1]) diff_types = true;
 				if (!diff_types && (api_get_val = gmtapi_select_get_function (API, V_obj->type[0])) == NULL)
 					return_null (API, GMT_NOT_A_VALID_TYPE);
@@ -4003,7 +4003,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				if ((D_obj->table[D_obj->n_tables] = gmt_get_table (GMT)) == NULL) return NULL;
 				if ((D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT *)) == NULL) return NULL;
 				S = D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, smode, 0, n_columns, NULL, NULL);
-                if (S == NULL) return NULL;
+				if (S == NULL) return NULL;
 				SH = gmt_get_DS_hidden (S);
 				for (col = 0; col < V_obj->n_columns; col++) {
 					if (GMT->common.i.select) {	/* -i has selected some columns */
@@ -4710,7 +4710,7 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 					GMT_Report (API, GMT_MSG_ERROR, "Unsupported image data type %d\n", I_obj->type);
 					return_null (API, GMT_NOT_A_VALID_TYPE);
 				}
-                if (I_obj->data == NULL) return_null (API, GMT_MEMORY_ERROR);
+				if (I_obj->data == NULL) return_null (API, GMT_MEMORY_ERROR);
 			}
 			else {	/* Already have allocated space; check that it is enough */
 				if (size > I_obj->header->size) return_null (API, GMT_IMAGE_READ_ERROR);
@@ -5180,9 +5180,9 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					char r_mode = (mode & GMT_GRID_NO_HEADER) ? 'R' : 'r';
 					/* If we get here more than once we only allocate extra once */
 					if (GH->extra == NULL) GH->extra = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
-                    if (GH->extra == NULL) {
-                        return_null (API, GMT_MEMORY_ERROR);
-                    }
+					if (GH->extra == NULL) {
+						return_null (API, GMT_MEMORY_ERROR);
+					}
 					if (gmtapi_open_grd (GMT, S_obj->filename, G_obj, r_mode, mode)) {	/* Open the grid for incremental row reading */
 						if (new) gmt_free_grid (GMT, &G_obj, false);
 						return_null (API, GMT_GRID_READ_ERROR);
@@ -5397,7 +5397,7 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				return_null (API, GMT_PTR_IS_NULL);
 			}
 			else if ((G_obj->data = gmt_M_memory_aligned (GMT, NULL, G_obj->header->size, gmt_grdfloat)) == NULL)
-                return_null (API, GMT_MEMORY_ERROR);
+				return_null (API, GMT_MEMORY_ERROR);
 			G_obj->header->z_min = DBL_MAX;
 			G_obj->header->z_max = -DBL_MAX;
 			for (row = j0, row_out = 0; row <= j1; row++, row_out++) {
@@ -5675,9 +5675,9 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 					char w_mode = (mode & GMT_GRID_NO_HEADER) ? 'W' : 'w';
 					/* Since we may get here twice (initial write; later update) we only allocate extra if NULL */
 					if (GH->extra == NULL) GH->extra = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
-                    if (GH->extra == NULL) {
-                        return (gmtlib_report_error (API, GMT_MEMORY_ERROR));
-                    }
+					if (GH->extra == NULL) {
+						return (gmtlib_report_error (API, GMT_MEMORY_ERROR));
+					}
 					if (gmtapi_open_grd (GMT, S_obj->filename, G_obj, w_mode, mode))	/* Open the grid for incremental row writing */
 						return (gmtlib_report_error (API, GMT_GRID_WRITE_ERROR));
 				}
@@ -6220,7 +6220,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				return_null (API, GMT_PTR_IS_NULL);
 			}
 			else if ((U_obj->data = gmt_M_memory_aligned (GMT, NULL, U_obj->header->size * U_obj->header->n_bands, gmt_grdfloat)) == NULL)
-                return_null (API, GMT_MEMORY_ERROR);
+				return_null (API, GMT_MEMORY_ERROR);
 			here = 0;
 			for (k = k0; k <= k1; k++) {
 				for (row = j0, row_out = 0; row <= j1; row++, row_out++) {
@@ -7791,7 +7791,7 @@ GMT_LOCAL struct GMTAPI_DATA_OBJECT * gmtapi_make_dataobject (struct GMTAPI_CTRL
 	/* Simply the creation and initialization of this DATA_OBJECT structure */
 	struct GMTAPI_DATA_OBJECT *S_obj = gmt_M_memory (API->GMT, NULL, 1, struct GMTAPI_DATA_OBJECT);
 
-    if (S_obj == NULL) return NULL;
+	if (S_obj == NULL) return NULL;
 	S_obj->family    = S_obj->actual_family = family;	/* At creation we are all equal */
 	S_obj->method    = method;
 	S_obj->geometry  = geometry;

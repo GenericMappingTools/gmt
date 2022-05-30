@@ -1075,7 +1075,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			else if (prhs->c_ptr.active) 	/* Use the previously allocated pointer */
 				Ctrl->Int16.data = (int16_t *)prhs->c_ptr.grd;
 			else if ((Ctrl->Int16.data = gmt_M_memory (GMT, NULL, n_alloc, int16_t)) == NULL)
-					return GMT_NOTSET;
+				return GMT_NOTSET;
 			break;
 		case GDT_UInt16:
 			if (prhs->f_ptr.active) {	/* Use the previously allocated float pointer */
