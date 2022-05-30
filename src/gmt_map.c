@@ -8174,7 +8174,8 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	O->header->z_min = FLT_MAX; O->header->z_max = -FLT_MAX;	/* Min/max for out */
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		bool skip_repeat = false, duplicate_east = false;
-		openmp_int n_columns = O->header->n_columns, n_rows = O->header->n_rows, kase, duplicate_col;
+		openmp_int n_columns = O->header->n_columns, n_rows = O->header->n_rows, kase;
+		int duplicate_col;
 		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
 		/* Cannot do OPENMP yet here since it would require a reduction into an output array (nz) */
 		kase = gmt_whole_earth (GMT, I->header->wesn, GMT->common.R.wesn);
@@ -8184,7 +8185,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 			skip_repeat = true;	/* Since both -180 and +180 fall inside the image, we only want to use one of then (-180) */
 			duplicate_east = gmt_M_is_periodic (GMT);	/* Since the meridian corresponding to map west only appears once we may need to duplicate on east */
 			if (duplicate_east)	/* Find the column in I->data that corresponds to the longitude of the left boundary of the map */
-				duplicate_col = gmt_M_grd_x_to_col (GMT, GMT->common.R.wesn[XLO], I->header);
+				duplicate_col = MAX (0, gmt_M_grd_x_to_col (GMT, GMT->common.R.wesn[XLO], I->header));	/* Prevent round-off from giving -1 */
 		}
 
 		gmt_M_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
