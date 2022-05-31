@@ -171,7 +171,7 @@ Optional Arguments
     over the full reference height [0] and set the variable density profile exponent *power* [1, i.e., a linear
     change]. Below, *h(r)* is the final height of any seamount and *z(r)* is a point inside the seamount.
     If the seamount is truncated (via |-F|) then *h(r)* refers to the original height.  **Note**: If
-    |-V| is used then we report the mean density for each seamount processed.  The radial density function
+    |-W| is used then we report the mean density for each seamount processed.  The radial density function
     is thus defined (with :math:`\Delta \rho_s = \rho_h - \rho_l` and the *densify* setting is :math:`\Delta \rho_f`):
 
 .. math::
