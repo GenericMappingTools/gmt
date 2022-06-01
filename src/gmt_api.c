@@ -13353,7 +13353,6 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c needs implicit arg via argument-less +%c modifier\n", opt->option, key[k][K_MODIFIER]);
 			else
 				implicit = false;
-//fprintf(stderr, "K = %d\t%s\t%d\n", k, argument, n_pre_arg);
 			if (implicit) {
 				/* This is an implicit reference and we must explicitly add the missing item by adding the questionmark */
 				info[n_items].option    = opt;
@@ -13363,7 +13362,6 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				info[n_items].mode = (api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
 				key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Change to ( or ) since option was provided, albeit implicitly */
 				info[n_items].pos = pos = (direction == GMT_IN) ? input_pos++ : output_pos++;
-//fprintf(stderr, "MERDA0 family = %d\tPos = %d\tdirection = %d\n", family, input_pos, direction);
 				/* Explicitly add the missing marker (e.g., ?) to the option argument */
 				if (mod_pos) {	/* Must expand something like 300k+s+d+u into 300k+s?+d+u (assuming +s triggered this test) */
 					strncpy (txt, opt->arg, mod_pos);

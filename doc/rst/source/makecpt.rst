@@ -345,16 +345,6 @@ To make a categorical CPT with string keys instead of numerical lookup values, t
 
 .. include:: cpt_notes.rst_
 
-Bugs
-----
-
-Since **makecpt** will also interpolate from any existing CPT you
-may have in your directory, you should not use one of the listed cpt names
-as an output filename; hence the my_gebco.cpt in the example.  If you
-do create a CPT of such a name, e.g., rainbow.cpt, then **makecpt** will
-read that file first and not look for the master CPT in the shared GMT
-directory.
-
 See Also
 --------
 

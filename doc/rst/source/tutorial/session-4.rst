@@ -63,7 +63,7 @@ above are done in classic mode.  If you run :doc:`/makecpt` in modern mode
 then you usually do not specify an output file via standard output since
 modern mode maintains what is known as the current CPT.  However,
 if you must explicitly name an output CPT then you will need to
-add the -H option for modern mode to allow output to standard output.
+add the **-H** option for modern mode to allow output to standard output.
 
 ======================================================= ==================================================================================
 Option                                                  Purpose

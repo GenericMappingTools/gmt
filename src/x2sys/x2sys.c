@@ -1276,11 +1276,11 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 			c_given = true;
 		}
 		if (geodetic == GMT_IS_0_TO_P360_RANGE && (B->wesn[XLO] < 0 || B->wesn[XHI] < 0)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your -R and -G settings are contradicting each other!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your -R values are contradicting the -G setting from x2sys_init!\n");
 			n_errors++;
 		}
 		else if (geodetic == GMT_IS_M180_TO_P180_RANGE && (B->wesn[XLO] > 0 && B->wesn[XHI] > 0)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your -R and -G settings are contradicting each other!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your -R values are contradicting the -G setting from x2sys_init!\n");
 			n_errors++;
 		}
 		if (c_given && dist_flag == 0) {
