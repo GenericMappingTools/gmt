@@ -102,7 +102,7 @@
 "cmocean/tempo      : Perceptually uniform colormap, by Kirsten Thyng [C=RGB]",
 "cmocean/thermal    : Perceptually uniform colormap, by Kirsten Thyng [C=RGB]",
 "cmocean/topo       : Perceptually uniform colormap, by Kirsten Thyng [H,C=RGB]",
-"cmocean/turbid     : Perceptually uniform colormap, by Kirsten Thyng [C=RGB]"
+"cmocean/turbid     : Perceptually uniform colormap, by Kirsten Thyng [C=RGB]",
 "cpt-city/cubhelix  : Intensity colormap via cube helix by Dave Green [C=RGB]",
 "cpt-city/dem1      : Digital Elevation Model (DEM) scale by Thomas Dewez [R=0/800, C=RGB]",
 "cpt-city/dem4      : Digital Elevation Model (DEM) scale for Wikipedia figures [R=0/1500, C=RGB]",
