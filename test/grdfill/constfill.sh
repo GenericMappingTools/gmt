@@ -2,7 +2,7 @@
 # Testing grdfill with constant infill of NaN areas
 ps=constfill.ps
 # Get topo for Hawaiian Islands and set data on land to NaN
-gmt grdclip @earth_relief_05m -R199:30/206/18/23 -Sa0/NaN -Gislands.nc
+gmt grdclip @earth_relief_05m_p -R199:30/206/18/23 -Sa0/NaN -Gislands.nc
 gmt makecpt -Csealand -T-5000/5000 > t.cpt
 # Now replace NaN holes with 4000 m
 gmt grdfill islands.nc -Ac4000 -Gnew.nc

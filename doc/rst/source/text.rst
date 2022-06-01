@@ -52,7 +52,7 @@ orientation. Various map projections are provided, with the option to
 draw and annotate the map boundaries.
 
 Greek characters, subscript, superscript, and small
-caps are supported as follows: 
+caps are supported as follows:
 
 .. list-table::
    :widths: 20 80
@@ -66,7 +66,7 @@ caps are supported as follows:
      - Switches to *font* where *font* can either be a font *number* or *name* (see |-L|) (@%% resets it)
    * - @-
      - Toggles subscripts on/off
-   * - @+ 
+   * - @+
      - Toggles superscript on/off
    * - @#
      - Toggles small caps on/off
@@ -74,7 +74,7 @@ caps are supported as follows:
      - Changes the font color (@;; resets it)
    * - @:\ *size*
      - Changes the font size (@:: resets it)
-   * - @\_ 
+   * - @\_
      - Toggles underline on/off
    * - @@
      - Prints the @ sign
@@ -85,7 +85,7 @@ caps are supported as follows:
 characters, as indicated in Table :ref:`escape <tbl-shorthand>`. Composite characters
 (overstrike) may be indicated with the @!<char1><char2> sequence, which will print the
 two characters on top of each other.
-  
+
 To learn the octal codes for symbols not available on the
 keyboard and some accented European characters, see Section :ref:`Char-esc-seq` and
 Appendix :ref:`Chart-Octal-Codes-for-Chars` in the GMT Technical Reference and Cookbook. Note that
@@ -115,9 +115,9 @@ Required Arguments
     If *font* is not an integer, then it is taken to be a text string
     with the desired font name (see |-L| for available fonts). The
     alignment refers to the part of the text string that will be mapped
-    onto the (*x*,\ *y*) point. Choose a 2 character combination of L,
-    C, R (for left, center, or right) and T, M, B for top, middle, or
-    bottom. e.g., BL for lower left.
+    onto the (*x*,\ *y*) point. Choose a 2 character combination of **L**,
+    **C**, **R** (for left, center, or right) and **T**, **M**, **B**
+    for top, middle, or bottom. e.g., **BL** for bottom left.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -174,7 +174,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **l**\|\ **r**\ [*first*] \|\ **t**\ *text*\|\ **z**\ [*format*]]
+**-F**\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **l**\|\ **r**\ [*first*]\|\ **t**\ *text*\|\ **z**\ [*format*]]
     By default, text will be placed horizontally, using the primary
     annotation font attributes (:term:`FONT_ANNOT_PRIMARY`), and centered
     on the data point. Use |-F| to override these defaults by
@@ -191,7 +191,7 @@ Optional Arguments
     **-F**\ **+f**\ 12p,Helvetica-Bold,red\ **+j+a** selects a 12p red
     Helvetica-Bold font and expects to read the justification and angle
     from the file, in that order, after *x* *y* and before *text*.
-    In addition, the **+c** justification lets us use *x,y* coordinates extracted from the
+    In addition, the **+c**\ *justification* lets us use *x,y* coordinates extracted from the
     |-R| string instead of providing them in the input file. For example **-F+c**\ TL
     gets the *x_min*, *y_max* from the |-R| string and plots the text
     at the Upper Left corner of the map.  Normally, the text to be plotted

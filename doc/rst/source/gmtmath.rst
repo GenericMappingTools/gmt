@@ -81,13 +81,13 @@ Optional Arguments
     from the given file *t_f(t)* containing *t* and *f(t)* only. The *t* is
     placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
     (see |-N|).  Append **+r** to only place *f(t)* and leave the left
-    hand side of the matrix equation alone.  If used with operators LSQFIT and SVDFIT you can
+    hand side of the matrix equation alone.  If used with operators **LSQFIT** and **SVDFIT** you can
     optionally append the modifier **+e** which will instead evaluate
-    the solution and write a data set with four columns: t, f(t), the
-    model solution at t, and the the residuals at t, respectively
+    the solution and write a data set with four columns: *t*, *f(t)*, the
+    model solution at *t*, and the the residuals at *t*, respectively
     [Default writes one column with model coefficients].  Append **+w**
     if *t_f(t* has a third column with weights, or append **+s** if
-    *t_f(t)* has a third column with 1-sigma.  In those two cases we
+    *t_f(t)* has a third column with 1-sigma uncertainties.  In those two cases we
     find the weighted solution.  The weights (or sigmas) will be output
     as the last column when **+e** is in effect.
 
@@ -96,7 +96,7 @@ Optional Arguments
 **-C**\ *cols*
     Select the columns that will be operated on until next occurrence of
     |-C|. List columns separated by commas; ranges like 1,3-5,7 are
-    allowed, plus -Cx can be used for -C0 and -Cy can be used for -C1.
+    allowed, plus **-Cx** can be used for **-C**\ 0 and **-Cy** can be used for **-C**\ 1.
     |-C| (no arguments) resets the default action of using
     all columns except time column (see |-N|). **-Ca** selects all
     columns, including time column, while **-Cr** reverses (toggles) the
@@ -106,7 +106,7 @@ Optional Arguments
 .. _-E:
 
 **-E**\ *eigen*
-    Sets the minimum eigenvalue used by operators LSQFIT and SVDFIT [1e-7].
+    Sets the minimum eigenvalue used by operators **LSQFIT** and **SVDFIT** [1e-7].
     Smaller eigenvalues are set to zero and will not be considered in the
     solution.
 
@@ -137,7 +137,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ [**f**\|\ **l**]
-    Only report the first or last row of the results [Default is all
+    Only report the first or last row of the results [Default outputs all
     rows]. This is useful if you have computed a statistic (say the
     **MODE**) and only want to report a single number instead of
     numerous records with identical values. Append **l** to get the last
@@ -618,19 +618,19 @@ The following symbols have special meaning:
 +-------------+-----------------------------------------+
 | **EPS_D**   | 2.2204460492503131e-16 (dbl. prec. eps) |
 +-------------+-----------------------------------------+
-| **TMIN**    | Minimum t value                         |
+| **TMIN**    | Minimum *t* value                       |
 +-------------+-----------------------------------------+
-| **TMAX**    | Maximum t value                         |
+| **TMAX**    | Maximum *t* value                       |
 +-------------+-----------------------------------------+
-| **TRANGE**  | Range of t values                       |
+| **TRANGE**  | Range of *t* values                     |
 +-------------+-----------------------------------------+
-| **TINC**    | t increment                             |
+| **TINC**    | *t* increment                           |
 +-------------+-----------------------------------------+
 | **N**       | The number of records                   |
 +-------------+-----------------------------------------+
-| **T**       | Table with t-coordinates                |
+| **T**       | Table with *t*-coordinates              |
 +-------------+-----------------------------------------+
-| **TNORM**   | Table with normalized t-coordinates     |
+| **TNORM**   | Table with normalized *t*-coordinates   |
 +-------------+-----------------------------------------+
 | **TROW**    | Table with row numbers 1, 2, ..., N-1   |
 +-------------+-----------------------------------------+
@@ -642,11 +642,11 @@ Notes On Operators
 ------------------
 
 #. The operators **PLM** and **PLMg** calculate the associated Legendre
-   polynomial of degree L and order M in x which must satisfy -1 <= x <= +1
-   and 0 <= M <= L. x, L, and M are the three arguments preceding the
+   polynomial of degree *L* and order *M* in *x* which must satisfy :math:`-1 \leq x \leq +1`
+   and :math:`0 \leq M \leq L`. Here, *x*, *L*, and *M* are the three arguments preceding the
    operator. **PLM** is not normalized and includes the Condon-Shortley
-   phase (-1)^M. **PLMg** is normalized in the way that is most commonly
-   used in geophysics. The C-S phase can be added by using -M as argument.
+   phase :math:`(-1)^M`. **PLMg** is normalized in the way that is most commonly
+   used in geophysics. The Condon-Shortley phase can be added by using *-M* as argument.
    **PLM** will overflow at higher degrees, whereas **PLMg** is stable
    until ultra high degrees (at least 3000).
 
@@ -684,8 +684,8 @@ Notes On Operators
    the width is taken to be given in number of rows.
 
 #. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
-   only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
-   sRGB (x, y, z) conversions between all four color spaces.  These functions
+   only *r,g,b* and *h,s,v* triplet conversions, but also *l,a,b* (CIE L a b ) and
+   sRGB (*x,y,z*) conversions between all four color spaces.  These functions
    behave differently whether |-Q| is used or not.  With |-Q| we expect
    three input constants and we place three output results on the stack.  Since
    only the top stack item is printed, you must use operators such as **POP** and
@@ -742,7 +742,7 @@ then clearly relative time formatting is required, while if you are computing ne
 by, say, adding an interval to absolute times then you will need to use **-fo** to set
 the output format for such columns to absolute time.
 
-Scalar math with units
+Scalar Math with Units
 ----------------------
 
 If you use |-Q| to do simple calculations, please note that the support for dimensional units is
@@ -763,13 +763,13 @@ To add two plot dimensions of different units, we can run
 
    ::
 
-    length=`gmt math -Q 15c 2i SUB =`
+    length=$(gmt math -Q 15c 2i SUB =)
 
 To compute the ratio of two plot dimensions of different units, we select *non-dimensional* output and run
 
    ::
 
-    ratio=`gmt math -Qn 15c 2i DIV =`
+    ratio=$(gmt math -Qn 15c 2i DIV =)
 
 To take the square root of the content of the second data column being
 piped through **gmtmath** by process1 and pipe it through a 3rd process, use
@@ -804,7 +804,7 @@ assign it to a variable, try
 
    ::
 
-    mode_age=`gmt math -S -T ages.txt MODE =`
+    mode_age=$(gmt math -S -T ages.txt MODE =)
 
 To evaluate the dilog(x) function for coordinates given in the file t.txt:
 
@@ -827,24 +827,24 @@ cos (60)) and store the result in the shell variable z:
 
    ::
 
-    z=`gmt math -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
+    z=$(gmt math -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =)
 
 To convert the r,g,b value for yellow to h,s,v and save the hue, try
 
    ::
 
-    set hue = `gmt math -Q 255 255 0 RGB2HSV POP POP =`
+    hue=$(gmt math -Q 255 255 0 RGB2HSV POP POP =)
 
 
 To use **gmtmath** as a general least squares equation solver, imagine
-that the current table is the augmented matrix [ A \| b ] and you want
-the least squares solution x to the matrix equation A \* x = b. The
+that the current table is the augmented matrix [ **A** \| **b** ] and you want
+the least squares solution **x** to the matrix equation **A** \* **x** = **b**. The
 operator **LSQFIT** does this; it is your job to populate the matrix
 correctly first. The |-A| option will facilitate this. Suppose you
-have a 2-column file ty.txt with *t* and *b(t)* and you would like to fit
-a the model y(t) = a + b\*t + c\*H(t-t0), where H is the Heaviside step
+have a 2-column file ty.txt with *t* and *y* and you would like to fit
+a the model *y(t) = a + b\*t + c\*H(t-t0)*, where *H(t)* is the Heaviside step
 function for a given t0 = 1.55. Then, you need a 4-column augmented
-table loaded with t in column 1 and your observed y(t) in column 3. The
+table loaded with *t* in column 1 and your observed *y* in column 3. The
 calculation becomes
 
    ::
@@ -854,9 +854,9 @@ calculation becomes
 Note we use the |-C| option to select which columns we are working on,
 then make active all the columns we need (here all of them, with
 **-Ca**) before calling **LSQFIT**. The second and fourth columns (col
-numbers 1 and 3) are preloaded with t and y(t), respectively, the other
+numbers 1 and 3) are preloaded with *t* and *y*, respectively, the other
 columns are zero. If you already have a pre-calculated table with the
-augmented matrix [ A \| b ] in a file (say lsqsys.txt), the least squares
+augmented matrix [ **A** \| **b** ] in a file (say lsqsys.txt), the least squares
 solution is simply
 
    ::
