@@ -48,6 +48,11 @@ enum Opt_C_modes {
 	GRDINFO_NUMERICAL	= 1,
 	GRDINFO_TRAILING	= 2};
 
+enum Opt_M_modes {
+	GRDINFO_FORCE_REPORT	= 1,
+	GRDINFO_FORCE			= 2,
+	GRDINFO_CONDITIONAL		= 3};
+
 struct GRDINFO_CTRL {
 	unsigned int n_files;	/* How many grids given */
 	bool is_cube;
@@ -313,11 +318,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 						Ctrl->L.norm |= (1+2+4); break;
 				}
 				break;
-			case 'M':	/* Global extrema */
+			case 'M':	/* Global extrema and|or update missing header data range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				switch (opt->arg[0]) {
-					case 'c':	Ctrl->M.mode = 2;	break;
-					case 'f':	case '\0':	Ctrl->M.mode = 1;	break;
+					case 'c':	Ctrl->M.mode = GRDINFO_CONDITIONAL;	break;
+					case 'f':	Ctrl->M.mode = GRDINFO_FORCE;		break;
+					case '\0':	Ctrl->M.mode = GRDINFO_FORCE_REPORT;	break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -M: Unrecognized modifier %s\n", opt->arg);
 						n_errors++;
@@ -633,7 +639,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		n_cols = (is_cube) ? 8 : 6;	/* w e s n {b t} w0 w1 */
 		if (!Ctrl->I.active) {
 			n_cols += (is_cube) ? 6 : 4;				/* Add dx dy {dz} n_columns n_rows {n_layers} */
-			if (Ctrl->M.mode == 1) n_cols += (is_cube) ? 7 : 5;	/* Add x0 y0 {z0} x1 y1 {z1} nnan */
+			if (Ctrl->M.mode == GRDINFO_FORCE_REPORT) n_cols += (is_cube) ? 7 : 5;	/* Add x0 y0 {z0} x1 y1 {z1} nnan */
 			if (Ctrl->L.norm & 1) n_cols += 2;	/* Add median scale */
 			if (Ctrl->L.norm & 2) n_cols += 3;	/* Add mean stdev rms */
 			if (Ctrl->L.norm & 4) n_cols += 2;	/* Add mode lmsscale */
@@ -715,7 +721,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			GMT->current.io.col_type[GMT_OUT][n] = gmt_M_type (GMT, GMT_IN, n);	/* Since grids may differ in types */
 
 		if (num_report && n_grds == 0) {	/* Need to prepare col_type for output */
-			if (Ctrl->M.mode == 1) {	/* Will write x,y[,z] min and max locations */
+			if (Ctrl->M.mode == GRDINFO_FORCE_REPORT) {	/* Will write x,y[,z] min and max locations */
 				GMT->current.io.col_type[GMT_OUT][x_col_min] = GMT->current.io.col_type[GMT_OUT][x_col_max] = GMT->current.io.col_type[GMT_OUT][GMT_X];
 				GMT->current.io.col_type[GMT_OUT][y_col_min] = GMT->current.io.col_type[GMT_OUT][y_col_max] = GMT->current.io.col_type[GMT_OUT][GMT_Y];
 				if (is_cube) GMT->current.io.col_type[GMT_OUT][z_col_min] = GMT->current.io.col_type[GMT_OUT][z_col_max] = GMT->current.io.col_type[GMT_OUT][GMT_Z];
@@ -726,11 +732,12 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 		n_grds++;
 
-		if (Ctrl->M.mode == 2) {	/* Conditionally read and find min/max if not in header */
-			if (doubleAlmostEqualZero (header->z_min, header->z_max))
+		if (Ctrl->M.mode == GRDINFO_CONDITIONAL) {	/* Conditionally read and find min/max if not in header */
+			if (doubleAlmostEqualZero (header->z_min, header->z_max)) {	/* Force search */
 				GMT_Report (API, GMT_MSG_WARNING, "No actual range for data in header - must read matrix and determine range\n");
-			else	/* Header has the data range; no need to read file */
-				Ctrl->M.mode = 0;
+				Ctrl->M.mode = GRDINFO_FORCE;
+			}
+			/* else the header has the data range; no need to read file */
 		}
 
 		if (Ctrl->E.active || Ctrl->M.mode || Ctrl->L.active || subset || Ctrl->D.mode || (Ctrl->T.mode & 2)) {	/* Need to read the data (all or subset) */
@@ -796,7 +803,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 		if (Ctrl->T.mode & 2) strncpy (grdfile, opt->arg, PATH_MAX-1);
 
-		if (Ctrl->M.mode || Ctrl->L.active) {	/* Must determine the location of global min and max values */
+		if (Ctrl->M.mode == GRDINFO_FORCE_REPORT || Ctrl->M.mode == GRDINFO_FORCE || Ctrl->L.active) {	/* Must determine the [location of] global min and max values */
 			uint64_t ij_min, ij_max, here = 0, node;
 			unsigned int col, row;
 			gmt_grdfloat *data = (is_cube) ? U->data : G->data;
@@ -833,7 +840,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 			else	/* Not a single valid node */
 				x_min = x_max = y_min = y_max = z_min = z_max = GMT->session.d_NaN;
-			if (Ctrl->M.mode == 2) {	/* Update header */
+			if (Ctrl->M.mode == GRDINFO_FORCE) {	/* Update header */
 				header->z_min = v_min;
 				header->z_max = v_max;
 			}
@@ -934,7 +941,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				out[col++] = header->z_min;			out[col++] = header->z_max;
 				out[col++] = header->inc[GMT_X];	out[col++] = header->inc[GMT_Y];	if (is_cube) out[col++] = U->z_inc;
 				out[col++] = header->n_columns;		out[col++] = header->n_rows;		if (is_cube) out[col++] = header->n_bands;
-				if (Ctrl->M.mode == 1) {
+				if (Ctrl->M.mode == GRDINFO_FORCE_REPORT) {
 					out[col++] = x_min;	out[col++] = y_min;	if (is_cube) out[col++] = z_min;
 					out[col++] = x_max;	out[col++] = y_max;	if (is_cube) out[col++] = z_max;
 				}
@@ -944,7 +951,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				if (Ctrl->L.norm & 2) {
 					out[col++] = z_mean;	out[col++] = z_stdev;	out[col++] = z_rms;
 				}
-				if (Ctrl->M.mode == 1) {
+				if (Ctrl->M.mode == GRDINFO_FORCE_REPORT) {
 					out[col++] = (double)n_nan;
 				}
 				if (Ctrl->L.norm & 4) {
@@ -996,7 +1003,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 					gmt_ascii_format_col (GMT, text, (double)header->n_bands, GMT_OUT, GMT_W);
 					strcat (record, text);	strcat (record, sep);
 				}
-				if (Ctrl->M.mode == 1) {
+				if (Ctrl->M.mode == GRDINFO_FORCE_REPORT) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, x_min, GMT_OUT, GMT_X);	strcat (record, text);
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, y_min, GMT_OUT, GMT_Y);	strcat (record, text);
 					if (is_cube) { strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_min, GMT_OUT, GMT_Z);	strcat (record, text); }
@@ -1013,7 +1020,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_stdev, GMT_OUT, GMT_Z);	strcat (record, text);
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text,   z_rms, GMT_OUT, GMT_Z);	strcat (record, text);
 				}
-				if (Ctrl->M.mode == 1) { sprintf (text, "%s%" PRIu64, sep, n_nan);	strcat (record, text); }
+				if (Ctrl->M.mode == GRDINFO_FORCE_REPORT) { sprintf (text, "%s%" PRIu64, sep, n_nan);	strcat (record, text); }
 				if (Ctrl->L.norm & 4) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_mode,   GMT_OUT, GMT_Z);	strcat (record, text);
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_lmsscl, GMT_OUT, GMT_Z);	strcat (record, text);
@@ -1138,7 +1145,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				}
 			}
 
-			if (Ctrl->M.mode == 1) {
+			if (Ctrl->M.mode == GRDINFO_FORCE_REPORT) {
 				if (v_min == DBL_MAX)  v_min = GMT->session.d_NaN;
 				if (v_max == -DBL_MAX) v_max = GMT->session.d_NaN;
 				sprintf (record, "%s: v_min: ", HH->name);
@@ -1180,7 +1187,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				         (header->z_max - header->z_add_offset) / header->z_scale_factor);
 			}
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			if (n_nan || Ctrl->M.mode == 1) {
+			if (n_nan || Ctrl->M.mode == GRDINFO_FORCE_REPORT) {
 				double percent = 100.0 * n_nan / header->nm;
 				sprintf (record, "%s: %" PRIu64 " nodes (%.1f%%) set to NaN", HH->name, n_nan, percent);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
