@@ -150,7 +150,7 @@ Optional Arguments
     report the number of nodes set to NaN, if any [Default]. Use directive
     **f** to instead force an update of the *v*-value min/max by reading the
     matrix, or use **c** for conditionally doing so if the header information
-    does not contain the *v* range.
+    does not contain a valid *v* range.
 
 .. |Add_-R| replace:: Using the |-R| option will select a subsection of the input grid(s). If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. For cubes you must also

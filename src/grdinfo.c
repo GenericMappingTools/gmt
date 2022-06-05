@@ -165,8 +165,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "a: All of the above.");
 	GMT_Usage (API, -2, "Note: If grid is geographic then we report area-weighted statistics.");
 	GMT_Usage (API, 1, "\n-M[c|f]");
-	GMT_Usage (API, -2, "\nSearch for the global min and max locations (x0,y0{,z0}) and (x1,y1{,z1}) [Default]." 
-		" Append c to only determine data min/max if missing from the header, or f to force that search regardless of header.");
+	GMT_Usage (API, -2, "\nSearch for the global data min and max locations (x0,y0{,z0}) and (x1,y1{,z1}) [Default]." 
+		" Append c to only determine data min/max range if missing from the header, or f to force that search to override the header range.");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-T[<dv>][+a[<alpha>]][+s]");
 	GMT_Usage (API, -2, "Print global -Tvmin/vmax[/dv] (in rounded multiples of <dv>, if given). Optional modifiers:");
