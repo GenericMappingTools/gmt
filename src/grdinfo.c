@@ -737,7 +737,8 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_WARNING, "No actual range for data in header - must read matrix and determine range\n");
 				Ctrl->M.mode = GRDINFO_FORCE;
 			}
-			/* else the header has the data range; no need to read file */
+			else	/* else the header has the data range; no need to read file */
+				GMT_Report (API, GMT_MSG_DEBUG, "Found valid actual data range in header - no need to read matrix\n");
 		}
 
 		if (Ctrl->E.active || Ctrl->M.mode || Ctrl->L.active || subset || Ctrl->D.mode || (Ctrl->T.mode & 2)) {	/* Need to read the data (all or subset) */
