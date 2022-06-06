@@ -17916,10 +17916,9 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		}
 		T->n = gmt_make_equidistant_array (GMT, tmp_t0, tmp_t1, T->reverse ? -inc : inc, &(T->array));
 	}
-	if (T->vartime && GMT->current.setting.time_system.unit != unit) {
+	if (T->temporal && GMT->current.setting.time_system.unit != unit) {
 		uint64_t k;
 		/* Restore to original TIME_UNIT unit and update val array to have same units */
-		//scale = GMT->current.setting.time_system.scale / scale;
 		GMT->current.setting.time_system.unit = unit;
 		(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
 		for (k = 0; k < T->n; k++) T->array[k] *= scale;
