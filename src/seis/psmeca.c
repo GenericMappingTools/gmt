@@ -183,7 +183,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSMECA_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free_refpoint (GMT, &C->I2.refpoint);
+	gmt_free_refpoint (GMT, &C->M.refpoint);
 	gmt_M_str_free (C->C.file);
 	gmt_M_free (GMT, C);
 }
@@ -477,18 +477,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 					n_errors++;
 				}
 				break;
-			case 'M':
-				Ctrl->M.active = true;
-				if ((Ctrl->M.refpoint = gmt_get_refpoint (GMT, opt->arg, 'I')) == NULL) {
-					n_errors++;	/* Failed basic parsing */
-					continue;
-				}
-				/* Args are [+o<dx>[/<dy>]] */
-				if (gmt_validate_modifiers (GMT, Ctrl->M.refpoint->args, 'I', "o", GMT_MSG_ERROR)) n_errors++;
-				if (gmt_get_modifier (Ctrl->M.refpoint->args, 'o', txt)) {
-					if ((n = gmt_get_pair (GMT, txt, GMT_PAIR_DIM_DUP, Ctrl->M.off)) < 0) n_errors++;
-				}
-				break;
 			case 'H':		/* Overall symbol/pen scale column provided */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				if (opt->arg[0]) {	/* Gave a fixed scale - no reading from file */
@@ -510,13 +498,23 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 					n_errors++;
 				}
 				break;
-			case 'M':	/* Same size for any magnitude [Deprecated 8/14/2021 6.3.0 - use -S+m instead] */
-				if (gmt_M_compat_check (GMT, 6)) {
+			case 'M':
+				if (opt->arg[0] == '\0' && gmt_M_compat_check (GMT, 6)) {	/* Same size for any magnitude [Deprecated 8/14/2021 6.3.0 - use -S+m instead] */
 					GMT_Report (API, GMT_MSG_COMPAT, "-M is deprecated from 6.3.0; use -S modifier +m instead.\n");
 					Ctrl->S.fixed = true;
 				}
-				else
-					n_errors += gmt_default_option_error (GMT, opt);
+				else {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
+					if ((Ctrl->M.refpoint = gmt_get_refpoint (GMT, opt->arg, 'M')) == NULL) {
+						n_errors++;	/* Failed basic parsing */
+						continue;
+					}
+					/* Args are [+o<dx>[/<dy>]] */
+					if (gmt_validate_modifiers (GMT, Ctrl->M.refpoint->args, 'I', "o", GMT_MSG_ERROR)) n_errors++;
+					if (gmt_get_modifier (Ctrl->M.refpoint->args, 'o', txt)) {
+						if ((n = gmt_get_pair (GMT, txt, GMT_PAIR_DIM_DUP, Ctrl->M.off)) < 0) n_errors++;
+					}
+				}
 				break;
 			case 'N':	/* Do not skip points outside border */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -1171,12 +1169,7 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 					PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A2.size, Ctrl->A2.T_symbol);
 				}
 				event_title[0] = string[0] = '\0';		/* Reset these two in case next record misses "string" */
-				}
 			}
-			else if (n_scanned == 1)	/* Only got event title */
-				strncpy (event_title, In->text, GMT_BUFSIZ-1);
-			else	/* Got no title */
-				event_title[0] = '\0';
 		}
 
 		/* Gather and transform the input records, depending on type */
@@ -1231,7 +1224,8 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 				Ctrl->T.active = true;
 				Ctrl->T.n_plane = 1;
 				meca.NP1.rake = 1000.;
-				GMT_Report (API, GMT_MSG_WARNING, "Second plane is not defined for event %s only first plane is plotted.\n", In->text);
+				event_name = (has_text) ? S->text[row] : no_name;
+				GMT_Report (API, GMT_MSG_WARNING, "Second plane is not defined for event %s only first plane is plotted.\n", event_name);
 			}
 			else
 				meca.NP1.rake = meca_computed_rake2(meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
@@ -1288,17 +1282,17 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 
 		/* Common to all input types ... */
 
-		if (!Ctrl->I.active)	/* Update plot location */
+		if (!Ctrl->M.active)	/* Update plot location */
 			gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 
-		/* If option -C is used, read the new position */
+		/* If option -A is used, read the new position */
 
-		if (Ctrl->C.active) {
+		if (Ctrl->A.active) {
 			if (fabs (xynew[GMT_X]) > EPSIL || fabs (xynew[GMT_Y]) > EPSIL) {
-				gmt_setpen (GMT, &Ctrl->C.pen);
+				gmt_setpen (GMT, &Ctrl->A.pen);
 				gmt_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
 				gmt_setfill (GMT, &Ctrl->G.fill, 1);
-				PSL_plotsymbol (PSL, plot_x, plot_y, &Ctrl->C.size, PSL_CIRCLE);
+				PSL_plotsymbol (PSL, plot_x, plot_y, &Ctrl->A.size, PSL_CIRCLE);
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_xnew, plot_ynew);
 				plot_x = plot_xnew;
 				plot_y = plot_ynew;
