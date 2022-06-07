@@ -73,7 +73,7 @@ Optional Arguments
 **-A**\ *region*
     Specify directly the region of the rotated grid.  By default, the
     output grid has a region that exactly matches the extent of the rotated
-    domain, but **-A** can be used to crop or extend this region to that
+    domain, but |-A| can be used to crop or extend this region to that
     provided via *region*.
 
 .. _-D:
@@ -83,8 +83,8 @@ Optional Arguments
     of the grid reconstructed to the specified time. If more than one reconstruction
     time is implied then *rotoutline* must contain a C-format specifier
     to format a floating point number (reconstruction time) to text.
-    If only one time is implied and **-D** is not set then we write the
-    polygon to stdout (but see **-N**).
+    If only one time is implied and |-D| is not set then we write the
+    polygon to standard output (but see |-N|).
 
 .. _-F:
 
@@ -96,7 +96,7 @@ Optional Arguments
 
 **-N**
     Do Not output the rotated polygon outline [Default will write it to
-    stdout, or to a file via **-D**].
+    standard output, or to a file via |-D|].
 
 .. _-R:
 
@@ -107,7 +107,7 @@ Optional Arguments
 
 **-S**
     Skip the rotation of the grid, just rotate the polygon outline
-    (requires **-F** if no grid is provided).
+    (requires |-F| if no grid is provided).
 
 .. _-T:
 
@@ -117,8 +117,8 @@ Optional Arguments
     give **-T**\ *start*\ /\ *stop*\ /\ *inc*. Append **+n** if *inc* should
     be interpreted to mean *npoints* instead.
     For an non-equidistant set of reconstruction times please pass them
-    via the first column in a file, e.g., **-T**\ *agefile*.  If no **-T**
-    option is given and **-E** specified a rotation file then we equate
+    via the first column in a file, e.g., **-T**\ *agefile*.  If no |-T|
+    option is given and |-E| specified a rotation file then we equate
     the rotation file times with the reconstruction times.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -192,7 +192,7 @@ region of overlap between the rotated grids, we use :doc:`grdmath </grdmath>`:
     gmt grdmath 1 rot_gridA.nc ISNAN SUB 1 rot_gridB.nc ISNAN SUB 2 EQ = overlap.nc
 
 The grid overlap.nc now has 1s in the regions of overlap and 0
-elsewhere. You can use it as a mask or use :doc:`grdcontour </grdcontour>` **-D** to extract
+elsewhere. You can use it as a mask or use :doc:`grdcontour </grdcontour>` |-D| to extract
 a polygon (i.e., a contour).
 
 Notes

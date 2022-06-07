@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -252,7 +252,7 @@ GMT_LOCAL void psconvert_pclose2 (struct popen2 **Faddr, int dir) {
 GMT_LOCAL int psconvert_parse_new_A_settings (struct GMT_CTRL *GMT, char *arg, struct PSCONVERT_CTRL *Ctrl) {
 	/* Syntax: -A[+r][+u] */
 	gmt_M_unused (GMT);
-	Ctrl->A.active = Ctrl->A.crop = true;
+	Ctrl->A.crop = true;
 
 	if (strstr (arg, "r"))
 		Ctrl->A.round = true;
@@ -284,7 +284,6 @@ GMT_LOCAL int psconvert_parse_new_I_settings (struct GMT_CTRL *GMT, char *arg, s
 		return (error);
 	}
 
-	Ctrl->I.active = true;
 	while (gmt_getmodopt (GMT, 'N', arg, "msS", &pos, p, &error) && error == 0) {
 		switch (p[0]) {
 			case 'm':	/* Margins */
@@ -352,8 +351,6 @@ GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, s
 	char p[GMT_LEN128] = {""};
 
 	if (gmt_validate_modifiers (GMT, arg, 'N', "fgip", GMT_MSG_ERROR)) return (1);	/* Bail right away */
-
-	Ctrl->N.active = true;
 
 	while (gmt_getmodopt (GMT, 'N', arg, "fgip", &pos, p, &error) && error == 0) {
 		switch (p[0]) {
@@ -482,10 +479,14 @@ GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struc
 	}
 	/* Now parse -A and possibly -I -N via backwards compatibility conversions */
 	n_errors += psconvert_parse_new_A_settings (GMT, A_option, Ctrl);
-	if (I_option[0])
+	if (I_option[0]) {
 		n_errors += psconvert_parse_new_I_settings (GMT, I_option, Ctrl);
-	if (N_option[0])
+		Ctrl->I.active = true;
+	}
+	if (N_option[0]) {
 		n_errors += psconvert_parse_new_N_settings (GMT, N_option, Ctrl);
+		Ctrl->N.active = true;
+	}
 	return (n_errors);
 }
 
@@ -496,7 +497,6 @@ GMT_LOCAL int psconvert_parse_GE_settings (struct GMT_CTRL *GMT, char *arg, stru
 	char p[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
-	C->W.active = true;
 	while (gmt_getmodopt (GMT, 'W', arg, "acfgklnotu", &pos, p, &error) && error == 0) {	/* Looking for +a, etc */
 		switch (p[0]) {
 			case 'a':	/* Altitude setting */
@@ -792,7 +792,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 			case '<':	/* Input files [Allow for file "=" under API calls] */
 				if (strstr (opt->arg, ".ps-")) halfbaked = true;
 				if (!(GMT->parent->external && !strncmp (opt->arg, "=", 1))) {	/* Can check if file is sane */
-					if (!halfbaked && GMT_Get_FilePath (API, GMT_IS_POSTSCRIPT, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+					if (!halfbaked && GMT_Get_FilePath (API, GMT_IS_POSTSCRIPT, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				}
 				Ctrl->In.n_files++;
 				break;
@@ -803,39 +803,33 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				n_errors += psconvert_parse_A_settings (GMT, opt->arg, Ctrl);
 				break;
-			case 'C':	/* Append extra custom GS options */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				strcat (Ctrl->C.arg, " ");
+			case 'C':	/* Append extra custom GS options (repeatable) */
+				Ctrl->C.active = true;
+				if (Ctrl->C.arg[0]) strcat (Ctrl->C.arg, " ");
 				strncat (Ctrl->C.arg, opt->arg, GMT_LEN256-1);	/* Append to list of extra GS options */
 				break;
 			case 'D':	/* Change output directory */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.dir = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.dir))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.dir));
 				break;
 			case 'E':	/* Set output dpi */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
-				Ctrl->E.dpi = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->E.dpi);
 				break;
 			case 'F':	/* Set explicitly the output file name */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				Ctrl->F.file = gmt_strdup_noquote (opt->arg);
 				gmt_filename_get (Ctrl->F.file);
 				break;
 			case 'G':	/* Set GS path */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				gmt_M_str_free (Ctrl->G.file);
 				Ctrl->G.file = malloc (strlen (opt->arg)+3);	/* Add space for quotes */
 				sprintf (Ctrl->G.file, "%c%s%c", quote, opt->arg, quote);
 				break;
 			case 'H':	/* RIP at a higher dpi, then downsample in gs */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.active = true;
-				Ctrl->H.factor = atoi (opt->arg);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->H.factor);
 				break;
 			case 'I':	/* Set margins/scale modifiers [Deprecated -I: Do not use the ICC profile when converting gray shades] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -843,9 +837,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'L':	/* Give list of files to convert */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
-				Ctrl->L.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file));
 				break;
 			case 'M':	/* Manage background and foreground layers for PostScript sandwich */
 				switch (opt->arg[0]) {
@@ -857,9 +849,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 						break;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M[j].active);
-				if (!n_errors && !Ctrl->M[j].active) {	/* Got -Mb<file> or -Mf<file> */
+				if (!n_errors && Ctrl->M[j].active) {	/* Got -Mb<file> or -Mf<file> */
 					if (!gmt_access (GMT, &opt->arg[1], R_OK)) {	/* The plot file exists */
-						Ctrl->M[j].active = true;
 						Ctrl->M[j].file = strdup (&opt->arg[1]);
 					}
 					else {
@@ -874,9 +865,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'P':	/* Force Portrait mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->P.active);
-				Ctrl->P.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
-			case 'Q':	/* Anti-aliasing settings */
+			case 'Q':	/* Anti-aliasing settings (repeatable) */
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'g')
 					mode = PSC_LINES;
@@ -895,11 +886,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'S':	/* Write the GS command to STDERR */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':	/* Select output format (optionally also request EPS) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if ((j = (int)strlen(opt->arg)) > 1 && opt->arg[j-1] == '-')	/* Old deprecated way of appending a single - sign at end */
 					grayscale = true;
 				else if (strstr (opt->arg, "+m"))	/* Modern monochrome option (like -M in grdimage) */
@@ -952,7 +942,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 							j++;
 							break;
 						default:
-							gmt_default_error (GMT, opt->option);
+							gmt_default_option_error (GMT, opt);
 							n_errors++;
 							break;
 					}
@@ -966,16 +956,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				if (GMT->current.setting.run_mode == GMT_CLASSIC)
-					Ctrl->Z.active = true;
-				else {
+				if (GMT->current.setting.run_mode == GMT_MODERN) {
 					GMT_Report (API, GMT_MSG_ERROR, "The -Z option is not available in MODERN mode!\n");
 					n_errors++;
 				}
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -1630,10 +1618,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	static char *gs_params_rasnew = "-q -dNOPAUSE -dBATCH -dNOSAFER -dSCANCONVERTERTYPE=2";
 	static char *gs_params_rasold = "-q -dNOPAUSE -dBATCH -dNOSAFER";
 	static char *gs_params = NULL;
-#ifdef HAVE_GDAL
 	struct GMT_GDALREAD_IN_CTRL  *to_gdalread = NULL;
 	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
-#endif
 
 	FILE *fp = NULL, *fpo = NULL, *fpb = NULL, *fp2 = NULL, *fpw = NULL;
 
@@ -1707,10 +1693,6 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		return_image = true;
-#ifndef HAVE_GDAL
-		GMT_Report (API, GMT_MSG_WARNING, "Selecting ppmraw device since GDAL not available.\n");
-		Ctrl->T.device = GS_DEV_PPM;
-#endif
 	}
 
 	if (Ctrl->D.active && (error = psconvert_make_dir_if_needed (API, Ctrl->D.dir))) {	/* Specified output directory; create if it does not exists */
@@ -2408,7 +2390,6 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				fprintf (fpo, "V clippath %s %g %g /Normal PSL_transp F N U\n", ptr, Ctrl->N.fade_level, Ctrl->N.fade_level);
 				transparency = true;
 			}
-#ifdef HAVE_GDAL
 			else if (Ctrl->A.crop && found_proj && !strncmp (line, "%%PageTrailer", 13)) {
 				psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos);
 				fprintf (fpo, "%%%%PageTrailer\n");
@@ -2467,7 +2448,6 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 				continue;
 			}
-#endif
 			fprintf (fpo, "%s\n", line);
 		}
 		if (add_grestore)
@@ -2506,7 +2486,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				Ctrl->T.device = GS_DEV_PDF;
 				/* After conversion, we convert the tmp PDF file to desired format via a 2nd gs call */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Convert to intermediate PDF...\n");
-				strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
+				strncat (out_file, ps_file, (size_t)pos_ext);
 				strcat (out_file, "_intermediate");
 			}
 			else {	/* Output is the final result */
@@ -2635,7 +2615,6 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		if (return_image) {	/* Must read in the saved raster image and return via Ctrl->F.file pointer */
 			struct GMT_IMAGE *I = NULL;
-#ifdef HAVE_GDAL	/* Since GMT_Read_Data with GMT_IS_IMAGE, GMT_IS_FILE means a call to GDAL */
 			gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 			/* State how we wish to receive images from GDAL */
 			if (GMT->current.gdal_read_in.O.mem_layout[0])		/* At one point this should never be allowed to be empty */
@@ -2646,44 +2625,6 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, out_file, NULL)) == NULL) {
 				Return (API->error);
 			}
-#else			/* Here we have already set device to PPM which we can read ourselves. */
-			uint64_t dim[GMT_DIM_SIZE] = {0U, 0U, 3U, 0U}; 	/* 3 bands. This might change if we do monochrome at some point */
-			uint64_t row, col, band, nCols, nRows, nBands, nXY;
-			FILE *fp_raw = NULL;
-			unsigned char *tmp;
-			if ((fp_raw = fopen (out_file, "rb")) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to open image file %s\n", out_file);
-				Return (GMT_ERROR_ON_FOPEN);
-			}
-			gmt_fgets (GMT, line, GMT_LEN128, fp_raw);	/* Skip 1st line */
-			gmt_fgets (GMT, line, GMT_LEN128, fp_raw);	/* Skip 2nd line */
-			gmt_fgets (GMT, line, GMT_LEN128, fp_raw);	/* Get 3rd line */
-			if (sscanf (line, "%" PRIu64 " %" PRIu64, &dim[GMT_X], &dim[GMT_Y]) != 2) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to decipher size of image in file %s\n", out_file);
-				fclose (fp_raw);
-				Return (GMT_PARSE_ERROR);
-			}
-			gmt_fgets (GMT, line, GMT_LEN128, fp_raw);	/* Skip 4th line */
-			gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
-			if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_ERROR, "Unable to create image structure\n");
-				fclose (fp_raw);
-				Return (API->error);
-			}
-
-			nCols = dim[GMT_X];		nRows = dim[GMT_Y];		nBands = dim[2];	nXY = nRows * nCols;
-			tmp   = gmt_M_memory(GMT, NULL, nCols * nBands, char);
-			for (row = 0; row < nRows; row++) {
-				fread(tmp, sizeof (unsigned char), nCols * nBands, fp_raw);		/* Read a row of nCols by nBands bytes of data */
-				for (col = 0; col < nCols; col++) {
-					for (band = 0; band < nBands; band++) {
-						I->data[row + col*nRows + band*nXY] = tmp[band + col*nBands];
-					}
-				}
-			}
-			gmt_M_free (GMT, tmp);
-			fclose (fp_raw);	fp_raw = NULL;
-#endif
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->F.file, I) != GMT_NOERROR)
 				Return (API->error);
 			gmt_set_pad (GMT, API->pad);	/* Reset padding to GMT default */

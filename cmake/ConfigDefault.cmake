@@ -1,6 +1,5 @@
 #
-#
-# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -39,7 +38,7 @@ set (GMT_PACKAGE_NAME "GMT")
 set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 
 # Year of the current GMT release.
-set (GMT_VERSION_YEAR "2021")
+set (GMT_VERSION_YEAR "2022")
 
 # The GMT release DOI
 set (GMT_VERSION_DOI "https://doi.org/10.5281/zenodo.5708769")
@@ -49,7 +48,7 @@ set (GMT_VERSION_CITATION "Wessel, P., Luis, J. F., Uieda, L., Scharroo, R., Wob
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION_MAJOR 6)
-set (GMT_PACKAGE_VERSION_MINOR 3)
+set (GMT_PACKAGE_VERSION_MINOR 4)
 set (GMT_PACKAGE_VERSION_PATCH 0)
 # If this is a beta version or similar, add a string suffix
 #set (GMT_PACKAGE_VERSION_SUFFIX "rc")
@@ -57,7 +56,7 @@ set (GMT_PACKAGE_VERSION_PATCH 0)
 # Whether to make a public release.
 # When making internal releases or just an ordinary developer build, it is set to FALSE.
 # When making *public* release, uncomment to set it to TRUE.
-set (GMT_PUBLIC_RELEASE TRUE)
+#set (GMT_PUBLIC_RELEASE TRUE)
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}${GMT_PACKAGE_VERSION_SUFFIX}")

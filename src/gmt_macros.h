@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #endif
 #ifndef MOD	/* Knuth-style modulo function (remainder after floored division) */
-#define MOD(x, y) (x - y * floor((double)(x)/(double)(y)))
+#define MOD(x, y) ((x) - (y) * floor((double)(x)/(double)(y)))
 #endif
 
 #ifdef DOUBLE_PRECISION_GRID

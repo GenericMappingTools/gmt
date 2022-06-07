@@ -1,3 +1,5 @@
+:orphan:
+
 Modules
 =======
 
@@ -144,6 +146,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    supplements/potential/gmtflexure
    supplements/potential/gmtgravmag3d
    supplements/potential/gravfft
+   supplements/potential/gravprisms
    supplements/potential/grdflexure
    supplements/potential/grdgravmag3d
    supplements/potential/grdredpol
@@ -313,6 +316,7 @@ Supplemental Modules
     - :doc:`/supplements/potential/gmtflexure`
     - :doc:`/supplements/potential/gmtgravmag3d`
     - :doc:`/supplements/potential/gravfft`
+    - :doc:`/supplements/potential/gravprisms`
     - :doc:`/supplements/potential/grdflexure`
     - :doc:`/supplements/potential/grdgravmag3d`
     - :doc:`/supplements/potential/grdredpol`
@@ -676,6 +680,8 @@ potential
 | :doc:`/supplements/potential/gmtgravmag3d` | |gmtgravmag3d_purpose|   |
 +--------------------------------------------+--------------------------+
 | :doc:`/supplements/potential/gravfft`      | |gravfft_purpose|        |
++--------------------------------------------+--------------------------+
+| :doc:`/supplements/potential/gravprisms`   | |gravprisms_purpose|     |
 +--------------------------------------------+--------------------------+
 | :doc:`/supplements/potential/grdflexure`   | |grdflexure_purpose|     |
 +--------------------------------------------+--------------------------+

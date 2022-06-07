@@ -45,6 +45,8 @@ Quick links
         gallery
         animations
         tutorial
+        tutorial_jl
+        Tutorials in PyGMT <https://www.pygmt.org/latest/tutorials/index.html>
 
     ---
 

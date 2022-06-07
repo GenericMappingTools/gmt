@@ -27,7 +27,7 @@ Synopsis
 Description
 -----------
 
-**grdproject** will do one of two things depending whether **-I** has
+**grdproject** will do one of two things depending whether |-I| has
 been set. If set, it will transform a gridded data set from a
 rectangular coordinate system onto a geographical system by resampling
 the surface at the new nodes. If not set, it will project a geographical
@@ -43,7 +43,7 @@ determined in one of several ways by specifying the grid spacing, number
 of nodes, or resolution. Nodes not constrained by input data are set to
 NaN.
 
-The **-R** option can be used to select a map region larger or smaller
+The |-R| option can be used to select a map region larger or smaller
 than that implied by the extent of the grid file.
 
 Required Arguments
@@ -74,14 +74,14 @@ Optional Arguments
 **-C**\ [*dx/dy*]
     Let projected coordinates be relative to projection center [Default
     is relative to lower left corner]. Optionally, add offsets in the
-    projected units to be added (or subtracted when **-I** is set) to
+    projected units to be added (or subtracted when |-I| is set) to
     (from) the projected coordinates, such as false eastings and
     northings for particular projection zones [0/0].
 
 .. _-D:
 
 **-D**\ *xinc*\ [**+e**\|\ **n**][/\ *yinc*\ [**+e**\|\ **n**]]
-    Set the grid spacing for the new grid.  If neither **-D** nor **-E** are set then we
+    Set the grid spacing for the new grid.  If neither |-D| nor |-E| are set then we
     select the same number of output nodes as there are input nodes.
     Optionally append a suffix modifier.
     **Geographical (degrees) coordinates**: Append
@@ -102,7 +102,7 @@ Optional Arguments
     increment value depends on whether you have selected a
     gridline-registered or pixel-registered grid; see :ref:`GMT File Formats` for
     details. **Note**: If **-R**\ *grdfile* is used then the grid spacing (and registration) have
-    already been initialized; use **-D** (and **-r**) to override the values.
+    already been initialized; use |-D| (and **-r**) to override the values.
 
 .. _-E:
 
@@ -112,12 +112,12 @@ Optional Arguments
 .. _-F:
 
 **-F**\ [**c**\|\ **i**\|\ **p**\|\ **e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**]
-    Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
+    Force 1:1 scaling, i.e., output (or input, see |-I|) data are in
     actual projected meters [**e**]. To specify other units, append
     **f** (foot), **k** (km), **M** (statute mile), **n** (nautical
     mile), **u** (US survey foot), **i** (inch), **c** (cm), or **p**
-    (point). Without **-F**, the output (or input, see **-I**) are in
-    the units specified by :term:`PROJ_LENGTH_UNIT` (but see **-M**).
+    (point). Without |-F|, the output (or input, see |-I|) are in
+    the units specified by :term:`PROJ_LENGTH_UNIT` (but see |-M|).
 
 .. _-I:
 
@@ -129,7 +129,7 @@ Optional Arguments
 **-Mc**\|\ **i**\|\ **p**
     Append **c**, **i**, or **p** to indicate that cm, inch, or point
     should be the projected measure unit [Default is set by
-    :term:`PROJ_LENGTH_UNIT` in :doc:`gmt.conf`]. Cannot be used with **-F**.
+    :term:`PROJ_LENGTH_UNIT` in :doc:`gmt.conf`]. Cannot be used with |-F|.
 
 .. |Add_-R| replace:: You may ask to project only a subset of the grid by specifying a smaller input *w/e/s/n* region
     [Default is the region given by the grid file]. |Add_-R_links|

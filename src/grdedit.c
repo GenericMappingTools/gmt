@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,8 +49,9 @@ struct GRDEDIT_CTRL {
 	struct GRDEDIT_A {	/* -A */
 		bool active;
 	} A;
-	struct GRDEDIT_C {	/* -C */
+	struct GRDEDIT_C {	/* -C[b|c|n|p] */
 		bool active;
+		unsigned int mode;	/* see gmt_constants.h */
 	} C;
 	struct GRDEDIT_D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
 		bool active;
@@ -103,7 +104,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s [-A] [-C] [%s] [-E[a|e|h|l|r|t|v]] [-G%s] [%s] [-L[+n|p]] "
+	GMT_Usage (API, 0, "usage: %s %s [-A] [-Cb|c|n|p] [%s] [-E[a|e|h|l|r|t|v]] [-G%s] [%s] [-L[+n|p]] "
 		"[-N<table>] [%s] [-S] [-T] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_GRDEDIT2D,
 		GMT_OUTGRID, GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -114,7 +115,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_ingrid_syntax (API, 0, "Name of grid to be modified");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A Adjust dx/dy to be compatible with the file domain (or new -R).");
-	GMT_Usage (API, 1, "\n-C Remove the command history from the header.");
+	GMT_Usage (API, 1, "\n-Cb|c|n|p");
+	GMT_Usage (API, -2, "Control how the current and previous command histories should be handled, via directives:");
+	GMT_Usage (API, 3, "b: Append the current command's history to the previous history.");
+	GMT_Usage (API, 3, "c: Only save the current command's history.");
+	GMT_Usage (API, 3, "n: Save no history at all [Default].");
+	GMT_Usage (API, 3, "p: Only preserve the previous history.");
 	gmt_grd_info_syntax (API->GMT, 'D');
 	GMT_Usage (API, 1, "\n-E[a|e|h|l|r|t|v]");
 	GMT_Usage (API, -2, "Transform the entire grid (this may exchange x and y). Append operation:");
@@ -155,7 +161,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -164,30 +170,35 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 			/* Common parameters */
 
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Adjust increments */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
-			case 'C':	/* Clear history */
+			case 'C':	/* Control history output -Cb|c|n|p */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
+				switch (opt->arg[0]) {
+					case 'b': Ctrl->C.mode = GMT_GRDHISTORY_BOTH;	break;
+					case 'c': Ctrl->C.mode = GMT_GRDHISTORY_NEW;	break;
+					case 'p': Ctrl->C.mode = GMT_GRDHISTORY_OLD;	break;
+					case 'n': case '\0': Ctrl->C.mode = GMT_GRDHISTORY_NONE;	break;	/* Default */
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Unrecognized directive %s\n", opt->arg);
+						n_errors++;
+						break;
+				}
 				break;
 			case 'D':	/* Give grid information */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.information = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->D.information);
 				break;
 			case 'E':	/* Transpose or rotate grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (opt->arg[0] == '\0')	/* Default transpose */
 					Ctrl->E.mode = 't';
 				else if (strchr ("aehlrtv", opt->arg[0]))
@@ -199,13 +210,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'G':	/* Separate output grid file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'L':	/* Rotate w/e */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if (strstr (opt->arg, "+n")) Ctrl->L.mode = -1;
 				else if (strstr (opt->arg, "+p")) Ctrl->L.mode = +1;
 				else if (opt->arg[0])
@@ -213,26 +221,23 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'N':	/* Replace nodes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
-				if (opt->arg[0]) Ctrl->N.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file));
 				break;
 			case 'S':	/* Rotate global grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':	/* Toggle registration */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Option -G: Must specify an output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->A.active,
 	                                 "Option -S: Incompatible with -A\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active &&
@@ -246,7 +251,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 	                                 "Option -S: Must also specify -R\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]),
 	                                 "Option -S: -R longitudes must span exactly 360 degrees\n");
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "Must specify a single grid file\n");
 	if (Ctrl->N.active) {
 		n_errors += gmt_check_binary_io (GMT, 3);
 	}
@@ -261,14 +266,14 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdedit task */
 	bool grid_was_read = false, do_J = false;
 
-	unsigned int row, col;
+	openmp_int row, col;
 	int error;
 
 	uint64_t ij, n_data, n_use;
 
 	double shift_amount = 0.0;
 
-	char *registration[2] = {"gridline", "pixel"}, *out_file = NULL, *projstring = NULL;
+	char *registration[2] = {"gridline", "pixel"}, *out_file = NULL, *projstring = NULL, command[GMT_BUFSIZ] = {""};
 
 	struct GRDEDIT_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL;
@@ -340,6 +345,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 		G->header->ProjRefPROJ4 = projstring;
 
 	if (Ctrl->D.active) {
+		bool was_NaN, is_NaN;
 		double scale_factor, add_offset;
 		gmt_grdfloat nan_value;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Decode and change attributes in file %s\n", out_file);
@@ -349,7 +355,9 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 		if (gmt_decode_grd_h_info (GMT, Ctrl->D.information, G->header))
 			Return (GMT_PARSE_ERROR);
 
-		if (nan_value != G->header->nan_value) {
+		was_NaN = gmt_M_is_dnan (nan_value);
+		is_NaN  = gmt_M_is_dnan (G->header->nan_value);
+		if (was_NaN != is_NaN || (was_NaN == false && is_NaN == false && nan_value != G->header->nan_value)) {
 			/* Must read data */
 			if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL)
 				Return (API->error);
@@ -363,9 +371,10 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->C.active) {	/* Wipe history */
-		gmt_M_memset (G->header->command, GMT_GRID_COMMAND_LEN320, char);
-	}
+	gmt_change_grid_history (API, Ctrl->C.mode, G->header, command);	/* Set grid history per -C mode */
+
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_COMMAND, command, G))
+		Return (API->error);
 
 	if (Ctrl->S.active) {
 		shift_amount = GMT->common.R.wesn[XLO] - G->header->wesn[XLO];
@@ -435,7 +444,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 			if (gmt_M_grd_duplicate_column (GMT, G->header, GMT_IN)) {	/* Make sure longitudes got replicated */
 				/* Possibly need to replicate e/w value */
 				if (col == 0) {ij = gmt_M_ijp (G->header, row, G->header->n_columns-1); G->data[ij] = (gmt_grdfloat)in[GMT_Z]; n_use++; }
-				else if (col == (G->header->n_columns-1)) {ij = gmt_M_ijp (G->header, row, 0); G->data[ij] = (gmt_grdfloat)in[GMT_Z]; n_use++; }
+				else if (col == (openmp_int)(G->header->n_columns-1)) {ij = gmt_M_ijp (G->header, row, 0); G->data[ij] = (gmt_grdfloat)in[GMT_Z]; n_use++; }
 			}
 		} while (true);
 

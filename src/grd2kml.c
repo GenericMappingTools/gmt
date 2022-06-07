@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -211,7 +211,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -222,17 +222,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Altitude mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'g': Ctrl->A.mode = 0; break;
 					case 's': Ctrl->A.mode = 1; break;
@@ -246,41 +243,34 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* CPT */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 			case 'D':	/* Debug options - may fade away when happy with the performance */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				if (strstr (opt->arg, "+s")) Ctrl->D.single = true;	/* Write all files in a single directory instead of one directory per level */
 				if (strstr (opt->arg, "+d")) Ctrl->D.dump = true;	/* Dump quadtree information to stdout */
 				break;
 			case 'E':	/* Remove URL for all contents but top driver kml */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				gmt_M_str_free (Ctrl->E.url);
 				Ctrl->E.url = strdup (opt->arg);
 				break;
 			case 'F':	/* Select filter type */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
-				if (strchr ("bcgm", opt->arg[0]))
-					Ctrl->F.filter = opt->arg[0];
-				else {
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->F.filter);
+				if (strchr ("bcgm", Ctrl->F.filter) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -F: Choose among b, c, g, m!\n");
 					n_errors++;
 				}
 				break;
 			case 'H':	/* RIP at a higher dpi, then downsample in gs */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.active = true;
-				Ctrl->H.factor = atoi (opt->arg);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->H.factor);
 				break;
 			case 'I':	/* Here, intensity must be a grid file since we need to filter it */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (!strcmp (opt->arg, "+d"))	/* Gave +d only, so derive intensities from input grid using default settings */
 					Ctrl->I.derive = true;
 				else if ((c = gmt_first_modifier (GMT, opt->arg, "an"))) {	/* Want to control how grdgradient is run */
@@ -312,31 +302,27 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'L':	/* Tiles sizes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
+				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->L.size);
 				Ctrl->L.size = atoi (opt->arg);
 				break;
 			case 'N':	/* File name prefix */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				gmt_M_str_free (Ctrl->N.prefix);
-				Ctrl->N.prefix = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->N.prefix);
 				break;
 			case 'Q':	/* Deprecated colormasking option */
 				GMT_Report (API, GMT_MSG_ERROR, "Option -Q is deprecated as transparency is automatically detected\n");
 				break;
 			case 'S':	/* Extra levels */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				Ctrl->S.extra = (opt->arg[0]) ? atoi (opt->arg) : 1;
 				break;
 			case 'T':	/* Title */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if (opt->arg[0]) Ctrl->T.title = strdup (opt->arg);
 				break;
 			case 'W':	/* Contours and pens */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if ((c = strstr (opt->arg, "+s"))) {	/* Gave +s<scl> modifier to scale pen widths given via -C and optional cutoff pen width */
 					sscanf (&c[2], "%lf/%lg", &Ctrl->W.scale, &Ctrl->W.cutoff);
 					c[0] = '\0';	/* Temporarily chop off the modifier */
@@ -350,13 +336,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Must specify a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "Must specify a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.prefix == NULL, "Option -N: Must specify a prefix for naming usage.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor <= 1, "Option -H: Must specify an integer factor > 1.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.url == NULL, "Option -E: Must specify an URL.\n");
@@ -485,7 +470,7 @@ int grd2kml_coarsen_grid (struct GMT_CTRL *GMT, unsigned int level, char filter,
 			case 'm':	k = 3; break;
 		}
 		sprintf (filt_report, " [%s filtered with -F%c%s -I%s]", kind[k], filter, fwidth, s_int);
-		sprintf (cmd, "%s -D0 -F%c%s -I%s -rp -G%s", DataGrid, filter, fwidth, s_int, Zgrid);
+		sprintf (cmd, "%s -D0 -fc -F%c%s -I%s -rp -G%s", DataGrid, filter, fwidth, s_int, Zgrid);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Running grdfilter : %s\n", cmd);
 		if ((error = GMT_Call_Module (GMT->parent, "grdfilter", GMT_MODULE_CMD, cmd)) != GMT_NOERROR)
 			return (GMT_RUNTIME_ERROR);
@@ -524,7 +509,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *C = NULL;
 	struct GMT_QUADTREE **Q = NULL;
 	struct GRD2KML_CTRL *Ctrl = NULL;
-	struct GMT_GRID *G = NULL, *T = NULL;
+	struct GMT_GRID *G = NULL, *T = NULL, *I = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -672,8 +657,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 		sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -N -G%s", Ctrl->In.file, ext_wesn[XLO], ext_wesn[XHI], ext_wesn[YLO], ext_wesn[YHI], DataGrid);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Extend original data grid to multiple of largest grid spacing\n");
 		if ((error = GMT_Call_Module (API, "grdcut", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
-			gmt_M_free (GMT, Q);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto end_times;
 		}
 		z_extend = true;	/* We made a temp file we need to zap later */
 		if (Ctrl->I.active) {	/* Also extend the intensity grid */
@@ -681,8 +665,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 			sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -N -G%s", Ctrl->I.file, ext_wesn[XLO], ext_wesn[XHI], ext_wesn[YLO], ext_wesn[YHI], IntensGrid);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Extend intensity grid to multiple of largest grid spacing\n");
 			if ((error = GMT_Call_Module (API, "grdcut", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
-				gmt_M_free (GMT, Q);
-				Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto end_times;
 			}
 			i_extend = true;	/* We made a temp file we need to zap later */
 		}
@@ -695,17 +678,17 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->C.active || gmt_is_cpt_master (GMT, Ctrl->C.file)) {	/* If no cpt given or just a master then we must compute a scaled one from the full-size grid and use it throughout */
-		char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file);
+		char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file, G->header);
 		char cptfile[PATH_MAX] = {""};
 		struct GMT_PALETTE *P = NULL;
 		if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, G->header->z_min, G->header->z_max, Ctrl->C.dz)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to create a CPT\n");
-			Return (API->error);	/* Well, that did not go well... */
+			error = API->error;	goto end_times;	/* Well, that did not go well... */
 		}
 		if (cpt) gmt_M_str_free (cpt);
 		sprintf (cptfile, "%s/grd2kml_%d.cpt", API->tmp_dir, uniq);
 		if (GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, cptfile, P) != GMT_NOERROR) {
-			Return (API->error);
+			error = API->error;	goto end_times;	/* Well, that did not go well... */
 		}
 		Ctrl->C.active = tmp_cpt = true;
 		Ctrl->C.file = strdup (cptfile);
@@ -721,24 +704,20 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 			gmt_set_cartesian (GMT, GMT_IN);
 			if ((error = GMT_Set_Columns (API, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to specify number of columns (1) to read\n");
-				gmt_M_free (GMT, Q);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto end_times;
 			}
 			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->W.file, NULL)) == NULL) {
-				gmt_M_free (GMT, Q);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto end_times;
 			}
 			if (C->n_segments > 1 || C->n_records == 0 || C->table[0]->segment[0]->text == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Contour file has more than one segment, no records at all, or no text\n");
-				gmt_M_free (GMT, Q);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto end_times;
 			}
 			S = C->table[0]->segment[0];
 			for (c = 0; c < C->n_records; c++) {	/* Must reformat the records to fit grdcontour requirements */
 				if (S->text[c] == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "No text record found\n");
-					gmt_M_free (GMT, Q);
-					Return (GMT_RUNTIME_ERROR);
+					error = GMT_RUNTIME_ERROR;	goto end_times;
 				}
 				sprintf (line, "C %s", S->text[c]);	/* Build the required record format for grdcontour */
 				gmt_M_str_free (S->text[c]);	/* Free previous string */
@@ -754,8 +733,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 			}
 			dim_c[GMT_ROW] = P->n_colors + 1;	/* Number of contours implied by CPT */
 			if ((C = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_WITH_STRINGS, dim_c, NULL, NULL, 0, 0, NULL)) == NULL) {
-				gmt_M_free (GMT, Q);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto end_times;
 			}
 			S = C->table[0]->segment[0];
 			sprintf (line, "C %s", Ctrl->W.file);	/* Build the required record format for grdcontour */
@@ -770,9 +748,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 		}
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN|GMT_IS_REFERENCE, C, contour_file) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual file for contours\n");
-			gmt_M_free (GMT, Q);
-			GMT_Destroy_Data (API, &C);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto end_times;
 		}
 		strcpy (K, " -K");	/* Since now we must do a contour overlay */
 	}
@@ -805,16 +781,12 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 		if (level < max_level || registration == GMT_GRID_NODE_REG || !doubleAlmostEqual (inc, G->header->inc[GMT_X])) {	/* Filter the data to match level resolution */
 			sprintf (Zgrid, "%s/grd2kml_Z_L%d_tmp_%6.6d.grd", API->tmp_dir, level, uniq);
 			if (grd2kml_coarsen_grid (GMT, level, Ctrl->F.filter, registration, G->header->inc[GMT_X], inc, DataGrid, Zgrid, filt_report)) {
-				gmt_M_free (GMT, Q);
-				if (Ctrl->W.active) GMT_Destroy_Data (API, &C);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto end_times;
 			}
 			if (Ctrl->I.active) {	/* Also filter the intensity grid */
 				sprintf (Igrid, "%s/grd2kml_I_L%d_tmp_%6.6d.grd", API->tmp_dir, level, uniq);
 				if (grd2kml_coarsen_grid (GMT, level, Ctrl->F.filter, registration, G->header->inc[GMT_X], inc, IntensGrid, Igrid, filt_report)) {
-					gmt_M_free (GMT, Q);
-					if (Ctrl->W.active) GMT_Destroy_Data (API, &C);
-					Return (GMT_RUNTIME_ERROR);
+					error = GMT_RUNTIME_ERROR;	goto end_times;
 				}
 			}
 		}
@@ -861,9 +833,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 				/* Now we have the current tile region */
 				if ((T = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Zgrid, NULL)) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "Unable to read in grid tile!\n");
-					gmt_M_free (GMT, Q);
-					if (Ctrl->W.active) GMT_Destroy_Data (API, &C);
-					Return (API->error);
+					error = GMT_RUNTIME_ERROR;	goto end_times;
 				}
 				/* Determine if we have any non-NaN data points inside this grid */
 				for (trow = n_NaN = 0; trow < T->header->n_rows; trow++) {
@@ -875,39 +845,47 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 				use_tile = (n_NaN < n_NM);
 				im_type = (n_NaN) ? 1 : 0;
 				if (use_tile) {	/* Found data inside this tile, make plot and rasterize (if PostScript) */
-					char z_data[GMT_VF_LEN] = {""}, psfile[PATH_MAX] = {""};
+					char z_data[GMT_VF_LEN] = {""}, i_data[GMT_VF_LEN] = {""}, psfile[PATH_MAX] = {""};
+					if (Ctrl->I.active) {	/* Also get the intensity tile */
+						if ((I = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Igrid, NULL)) == NULL) {
+							GMT_Report (API, GMT_MSG_ERROR, "Unable to read in intensity tile!\n");
+							error = GMT_RUNTIME_ERROR;	goto end_times;
+						}
+						/* Open the intensity subset as a virtual file we can pass to grdimage */
+						if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, I, i_data) == GMT_NOTSET) {
+							GMT_Report (API, GMT_MSG_ERROR, "Unable to open intensity tile as virtual file!\n");
+							error = GMT_RUNTIME_ERROR;	goto end_times;
+						}
+					}
 					/* Open the grid subset as a virtual file we can pass to grdimage */
 					if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, T, z_data) == GMT_NOTSET) {
 						GMT_Report (API, GMT_MSG_ERROR, "Unable to open grid tile as virtual file!\n");
-						gmt_M_free (GMT, Q);
-						if (Ctrl->W.active) GMT_Destroy_Data (API, &C);
-						Return (API->error);
+						error = GMT_RUNTIME_ERROR;	goto end_times;
 					}
 					/* Will pass -W so grdimage will notify us if there was no valid image data imaged */
 					if (!Ctrl->W.active) {
-						/* Build the grdimage command to write an image directly via GDAL - no need to go via PostSCript */
+						/* Build the grdimage command to write an image directly via GDAL - no need to go via PostScript */
 						char imagefile[PATH_MAX] = {""};
 						if (Ctrl->D.single)
 							sprintf (imagefile, "%s/L%2.2dR%3.3dC%3.3d.%s", Ctrl->N.prefix, level, row, col, ext[im_type]);
 						else
 							sprintf (imagefile, "%s/R%3.3dC%3.3d.%s", level_dir, row, col, ext[im_type]);
 						if (Ctrl->I.active)	/* Must pass two grids */
-							sprintf (cmd, "%s %s -I%s -R%s/%s/%s/%s -A%s", grdimage, z_data, Igrid, W, E, S, N, imagefile);
+							sprintf (cmd, "%s %s -I%s -R%s/%s/%s/%s -A%s", grdimage, z_data, i_data, W, E, S, N, imagefile);
 						else
 							sprintf (cmd, "%s %s -R%s/%s/%s/%s -A%s", grdimage, z_data, W, E, S, N, imagefile);
 						if (im_type) strcat (cmd, transp);
 						error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);
 						if (!(error == GMT_NOERROR || error == GMT_IMAGE_NO_DATA)) {
 							GMT_Report (API, GMT_MSG_ERROR, "Unable to create a direct PNG from grid\n");
-							gmt_M_free (GMT, Q);
-							Return (API->error);
+							error = GMT_RUNTIME_ERROR;	goto end_times;
 						}
 					}
 					else {
 						/* Build the grdimage command to make the PostScript plot */
 						sprintf (psfile, "%s/grd2kml_tile_tmp_%6.6d.ps", API->tmp_dir, uniq);
 						if (Ctrl->I.active)	/* Must pass two grids */
-							sprintf (cmd, "%s %s -I%s -R%s/%s/%s/%s ->%s", grdimage, z_data, Igrid, W, E, S, N, psfile);
+							sprintf (cmd, "%s %s -I%s -R%s/%s/%s/%s ->%s", grdimage, z_data, i_data, W, E, S, N, psfile);
 						else
 							sprintf (cmd, "%s %s -R%s/%s/%s/%s ->%s", grdimage, z_data, W, E, S, N, psfile);
 						if (im_type) strcat (cmd, transp);
@@ -918,17 +896,22 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 							GMT_Init_VirtualFile (API, 0, contour_file);	/* Read the same contours again */
 							if ((error = GMT_Call_Module (API, "grdcontour", GMT_MODULE_CMD, cmd))) {
 								GMT_Report (API, GMT_MSG_ERROR, "Unable to overlay contours!\n");
-								gmt_M_free (GMT, Q);
-								GMT_Destroy_Data (API, &C);
-								Return (API->error);
+								error = GMT_RUNTIME_ERROR;	goto end_times;
 							}
 						}
 					}
+					/* Relinquish the tile memory */
 					GMT_Close_VirtualFile (API, z_data);
 					if (GMT_Destroy_Data (API, &T) != GMT_NOERROR) {
 						GMT_Report (API, GMT_MSG_ERROR, "Unable to free memory of grid tile!\n");
-						gmt_M_free (GMT, Q);
-						Return (API->error);
+						error = GMT_RUNTIME_ERROR;	goto end_times;
+					}
+					if (Ctrl->I.active)	{	/* Same for intensity tile */
+						GMT_Close_VirtualFile (API, i_data);
+						if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
+							GMT_Report (API, GMT_MSG_ERROR, "Unable to free memory of intensity tile!\n");
+							error = GMT_RUNTIME_ERROR;	goto end_times;
+						}
 					}
 					if (error == GMT_IMAGE_NO_DATA) {	/* Must have found non-NaNs in the pad since the image is all NaN? */
 						GMT_Report (API, GMT_MSG_WARNING, "No image content for current tile (%d, %d, %d) - skipped\n", level, row, col);
@@ -946,8 +929,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 								sprintf (cmd, "%s -T%c -D%s -FR%3.3dC%3.3d %s", ps_cmd, img_code[im_type], level_dir, row, col, psfile);
 							if (GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd)) {
 								GMT_Report (API, GMT_MSG_ERROR, "Unable to rasterize current PNG tile!\n");
-								gmt_M_free (GMT, Q);
-								Return (API->error);
+								error = GMT_RUNTIME_ERROR;	goto end_times;
 							}
 						}
 						/* Update our list of tiles created */
@@ -1048,7 +1030,7 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 			sprintf (file, "%s/%2.2d/R%3.3dC%3.3d.kml", Ctrl->N.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
 		if ((fp = fopen (file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create file : %s\n", file);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto end_times;
 		}
 		/* First this tile's kml info and image href */
 		minLodPixels = (Q[k]->level == 0) ? 1 : Ctrl->L.size / 2;
@@ -1132,8 +1114,11 @@ EXTERN_MSC int GMT_grd2kml (void *V_API, int mode, void *args) {
 		gmt_M_str_free (Q[k]->region);	/* Free this tile region */
 		gmt_M_free (GMT, Q[k]);		/* Free this tile information */
 	}
-	gmt_M_free (GMT, Q);
 	GMT_Report (API, GMT_MSG_NOTICE, "Done: %d tiles (%d JPG and %d PNG) written to directory %s\n", n_tiles, n_img[0], n_img[1], Ctrl->N.prefix);
 
-	Return (GMT_NOERROR);
+end_times:
+	gmt_M_free (GMT, Q);
+	if (Ctrl->W.active) GMT_Destroy_Data (API, &C);
+
+	Return (error);
 }

@@ -9,13 +9,14 @@
 [![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
 [![Documentation (development version)](https://img.shields.io/badge/docs-development-green.svg)](http://docs.generic-mapping-tools.org/dev/)
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5708769.svg)](https://doi.org/10.5281/zenodo.5708769)
 
 ## What is GMT?
 
 GMT is an open source collection of about 90 command-line tools for manipulating
 geographic and Cartesian data sets (including filtering, trend fitting, gridding,
-projecting, etc.) and producing high-quality illustrations ranging from simple x–y
+projecting, etc.) and producing high-quality illustrations ranging from simple x-y
 plots via contour maps to artificially illuminated surfaces, 3D perspective
 views and animations. The GMT supplements add another 50 more specialized and discipline-specific
 tools. GMT supports over 30 map projections and transformations and requires
@@ -63,7 +64,7 @@ our latest article in the reference list of your future publications that
 will benefit from the availability of GMT:
 
 > Wessel, P., Luis, J. F., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019).
-> The Generic Mapping Tools version 6. Geochemistry, Geophysics, Geosystems, 20, 5556–5564.
+> The Generic Mapping Tools version 6. Geochemistry, Geophysics, Geosystems, 20, 5556-5564.
 > https://doi.org/10.1029/2019GC008515
 
 ## Software support
@@ -84,7 +85,7 @@ Contributions are welcome and appreciated. Please refer to the [contributing gui
 
 ## License
 
-Copyright (c) 1991-2021 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
+Copyright (c) 1991-2022 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
 
 GMT is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
@@ -109,11 +110,18 @@ GDAL (ogr2ogr, gdal_translate), [Ghostscript](https://www.ghostscript.com),
 [xdg-open](https://www.freedesktop.org/wiki/Software/xdg-utils/), and
 [GraphicsMagick](http://www.graphicsmagick.org).
 
-GMT uses (or can access) data derived from these sources:
+GMT uses (or can access) raster data derived from these sources:
 
 - [Scientific Color Maps (CPT)](http://www.fabiocrameri.ch/visualisation.php)
-- [Earth 15" DEM](http://dx.doi.org/10.1029/2019EA000658)
+- [Earth 15" IGPP DEM](https://www.essoar.org/doi/10.1002/essoar.10508279.1)
+- [Earth 15" GEBCO DEM](https://www.gebco.net/data_and_products/gridded_bathymetry_data/)
 - [Earth 1" SRTM DEM](https://lpdaac.usgs.gov/products/srtmgl3v003)
-- [Earth 1' crustal age](http://dx.doi.org/10.1029/2020GC009214)
+- [Earth 15" GSHHG land/sea masks](http://www.soest.hawaii.edu/pwessel/)
+- [Earth 1' crustal age](https://doi.org/10.1029/2020GC009214)
 - [Earth 30" Blue Marble images](https://visibleearth.nasa.gov/images/57752/blue-marble-land-surface-shallow-water-and-shaded-topography)
 - [Earth 30" Black Marble images](https://earthobservatory.nasa.gov/features/NightLights/page3.php)
+- [Earth 1' EGM2008 Geoid Anomalies](https://earth-info.nga.mil)
+- [Earth 1' Free-Air Gravity Anomalies from Altimetry](https://topex.ucsd.edu/marine_grav/mar_grav.html)
+- [Earth 1' Vertical Gravity Gradients from Altimetry](https://topex.ucsd.edu/marine_grav/mar_grav.html)
+- [Earth 2' EMAG2 Magnetic Anomalies](https://www.ncei.noaa.gov)
+- [Earth 3' WDMAM Magnetic Anomalies](https://wdmam.org)

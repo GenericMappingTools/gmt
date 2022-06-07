@@ -1,8 +1,20 @@
-/* -------------------------------------------------------------------
- *      See LICENSE.TXT file for copying and redistribution conditions.
+/*--------------------------------------------------------------------
  *
- *    Copyright (c) 2004-2021 by Pthe GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Chandler
- *	File:	mgd77_rls_coeffs.c
+ *	Copyright (c) 2004-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
+ *--------------------------------------------------------------------*/
+/*	File:	mgd77_rls_coeffs.c
  *
  *	Tables consisting of regression statistics for (in this order):
  *		Ship bathymetry vs S2004 predicted bathymetry (slope and correlation)
@@ -22,7 +34,7 @@
  *	testing purposes.
  *
  *	Authors:
- *		Michael Chandler and Paul Wessel
+ *		Michael Hamilton (nee Chandler) and Paul Wessel
  *		School of Ocean and Earth Science and Technology
  *		University of Hawaii
  *

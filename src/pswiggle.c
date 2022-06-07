@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -287,14 +287,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (opt->arg[0] == '\0')	/* Do not enforce a 180-degree preferred window */
 					Ctrl->A.mode = 0;
 				else
@@ -302,11 +301,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
-				Ctrl->C.value = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->C.value);
 				break;
 			case 'D':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				if ((!strchr (opt->arg, '+') || opt->arg[0] == 'x') && gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-D option is deprecated; use -g instead.\n");
 					GMT->common.g.active = true;
@@ -319,18 +316,18 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 					n_errors += gmt_parse_g_option (GMT, txt_a);
 				}
 				else {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 					if (opt->arg[0])
 						Ctrl->D.arg = strdup (opt->arg);
 					else {
 						GMT_Report (API, GMT_MSG_ERROR, "Option -D: No argument given!\n");
 						n_errors++;					
 					}
-					Ctrl->D.active = Ctrl->D.scale.vertical = true;
+					Ctrl->D.scale.vertical = true;
 				}
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->D.scale.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the scale", 3);
 					n_errors++;
@@ -360,7 +357,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 				if (!(pos || neg)) pos = true;	/* Default is positive fill */
 				k = (pos) ? PSWIGGLE_POS : PSWIGGLE_NEG;
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[k]);
-				Ctrl->G.active[k] = true;
 				if (gmt_getfill (GMT, &opt->arg[j], &Ctrl->G.fill[k])) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
@@ -370,8 +366,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.value = atof (opt->arg);
-				Ctrl->I.active = true;
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->I.value);
 				break;
 			case 'N':
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -379,7 +374,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 					N_active = true;
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'S':
 				if (gmt_M_compat_check (GMT, 5)) {
@@ -400,11 +395,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 					n_errors += gmt_M_check_condition (GMT, k != 3, "Option -S: Correct syntax:\n\t-S[x]<x0>/<y0>/<length>[/<units>]\n");
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->T.pen)) {
 					gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
 					n_errors++;
@@ -412,7 +406,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
@@ -420,14 +413,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				j = (unsigned int)strlen (opt->arg) - 1;
 				if (strchr (GMT_DIM_UNITS, (int)opt->arg[j])) Ctrl->Z.unit = opt->arg[j];
 				Ctrl->Z.scale = atof (opt->arg);
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -561,7 +553,7 @@ EXTERN_MSC int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 
-			if (gmt_segment_BB_outside_map_BB (GMT, T->segment[seg])) continue;
+			/* Cannot exclude segments whose x,y are all outside since we do not yet know the coordinates of the amplitude curve */
 
 			PSL_comment (PSL, "%s\n", T->segment[seg]->header);
 

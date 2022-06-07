@@ -1,5 +1,5 @@
     Dump the (x,y,z) coordinates of each contour to one or more output files
-    (or *stdout* if *template* is not given). No plotting will take place.
+    (or standard output if *template* is not given). No plotting will take place.
     If *template* contains one or more of the C-format specifiers %d, %f, %c
     then line segments will be written to different files; otherwise all
     lines are written to the specified file (*template*). The use of the

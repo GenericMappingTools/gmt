@@ -1,0 +1,5 @@
+outs:
+- md5: 9185a74ecf509563633e55261a093518.dir
+  size: 223957
+  nfiles: 4
+  path: grdsample

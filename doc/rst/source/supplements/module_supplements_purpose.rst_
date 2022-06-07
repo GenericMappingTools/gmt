@@ -36,6 +36,8 @@
 
 .. |gravfft_purpose| replace:: Spectral calculations of gravity, isostasy, admittance, and coherence for grids
 
+.. |gravprisms_purpose| replace:: Compute geopotential anomalies over 3-D vertical prisms
+
 .. |grdflexure_purpose| replace:: Compute flexural deformation of 3-D surfaces for various rheologies
 
 .. |grdgravmag3d_purpose| replace:: Computes the gravity effect of one (or two) grids by the method of Okabe

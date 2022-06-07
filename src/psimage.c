@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,6 @@
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: psimage reads an EPS file or a 1, 8, 24, or 32 bit image and plots it on the page
- * Images are only supported if GMT was built with GDAL support.
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
@@ -110,6 +109,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"then we use absolute value as width and interpolate image in PostScript. Alternatively:");
 	GMT_Usage (API, 3, "+r Append image dpi (dots per inch).");
 	GMT_Usage (API, 3, "+n Append <n_columns>[/<n_rows>] to replicate image <n_columns> by <n_rows> times [Default is no replication].");
+	GMT_Usage (API, -2, "Note: if neither +w nor +r is set we default to the default dpu [%lg%c]\n",
+		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the image", 1);
 	GMT_Usage (API, 1, "\n-G[<color>][+b|f|t]");
 	GMT_Usage (API, -2, "Change some pixels to be transparent (or to optional <color>) depending on selected modifier (repeatable):");
@@ -134,7 +135,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, ind = PSIMAGE_FGD, k = 0;
+	unsigned int n_errors = 0, ind = PSIMAGE_FGD, k = 0;
 	int n;
 	bool p_fail = false;
 	char string[GMT_LEN256] = {""}, *p = NULL;
@@ -147,10 +148,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_IMAGE, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_IMAGE, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
@@ -166,7 +165,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p, 'D')) == NULL) {	/* Failed basic parsing */
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Basic parsing of reference point in %s failed\n", opt->arg);
@@ -183,8 +181,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 							Ctrl->D.interpolate = true;
 						}
 					}
-					else if (gmt_get_modifier (Ctrl->D.refpoint->args, 'r', string))
+					else if (gmt_get_modifier (Ctrl->D.refpoint->args, 'r', string)) {
 						Ctrl->D.dpi = atof (string);
+						if (strchr (string, 'c')) Ctrl->D.dpi *= 2.54;	/* Convert dpc to dpi */
+					}
 					/* Optional modifiers +j, +n, +o */
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
@@ -207,7 +207,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'F':	/* Specify frame pen */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (gmt_M_compat_check (GMT, 5) && opt->arg[0] != '+') /* Warn but process old -F<pen> */
 					sprintf (string, "+c0+p%s", opt->arg);
 				else
@@ -259,16 +258,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.set[ind]);
-				Ctrl->G.set[ind] = true;
 				if (p) p[0] = '+';	/* Restore modifier */
 				break;
 			case 'I':	/* Invert 1-bit images */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'M':	/* Monochrome image */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Replicate image */
 				GMT_Report (API, GMT_MSG_COMPAT, "-N option is deprecated; use -D modifier +n instead.\n");
@@ -286,9 +284,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
+	}
+
+	if (Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0) {	/* No width or dpi set, default to GMT dpi */
+		Ctrl->D.dpi = GMT->current.setting.graphics_dpu;
+		if (GMT->current.setting.graphics_dpu_unit == 'c') Ctrl->D.dpi *= 2.54;	/* Convert dpc to dpi */
 	}
 
 	if (!Ctrl->D.active) {	/* Old syntax without reference point implies -Dx0/0 */
@@ -302,8 +305,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "-D%c requires the -R option\n", kind[Ctrl->D.refpoint->mode]);
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "-D%c requires the -J option\n", kind[Ctrl->D.refpoint->mode]);
 	}
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify a single input raster or EPS file\n");
-	n_errors += gmt_M_check_condition (GMT, !p_fail && Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Option -D: Must specify image width (+w) or dpi (+r)\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "Must specify a single input raster or EPS file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.n_columns < 1 || Ctrl->D.n_rows < 1,
 			"Option -D: Must specify positive values for replication with +n\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.rgb[PSIMAGE_FGD][0] == -1 && Ctrl->G.rgb[PSIMAGE_BGD][0] == -1,
@@ -346,7 +348,6 @@ GMT_LOCAL int file_is_eps (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 if 
 
 #define Return(code) {gmt_M_free (GMT, table); return (code);}
 
-#ifdef HAVE_GDAL
 GMT_LOCAL int psimage_find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int *r, int *g, int *b) {
 	size_t i, j;
 	int idx;
@@ -384,7 +385,6 @@ GMT_LOCAL int psimage_find_unique_color (struct GMT_CTRL *GMT, unsigned char *rg
 	}
 	Return (3);
 }
-#endif
 
 #undef Return
 
@@ -394,7 +394,9 @@ EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes,
 
 EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	int i, j, PS_interpolate = 1, PS_transparent = 1, is_eps = 0, error = 0, is_gdal = 0;
+	int k, r = 0, g = 0, b = 0, has_trans = 0;
 	unsigned int row, col;
+	unsigned char colormap[4*256];
 	size_t n;
 	bool free_GMT = false, did_gray = false;
 
@@ -410,11 +412,7 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
-#ifdef HAVE_GDAL
-	int k, r = 0, g = 0, b = 0, has_trans = 0;
-	unsigned char colormap[4*256];
-	struct GMT_IMAGE *I = NULL;		/* A GMT image datatype, if GDAL is used */
-#endif
+	struct GMT_IMAGE *I = NULL;		/* A GMT image datatype */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -462,7 +460,6 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 			Return (GMT_IMAGE_READ_ERROR);
 		}
 	}
-#ifdef HAVE_GDAL
 	else  {	/* Read a raster image */
 		bool R_save = GMT->common.R.active[RSET];
 		GMT->common.R.active[RSET] = false;	/* Temporarily unset any active -R since we do not want it to be used for a subset of this image! */
@@ -533,13 +530,6 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 		header.height = I->header->n_rows;
 		header.depth = (int)I->header->n_bands * 8;
 	}
-#else
-	else {	/* Without GDAL we can only read EPS files */
-		GMT_Report (API, GMT_MSG_ERROR, "Unsupported file format for file %s!\n", file);
-		gmt_M_str_free (file);
-		Return (GMT_RUNTIME_ERROR);
-	}
-#endif
 
 	if (Ctrl->M.active && header.depth == 24) {	/* Downgrade to grayshade image */
 		did_gray = true;
@@ -547,14 +537,12 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 		buffer = psl_gray_encode (PSL, &n, picture);
 		header.depth = 8;
 		if (is_eps) PSL_free (picture); /* EPS ile */
-#ifdef HAVE_GDAL
 		else {	/* Got it via GMT_Read_Data */
 			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
 				gmt_M_str_free (file);
 				Return (API->error);
 			}
 		}
-#endif
 		picture = buffer;
 	}
 
@@ -568,14 +556,10 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 		buffer = gmt_M_memory (GMT, NULL, n, unsigned char);
 		for (i = 0; i < j; i++) buffer[i] = (unsigned char)rint(255 * Ctrl->G.rgb[PSIMAGE_TRA][i]);
 		gmt_M_memcpy (&(buffer[j]), picture, n - j, unsigned char);
-#ifdef HAVE_GDAL
 		if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {	/* If I is NULL then nothing is done */
 			gmt_M_str_free (file);
 			Return (API->error);
 		}
-#else
-		PSL_free (picture);
-#endif
 		picture = buffer;
 		free_GMT = true;
 	}
@@ -700,11 +684,9 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	gmt_plotend (GMT);
 	gmt_M_str_free (file);
 
-#ifdef HAVE_GDAL
 	if (I && GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
 		Return (API->error);	/* If I is NULL then nothing is done */
 	}
-#endif
 	if (free_GMT) {
 		gmt_M_free (GMT, picture);
 	}

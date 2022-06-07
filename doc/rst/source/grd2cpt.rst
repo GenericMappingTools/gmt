@@ -43,7 +43,7 @@ Description
 
 **grd2cpt** reads one or more grid files and writes a static color palette
 (CPT) file. In classic mode we write the CPT to standard output, while under
-modern mode we simply save the CPT as the current session CPT (but see **-H**).
+modern mode we simply save the CPT as the current session CPT (but see |-H|).
 The CPT is based on an existing dynamic
 master CPT of your choice, and the mapping from data value to
 colors is through the data's cumulative distribution function (CDF), so
@@ -67,7 +67,7 @@ copied into the new master file. If not, the parameters
 :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
 and :term:`COLOR_NAN` from
 the :doc:`gmt.conf` file or the command line will be used. This default
-behavior can be overruled using the options **-D**, **-M** or **-N**.
+behavior can be overruled using the options |-D|, |-M| or |-N|.
 
 The color model (RGB, HSV or CMYK) of the palette created by :doc:`makecpt`
 will be the same as specified in the header of the master CPT. When
@@ -102,7 +102,7 @@ Optional Arguments
 
 **-D**\ [**i**\|\ **o**]
     Select the back- and foreground colors to match the colors for
-    lowest and highest *z*-values in the output CPT [Default (**-D** or **-Do**)
+    lowest and highest *z*-values in the output CPT [Default (|-D| or **-Do**)
     uses the colors specified in the master file, or those defined by the
     parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
     :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and
@@ -162,7 +162,7 @@ Optional Arguments
     specified by the parameters :term:`COLOR_BACKGROUND` and
     :term:`COLOR_FOREGROUND`.
     Append **z** to reverse the sign of z-values in the color table.  Note that
-    this change of *z*-direction happens before **-G** and **-S** values are used
+    this change of *z*-direction happens before |-G| and |-S| values are used
     so the latter must be compatible with the changed *z*-range. See also :ref:`manipulating_CPTs`
 
 .. _-L:
@@ -180,7 +180,7 @@ Optional Arguments
     :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
     and :term:`COLOR_NAN`
     specified in the :doc:`gmt.conf` file or on the command line. When
-    combined with **-D**, only :term:`COLOR_NAN` is considered.
+    combined with |-D|, only :term:`COLOR_NAN` is considered.
 
 .. _-N:
 
@@ -237,7 +237,7 @@ Optional Arguments
     Force a continuous CPT [Default is discontinuous].
 
 .. |Add_-bo| replace:: [Default is 2]. This option
-    only applies if **-E** selects CDF output.
+    only applies if |-E| selects CDF output.
 .. include:: explain_-bo.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
@@ -269,7 +269,7 @@ Discrete versus Continuous CPT
 ------------------------------
 
 All CPTs can be stretched, but only continuous CPTs can be sampled
-at new nodes (i.e., by given an increment in **-T**).  We impose this
+at new nodes (i.e., by given an increment in |-T|).  We impose this
 limitation to avoid aliasing the original CPT.
 
 Examples
@@ -285,7 +285,7 @@ from the remote 5m relief file, using the geo color table, try::
 Sometimes you don't want to make a CPT (yet) but would find it
 helpful to know that 90% of your data lie between z1 and z2, something
 you cannot learn from :doc:`grdinfo`. So you can do this to see some points
-on the CDF(Z) curve (use **-V** option to see more):
+on the CDF(Z) curve (use |-V| option to see more):
 
    ::
 

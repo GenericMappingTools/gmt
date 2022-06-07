@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  *
+ * Note on KEYS: ED)=f mean -E takes an optional Dataset as argument via the +f modifier.
  */
 
 #include "gmt_dev.h"
@@ -227,7 +228,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 	 */
 
 	int n;
-	unsigned int n_errors = 0, pos = 0, n_files[2] = {0, 0};
+	unsigned int n_errors = 0, pos = 0, n_files = 0;
 	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL;
 	char *T_arg = NULL, *S_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -236,20 +237,20 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Input files */
+			case '<':	/* Input files (repeatable - check if they exist) */
 				Ctrl->In.active = true;
-				n_files[GMT_IN]++;
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				n_files++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files[GMT_OUT]++ == 0) Ctrl->Out.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Sets transparency [-A<transp>[+a]] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (opt->arg[0] == '+') {	/* Old syntax */
 					Ctrl->A.mode = 1;
 					Ctrl->A.value = 0.01 * atof (&opt->arg[1]);
@@ -265,18 +266,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* Get CPT */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Set fore/back-ground to match end-colors */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				Ctrl->D.mode = 1;
 				if (opt->arg[0] == 'i') Ctrl->D.mode = 2;
 				break;
 			case 'E':	/* Use n levels */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (opt->arg[0]) {	/* Got an argument */
 					if (gmt_validate_modifiers (GMT, opt->arg, 'E', "cf", GMT_MSG_ERROR)) n_errors++;
 					if ((c = gmt_first_modifier (GMT, opt->arg, "cf")) ) {
@@ -310,7 +308,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 					Ctrl->F.cat = true;
 					if (txt_a[0]) Ctrl->F.label = strdup (txt_a);
 				}
-				Ctrl->F.active = true;
 				switch (txt_a[0]) {
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
 					case 'h': Ctrl->F.model = GMT_HSV; break;
@@ -320,22 +317,19 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'G':	/* truncate incoming CPT */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				n_errors += gmt_get_limits (GMT, 'G', opt->arg, 0, &Ctrl->G.z_low, &Ctrl->G.z_high);
 				break;
 			case 'H':	/* Modern mode only: write CPT to stdout */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				Ctrl->H.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'I':	/* Invert table */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if ((Ctrl->I.mode = gmt_parse_inv_cpt (GMT, opt->arg)) == UINT_MAX)
 					n_errors++;
 				break;
 			case 'L':	/* Limit data range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if ((n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b)) != 2) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -L: Cannot decode two limits\n");
 					n_errors++;
@@ -347,15 +341,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'M':	/* Override fore/back/NaN using GMT defaults */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Do not write F/B/N colors */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':	/* Logarithmic data */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'o')	/* Input data is z, but take log10(z) before interpolation colors */
 					Ctrl->Q.mode = 2;
 				else			/* Input is log10(z) */
@@ -363,28 +356,26 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':	/* Sets sample range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				T_arg = opt->arg;
 				break;
 			case 'S':	/* Force symmetry */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				S_arg = opt->arg;
 				break;
 			case 'W':	/* Do not interpolate colors */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				if (opt->arg[0] == 'w')
+				if (opt->arg[0] == 'w') {
 					Ctrl->W.wrap = true;
-				else
-					Ctrl->W.active = true;
+					Ctrl->W.active = false;
+				}
 				break;
 			case 'Z':	/* Continuous colors */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -460,7 +451,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file == NULL,
 			"Options -C: No CPT argument given\n");
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] < 1, "No grid name(s) specified.\n");
+	n_errors += gmt_M_check_condition (GMT, n_files < 1, "No grid name(s) specified.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
 					"Options -W and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.cat && Ctrl->Z.active,
@@ -474,7 +465,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->S.active || Ctrl->E.active),
 					"Option -T: Cannot be combined with -E nor -S option.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.file && !Ctrl->E.cdf, "Option -E modifier +f is only valid if +c is used\n");
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 					"Option -A: Transparency must be n 0-100 range [0 or opaque]\n");
 
@@ -499,7 +489,8 @@ EXTERN_MSC int gmtlib_compare_observation (const void *a, const void *b);
 
 EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	uint64_t ij, k, ngrd = 0, nxyg, nxy = 0, nfound, ngood;
-	unsigned int row, col, j, cpt_flags = 0;
+	openmp_int row, col;
+	unsigned int j, cpt_flags = 0;
 	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
 	bool write = false, interpolate = true;

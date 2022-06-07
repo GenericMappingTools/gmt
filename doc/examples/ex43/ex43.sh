@@ -12,7 +12,7 @@ AWK=${AWK:-awk}
 # Data from Table 7 in Rousseeuw and Leroy, 1987.
 gmt begin ex43
 
-	file=$(gmt which -G @bb_weights.txt)
+	file=$(gmt which -Gc @bb_weights.txt)
 	gmt regress -Ey -Nw -i0:1+l $file > model.txt
 	gmt regress -Ey -Nw -i0:1+l $file -Fxmc -T-2/6/0.1 -C99 > rls_line.txt
 	gmt regress -Ey -N2 -i0:1+l $file -Fxm -T-2/6/2+n > ls_line.txt
@@ -50,7 +50,7 @@ gmt begin ex43
 	0	-2.5
 
 	EOF
-	$AWK '{print NR, $6, $7}' A.txt | gmt plot -Sb1ub0 -W0.25p -C
+	$AWK '{print NR, $6, $7}' A.txt | gmt plot -Sb1q+b0 -W0.25p -C
 	gmt basemap -Bafg100 -Bx+l"Animal index number" -By+l"z-zcore" -BWSne
 	rm -f *.txt
 gmt end show

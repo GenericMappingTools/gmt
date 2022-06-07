@@ -20,7 +20,7 @@ Synopsis
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
 [ |-N| ] [ |-Q|\ *parameters* ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [**i**\|\ **l**]\ *scale* ]
+[ |-S|\ [**i**\|\ **l**]\ *scale*\ [**+c**\ [[*slon*/]\ *slat*]][**+s**\ *refsize*] ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-Y| ]
 [ |-Z| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
@@ -82,7 +83,7 @@ Optional Arguments
 
 **-G**\ *fill*
     Sets color or shade for vector interiors [Default is no fill].
-    Alternatively, the fill may be set via **-Q**.
+    Alternatively, the fill may be set via |-Q|.
 
 .. _-I:
 
@@ -111,22 +112,33 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**i**\|\ **l**]\ *scale*
+**-S**\ [**i**\|\ **l**]\ *scale*\ [**+c**\ [[*slon*/]\ *slat*]][**+s**\ *refsize*]
     Sets scale for vector plot lengths in data units per plot distance measurement unit.
     Append **c**, **i**, or **p** to indicate the desired plot distance measurement
     unit (cm, inch, or point); if no unit is given we use the default value that
     is controlled by :term:`PROJ_LENGTH_UNIT`.  Vector lengths converted via plot unit
     scaling will plot as straight Cartesian vectors and their lengths are not
-    affected by map projection and coordinate locations.
+    affected by map projections and coordinate locations.
     For geographic data you may alternatively give *scale* in data units per map distance
     unit (see `Units`_). Then, your vector magnitudes (in data units) are scaled to map
     *distances* in the given distance unit, and finally projected onto the Earth to give
     *plot* dimensions.  These are geo-vectors that follow great circle paths and their
     lengths may be affected by the map projection and their coordinates.  Finally, use
     **-Si** if it is simpler to give the reciprocal scale in plot length or distance units
-    per data unit.  To report the minimum, maximum, and mean data and plot vector lengths
-    of all vectors plotted, use **-V**.  Alternatively, use **-Sl**\ *length* to set a fixed
-    plot length for all vectors.
+    per data unit.  Alternatively, use **-Sl**\ *length* to set a fixed plot length for all
+    vectors. To report the minimum, maximum, and mean data and plot vector lengths
+    of all vectors plotted, use |-V|. If an automatic legend entry is desired via **-l**,
+    or or two modifiers will be required:
+
+    - **+c**\ [[*slon*/]\ *slat*] controls where on a geographic map a geovector's *refsize*
+      length applies. The modifier is neither needed nor available when plotting Cartesian vectors.
+      The length is calculated for latitude *slat* (optionally supply longitude *slon* for
+      oblique projections [default is central meridian]). If **+c** is given with no arguments
+      then we select the reference length origin to be the middle of the map.
+    - **+s**\ *refsize* sets the desired reference vector magnitude in data units. E.g., for a
+      reference length of 25 mm/yr for plate motions, use modifier **+s**\ 25 with a corresponding
+      option **-l**\ "Velocity (25 mm/yr)".  If *refsize* is not specified we default to the *scale*
+      given above.
 
 .. _-T:
 
@@ -160,10 +172,13 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    The theta grid provided contains azimuths rather than directions (implies **-A**).
+    The theta grid provided contains azimuths rather than directions (implies |-A|).
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+.. |Add_-l| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-l.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
@@ -206,11 +221,11 @@ using a length scale of 200 km per data unit and only plot every 3rd node in eit
 Vector scaling and unit effects
 -------------------------------
 
-The scale given via **-S** may require some consideration. As explained in **-S**,
+The scale given via |-S| may require some consideration. As explained in |-S|,
 it is specified in data-units per plot or distance unit. The plot or distance unit
 chosen will affect the type of vector you select. In all cases, we first compute
 the magnitude *r* of the user's data vectors at each selected node from the *x* and *y*
-components (unless you are passing *r*, *theta* grids directly with **-A**).  These
+components (unless you are passing *r*, *theta* grids directly with |-A|).  These
 magnitudes are given in whatever data units they come with.  Let us pretend our data
 grids record secular changes in the Earth's magnetic horizontal vector field in units
 of nTesla/year, and that at a particular node the magnitude is 28 nTesla/year (in some
@@ -245,12 +260,12 @@ when providing the inverse of the scale is simpler. In the Cartesian case above,
 could instead give **-Si**\ 0.1c which would directly imply a plot scale of 0.1 cm per
 nTesla/year. Likewise, for geographic distances we could give **-Si**\ 2k for 2 km per
 nTesla/year scale as well. As the **-Si** argument increases, the plotted vector length
-increases as well, while for plain **-S** the plot length decreases with increasing scale.
+increases as well, while for plain |-S| the plot length decreases with increasing scale.
 
 Notes
 -----
 
-Be aware that using **-I** may lead to aliasing unless
+Be aware that using |-I| may lead to aliasing unless
 your grid is smoothly varying over the new length increments.
 It is generally better to filter your grids and resample at a
 larger grid increment and use these grids instead of the originals.

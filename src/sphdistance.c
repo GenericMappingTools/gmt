@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2008-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2008-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -193,22 +193,21 @@ static int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				switch (opt->arg[0]) {	/* Select output grid mode */
 					case 'n': Ctrl->E.mode = SPHD_NODES;  k = 1;	break;
 					case 'z': Ctrl->E.mode = SPHD_VALUES; k = 1;	break;
@@ -219,18 +218,14 @@ static int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct GM
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if (!(opt->arg && strchr (GMT_LEN_UNITS, opt->arg[0]))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
 					n_errors++;
@@ -240,16 +235,14 @@ static int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct GM
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				Ctrl->N.file = strdup (opt->arg);
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				Ctrl->Q.file = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -548,13 +541,15 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 				if (P->data[GMT_X][vertex] < 0.0) P->data[GMT_X][vertex] += 360.0;
 				if (P->data[GMT_X][vertex] == 360.0) P->data[GMT_X][vertex] = 0.0;
 				vertex++;
-				if (vertex == p_alloc) gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
+				if (vertex == p_alloc)
+					gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
 
 				/* When we reach the vertex where we started, we are done with this polygon */
 			} while (node_new != node_stop);
 			P->data[GMT_X][vertex] = P->data[GMT_X][0];	/* Close polygon explicitly */
 			P->data[GMT_Y][vertex] = P->data[GMT_Y][0];
-			if ((++vertex) == p_alloc) gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
+			if ((++vertex) == p_alloc)
+				gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
 			P->n_rows = vertex;
 			switch (Ctrl->E.mode) {
 				case SPHD_NODES:	f_val = (gmt_grdfloat)node;	break;
@@ -569,7 +564,7 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, P);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		P->n_rows = n_new;
+		P->n_rows = p_alloc = n_new;	/* Must reset p_alloc since gmt_fix_up_path reallocated to fit n_new */
 		sphdistance_prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
 		south_row = (int)gmt_M_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);

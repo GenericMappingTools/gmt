@@ -1,6 +1,6 @@
-/*
+/*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -159,7 +159,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	int n = 0;
 	char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -169,44 +169,37 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Separate closed from open segments  */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Write each segment to a separate output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				gmt_M_str_free (Ctrl->D.format);
 				if (opt->arg[0]) Ctrl->D.format = strdup (opt->arg);
 				break;
 			case 'L':	/* Write link information to file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				gmt_M_str_free (Ctrl->L.file);
 				if (opt->arg[0]) Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 'Q':	/* Write names of individual files to list(s) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				gmt_M_str_free (Ctrl->Q.file);
 				if (opt->arg[0]) Ctrl->Q.file = strdup (opt->arg);
 				break;
 			case 'T':	/* Set threshold distance */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[0]);
-				Ctrl->T.active[0] = true;
 				if (opt->arg[0]) {	/* Specified a distance */
 					char *c = NULL;
 					if ((c = strstr (opt->arg, "+s"))) {	/* Gave second distance via +s<dist> */
@@ -214,7 +207,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 						c[0] = '\0';	/* Temporarily chop off modifier */
 						Ctrl->T.mode = gmt_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
 						Ctrl->T.dist[1] = atof (&c[2]);
-						Ctrl->T.active[1] = true;
 						c[0] = '+';	/* Restore modifier */
 					}
 					else {	/* Only one distance but possibly old-style /dist */
@@ -223,7 +215,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 						if (n == 2) {	/* Gave second distance via /<dist> */
 							n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[1]);
 							Ctrl->T.dist[1] = atof (B);
-							Ctrl->T.active[1] = true;
 						}
 					}
 				}
@@ -231,7 +222,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 					Ctrl->T.dist[0] = DBL_MAX;
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -244,7 +235,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Binary input data (-bi) must have at least 2 columns\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Option -C cannot be used with -D!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Option -C cannot be used with -D!\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

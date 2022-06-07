@@ -47,27 +47,27 @@ be organized with one or more layers representing the (common) *x* and *y* dimen
 while the 3rd dimension may represent distance or time; we refer to this
 dimension as the *level*.  The output layers may be written as a single 3-D cube
 or as a set of 2-D layers.  Alternatively, we interpolate the cube along the level-axis
-at one or more arbitrary (*x/y*) coordinates (**-S**), resulting in a data table with one or
+at one or more arbitrary (*x/y*) coordinates (|-S|), resulting in a data table with one or
 more level-series, or we slice the 3-D cube along an arbitrary vertical slice and write that
-2-D slice to a grid file (**-E**).
+2-D slice to a grid file (|-E|).
 
 Required Arguments
 ------------------
 
 *cube*
-    Name of a 3-D netCDF data cube to be interpolated. Alternatively, with **-Z**,
+    Name of a 3-D netCDF data cube to be interpolated. Alternatively, with |-Z|,
     you can specify a set of 2-D grid layers instead.
 
 .. _-G:
 
 **-G**\ *outfile*
-    This is the output 3D data cube file.  If **-T** only selects a
+    This is the output 3D data cube file.  If |-T| only selects a
     single layer then the data cube collapses to a regular 2-D grid file.
     If *outfile* contains a C-language format statement for a floating
     point number (e.g., layer_%6.6f.grd) then we write a series of 2-D
     grid files which will contain the values for each level [Default is
-    a 3-D data cube, unless only a single layer is implied by **-T**].
-    Also see **-S** for a similar use to write individual level-series tables.
+    a 3-D data cube, unless only a single layer is implied by |-T|].
+    Also see |-S| for a similar use to write individual level-series tables.
 
 Optional Arguments
 ------------------
@@ -101,7 +101,7 @@ Optional Arguments
     will result in an error.  If no units are specified we default to
     great circle distances in km (if geographic).  If working with geographic
     data you can use **-j** to control distance calculation mode [Great Circle].
-    Use **-G** to set the output grid file name.
+    Use |-G| to set the output grid file name.
 
 .. _-F:
 
@@ -113,7 +113,7 @@ Optional Arguments
     You may optionally evaluate the first or second derivative of the spline
     by appending **+1** or **+2**, respectively.
 
-.. |Add_-R| replace:: Using the **-R** option will select a subsection of the grid. If this subsection exceeds the
+.. |Add_-R| replace:: Using the |-R| option will select a subsection of the grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be output. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -122,27 +122,30 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *x/y*\|\ *pointfile*\ [**+h**\ *header*]
-    Rather that compute gridded output, create tile/spatial series through the stacked
+    Rather that compute gridded output, create time or spatial series through the stacked
     grids at the given point (*x/y*) or the list of points in *pointfile*.  If you need
     a series of points defined by an origin and an end point or similar, you can make
     such a file first with :doc:`project`.  By default we simply sample the cube at
-    each level.  Use **-T** to interpolate the series.  The grid level (e.g., depth or time)
+    each level.  Use |-T| to interpolate the series.  The grid level (e.g., depth or time)
     will be inserted as the third numerical value in the series records, with optional input
     columns appended, ending with the sampled cube value.  Use the optional
     **+h** modifier to append *header* to the trailing text of these input points.
     On output the trailing text will become the segment header for the series that originate
-    from each point.  By default, the table output is written to standard output.  Use **-G**
+    from each point.  By default, the table output is written to standard output.  Use |-G|
     to specify a file name.  Alternatively, if you wish each series to be written to its own
-    data file, let the filename in **-G** have a C-format integer specifier (e.g., %d) and we
+    data file, let the filename in |-G| have a C-format integer specifier (e.g., %d) and we
     will use the running point number to create unique file names.
 
 .. _-T:
 
 **-T**\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
-    For details on array creation, see `Generate 1D Array`_.  **Note**: If **-Z** is set
-    and no output times are set with **-T** we simply rewrite the grid-produced cube as
-    a 3-D data cube file and exit.
+    For details on array creation, see `Generate 1D Array`_.  **Note**: If |-Z| is set
+    and no output times are set with |-T| we simply rewrite the grid-produced cube as
+    a 3-D data cube file and exit. Also, for |-E| and |-S| you may also just give
+    a range via -T**\ *min/max* to limit the layers considered, with no interpolation
+    between the selected layers.  If |-T| is not given and neither |-E| nor |-S| are
+    set, then we simply extract all layers within the bounds set by |-R|.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -155,7 +158,7 @@ Optional Arguments
     Read all 2-D input grids given on the command line and assume they represent
     the layers in a 3-D cube [Default reads a single 3-D data cube].
     Optionally, append *levels* and assign these to the cube constructed from the grids.
-    The *levels* may be specified the same way as in **-T**.  If not given then we default
+    The *levels* may be specified the same way as in |-T|.  If not given then we default
     to an integer *levels* array starting at 0.
 
 **-:**
@@ -201,8 +204,8 @@ File Order
 ----------
 
 If you provide a series of 2-D files and thus separately assigning the
-level via **-Z**, then you must make sure that the order the grids are given
-on the command line matches the levels you provide via **-Z**.  Unless your
+level via |-Z|, then you must make sure that the order the grids are given
+on the command line matches the levels you provide via |-Z|.  Unless your
 files are named in lexical order you must be careful with using wildcards
 to list all the grids (e.g., \*.nc).
 
@@ -222,10 +225,10 @@ for x, y, or z coordinate, respectively.
 Series creation
 ---------------
 
-The (optional) table-reading and table-producing **-S** option may require some
+The (optional) table-reading and table-producing |-S| option may require some
 of the standard common options associated with table i/o, such as **-b**, **-i**,
 **o**, etc., thus these options are available to **grdinterpolate** as well.
-Because the coordinates given via **-S** are *not* required to equal the coordinates
+Because the coordinates given via |-S| are *not* required to equal the coordinates
 of the grid nodes, we are resampling each 2-D layer at the given points via
 :doc:`grdtrack`, hence the availability of the **-n** option.
 

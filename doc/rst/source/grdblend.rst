@@ -67,9 +67,20 @@ Required Arguments
     list all the grids on the command line instead of providing a
     *blendfile*. You must specify at least 2 input grids for this
     mechanism to work. Any grid that is not co-registered with the
-    desired output layout implied by **-R**, **-I** (and |SYN_OPT-r|) will
+    desired output layout implied by |-R|, |-I| (and |SYN_OPT-r|) will
     first be resampled via :doc:`grdsample`. Also, grids that are not in
     netCDF or native binary format will first be reformatted via :doc:`grdconvert`.
+
+.. figure:: /_images/GMT_blend.*
+   :width: 500 px
+   :align: center
+
+   Each input grid has its full region (heavy line) and optionally an inner
+   region (dashed line). The area between these bounds are subject to cosine
+   tapering, where the weight will go from 0 to 1 (or the specified relative
+   weight per grid).  Any output grid node is then a weighted sum of the grids
+   that overlap the node.  Blue line shows a crossection of how the blending
+   and tapering works.
 
 .. _-G:
 

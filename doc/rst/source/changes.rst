@@ -1,3 +1,5 @@
+:orphan:
+
 .. _changelog:
 
 =========
@@ -43,7 +45,7 @@ New Core Module Features in GMT 6.3
 * :doc:`grdtrack`: Let -C also accept a fixed azimuth for all profiles (`#5849 <https://github.com/GenericMappingTools/gmt/pull/5849>`_)
 * :doc:`grdtrend`: Fit model along xx or yy only. (`#5496 <https://github.com/GenericMappingTools/gmt/pull/5496>`_)
 * :doc:`inset`: Let begin optionally take -R -J to determine inset size instead of via -D (`#5903 <https://github.com/GenericMappingTools/gmt/pull/5903>`_)
-* :doc:`plot`:Add inverted triangle to front symbol choices (`#5983 <https://github.com/GenericMappingTools/gmt/pull/5983>`_)
+* :doc:`plot`: Add inverted triangle to front symbol choices (`#5983 <https://github.com/GenericMappingTools/gmt/pull/5983>`_)
 * :doc:`plot`: For error bars, allow asymmetrical bounds as well (`#5844 <https://github.com/GenericMappingTools/gmt/pull/5844>`_)
 * :doc:`plot`, :doc:`plot3d`, and :doc:`clip`: Add polar resampling via -Ar|t (`#5263 <https://github.com/GenericMappingTools/gmt/pull/5263>`_)
 * :doc:`project`: Let -G accept increment unit and +n modifier (`#5984 <https://github.com/GenericMappingTools/gmt/pull/5984>`_)
@@ -65,8 +67,8 @@ Enhancements in GMT 6.3
 * Add v (vector) to custom symbol kit, plus handle azimuth vs angle (`#5606 <https://github.com/GenericMappingTools/gmt/pull/5606>`_)
 * Allow trailing comments in custom symbol files (`#5610 <https://github.com/GenericMappingTools/gmt/pull/5610>`_)
 * Let -d set starting column via modifier (`#5966 <https://github.com/GenericMappingTools/gmt/pull/5966>`_)
-* Let -f\ *col* explicity set start of input trailing text (`#5370 <https://github.com/GenericMappingTools/gmt/pull/5370>`_)
-* Let multi-layer geotiff files be cut via gdal_translate (`#5819 <https://github.com/GenericMappingTools/gmt/pull/5819>`_)
+* Let -f\ *col* explicitly set start of input trailing text (`#5370 <https://github.com/GenericMappingTools/gmt/pull/5370>`_)
+* Let multi-layer geotiff files be cut via *gdal_translate* (`#5819 <https://github.com/GenericMappingTools/gmt/pull/5819>`_)
 
 Documentation updates in GMT 6.3
 --------------------------------
@@ -204,7 +206,8 @@ New Modules in GMT 6.1:
 #. :doc:`batch`: Automate batch job processing by replicating a master script with job-specific parameters.
 #. :doc:`grdmix`: Blending and transforming grids and images, including manipulating transparency.
 #. :doc:`grdinterpolate`: Interpolate new 2-D grids or 1-D data series from a 3-D data cube.
-#. :doc:`grdgdal`: Execute GDAL raster programs (such as info, dem, grid, translate, rasterize or warp), from GMT.
+#. :doc:`grdgdal`: Execute `GDAL raster programs <https://gdal.org/programs/index.html#raster-programs>`_
+   (such as *gdalinfo*, *gdaldem*, *gdal_grid*, *gdal_translate*, *gdal_rasterize* or *gdalwarp*), from GMT.
 
 New Core Module Features in GMT 6.1:
 ------------------------------------
@@ -1204,7 +1207,7 @@ changes to existing syntax will be backwards compatible:
    modifiers **+1** or **+2** which will compute
    the first or second derivatives of the spline, respectively.
 
-*  :doc:`spectrum1d` can now turn off single-output data to stdout via **-T**
+*  :doc:`spectrum1d` can now turn off single-output data to standard output via **-T**
    or turn off multi-file output via **-N**.
 
 *  :doc:`sphdistance` can now also perform a nearest-neighbor gridding where
@@ -1228,7 +1231,7 @@ A few supplement modules have new features as well:
 *  :doc:`grdgravmag3d <supplements/potential/grdgravmag3d>` adds **-H** to compute magnetic anomaly.
 
 *  :doc:`grdpmodeler <supplements/spotter/grdpmodeler>` can now output more than one model
-   prediction into several grids or as a record written to stdout.  Also gains the **-N** option
+   prediction into several grids or as a record written to standard output.  Also gains the **-N** option
    used by other spotter tools to extend the model duration.
 
 
@@ -1362,7 +1365,7 @@ implemented by a series of new lower-case GMT common options:
 
 *  Programs that read data tables can now process the aspatial metadata
    in OGR/GMT files with the new **-a** option. These can be produced by
-   **ogr2ogr** (a GDAL tool) when selecting the -f "GMT" output
+   *ogr2ogr* (a `GDAL tool <https://gdal.org/>`_) when selecting the -f "GMT" output
    format. See Chapter :ref:`OGR_compat` for an explanation of the OGR/GMT file format.
    Because all GIS information is encoded via GMT comment lines these
    files can also be used in GMT 4 (the GIS metadata is simply

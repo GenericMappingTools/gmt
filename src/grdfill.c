@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,8 @@
 enum GRDFILL_mode {
 	ALG_CONSTANT,
 	ALG_NN,
-	ALG_SPLINE
+	ALG_SPLINE,
+	ALG_GRID
 };
 
 struct GRDFILL_CTRL {
@@ -45,10 +46,11 @@ struct GRDFILL_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct GRDFILL_A {	/* -A<algo>[<options>] */
+	struct GRDFILL_A {	/* -Ac|g|n|s[<options>] */
 		bool active;
 		unsigned int mode;
 		double value;
+		char *file;
 	} A;
 	struct GRDFILL_G {	/* -G<outgrid> */
 		bool active;
@@ -77,6 +79,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->A.file);
 	gmt_M_str_free (C->G.file);
 	gmt_M_free (GMT, C);
 }
@@ -84,7 +87,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s [-Ac|n|s[<arg>]] [-G%s] [-L[p]] [-N<value>] [%s] [%s] [%s] [%s]\n",
+	GMT_Usage (API, 0, "usage: %s %s [-Ac|g|n|s[<arg>]] [-G%s] [-L[p]] [-N<value>] [%s] [%s] [%s] [%s]\n",
 		name, GMT_INGRID, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -95,12 +98,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-Ac|n|s[<arg>]");
 	GMT_Usage (API, -2, "Specify algorithm and any required parameters for in-fill:");
 	GMT_Usage (API, 3, "c: Fill in NaN holes with the given constant <value>.");
+	GMT_Usage (API, 3, "g: Fill in NaN holes by sampling the gridfile whose name is appended.");
 	GMT_Usage (API, 3, "n: Fill in NaN holes with nearest neighbor values; "
 		"append <max_radius> nodes for the outward search "
 		"[Default radius is sqrt(nx^2+ny^2), with (nx,ny) the dimensions of the grid].");
 	GMT_Usage (API, 3, "s: Fill in NaN holes with a spline (optionally append tension).");
 	GMT_Usage (API, -2, "Note: -A is required unless -L is used.");
-	gmt_outgrid_syntax (API, 'G', "Give filename for where to write the filled-in grid");
+	gmt_outgrid_syntax (API, 'G', "Give filename for where to write the output grid");
 	GMT_Usage (API, 1, "\n-L[p]");
 	GMT_Usage (API, -2, "Just list the sub-regions w/e/s/n of each hole. "
 		"No grid fill takes place and -G is ignored. "
@@ -119,7 +123,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -127,26 +131,26 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Input and Output files */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 			case '>':	/* Output file  */
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'c':	/* Constant fill */
 						Ctrl->A.mode = ALG_CONSTANT;
 						Ctrl->A.value = atof (&opt->arg[1]);
+						break;
+					case 'g':	/* Sample a (coarser?) grid */
+						Ctrl->A.mode = ALG_GRID;
+						n_errors += gmt_get_required_file (GMT, &opt->arg[1], opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file));
 						break;
 					case 'n':	/* Nearest neighbor fill */
 						Ctrl->A.mode = ALG_NN;
@@ -164,27 +168,22 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT_OP
 
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (Ctrl->G.file) {
 					GMT_Report (API, GMT_MSG_ERROR, "Specify only one output file\n");
 					n_errors++;
 				}
-				else {
-					Ctrl->G.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
-				}
+				else
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if (opt->arg[0] == 'p')
 					Ctrl->L.mode = 1;
 				break;
 
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (opt->arg[0] && !strchr ("Nn", opt->arg[0]))
 					Ctrl->N.value = (float) atof (opt->arg);
 				else {
@@ -194,7 +193,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -492,13 +491,85 @@ GMT_LOCAL void grdfill_nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In
 	gmt_M_free (GMT, ys);
 }
 
+GMT_LOCAL int grdfill_sample (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct GMT_GRID *Out, char *file) {
+	/* Algorithm 3: Replace NaNs with values sampled from another grid */
+	/* 1. Create x,y arrays of NaN locations in the grid and an empty z array
+	 * 2. Call grdtrack with virtual input and virtual output
+	 * 3. Fill in the holes in the grid with these values
+	 */
+	openmp_int row, col, k;
+	uint64_t dim[4] = {0, 0, 0, 0}, node, n_NaNs = 0, n_bad = 0, n_alloc = 0;
+	char input[GMT_VF_LEN] = {""}, output[GMT_VF_LEN] = {""}, args[GMT_LEN256] = {""};
+	double *data[3] = {NULL, NULL, NULL};
+	struct GMT_VECTOR *V_in = NULL, *V_out = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;	/* Shorthand */
+
+	/* Build array list of node coordinates where we have NaNs */
+	gmt_M_grd_loop (GMT, In, row, col, node) {
+		if (!gmt_M_is_fnan (In->data[node])) continue;	/* Not part of a hole */
+		if (n_NaNs >= n_alloc) {	/* Allocate more memory (including the first time) */
+			if (n_alloc == 0) n_alloc = GMT_INITIAL_MEM_ROW_ALLOC; else n_alloc *= 2;
+			for (k = 0; k < 2; k++) data[k] = gmt_M_memory (GMT, data[k], n_alloc, double);
+		}
+		/* Keep the coordinates of the NaN node */
+		data[GMT_X][n_NaNs] = In->x[col];
+		data[GMT_Y][n_NaNs] = In->y[row];
+		n_NaNs++;	/* Number of NaNs so far */
+	}
+	if (n_NaNs == 0) {	/* Well, that was a waste of our time */
+		GMT_Report (API, GMT_MSG_WARNING, "There are no NaNs in your grid - returning the input grid as output\n");
+		for (k = 0; k < 2; k++) gmt_M_free (GMT, data[k]);
+		return (GMT_NOERROR);
+	}
+	/* Finalize the memory allocation (and z for the first time) */
+	for (k = 0; k < 3; k++) data[k] = gmt_M_memory (GMT, data[k], n_NaNs, double);
+	/* Allocate two vector containers for input and output separately */
+	dim[0] = 2;	/* Want two input columns but let length be 0 - this signals that no vector allocations should take place */
+	if ((V_in = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (API->error);
+	dim[0] = 3;	/* Want three output columns [we will share the first two with input] */
+	if ((V_out = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (API->error);
+	V_in->n_rows = V_out->n_rows = n_NaNs;	/* Must specify how many input points we have */
+	/* Hook these up to our containers, reusing x,y as both in and out x/y vectors */
+	GMT_Put_Vector (API, V_in,  GMT_X, GMT_DOUBLE, data[GMT_X]);
+	GMT_Put_Vector (API, V_in,  GMT_Y, GMT_DOUBLE, data[GMT_Y]);
+	GMT_Put_Vector (API, V_out, GMT_X, GMT_DOUBLE, data[GMT_X]);
+	GMT_Put_Vector (API, V_out, GMT_Y, GMT_DOUBLE, data[GMT_Y]);
+	GMT_Put_Vector (API, V_out, GMT_Z, GMT_DOUBLE, data[GMT_Z]);
+	if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, V_in, input)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to use vectors as a virtual dataset!\n");
+		return (API->error);
+	}
+	if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, V_out, output)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to use vectors as a virtual dataset!\n");
+		return (API->error);
+	}
+	sprintf (args, "-G%s -R%.16g/%.16g/%.16g/%.16g %s > %s", file, In->header->wesn[XLO], In->header->wesn[XHI],
+		In->header->wesn[YLO], In->header->wesn[YHI], input, output);	/* Build grdtrack command and limit with -R */
+	if (GMT_Call_Module (API, "grdtrack", GMT_MODULE_CMD, args)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Run-time error from grdtrack\n");
+		return (API->error);
+	}
+	n_NaNs = 0;	/* Rewind and march through the grid again */
+	gmt_M_grd_loop (GMT, In, row, col, node) {
+		if (!gmt_M_is_fnan (In->data[node])) continue;	/* Not part of a hole */
+		Out->data[node] = data[GMT_Z][n_NaNs++];	/* Replace the values at NaN-nodes */
+		if (gmt_M_is_fnan (Out->data[node])) n_bad++;	/* Oh-oh, not getting a clean output grid */
+	}
+	if (n_bad)
+		GMT_Report (API, GMT_MSG_WARNING, "There are still %" PRIu64 " NaNs remaining after -Ag sampling!\n", n_bad);
+
+	for (k = 0; k < 3; k++) gmt_M_free (GMT, data[k]);	/* Free the temp memory */
+	return (GMT_NOERROR);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 	char *ID = NULL, *RG_orig_hist = NULL;
 	int error = 0, RG_id = 0;
-	unsigned int hole_number = 0, row, col, limit[4], n_nodes;
+	openmp_int row, col;
+	unsigned int hole_number = 0, limit[4], n_nodes;
 	uint64_t node, offset;
 	int64_t off[4];
 	double wesn[4];
@@ -526,7 +597,7 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdfill main code ----------------------------*/
 
-	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_NEEDS_PAD1, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
@@ -564,7 +635,24 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 		}
 		grdfill_nearest_interp (GMT, Grid, New, radius);	/* Perform the NN replacements */
 
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, New)) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, New)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Failed to write output grid!\n");
+			Return (API->error);
+		}
+		Return (GMT_NOERROR);
+	}
+
+	if (Ctrl->A.mode == ALG_GRID) {	/* Basically a grdtrack virtual file exercise */
+		struct GMT_GRID *New = NULL;
+
+		if (gmt_set_outgrid (GMT, Ctrl->In.file, false, 0, Grid, &New))	/* true if input is a read-only array */
+			gmt_M_memcpy (New->data, Grid->data, New->header->size, gmt_grdfloat);	/* First duplicate all nodes to the new grid */
+
+		if ((error = grdfill_sample (GMT, Grid, New, Ctrl->A.file)))
+			Return (error);	/* Not a happy ending */
+
+		/* Output the filled-in grid */
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, New)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to write output grid!\n");
 			Return (API->error);
 		}
@@ -596,15 +684,15 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 	 * the boundary row/cols in the ID grid to 1. */
 
 	ID = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, char);
-	/* Set the top and bottom boundary rows to UINT_MAX */
+	/* Set the top and bottom boundary rows to 1 */
 	offset = (uint64_t)(Grid->header->pad[YHI] + Grid->header->n_rows) * Grid->header->mx;
 	for (node = 0; node < (uint64_t)Grid->header->pad[YHI]*Grid->header->mx; node++) ID[node] = ID[node+offset] = 1;
-	/* Set the left and right boundary columnss to UINT_MAX */
+	/* Set the left and right boundary columns to 1 */
 	offset = Grid->header->pad[XLO] + Grid->header->n_columns;
-	for (row = 0; row < Grid->header->my; row++) {
-		for (col = 0; col < Grid->header->pad[XLO]; col++)
+	for (row = 0; row < (openmp_int)Grid->header->my; row++) {
+		for (col = 0; col < (openmp_int)Grid->header->pad[XLO]; col++)
 			ID[row*Grid->header->mx+col] = 1;
-		for (col = 0; col < Grid->header->pad[XHI]; col++)
+		for (col = 0; col < (openmp_int)Grid->header->pad[XHI]; col++)
 			ID[row*Grid->header->mx+offset+col] = 1;
 	}
 	/* Initiate the node offsets in the cardinal directions */
@@ -670,7 +758,8 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else if (hole_number) {	/* Must write the revised grid if there were any holes*/
+	else {	/* Must write the revised grid whether there are any holes or not */
+		if (hole_number == 0) GMT_Report (API, GMT_MSG_WARNING, "No holes detected in grid - grid unchanged\n");
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
 			free(RG_orig_hist);
 			Return (API->error);
@@ -679,9 +768,6 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 			free(RG_orig_hist);
 			Return (API->error);
 		}
-	}
-	else {
-		GMT_Report (API, GMT_MSG_WARNING, "No holes detected in grid - grid was not updated\n");
 	}
 
 	if (Ctrl->A.mode == ALG_SPLINE) {

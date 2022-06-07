@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2012-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2012-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -295,10 +295,11 @@ enum GMT_enum_duplicate {
 
 /* Various directions and modes to call the FFT */
 enum GMT_enum_FFT {
-	GMT_FFT_FWD     = 0U,	/* forward Fourier transform */
-	GMT_FFT_INV     = 1U,	/* inverse Fourier transform */
-	GMT_FFT_REAL    = 0U,	/* real-input FT (currently unsupported) */
-	GMT_FFT_COMPLEX = 1U	/* complex-input Fourier transform */
+	GMT_FFT_FWD      = 0U,	/* forward Fourier transform */
+	GMT_FFT_INV      = 1U,	/* inverse Fourier transform */
+	GMT_FFT_REAL     = 0U,	/* real-input FT (currently unsupported) */
+	GMT_FFT_COMPLEX  = 1U,	/* complex-input Fourier transform */
+	GMT_FFT_NO_DEMUX = 8U	/* Do NOT demux the complex grid to only save the real after GMT_FFT_INV */
 };
 
 /* Various modes to select time in GMT_Message */

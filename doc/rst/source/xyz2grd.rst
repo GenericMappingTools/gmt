@@ -42,9 +42,9 @@ Description
 file. **xyz2grd** will report if some of the nodes are not filled in
 with data. Such unconstrained nodes are set to a value specified by the
 user [Default is NaN]. Nodes with more than one value will be set to the
-mean value. As an option (using **-Z**), a 1-column z-table may be read
+mean value. As an option (using |-Z|), a 1-column z-table may be read
 assuming all nodes are present (z-tables can be in organized in a number
-of formats, see **-Z** below.)  **Note**: **xyz2grd** does not grid the data,
+of formats, see |-Z| below.)  **Note**: **xyz2grd** does not grid the data,
 it simply reformats existing data to a grid structure.  For gridding,
 see :doc:`surface`, :doc:`greenspline`, :doc:`nearneighbor`, or
 :doc:`triangulate`.
@@ -55,7 +55,7 @@ Required Arguments
 *table*
     One or more ASCII [or binary, see **-bi**]
     files holding z or (x,y,z) values. The xyz triplets do not have to
-    be sorted. One-column z tables must be sorted and the **-Z** must be set.
+    be sorted. One-column z tables must be sorted and the |-Z| must be set.
 
 .. _-G:
 
@@ -80,8 +80,8 @@ Optional Arguments
 
 **-A**\ [**d**\|\ **f**\|\ **l**\|\ **m**\|\ **n**\|\ **r**\|\ **S**\|\ **s**\|\ **u**\|\ **z**]
     By default we will calculate mean values if multiple entries fall on
-    the same node. Use **-A** to change this behavior, except it is
-    ignored if **-Z** is given. Append **f** or **s** to simply keep the
+    the same node. Use |-A| to change this behavior, except it is
+    ignored if |-Z| is given. Append **f** or **s** to simply keep the
     first or last data point that was assigned to each node. Append
     **l** or **u** or **d** to find the lowest (minimum) or upper (maximum) value
     or the difference between the maximum and miminum value
@@ -95,8 +95,8 @@ Optional Arguments
 
 .. include:: explain_-D_cap.rst_
 
-.. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant metadata in
-    netCDF grids. Remember also that PROJ syntax can be used directly in **-J**. This referencing will be
+.. |Add_-J| replace:: Use the |-J| syntax to save the georeferencing info as CF-1 compliant metadata in
+    netCDF grids. Remember also that PROJ syntax can be used directly in |-J|. This referencing will be
     recognized by GDAL and increasingly also by GMT.
 .. include:: explain_-J.rst_
     :start-after: **Syntax**
@@ -106,8 +106,8 @@ Optional Arguments
 
 **-S**\ [*zfile*]
     Swap the byte-order of the input only. No grid file is produced. You
-    must also supply the **-Z** option. The output is written to *zfile*
-    (or stdout if not supplied).
+    must also supply the |-Z| option. The output is written to *zfile*
+    (or standard output if not supplied).
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -156,7 +156,7 @@ Optional Arguments
     Translate incoming *z*-values via the **-i**\ 0 option and needed modifiers.
 
 .. |Add_-bi| replace:: [Default is 3 input columns]. This option only applies
-    to xyz input files; see **-Z** for z tables.
+    to xyz input files; see |-Z| for z tables.
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| replace:: Also sets nodes with no input xyz triplet to this value
@@ -194,7 +194,7 @@ Swapping Limitations
 
 All data types can be read, even 64-bit integers, but internally grids
 are stored using floats. Hence, integer values exceeding the float
-type's 23-bit mantissa may not be represented exactly. When **-S** is
+type's 23-bit mantissa may not be represented exactly. When |-S| is
 used no grids are implied and we read data into an intermediate double
 container. This means all but 64-bit integers can be represented using
 the double type's 53-bit mantissa.

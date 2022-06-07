@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -123,7 +123,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	int sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -132,52 +132,45 @@ static int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Get # of cells */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
-				sval = atoi (opt->arg);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &sval);
 				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -C: n_cells must be positive\n");
-				Ctrl->C.value = sval;
+				Ctrl->C.value = (unsigned int)sval;
 				break;
 			case 'D':	/* Dump info to file or stdout */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'G':	/* Output file for equalized grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'N':	/* Get normalized scores */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (opt->arg[0]) Ctrl->N.norm = atof (opt->arg);
 				break;
 			case 'Q':	/* Use quadratic scaling */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Must specify a single input grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Option -N: Must also specify output grid file with -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Q.active, "Option -N: Cannot be combined with -Q\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->C.active, "Option -N: Cannot be combined with -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value <= 0, "Option -C: n_cells must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active && !Ctrl->G.active, "Either -D or -G is required for output\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="), "Piping of input grid file not supported!\n");
@@ -278,7 +271,8 @@ GMT_LOCAL struct GRDHISTEQ_CELL *grdhisteq_do_hist_equalization_cart (struct GMT
 GMT_LOCAL struct GRDHISTEQ_CELL *grdhisteq_do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, unsigned int n_cells, bool quadratic) {
 	/* Do basic area-weighted histogram equalization */
 	uint64_t i, j, node, nxy = 0;
-	unsigned int n_cells_m1 = 0, current_cell, row, col;
+	openmp_int row, col;
+	unsigned int n_cells_m1 = 0, current_cell;
 	double cell_w, delta_w, target_w, wsum = 0.0;
 	struct GRDHISTEQ_CELL *cell = gmt_M_memory (GMT, NULL, n_cells, struct GRDHISTEQ_CELL);
 	struct GMT_GRID *W = gmt_duplicate_grid (GMT, Grid, GMT_DUPLICATE_ALLOC);
@@ -366,7 +360,7 @@ GMT_LOCAL int grdhisteq_compare_indices (const void *point_1, const void *point_
 
 GMT_LOCAL int grdhisteq_do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm) {
 	/* Make an output grid file with standard normal scores */
-	unsigned int row, col;
+	openmp_int row, col;
 	uint64_t i = 0, j = 0, ij, nxy;
 	double dnxy;
 	struct INDEXED_DATA *indexed_data = NULL;
@@ -482,7 +476,7 @@ EXTERN_MSC int GMT_grdhisteq (void *V_API, int mode, void *args) {
 		for (row = 0; row < S->n_rows; row++) {
 			S->data[GMT_X][row] = Cell[row].low;
 			S->data[GMT_Y][row] = Cell[row].high;
-			S->data[GMT_Z][row] = Cell[row].row;;
+			S->data[GMT_Z][row] = Cell[row].row;
 		}		
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, Ctrl->D.file, D) != GMT_NOERROR) {
 			Return (API->error);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -188,14 +188,13 @@ static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'E':	/* NaN value */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (opt->arg[0])
 					Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
@@ -205,13 +204,10 @@ static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct G
 				break;
 			case 'G':	/* Output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':	/* Grid spacings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':	/* BCs */
@@ -227,11 +223,10 @@ static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct G
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'N':	/* -N<sectors>[+m<minsectors>]] or -Nn */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (opt->arg[0] == 'n')
 					Ctrl->N.mode = 1;
 				else if (opt->arg[0]) {	/* Override default -N4+m4 */
@@ -255,15 +250,14 @@ static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct G
 				break;
 			case 'S':	/* Search radius */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				break;
 			case 'W':	/* Use weights */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -289,8 +283,9 @@ static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct G
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_nearneighbor (void *V_API, int mode, void *args) {
+	openmp_int rowu, colu, max_d_col, d_row, *d_col = NULL;
 	int col_0, row_0, row, col, row_end, col_end, ii, jj, error = 0;
-	unsigned int k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
+	unsigned int k, sector, y_wrap, x_wrap;
 	bool wrap_180, replicate_x, replicate_y;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 
@@ -328,7 +323,7 @@ EXTERN_MSC int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the nearneighbor main code ----------------------------*/
 
-#if defined(HAVE_GDAL) && ((GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)) || (GDAL_VERSION_MAJOR >= 3)
+#if ((GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)) || (GDAL_VERSION_MAJOR >= 3)
 	if (Ctrl->N.mode) {	/* Pass over to GDAL */
 		char buf[GMT_LEN128] = {""};
 		struct GMT_OPTION *opt = NULL;
@@ -347,6 +342,8 @@ EXTERN_MSC int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, st);
 		Return (error);
 	}
+#else
+	GMT_Report (API, GMT_MSG_ERROR, "Option -Nn: Requires GDAL 2.1 or later\n");
 #endif
 
 	/* Regular nearest neighbor moving average operation */
@@ -444,20 +441,20 @@ EXTERN_MSC int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 		/* Loop over all nodes within radius of this node */
 
-		row_end = row_0 + d_row;
-		for (row = row_0 - d_row; row <= row_end; row++) {
+		row_end = row_0 + (int)d_row;
+		for (row = row_0 - (int)d_row; row <= row_end; row++) {
 
 			jj = row;
 			if (gmt_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range.  This call must happen BEFORE gmt_x_out_of_bounds as it sets wrap_180 */
-			rowu = jj;
-			col_end = col_0 + d_col[jj];
-			for (col = col_0 - d_col[jj]; col <= col_end; col++) {
+			rowu = (openmp_int)jj;
+			col_end = col_0 + (int)d_col[jj];
+			for (col = col_0 - (int)d_col[jj]; col <= col_end; col++) {
 
 				ii = col;
 				if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */
 
 				/* Here, (ii,jj) [both are >= 0] is index of a node (kk) inside the grid */
-				colu = ii;
+				colu = (openmp_int)ii;
 
 				distance = gmt_distance (GMT, x0[colu], y0[rowu], in[GMT_X], in[GMT_Y]);
 
@@ -487,13 +484,13 @@ EXTERN_MSC int GMT_nearneighbor (void *V_API, int mode, void *args) {
 				if (replicate_x) {	/* Must check if we have to replicate a column */
 					if (colu == 0) 	/* Must replicate left to right column */
 						nearneighbor_assign_node (GMT, &grid_node[kk+x_wrap], Ctrl->N.sectors, sector, distance, n);
-					else if (colu == HH->nxp)	/* Must replicate right to left column */
+					else if (colu == (openmp_int)HH->nxp)	/* Must replicate right to left column */
 						nearneighbor_assign_node (GMT, &grid_node[kk-x_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 				if (replicate_y) {	/* Must check if we have to replicate a row */
 					if (rowu == 0)	/* Must replicate top to bottom row */
 						nearneighbor_assign_node (GMT, &grid_node[kk+y_wrap], Ctrl->N.sectors, sector, distance, n);
-					else if (rowu == HH->nyp)	/* Must replicate bottom to top row */
+					else if (rowu == (openmp_int)HH->nyp)	/* Must replicate bottom to top row */
 						nearneighbor_assign_node (GMT, &grid_node[kk-y_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 			}
@@ -528,8 +525,8 @@ EXTERN_MSC int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	three_over_radius = 3.0 / Ctrl->S.radius;
 
 	ij0 = 0;
-	gmt_M_row_loop (GMT, Grid, row) {
-		gmt_M_col_loop (GMT, Grid, row, col, ij) {
+	gmt_M_row_loop (GMT, Grid, rowu) {
+		gmt_M_col_loop (GMT, Grid, rowu, colu, ij) {
 			if (!grid_node[ij0]) {	/* No nearest neighbors, set to empty and goto next node */
 				n_none++;
 				Grid->data[ij] = (gmt_grdfloat)Ctrl->E.value;
@@ -564,9 +561,9 @@ EXTERN_MSC int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			nearneighbor_free_node (GMT, grid_node[ij0]);
 			ij0++;
 		}
-		if ((row % 128) == 0) GMT_Report (API, GMT_MSG_INFORMATION, "Gridded row %10ld\r", row);
+		if ((rowu % 128) == 0) GMT_Report (API, GMT_MSG_INFORMATION, "Gridded row %10ld\r", rowu);
 	}
-	GMT_Report (API, GMT_MSG_INFORMATION, "Gridded row %10ld\n", row);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Gridded row %10ld\n", rowu);
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
 		gmt_M_free (GMT, point);	gmt_M_free (GMT, grid_node);	gmt_M_free (GMT, d_col);

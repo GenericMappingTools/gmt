@@ -1,19 +1,19 @@
 /*--------------------------------------------------------------------
-*
-*	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
-*	See LICENSE.TXT file for copying and redistribution conditions.
-*
-*	This program is free software; you can redistribute it and/or modify
-*	it under the terms of the GNU Lesser General Public License as published by
-*	the Free Software Foundation; version 3 or any later version.
-*
-*	This program is distributed in the hope that it will be useful,
-*	but WITHOUT ANY WARRANTY; without even the implied warranty of
-*	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*	GNU Lesser General Public License for more details.
-*
-*	Contact info: www.generic-mapping-tools.org
-*--------------------------------------------------------------------*/
+ *
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
+ *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: mapproject reads a pair of coordinates [+ optional data fields] from
  * standard input or file(s) and transforms the coordinates according to the
@@ -34,6 +34,8 @@
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
  * Version:	6 API
+ *
+ * Note on KEYS: LD(= means -L takes an optional input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -65,7 +67,11 @@ enum GMT_mp_Wcodes {	/* Support for -W parsing */
 	GMT_MP_M_HEIGHT  = 2,	/* Return height */
 	GMT_MP_M_POINT   = 3,	/* Return user coordinates of point given in plot coordinates */
 	GMT_MP_M_REGION  = 4,	/* Return rectangular w/e/s/n for oblique -R -J setting */
-	GMT_MP_M_RSTRING = 5	/* As 4, but return string -Rw/e/s/n */
+	GMT_MP_M_RSTRING = 5,	/* As 4, but return string -Rw/e/s/n */
+	GMT_MP_M_OREGION = 6,	/* Converts -R<xmin/xmax/ymin/ymax>+u<unit> to <llx/lly/urx/ury> returned as llx urx lly ury */
+	GMT_MP_M_OSTRING = 7,	/* As 6, but return string -Rw/e/s/n */
+	GMT_MP_M_EREGION = 8,	/* Converts -R<xmin/xmax/ymin/ymax>+u<unit> to <llx/lly/urx/ury> returned as llx urx lly ury */
+	GMT_MP_M_ESTRING = 9	/* As 6, but return string -Rw/e/s/n */
 };
 
 enum GMT_mp_Zcodes {	/* Support for -Z parsing */
@@ -87,9 +93,15 @@ enum GMT_mp_cols {	/* Index into the extra and ecol_type arrays */
 	MP_COL_N		/* How many extra items there are to choose from */
 };
 
+#define GMT_MP_NNODES	100	/* Default number of points on one polygon side in -We|r+n */
+
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	bool used[8];	/* Used to keep track of which items are used by -A,G,L,Z */
+	struct SAMPLE1D_Out {	/* -> */
+		bool active;
+		char *file;
+	} Out;
 	struct MAPPROJECT_A {	/* -Ab|B|f|Fb|B|o|O<lon0>/<lat0> */
 		bool active;
 		bool azims;
@@ -151,9 +163,11 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 		struct GMT_DATUM from;	/* Contains a, f, xyz[3] */
 		struct GMT_DATUM to;	/* Contains a, f, xyz[3] */
 	} T;
-	struct MAPPROJECT_W {	/* -W[w|h|j<code>|n<rx/ry>|g<lon/lat>|x<x/y>] */
+	struct MAPPROJECT_W {	/* -W[e|E|g<lon/lat>|h|j<code>|n<rx/ry>|o|O|r|R|w|x<x/y>[+n<nx/ny>] */
 		bool active;
+		bool poly;
 		unsigned int mode;	/* See GMT_mp_Wcodes above */
+		unsigned int nx, ny;
 		struct GMT_REFPOINT *refpoint;
 	} W;
 	struct MAPPROJECT_Z {	/* -Z[<speed>][+c][+f][+i][+t<epoch>] */
@@ -172,6 +186,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
+	C->F.unit = 'e';	/* Default projected unit is meter */
 	C->G.unit = GMT_MAP_DIST_UNIT;	/* Default unit is meter */
 	C->G.sph = GMT_GREATCIRCLE;	/* Default is great-circle distances */
 	C->L.mode = GMT_MP_GIVE_CORD;	/* Default returns coordinates of nearest point */
@@ -184,6 +199,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->L.file);
 	gmt_M_free (GMT, C);
 }
@@ -193,7 +209,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> %s %s [-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]] [-C[<dx></dy>][+m]] [-D%s] "
 		"[-E[<datum>]] [-F[<%s|%s>]] [-G[<lon0>/<lat0>][+a][+i][+u<unit>][+v]] [-I] [-L<table>[+p][+u<unit>]] "
-		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[g|h|j|n|r|R|w|x]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
+		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[e|E|g|h|j|n|o|O|r|R|w|x]][+n[<nx>[/<ny]]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_V_OPT,
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_p_OPT,
@@ -276,17 +292,21 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If <from> equals - we use WGS-84.  If /<to> is not given we assume WGS-84. "
 		"Note: -T can be used as pre- or post- (-I) processing for -J -R.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W[g|h|j|n|r|R|w|x]");
+	GMT_Usage (API, 1, "\n-W[e|E|g|h|j|n|o|O|r|R|w|x][+n[<nx>[/<ny]]]");
 	GMT_Usage (API, -2, "Print map width and/or height or a reference point. No input files are read. Select optional directive:");
+	GMT_Usage (API, 3, "e: Print oblique <llx>/<lly>/<urx>/<ury>+r coordinates for rectangular region encompassing the -R -J area.");
+	GMT_Usage (API, 3, "E: Same as e but prints -Rw/s/e/n+r string as trailing text instead.");
 	GMT_Usage (API, 3, "g: Print map coordinates of reference point <gx/gy>.");
 	GMT_Usage (API, 3, "h: Print map height (See -D for plot units).");
 	GMT_Usage (API, 3, "j: Print map coordinates of justification point given as 2-char justification code (BL, MC, etc.).");
 	GMT_Usage (API, 3, "n: Print map coordinates of reference point with normalized coordinates <rx/ry> in 0-1 range.");
+	GMT_Usage (API, 3, "o: Print oblique <llx>/<lly>/<urx>/<ury>+r coordinates and -R string for an oblique input region given via <xmin/xmax/ymin/ymax>+u<unit>.");
 	GMT_Usage (API, 3, "r: Print rectangular region for an oblique -R -J selection.");
 	GMT_Usage (API, 3, "R: Same as r but prints -Rw/e/s/n string as trailing text instead.");
 	GMT_Usage (API, 3, "w: Print map width (See -D for plot units).");
 	GMT_Usage (API, 3, "x: Print map coordinates of reference point given in plot coordinates <px/py>.");
-	GMT_Usage (API, -2, "Default prints both map width and map height.");
+	GMT_Usage (API, -2, "Note: For -We|r you can use +n[<nx>[/<ny]] to output the enclosing polygon instead "
+		"by giving the number of nodes along the two sides [100]. Default (-W with no args) prints map width and map height.");
 	GMT_Usage (API, 1, "\n-Z[<speed>][+a][+i][+f][+t<epoch>]");
 	GMT_Usage (API, -2, "Compute travel times along track using specified speed. "
 		"Note: Requires -G for setting distance calculations. "
@@ -462,14 +482,17 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
+				break;
+			case '>':	/* Got named output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if ((p = strstr(opt->arg, "+v"))) {	/* Expect two pairs of coordinates per line for azim calculations */
 					Ctrl->A.mode = GMT_MP_PAIR_DIST;
 					p[0] = '\0';	/* Chop off the +v string */
@@ -519,7 +542,6 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if (opt->arg[0] && (p = strstr (opt->arg, "+m"))) {	/* Gave +m for reset relative offsets to Mercator origin */
 					Ctrl->C.m_origin = true;
 					p[0] = '\0';	/* Temporarily chop off modifier */
@@ -535,23 +557,19 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.unit = opt->arg[0];
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->D.unit);
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (gmt_set_datum (GMT, opt->arg, &Ctrl->E.datum) == -1) n_errors++;
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
-				Ctrl->F.unit = opt->arg[0];
+				if (opt->arg[0]) Ctrl->F.unit = opt->arg[0];
 				will_need_RJ = true;	/* Since -F is used with projections only */
 				break;
 			case 'G':	/* Syntax. Old: -G[<lon0/lat0>][/[+|-]unit][+|-]  New: -G[<lon0/lat0>][+i][+a][+u<unit>][+v] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (mapproject_is_old_G_syntax (GMT, opt->arg))
 					n_errors += mapproject_old_G_parser (GMT, opt->arg, Ctrl);		/* -G[<lon0/lat0>][/[+|-]unit][+|-] */
 				else {	/* -G[<lon0/lat0>][+i][+a][+u<unit>][+v] */
@@ -615,12 +633,11 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				will_need_RJ = true;	/* Since -I means inverse projection */
 				break;
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] (Note: spherical only) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if (!(gmt_found_modifier (GMT, opt->arg, "pu") || strchr (opt->arg, '/')))
 					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
 				else {
@@ -648,7 +665,6 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->N.mode = GMT_LATSWAP_G2A; break;
 					case 'c': Ctrl->N.mode = GMT_LATSWAP_G2C; break;
@@ -662,18 +678,16 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e')  Ctrl->Q.mode |= 1;
 				if (opt->arg[0] == 'd')  Ctrl->Q.mode |= 2;
 				if (opt->arg[0] == '\0') Ctrl->Q.mode = 3;
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				k = 0;
 				if (opt->arg[k] == 'h') {	/* We will process lon, lat, height data */
 					k = 1;
@@ -693,7 +707,6 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				switch (opt->arg[0]) {
 					case '\0': Ctrl->W.mode = GMT_MP_M_WH; break;
 					case 'w': Ctrl->W.mode = GMT_MP_M_WIDTH; break;
@@ -704,19 +717,35 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 						}
 						Ctrl->W.mode = GMT_MP_M_POINT;
 						break;
+					case 'e': Ctrl->W.mode = GMT_MP_M_EREGION; break;
+					case 'E': Ctrl->W.mode = GMT_MP_M_ESTRING; break;
+					case 'o': Ctrl->W.mode = GMT_MP_M_OREGION; break;
+					case 'O': Ctrl->W.mode = GMT_MP_M_OSTRING; break;
 					case 'r': Ctrl->W.mode = GMT_MP_M_REGION; break;
 					case 'R': Ctrl->W.mode = GMT_MP_M_RSTRING; break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Expected -W[g|h|j|n|r|R|w|x]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Expected -W[e|E|g|h|j|n|o|O|r|R|w|x]\n");
 						n_errors++;
 						break;
+				}
+				if ((p = strstr (opt->arg, "+n"))) {	/* Building polygon */
+					if (p[2] == '\0')	/* No args, set default nodes */
+						Ctrl->W.nx = Ctrl->W.ny = GMT_MP_NNODES;
+					else {	/* Scan and assign */
+						n = sscanf (&p[2], "%u/%u", &Ctrl->W.nx, &Ctrl->W.ny);
+						if (n == 1) Ctrl->W.ny = Ctrl->W.nx;
+					}
+					if (!(Ctrl->W.mode == GMT_MP_M_EREGION || Ctrl->W.mode == GMT_MP_M_REGION)) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Modifier +n is only allowed with directives e or r\n");
+						n_errors++;
+					}
+					Ctrl->W.poly = true;
 				}
 				will_need_RJ = true;	/* Since knowing the dimensions means region and projection */
 				break;
 
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				if ((p = gmt_first_modifier (GMT, opt->arg, "aift"))) {
 					unsigned int pos = 0;
 					txt_a[0] = 0;
@@ -750,7 +779,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -1000,12 +1029,37 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
-	Out = gmt_new_record (GMT, NULL, NULL);
+	if (!Ctrl->W.poly) Out = gmt_new_record (GMT, NULL, NULL);
 
 	if (Ctrl->W.active) {	/* Print map dimensions or reference point and exit */
 		double w_out[4] = {0.0, 0.0, 0.0, 0.0}, x_orig, y_orig;
 		unsigned int wmode = 0, tmode = GMT_COL_FIX_NO_TEXT;
 		char key[3] = {""}, region[GMT_LEN256] = {""};
+
+		if (Ctrl->W.poly) {	/* Must generate a closed polygon via -We|r+n */
+			uint64_t dim[4] = {1, 1, 2*(Ctrl->W.nx+Ctrl->W.ny)-3, 2};
+			double dx, dy;
+			struct GMT_DATASEGMENT *S = NULL;
+			struct GMT_DATASET *D = NULL;
+			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
+				Return (API->error);
+			S = D->table[0]->segment[0];	/* The one and only segment */
+			dx = (GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]) / (Ctrl->W.nx - 1);
+			dy = (GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO]) / (Ctrl->W.ny - 1);
+			for (i = k = 0; i < Ctrl->W.nx; i++, k++)	/* min to max along bottom */
+				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XLO]+i*dx, GMT->current.proj.rect[YLO]);
+			for (i = 1; i < Ctrl->W.ny; i++, k++)	/* min to max along right side */
+				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO]+i*dy);
+			for (i = 1; i < Ctrl->W.nx; i++, k++)	/* max to min along top */
+				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XHI]-i*dx, GMT->current.proj.rect[YHI]);
+			for (i = 1; i < (Ctrl->W.ny - 1); i++, k++)	/* max to min along left side */
+				gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], GMT->current.proj.rect[XLO], GMT->current.proj.rect[YHI]-i*dy);
+			S->data[GMT_X][k] = S->data[GMT_X][0];	S->data[GMT_Y][k] = S->data[GMT_Y][0];
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_NORMAL, NULL, Ctrl->Out.file, D) != GMT_NOERROR)
+				Return (API->error);
+			Return (GMT_NOERROR);
+		}
+
 		switch (Ctrl->W.mode) {
 			case GMT_MP_M_WIDTH:
 				GMT_Report (API, GMT_MSG_INFORMATION, "Reporting map width in %s\n", unit_name);
@@ -1047,13 +1101,28 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 				}
 				gmt_free_refpoint (GMT, &Ctrl->W.refpoint);
 				n_output = 2;	break;
+			case GMT_MP_M_OSTRING:
+				tmode = GMT_COL_FIX;	/* Fall through on purpose here */
+			case GMT_MP_M_OREGION:
+				gmt_M_memcpy (w_out, GMT->common.R.wesn, 4, double);
+				if (w_out[XHI] < w_out[XLO]) w_out[XHI] += 360.0;
+				n_output = (tmode == GMT_COL_FIX) ? 0 : 4;
+				break;
+			case GMT_MP_M_ESTRING:
+				tmode = GMT_COL_FIX;	/* Fall through on purpose here */
+			case GMT_MP_M_EREGION:
+				gmt_xy_to_geo (GMT, &w_out[XLO], &w_out[YLO], GMT->current.proj.rect[XLO], GMT->current.proj.rect[YLO]);
+				gmt_xy_to_geo (GMT, &w_out[XHI], &w_out[YHI], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI]);
+				if (w_out[XHI] < w_out[XLO]) w_out[XHI] += 360.0;
+				n_output = (tmode == GMT_COL_FIX) ? 0 : 4;
+				break;
 			case GMT_MP_M_RSTRING:
 				tmode = GMT_COL_FIX;	/* Fall through on purpose here */
 			case GMT_MP_M_REGION:
 				if (GMT->current.proj.search && (error = gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false)))
 					Return (GMT_RUNTIME_ERROR);
 				gmt_M_memcpy (w_out, GMT->common.R.wesn, 4, double);
-				n_output = 4;
+				n_output = (tmode == GMT_COL_FIX) ? 0 : 4;
 				break;
 			default:
 				GMT_Report (API, GMT_MSG_INFORMATION, "Reporting map width and height in %s\n", unit_name);
@@ -1066,7 +1135,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, Out);
 			Return (API->error);
 		}
-		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)(Ctrl->W.mode == GMT_MP_M_RSTRING ? 0 : n_output), tmode)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_output, tmode)) != GMT_NOERROR) {
 			gmt_M_free (GMT, Out);
 			Return (error);
 		}
@@ -1078,7 +1147,11 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, Out);
 			Return (API->error);
 		}
-		if (Ctrl->W.mode == GMT_MP_M_RSTRING) {
+		if (Ctrl->W.mode == GMT_MP_M_OSTRING || Ctrl->W.mode == GMT_MP_M_ESTRING) {
+			sprintf (region, "-R%.16lg/%.16lg/%.16lg/%.16lg+r", w_out[XLO], w_out[YLO], w_out[XHI], w_out[YHI]);
+			Out->text = region;
+		}
+		else if (Ctrl->W.mode == GMT_MP_M_RSTRING) {
 			sprintf (region, "-R%.16lg/%.16lg/%.16lg/%.16lg", w_out[XLO], w_out[XHI], w_out[YLO], w_out[YHI]);
 			Out->text = region;
 		}

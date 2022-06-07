@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -181,10 +181,9 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Distance calculation flag */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				if (gmt_M_compat_check (API->GMT, 6)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "The -C option is deprecated; use the GMT common option -j<mode> instead\n");
-					Ctrl->C.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 					if (!strchr ("cefg", (int)opt->arg[0])) {
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Flag must be c, f, g, or e\n");
 						n_errors++;
@@ -198,7 +197,6 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				if ((c = strstr (opt->arg, "." X2SYS_FMT_EXT)) == NULL && (c = strstr (opt->arg, "." X2SYS_FMT_EXT_OLD)) == NULL)
 					Ctrl->D.file = strdup (opt->arg);	/* Gave no extension so store everything */
 				else {	/* Must avoid the extension */
@@ -209,21 +207,18 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
-				Ctrl->E.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->E.string);
 				break;
 			case 'G':	/* Geographical coordinates, set discontinuity */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				Ctrl->G.string = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->G.string = strdup (opt->arg);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (opt->arg[0] && gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
@@ -249,7 +244,6 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 				}
 				if (!n_errors) {
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[k]);
-					Ctrl->N.active[k] = true;
 					Ctrl->N.string[k] = strdup (opt->arg);
 				}
 				break;
@@ -267,12 +261,11 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 				}
 				if (!n_errors) {
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active[k]);
-					Ctrl->W.active[k] = true;
 					Ctrl->W.string[k] = strdup (opt->arg);
 				}
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

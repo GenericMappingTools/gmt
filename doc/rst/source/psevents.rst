@@ -29,7 +29,7 @@ Synopsis
 [ |-L|\ [*length*\|\ **t**] ]
 [ |-M|\ **i**\|\ **s**\|\ **t**\|\ **z**\ *val1*\ [**+c**\ *val2*] ]
 [ |-N|\ [**c**\|\ **r**] ]
-[ |-O| ] [ **-P** ]
+[ |-O| ] [ |-P| ]
 [ |-Q|\ *prefix* ]
 [ |-S|\ *symbol*\ [*size*] ]
 [ |SYN_OPT-U| ]
@@ -82,5 +82,6 @@ or you specify **-Ar**\ 200\ **i**.
 See Also
 --------
 
-:doc:`gmt`, :doc:`gmtcolors`,
+:doc:`gmt`,
+:doc:`gmtcolors`,
 :doc:`psxy`

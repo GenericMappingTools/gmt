@@ -99,19 +99,19 @@ Required Arguments
 .. _-G:
 
 **-G**\ *grdfile*
-    Name of resulting output file. (1) If options **-R**, **-I**, and
+    Name of resulting output file. (1) If options |-R|, |-I|, and
     possibly **-r** are set we produce an equidistant output table. This
-    will be written to stdout unless **-G** is specified. **Note**: For 2-D
-    grids the **-G** option is required. (2) If option **-T** is
-    selected then **-G** is required and the output file is a 2-D binary
+    will be written to standard output unless |-G| is specified. **Note**: For 2-D
+    grids the |-G| option is required. (2) If option |-T| is
+    selected then |-G| is required and the output file is a 2-D binary
     grid file. Applies to 2-D interpolation only. (3) For 3-D cubes
-    the **-G** option is optional.  If set, it can be the name of a 3-D
+    the |-G| option is optional.  If set, it can be the name of a 3-D
     cube file or a filename template with a floating-point C-format identifier
     in it so that each layer is written to a 2-D grid file; otherwise
-    we write (*x, y, z, w*) records to stdout. (4) If **-N** is
+    we write (*x, y, z, w*) records to standard output. (4) If |-N| is
     selected then the output is an ASCII (or binary; see
-    **-bo**) table; if **-G** is not given then
-    this table is written to standard output. Ignored if **-C** or
+    **-bo**) table; if |-G| is not given then
+    this table is written to standard output. Ignored if |-C| or
     **-C**\ 0 is given.
 
 Optional Arguments
@@ -146,7 +146,7 @@ Optional Arguments
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from smaller
     eigenvalues [Default uses Gauss-Jordan elimination to solve the linear system
-    and fit the data exactly (unless **-W** is used)]. Append a directive and *value*
+    and fit the data exactly (unless |-W| is used)]. Append a directive and *value*
     to determine which eigenvalues to keep: **n** will retain only the *value* largest
     eigenvalues [all], **r** [Default] will retain those eigenvalues whose ratio
     to the largest eigenvalue is less than *value* [0], while **v** will retain
@@ -158,7 +158,7 @@ Optional Arguments
     stop after saving the eigenvalues, i.e., no surface output is produced.  The
     two other modifiers (**+c** and **+i**) are only available for 2-D gridding and
     can be used to write intermediate grids, one per added eigenvalue, and thus require
-    a file name with a suitable extension to be given via **-G** (we automatically
+    a file name with a suitable extension to be given via |-G| (we automatically
     insert "_cum_###" or "_inc_###" before the extension, using a fixed integer
     format for the eigenvalue number starting at 0).  The **+i** modifier will
     write the **i**\ ncremental contributions to the grid for each eigenvalue added,
@@ -176,9 +176,9 @@ Optional Arguments
     statistics of the misfit (mean, standard deviation, and rms).  Optionally,
     append a filename and we will write the data table, augmented by
     two extra columns holding the spline estimate and the misfit. Alternatively,
-    if **-C** is used and history is computed (via one or more of modifiers **+c**
+    if |-C| is used and history is computed (via one or more of modifiers **+c**
     and **+i**), then we will instead write a table with eigenvalue number,
-    eigenvalue, percent of model variance explained, and rms misfit.  If **-W**
+    eigenvalue, percent of model variance explained, and rms misfit.  If |-W|
     is used we also append :math:`\chi^2`.
 
 .. _-I:
@@ -189,7 +189,7 @@ Optional Arguments
 .. _-L:
 
 **-L**
-    Do *not* remove a linear (1-D) or planer (2-D) trend when **-Z**
+    Do *not* remove a linear (1-D) or planer (2-D) trend when |-Z|
     selects mode 0-3 [For those Cartesian cases a least-squares line or
     plane is modeled and removed, then restored after fitting a spline
     to the residuals]. However, in mixed cases with both data values and
@@ -201,10 +201,10 @@ Optional Arguments
 **-N**\ *nodefile*
     ASCII file with coordinates of desired output locations **x** in the
     first column(s). The resulting *w* values are appended to each
-    record and written to the file given in **-G** [or stdout if not
+    record and written to the file given in |-G| [or standard output if not
     specified]; see **-bo** for binary output
-    instead. This option eliminates the need to specify options **-R**,
-    **-I**, and **-r**.
+    instead. This option eliminates the need to specify options |-R|,
+    |-I|, and **-r**.
 
 .. _-Q:
 
@@ -218,7 +218,7 @@ Optional Arguments
 
 **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*]]
     Specify the domain for an equidistant lattice where output
-    predictions are required. Requires **-I** and optionally **-r**.
+    predictions are required. Requires |-I| and optionally **-r**.
 
     *1-D:* Give *xmin/xmax*, the minimum and maximum *x* coordinates.
 
@@ -240,7 +240,7 @@ Optional Arguments
 
 **-S**\ **c\|t\|l\|r\|p\|q**\ [*pars*]
     Select one of six different splines. The first two are used for
-    1-D, 2-D, or 3-D Cartesian splines (see **-Z** for discussion). Note
+    1-D, 2-D, or 3-D Cartesian splines (see |-Z| for discussion). Note
     that all tension values are expected to be normalized tension in the
     range 0 < *t* < 1: (**c**) Minimum curvature spline [*Sandwell*,
     1987], (**t**) Continuous curvature spline in tension [*Wessel and
@@ -266,7 +266,7 @@ Optional Arguments
 **-T**\ *maskgrid*
     For 2-D interpolation only. Only evaluate the solution at the nodes
     in the *maskgrid* that are not equal to NaN. This option eliminates
-    the need to specify options **-R**, **-I**, and **-r**.
+    the need to specify options |-R|, |-I|, and **-r**.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -280,7 +280,7 @@ Optional Arguments
    We then compute weights that are inversely proportional to the uncertainties squared.
    Append **w** if weights are given instead of uncertainties and then they will be used
    as is (no squaring).  This results in a weighted least squares fit.  Note that this
-   only has an effect if **-C** is used.  [Default uses no weights or uncertainties].
+   only has an effect if |-C| is used.  [Default uses no weights or uncertainties].
 
 .. _-Z:
 
@@ -445,7 +445,7 @@ Considerations
    You can remedy this by preprocessing the data, e.g., by averaging
    closely spaced neighbors. Alternatively, you can improve stability by
    using the SVD solution and discard information associated with the
-   smallest eigenvalues (see **-C**).
+   smallest eigenvalues (see |-C|).
 
 #. The series solution implemented for **-Sq** was developed by
    Robert L. Parker, Scripps Institution of Oceanography, which we
@@ -459,11 +459,11 @@ Considerations
    note 1, does *not* specify boundary conditions at the end of the data domain.
 
 #. It may be difficult to know how many eigenvalues are needed for a suitable
-   approximate fit.  The **-C** modifiers allow you to explore this further
+   approximate fit.  The |-C| modifiers allow you to explore this further
    by creating solutions for all cutoff selections and estimate model variance
    and data misfit as a function of how many eigenvalues are used.  The large
    set of such solutions can be animated so it is easier to explore the changes
-   between solutions and to make a good selection for the **-C** directive values.
+   between solutions and to make a good selection for the |-C| directive values.
    See the animations for one or more examples of this exploration.
 
 Tension
@@ -484,8 +484,8 @@ see the references below.
 Deprecations
 ------------
 
-- 6.3.0: Replace **+m** and **+M** modifiers for **-C**. `#5714 <https://github.com/GenericMappingTools/gmt/pull/5714>`_
-- 6.3.0: Use **+n** instead of negative value for **-C** to set dry-run. `#5725 <https://github.com/GenericMappingTools/gmt/pull/5725/>`_
+- 6.3.0: Replace **+m** and **+M** modifiers for |-C|. `#5714 <https://github.com/GenericMappingTools/gmt/pull/5714>`_
+- 6.3.0: Use **+n** instead of negative value for |-C| to set dry-run. `#5725 <https://github.com/GenericMappingTools/gmt/pull/5725/>`_
 
 References
 ----------
@@ -504,14 +504,15 @@ Sandwell, D. T., 1987, Biharmonic spline interpolation of Geos-3 and
 Seasat altimeter data, *Geophys. Res. Lett.*, **14**, 139-142.
 
 Wessel, P., and D. Bercovici, 1998, Interpolation with splines in
-tension: a Green's function approach, *Math. Geol.*, **30**, 77-93.
+tension: a Green's function approach, *Math. Geol.*, **30**, 77-93,
+https://doi.org/10.1023/A:1021713421882.
 
 Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized
 Green's function for a spherical surface spline in tension, *Geophys. J.
-Int*, **174**, 21-28.
+Int*, **174**, 21-28, https://doi.org/10.1111/j.1365-246X.2008.03829.x.
 
 Wessel, P., 2009, A general-purpose Green's function interpolator,
-*Computers & Geosciences*, **35**, 1247-1254, doi:10.1016/j.cageo.2008.08.012.
+*Computers & Geosciences*, **35**, 1247-1254, https://doi.org/10.1016/j.cageo.2008.08.012.
 
 See Also
 --------

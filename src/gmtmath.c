@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
  * on them like add, multiply, etc.
  * Some operators only work on one operand (e.g., log, exp)
  *
+ * Note on KEYS: AD(= means -A takes an input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -495,19 +496,26 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"     -----------------------\n");
 	GMT_Message (API, GMT_TIME_NONE, "     ABS        1 1  ");	GMT_Usage (API, -21, "abs (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACOS       1 1  ");	GMT_Usage (API, -21, "acos (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ACOSD      1 1  ");	GMT_Usage (API, -21, "acosd (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACOSH      1 1  ");	GMT_Usage (API, -21, "acosh (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACOT       1 1  ");	GMT_Usage (API, -21, "acot (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ACOTD      1 1  ");	GMT_Usage (API, -21, "acotd (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACOTH      1 1  ");	GMT_Usage (API, -21, "acoth (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACSC       1 1  ");	GMT_Usage (API, -21, "acsc (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ACSCD      1 1  ");	GMT_Usage (API, -21, "acscd (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACSCH      1 1  ");	GMT_Usage (API, -21, "acsch (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ADD        2 1  ");	GMT_Usage (API, -21, "A + B"); 
 	GMT_Message (API, GMT_TIME_NONE, "     AND        2 1  ");	GMT_Usage (API, -21, "B if A == NaN, else A"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ASEC       1 1  ");	GMT_Usage (API, -21, "asec (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ASECD      1 1  ");	GMT_Usage (API, -21, "asecd (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ASECH      1 1  ");	GMT_Usage (API, -21, "asech (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ASIN       1 1  ");	GMT_Usage (API, -21, "asin (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ASIND      1 1  ");	GMT_Usage (API, -21, "asind (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ASINH      1 1  ");	GMT_Usage (API, -21, "asinh (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ATAN       1 1  ");	GMT_Usage (API, -21, "atan (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ATAND      1 1  ");	GMT_Usage (API, -21, "atand (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ATAN2      2 1  ");	GMT_Usage (API, -21, "atan2 (A, B)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ATAN2D     2 1  ");	GMT_Usage (API, -21, "atan2d (A, B)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ATANH      1 1  ");	GMT_Usage (API, -21, "atanh (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     BCDF       3 1  ");	GMT_Usage (API, -21, "Binomial cumulative distribution function for p = A, n = B and x = C"); 
 	GMT_Message (API, GMT_TIME_NONE, "     BEI        1 1  ");	GMT_Usage (API, -21, "Kelvin function bei (A)"); 
@@ -540,6 +548,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     DDT        1 1  ");	GMT_Usage (API, -21, "d(A)/dt Central 1st derivative"); 
 	GMT_Message (API, GMT_TIME_NONE, "     D2DT2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dt^2 2nd derivative"); 
 	GMT_Message (API, GMT_TIME_NONE, "     D2R        1 1  ");	GMT_Usage (API, -21, "Converts Degrees to Radians"); 
+	GMT_Message (API, GMT_TIME_NONE, "     DEG2KM     1 1  ");	GMT_Usage (API, -21, "Converts Spherical Degrees to Kilometers");
 	GMT_Message (API, GMT_TIME_NONE, "     DENAN      2 1  ");	GMT_Usage (API, -21, "Replace NaNs in A with values from B"); 
 	GMT_Message (API, GMT_TIME_NONE, "     DILOG      1 1  ");	GMT_Usage (API, -21, "dilog (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     DIFF       1 1  ");	GMT_Usage (API, -21, "Forward difference between elements of A (A[1]-A[0], A[2]-A[1], ..., NaN)"); 
@@ -581,6 +590,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     JN         2 1  ");	GMT_Usage (API, -21, "Bessel function of A (1st kind, order B)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     K0         1 1  ");	GMT_Usage (API, -21, "Modified Kelvin function of A (2nd kind, order 0)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     K1         1 1  ");	GMT_Usage (API, -21, "Modified Bessel function of A (2nd kind, order 1)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     KM2DEG     1 1  ");	GMT_Usage (API, -21, "Converts Kilometers to Spherical Degrees");
 	GMT_Message (API, GMT_TIME_NONE, "     KN         2 1  ");	GMT_Usage (API, -21, "Modified Bessel function of A (2nd kind, order B)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     KEI        1 1  ");	GMT_Usage (API, -21, "Kelvin function kei (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     KER        1 1  ");	GMT_Usage (API, -21, "Kelvin function ker (A)"); 
@@ -617,7 +627,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     NAN        2 1  ");	GMT_Usage (API, -21, "NaN if A == B, else A"); 
 	GMT_Message (API, GMT_TIME_NONE, "     NEG        1 1  ");	GMT_Usage (API, -21, "-A"); 
 	GMT_Message (API, GMT_TIME_NONE, "     NEQ        2 1  ");	GMT_Usage (API, -21, "1 if A != B, else 0"); 
-	GMT_Message (API, GMT_TIME_NONE, "     NORM       1 1  ");	GMT_Usage (API, -21, "Normalize (A) so max(A)-min(A) = 1"); 
+	GMT_Message (API, GMT_TIME_NONE, "     NORM       1 1  ");	GMT_Usage (API, -21, "Normalize (A) so min(A) = 0 and max(A) = 1"); 
 	GMT_Message (API, GMT_TIME_NONE, "     NOT        1 1  ");	GMT_Usage (API, -21, "NaN if A == NaN, 1 if A == 0, else 0"); 
 	GMT_Message (API, GMT_TIME_NONE, "     NRAND      2 1  ");	GMT_Usage (API, -21, "Normal, random values with mean A and std. deviation B"); 
 	GMT_Message (API, GMT_TIME_NONE, "     OR         2 1  ");	GMT_Usage (API, -21, "NaN if B == NaN, else A"); 
@@ -644,7 +654,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     RINT       1 1  ");	GMT_Usage (API, -21, "rint (A) (round to integral value nearest to A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     RMS        1 1  ");	GMT_Usage (API, -21, "Root-mean-square of A"); 
 	GMT_Message (API, GMT_TIME_NONE, "     RMSW       2 1  ");	GMT_Usage (API, -21, "Weighted Root-mean-square of A for weights in B"); 
-	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclicly shifts the top A stack items by an amount B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclically shifts the top A stack items by an amount B"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ROTT       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in the t-direction"); 
 	GMT_Message (API, GMT_TIME_NONE, "     SEC        1 1  ");	GMT_Usage (API, -21, "sec (A) (A in radians)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     SECD       1 1  ");	GMT_Usage (API, -21, "sec (A) (A in degrees)"); 
@@ -759,7 +769,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k, n_files = 0;
+	unsigned int n_errors = 0, k = 0;
 	bool missing_equal = true;
 	char *c = NULL, *t_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -774,16 +784,16 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 					missing_equal = false;
 					opt->option = GMT_OPT_OUTFILE;	/* Prevents further use later */
 					if (opt->next && (opt->next->option == GMT_OPT_INFILE || opt->next->option == GMT_OPT_OUTFILE)) {
-						Ctrl->Out.active = true;
-						if (opt->next->arg[0]) Ctrl->Out.file = strdup (opt->next->arg);
-						opt->next->option = GMT_OPT_OUTFILE;	/* Prevents further use later */
+						opt = opt->next;	/* Skip ahead */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+						if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);	/* Optional output file since stdout is default */
+						opt->option = GMT_OPT_OUTFILE;	/* Prevents further use later */
 					}
 				}
-				n_files++;
 				break;
-			case '>':	/* Output file specified via an API; set output file here */
-				opt->option = GMT_OPT_OUTFILE;
-				if (opt->arg[0] && !Ctrl->Out.file) Ctrl->Out.file = strdup (opt->arg);
+			case '>':	/* Output file specified via an API; set required output file here */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				missing_equal = false;
 				break;
 			case '#':	/* Skip numbers */
@@ -793,7 +803,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 
 			case 'A':	/* y(x) table for LSQFIT/SVDFIT operations */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;	k = 0;
 				if (opt->arg[0] == '-') {	/* Old-style leading hyphen to the filename has been replaced by modifier +r */
 					if (gmt_M_compat_check (GMT, 5)) {
 						GMT_Report (API, GMT_MSG_COMPAT, "The leading hyphen in -A is deprecated.  Append modifier +r instead.\n");
@@ -825,11 +834,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 					Ctrl->A.file = strdup (&opt->arg[k]);
 				break;
 			case 'C':	/* Processed in the main loop but not here; just skip */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				break;
 			case 'E':	/* Set minimum eigenvalue cutoff */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.eigen = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->E.eigen);
 				break;
 			case 'F':	/* Now obsolete, using -o instead */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -837,24 +845,22 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 					gmt_parse_o_option (GMT, opt->arg);
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'I':	/* Reverse output order */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'L':	/* Apply operator per segment basis */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Sets no of columns and optionally the time column [0] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (sscanf (opt->arg, "%" PRIu64 "/%" PRIu64, &Ctrl->N.ncol, &Ctrl->N.tcol) == 1) Ctrl->N.tcol = 0;
 				break;
 			case 'Q':	/* Quick for -Ca -N1/0 -T0/0/1 */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'n')	/* Want no unit conversion on output */
 					Ctrl->Q.unit = GMT_INCH;	/* We do this which will convert from inch to inch, i.e., no change */
 				else if (opt->arg[0] && strchr (GMT_DIM_UNITS, opt->arg[0]))	/* Want a specific unit conversion from inch to this unit on output */
@@ -863,7 +869,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'S':	/* Only want one row (first or last) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'f': case 'F': case '\0':
 						Ctrl->S.mode = -1; break;
@@ -877,12 +882,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'T':	/* Either get a file with time coordinate or a min/max/dt setting */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				t_arg = opt->arg;
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 		}
 	}
 
@@ -953,6 +957,20 @@ GMT_LOCAL int gmtmath_ACOS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	return 0;
 }
 
+GMT_LOCAL int gmtmath_ACOSD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ACOSD 1 1 acosd (A).  */
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACOSD!\n");
+	if (S[last]->constant) a = R2D * d_acos (S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++)
+			T->segment[s]->data[col][row] = (S[last]->constant) ? a : R2D * d_acos (T->segment[s]->data[col][row]);
+	return 0;
+}
+
 GMT_LOCAL int gmtmath_ACOSH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ACOSH 1 1 acosh (A).  */
 {
@@ -982,6 +1000,20 @@ GMT_LOCAL int gmtmath_ACOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	return 0;
 }
 
+GMT_LOCAL int gmtmath_ACOTD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ACOTD 1 1 acotd (A).  */
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACOTD!\n");
+	if (S[last]->constant) a = R2D * atan (1.0 / S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++)
+			T->segment[s]->data[col][row] = (S[last]->constant) ? a : R2D * atan (1.0 / T->segment[s]->data[col][row]);
+	return 0;
+}
+
 GMT_LOCAL int gmtmath_ACOTH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: ACOTH 1 1 acoth (A).  */
 	uint64_t s, row;
@@ -1007,6 +1039,20 @@ GMT_LOCAL int gmtmath_ACSC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
 			T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_asin (1.0 / T->segment[s]->data[col][row]);
+	return 0;
+}
+
+GMT_LOCAL int gmtmath_ACSCD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ACSCD 1 1 acscd (A).  */
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACSCD!\n");
+	if (S[last]->constant) a = R2D * d_asin (1.0 / S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++)
+			T->segment[s]->data[col][row] = (S[last]->constant) ? a : R2D * d_asin (1.0 / T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1078,6 +1124,20 @@ GMT_LOCAL int gmtmath_ASEC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	return 0;
 }
 
+GMT_LOCAL int gmtmath_ASECD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ASECD 1 1 asecd (A).  */
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ASECD!\n");
+	if (S[last]->constant) a = R2D * d_acos (1.0 / S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++)
+			T->segment[s]->data[col][row] = (S[last]->constant) ? a : R2D * d_acos (1.0 / T->segment[s]->data[col][row]);
+	return 0;
+}
+
 GMT_LOCAL int gmtmath_ASECH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: ASECH 1 1 asech (A).  */
 	uint64_t s, row;
@@ -1103,6 +1163,20 @@ GMT_LOCAL int gmtmath_ASIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	for (s = 0; s < info->T->n_segments; s++)
 		for (row = 0; row < info->T->segment[s]->n_rows; row++)
 			T->segment[s]->data[col][row] = (S[last]->constant) ? a : d_asin (T->segment[s]->data[col][row]);
+	return 0;
+}
+
+GMT_LOCAL int gmtmath_ASIND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ASIND 1 1 asind (A).  */
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ASIND!\n");
+	if (S[last]->constant) a = R2D * d_asin (S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++)
+			T->segment[s]->data[col][row] = (S[last]->constant) ? a : R2D * d_asin (T->segment[s]->data[col][row]);
 	return 0;
 }
 
@@ -1134,6 +1208,20 @@ GMT_LOCAL int gmtmath_ATAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	return 0;
 }
 
+GMT_LOCAL int gmtmath_ATAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ATAND 1 1 atand (A).  */
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	gmt_M_unused(GMT);
+
+	if (S[last]->constant) a = R2D * atan (S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++)
+		for (row = 0; row < info->T->segment[s]->n_rows; row++)
+			T->segment[s]->data[col][row] = (S[last]->constant) ? a : R2D * atan (T->segment[s]->data[col][row]);
+	return 0;
+}
+
 GMT_LOCAL int gmtmath_ATAN2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: ATAN2 2 1 atan2 (A, B).  */
 	uint64_t s, row;
@@ -1150,6 +1238,27 @@ GMT_LOCAL int gmtmath_ATAN2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 			a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
 			b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
 			T_prev->segment[s]->data[col][row] = d_atan2 (a, b);
+		}
+	}
+	return 0;
+}
+
+GMT_LOCAL int gmtmath_ATAN2D (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
+/*OPERATOR: ATAN2D 2 1 atan2d (A, B).  */
+	uint64_t s, row;
+	unsigned int prev;
+	double a, b;
+	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
+
+	if ((prev = gmtmath_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
+
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for ATAN2D!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for ATAN2D!\n");
+	for (s = 0; s < info->T->n_segments; s++) {
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
+			b = (S[last]->constant) ? S[last]->factor : T->segment[s]->data[col][row];
+			T_prev->segment[s]->data[col][row] = R2D * d_atan2 (a, b);
 		}
 	}
 	return 0;
@@ -1894,6 +2003,20 @@ GMT_LOCAL int gmtmath_D2R (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 	if (S[last]->constant) a = S[last]->factor * D2R;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : T->segment[s]->data[col][row] * D2R;
+	return 0;
+}
+
+GMT_LOCAL int gmtmath_DEG2KM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: DEG2KM 1 1 Converts Spherical Degrees to Kilometers.  */
+{
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	gmt_M_unused(GMT);
+
+	if (gmt_M_sph_mode (GMT) == GMT_GEODESIC) GMT_Report (GMT->parent, GMT_MSG_WARNING, "DEG2KM is only exact when PROJ_ELLIPSOID == sphere\n");
+	if (S[last]->constant) a = S[last]->factor * GMT->current.proj.DIST_KM_PR_DEG;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : T->segment[s]->data[col][row] * GMT->current.proj.DIST_KM_PR_DEG;
 	return 0;
 }
 
@@ -2720,6 +2843,20 @@ GMT_LOCAL int gmtmath_K1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	if (S[last]->constant) a = gmt_k1 (GMT, S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : gmt_k1 (GMT, T->segment[s]->data[col][row]);
+	return 0;
+}
+
+GMT_LOCAL int gmtmath_KM2DEG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: KM2DEG 1 1 Converts Kilometers to Spherical Degrees.  */
+{
+	uint64_t s, row;
+	double a = 0.0, f = 1.0 / GMT->current.proj.DIST_KM_PR_DEG;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	gmt_M_unused(GMT);
+
+	if (gmt_M_sph_mode (GMT) == GMT_GEODESIC) GMT_Report (GMT->parent, GMT_MSG_WARNING, "KM2DEG is only exact when PROJ_ELLIPSOID == sphere\n");
+	if (S[last]->constant) a = S[last]->factor * f;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : T->segment[s]->data[col][row] * f;
 	return 0;
 }
 
@@ -3767,7 +3904,7 @@ GMT_LOCAL int gmtmath_NEQ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 }
 
 GMT_LOCAL int gmtmath_NORM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: NORM 1 1 Normalize (A) so max(A)-min(A) = 1.  */
+/*OPERATOR: NORM 1 1 Normalize (A) min(A) == 0 and so max(A) = 1.  */
 {
 	uint64_t s, row, n;
 	double a, z, zmin = DBL_MAX, zmax = -DBL_MAX;
@@ -3787,7 +3924,7 @@ GMT_LOCAL int gmtmath_NORM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 		}
 		a = (n == 0 || zmax == zmin) ? GMT->session.d_NaN : 1.0 / (zmax - zmin);	/* Normalization scale */
 	}
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : a * (T->segment[s]->data[col][row]);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : a * (T->segment[s]->data[col][row] - zmin);
 	return 0;
 }
 
@@ -5660,7 +5797,7 @@ GMT_LOCAL int gmtmath_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GMTMATH_N_OPERATORS 198
+#define GMTMATH_N_OPERATORS 207
 
 GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int), unsigned int n_args[], unsigned int n_out[]) {
 	/* Operator function	# of operands	# of outputs */
@@ -5863,6 +6000,15 @@ GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO
 	ops[195] = gmtmath_XYZ2LAB;	n_args[195] = 3;	n_out[195] = 3;
 	ops[196] = gmtmath_XYZ2RGB;	n_args[196] = 3;	n_out[196] = 3;
 	ops[197] = gmtmath_VPDF;	n_args[197] = 3;	n_out[197] = 1;
+	ops[198] = gmtmath_DEG2KM;	n_args[198] = 1;	n_out[198] = 1;
+	ops[199] = gmtmath_KM2DEG;	n_args[199] = 1;	n_out[199] = 1;
+	ops[200] = gmtmath_ACOSD;	n_args[200] = 1;	n_out[200] = 1;
+	ops[201] = gmtmath_ACOTD;	n_args[201] = 1;	n_out[201] = 1;
+	ops[202] = gmtmath_ACSCD;	n_args[202] = 1;	n_out[202] = 1;
+	ops[203] = gmtmath_ASECD;	n_args[203] = 1;	n_out[203] = 1;
+	ops[204] = gmtmath_ASIND;	n_args[204] = 1;	n_out[204] = 1;
+	ops[205] = gmtmath_ATAND;	n_args[205] = 1;	n_out[205] = 1;
+	ops[206] = gmtmath_ATAN2D;	n_args[206] = 2;	n_out[206] = 1;
 }
 
 GMT_LOCAL void gmtmath_free_stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack) {
@@ -6269,6 +6415,15 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		"XYZ2LAB",	/* id = 195 */
 		"XYZ2RGB",	/* id = 196 */
 		"VPDF",	/* id = 197 */
+		"DEG2KM",	/* id = 198 */
+		"KM2DEG",	/* id = 199 */
+		"ACOSD",	/* id = 200 */
+		"ACOTD",	/* id = 201 */
+		"ACSCD",	/* id = 202 */
+		"ASECD",	/* id = 203 */
+		"ASIND",	/* id = 204 */
+		"ATAND",	/* id = 205 */
+		"ATAN2D",	/* id = 206 */
 		"" /* last element is intentionally left blank */
 	};
 
@@ -6755,7 +6910,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		for (j = 0, i = nstack - eaten; j < created; j++, i++) {
 			if (stack[i]->constant && !stack[i]->D) {
 				stack[i]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-				if (!Ctrl->T.notime) gmtmath_load_column (stack[i]->D, COL_T, info.T, COL_T);	/* Make sure t-column is copied if needed */
+				if (!Ctrl->T.notime) gmtmath_load_column (stack[i]->D, Ctrl->N.tcol, info.T, COL_T);	/* Make sure t-column is copied if needed */
 			}
 		}
 
@@ -6801,7 +6956,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if (!stack[last]->D)
 			stack[last]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 		for (j = 0; j < n_columns; j++) {
-			if (j == COL_T && !Ctrl->Q.active && Ctrl->C.cols[j])
+			if (j == Ctrl->N.tcol && !Ctrl->Q.active && Ctrl->C.cols[j])
 				gmtmath_load_column (stack[last]->D, j, info.T, COL_T);
 			else if (!Ctrl->C.cols[j])
 				gmtmath_load_const_column (stack[last]->D, j, stack[last]->factor);

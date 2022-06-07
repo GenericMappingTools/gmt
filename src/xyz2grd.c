@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,8 +36,7 @@
 
 struct XYZ2GRD_CTRL {
 	struct XYZ2GRD_In {
-		bool active;
-		char *file;
+		char *file;	/* Deprecated use with -E only */
 	} In;
 	struct XYZ2GRD_A {	/* -A[f|l|n|m|r|s|u|z] */
 		bool active;
@@ -162,23 +161,24 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 
 	unsigned int n_errors = 0, n_files = 0;
 	uint64_t n_req;
-	bool do_grid, b_only = false;
+	bool do_grid, b_only = false, got_E = false;
 	char *ptr_to_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	memset (io, 0, sizeof(struct GMT_Z_IO)); /* Initialize with zero */
 
+	for (opt = options; opt; opt = opt->next) {	/* Look for deprecated -E first */
+		if (opt->option == 'E') got_E = true;
+	}
+
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
-					n_errors++;
-				else
-					Ctrl->In.active = true;
+				if (got_E)
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
@@ -187,22 +187,18 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				if (!opt->arg[0] && gmt_M_compat_check (GMT, 4)) {	/* In GMT4, just -A implied -Az */
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -A is deprecated; use -Az instead.\n");
-					Ctrl->A.active = true;
 					Ctrl->A.mode = 'z';
 				}
 				else if (!strchr ("dflmnrSsuz", opt->arg[0])) {
 					GMT_Report (API, GMT_MSG_ERROR, "Select -Ad, -Af, -Al, -Am, -An, -Ar, -AS, -As, -Au, or -Az\n");
 					n_errors++;
 				}
-				else {
-					Ctrl->A.active = true;
+				else
 					Ctrl->A.mode = opt->arg[0];
-				}
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.information = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->D.information);
 				break;
 			case 'E':
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -214,17 +210,14 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':
@@ -241,21 +234,19 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				if (opt->arg[0]) Ctrl->S.file = strdup (opt->arg);
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				ptr_to_arg = opt->arg;
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				if (opt->option == 'b') b_only = true;
 				break;
 		}
@@ -293,7 +284,7 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Option -I: Must specify positive increment(s)\n");
 	}
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !(Ctrl->G.active || Ctrl->G.file), "Option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->S.active || Ctrl->G.active), "Must specify either -G or -S\n");
 	n_req = (Ctrl->Z.active) ? 1 : ((Ctrl->A.mode == 'n') ? 2 : 3);
 	n_errors += gmt_check_binary_io (GMT, n_req);
 
@@ -303,22 +294,17 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LOCAL void xyz2grd_protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
+GMT_LOCAL void xyz2grd_protect_J (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	if (GMT_Find_Option (API, 'J', options) != NULL) {
-#ifdef HAVE_GDAL
 		struct GMT_OPTION *opt = GMT_Make_Option (API, 'f', "0f,1f");
 		(void)GMT_Append_Option(API, opt, options);
-#else
-		GMT_Report(API, GMT_MSG_ERROR,
-		           "-J option to set grid's referencing system is only available when GMT was build with GDAL\n");
-#endif
 	}
 }
 
 EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	bool previous_bin_i = false, previous_bin_o = false;
 	int error = 0, scol, srow;
-	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1;
+	unsigned int zcol, row, col, i, *flag = NULL, n_min = 1, was;
 	uint64_t n_empty = 0, n_confused = 0;
 	uint64_t ij, ij_gmt, n_read, n_filled = 0, n_used = 0, n_req;
 
@@ -494,7 +480,10 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 		n_left = Grid->header->nm;
 
-		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, gmt_grdfloat);
+		if ((Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, gmt_grdfloat)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate grid memory\n");
+			Return (GMT_MEMORY_ERROR);
+		}
 		/* ESRI grids are scanline oriented (top to bottom), as are the GMT grids */
 		row = col = 0;
 		if (fscanf (fp, "%s", line) != 1) {
@@ -553,7 +542,10 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	/* For Amode = 'd' or 'S' we need a second grid, and also require a minimum of 2 points per grid */
 	if (Amode == 'd' || Amode == 'S') {
-		data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, gmt_grdfloat);
+		if ((data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, gmt_grdfloat)) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate secondary data memory\n");
+			Return (GMT_MEMORY_ERROR);
+		}
 		n_min = 2;
 	}
 
@@ -572,7 +564,13 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	if (gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file)) Return (GMT_RUNTIME_ERROR);
 
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
-	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && gmt_M_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing since nan_proxy is NaN... */
+	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN]) {
+		was = GMT->common.d.first_col[GMT_IN];
+		if (gmt_M_is_fnan (no_data_f))	/* No point testing since nan_proxy is NaN... */
+			GMT->common.d.active[GMT_IN] = false;
+		else if (GMT->common.d.first_col[GMT_IN] == GMT_Z)	/* Change the default to the only column available */
+			GMT->common.d.first_col[GMT_IN] = GMT_X;
+	}
 
 	if (Ctrl->Z.active) {	/* Need to override input method since reading single input column as z (not x,y) */
 		zcol = GMT_X;
@@ -584,7 +582,11 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	}
 	else {
 		zcol = GMT_Z;
-		flag = gmt_M_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* No padding needed for flag array */
+		if ((flag = gmt_M_memory (GMT, NULL, Grid->header->nm, unsigned int)) == NULL) {	/* No padding needed for flag array */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to allocate flag memory\n");
+			gmt_M_free (GMT, data);
+			Return (GMT_MEMORY_ERROR);
+		}
 		gmt_M_memset (Grid->header->pad, 4, unsigned int);	/* Algorithm below expects no padding; we repad at the end */
 		GMT->current.setting.io_nan_records = false;	/* Cannot have x,y as NaNs here */
 	}
@@ -722,6 +724,8 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	if (Ctrl->Z.active) {
 		GMT->current.io.input = save_i;	/* Reset pointer */
 		GMT->common.b.active[GMT_IN] = previous_bin_i;	/* Reset binary */
+		if (GMT->common.d.active[GMT_IN])	/* Reset column */
+			GMT->common.d.first_col[GMT_IN] = was;
 		if (ij != io.n_expected) {	/* Input amount does not match expectations */
 			GMT_Report (API, GMT_MSG_ERROR, "Found %" PRIu64 " records, but %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
 				GMT_Report (API, GMT_MSG_ERROR, "(You are probably misterpreting xyz2grd with an interpolator; see 'surface' man page)\n");

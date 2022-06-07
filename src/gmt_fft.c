@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1639,7 +1639,7 @@ int GMT_FFT_1D (void *V_API, gmt_grdfloat *data, uint64_t n, int direction, unsi
 	int status, use;
 	struct GMTAPI_CTRL *API = gmtfft_get_api_ptr (V_API);
 	struct GMT_CTRL *GMT = API->GMT;
-	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
+	assert (mode & GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
 	use = gmtfft_1d_selection (GMT, n);
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "1-D FFT using %s\n", GMT_fft_algo[use]);
 	status = GMT->session.fft1d[use] (GMT, data, (unsigned int)n, direction, mode);
@@ -1659,7 +1659,7 @@ int GMT_FFT_2D (void *V_API, gmt_grdfloat *data, unsigned int n_columns, unsigne
 	int status, use;
 	struct GMTAPI_CTRL *API = gmtfft_get_api_ptr (V_API);
 	struct GMT_CTRL *GMT = API->GMT;
-	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
+	assert (mode & GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
 	use = gmtfft_2d_selection (GMT, n_columns, n_rows);
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "2-D FFT using %s\n", GMT_fft_algo[use]);

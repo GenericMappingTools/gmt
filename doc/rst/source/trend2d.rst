@@ -98,7 +98,7 @@ Optional Arguments
     Iteratively increase the number of model parameters, starting at
     one, until *n\_model* is reached or the reduction in variance of the
     model is not significant at the *confidence\_level* level. You may
-    set **-I** only, without an attached number; in this case the fit
+    set |-I| only, without an attached number; in this case the fit
     will be iterative with a default confidence level of 0.51. Or choose
     your own level between 0 and 1. See remarks section.
 
@@ -116,10 +116,10 @@ Optional Arguments
     and create weights as 1/sigma^2, or use the weights as read (**+w**)
     [Default reads only the first 2 columns].
 
-.. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) input columns].
+.. |Add_-bi| replace:: [Default is 3 (or 4 if |-W| is set) input columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 1-6 columns as set by **-F**].
+.. |Add_-bo| replace:: [Default is 1-6 columns as set by |-F|].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -161,16 +161,16 @@ instead, it may find that the matrix problem has deficient rank.
 However, the solution is computed using the generalized inverse and
 should still work out OK. The user should check the results graphically
 if **trend2d** shows deficient rank. NOTE: The model parameters listed
-with **-V** are Chebyshev coefficients; they are not numerically
+with |-V| are Chebyshev coefficients; they are not numerically
 equivalent to the m#s in the equation described above. The description
-above is to allow the user to match **-N** with the order of the
+above is to allow the user to match |-N| with the order of the
 polynomial surface. For evaluating Chebyshev polynomials, see
 :doc:`grdmath`.
 
-The **-N**\ *n\_model*\ **r** (robust) and **-I** (iterative) options
+The **-N**\ *n\_model*\ **r** (robust) and |-I| (iterative) options
 evaluate the significance of the improvement in model misfit Chi-Squared
 by an F test. The default confidence limit is set at 0.51; it can be
-changed with the **-I** option. The user may be surprised to find that
+changed with the |-I| option. The user may be surprised to find that
 in most cases the reduction in variance achieved by increasing the
 number of terms in a model is not significant at a very high degree of
 confidence. For example, with 120 degrees of freedom, Chi-Squared must

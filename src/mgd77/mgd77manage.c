@@ -1,13 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2005-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- * mgd77manage is used to (1) remove data columns from mgd77+ files
- * or (2) add a new data column to mgd77+ files.  Data can be added
- * from data tables, created from reference field formulas, or by
- * sampling grids along track.  Data from tables may be numbers or
- * text strings.
+ *	Copyright (c) 2005-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    See README file for copying and redistribution conditions.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  *
@@ -346,7 +351,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct GM
 
 			case 'A':	/* Adding a new column */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				k = 0;
 				if (opt->arg[k] == '+') {	/* Deprecated way of doing _f */
 					Ctrl->A.replace = true;
@@ -449,32 +453,28 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct GM
 				break;
 			case 'D':	/* Columns to delete */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.file = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->D.file);
 				break;
 
 			case 'E':	/* character to generate no-string value */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
-				Ctrl->E.value = opt->arg[0];
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->E.value);
 				break;
 
 			case 'F':	/* Force mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'I':	/* Column attribute information */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += mgd77manage_decode_I_options (GMT, opt->arg, Ctrl->I.c_abbrev, Ctrl->I.c_name, Ctrl->I.c_units,
 				                              &Ctrl->I.c_size, Ctrl->I.c_comment, Ctrl->A.parameters);
 				break;
 
 			case 'N':	/* Set distance units */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
-				Ctrl->N.code[0] = opt->arg[0];
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->N.code[0]);
 				if (Ctrl->N.code[0] == 'm' && gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -N: Unit m for miles is deprecated; use unit M instead\n");
 					Ctrl->N.code[0] = 'M';
@@ -486,7 +486,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct GM
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

@@ -41,7 +41,7 @@ The output *.nc* file can optionally be generated as a subregion of the
 input and/or with a new **-I**\ ncrement. In this way, one may have
 "extra space" in the input data so that there will be no edge effects
 for the output grid. If the filter is low-pass, then the output may be
-less frequently sampled than the input. The **-Q** option is for the error analysis
+less frequently sampled than the input. The |-Q| option is for the error analysis
 mode and expects the input file to contains the filtered depths. Finally, one should know that
 **dimfilter** will not produce a smooth output as other spatial filters
 do because it returns a minimum median out of *N* medians of *N*
@@ -239,14 +239,14 @@ Script Template
 
 The dim.template.sh is a skeleton shell script that can be used to set
 up a complete DiM analysis, including the MAD analysis.  It is obtained
-via the **-L** option.
+via the |-L| option.
 
-Reference
----------
+References
+----------
 
 Kim, S.-S., and Wessel, P. (2008), Directional Median Filtering for
 Regional-Residual Separation of Bathymetry, *Geochem. Geophys.
-Geosyst.*, **9**, Q03005, doi:10.1029/2007GC001850.
+Geosyst.*, **9**, Q03005, https://doi.org/10.1029/2007GC001850.
 
 See Also
 --------

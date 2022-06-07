@@ -1,0 +1,5 @@
+outs:
+- md5: 020add986ddb557c42f68654351670f6.dir
+  size: 1344428
+  nfiles: 12
+  path: grdmath

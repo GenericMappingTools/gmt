@@ -1,7 +1,9 @@
+:orphan:
+
 .. _example_gallery:
 
-Example Gallery
-===============
+Illustration Gallery
+====================
 
 In this section we will be giving numerous examples of typical usage of
 GMT programs. In general, we will start with a raw data set,
