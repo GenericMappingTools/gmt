@@ -5,7 +5,7 @@
 ps=denver.ps
 radius_of_spaceship=100
 gmt makecpt -Cjet -T1000/4000 > t.cpt
-gmt grdcut @earth_relief_30s -R-108/-103/35/40 -Gtopo.nc
+gmt grdcut @earth_relief_30s_p -R-108/-103/35/40 -Gtopo.nc
 gmt grdgradient topo.nc -A225 -Nt1 -Gint.nc
 gmt grdmath -Rint.nc 104.9903W 39.7392N SDIST = r.nc
 gmt grdmath r.nc $radius_of_spaceship LT = inside.nc

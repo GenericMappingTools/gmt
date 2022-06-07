@@ -58,7 +58,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup vcpkg (Windows)
-        uses: dawidd6/action-download-artifact@v2.17.0
+        uses: dawidd6/action-download-artifact@v2.19.0
         with:
           workflow: ci-caches.yml
           name: vcpkg-cache
@@ -73,7 +73,7 @@ jobs:
           bash ci/install-dependencies-${os}.sh
 
       - name: Cache GSHHG and DCW data
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-coastline
         with:
           path: ${{ env.COASTLINEDIR }}
@@ -114,7 +114,7 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Download cached GMT remote data from GitHub Artifacts
-        uses: dawidd6/action-download-artifact@v2.17.0
+        uses: dawidd6/action-download-artifact@v2.19.0
         with:
           workflow: ci-caches.yml
           name: gmt-cache

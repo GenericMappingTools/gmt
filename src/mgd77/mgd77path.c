@@ -113,7 +113,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct GMT_
 
 			case 'P':
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "-P is deprecated; use -A instead mext time.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-P is deprecated; use -A instead the next time.\n");
 					Ctrl->A.active = true;
 					/* Purposfully falling through to catch 'A' instead */
 				}
@@ -124,18 +124,16 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct GMT_
 				/* Intentionally fall through */
 			case 'A':	/* Show list of paths to MGD77 files */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (opt->arg[0] == 'c' || opt->arg[0] == '-') Ctrl->A.mode = true;
 				break;
 
 			case 'D':	/* Show list of directories with MGD77 files */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (Ctrl->I.n < 3) {
 					if (strchr ("acmt", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];

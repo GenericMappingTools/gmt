@@ -138,7 +138,7 @@ Optional Arguments
     the same day, and **d** for distance markers). For each of these you
     can specify the 5 comma-separated attributes *markersize*,
     *markercolor*, *markerfontsize*, *markerfont*, and
-    *markerfontcolor*. Repeat the **-T** option for each marker type.
+    *markerfontcolor*. Repeat the |-T| option for each marker type.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
@@ -194,6 +194,9 @@ References
 
 The Marine Geophysical Data Exchange Format - MGD77, see
 `<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
+
+Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1023/A:1021744224009.
 
 .. module_note_ends
 

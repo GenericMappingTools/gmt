@@ -52,12 +52,12 @@ clipped. Such intensity files can be created from the grid using
 :doc:`grdhisteq`. Alternatively , pass *image* which can be an image
 file (geo-referenced or not).
 In this case the image can optionally be illuminated with the
-file provided via the **-I** option. Here, if image has no coordinates
+file provided via the |-I| option. Here, if image has no coordinates
 then those of the intensity file will be used.
 
 When using map projections, the grid is first resampled on a new
 rectangular grid with the same dimensions. Higher resolution images can
-be obtained by using the **-E** option. To obtain the resampled value
+be obtained by using the |-E| option. To obtain the resampled value
 (and hence shade or color) of each map pixel, its location is inversely
 projected back onto the input grid after which a value is interpolated
 between the surrounding input grid values. By default bi-cubic
@@ -66,7 +66,7 @@ the input grid nodes. If two or more nodes are projected onto the same
 pixel, their average will dominate in the calculation of the pixel
 value. Interpolation and aliasing is controlled with the **-n** option.
 
-The **-R** option can be used to select a map region larger or smaller
+The |-R| option can be used to select a map region larger or smaller
 than that implied by the extent of the grid.
 
 Required Arguments
@@ -111,9 +111,9 @@ Optional Arguments
 **-D**\ [**r**]
     GMT will automatically detect standard image files (Geotiff, TIFF,
     JPG, PNG, GIF, etc.) and will read those via GDAL.  For very
-    obscure image formats you may need to explicitly set **-D**, which
+    obscure image formats you may need to explicitly set |-D|, which
     specifies that the grid is in fact an image file to be read via
-    GDAL. Append **r** to assign the region specified by **-R** to the image.
+    GDAL. Append **r** to assign the region specified by |-R| to the image.
     For example, if you have used **-Rd** then the image will be
     assigned a global domain. This mode allows you to project a raw image
     (an image without referencing coordinates).
@@ -156,7 +156,7 @@ Optional Arguments
 
 **-M**
     Force conversion to monochrome image using the (old-style television) YIQ
-    transformation. Cannot be used with **-Q**.
+    transformation. Cannot be used with |-Q|.
 
 .. _-N:
 
@@ -213,8 +213,6 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
-.. include:: earth_relief.rst_
-
 .. module_common_ends
 
 .. module_note_begins
@@ -240,9 +238,9 @@ be interpolated (i.e., categories 4 and 5 should never be averaged to give
 a new category 4.5).  However, imaging such grids using map projections
 requires a resampling onto an equidistant Cartesian lattice that usually
 will result in such blending.  We do not know if a grid is categorical but
-if the CPT provided via **-C** is categorical we will override any **-n** setting you
+if the CPT provided via |-C| is categorical we will override any **-n** setting you
 have chosen (perhaps implicitly) with **-nn+a** that turns *on* nearest neighbor
-gridding and turns *off* anti-aliasing.  Alternatively, use :doc:`grdview` **-T**
+gridding and turns *off* anti-aliasing.  Alternatively, use :doc:`grdview` |-T|
 instead to plot individual polygons centered on each node.
 
 Image formats recognized

@@ -18,6 +18,7 @@ Synopsis
 [ |-E|\ *limit* ]
 [ |-I|\ **l**\|\ **a**\|\ **c** ]
 [ |-Q|\ **e**\|\ **i** ]
+[ |SYN_OPT-R| ]
 [ |-S|\ **l**\|\ **u**\|\ **h**\ *speed* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *size* ] [ |-Z| ]
@@ -54,7 +55,7 @@ Optional Arguments
 **-A**\ *pairs*
     Only process the pair-combinations found in the file *pairs*
     [Default process all possible combinations among the specified
-    files]. The file *pairs* can be created by :doc:`x2sys_get` **-L** option
+    files]. The file *pairs* can be created by :doc:`x2sys_get` |-L| option
 
 .. _-C:
 
@@ -72,7 +73,7 @@ Optional Arguments
     Control how geographic coordinates are handled (Cartesian data are unaffected).
     By default, we determine if the data are closer to one pole than the other, and
     then we use a cylindrical polar conversion to avoid problems with longitude jumps.
-    You can turn this off entirely with **-D** and then the calculations uses the
+    You can turn this off entirely with |-D| and then the calculations uses the
     original data (we have protections against longitude jumps).  However, you can
     force the selection of the pole for the projection by appending **S** or **N**
     for the south or north pole, respectively.  The conversion is used because the
@@ -163,7 +164,7 @@ fields written out are x, y, time along track #1 and #2, distance along
 track #1 and #2, heading along track #1 and #2, velocity along track #1
 and #2, and then pairs of columns for each selected observable. These
 are either pairs of (COE, average value) for each data type (or
-track-values #1 and #2; see **-Z**). It is recommended that the Akima
+track-values #1 and #2; see |-Z|). It is recommended that the Akima
 spline is used instead of the natural cubic spline, since it is less
 sensitive to outliers that tend to introduce wild oscillations in the
 interpolation.
@@ -187,32 +188,22 @@ Examples
 --------
 
 To compute all internal crossovers in the gmt-formatted file c2104.gmt,
-and using the tag GMT, try
-
-   ::
+and using the tag GMT, try::
 
     gmt x2sys_cross c2104.gmt -TGMT > c2104.txt
 
 To find the crossover locations with bathymetry between the two MGD77
-files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
-
-   ::
+files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try::
 
     gmt x2sys_cross A13232.mgd77 A99938.mgd77 -Qe -TMGD77 > crossovers.txt
 
-References
-----------
-
-Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys
-package. *Computers and Geosciences*, **36**, 348-354.
-
-Wessel, P. (1989), XOVER: A cross-over error detector for track data,
-*Computers and Geosciences*, **15**\ (3), 333-346.
+.. include:: x2sys_refs.rst_
 
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`x2sys_binlist`,
+:doc:`gmt </gmt>`,
+:doc:`x2sys_binlist`,
 :doc:`x2sys_init`,
 :doc:`x2sys_datalist`,
 :doc:`x2sys_get`,

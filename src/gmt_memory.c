@@ -570,7 +570,7 @@ void gmt_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *wh
 #ifdef DEBUG
 		/* Report attempt at freeing unallocated memory only in level GMT_MSG_DEBUG (-V4) */
 		gmtlib_report_func (GMT, GMT_MSG_DEBUG, where,
-				"tried to free unallocated memory\n");
+				"FYI: gmt_M_free given a NULL pointer - ignored\n");
 #endif
 		return; /* Do not free a NULL pointer, although allowed */
 	}

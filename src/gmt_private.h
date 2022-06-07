@@ -214,6 +214,8 @@ struct GMTAPI_CTRL {
 	struct GMT_DATA_INFO *remote_info;
 	bool server_announced;	/* Set to true after we have announced which GMT data server we are using */
 	struct GMT_COMMON *common_snapshot;	/* Holds the latest GMT common option settings after a module completes. */
+	bool inset_shrink;	/* True if gmt inset gets a -R -J that forces us to shrink the scale to fit the inset size */
+	double inset_shrink_scale;	/* The amount of shrinking.  Reset to false and 1 in gmt inset end */
 };
 
 /* Macro to test if filename is a special name indicating memory location */
@@ -224,6 +226,8 @@ struct GMTAPI_CTRL {
 #define GMTAPI_OBJECT_FAMILY_START 15U	/* Start position of the encoded actual family in the virtual filename */
 #define GMTAPI_OBJECT_ID_START 21U		/* Start position of the encoded object ID in the virtual filename */
 #define gmt_M_file_is_memory(file) (file && !strncmp (file, "@GMTAPI@-", GMTAPI_PREFIX_LEN) && strlen (file) == GMTAPI_MEMFILE_LEN)
+#define gmt_M_memfile_is_grid(file) (gmt_M_file_is_memory(file) && file[GMTAPI_OBJECT_FAMILY_START] == 'G')
+#define gmt_M_memfile_is_cube(file) (gmt_M_file_is_memory(file) && file[GMTAPI_OBJECT_FAMILY_START] == 'U')
 
 #ifdef __cplusplus
 }

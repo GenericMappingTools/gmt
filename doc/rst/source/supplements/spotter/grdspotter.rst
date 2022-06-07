@@ -98,11 +98,11 @@ Optional Arguments
 .. _-M:
 
 **-M**
-    Do not attempt to keep all flowlines in memory when using **-D**
-    and/or **-P**. Should you run out of memory you can use this option
+    Do not attempt to keep all flowlines in memory when using |-D|
+    and/or |-P|. Should you run out of memory you can use this option
     to compute flowlines on-the-fly. It will be slower as we no longer
     can reuse the flowlines calculated for the CVA step. Cannot be used
-    with **-W** or the multi-slice mode in **-Z**.
+    with |-W| or the multi-slice mode in |-Z|.
 
 .. _-N:
 
@@ -118,7 +118,7 @@ Optional Arguments
     [Default uses all IDs]. Each line would be TAG ID [w e s n]. The
     *w/e/s/n* zoom box is optional; if specified it means we only trace
     the flowline if inside this region [Default uses region set by
-    **-R**]. Requires **-L**.
+    |-R|]. Requires |-L|.
 
 .. _-S:
 
@@ -146,7 +146,7 @@ Optional Arguments
 **-W**\ *n\_try*
     Get *n\_try* bootstrap estimates of the maximum CVA location; the
     longitude and latitude results are written to standard output [Default is no
-    bootstrapping]. Cannot be used with **-M**.
+    bootstrapping]. Cannot be used with |-M|.
 
 .. _-Z:
 
@@ -154,7 +154,7 @@ Optional Arguments
     Ignore nodes with z-values lower than *z_min* [0] and optionally
     larger than *z_max* [Inf]. Give *z_min/z_max/z_inc* to make
     separate CVA grids for each *z*-slice [Default makes one CVA grid].
-    Multi-slicing cannot be used with **-M**.
+    Multi-slicing cannot be used with |-M|.
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_
@@ -204,4 +204,4 @@ Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 
 Wessel, P., 2008, Hotspotting: Principles and properties of a plate
 tectonic Hough transform, Geochem. Geophys. Geosyst. 9(Q08004):
-doi:10.1029/2008GC002058.
+https://doi.org/10.1029/2008GC002058.

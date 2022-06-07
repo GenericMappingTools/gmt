@@ -62,7 +62,7 @@ Required Arguments (begin mode)
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
-    Specify inset box attributes via the **-F** option [outline only].
+    Specify inset box attributes via the |-F| option [outline only].
 
 Optional Arguments (begin mode)
 -------------------------------

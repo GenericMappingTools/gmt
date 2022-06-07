@@ -9,7 +9,7 @@
 [![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
 [![Documentation (development version)](https://img.shields.io/badge/docs-development-green.svg)](http://docs.generic-mapping-tools.org/dev/)
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5708769.svg)](https://doi.org/10.5281/zenodo.5708769)
 
 ## What is GMT?
@@ -117,7 +117,7 @@ GMT uses (or can access) raster data derived from these sources:
 - [Earth 15" GEBCO DEM](https://www.gebco.net/data_and_products/gridded_bathymetry_data/)
 - [Earth 1" SRTM DEM](https://lpdaac.usgs.gov/products/srtmgl3v003)
 - [Earth 15" GSHHG land/sea masks](http://www.soest.hawaii.edu/pwessel/)
-- [Earth 1' crustal age](http://dx.doi.org/10.1029/2020GC009214)
+- [Earth 1' crustal age](https://doi.org/10.1029/2020GC009214)
 - [Earth 30" Blue Marble images](https://visibleearth.nasa.gov/images/57752/blue-marble-land-surface-shallow-water-and-shaded-topography)
 - [Earth 30" Black Marble images](https://earthobservatory.nasa.gov/features/NightLights/page3.php)
 - [Earth 1' EGM2008 Geoid Anomalies](https://earth-info.nga.mil)

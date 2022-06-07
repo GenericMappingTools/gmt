@@ -52,7 +52,7 @@ orientation. Various map projections are provided, with the option to
 draw and annotate the map boundaries.
 
 Greek characters, subscript, superscript, and small
-caps are supported as follows: 
+caps are supported as follows:
 
 .. list-table::
    :widths: 20 80
@@ -66,7 +66,7 @@ caps are supported as follows:
      - Switches to *font* where *font* can either be a font *number* or *name* (see |-L|) (@%% resets it)
    * - @-
      - Toggles subscripts on/off
-   * - @+ 
+   * - @+
      - Toggles superscript on/off
    * - @#
      - Toggles small caps on/off
@@ -74,7 +74,7 @@ caps are supported as follows:
      - Changes the font color (@;; resets it)
    * - @:\ *size*
      - Changes the font size (@:: resets it)
-   * - @\_ 
+   * - @\_
      - Toggles underline on/off
    * - @@
      - Prints the @ sign
@@ -85,16 +85,16 @@ caps are supported as follows:
 characters, as indicated in Table :ref:`escape <tbl-shorthand>`. Composite characters
 (overstrike) may be indicated with the @!<char1><char2> sequence, which will print the
 two characters on top of each other.
-  
+
 To learn the octal codes for symbols not available on the
 keyboard and some accented European characters, see Section :ref:`Char-esc-seq` and
 Appendix :ref:`Chart-Octal-Codes-for-Chars` in the GMT Technical Reference and Cookbook. Note that
 :term:`PS_CHAR_ENCODING` must be set to an extended character set in your
 :doc:`gmt.conf` file in order to use the accented characters.
 
-Using the **-G** or **-W** options, a rectangle underlying the text may be plotted
+Using the |-G| or |-W| options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
-characters, except in paragraph mode (**-M**)).
+characters, except in paragraph mode (|-M|)).
 
 Finally, you may typeset LaTeX expressions provided they are enclosed in @[ ... @[ or <math> ... </math>;
 see Chapter :doc:`/cookbook/gmt-latex` for more details.
@@ -105,7 +105,7 @@ Required Arguments
 *textfiles*
     This is one or more files containing 1 or more records with (*x*
     *y* [*font* *angle* *justify*] *text*). The presence or absence of
-    items in the brackets are determined by **-F**. If no files
+    items in the brackets are determined by |-F|. If no files
     are given, **text** will read standard input. *font* is a font
     specification with format [*size*,][*font*,][*color*] where
     *size* is text size in points, *font* is the font to use, and
@@ -113,11 +113,11 @@ Required Arguments
     =\ *pen* to the font specification. The *angle* is measured in degrees
     counter-clockwise from horizontal, and *justify* sets the alignment.
     If *font* is not an integer, then it is taken to be a text string
-    with the desired font name (see **-L** for available fonts). The
+    with the desired font name (see |-L| for available fonts). The
     alignment refers to the part of the text string that will be mapped
-    onto the (*x*,\ *y*) point. Choose a 2 character combination of L,
-    C, R (for left, center, or right) and T, M, B for top, middle, or
-    bottom. e.g., BL for lower left.
+    onto the (*x*,\ *y*) point. Choose a 2 character combination of **L**,
+    **C**, **R** (for left, center, or right) and **T**, **M**, **B**
+    for top, middle, or bottom. e.g., **BL** for bottom left.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -150,13 +150,13 @@ Optional Arguments
 
 **-C**\ [*dx/dy*][**+to**\|\ **O**\|\ **c**\|\ **C**]
     Adjust the clearance between the text and the surrounding box [15%].
-    Only used if **-W** or **-G** are specified. Append the unit you
+    Only used if |-W| or |-G| are specified. Append the unit you
     want (**c**\ m, **i**\ nch, or **p**\ oint; if not given we consult
     :term:`PROJ_LENGTH_UNIT`) or % for a percentage of the font size.
-    Optionally, use modifier **+t** to set the shape of the textbox when using **-G** and/or **-W**.
+    Optionally, use modifier **+t** to set the shape of the textbox when using |-G| and/or |-W|.
     Append lower case **o** to get a straight rectangle [Default].
     Append upper case **O** to get a rounded rectangle. In paragraph
-    mode (**-M**) you can also append lower case **c** to get a concave
+    mode (|-M|) you can also append lower case **c** to get a concave
     rectangle or append upper case **C** to get a convex rectangle.
 
 .. _-D:
@@ -174,10 +174,10 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **l**\|\ **r**\ [*first*] \|\ **t**\ *text*\|\ **z**\ [*format*]]
+**-F**\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **l**\|\ **r**\ [*first*]\|\ **t**\ *text*\|\ **z**\ [*format*]]
     By default, text will be placed horizontally, using the primary
     annotation font attributes (:term:`FONT_ANNOT_PRIMARY`), and centered
-    on the data point. Use **-F** to override these defaults by
+    on the data point. Use |-F| to override these defaults by
     specifying up to three text attributes (font, angle, and
     justification) directly on the command line. Use modifier **+f** to set the
     font ([*size*][,\ *fontname*][,\ *color*]); if no font info is given then the input
@@ -187,20 +187,20 @@ Optional Arguments
     to convert into the -90/+90 range.  Use **+j** to set the justification; if no
     justification is given then the input file must have this item as a
     column. Items read from the data file should be in the same order as
-    the modifiers are specified with the **-F** option. Example:
+    the modifiers are specified with the |-F| option. Example:
     **-F**\ **+f**\ 12p,Helvetica-Bold,red\ **+j+a** selects a 12p red
     Helvetica-Bold font and expects to read the justification and angle
     from the file, in that order, after *x* *y* and before *text*.
-    In addition, the **+c** justification lets us use *x,y* coordinates extracted from the
-    **-R** string instead of providing them in the input file. For example **-F+c**\ TL
-    gets the *x_min*, *y_max* from the **-R** string and plots the text
+    In addition, the **+c**\ *justification* lets us use *x,y* coordinates extracted from the
+    |-R| string instead of providing them in the input file. For example **-F+c**\ TL
+    gets the *x_min*, *y_max* from the |-R| string and plots the text
     at the Upper Left corner of the map.  Normally, the text to be plotted
     comes from the data record.  Instead, use **+h** or **+l** to select the
     text as the most recent segment header or segment label, respectively in
     a multisegment input file, **+r** to use the record number (counting up from *first*),
     **+t**\ *text* to set a fixed text string (if *text* contains plus characters then the
-    **+t** modifier must be the last modifier in **-F**), or **+z** to format incoming *z* values
-    to a string using the supplied *format* [use :term:`FORMAT_FLOAT_MAP`].  **Note**: If **-Z** is
+    **+t** modifier must be the last modifier in |-F|), or **+z** to format incoming *z* values
+    to a string using the supplied *format* [use :term:`FORMAT_FLOAT_MAP`].  **Note**: If |-Z| is
     in effect then the *z* value used for formatting is in the 4th, not 3rd column.
     If you only want a specific word from the trailing text and not the whole line,
     use **-it**\ *word* to indicate which word (0 is the first word) you want.
@@ -210,8 +210,8 @@ Optional Arguments
 **-G**\ [*fill*][**+n**]
     Sets the shade or color used for filling the text box [Default is no
     fill]. Alternatively, give no *fill* to plot text and then use the
-    text dimensions (and **-C**) to build clip paths and turn clipping on.
-    This clipping can then be turned off later with :doc:`clip` **-C**.
+    text dimensions (and |-C|) to build clip paths and turn clipping on.
+    This clipping can then be turned off later with :doc:`clip` |-C|.
     To **not** plot the text but activate clipping, use **-G+n** instead.
     **Note**: cannot be used with LaTeX expressions.
 
@@ -230,7 +230,7 @@ Optional Arguments
     remaining lines until next segment header). The information expected
     is (*x y* [*font angle justify*] *linespace parwidth parjust*),
     where *x y font angle justify* are defined above (the presence or
-    absence of *font*, *angle*, and *justify* are determined by **-F**), while *linespace* and
+    absence of *font*, *angle*, and *justify* are determined by |-F|), while *linespace* and
     *parwidth* are the linespacing and paragraph width, respectively.
     The justification of the text paragraph is governed by *parjust*
     which may be **l**\ (eft), **c**\ (enter), **r**\ (ight), or
@@ -273,7 +273,7 @@ Optional Arguments
 
 **-W**\ *pen*
     Sets the pen used to draw a rectangle around the text string (see
-    **-C**) [Default is width = default, color = black, style = solid].
+    |-C|) [Default is width = default, color = black, style = solid].
     **Note**: cannot be used with LaTeX expressions.
 
 .. |Add_-XY| replace:: |Add_-XY_links|
@@ -285,7 +285,7 @@ Optional Arguments
 
 **-Z**
     For 3-D projections: expect each item to have its own level given in
-    the 3rd column, and **-N** is implicitly set. (Not implemented for
+    the 3rd column, and |-N| is implicitly set. (Not implemented for
     paragraph mode).  **Note**: If **-F+z** is used then the text level
     is based on the 4th data column instead.
 

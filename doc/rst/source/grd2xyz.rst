@@ -39,7 +39,7 @@ precision of the ASCII output format by editing the
 :term:`FORMAT_FLOAT_OUT` parameter in your :doc:`gmt.conf` file or use
 **--FORMAT_FLOAT_OUT**\ =\ *format* on the command line, or choose binary
 output using single or double precision storage. As an option you may
-output z-values without the (x,y) coordinates (see **-Z** below) or you can
+output z-values without the (x,y) coordinates (see |-Z| below) or you can
 save the grid in the STL format for 3-D printers.
 
 Required Arguments
@@ -71,7 +71,7 @@ Optional Arguments
     the valid range then no output will result and a warning is issued.  **Note**: For
     directives **x** and **y** we find the nearest column or row, respectively.
 
-.. |Add_-R| replace:: Using the **-R** option will select a subsection of the grid. If this subsection exceeds the
+.. |Add_-R| replace:: Using the |-R| option will select a subsection of the grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be output. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -147,7 +147,7 @@ Optional Arguments
     Default format is scanline orientation of ASCII numbers: **-ZTLa**.
 
 .. |Add_-bo| replace:: [Default is 3]. This option
-    only applies to xyz output; see **-Z** for z table output.
+    only applies to xyz output; see |-Z| for z table output.
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code

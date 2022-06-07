@@ -41,7 +41,7 @@ viewing level in the quadtree using a Gaussian filter, but other
 filters can be selected as well.
 Optionally, illumination may be added by providing a grid file with
 intensities in the (-1,+1) range or by giving instructions to derive intensities
-from the input data grid automatically (see **-I**). Values outside the (-1,+1) intensity range will be
+from the input data grid automatically (see |-I|). Values outside the (-1,+1) intensity range will be
 clipped. Map colors are specified via a color palette lookup table. Contour overlays are optional.
 If plain tiles are selected (i.e., no contours specified) then the PNG tiles are written directly from
 :doc:`grdimage`. Otherwise, we must first make a PostScript plot that is then converted to raster image via
@@ -104,8 +104,8 @@ Optional Arguments
 
 **-H**\ *scale*
     Improve the quality of rasterization by passing the sub-pixel smoothing scale
-    to psconvert (same as **-H** option in :doc:`psconvert`) [no sub-pixel smoothing].
-    Ignored when **-W** is not used.
+    to psconvert (same as |-H| option in :doc:`psconvert`) [no sub-pixel smoothing].
+    Ignored when |-W| is not used.
 
 .. _-I:
 
@@ -126,7 +126,7 @@ Optional Arguments
     Sets the fixed size of the image building blocks.  Must be an integer that
     is radix 2.  Typical values are 256 or 512 [256].  **Note**: For global
     grids (here meaning 360-degree longitude range), we will select a
-    *tilesize* of 360 if **-L** is not specified.
+    *tilesize* of 360 if |-L| is not specified.
 
 .. _-S:
 
@@ -151,9 +151,9 @@ Optional Arguments
 **-W**\ *cfile*\|\ *pen*\ [**+s**\ *scale*/*limit*]
     Supply a file with records each holding a contour value and a contour pen.
     We then overlay the selected contour lines on top of the image [no contours].
-    Consequently, **-W** triggers the tile creation via PostScript and thus is slower.
+    Consequently, |-W| triggers the tile creation via PostScript and thus is slower.
     If *cfile* is not a valid file we assume you instead gave a *pen* and want
-    to draw all the contours implied by the *cpt* specified in **-C**.  The contours
+    to draw all the contours implied by the *cpt* specified in |-C|.  The contours
     are overlain via calls to :doc:`grdcontour`.  **Note**: The contour pen width(s)
     refer to the highest tile level and are reduced by a factor of *scale* [sqrt(2)] for each
     lower level.  Contours with scaled pen widths < *limit* [0.1] points are skipped (except
@@ -189,7 +189,7 @@ Because each tile is a fixed size image (e.g., 512x512 pixels) but the amount of
 changes by factors of 4 for each new level, we cannot use a constant thickness contour pen for all
 levels.  Thus, the pen you supply must be considered the final pen applied to the highest resolution
 map overlays.  Furthermore, because the *dpi* here is very small compared to regular GMT plots, it is
-important to improve the appearance of the contours by using sub-pixel smoothing (**-H**). Both
+important to improve the appearance of the contours by using sub-pixel smoothing (|-H|). Both
 generating PostScript tiles and using sub-pixel smoothing adds considerable processing time over
 plain tiles.
 

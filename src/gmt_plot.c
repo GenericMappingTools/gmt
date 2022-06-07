@@ -3290,7 +3290,7 @@ GMT_LOCAL void gmtplot_northstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 #define TITLE_SCL	0.125	/* Title Font size is this fraction of rose size */
 #define LBL_SCL		0.07	/* Label Font size is this fraction of rose size */
 #define TITLE_OFF	0.2		/* Title offset is this fraction of rose size */
-#define SIZE_THRESHOLD	0.984251968504	/* Compass smaller than 2.5cm gets changed annotation intervals */
+#define SIZE_THRESHOLD	0.984251968504	/* Compass smaller than 2.5 cm gets changed annotation intervals */
 
 GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_MAP_ROSE *mr) {
 	/* Magnetic compass rose */
@@ -3299,7 +3299,7 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	int hh = mr->justify % 4 - 2, vv = mr->justify / 4 - 1;	/* Horizontal and vertical shift indicators */
 	double ew_angle, angle, R[2], tlen[3], L, s, c, lon, lat, x[5], y[5], xp[5], yp[5];
 	double offset, t_angle, scale[2], base, v_angle, *val = NULL, dim[PSL_MAX_DIMS];
-	double font_size[2], off[2], txt_offset, title_size, lbl_size;
+	double font_size[2], off[2], txt_offset, title_size, lbl_size, factor = (mr->do_label) ? 1.0 : 0.0;
 	char label[GMT_LEN16], *type[2] = {"inner", "outer"}, *T_label = NULL;
 
 	struct GMT_FILL f;
@@ -3336,24 +3336,24 @@ GMT_LOCAL void gmtplot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	scale[GMT_ROSE_SECONDARY] = 1.0;
 	GMT->current.plot.r_theta_annot = false;	/* Just in case it was turned on in gmt_map.c */
 
-	mr->refpoint->x -= hh * (font_size[1] / 72.0 + off[1] + 2.0 * tlen[2]);	/* Any horizontal shifts we know exactly */
-	mr->refpoint->y -= vv * (font_size[1] / 72.0 + off[1] + 2.0 * tlen[2]);	/* Any vectical shifts we know exactly */
+	mr->refpoint->x -= hh * (font_size[1] / 72.0 + off[1] + factor * tlen[2]);	/* Any horizontal shifts we know exactly */
+	mr->refpoint->y -= vv * (font_size[1] / 72.0 + off[1] + factor * tlen[2]);	/* Any vertical shifts we know exactly */
 
 	PSL_settextmode (PSL, PSL_TXTMODE_MINUS);	/* Replace hyphens with minus signs */
 
 	PSL_command (PSL, "V\n");	/* Place the rose under gsave/grestore */
 
-	if (hh) {	/* We need horizontal adjustments. Do label offset here and adjust for text size in PSL */
+	if (hh && mr->do_label) {	/* We need horizontal adjustments. Do label offset here and adjust for text size in PSL */
 		T_label = (hh == -1) ? mr->label[3] : mr->label[1];	/* Get the W or E text label */
-		if (T_label) {	/* Get width of label and use it to shift origin left or right */
+		if (T_label[0]) {	/* Get width of label and use it to shift origin left or right */
 			mr->refpoint->x -= hh * txt_offset;	/* Any horizontal shifts we know exactly */
 			PSL_deftextdim (PSL, "-w", title_size, T_label);	/* Get label width and place on PSL stack */
 			PSL_command (PSL, "%d mul 0 T\n", -hh);	/* Multiply by +1 or -1 and transform x-origin by that amount */
 		}
 	}
-	if (vv) {	/* We need vertical adjustments. Do label offset here and adjust for text size in PSL */
+	if (vv && mr->do_label) {	/* We need vertical adjustments. Do label offset here and adjust for text size in PSL */
 		T_label = (vv == -1) ? mr->label[0] : mr->label[2];	/* Get the S or N text label */
-		if (T_label) {	/* Get height of string and use it to shift origin up or down */
+		if (T_label[0]) {	/* Get height of string and use it to shift origin up or down */
 			mr->refpoint->y -= vv * txt_offset;	/* Any horizontal shifts we know exactly */
 			PSL_deftextdim (PSL, "-H", title_size, T_label);	/* Get label height and place on PSL stack */
 			PSL_command (PSL, "%d mul 0 exch T\n", -vv);	/* Multiply by +1 or -1 and transform y-origin by that amount */
@@ -3551,7 +3551,7 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 			char *T_label = NULL;
 			if (hh) {	/* We need horizontal adjustments. Do label offset here and adjust for text size in PSL */
 				T_label = (hh == -1) ? mr->label[3] : mr->label[1];	/* Get the W or E text label */
-				if (T_label) {	/* Get width of label and use it to shift origin left or right */
+				if (T_label[0]) {	/* Get width of label and use it to shift origin left or right */
 					mr->refpoint->x -= hh * txt_offset;	/* Any horizontal shifts we know exactly */
 					PSL_deftextdim (PSL, "-w", title_size, T_label);	/* Get label width and place on PSL stack */
 					PSL_command (PSL, "%d mul 0 T\n", -hh);	/* Multiply by +1 or -1 and transform x-origin by that amount */
@@ -3559,7 +3559,7 @@ GMT_LOCAL void gmtplot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 			}
 			if (vv) {	/* We need vertical adjustments. Do label offset here and adjust for text size in PSL */
 				T_label = (vv == -1) ? mr->label[0] : mr->label[2];	/* Get the S or N text label */
-				if (T_label) {	/* Get height of string and use it to shift origin up or down */
+				if (T_label[0]) {	/* Get height of string and use it to shift origin up or down */
 					mr->refpoint->y -= vv * txt_offset;	/* Any horizontal shifts we know exactly */
 					PSL_deftextdim (PSL, "-H", title_size, T_label);	/* Get label height and place on PSL stack */
 					PSL_command (PSL, "%d mul 0 exch T\n", -vv);	/* Multiply by +1 or -1 and transform y-origin by that amount */
@@ -3826,8 +3826,13 @@ GMT_LOCAL int gmtplot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_
 }
 
 GMT_LOCAL void gmtplot_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, int outline, bool *flush) {
-	int draw_outline = (outline && p->rgb[0] != -1) ? 1 : 0;
+	/* Finishes drawing a line or polygon that has been building, then resets flush and n */
+	int draw_outline;
 
+	*flush = false;         /* We are flushing it now... */
+	if (*n == 0) return;    /* ...but there was nothing to flush */
+
+	draw_outline = (outline && p->rgb[0] != -1) ? 1 : 0;
 	if (draw_outline) gmt_setpen (GMT, p);
 	if (outline == 2) {	/* Stroke path only */
 		PSL_plotline (PSL, x, y, (int)*n, PSL_MOVE|PSL_STROKE);
@@ -3836,8 +3841,7 @@ GMT_LOCAL void gmtplot_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL
 		gmt_setfill (GMT, f, draw_outline);
 		PSL_plotpolygon (PSL, x, y, (int)*n);
 	}
-	*flush = false;
-	*n = 0;
+	*n = 0;    /* Done with this array */
 }
 
 GMT_LOCAL void gmtplot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], char *text) {
@@ -7258,7 +7262,8 @@ void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {
 	}
 	if (GMT->current.setting.map_embellishment_mode && ((mr->mode & GMT_ROSE_OFF_SET) == 0)) {   /* Now compute reasonable offsets */
 		int psize = irint (mr->size * 0.01 * GMT_EMBELLISHMENT_OFFSET * 72.0);	/* 10% of size in points rounded to nearest point */
-		mr->off[GMT_X] = mr->off[GMT_Y] = psize / 72.0;	/* Back to inches */
+		mr->off[GMT_X] = abs (mr->justify%4 - 2) * (psize / 72.0); /* Back to inches - and zero if centered in x */
+		mr->off[GMT_Y] = abs (mr->justify/4 - 1) * (psize / 72.0); /* Back to inches - and zero if centered in y */
 		mr->mode -= GMT_ROSE_OFF_SET;
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Map rose margin default to %d pt\n", psize);
 	}
@@ -7521,7 +7526,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 		switch (action) {
 			case GMT_SYMBOL_MOVE:	/* Flush existing polygon and start a new path */
 				if (flush) gmtplot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
-				n = 0;
+				n = 0;	/* Start of a new line or polygon */
 				if (n >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 				xx[n] = x, yy[n] = y, n++;
 				gmtplot_get_the_pen (&p, s, current_pen, current_fill);
@@ -7531,7 +7536,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 			case GMT_SYMBOL_STROKE:	/* To force the drawing of a line (outline == 2), not a closed polygon */
 				if (flush) gmtplot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, 2, &flush);
-				n = 0;
+				n = 0;	/* After Stroke we reset to no points */
 				break;
 
 			case GMT_SYMBOL_DRAW:	/* Append another point to the path */
@@ -8897,9 +8902,12 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				}
 			}
 			if ((GMT->current.map.width > GMT->current.map.height) && (((GMT->current.map.width + GMT->current.setting.map_origin[GMT_X]) * 72) > media_size[GMT_X]) && GMT->current.setting.ps_orientation == PSL_PORTRAIT) {
-				GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Changing to PostScript landscape orientation based on your plot and paper dimensions, but we cannot be 100%% sure.\n");
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Use PS_MEDIA and/or PS_PAGE_ORIENTATION to specify correct paper dimensions and/or orientation if our guesses are inadequate.\n");
+				char *env = getenv ("GMT_MOVIE");	/* Are we building a movie right now? */
+				if (env == NULL || strcmp (env, "YES")) {      /* Not building a movie, do the change */
+					GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Changing to PostScript landscape orientation based on your plot and paper dimensions, but we cannot be 100%% sure.\n");
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Use PS_MEDIA and/or PS_PAGE_ORIENTATION to specify correct paper dimensions and/or orientation if our guesses are inadequate.\n");
+				}
 			}
 		}
 		else if (!O_active) {	/* Not desiring PS output so we can add safety margin of paper_margin inches for initial layer unless PS_MEDIA was set */
@@ -9093,7 +9101,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		else 	/* Place both fill and stroke transparencies in 0-1 normalized range, plus the blend mode name */
 			PSL_command (PSL, "%.12g %.12g /%s PSL_transp\n", 1.0 - 0.01 * GMT->common.t.value[GMT_FILL_TRANSP], 1.0 - 0.01 * GMT->common.t.value[GMT_PEN_TRANSP], GMT->current.setting.ps_transpmode);
 	}
-	/* If requested, place the timestamp */
+	/* If requested, place the timestamp (text set here but plotting happens in gmt_plotend) */
 
 	if (GMT->current.ps.logo_cmd) {
 		char txt[4] = {' ', '-', 'X', 0}, not_used[GMT_LEN32] = {""};
@@ -9114,8 +9122,6 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		}
 		GMT->current.ps.logo_cmd = false;	/* Mission accomplished */
 	}
-	if (GMT->current.setting.map_logo)
-		gmtplot_timestamp (GMT, PSL, GMT->current.setting.map_logo_pos[GMT_X], GMT->current.setting.map_logo_pos[GMT_Y], GMT->current.setting.map_logo_justify, GMT->current.ps.map_logo_label);
 
 	PSL_settransparencymode (PSL, GMT->current.setting.ps_transpmode);	/* Set PDF transparency mode, if used */
 	/* Enforce chosen line parameters */
@@ -9423,6 +9429,9 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		PSL_setorigin (PSL, x0, y0, -GMT->common.p.z_rotation, PSL_FWD);
 		PSL_setorigin (PSL, -x0, -y0, 0.0, PSL_FWD);
 	}
+
+	if (GMT->current.setting.map_logo)
+		gmtplot_timestamp (GMT, PSL, GMT->current.setting.map_logo_pos[GMT_X], GMT->current.setting.map_logo_pos[GMT_Y], GMT->current.setting.map_logo_justify, GMT->current.ps.map_logo_label);
 
 	/* Check expected change of clip level to achieved one. Update overall clip level. Check for pending clips. */
 

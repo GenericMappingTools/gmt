@@ -42,7 +42,7 @@ Description
 
 **makecpt** is a module that will help you make static color palette tables
 (CPTs). In classic mode we write the CPT to standard output, while under
-modern mode we simply save the CPT as the current session CPT (but see **-H**).
+modern mode we simply save the CPT as the current session CPT (but see |-H|).
 You define an equidistant set of contour intervals or pass
 your own z-table or list, and create a new CPT based on an existing master (dynamic)
 CPT. The resulting CPT can be reversed relative to the master
@@ -61,7 +61,7 @@ copied into the new master file. If not, the parameters
 :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
 and :term:`COLOR_NAN` from
 the :doc:`gmt.conf` file or the command line will be used. This default
-behavior can be overruled using the options **-D**, **-M** or **-N**.
+behavior can be overruled using the options |-D|, |-M| or |-N|.
 
 The color model (RGB, HSV or CMYK) of the palette created by **makecpt**
 will be the same as specified in the header of the master CPT. When
@@ -92,7 +92,7 @@ Optional Arguments
 
 **-D**\ [**i**\|\ **o**]
     Select the back- and foreground colors to match the colors for
-    lowest and highest *z*-values in the output CPT [Default (**-D** or **-Do**)
+    lowest and highest *z*-values in the output CPT [Default (|-D| or **-Do**)
     uses the colors specified in the master file, or those defined by the
     parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
     :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and
@@ -104,7 +104,7 @@ Optional Arguments
     Implies reading data table(s) from given command-line files or standard input.
     We use the last data column to determine the data range; use **-i** to
     select another column, and use **-bi** if your data table is native binary.
-    This z-range information is used instead of providing the **-T** option.
+    This z-range information is used instead of providing the |-T| option.
     We create a linear color table by dividing the table data z-range into
     *nlevels* equidistant slices.  If *nlevels* is not given it defaults to
     the number of levels in the chosen CPT.
@@ -125,7 +125,7 @@ Optional Arguments
     keys instead of numerical entries then append **+k**\ *keys*, where
     *keys* is either a file with one key per record or a single letter (e.g., D),
     then we build sequential letter keys (e.g., D, E, F, ...) starting at that point.
-    For comma-separated lists of keys, use **-T** instead.  **Note**: If **+cM** is given and the number
+    For comma-separated lists of keys, use |-T| instead.  **Note**: If **+cM** is given and the number
     of categories is 12, then we automatically create a list of month names.
     Likewise, if **+cD** is given and the number of categories is 7 then we
     make a list of weekday names.  The format of these labels will depend on the
@@ -155,7 +155,7 @@ Optional Arguments
     specified by the parameters :term:`COLOR_BACKGROUND` and
     :term:`COLOR_FOREGROUND`.
     Append **z** to reverse the sign of z-values in the color table.  Note that
-    this change of *z*-direction happens before **-G** and **-T** values are used
+    this change of *z*-direction happens before |-G| and |-T| values are used
     so the latter much be compatible with the changed *z*-range.
     See also :ref:`manipulating_CPTs`
 
@@ -167,7 +167,7 @@ Optional Arguments
     :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
     and :term:`COLOR_NAN`
     specified in the :doc:`gmt.conf` file or on the command line. When
-    combined with **-D**, only :term:`COLOR_NAN` is considered.
+    combined with |-D|, only :term:`COLOR_NAN` is considered.
 
 .. _-N:
 
@@ -178,13 +178,13 @@ Optional Arguments
 
 **-Q**
     For logarithmic interpolation scheme with input given as logarithms.
-    Expects input z-values provided via **-T** to be log10(*z*\ ), assigns colors, and
+    Expects input z-values provided via |-T| to be log10(*z*\ ), assigns colors, and
     writes out *z*.
 
 .. _-S:
 
 **-S**\ *mode*
-    Determine a suitable range for the **-T** option from the input table(s) (or standard input).
+    Determine a suitable range for the |-T| option from the input table(s) (or standard input).
     Choose from several types of range determinations:
     **-Sr** will use the data range min/max, **-S**\ *inc*\ [**+d**] will use the data min/max but rounded
     to nearest *inc* (append **+d** to resample to a discrete CPT), **-Sa**\ *scl* will
@@ -199,7 +199,7 @@ Optional Arguments
 
 **-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **i**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
     Defines the range of the new CPT by giving the lowest and
-    highest z-value (and optionally an interval).  If **-T** is
+    highest z-value (and optionally an interval).  If |-T| is
     not given, the existing range in the master CPT will be used intact.
     The values produces defines the color slice boundaries.  If **+n** is
     used it refers to the number of such boundaries and not the number of slices.
@@ -264,7 +264,7 @@ Discrete versus Continuous CPT
 ------------------------------
 
 All CPTs can be stretched, but only continuous CPTs can be sampled
-at new nodes (i.e., by given an increment in **-T**).  We impose this
+at new nodes (i.e., by given an increment in |-T|).  We impose this
 limitation to avoid aliasing the original CPT.
 
 Examples
@@ -344,16 +344,6 @@ To make a categorical CPT with string keys instead of numerical lookup values, t
     gmt makecpt -Ccategorical -Twood,water,gold 
 
 .. include:: cpt_notes.rst_
-
-Bugs
-----
-
-Since **makecpt** will also interpolate from any existing CPT you
-may have in your directory, you should not use one of the listed cpt names
-as an output filename; hence the my_gebco.cpt in the example.  If you
-do create a CPT of such a name, e.g., rainbow.cpt, then **makecpt** will
-read that file first and not look for the master CPT in the shared GMT
-directory.
 
 See Also
 --------

@@ -1,3 +1,5 @@
+:orphan:
+
 Contributors Guide
 ==================
 
@@ -345,7 +347,7 @@ Setting up your local environment for dvc
 #. If you will need to push baseline images to the remote, ask a GMT maintainer to add you as a collaborator on
    `DAGsHub <https://dagshub.com/GenericMappingTools/gmt>`_.
 #. If you will need to push baseline imaged to the remote, set up
-   `authentication for the DVC remote <https://dagshub.com/docs/reference/dagshub_storage/#pushing-files-or-using-a-private-repo>`_.
+   `authentication for the DVC remote <https://dagshub.com/docs/feature_guide/dagshub_storage/#pushing-files-or-using-a-private-repo>`_.
 
 Pulling files from the remote for testing
 *****************************************
@@ -423,7 +425,7 @@ using the following steps:
   ``build/doc/examples/`` to ``test/baseline/<module>``, ``doc/scripts/images/``, or ``doc/examples/images/`` respectively.
 - Run the tests to ensure that the failing tests now pass.
 - Run ``dvc diff`` to check that modified files are in the correct directory.
-- Add the modified images to dvc using ``dvc add test/baseline/<module>``, ``dvc add doc/scripts/images``, or ``dvc add doc/scripts/examples``
+- Add the modified images to dvc using ``dvc add test/baseline/<module>``, ``dvc add doc/scripts/images``, or ``dvc add doc/examples/images``
   depending on the type of test modified.
 - Check that the .dvc file was updated by running ``git status``.
 - Stage the modified .dvc file in git using ``git add test/baseline/<module>.dvc``, ``dvc add doc/scripts/images.dvc``, or

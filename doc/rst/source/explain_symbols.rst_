@@ -16,7 +16,7 @@
     *coordinates* [ *value* ] [ *parameters* ] [ *symbol* ]
 
     where *coordinates* is two or three columns specifying the location of a point,
-    the optional *value* is required when **-C** is used to control color, the optional
+    the optional *value* is required when |-C| is used to control color, the optional
     *parameters* is required when no symbol size is specified, and the trailing
     text with leading *symbol* code is required when the symbol code is not specified
     on the command line.  **Note**: *parameters* may represent more than one *size*
@@ -25,7 +25,7 @@
     orientation and two dimensions, and so on); see specifics below.  When there is only
     a single parameter we will refer to it as *size*.
 
-    You can also change symbols by adding the required **-S** option to any of
+    You can also change symbols by adding the required |-S| option to any of
     your multi-segment headers.
 
     We will first outline the 14 basic geometric symbols that only require
@@ -37,8 +37,8 @@
 
         The 14 basic geometric symbols available, shown with their symbol codes.
         Four symbols (**-**\ \|\ **+**\ \|\ **x**\ \|\ **y**) are line-symbols only
-        (**-W**), one (the point **p** only takes a color via **-G**) while the rest
-        may have outline (**-W**) and fill (**-G**) specified.
+        (|-W|), one (the point **p** only takes a color via |-G|) while the rest
+        may have outline (|-W|) and fill (|-G|) specified.
         The thin circles represent the circumscribing circle of the same size.
 
     **-S-**\ *size*
@@ -113,7 +113,7 @@
         unchanged.)  Furthermore, *major_axis* and *minor_axis* must be given in
         geographical instead of plot-distance units.  For degenerate ellipses (i.e.,
         circles) with just a *diameter* given via the input data, use **-SE-**. For a
-        linear projection we assume the dimensions are given in the same units as **-R**.
+        linear projection we assume the dimensions are given in the same units as |-R|.
         For allowable geographical units, see `Units`_ and append desired unit to the dimension(s);
         if dimensions are read from the input then either just append the unit for these values
         or append the unit to each dimension in the file (do not do both) [Default is k for km].
@@ -131,7 +131,7 @@
         unchanged.) Furthermore, the two dimensions must be given in geographical
         instead of plot-distance units. For a degenerate rectangle (i.e., square)
         with one *dimension* expected to be given via the input data, use **-SJ-**. For
-        a linear projection we assume the dimensions are given in the same units as **-R**.
+        a linear projection we assume the dimensions are given in the same units as |-R|.
         For allowable geographical units, see `Units`_ and append desired unit to the dimension(s);
         if dimensions are read from the input then either just append the unit for these values
         or append the unit to each dimension in the file (do not do both) [Default is k for km].
@@ -182,7 +182,7 @@
 
         A text symbol can be any letter or string (up to 256 characters) and you may specify
         specific fonts (size and type) and control outline and the fill properties. Note there
-        is no mechanism to perfectly center the string; see **-D** to make a simple global adjustment.
+        is no mechanism to perfectly center the string; see |-D| to make a simple global adjustment.
 
     **-Sl**\ *size*\ **+t**\ *string*\ [**+a**\|\ **A**\ *angle*]\ [**+f**\ *font*][**+j**\ *justify*]
         **l**\ etter or text string (less than 256 characters). Give size, and
@@ -202,7 +202,7 @@
         We may place vertical (**b**) or horizontal (**B**) bars, and they may extend from the
         *base* of your choosing.  The thickness of a bar can be a given dimension or can be
         specified in the units of that axis so its width scales with the projection and region.
-        Using modifiers **+v** or **+i** you can also plot multi-band bars with colors set via **-C**,
+        Using modifiers **+v** or **+i** you can also plot multi-band bars with colors set via |-C|,
         and **+s** can represent those as groups of individual bars instead.
 
     **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **q**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *ny*][**+s**\ [*gap*]]
@@ -219,7 +219,7 @@
         Use **+s** to instead split the bar into *ny* side-by-side, individual and thinner bars. The
         optional *gap* is a percent (of fraction) of *size* for adding gaps between the bars [none],
         where *size* is the combined width of all the individual, thinner bars plus the gaps.
-        Multiband bars requires **-C** with one color per band (CPT z-values must be 0, 1, ..., *ny* - 1).
+        Multiband bars requires |-C| with one color per band (CPT z-values must be 0, 1, ..., *ny* - 1).
         Thus, input records are either (*x y1 y2 ... yn*) or (*x dy1 dy2 ... dyn*).
 
     **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **q**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *nx*][**+s**\ [*gap*]]
@@ -236,7 +236,7 @@
         Use **+s** to instead split the bar into *nx* side-by-side, individual and thinner bars. The
         optional *gap* is a percent (of fraction) of *size* for adding gaps between the bars [none],
         where *size* is the combined width of all the individual, thinner bars plus the gaps.
-        Multiband bars requires **-C** with one color per band (CPT z-values must be 0, 1, ..., *nx* - 1).
+        Multiband bars requires |-C| with one color per band (CPT z-values must be 0, 1, ..., *nx* - 1).
         Thus, input records are either (*x1 y x2 ... xn*) or (*dx1 y dx2 ... dxn*).
 
     The next family of symbols are all different types of *vectors*. Apart from requiring parameters
@@ -254,7 +254,7 @@
     **-Sm**\ *size*\ [**+**\ *vecmodifiers*]
         **m**\ ath angle arc, optionally with one or two arrow heads [Default is
         no arrow heads]. The *size* is the length of the vector head. Arc width
-        is set by **-W**, with vector head outlines defaulting to half of arc width.
+        is set by |-W|, with vector head outlines defaulting to half of arc width.
         The *radius* of the arc and its *start* and *stop* directions (in degrees
         counter-clockwise from horizontal) must be given after the location [and *value*]
         columns. See `Vector Attributes`_ for specifying other attributes.
@@ -268,7 +268,7 @@
         horizontal) and *length* must be found after the location [and *value*] columns,
         and *size*, if not specified on the command-line, should be present as well,
         pushing the other items to later columns.
-        The *size* is the length of the vector head. Vector stem width is set by **-W**,
+        The *size* is the length of the vector head. Vector stem width is set by |-W|,
         with head outline pen width defaulting to half of stem pen width.
         See `Vector Attributes`_ for specifying this and other attributes.
 
@@ -284,7 +284,7 @@
     **-S=**\ *size*\ [**+**\ *vecmodifiers*]
         Geographic vector. Here, *azimuth* (in degrees east from north) and geographical *length*
         must be found after the location [and *value*] columns. The *size* is the length of the
-        vector head. Vector width is set by **-W**. See `Vector Attributes`_
+        vector head. Vector width is set by |-W|. See `Vector Attributes`_
         for specifying attributes. **Note**: Geovector stems are drawn as thin
         filled polygons and hence pen attributes like dashed and dotted are
         not available. For allowable geographical units for the length, see `Units`_ [k].
@@ -316,7 +316,7 @@
     The last group of symbols are all special *lines* with embellishments along them.
     The first symbol is called a *front* and has specific
     symbols distributed along the curve.  Typical uses are weather fronts, fault lines,
-    and more.  While the line appearance is controlled by **-W**, there are many modifiers
+    and more.  While the line appearance is controlled by |-W|, there are many modifiers
     to control the selection and appearance of the along-line symbols:
 
     .. figure:: /_images/GMT_base_symbols7.*
@@ -342,7 +342,7 @@
         the vector [20]. Alternatively, use **+S** which draws arcuate arrow
         heads. Append **+o**\ *offset* to offset the first symbol from the
         beginning of the front by that amount [0]. The chosen symbol is drawn
-        with the same pen as set for the line (i.e., via **-W**). To use an
+        with the same pen as set for the line (i.e., via |-W|). To use an
         alternate pen, append **+p**\ *pen*. To skip the outline, just use
         **+p** with no argument.  To make the main front line invisible, add **+i**.  **Note**:
         By placing **-Sf** options in the segment headers that differ from the one on
@@ -366,7 +366,7 @@
         **Note**: The colon separates the algorithm settings from the label information.
         Choose among six controlling algorithms:
 
-            **d**\ *dist*\ [**c**\|\ **i**\|\ **p**] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**]
+            **d**\ *dist*\ [**c**\|\ **i**\|\ **p**][/\ *frac*] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**][/\ *frac*]
                 For lower case **d**, give distances between labels on the plot in
                 your preferred measurement unit **c** (cm), **i** (inch), or **p**
                 (points), while for upper case **D**, specify distances in map units
@@ -374,14 +374,17 @@
                 (km), **M** (mile), **n** (nautical mile) or **u** (US survey foot),
                 and **d** (arc degree), **m** (arc minute), or **s** (arc second).
                 [Default is 10\ **c** or 4\ **i**]. As an option, you can append
-                /*fraction* which is used to place the very first label for each
-                contour when the cumulative along-contour distance equals *fraction
-                \* dist* [0.25].
+                append *frac* which will place the first label at the distance *d = dist*
+                :math:`\times` *frac* from the start of a line (and every
+                *dist* thereafter). If not given, *frac* defaults to 0.25.
 
-            **f**\ *ffile.txt*
-                Read the ASCII file *ffile.txt* and places labels at locations in the
-                file that matches locations along the quoted lines. Inexact matches
-                and points outside the region are skipped.
+            **f**\ *file.txt*\ [/*slop*\ [**c**\|\ **i**\|\ **p**]]
+                Read the ASCII file *file.txt* and places labels at locations in the
+                file that best matches locations along the quoted lines. Labels will
+                only be placed if the coordinates match the line coordinates to
+                within a distance of *slop* (append desired unit or we use
+                :term:`PROJ_LENGTH_UNIT`). The default *slop* is zero, meaning only
+                exact coordinate matches will do.
 
             **l**\|\ **L**\ *line1*\ [,\ *line2*,...]
                 Give the coordinates of the end points for one or more comma-separated straight line segments.
@@ -392,16 +395,16 @@
                 center of the map, given as [LCR][BMT]. Alternatively, select **L** to interpret the point
                 pairs as defining great circle segments [Default is straight lines].
 
-            **n**\|\ **N**\ *n_label*
+            **n**\|\ **N**\ *n_label*\ [/*min_dist*\ [**c**\|\ **i**\|\ **p**]]
                 Specify the number of equidistant labels for quoted lines
                 [1]. Upper case **N** starts labeling exactly at the start of the
                 line [Default centers them along the line]. **N**-1 places one
                 justified label at start, while **N**\ +1 places one justified label
                 at the end of quoted lines. Optionally, append
-                /*min_dist*\ [**c**\|\ **i**\|\ **p**] to enforce that a
-                minimum distance separation between successive labels is enforced.
+                /*min_dist*\ [**c**\|\ **i**\|\ **p**] to enforce a
+                minimum distance separation between successive labels.
 
-            **s**\|\ **S**\ *n_label*
+            **s**\|\ **S**\ *n_label*\ [/*min_dist*\ [**c**\|\ **i**\|\ **p**]]
                 Same as **n**\|\ **N**\ *n_label* but implies that the input data are
                 first to be converted into a series of 2-point line segments before plotting.
 
@@ -446,7 +449,7 @@
                 specify the color [Default is :term:`PS_PAGE_COLOR`].
 
             **+i**
-                Make the main quoted line invisible [Draw it per **-W**].
+                Make the main quoted line invisible [Draw it per |-W|].
 
             **+j**\ *just*
                 Set label justification [Default is MC]. Ignored when
@@ -548,7 +551,7 @@
         **Note**: The colon separates the algorithm settings from the required symbol information.
         Choose among six controlling algorithms:
 
-            **d**\ *dist*\ [**c**\|\ **i**\|\ **p**] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**]
+            **d**\ *dist*\ [**c**\|\ **i**\|\ **p**][/\ *frac*] or **D**\ *dist*\ [**d**\|\ **e**\|\ **f**\|\ **k**\|\ **m**\|\ **M**\|\ **n**\|\ **s**][/\ *frac*]
                 For lower case **d**, give distances between symbols on the plot in
                 your preferred measurement unit **c** (cm), **i** (inch), or **p**
                 (points), while for upper case **D**, specify distances in map units
@@ -556,14 +559,17 @@
                 (km), **M** (mile), **n** (nautical mile) or **u** (US survey foot),
                 and **d** (arc degree), **m** (arc minute), or **s** (arc second).
                 [Default is 10\ **c** or 4\ **i**]. As an option, you can append
-                /*fraction* which is used to place the very first symbol for each
-                line when the cumulative along-line distance equals *fraction
-                \* dist* [0.25].
+                append *frac* which will place the first symbol at the distance *d = dist*
+                :math:`\times` *frac* from the start of a line (and every
+                *dist* thereafter). If not given, *frac* defaults to 0.25.
 
-            **f**\ *ffile.txt*
-                Read the ASCII file *ffile.txt* and places symbols at locations in the
-                file that matches locations along the decorated lines. Inexact matches
-                and points outside the region are skipped.
+            **f**\ *file.txt*\ [/*slop*\ [**c**\|\ **i**\|\ **p**]]
+                Read the ASCII file *file.txt* and place symbols at locations in the
+                file that matches locations along the decorated lines. Symbols will
+                only be placed if the coordinates match the line coordinates to
+                within a distance of *slop* (append desired unit or we use
+                :term:`PROJ_LENGTH_UNIT`). The default *slop* is zero, meaning only
+                exact coordinate matches will do.
 
             **l**\|\ **L**\ *line1*\ [,\ *line2*,...]
                 Give the coordinates of the end points for one or more comma-separated straight line segments.
@@ -574,18 +580,17 @@
                 center of the map, given as [LCR][BMT].
                 **L** will interpret the point pairs as defining great circles [Default is straight line].
 
-            **n**\|\ **N**\ *n_symbol*
+            **n**\|\ **N**\ *n_symbol*\ [/*min_dist*\ [**c**\|\ **i**\|\ **p**]]
                 Specify the number of equidistant symbols for decorated lines
                 [1]. Upper case **N** starts placing symbols exactly at the start of the
                 line [Default centers them along the line]. **N**-1 places one symbol
-                at start, while **N**\ +1 places one symbol
-                at the end of decorated lines. Optionally, append
-                /*min_dist*\ [**c**\|\ **i**\|\ **p**] to enforce that a
-                minimum distance separation between successive symbols is enforced.
+                at start, while **N**\ +1 places one symbol at the end of decorated lines.
+                Optionally, append /*min_dist*\ [**c**\|\ **i**\|\ **p**] to enforce a
+                minimum distance separation between successive symbols.
 
-            **s**\|\ **S**\ *n_symbol*
+            **s**\|\ **S**\ *n_symbol*\ [/*min_dist*\ [**c**\|\ **i**\|\ **p**]]
                 Same as **n**\|\ **N**\ *n_symbol* but implies that the input data are
-		        first to be converted into a series of 2-point line segments before plotting.
+                first to be converted into a series of 2-point line segments before plotting.
 
             **x**\|\ **X**\ *xfile.txt*
                 Read the ASCII multisegment file *xfile.txt* and places symbols at the
@@ -609,7 +614,7 @@
                 Set the symbol fill [no fill].
 
             **+i**
-                Make the main decorated line invisible [Draw it using pen settings provided by **-W**].
+                Make the main decorated line invisible [Draw it using pen settings provided by |-W|].
 
             **+n**\ *dx*\ [/*dy*]
                 Nudge the placement of symbols by the specified amount (append
@@ -626,7 +631,8 @@
             **+s**\ <symbol><size> or **+sk**\ *customsymbol*/*size*
                 Specify the code and size of the decorative symbol.
                 Custom symbols need to be simple, i.e., not require data columns,
-                or give a single EPS file.
+                or be a single EPS file.  Hence, valid symbols are limited to the
+                plain geometric one-parameter symbols and the custom symbol (**k**).
 
             **+w**
                 Specify how many (*x*,\ *y*) points will be used to estimate

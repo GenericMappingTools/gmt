@@ -208,7 +208,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Alternatively, specify <lower>/<upper> intensity values.");
 	GMT_Option (API, "J-Z,K");
 	GMT_Usage (API, 1, "\n-L[i][<gap>]");
-	GMT_Usage (API, -2, "Select equal-sized color rectangles. The -B option cannot be used. n"
+	GMT_Usage (API, -2, "Select equal-sized color rectangles. The -B option cannot be used. "
 		"Append i to annotate the interval range instead of lower/upper. "
 		"If <gap> is appended, we separate each rectangle by <gap> units and center each "
 		"lower (z0) annotation on the rectangle.  Ignored if not a discrete CPT. "
@@ -289,13 +289,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				if (opt->arg[0] == '+' && (gmt_found_modifier (GMT, opt->arg, "en")) && strstr (opt->arg, "w") == NULL) {
 					/* Only want +e or +n to be added to defaults */
 					sprintf (string, "%s%s", Ctrl->D.opt, opt->arg);
@@ -308,40 +306,43 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'E':
-				GMT_Report (API, GMT_MSG_COMPAT, "The -E option is deprecated but is accepted.\n");
-				GMT_Report (API, GMT_MSG_COMPAT, "For the current -D syntax you should use -D modifier +e instead.\n");
-				GMT_Report (API, GMT_MSG_COMPAT, "Note you cannot mix new-style modifiers (+e) with the old-style -D option.\n");
-				Ctrl->D.extend = true;
-				if ((c = strchr (opt->arg, 'n')) != NULL) {	/* Got +n[<text>] */
-					c--;	*c = 0; c += 2;
-					Ctrl->D.etext = (*c) ? strdup (c) : strdup ("NaN");
-					Ctrl->D.emode = 4;
-					c -= 2;
+				if (gmt_M_compat_check (GMT, 5)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "The -E option is deprecated but is accepted.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "For the current -D syntax you should use -D modifier +e instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Note you cannot mix new-style modifiers (+e) with the old-style -D option.\n");
+					Ctrl->D.extend = true;
+					if ((c = strchr (opt->arg, 'n')) != NULL) {	/* Got +n[<text>] */
+						c--;	*c = 0; c += 2;
+						Ctrl->D.etext = (*c) ? strdup (c) : strdup ("NaN");
+						Ctrl->D.emode = 4;
+						c -= 2;
+					}
+					j = 0;
+					if (opt->arg[0] == 'b') {
+						Ctrl->D.emode |= 1;
+						j = 1;
+					}
+					else if (opt->arg[j] == 'f') {
+						Ctrl->D.emode |= 2;
+						j = 1;
+					}
+					if (opt->arg[j] == 'b') {
+						Ctrl->D.emode |= 1;
+						j++;
+					}
+					else if (opt->arg[j] == 'f') {
+						Ctrl->D.emode |= 2;
+						j++;
+					}
+					if (j == 0) Ctrl->D.emode |= 3;	/* No b|f added */
+					if (opt->arg[j]) Ctrl->D.elength = gmt_M_to_inch (GMT, &opt->arg[j]);
+					if (c) *c = '+';	/* Put back the + sign */
 				}
-				j = 0;
-				if (opt->arg[0] == 'b') {
-					Ctrl->D.emode |= 1;
-					j = 1;
-				}
-				else if (opt->arg[j] == 'f') {
-					Ctrl->D.emode |= 2;
-					j = 1;
-				}
-				if (opt->arg[j] == 'b') {
-					Ctrl->D.emode |= 1;
-					j++;
-				}
-				else if (opt->arg[j] == 'f') {
-					Ctrl->D.emode |= 2;
-					j++;
-				}
-				if (j == 0) Ctrl->D.emode |= 3;	/* No b|f added */
-				if (opt->arg[j]) Ctrl->D.elength = gmt_M_to_inch (GMT, &opt->arg[j]);
-				if (c) *c = '+';	/* Put back the + sign */
+				else
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the scale", 3);
 					n_errors++;
@@ -349,7 +350,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'G':	/* truncate incoming CPT */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
 				n_errors += gmt_M_check_condition (GMT, j < 2, "Option -G: Must specify z_low/z_high\n");
 				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
@@ -358,7 +358,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (opt->arg[0]) {
 					j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
 					if (j == 1) {
@@ -373,7 +372,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				j = 0;
 				if (opt->arg[0] == 'i') Ctrl->L.interval = true, j = 1;
 				if (opt->arg[j]) Ctrl->L.spacing = gmt_M_to_inch (GMT, &opt->arg[j]);
@@ -381,11 +379,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				/* Default will use image@600 dpi or polygons according to what is simplest */
 				if (opt->arg[0] == 'p')	/* Preferentially use polygon fill if at all possible */
 					Ctrl->N.mode = N_FAVOR_POLY;
@@ -396,11 +393,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				Ctrl->S.mode = PSSCALE_ANNOT_NUMERICAL;	/* The default */
 				if (opt->arg[0]) {	/* Modern syntax with modifiers */
 					if ((c = gmt_first_modifier (GMT, opt->arg, "acnsxy"))) {	/* Process any modifiers */
@@ -454,13 +450,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
-				Ctrl->Z.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->Z.file));
 				break;
-			case 'W':	/* Dump out interpolated colors for debugging */
+			case 'W':	/* Multiply all z-values in the CPT by the provided scale. */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
-				Ctrl->W.scale = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->W.scale);
 				break;
 #ifdef DEBUG
 			case 'd':	/* Dump out interpolated colors for debugging */

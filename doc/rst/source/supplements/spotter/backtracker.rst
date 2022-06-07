@@ -90,9 +90,9 @@ Optional Arguments
     location of the hotspot at that time, via an interpolation of the
     hotspot motion history. Input data locations are then adjusted by the
     change in hotspot location when reconstructing the point or path [No drift].
-    **Note**: (1) When **-F** is used the **-L** *step* values will be in time (Myr).
+    **Note**: (1) When |-F| is used the |-L| *step* values will be in time (Myr).
     (2) Drift is only considered when backtracking a point (**-Db**) or predicting
-    seamount trails (**-Df** **-Lb**). (3) Cannot be used with **-M**.
+    seamount trails (**-Df** **-Lb**). (3) Cannot be used with |-M|.
 
 .. _-L:
 
@@ -103,7 +103,7 @@ Optional Arguments
     then only the rotation times will be returned. When **-LF** or
     **-LB** is used, the third output column will contain the stage id
     (1 is youngest) [Default is along-track predicted ages]. You can
-    control the direction of the paths by using **-D**.
+    control the direction of the paths by using |-D|.
 
 .. _-M:
 
@@ -127,7 +127,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *filestem*
-    When **-L** is set, the tracks are normally written to standard output as a
+    When |-L| is set, the tracks are normally written to standard output as a
     multisegment file. Specify a *filestem* to have each track written
     to *filestem.#*, where *#* is the track number. The track number is
     also copied to the 4th output column.
@@ -151,7 +151,7 @@ Optional Arguments
     rotation time, otherwise the point will be skipped. Append **t** or
     **a** to output time or angle, respectively, after the projected
     lon, lat. After these 2-3 items, we write azimuth, major, minor (in
-    km) for the 95% confidence ellipse. See **-D** for the direction of
+    km) for the 95% confidence ellipse. See |-D| for the direction of
     rotation.
 
 .. |Add_-bi| replace:: [Default is 3 input columns].
@@ -248,4 +248,4 @@ References
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29),
 p. 319.
 
-Doubrovine, P. V., B. Steinberger, and T. H. Torsvik, 2012, Absolute plate motions in a reference frame defined by moving hot spots in the Pacific, Atlantic, and Indian oceans, J. Geophys. Res., 117(B09101), doi:10.1029/2011jb009072.
+Doubrovine, P. V., B. Steinberger, and T. H. Torsvik, 2012, Absolute plate motions in a reference frame defined by moving hot spots in the Pacific, Atlantic, and Indian oceans, *J. Geophys. Res.*, **117**\ (B09101), https://doi.org/10.1029/2011jb009072.

@@ -72,12 +72,12 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 	size_t n_alloc;
 	double *ds = NULL;
 
-	ds = gmt_M_memory (GMT, NULL, n, double);
-	lend = gmt_M_memory (GMT, NULL, n, int64_t);
- 	iwk = gmt_M_memory (GMT, NULL, 2*n, int64_t);
+	if ((ds = gmt_M_memory (GMT, NULL, n, double)) == NULL) return GMT_MEMORY_ERROR;
+	if ((lend = gmt_M_memory (GMT, NULL, n, int64_t)) == NULL) return GMT_MEMORY_ERROR;
+ 	if ((iwk = gmt_M_memory (GMT, NULL, 2*n, int64_t)) == NULL) return GMT_MEMORY_ERROR;
 	n_alloc = 6 * (n - 2);
-	lptr = gmt_M_memory (GMT, NULL, n_alloc, int64_t);
-	list = gmt_M_memory (GMT, NULL, n_alloc, int64_t);
+	if ((lptr = gmt_M_memory (GMT, NULL, n_alloc, int64_t)) == NULL) return GMT_MEMORY_ERROR;
+	if ((list = gmt_M_memory (GMT, NULL, n_alloc, int64_t)) == NULL) return GMT_MEMORY_ERROR;
 
 	/* Create the triangulation. Main output is (list, lptr, lend) */
 
@@ -112,7 +112,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 	/* Create a triangle list which returns the number of triangles and their node list tri */
 
 	n_alloc = 2 * (n - 2);
-	T->D.tri = gmt_M_memory (GMT, NULL, TRI_NROW*n_alloc, int64_t);
+	if ((T->D.tri = gmt_M_memory (GMT, NULL, TRI_NROW*n_alloc, int64_t)) == NULL) return GMT_MEMORY_ERROR;
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK TRLIST subroutine\n");
 	trlist_ (&n, list, lptr, lend, &nrow, &n_out, T->D.tri, &ierror);
 	T->D.n = n_out;
@@ -131,13 +131,13 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 		/* Note that the triangulation data structure is altered if NB > 0 */
 
 		n_alloc = 2 * (n - 2);
-		xc = gmt_M_memory (GMT, NULL, n_alloc, double);
-		yc = gmt_M_memory (GMT, NULL, n_alloc, double);
-		zc = gmt_M_memory (GMT, NULL, n_alloc, double);
-		rc = gmt_M_memory (GMT, NULL, n_alloc, double);
+		if ((xc = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((yc = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((zc = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((rc = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
 		n_alloc = 6 * (n - 2);
-		T->V.listc = gmt_M_memory (GMT, NULL, n_alloc, int64_t);
-		lbtri = gmt_M_memory (GMT, NULL, 6*n, int64_t);
+		if ((T->V.listc = gmt_M_memory (GMT, NULL, n_alloc, int64_t)) == NULL) return GMT_MEMORY_ERROR;
+		if ((lbtri = gmt_M_memory (GMT, NULL, 6*n, int64_t)) == NULL) return GMT_MEMORY_ERROR;
 
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK CRLIST subroutine\n");
 		crlist_ (&n, &n, x, y, z, list, lend, lptr, &lnew, lbtri, T->V.listc, &n_out, xc, yc, zc, rc, &ierror);
@@ -148,8 +148,8 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 		T->V.lptr = lptr;
 		/* Convert polygon vertices vectors to lon, lat */
 		n_alloc = 2 * (n - 2);
-		T->V.lon = gmt_M_memory (GMT, NULL, n_alloc, double);
-		T->V.lat = gmt_M_memory (GMT, NULL, n_alloc, double);
+		if ((T->V.lon = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((T->V.lat = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
 		gmt_n_cart_to_geo (GMT, n_alloc, xc, yc, zc, T->V.lon, T->V.lat);
 		gmt_M_free (GMT, xc);
 		gmt_M_free (GMT, yc);
@@ -204,16 +204,16 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 
 	/* Set out output nodes */
 
-	plon = gmt_M_memory (GMT, NULL, h->n_columns, double);
-	plat = gmt_M_memory (GMT, NULL, h->n_rows, double);
+	if ((plon = gmt_M_memory (GMT, NULL, h->n_columns, double)) == NULL) return GMT_MEMORY_ERROR;
+	if ((plat = gmt_M_memory (GMT, NULL, h->n_rows, double)) == NULL) return GMT_MEMORY_ERROR;
 	for (col = 0; col < h->n_columns; col++) plon[col] = D2R * gmt_M_grd_col_to_x (GMT, col, h);
 	for (row = 0; row < h->n_rows; row++) plat[row] = D2R * gmt_M_grd_row_to_y (GMT, row, h);
 	nm = h->n_columns * h->n_rows;
 
 	/* Time to work on the interpolation */
 
-	sigma = gmt_M_memory (GMT, NULL, n_sig, double);
-	if (mode) grad = gmt_M_memory (GMT, NULL, 3*n, double);
+	if ((sigma = gmt_M_memory (GMT, NULL, n_sig, double)) == NULL) return GMT_MEMORY_ERROR;
+	if (mode && (grad = gmt_M_memory (GMT, NULL, 3*n, double)) == NULL) return GMT_MEMORY_ERROR;
 
 	if (mode == 0) {	 /* C-0 interpolation (INTRC0). */
 		nxp = 0;
@@ -321,7 +321,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 	}
 	else if (mode == 3) {	/* c-1 smoothing method smsurf. */
 		double wtk, smtol, gstol, e, sm;
-		wt = gmt_M_memory (GMT, NULL, n, double);
+		if ((wt = gmt_M_memory (GMT, NULL, n, double)) == NULL) return GMT_MEMORY_ERROR;
 		e    = (par[0] == 0.0) ? 0.01 : par[0];
 		sm   = (par[1] <= 0.0) ? (double)n : par[1];
 		itgs = (par[2] == 0.0) ? 3 : lrint (par[2]);

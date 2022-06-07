@@ -51,7 +51,7 @@ Optional Arguments
     longitude instead). Normally, the third and fourth columns must
     contain altitude (in km) and time, respectively, but if one or both
     of these are constant for all records they can be supplied via the
-    **-A** option instead and are thus not expected in the input file.
+    |-A| option instead and are thus not expected in the input file.
     If no input file is given we read standard input. |br|
     A note about the CM4
     validity domain. The core field of CM4 is valid from 1960-2002.5 but
@@ -206,10 +206,10 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. |Add_-bi| replace:: [Default is 4 input columns unless **-A** is used].
+.. |Add_-bi| replace:: [Default is 4 input columns unless |-A| is used].
 .. include:: ../../explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is reflected by **-F**].
+.. |Add_-bo| replace:: [Default is reflected by |-F|].
 .. include:: ../../explain_-bo.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
@@ -259,7 +259,7 @@ References
 ----------
 
 Comprehensive Modeling of the Geomagnetic Field, see
-`<https://onlinelibrary.wiley.com/doi/10.1111/j.1365-246X.2004.02421.x>`_
+`<https://doi.org/10.1111/j.1365-246X.2004.02421.x>`_.
 
 The International Geomagnetic Reference Field (IGRF), see
-`<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
+`<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_.
