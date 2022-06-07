@@ -687,6 +687,7 @@ CURL * gmtremote_setup_curl (struct GMTAPI_CTRL *API, char *url, char *local_fil
 struct LOCFILE_FP *gmtremote_lock_on (struct GMT_CTRL *GMT, char *file) {
 	/* Creates filename for lock and activates the lock */
 	struct LOCFILE_FP *P = gmt_M_memory (GMT, NULL, 1, struct LOCFILE_FP);
+	if (P == NULL) return NULL;
 	P->file = gmtremote_lockfile (GMT, file);
 	if ((P->fp = fopen (P->file, "w")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to create lock file %s\n", P->file);
@@ -798,7 +799,7 @@ GMT_LOCAL struct GMT_DATA_HASH *gmtremote_hash_load (struct GMT_CTRL *GMT, char 
 		fclose (fp);
 		return NULL;
 	}
-	L = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_HASH);
+	if ((L = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_HASH)) == NULL) return NULL;
 	for (k = 0; k < *n; k++) {
 		if (fgets (line, GMT_LEN256, fp) == NULL) break;	/* Next record */
 		sscanf (line, "%s %s %" PRIuS, L[k].name, L[k].hash, &L[k].size);

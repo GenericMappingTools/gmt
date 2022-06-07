@@ -215,7 +215,7 @@ GMT_LOCAL void gmtshore_prepare_sides (struct GMT_CTRL *GMT, struct GMT_SHORE *c
 	for (s = 0; s < c->ns; s++) if (c->seg[s].entry < 4) c->nside[c->seg[s].entry]++;	/* Add up additional segments entering each side */
 
 	for (i = c->n_entries = 0; i < 4; i++) {	/* Allocate memory and add corners; they are given max pos so they are the last in the sorted list per side */
-		c->side[i] = gmt_M_memory (GMT, NULL, c->nside[i], struct GSHHS_SIDE);
+		if ((c->side[i] = gmt_M_memory (GMT, NULL, c->nside[i], struct GSHHS_SIDE)) == NULL) return;
 		c->side[i][0].pos = (dir == 1) ? GSHHS_MAX_DELTA : 0;	/* position at end of side depends if going CCW (65535) or CW (0) */
 		c->side[i][0].id = (short int)(i - 4);	/* Corners have negative IDs; add 4 to get real ID */
 		c->n_entries += c->nside[i] - 1;	/* Total number of entries so far */
@@ -684,7 +684,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	c->bsize = c->bin_size / 60.0;
 	info->bin_size = c->bsize;	/* To make bin size in degrees accessible elsewhere */
 
-	c->bins = gmt_M_memory (GMT, NULL, c->n_bin, int);
+	if ((c->bins = gmt_M_memory (GMT, NULL, c->n_bin, int)) == NULL) return 0;
 
 	/* Round off area to nearest multiple of block-dimension */
 
@@ -717,18 +717,18 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		return (err);
 	}
 	count[0] = c->n_poly;
-	c->GSHHS_parent = gmt_M_memory (GMT, NULL, c->n_poly, int);
+	if ((c->GSHHS_parent = gmt_M_memory (GMT, NULL, c->n_poly, int)) == NULL) return GMT_MEMORY_ERROR;
 	if ((err = nc_get_vara_int (c->cdfid, c->GSHHS_parent_id, start, count, c->GSHHS_parent))) {
 		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
 		return (err);
 	}
-	c->GSHHS_area = gmt_M_memory (GMT, NULL, c->n_poly, double);
+	if ((c->GSHHS_area = gmt_M_memory (GMT, NULL, c->n_poly, double)) == NULL) return GMT_MEMORY_ERROR;
 	if ((err = nc_get_vara_double (c->cdfid, c->GSHHS_area_id, start, count, c->GSHHS_area))) {
 		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
 		return (err);
 	}
 	if (int_areas) for (i = 0; i < c->n_poly; i++) c->GSHHS_area[i] *= 0.1;	/* Since they were stored as 10 * km^2 using integers */
-	c->GSHHS_area_fraction = gmt_M_memory (GMT, NULL, c->n_poly, int);
+	if ((c->GSHHS_area_fraction = gmt_M_memory (GMT, NULL, c->n_poly, int)) == NULL) return GMT_MEMORY_ERROR;
 	if ((err = nc_get_vara_int (c->cdfid, c->GSHHS_areafrac_id, start, count, c->GSHHS_area_fraction))) {
 		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
 		return (err);
@@ -738,7 +738,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 			gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
 			return (err);
 		}
-		c->GSHHS_node = gmt_M_memory (GMT, NULL, c->n_nodes, int);
+		if ((c->GSHHS_node = gmt_M_memory (GMT, NULL, c->n_nodes, int)) == NULL) return GMT_MEMORY_ERROR;
 		count[0] = c->n_nodes;
 		if ((err = nc_get_vara_int (c->cdfid, c->GSHHS_node_id, start, count, c->GSHHS_node))) {
 			gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */

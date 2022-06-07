@@ -5172,7 +5172,7 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 	dx = (xmax - xmin) / GMT->current.map.n_lon_nodes;
 	dy = (ymax - ymin) / GMT->current.map.n_lat_nodes;
 	/* Need temp array to hold all the longitudes we compute */
-	lon = gmt_M_memory (GMT, NULL, 2 * (GMT->current.map.n_lon_nodes + GMT->current.map.n_lat_nodes + 2), double);
+	if ((lon = gmt_M_memory (GMT, NULL, 2 * (GMT->current.map.n_lon_nodes + GMT->current.map.n_lat_nodes + 2), double)) == NULL) return;
 	w = s = DBL_MAX;	e = n = -DBL_MAX;
 	for (i = k = 0; i <= GMT->current.map.n_lon_nodes; i++) {
 		x = (i == GMT->current.map.n_lon_nodes) ? xmax : xmin + i * dx;
@@ -5221,6 +5221,7 @@ GMT_LOCAL void gmtmap_genper_search (struct GMT_CTRL *GMT, double *west, double 
 	np = (GMT->current.proj.polar && (GMT->common.R.wesn[YLO] <= -90.0 || GMT->common.R.wesn[YHI] >= 90.0)) ? GMT->current.map.n_lon_nodes + 2: 2 * (GMT->current.map.n_lon_nodes + 1);
 	work_x = gmt_M_memory (GMT, NULL, np, double);
 	work_y = gmt_M_memory (GMT, NULL, np, double);
+	if (work_x == NULL || work_y == NULL) return;
 	gmtlib_genper_map_clip_path (GMT, np, work_x, work_y);
 
 	/* Search for extreme lon/lat coordinates by matching along the genper boundary */
@@ -8143,10 +8144,10 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	}
 
 	if (gmt_M_is_rect_graticule (GMT)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
-		x_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_columns, double);
-		y_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_rows, double);
-		x_out_proj = gmt_M_memory (GMT, NULL, O->header->n_columns, double);
-		y_out_proj = gmt_M_memory (GMT, NULL, O->header->n_rows, double);
+		if ((x_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_columns, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((y_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_rows, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((x_out_proj = gmt_M_memory (GMT, NULL, O->header->n_columns, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((y_out_proj = gmt_M_memory (GMT, NULL, O->header->n_rows, double)) == NULL) return GMT_MEMORY_ERROR;
 		if (inverse) {
 			gmt_M_row_loop  (GMT, I, row_in)  gmt_xy_to_geo (GMT, &x_proj, &y_in_proj[row_in], I->header->wesn[XLO], y_in[row_in]);
 			gmt_M_col_loop2 (GMT, I, col_in)  gmt_xy_to_geo (GMT, &x_in_proj[col_in], &y_proj, x_in[col_in], I->header->wesn[YLO]);
@@ -8175,7 +8176,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		bool skip_repeat = false, duplicate_east = false;
 		openmp_int n_columns = O->header->n_columns, n_rows = O->header->n_rows, kase, duplicate_col;
-		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
+		if ((nz = gmt_M_memory (GMT, NULL, O->header->size, short int)) == NULL) return GMT_MEMORY_ERROR;
 		/* Cannot do OPENMP yet here since it would require a reduction into an output array (nz) */
 		kase = gmt_whole_earth (GMT, I->header->wesn, GMT->common.R.wesn);
 		if (kase == 1 && I->header->registration == GMT_GRID_NODE_REG) {
@@ -8414,10 +8415,10 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	}
 
 	if (gmt_M_is_rect_graticule (GMT)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
-		x_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_columns, double);
-		y_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_rows, double);
-		x_out_proj = gmt_M_memory (GMT, NULL, O->header->n_columns, double);
-		y_out_proj = gmt_M_memory (GMT, NULL, O->header->n_rows, double);
+		if ((x_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_columns, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((y_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_rows, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((x_out_proj = gmt_M_memory (GMT, NULL, O->header->n_columns, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((y_out_proj = gmt_M_memory (GMT, NULL, O->header->n_rows, double)) == NULL) return GMT_MEMORY_ERROR;
 		if (inverse) {
 			gmt_M_row_loop  (GMT, I, row_in)  gmt_xy_to_geo (GMT, &x_proj, &y_in_proj[row_in], I->header->wesn[XLO], y_in[row_in]);
 			gmt_M_col_loop2 (GMT, I, col_in)  gmt_xy_to_geo (GMT, &x_in_proj[col_in], &y_proj, x_in[col_in], I->header->wesn[YLO]);
@@ -8448,7 +8449,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		openmp_int n_columns = O->header->n_columns, n_rows = O->header->n_rows;
-		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
+		if ((nz = gmt_M_memory (GMT, NULL, O->header->size, short int)) == NULL) return GMT_MEMORY_ERROR;
 		/* Cannot do OPENMP yet here since it would require a reduction into an output array (nz) */
 
 		gmt_M_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
@@ -8675,8 +8676,8 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 		}
 	}
 
-	work_x = gmt_M_memory (GMT, NULL, np+1, double);	/* Add one for manual closure */
-	work_y = gmt_M_memory (GMT, NULL, np+1, double);
+	if ((work_x = gmt_M_memory (GMT, NULL, np+1, double)) == NULL) return 0;	/* Add one for manual closure */
+	if ((work_y = gmt_M_memory (GMT, NULL, np+1, double)) == NULL) return 0;
 
 	if (GMT->common.R.oblique) {
 		work_x[0] = work_x[3] = GMT->current.proj.rect[XLO];	work_y[0] = work_y[1] = GMT->current.proj.rect[YLO];
@@ -9202,7 +9203,7 @@ double *gmt_dist_array (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n
 	double *d = NULL, cum_dist = 0.0, inc = 0.0;
 
 	if (n == 0) return (NULL);
-	d = gmt_M_memory (GMT, NULL, n, double);
+	if ((d = gmt_M_memory (GMT, NULL, n, double)) == NULL) return NULL;
 	if (gmt_M_is_dnan (x[0]) || gmt_M_is_dnan (y[0])) d[0] = GMT->session.d_NaN;
 	for (this_p = 1, prev = 0; this_p < n; this_p++) {
 		xy_not_NaN = !(gmt_M_is_dnan (x[this_p]) || gmt_M_is_dnan (y[this_p]));
@@ -9238,7 +9239,7 @@ double * gmt_dist_array_2 (struct GMT_CTRL *GMT, double x[], double y[], uint64_
 	if (dist_flag < 0 || dist_flag > 3) return (NULL);
 
 	do_scale = (scale != 1.0);
-	d = gmt_M_memory (GMT, NULL, n, double);
+	if ((d = gmt_M_memory (GMT, NULL, n, double)) == NULL) return NULL;
 	if (gmt_M_is_dnan (x[0]) || gmt_M_is_dnan (y[0])) d[0] = GMT->session.d_NaN;
 	for (this_p = 1, prev = 0; this_p < n; this_p++) {
 		xy_not_NaN = !(gmt_M_is_dnan (x[this_p]) || gmt_M_is_dnan (y[this_p]));
