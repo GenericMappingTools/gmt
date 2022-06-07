@@ -19,6 +19,7 @@ cat << EOF >| yannots.txt
 EOF
 
 gmt begin GMT_-B_custom
+	gmt set GMT_THEME cookbook
 	gmt basemap -R416/542/0/6.2831852 -JX-12c/6c -Bpx25f5g25+u" Ma" -Bpycyannots.txt -Bsxcxannots.txt -BWS+glightblue \
 		--MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p
 gmt end show

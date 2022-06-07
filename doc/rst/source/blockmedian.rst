@@ -17,12 +17,12 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *fields* ]
 [ |-C| ]
-[ |-E|\ [**b**] ] [ |-E|\ **r**\|\ **s**\ [**+l**\|\ **h**] ]
+[ |-E|\ [**b**\|\ **r**\|\ **s**\ [**+l**\|\ **h**]] ]
 [ |-G|\ [*grdfile*] ]
 [ |-Q| ]
 [ |-T|\ *quantile* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**i**\|\ **o**][**+s**] ]
+[ |-W|\ [**i**\|\ **o**][**+s**\|\ **w**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -33,6 +33,7 @@ Synopsis
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -44,8 +45,8 @@ Description
 **blockmedian** reads arbitrarily located (*x*,\ *y*,\ *z*) triples [or
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output a median position and
-value for every non-empty block in a grid region defined by the **-R**
-and **-I** arguments. See **-G** for writing gridded output directly.
+value for every non-empty block in a grid region defined by the |-R|
+and |-I| arguments. See |-G| for writing gridded output directly.
 Either :doc:`blockmean`, **blockmedian**, or
 :doc:`blockmode` should be used as a pre-processor before running
 :doc:`surface` to avoid aliasing short wavelengths. These routines are also
@@ -58,7 +59,7 @@ Required Arguments
 ------------------
 
 *table*
-    3 (or 4, see **-W**) column ASCII data table file(s) (or binary, see
+    3 (or 4, see |-W|) column ASCII data table file(s) (or binary, see
     **-bi**) holding (*x*,\ *y*,\ *z*\ [,\ *w*])
     data values, where [*w*] is an optional weight for the data.
     If no file is specified, **blockmedian** will read
@@ -68,8 +69,10 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -77,19 +80,19 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *fields*
-    Select which fields to write to individual grids.  Requires **-G**.
+    Select which fields to write to individual grids.  Requires |-G|.
     Append the codes for available fields: **z** (the median
-    data z, but see **-T**), **s** (the L1 scale of the median), **l** (lowest
+    data z, but see |-T|), **s** (the L1 scale of the median), **l** (lowest
     value), **q25** (the 25% quartile), **q75** (the 75% quartile), **h** (highest value),
-    and **w** (the output weight; requires **-W**).  Note **s**\|\ **l**\|\ **h**
-    requires **-E**, while **l**\|\ **q25**\|\ **q75**\|\ **h** requires **-Eb**,
+    and **w** (the output weight; requires |-W|).  Note **s**\|\ **l**\|\ **h**
+    requires |-E|, while **l**\|\ **q25**\|\ **q75**\|\ **h** requires **-Eb**,
     and **Es**\|\ **r** cannot be used. [Default is just **z**].
 
 .. _-C:
 
 **-C**
     Use the center of the block as the output location [Default uses the
-    median x and median y as location (but see **-Q**)].
+    median x and median y as location (but see |-Q|)].
 
 .. _-E:
 
@@ -101,14 +104,15 @@ Optional Arguments
     *x*,\ *y*,\ *z*\ [,\ *w*]. For box-and-whisker calculation, use
     **-Eb** which will output
     *x*,\ *y*,\ *z*,\ *l*,\ *q25*,\ *q75*,\ *h*\ [,\ *w*], where *q25* and
-    *q75* are the 25% and 75% quantiles, respectively. See **-W** for
+    *q75* are the 25% and 75% quantiles, respectively. See |-W| for
     *w* output.
+
 **-E**\ **r**\|\ **s**\ [**+l**\|\ **h**]
     Provide source id **s** or record number **r** output, i.e., append
     the source id or record number associated with the median value. If
     tied then report the record number of the higher of the two values (i.e., **+h** is the default);
     append **+l** to instead report the record number of the lower value.
-    Note that **-E** may be repeated so that both **-E**\ [**b**] and
+    Note that |-E| may be repeated so that both **-E**\ [**b**] and
     **-E**\ **r**\ [**+l**\|\ **h**] can be
     specified. For **-E**\ **s** we expect input records of the form
     *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned integer
@@ -118,15 +122,16 @@ Optional Arguments
 
 **-G**\ *grdfile*
     Write one or more fields directly to grids; no table data are written to
-    standard output.  If more than one fields are specified via **-A** then
+    standard output.  If more than one fields are specified via |-A| then
     *grdfile* must contain the format flag %s so that we can embed the field
-    code in the file names.
+    code in the file names.  **Note**: Options |-C| and |-Q| are irrelevant
+    and not allowed.
 
 .. _-Q:
 
 **-Q**
     (Quicker) Finds median *z* and (*x*,\ *y*) at that the median *z*
-    [Default finds median *x*, median *y* independent of *z*]. Also see **-C**.
+    [Default finds median *x*, median *y* independent of *z*]. Also see |-C|.
 
 .. _-T:
 
@@ -134,29 +139,30 @@ Optional Arguments
     Sets the *quantile* of the distribution to be returned [Default is
     0.5 which returns the median *z*]. Here, 0 < *quantile* < 1.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
-**-W**\ [**i**\|\ **o**][**+s**]
-    Weighted modifier[s]. Unweighted input and output have 3 columns
-    *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
+**-W**\ [**i**\|\ **o**][**+s**\|\ **w**]
+    Compute weighted results. Unweighted input and output have 3 columns
+    *x*,\ *y*,\ *z*; weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
     Weights can be used in input to construct weighted median values for each
-    block. Weight sums can be reported in output for later combining
-    several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
-    input only, and **-Wo** for weighted output only. [Default uses
+    block. Weight sums can be reported to output for later combining
+    several runs, etc. Use |-W| for weighted i/o, **-Wi** for weighted
+    input only, and **-Wo** for weighted output only [Default uses
     unweighted i/o]. If your weights are actually uncertainties (one sigma)
-    then append **+s** and we compute weight = 1/sigma.
+    then append **+s** and we compute weight = 1/sigma.  Otherwise (or via
+    **+w**) we use the weights directly.
 
 .. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-Wi** is set)].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 3 (or 4 if **-Wo** is set)]. **-E** adds 3 additional columns.
+.. |Add_-bo| replace:: [Default is 3 (or 4 if **-Wo** is set)]. |-E| adds 3 additional columns.
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -182,6 +188,8 @@ Optional Arguments
     (*x*,\ *y*) < 11 is one of 25 blocks; otherwise 9.5 <= (*x*,\ *y*)
     < 10.5 is one of 36 blocks.
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 .. include:: explain_help.rst_

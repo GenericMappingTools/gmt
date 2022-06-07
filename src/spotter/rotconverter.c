@@ -1,17 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Lesser General Public License as published by
- *   the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
- *   Contact info: www.generic-mapping-tools.org
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Program for converting between total reconstruction and stage poles or to add rotations.
@@ -125,30 +126,35 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *C) {	/* D
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F<out>] [-G] [-M[<factor>]] [-N] [-S] [-T] [%s] [-W]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_h_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] "
+		"[-Fs|t] [-G] [-M[<factor>]] [-N] [-S] [-T] [%s] [-W] [%s] [%s]\n", name, GMT_V_OPT, GMT_h_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<rotA>, <rotB>, etc. are total reconstruction or stage rotation pole files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give two plate IDs separated by a hyphen (e.g., PAC-MBL)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to extract that rotation from the GPlates rotation database (if installed)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Or, they can be a single rotation in lon/lat[/tstart[/tstop]]/angle format.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   All rotation poles are assumed to be in geocentric coordinates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Rotations will be added/subtracted in the order given.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Report angles as time [Default uses time].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Report all longitudes in -180/+180 range [Default is 0-360].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Set output file type: t for total reconstruction and s for stage rotations [Default is -Ft].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Write rotations using GPlates format [Default is spotter format].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Reduce opening angles for stage rotations by <factor> [0.5].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Typically used to get half-rates needed for flowlines.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Ensure all poles are in northern hemisphere [Default ensures positive opening angles/rates].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Ensure all poles are in southern hemisphere [Default ensures positive opening angles/rates].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Transpose the result (i.e., change sign of final rotation angle).\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<rotA>, ... are total reconstruction or stage rotation pole files. "
+		"Alternatively, give two plate IDs separated by a hyphen (e.g., PAC-MBL) "
+		"to extract that rotation from the GPlates rotation database (if installed). "
+		"Or, they can be a single rotation in lon/lat[/tstart[/tstop]]/angle format. "
+		"All rotation poles are assumed to be in geocentric coordinates. "
+		"Rotations will be added/subtracted in the order given.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Report angles as time [Default uses time].");
+	GMT_Usage (API, 1, "\n-D Report all longitudes in -180/+180 range [Default is 0-360].");
+	GMT_Usage (API, 1, "\n-Fs|t");
+	GMT_Usage (API, -2, "Set output file directive:");
+	GMT_Usage (API, 3, "t: Total reconstruction [Default].");
+	GMT_Usage (API, 3, "s: Stage rotations.");
+	GMT_Usage (API, 1, "\n-G Write rotations using GPlates format [Default is spotter format].");
+	GMT_Usage (API, 1, "\n-M[<factor>]");
+	GMT_Usage (API, -2, "Reduce opening angles for stage rotations by <factor> [0.5]. "
+		"Typically used to get half-rates needed for flowlines.");
+	GMT_Usage (API, 1, "\n-N Ensure all poles are in northern hemisphere [Default ensures positive opening angles/rates].");
+	GMT_Usage (API, 1, "\n-S Ensure all poles are in southern hemisphere [Default ensures positive opening angles/rates].");
+	GMT_Usage (API, 1, "\n-T Transpose the result (i.e., change sign of final rotation angle).");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Ensure all rotations have negative opening angles/rates [Default ensures positive opening angles/rates].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Only one of -N, -S, -W may be used at the same time.\n");
+	GMT_Usage (API, 1, "\n-W Ensure all rotations have negative opening angles/rates [Default ensures positive opening angles/rates].");
+	GMT_Usage (API, 1, "\nOnly one of -N, -S, -W may be used at the same time.");
 	GMT_Option (API, "h,.");
 
 	return (GMT_MODULE_USAGE);
@@ -174,16 +180,18 @@ static int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struct G
 			/* Supplemental parameters */
 
 			case 'A':	/* Angle, not time */
-				Ctrl->A.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':	/* Dateline */
-				Ctrl->D.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'E':	/* Convert to half-spreading stage rotations [NOW -M] */
 				if (gmt_M_compat_check (GMT, 5)) { /* Warn and fall through */
 					GMT_Report (API, GMT_MSG_COMPAT, "-E is deprecated; use -M instead.\n");
-					Ctrl->M.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 					if (opt->arg[0]) Ctrl->M.value = atof (opt->arg);
 				}
 				else {
@@ -193,7 +201,7 @@ static int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struct G
 				break;
 
 			case 'F':
-				Ctrl->F.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				if (strlen (opt->arg) != 1) {
 					GMT_Report (API, GMT_MSG_ERROR, "Must specify -F<out>\n");
 					n_errors++;
@@ -224,28 +232,33 @@ static int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struct G
 				break;
 
 			case 'G':	/* GPlates output format */
-				Ctrl->G.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'M':	/* Convert to total reconstruction rotation poles instead */
-				Ctrl->M.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				if (opt->arg[0]) Ctrl->M.value = atof (opt->arg);
 				break;
 
 			case 'N':	/* Ensure all poles reported are in northern hemisphere */
-				Ctrl->N.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'S':	/* Ensure all poles reported are in southern hemisphere */
-				Ctrl->S.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'T':	/* Transpose the final result (i.e., change sign of rotation) */
-				Ctrl->T.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'W':	/* Ensure all poles reported have negative opening angles */
-				Ctrl->W.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6':
@@ -253,7 +266,7 @@ static int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struct G
 				break;	/* Probably a rotation lon/lat/angle with negative longitude */
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -345,10 +358,10 @@ EXTERN_MSC int GMT_rotconverter (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (out, 20, double);
 	if (Ctrl->G.active) {
-		gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_FLOAT);
-		gmt_set_column (GMT, GMT_OUT, 1, GMT_IS_FLOAT);
-		gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_LAT);
-		gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_LON);
+		gmt_set_column_type (GMT, GMT_OUT, 0, GMT_IS_FLOAT);
+		gmt_set_column_type (GMT, GMT_OUT, 1, GMT_IS_FLOAT);
+		gmt_set_column_type (GMT, GMT_OUT, 2, GMT_IS_LAT);
+		gmt_set_column_type (GMT, GMT_OUT, 3, GMT_IS_LON);
 		strcpy (GMT->current.setting.format_float_out, "%g");
 	}
 

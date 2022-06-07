@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdvolume** *grdfile* [ |-C|\ *cval* or |-C|\ *low/high/delta* or |-C|\ **r**\ *low/high* or |-C|\ **r**\ *cval*]
+**gmt grdvolume** *ingrid* [ |-C|\ *cval* or |-C|\ *low/high/delta* or |-C|\ **r**\ *low/high* or |-C|\ **r**\ *cval*]
 [ |-D| ]
 [ |-L|\ *base* ]
 [ |SYN_OPT-R| ]
@@ -21,6 +21,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-Z|\ *fact*\ [/*shift*] ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT--| ]
 
@@ -33,31 +34,43 @@ Description
 **grdvolume** reads a 2-D grid file and calculates the volume contained below the surface and above the plane specified
 by the given contour (or zero if not given) and reports the contour, area, volume, and maximum mean height (volume/area).
 Alternatively, specify a range of contours to be tried and **grdvolume** will determine the volume and area inside
-the contour for all contour values. Using **-T**, the contour that produced the maximum mean height (or maximum
+the contour for all contour values. Using |-T|, the contour that produced the maximum mean height (or maximum
 curvature of heights vs contour value) is reported as well. This feature may be used with :doc:`grdfilter`
-in designing an Optimal Robust Separator [*Wessel*, 1998].
+in designing an Optimal Robust Separator [*Wessel*, 1998; 2016].
 
 Required Arguments
 ------------------
 
-*grdfile*
-    The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)
+.. |Add_ingrid| replace:: 2-D gridded data file.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------
 
 .. _-C:
 
-**-C**\ *cval* or **-C**\ *low/high/delta* or **-Cr**\ *low/high* or **-Cr**\ *cval*
-    find area, volume and mean height (volume/area) inside and above the *cval* contour. Alternatively, search using
-    all contours from *low* to *high* in steps of *delta*. [Default returns area, volume and mean height
-    of the entire grid]. The area is measured in the plane of the contour. The **Cr** form on the other
-    hand computes the volume below the grid surface and above the planes defined by *low* and *high*,
-    or below *cval* and grid's minimum. Note that this is an *outside* volume whilst the other forms
-    compute an *inside* (below the surface) area volume. Use this form to compute for example the volume
-    of water between two contours. **Note**: If no **-C** is given then there is no contour and we return
-    the entire grid area, volume and the mean height; *cval* will be reported as 0 but we are not tracing
-    a zero-contour (which we do if **-C**\ 0 is given).
+**-C**\ [*cval*\|\ *low/high/delta*] or **-C**\ **r**\ [*cval*\|\ *low/high*]
+    By default, report the area, volume, and mean height (where height = volume / area)
+    of the entire grid. While the value in the first column will be 0, this does not
+    mean that a zero-contour was traced (unless **-C**\ 0 is used). Alternatively, use
+    one of the following to report a different statistic:
+
+        * **-C**\ *cval* - Report the area, volume, and mean height above the
+          *cval* contour and below the grid surface.
+
+        * **-C**\ *low/high/delta* - Report the area, volume, and mean height
+          above each contour from *low* to *high* in steps of *delta* and below
+          the grid surface. The area is calculated in the plane of the contour.
+
+        * **-C**\ **r**\ *cval* - Report the area, volume, and mean height
+          below the *cval* contour and above the grid surface. **Note**: This
+          defines an *outside* volume.
+
+        * **-C**\ **r**\ *low/high* - Report the area, volume, and mean height
+          between *low* and *high* and above the grid surface. For example, use
+          this form to compute the volume of water between to contours.
 
 .. _-D:
 
@@ -84,33 +97,34 @@ Optional Arguments
     Determine the single contour that maximized the average height (=
     volume/area). Select **-Tc** to use the maximum curvature of heights
     versus contour value rather than the contour with the maximum height
-    to pick the best contour value (requires **-C**).
+    to pick the best contour value (requires |-C|).
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
 **-Z**\ *fact*\ [/*shift*]
     Optionally subtract *shift* before scaling data by *fact*. [Default
-    is no scaling]. (Numbers in **-C**, **-L** refer to values after
+    is no scaling]. (Numbers in |-C|, |-L| refer to values after
     this scaling has occurred).
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
+
 .. include:: explain_-ocols.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------
@@ -160,11 +174,11 @@ to go through a box and affect the integration domain and limits.
 Notes
 -----
 
-#. The output of **grdvolume** is one or more records (one per contour if **-C**
+#. The output of **grdvolume** is one or more records (one per contour if |-C|
    is set to search multiple contours) containing *contour area volume volume/area*.
    These records are written to standard output.
 #. For geographical grids we convert degrees to "Flat Earth" distances in
-   meter.  You can use **-S** to select another distance unit.  The
+   meter.  You can use |-S| to select another distance unit.  The
    area is then reported in this unit squared while the volume is reported
    in unit^2 * z_unit quantities.
 #. **grdvolume** distinguishes between gridline and pixel-registered grids.
@@ -172,9 +186,9 @@ Notes
    boundaries. That means that in the first case the grid cells on the
    boundary only contribute half their area (and volume), whereas in the
    second case all grid cells are fully used. The exception is when the
-   **-C** flag is used: since contours do not extend beyond the outermost
+   |-C| flag is used: since contours do not extend beyond the outermost
    grid point, both grid types are treated the same. That means the outer
-   rim in pixel oriented grids is ignored when using the **-C** flag.
+   rim in pixel oriented grids is ignored when using the |-C| flag.
 
 See Also
 --------
@@ -188,4 +202,8 @@ References
 ----------
 
 Wessel, P., 1998, An empirical method for optimal robust
-regional-residual separation of geophysical data, *Math. Geol.*, **30**\ (4), 391-408.
+regional-residual separation of geophysical data, *Math. Geol.*, **30**\ (4), 391-408,
+https://doi.org/10.1023/A:1021744224009.
+
+Wessel, P., 2016, Regional–residual separation of bathymetry and revised estimates of Hawaii plume flux,
+*Geophys. J. Int.*, **204**\ (2), 932-947, https://doi.org/10.1093/gji/ggv472.

@@ -24,6 +24,8 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -77,8 +79,8 @@ Required Arguments
     the basis functions.  Basically, the trigonometric bases all
     use the normalized x' = (2*pi*(x-\ *origin*\ )/*length*) while
     the polynomials use x' = 2*(x-x_mid)/(xmax - xmin) for stability. Finally, append **+r** for a robust
-    solution [Default gives a least squares fit].  Use **-V** to see
-    a plain-text representation of the y(x) model specified in **-N**.
+    solution [Default gives a least squares fit].  Use |-V| to see
+    a plain-text representation of the y(x) model specified in |-N|.
 
 Optional Arguments
 ------------------
@@ -98,16 +100,16 @@ Optional Arguments
     Iteratively increase the number of model parameters, starting at
     one, until *n\_model* is reached or the reduction in variance of the
     model is not significant at the *confidence\_level* level. You may
-    set **-I** only, without an attached number; in this case the fit
+    set |-I| only, without an attached number; in this case the fit
     will be iterative with a default confidence level of 0.51. Or choose
     your own level between 0 and 1. See remarks section.  Note that the
-    model terms are added in the order they were given in **-N** so you
+    model terms are added in the order they were given in |-N| so you
     should place the most important terms first.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -117,10 +119,10 @@ Optional Arguments
     fit]. Append **+s** to instead read data uncertainties (one sigma)
     and create weights as 1/sigma^2 [Default reads only the first 2 columns].
 
-.. |Add_-bi| replace:: [Default is 2 (or 3 if **-W** is set) columns].
+.. |Add_-bi| replace:: [Default is 2 (or 3 if |-W| is set) columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 1-5 columns as given by **-F**].
+.. |Add_-bo| replace:: [Default is 1-5 columns as given by |-F|].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -138,6 +140,10 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-q.rst_
+
+.. include:: explain_-s.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 
@@ -161,10 +167,10 @@ bx + cxx + ... are also given in Verbose mode but users must realize
 that they are NOT stable beyond degree 7 or 8. See Numerical Recipes for
 more discussion. For evaluating Chebyshev polynomials, see :doc:`gmtmath`.
 
-The **-N**\ ...\ **+r** (robust) and **-I** (iterative) options evaluate the
+The **-N**\ ...\ **+r** (robust) and |-I| (iterative) options evaluate the
 significance of the improvement in model misfit Chi-Squared by an F
 test. The default confidence limit is set at 0.51; it can be changed
-with the **-I** option. The user may be surprised to find that in most
+with the |-I| option. The user may be surprised to find that in most
 cases the reduction in variance achieved by increasing the number of
 terms in a model is not significant at a very high degree of confidence.
 For example, with 120 degrees of freedom, Chi-Squared must decrease by

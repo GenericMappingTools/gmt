@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -68,13 +68,17 @@ extern "C" {
  * see http://stackoverflow.com/questions/26527077/compiling-with-accelerate-framework-on-osx-yosemite */
 
 #ifdef __APPLE__
-#ifndef __clang__
-#ifndef __has_extension
-#define __has_extension(x) 0
-#endif
-#define vImage_Utilities_h
-#define vImage_CVUtilities_h
-#endif
+    /* Apple Xcode expects _Nullable to be defined but it is not if gcc */
+#   ifndef _Nullable
+#       define _Nullable
+#   endif
+#   ifndef __clang__
+#       ifndef __has_extension
+#           define __has_extension(x) 0
+#       endif
+#       define vImage_Utilities_h
+#       define vImage_CVUtilities_h
+#   endif
 #endif
 
 /* Avoid some annoying warnings from MS Visual Studio */
@@ -120,16 +124,18 @@ extern "C" {
 #	define GMT_LOCAL static
 #endif
 
+#include "gmt_common_byteswap.h"    /* Byte-swap inline functions */
+
 #include "gmt_common_math.h" /* Shared math functions */
 #include "gmt.h"             /* All GMT high-level API */
 #include "gmt_private.h"     /* API declaration needed by libraries */
+#include "gmt_constants.h"   /* All basic constant definitions */
 #include "gmt_hidden.h"      /* Hidden bookkeeping structure for API containers */
 
 struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 #include "gmt_notposix.h"       /* Non-POSIX extensions */
 
-#include "gmt_constants.h"      /* All basic constant definitions */
 #include "gmt_modern.h"         /* Modern mode constant definitions */
 #include "gmt_macros.h"         /* All basic macros definitions */
 #include "gmt_dimensions.h"     /* Constant definitions created by configure */
@@ -139,9 +145,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_psl.h"            /* Declarations of structure for GMT PostScript settings */
 #include "gmt_hash.h"           /* Declarations of structure for GMT hashing */
 
-#ifdef HAVE_GDAL
-#	include "gmt_gdalread.h"      /* GDAL support */
-#endif
+#include "gmt_gdalread.h"      /* GDAL support */
 
 #include "gmt_common.h"         /* For holding the GMT common option settings */
 #include "gmt_fft.h"            /* Structures and enums used by programs needing FFTs */
@@ -169,6 +173,11 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 #include "gmt_prototypes.h"     /* All GMT low-level API */
 #include "gmt_common_string.h"  /* All code shared between GMT and PSL */
+
+#ifndef NO_SIGHANDLER
+/* Include signal declarations */
+#include "gmt_common_sighandler.h"
+#endif
 
 #include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 

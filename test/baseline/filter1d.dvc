@@ -1,0 +1,5 @@
+outs:
+- md5: 17eb890ce6ca5e7c8a6d8d6b124420ac.dir
+  size: 251237
+  nfiles: 6
+  path: filter1d

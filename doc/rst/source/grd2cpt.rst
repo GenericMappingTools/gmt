@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2cpt** *grid*
+**gmt grd2cpt** *ingrid*
 [ |-A|\ *transparency*\ [**+a**] ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
@@ -27,7 +27,7 @@ Synopsis
 [ |-Q|\ [**i**\|\ **o**] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ **h**\|\ **l**\|\ **m**\|\ **u** ]
-[ |-T|\ *start/stop/inc* ]
+[ |-T|\ *start/stop/inc*\|\ **n**]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
@@ -43,7 +43,7 @@ Description
 
 **grd2cpt** reads one or more grid files and writes a static color palette
 (CPT) file. In classic mode we write the CPT to standard output, while under
-modern mode we simply save the CPT as the current session CPT (but see **-H**).
+modern mode we simply save the CPT as the current session CPT (but see |-H|).
 The CPT is based on an existing dynamic
 master CPT of your choice, and the mapping from data value to
 colors is through the data's cumulative distribution function (CDF), so
@@ -67,7 +67,7 @@ copied into the new master file. If not, the parameters
 :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
 and :term:`COLOR_NAN` from
 the :doc:`gmt.conf` file or the command line will be used. This default
-behavior can be overruled using the options **-D**, **-M** or **-N**.
+behavior can be overruled using the options |-D|, |-M| or |-N|.
 
 The color model (RGB, HSV or CMYK) of the palette created by :doc:`makecpt`
 will be the same as specified in the header of the master CPT. When
@@ -78,10 +78,11 @@ line will be used.
 Required Arguments
 ------------------
 
-*grid*
-    Names of one or more grid files used to derive the color palette
-    table. All grids need to have the same size and dimensions. (See
-    GRID FILE FORMATS below).
+.. |Add_ingrid| replace:: Names of one or more grid files used to derive the
+    color palette table. All grids need to have the same size and dimensions.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -101,7 +102,7 @@ Optional Arguments
 
 **-D**\ [**i**\|\ **o**]
     Select the back- and foreground colors to match the colors for
-    lowest and highest *z*-values in the output CPT [Default (**-D** or **-Do**)
+    lowest and highest *z*-values in the output CPT [Default (|-D| or **-Do**)
     uses the colors specified in the master file, or those defined by the
     parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
     :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and
@@ -111,11 +112,12 @@ Optional Arguments
 
 **-E**\ [*nlevels*][**+c**][**+f**\ *file*]
     Create a linear color table by using the grid z-range as the new
-    limits in the CPT.  Alternatively, append *nlevels* and we will
+    limits in the CPT, so the number of levels in the CPT remain unchanged.
+    Alternatively, append *nlevels* and we will instead
     resample the color table into *nlevels* equidistant slices. As an
     option, append **+c** to estimate the cumulative density function
-    of the data and assign color levels accordingly.  if **+c** is used
-    the you may optionally append **+f** to save the CDF to *file*;
+    of the data and assign color levels accordingly. If **+c** is used
+    then you may optionally append **+f** to save the CDF to *file*;
     see **-bo** and **-o** for output formatting.
 
 .. _-F:
@@ -130,7 +132,12 @@ Optional Arguments
     category names (you can skip a category by not giving a name), or give
     *start*[-], where we automatically build monotonically increasing labels
     from *start* (a single letter or an integer). Append - to build ranges
-    *start*-*start+1* instead.
+    *start*-*start+1* instead.  **Note**: If **+cM** is given and the number
+    of categories is 12, then we automatically create a list of month names.
+    Likewise, if **+cD** is given and the number of categories is 7 then we
+    make a list of weekday names.  The format of these labels will depend on the
+    :term:`FORMAT_TIME_PRIMARY_MAP`, :term:`GMT_LANGUAGE` and possibly
+    :term:`TIME_WEEK_START` settings.
 
 .. _-G:
 
@@ -144,8 +151,8 @@ Optional Arguments
 
 **-H**\
     Modern mode only: Write the CPT to standard output as well [Default saves
-    the CPT as the session current CPT].  Required for scripts used to make
-    animations via :doc:`movie` where we must pass named CPT files.
+    the CPT as the session current CPT]. Required for scripts used to make
+    animations via :doc:`movie` and :doc:`batch` where we must pass named CPT files.
 
 .. _-I:
 
@@ -155,14 +162,15 @@ Optional Arguments
     specified by the parameters :term:`COLOR_BACKGROUND` and
     :term:`COLOR_FOREGROUND`.
     Append **z** to reverse the sign of z-values in the color table.  Note that
-    this change of *z*-direction happens before **-G** and **-S** values are used
-    so the latter much be compatible with the changed *z*-range. See also :ref:`manipulating_CPTs`
+    this change of *z*-direction happens before |-G| and |-S| values are used
+    so the latter must be compatible with the changed *z*-range. See also :ref:`manipulating_CPTs`
 
 .. _-L:
 
 **-L**\ *minlimit/maxlimit*
     Limit range of CPT to *minlimit/maxlimit*, and don't count data
-    outside this range when estimating CDF(Z). [Default uses min and max of data.]
+    outside this range when estimating CDF(Z). To set only one limit,
+    specify the other limit as "-" [Default uses min and max of data.]
 
 .. _-M:
 
@@ -172,7 +180,7 @@ Optional Arguments
     :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`,
     and :term:`COLOR_NAN`
     specified in the :doc:`gmt.conf` file or on the command line. When
-    combined with **-D**, only :term:`COLOR_NAN` is considered.
+    combined with |-D|, only :term:`COLOR_NAN` is considered.
 
 .. _-N:
 
@@ -188,10 +196,10 @@ Optional Arguments
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
     colors, and writes out z.
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -229,7 +237,7 @@ Optional Arguments
     Force a continuous CPT [Default is discontinuous].
 
 .. |Add_-bo| replace:: [Default is 2]. This option
-    only applies if **-E** selects CDF output.
+    only applies if |-E| selects CDF output.
 .. include:: explain_-bo.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
@@ -238,8 +246,6 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. include:: explain_-ocols.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_transparency.rst_
 
@@ -263,7 +269,7 @@ Discrete versus Continuous CPT
 ------------------------------
 
 All CPTs can be stretched, but only continuous CPTs can be sampled
-at new nodes (i.e., by given an increment in **-T**).  We impose this
+at new nodes (i.e., by given an increment in |-T|).  We impose this
 limitation to avoid aliasing the original CPT.
 
 Examples
@@ -279,7 +285,7 @@ from the remote 5m relief file, using the geo color table, try::
 Sometimes you don't want to make a CPT (yet) but would find it
 helpful to know that 90% of your data lie between z1 and z2, something
 you cannot learn from :doc:`grdinfo`. So you can do this to see some points
-on the CDF(Z) curve (use **-V** option to see more):
+on the CDF(Z) curve (use |-V| option to see more):
 
    ::
 

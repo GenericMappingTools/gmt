@@ -33,14 +33,16 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: basemap_common.rst_
+.. include:: basemap.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
 .. _-D:
 
 **-D**\ *xmin/xmax/ymin/ymax*\ [**+r**][**+s**\ *file*][**+t**][**+u**\ *unit*]\  \| **-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*][**+t**]
-    Draw a simple map inset box on the map.  Requires **-F**.  Specify the box in one of three ways:
+    Draw a simple map inset box on the map.  Requires |-F|.  Specify the box in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **r** if the coordinates instead are the lower left and
     upper right corners of the desired rectangle. (b) Give *xmin/xmax/ymin/ymax*
@@ -61,7 +63,7 @@ Synopsis
     its dimensions in the current map unit, use **+s**\ *file* to write this information
     to *file*.  Alternatively, you may append **+t** to translate the plot origin to
     the lower left corner of the map inset.
-    Specify inset box attributes via the **-F** option [outline only].
+    Specify inset box attributes via the |-F| option [outline only].
 
 Examples
 --------
@@ -187,7 +189,7 @@ the central meridian. A UTM basemap for Indo-China can be plotted as
 
    ::
 
-    gmt psbasemap -R95/5/108/20r -Ju46/1:10000000 -Bafg -B+tUTM -P > utm.ps
+    gmt psbasemap -R95/5/108/20+r -Ju46/1:10000000 -Bafg -B+tUTM -P > utm.ps
 
 Cylindrical Equal-Area
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -222,8 +224,8 @@ Another basemap for middle Europe may be created by
 
     gmt psbasemap -R0/90/25/55 -Jl45/20/32/45/0.1i -Bafg -B+t"Lambert Conformal Conic" -P > lambertc.ps
 
-Equidistant
-~~~~~~~~~~~
+Conic Equidistant
+~~~~~~~~~~~~~~~~~
 
 Yet another basemap of width 6 inch for middle Europe may be created by
 
@@ -257,8 +259,8 @@ Follow the instructions for stereographic projection if you want to
 impose rectangular boundaries on the azimuthal equal-area map but
 substitute **-Ja** for **-Js**.
 
-Equidistant
-~~~~~~~~~~~
+Azimuthal Equidistant
+~~~~~~~~~~~~~~~~~~~~~
 
 A 15-cm-wide global map in which distances from the center (here 125/10)
 to any point is true can be obtained by:
@@ -298,7 +300,7 @@ and height will product a 6-inch-wide basemap:
 
    ::
 
-    gmt psbasemap -Rg -JG-74/41.5/160/210/55/30/30/6i -Bafg -B+t"General Perspective" -P > genper.ps
+    gmt psbasemap -Rg -JG-74/41.5/6i+z160+a210+t55+v30 -Bafg -B+t"General Perspective" -P > genper.ps
 
 Stereographic [conformal]
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -313,14 +315,14 @@ degrees annotation/tick interval and 1 degree gridlines, run
 
 To make a 12-cm-wide stereographic basemap for Australia from an
 arbitrary view point (not the poles), and use a rectangular boundary, we
-must give the pole for the new projection and use the **-R** option to
+must give the pole for the new projection and use the |-R| option to
 indicate the lower left and upper right corners (in lon/lat) that will
 define our rectangle. We choose a pole at 130/-30 and use 100/-45 and
 160/-5 as our corners. The command becomes
 
    ::
 
-    gmt psbasemap -R100/-45/160/-5r -JS130/-30/12c -Bafg -B+t"General Stereographic View" -P > stereo2.ps
+    gmt psbasemap -R100/-45/160/-5+r -JS130/-30/12c -Bafg -B+t"General Stereographic View" -P > stereo2.ps
 
 Miscellaneous Map Projections
 -----------------------------
@@ -428,7 +430,9 @@ degrees about an axis centered on the map, try
 
     gmt psbasemap -R10/40/10/40 -JM10c -P -Bafg -B+t"I am rotated" -p90+w25/25 -Xc -P > rotated.ps
 
-.. include:: basemap_notes.rst_
+.. include:: basemap.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------

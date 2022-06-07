@@ -27,7 +27,7 @@ one. That is, it MUST NOT contain any new two tracks intersections (This
 point is NOT checked in the code). This program is useful when, for any
 good reason like file editing NAV correction or whatever, one had to
 recompute only the COEs between the edited files and the rest of the
-database.  The complete data base is written to *stdout*.
+database.  The complete data base is written to standard output.
 
 Required Arguments
 ------------------
@@ -49,11 +49,11 @@ Examples
 --------
 
 To update the main COE_data.txt with the new COEs estimations saved in
-the smaller COE_fresh.txt, try
-
-   ::
+the smaller COE_fresh.txt, try::
 
     gmt x2sys_merge -ACOE_data.txt -MCOE_fresh.txt > COE_updated.txt
+
+.. include:: x2sys_refs.rst_
 
 See Also
 --------

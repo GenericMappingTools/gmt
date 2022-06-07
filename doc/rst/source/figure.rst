@@ -50,6 +50,8 @@ Optional Arguments
 *formats*
     Give one or more comma-separated graphics extensions from the list of allowable graphics
     :ref:`formats <tbl-formats>` (default is configurable via setting GMT_GRAPHICS_FORMAT [pdf]).
+    Optionally, append **+m** for monochrome image (BMP, JPEG, PNG, and TIFF only)
+    and **+q**\ *quality* in 0-100 range to change JPEG quality [90].
 
 .. _figure-options:
 
@@ -60,10 +62,10 @@ Optional Arguments
     **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **M**\ *args*,\ **Q**\ *args*,\ **S**.
     See the :doc:`psconvert` documentation for details on these options.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_help_nopar.rst_
 
@@ -84,14 +86,14 @@ To start a new figure GlobalMap that should be returned as a JPEG file with a 1 
 around the image, try::
 
     gmt begin
-    gmt figure GlobalMap jpg A+m1c
+    gmt figure GlobalMap jpg A,I+m1c
     gmt ...
     gmt end show
 
 If the same figure were to be called Global Map.jpg you would need quotes::
 
     gmt begin
-    gmt figure 'Global Map' jpg A+m1c
+    gmt figure 'Global Map' jpg A,I+m1c
     gmt ...
     gmt end show
 

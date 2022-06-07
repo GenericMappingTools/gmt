@@ -10,7 +10,7 @@ set (GSHHG_ROOT "$ENV{COASTLINEDIR}/gshhg")
 set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
 
 set (GMT_USE_THREADS TRUE)
-set (GMT_ENABLE_OPENMP TRUE)
+# set (GMT_ENABLE_OPENMP TRUE)
 
 # recommended even for release build
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
@@ -26,6 +26,7 @@ enable_testing()
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_API_TESTS ON)
+set (DO_SUPPLEMENT_TESTS ON)
 set (SUPPORT_EXEC_IN_BINARY_DIR TRUE)
 
 # For code coverage
@@ -35,12 +36,6 @@ set (CMAKE_C_FLAGS "-coverage -O0 ${CMAKE_C_FLAGS}")
 add_definitions(-DUSE_COMMON_LONG_OPTIONS)
 # Turn on testing of upcoming long-option syntax for module options
 add_definitions(-DUSE_MODULE_LONG_OPTIONS)
-EOF
-fi
-
-if [[ "$BUILD_DOCS" == "true" ]]; then
-    cat >> cmake/ConfigUser.cmake << 'EOF'
-set (DO_ANIMATIONS TRUE)
 EOF
 fi
 

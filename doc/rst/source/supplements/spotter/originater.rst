@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt originater** [ *table* ] |-E|\ *rotfile*\ [**+i**]
+**gmt originater** [ *table* ]
+|-E|\ *rot_file*\|\ *ID1-ID2*\|\ *lon*/*lat*/*angle*\ [**+i**]
 |-F|\ *hs_file*\ [**+d**]
 [ |-D|\ *d_km* ]
 [ |-L|\ [*flag*] ]
@@ -29,6 +30,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -100,7 +102,7 @@ Optional Arguments
 .. _-L:
 
 **-L**\ [*flag*]
-    Output closest approach for nearest hotspot only (ignores **-S**).
+    Output closest approach for nearest hotspot only (ignores |-S|).
     Choose **-Lt** for (*time*, *dist*, *z*) [Default], **-Lw** for
     (*omega*, *dist*, *z*), and **-Ll** for (lon, lat, time, dist, z).
     Normally, *dist* is in km; use upper case modifiers **TWL** to get
@@ -125,12 +127,12 @@ Optional Arguments
 .. _-T:
 
 **-T**
-    Truncate seamount ages exceeding the upper age set with **-N** [no truncation].
+    Truncate seamount ages exceeding the upper age set with |-N| [no truncation].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -153,10 +155,11 @@ Optional Arguments
 .. include:: ../../explain_-e.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-h.rst_../../explain_-V.rst_
+.. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_-q.rst_
+.. include:: ../../explain_-s.rst_
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_help.rst_
 

@@ -12,12 +12,14 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdmask** *table* |-G|\ *mask_grd_file*
+**gmt grdmask** *table* |-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**] ]
+[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
+[ |-C|\ **f**\|\ **l**\|\ **o**\|\ **u** ]
 [ |-N|\ [**z**\|\ **Z**\|\ **p**\|\ **P**]\ *values* ]
 [ |-S|\ *search\_radius*\|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -29,6 +31,7 @@ Synopsis
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -42,7 +45,9 @@ Description
 *pathfiles* that each define a closed polygon. The nodes defined by the
 specified region and lattice spacing will be set equal to one of three
 possible values depending on whether the node is outside, on the polygon
-perimeter, or inside the polygon. The resulting mask may be used in
+perimeter, or inside the polygon, with the assigned  *z* value selected
+via |-N|.  If multiple polygons overlap the same nodes then the polygon
+selected depends on the |-C| selection.  The resulting mask may be used in
 subsequent operations involving :doc:`grdmath` to mask out data from
 polygonal areas. 2. The *pathfiles* simply represent data point locations
 and the mask is set to the inside or outside value depending on whether
@@ -59,17 +64,19 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *mask_grd_file*
-    Name of resulting output mask grid file. (See GRID FILE FORMATS below).
+.. |Add_outgrid| replace:: Give the name of the output mask grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
 .. include:: explain_-I.rst_
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -79,12 +86,24 @@ Optional Arguments
 **-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**]
     If the input data are geographic (as indicated by **-f**) then the
     sides in the polygons will be approximated by great circle arcs.
-    When using the **-A** sides will be regarded as straight lines.
+    When using the |-A| sides will be regarded as straight lines.
     Alternatively, append **m** to have sides first follow meridians,
     then parallels. Or append **p** to first follow parallels, then meridians.
     For Cartesian data, points are simply connected, unless you append
     **x** or **y** to construct stair-case paths whose first move is along
-    *x* or *y*, respectively.
+    *x* or *y*, respectively.  If your Cartesian data are polar (*theta*, *r*), append
+    **t** or **r** to construct stair-case paths whose first move is along
+    *theta* or *r*, respectively.
+
+.. _-C:
+
+**-C**\ **f**\|\ **l**\|\ **o**\|\ **u**
+    Clobber mode: Selects the polygon whose *z*-value will determine the
+    grid nodes. Choose from the following modes: **f** for the first polygon
+    to overlap a node; **o** for the last polygon to overlap a node; **l**
+    for the polygon with the lowest *z*-value, and **u** for the polygon with
+    the uppermost *z*-value [Default is **o**]. **Note**: Does not apply to |-S|.
+    For polygon *z*-values, see |-N|.
 
 .. _-N:
 
@@ -111,7 +130,7 @@ Optional Arguments
     (see `Units`_). If *radius* is given as **z** then we instead read
     individual radii from the 3rd input column.  Unless Cartesian data,
     specify the unit of these radii by appending it after **-Sz**.
-    If **-S** is not set then we consider the input data to define
+    If |-S| is not set then we consider the input data to define
     one or more closed polygon(s) instead.  For Cartesian data with
     different units you can instead append *xlim*\ /*ylim* which will
     perform a rectangular search where all nodes within ±\ *xlim* and
@@ -121,10 +140,12 @@ Optional Arguments
     that only the cell where point lies is masked, **-S**\ 1\ **c** masks one cell beyond that
     (i.e. makes a 3x3 neighborhood), and so on.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns (3 with **-Sz**)].
 .. include:: explain_-bi.rst_
@@ -146,8 +167,6 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-.. include:: explain_-qi.rst_
-
 .. include:: explain_distcalc.rst_
 
 **-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*][**+t**\ *threshold*]
@@ -157,16 +176,18 @@ Optional Arguments
    or **y** to specify just one direction, otherwise both are assumed.
    [Default is geographic if grid is geographic].
 
+.. include:: explain_-qi.rst_
+
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_core.rst_
 
 .. include:: explain_help.rst_
 
 .. include:: explain_distunits.rst_
-
-.. include:: explain_grd_output.rst_
 
 .. include:: explain_grd_coord.rst_
 

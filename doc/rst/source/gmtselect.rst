@@ -16,7 +16,7 @@ Synopsis
 [ |SYN_OPT-Area| ]
 [ |-C|\ *pointfile*\ \|\ *lon*/*lat*\ **+d**\ *dist* ]
 [ |-D|\ *resolution*\ [**+f**] ]
-[ |-E|\ [**fn**] ]
+[ |-E|\ [**f**][**n**] ]
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *gridmask* ]
 [ |-I|\ [**cfglrsz**] ]
@@ -24,8 +24,9 @@ Synopsis
 [ |-L|\ *linefile*\ **+d**\ *dist*\ [**+p**] ]
 [ |-N|\ *maskvalues* ]
 [ |SYN_OPT-R| ]
-[ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**] ]
 [ |SYN_OPT-V| ]
+[ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**] ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -35,6 +36,8 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -45,11 +48,11 @@ Description
 
 **select** is a filter that reads (x, y) or (longitude, latitude) positions from the first 2 columns of *infiles*
 [or standard input] and uses a combination of 1-7 criteria to pass or reject the records. Records can be
-selected based on whether or not they are 1) inside a rectangular region (**-R** [and **-J**]), 2) within
+selected based on whether or not they are 1) inside a rectangular region (|-R| [and |-J|]), 2) within
 *dist* km of any point in *pointfile*, 3) within *dist* km of any line in *linefile*, 4) inside one of the
 polygons in the *polygonfile*, 5) inside geographical features (based on coastlines), 6) has z-values
 within a given range, or 7) inside bins of a grid mask whose nodes are non-zero. The sense of the tests can
-be reversed for each of these 6 criteria by using the **-I** option. See option **-:** on how to read
+be reversed for each of these 7 criteria by using the |-I| option. See option **-:** on how to read
 (y,x) or (latitude,longitude) files (this option affects all module input data).  **Note**: If no projection
 information is used then you must supply **-fg** to tell **select** that your data are geographical.
 
@@ -64,7 +67,7 @@ Optional Arguments
 
 .. _-A:
 
-.. |Add_-A| replace:: Ignored unless **-N** is set.
+.. |Add_-A| replace:: Ignored unless |-N| is set.
 .. include:: explain_-A.rst_
 
 .. _-C:
@@ -77,7 +80,7 @@ Optional Arguments
     *lon*/*lat* instead of *pointfile*.  Distances are Cartesian and in
     user units; specify **-fg** to indicate spherical distances and
     append a distance unit, even if the distance specified is 0.
-    (see `Units`_). Alternatively, if **-R** and **-J** are used then
+    (see `Units`_). Alternatively, if |-R| and |-J| are used then
     geographic coordinates are projected to map coordinates (in cm,
     inch, or points, as determined by :term:`PROJ_LENGTH_UNIT`) before
     Cartesian distances are compared to *dist*.
@@ -85,7 +88,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *resolution*\ [**+f**]
-    Ignored unless **-N** is set. Selects the resolution of the
+    Ignored unless |-N| is set. Selects the resolution of the
     coastline data set to use ((**f**)ull, (**h**)igh,
     (**i**)ntermediate, (**l**)ow, or (**c**)rude). The resolution drops
     off by ~80% between data sets. [Default is **l**]. Append (**+f**) to
@@ -96,11 +99,11 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**fn**]
+**-E**\ [**f**][**n**]
     Specify how points exactly on a polygon boundary should be
     considered. By default, such points are considered to be inside the
     polygon. Append **f** and/or **n** to change this behavior for the
-    **-F** and/or **-N** options, respectively, so that boundary points are
+    |-F| and/or |-N| options, respectively, so that boundary points are
     considered to be outside.
 
 .. _-F:
@@ -123,25 +126,19 @@ Optional Arguments
 **-I**\ [**cflrsz**]
     Reverses the sense of the test for each of the criteria specified:
 
-    **c** select records NOT inside any point's circle of influence.
+    - **c** - select records NOT inside any point's circle of influence.
+    - **f** - select records NOT inside any of the polygons.
+    - **g** - pass records inside the cells with z equal zero of the grid mask in |-G|.
+    - **l** - select records NOT within the specified distance of any line.
+    - **r** - select records NOT inside the specified rectangular region.
+    - **s** - select records NOT considered inside as specified by |-N|
+      (and |-A|, |-D|).
+    - **z** - select records NOT within the range specified by |-Z|.
 
-    **f** select records NOT inside any of the polygons.
-
-    **g** will pass records inside the cells with z equal zero of the grid mask in **-G**.
-
-    **l** select records NOT within the specified distance of any line.
-
-    **r** select records NOT inside the specified rectangular region.
-
-    **s** select records NOT considered inside as specified by **-N**
-    (and **-A**, **-D**).
-
-    **z** select records NOT within the range specified by **-Z**.
-
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 
@@ -152,7 +149,7 @@ Optional Arguments
     embedded **-D**\ *dist* setting that sets each line's individual
     distance value. Distances are Cartesian and in user units; specify
     **-fg** to indicate spherical distances append a distance unit (see
-    `Units`_). Alternatively, if **-R** and **-J** are used then geographic
+    `Units`_). Alternatively, if |-R| and |-J| are used then geographic
     coordinates are projected to map coordinates (in cm, inch, m, or
     points, as determined by :term:`PROJ_LENGTH_UNIT`) before Cartesian
     distances are compared to *dist*. Append **+p** to ensure only points
@@ -173,15 +170,15 @@ Optional Arguments
 
     [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land].
 
-.. _-R:
-
-.. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1.
+.. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -194,12 +191,15 @@ Optional Arguments
     min or max, specify a hyphen (-). If your 3rd column is absolute
     time then remember to supply **-f**\ 2T. To specify another column, append
     **+c**\ *col*, and to specify several tests just repeat the **Z** option as
-    many times has you have columns to test. **Note**: When more than one **Z** option
+    many times as you have columns to test. **Note**: When more than one **Z** option
     is given then the **-Iz** option cannot be used.  In the case of multiple tests
-    you may use these modifiers as well: **a** passes any record that passes at least
-    one of your *z* tests [all tests must pass], and **i** reverses the tests to pass
-    record with *z* value NOT in the given range.  Finally, if **+c** is not used
-    then it is automatically incremented for each new **-Z** option, starting with 2.
+    you may use these modifiers as well: **+a** passes any record that passes at least
+    one of your *z* tests [Default is all tests must pass], and **+i** reverses the
+    tests to pass record with *z* value NOT in the given range.  Finally, if **+c** is
+    not used then it is automatically incremented for each new |-Z| option, starting
+    with 2.
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -230,6 +230,8 @@ Optional Arguments
 
 .. include:: explain_-s.rst_
 
+.. include:: explain_-w.rst_
+
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
@@ -254,18 +256,18 @@ not, comments, and other non-numerical content.
 Note On Distances
 -----------------
 
-If options **-C** or **-L** are selected then distances are Cartesian
+If options |-C| or |-L| are selected then distances are Cartesian
 and in user units; use **-fg** to imply spherical distances in km and
-geographical (lon, lat) coordinates. Alternatively, specify **-R** and
+geographical (lon, lat) coordinates. Alternatively, specify |-R| and
 **-J** to measure projected Cartesian distances in map units (cm, inch,
 or points, as determined by :term:`PROJ_LENGTH_UNIT`).
 
-This program has evolved over the years. Originally, the **-R** and
+This program has evolved over the years. Originally, the |-R| and
 **-J** were mandatory in order to handle geographic data, but now there
-is full support for spherical calculations. Thus, **-J** should only be
+is full support for spherical calculations. Thus, |-J| should only be
 used if you want the tests to be applied on projected data and not the
-original coordinates. If **-J** is used the distances given via **-C**
-and **-L** are projected distances.
+original coordinates. If |-J| is used the distances given via |-C|
+and |-L| are projected distances.
 
 Note On Segments
 ----------------

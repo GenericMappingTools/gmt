@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdpaste** *file_a.nc file_b.nc* |-G|\ *outfile.nc*
+**gmt grdpaste** *file_a.nc file_b.nc*
+|-G|\ *outfile.nc*
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -24,11 +25,12 @@ Description
 
 **grdpaste** will combine *file_a.nc* and *file_b.nc* into
 *outfile.nc* by pasting them together along their common edge. Files
-*file_a.nc* and *file_b.nc* must have the same dx, dy and have one
+*file_a.nc* and *file_b.nc* must have the same grid spacings and registration, and must have one
 edge in common. If in doubt, check with :doc:`grdinfo` and use :doc:`grdcut`
 and/or :doc:`grdsample` if necessary to prepare the edge joint. **Note**: For
 geographical grids, you may have to use **-f** to handle periodic longitudes
 unless the input grids are properly recognized as such via their meta-data.
+For stitching multiple grids, see :doc:`grdblend` instead.
 
 Required Arguments
 ------------------
@@ -41,22 +43,20 @@ Required Arguments
 .. _-G:
 
 **-G**\ *outfile.nc*
-    The name for the combined output.
+    The name for the combined output. (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

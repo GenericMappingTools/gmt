@@ -73,6 +73,7 @@
 #
 #---------------------------------------------------
 gmt begin GMT_App_J_2
+gmt set GMT_THEME cookbook
 gmt set FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
 gmt math -T0/5/0.01 T SINC = | gmt plot -R0/5/-0.3/1 -JX4i/2i -Bxa1f0.2+l"Frequency (cycles per filter width)" -Bya0.2f0.1g1+l"Gain" -BWeSn -Wthick
 gmt math -T0/5/0.01 T SINC 1 T T MUL SUB DIV = | grep -v '^>' | $AWK '{ if ($1 == 1) print 1, 0.5; else print $0}' | gmt plot -Wthick,-

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2008-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2008-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -72,12 +72,12 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 	size_t n_alloc;
 	double *ds = NULL;
 
-	ds = gmt_M_memory (GMT, NULL, n, double);
-	lend = gmt_M_memory (GMT, NULL, n, int64_t);
- 	iwk = gmt_M_memory (GMT, NULL, 2*n, int64_t);
+	if ((ds = gmt_M_memory (GMT, NULL, n, double)) == NULL) return GMT_MEMORY_ERROR;
+	if ((lend = gmt_M_memory (GMT, NULL, n, int64_t)) == NULL) return GMT_MEMORY_ERROR;
+ 	if ((iwk = gmt_M_memory (GMT, NULL, 2*n, int64_t)) == NULL) return GMT_MEMORY_ERROR;
 	n_alloc = 6 * (n - 2);
-	lptr = gmt_M_memory (GMT, NULL, n_alloc, int64_t);
-	list = gmt_M_memory (GMT, NULL, n_alloc, int64_t);
+	if ((lptr = gmt_M_memory (GMT, NULL, n_alloc, int64_t)) == NULL) return GMT_MEMORY_ERROR;
+	if ((list = gmt_M_memory (GMT, NULL, n_alloc, int64_t)) == NULL) return GMT_MEMORY_ERROR;
 
 	/* Create the triangulation. Main output is (list, lptr, lend) */
 
@@ -112,7 +112,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 	/* Create a triangle list which returns the number of triangles and their node list tri */
 
 	n_alloc = 2 * (n - 2);
-	T->D.tri = gmt_M_memory (GMT, NULL, TRI_NROW*n_alloc, int64_t);
+	if ((T->D.tri = gmt_M_memory (GMT, NULL, TRI_NROW*n_alloc, int64_t)) == NULL) return GMT_MEMORY_ERROR;
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK TRLIST subroutine\n");
 	trlist_ (&n, list, lptr, lend, &nrow, &n_out, T->D.tri, &ierror);
 	T->D.n = n_out;
@@ -131,13 +131,13 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 		/* Note that the triangulation data structure is altered if NB > 0 */
 
 		n_alloc = 2 * (n - 2);
-		xc = gmt_M_memory (GMT, NULL, n_alloc, double);
-		yc = gmt_M_memory (GMT, NULL, n_alloc, double);
-		zc = gmt_M_memory (GMT, NULL, n_alloc, double);
-		rc = gmt_M_memory (GMT, NULL, n_alloc, double);
+		if ((xc = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((yc = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((zc = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((rc = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
 		n_alloc = 6 * (n - 2);
-		T->V.listc = gmt_M_memory (GMT, NULL, n_alloc, int64_t);
-		lbtri = gmt_M_memory (GMT, NULL, 6*n, int64_t);
+		if ((T->V.listc = gmt_M_memory (GMT, NULL, n_alloc, int64_t)) == NULL) return GMT_MEMORY_ERROR;
+		if ((lbtri = gmt_M_memory (GMT, NULL, 6*n, int64_t)) == NULL) return GMT_MEMORY_ERROR;
 
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Call STRIPACK CRLIST subroutine\n");
 		crlist_ (&n, &n, x, y, z, list, lend, lptr, &lnew, lbtri, T->V.listc, &n_out, xc, yc, zc, rc, &ierror);
@@ -148,8 +148,8 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 		T->V.lptr = lptr;
 		/* Convert polygon vertices vectors to lon, lat */
 		n_alloc = 2 * (n - 2);
-		T->V.lon = gmt_M_memory (GMT, NULL, n_alloc, double);
-		T->V.lat = gmt_M_memory (GMT, NULL, n_alloc, double);
+		if ((T->V.lon = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
+		if ((T->V.lat = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return GMT_MEMORY_ERROR;
 		gmt_n_cart_to_geo (GMT, n_alloc, xc, yc, zc, T->V.lon, T->V.lat);
 		gmt_M_free (GMT, xc);
 		gmt_M_free (GMT, yc);
@@ -204,16 +204,16 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 
 	/* Set out output nodes */
 
-	plon = gmt_M_memory (GMT, NULL, h->n_columns, double);
-	plat = gmt_M_memory (GMT, NULL, h->n_rows, double);
+	if ((plon = gmt_M_memory (GMT, NULL, h->n_columns, double)) == NULL) return GMT_MEMORY_ERROR;
+	if ((plat = gmt_M_memory (GMT, NULL, h->n_rows, double)) == NULL) return GMT_MEMORY_ERROR;
 	for (col = 0; col < h->n_columns; col++) plon[col] = D2R * gmt_M_grd_col_to_x (GMT, col, h);
 	for (row = 0; row < h->n_rows; row++) plat[row] = D2R * gmt_M_grd_row_to_y (GMT, row, h);
 	nm = h->n_columns * h->n_rows;
 
 	/* Time to work on the interpolation */
 
-	sigma = gmt_M_memory (GMT, NULL, n_sig, double);
-	if (mode) grad = gmt_M_memory (GMT, NULL, 3*n, double);
+	if ((sigma = gmt_M_memory (GMT, NULL, n_sig, double)) == NULL) return GMT_MEMORY_ERROR;
+	if (mode && (grad = gmt_M_memory (GMT, NULL, 3*n, double)) == NULL) return GMT_MEMORY_ERROR;
 
 	if (mode == 0) {	 /* C-0 interpolation (INTRC0). */
 		nxp = 0;
@@ -321,7 +321,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 	}
 	else if (mode == 3) {	/* c-1 smoothing method smsurf. */
 		double wtk, smtol, gstol, e, sm;
-		wt = gmt_M_memory (GMT, NULL, n, double);
+		if ((wt = gmt_M_memory (GMT, NULL, n, double)) == NULL) return GMT_MEMORY_ERROR;
 		e    = (par[0] == 0.0) ? 0.01 : par[0];
 		sm   = (par[1] <= 0.0) ? (double)n : par[1];
 		itgs = (par[2] == 0.0) ? 3 : lrint (par[2]);
@@ -399,8 +399,11 @@ double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat,
 	unsigned int k, kind;
 	int sgn;
 	uint64_t p;
-	double pol_area = 0.0, tri_area, clat, P0[3], P1[3], N[3], M[3], C[3] = {0.0, 0.0, 0.0}, center[2];
+	double pol_area = 0.0, tri_area, clat, P0[3], P1[3], N[3], M[3], C[3] = {0.0, 0.0, 0.0}, center[2], R2;
 	static char *way[2] = {"CCW", "CW"};
+
+	/* pol_area is given in steradians and must be scaled by radius squared (R2) to yield a dimensioned area */
+	R2 = pow (GMT->current.proj.mean_radius * GMT->current.map.dist[GMT_MAP_DIST].scale, 2.0);	/* R in desired length unit squared (R2) */
 	if (n == 4) {	/* Apply directly on the spherical triangle (4 because of repeated point) */
 		clat = gmt_lat_swap (GMT, lat[0], GMT_LATSWAP_G2O);	/* Get geocentric latitude */
 		gmt_geo_to_cart (GMT, clat, lon[0], N, true);	/* get x/y/z for first point*/
@@ -414,11 +417,13 @@ double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat,
 			kind = (sgn == -1) ? 0 : 1;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Spherical triangle %.4lg/%.4lg via %.4lg/%.4lg to %.4lg/%.4lg : Unit area %7.5lg oriented %3s\n", lon[0], lat[1], lon[1], lat[1], lon[2], lat[2], pol_area, way[kind]);
 		}
-		for (k = 0; k < 3; k++) C[k] = N[k] + P0[k] + P1[k];
-		gmt_normalize3v (GMT, C);
-		gmt_cart_to_geo (GMT, &clat, &centroid[GMT_X], C, true);
-		centroid[GMT_Y] = gmt_lat_swap (GMT, clat, GMT_LATSWAP_G2O+1);	/* Get geodetic latitude */
-		return (sgn * pol_area * GMT->current.proj.mean_radius * GMT->current.proj.mean_radius * 1.0e-6);	/* Signed area in km^2 */
+		if (centroid) {
+			for (k = 0; k < 3; k++) C[k] = N[k] + P0[k] + P1[k];
+			gmt_normalize3v (GMT, C);
+			gmt_cart_to_geo (GMT, &clat, &centroid[GMT_X], C, true);
+			centroid[GMT_Y] = gmt_lat_swap (GMT, clat, GMT_LATSWAP_G2O+1);	/* Get geodetic latitude */
+		}
+		return (sgn * pol_area * R2);	/* Signed area in selected unit squared [km^2] */
 	}
 
 	/* Must split up polygon in a series of triangles */
@@ -444,18 +449,21 @@ double gmtlib_geo_centroid_area (struct GMT_CTRL *GMT, double *lon, double *lat,
 			kind = (sgn == -1) ? 0 : 1;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Spherical triangle %.4lg/%.4lg via %.4lg/%.4lg to %.4lg/%.4lg : Unit area %7.5lg oriented %3s\n", center[0], center[1], lon[p-1], lat[p-1], lon[p], lat[p], tri_area, way[kind]);
 		}
-		/* Compute centroid of this spherical triangle */
-		for (k = 0; k < 3; k++) M[k] = N[k] + P0[k] + P1[k];
-		gmt_normalize3v (GMT, M);
 		/* Add up weighted contribution to polygon centroid */
 		tri_area *= sgn;
-		for (k = 0; k < 3; k++) C[k] += M[k] * tri_area;
 		pol_area += tri_area;
+		if (centroid) {	/* Compute centroid of this spherical triangle */
+			for (k = 0; k < 3; k++) M[k] = N[k] + P0[k] + P1[k];
+			gmt_normalize3v (GMT, M);
+			for (k = 0; k < 3; k++) C[k] += M[k] * tri_area;
+		}
 		if (p < n) gmt_M_memcpy (P0, P1, 3, double);	/* Make P1 the next P0 except at end */
 	}
-	for (k = 0; k < 3; k++) C[k] /= pol_area;	/* Get raw centroid */
-	gmt_normalize3v (GMT, C);
-	gmt_cart_to_geo (GMT, &clat, &centroid[GMT_X], C, true);
-	centroid[GMT_Y] = gmt_lat_swap (GMT, clat, GMT_LATSWAP_G2O+1);	/* Get geodetic latitude */
-	return (pol_area * GMT->current.proj.mean_radius * GMT->current.proj.mean_radius * 1.0e-6);	/* Signed area in km^2 */
+	if (centroid) {
+		for (k = 0; k < 3; k++) C[k] /= pol_area;	/* Get raw centroid */
+		gmt_normalize3v (GMT, C);
+		gmt_cart_to_geo (GMT, &clat, &centroid[GMT_X], C, true);
+		centroid[GMT_Y] = gmt_lat_swap (GMT, clat, GMT_LATSWAP_G2O+1);	/* Get geodetic latitude */
+	}
+	return (pol_area * R2);	/* Signed area in selected unit squared [km^2] */
 }

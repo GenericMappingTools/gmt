@@ -1,17 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Lesser General Public License as published by
- *   the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
- *   Contact info: www.soest.hawaii.edu/wessel
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * SPOTTER.H: Include file for programs that link with spotter.a.
@@ -38,7 +39,7 @@
 #define GPLATES_PLATES    "Global_EarthByte_Plate_ID_Table"		/* .txt */
 #define GPLATES_ROTATIONS "Global_250-0Ma_Rotations_2019_v2"		/* .rot */
 
-#define SPOTTER_E_OPT "-E<rottable>[+i]|<ID1>-<ID2>[+i]|<plon>/<plat>/<prot>"
+#define SPOTTER_E_OPT "-E<rottable>|<ID1>-<ID2>|<plon>/<plat>/<prot>[+i]"
 
 /*! Structure with info on each Euler (stage) pole */
 struct EULER {
@@ -91,7 +92,7 @@ struct SPOTTER_ROT {	/* Holds -E information */
 EXTERN_MSC void spotter_setrot (struct GMT_CTRL *GMT, struct EULER *e);
 EXTERN_MSC unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct SPOTTER_ROT *R);
 EXTERN_MSC int spotter_stage (struct GMT_CTRL *GMT, double t, struct EULER p[], unsigned int ns);
-EXTERN_MSC void spotter_rot_usage (struct GMTAPI_CTRL *API, char option);
+EXTERN_MSC void spotter_rot_usage (struct GMTAPI_CTRL *API);
 EXTERN_MSC bool spotter_GPlates_pair (char *file);
 EXTERN_MSC int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, unsigned int flowline, bool total_out, bool invert, double *t_max);
 EXTERN_MSC int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, struct HOTSPOT **p);

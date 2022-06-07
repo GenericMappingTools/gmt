@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -288,9 +288,7 @@ struct GMT_IO {				/* Used to process input data records */
 	char curr_trailing_text[GMT_BUFSIZ];	/* Current text portion of current record (or NULL) */
 	char segment_header[GMT_BUFSIZ];	/* Current ASCII segment header */
 	char filename[2][PATH_MAX];	/* Current filenames (or <stdin>/<stdout>) */
-#ifdef HAVE_GDAL
 	char tempfile[PATH_MAX];	/* Temporary file used to read - should be removed when closed */
-#endif
 	char col_set[2][GMT_MAX_COLUMNS];	/* Keeps track of which columns have had their type set */
 	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ASCII format to overrule format_float_out */
 	int ncid;			/* NetCDF file ID (when opening netCDF file) */
@@ -316,8 +314,16 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
 	struct GMT_RECORD record;	/* Current record with pointers to data columns and text */
 	double *nc_xarray, *nc_yarray;	/* For grids with variable x,y arrays */
+	enum GMT_time_period cycle_operator;
+	bool cycle_interval;	/* true for annual and weekly cycles */
+	int64_t cycle_col;	/* The input column with periodic time [-1 meaning no such thing] */
+	double cycle_min;	/* Min cyclical time requested via -R */
+	double cycle_max;	/* Max cyclical time requested via -R */
+	double cycle_range;	/* A full period of time */
+	double cycle_period;	/* Custom period */
+	double cycle_phase;		/* Custom phase */
 	/* The remainder are just pointers to memory allocated elsewhere */
-	int *varid;			/* Array of variable IDs (netCDF only) */
+	int *grpid, *varid;			/* Arrays of group and variable IDs (netCDF only) */
 	double *scale_factor;		/* Array of scale factors (netCDF only) */
 	double *add_offset;		/* Array of offsets (netCDF only) */
 	double *missing_value;		/* Array of missing values (netCDF only) */

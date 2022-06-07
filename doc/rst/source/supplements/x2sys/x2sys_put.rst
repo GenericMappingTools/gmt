@@ -33,7 +33,7 @@ Required Arguments
 ------------------
 
 *info.tbf*
-    Name of a single track bin file. If not given, *stdin* will be read.
+    Name of a single track bin file. If not given, standard input will be read.
 
 .. include:: explain_tag.rst_
 
@@ -53,10 +53,10 @@ Optional Arguments
     new information in the track bin file [Default refuses to process
     tracks already in the database].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: ../../explain_help.rst_
 
@@ -85,7 +85,10 @@ options passed to :doc:`x2sys_init` when the *TAG* was first initiated.
 Both data base files are stored in the **$X2SYS_HOME**/*TAG* directory.
 Do not attempt to edit these files by hand.
 
+.. include:: x2sys_refs.rst_
+
 See Also
 --------
 
-:doc:`x2sys_binlist`, :doc:`x2sys_get`
+:doc:`x2sys_binlist`,
+:doc:`x2sys_get`

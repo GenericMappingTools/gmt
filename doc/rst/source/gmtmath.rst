@@ -14,10 +14,12 @@ Synopsis
 
 **gmt math** [ |-A|\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\|\ **w**] ]
 [ |-C|\ *cols* ]
-[ |-E|\ *eigen* ] [ |-I| ]
+[ |-E|\ *eigen* ]
+[ |-I| ]
 [ |-N|\ *n\_col*\ [/*t_col*] ]
-[ |-Q| ] [ |-S|\ [**f**\|\ **l**] ]
-[ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
+[ |-Q|\ [**c**\|\ **i**\|\ **p**\|\ **n**] ]
+[ |-S|\ [**f**\|\ **l**] ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **i**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -29,6 +31,7 @@ Synopsis
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
 [ |SYN_OPT-s| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT--| ]
 *operand* [ *operand* ] **OPERATOR** [ *operand* ] **OPERATOR** ...
 **=** [ *outfile* ]
@@ -45,12 +48,12 @@ syntax.  Arbitrarily complicated expressions may therefore be evaluated; the
 final result is written to an output file [or standard output]. Data
 operations are element-by-element, not matrix manipulations (except
 where noted). Some operators only require one operand (see below). If no
-data tables are used in the expression then options **-T**, **-N** can
+data tables are used in the expression then options |-T|, |-N| can
 be set (and optionally **-bo** to indicate the
 data type for binary tables). If STDIN is given, the standard input will
 be read and placed on the stack as if a file with that content had been
 given on the command line. By default, all columns except the "time"
-column are operated on, but this can be changed (see **-C**).
+column are operated on, but this can be changed (see |-C|).
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations.
 
@@ -61,12 +64,12 @@ Required Arguments
     If *operand* can be opened as a file it will be read as an ASCII (or
     binary, see **-bi**) table data file. If not
     a file, it is interpreted as a numerical constant or a special
-    symbol (see below). The special argument STDIN means that *stdin*
+    symbol (see below). The special argument STDIN means that standard input
     will be read and placed on the stack; STDIN can appear more than
     once if necessary.
 *outfile*
     The name of a table data file that will hold the final result. If
-    not given then the output is sent to stdout.
+    not given then the output is sent to standard output.
 
 Optional Arguments
 ------------------
@@ -74,17 +77,17 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\|\ **w**]
-    Requires **-N** and will partially initialize a table with values
+    Requires |-N| and will partially initialize a table with values
     from the given file *t_f(t)* containing *t* and *f(t)* only. The *t* is
     placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
-    (see **-N**).  Append **+r** to only place *f(t)* and leave the left
-    hand side of the matrix equation alone.  If used with operators LSQFIT and SVDFIT you can
+    (see |-N|).  Append **+r** to only place *f(t)* and leave the left
+    hand side of the matrix equation alone.  If used with operators **LSQFIT** and **SVDFIT** you can
     optionally append the modifier **+e** which will instead evaluate
-    the solution and write a data set with four columns: t, f(t), the
-    model solution at t, and the the residuals at t, respectively
+    the solution and write a data set with four columns: *t*, *f(t)*, the
+    model solution at *t*, and the the residuals at *t*, respectively
     [Default writes one column with model coefficients].  Append **+w**
     if *t_f(t* has a third column with weights, or append **+s** if
-    *t_f(t)* has a third column with 1-sigma.  In those two cases we
+    *t_f(t)* has a third column with 1-sigma uncertainties.  In those two cases we
     find the weighted solution.  The weights (or sigmas) will be output
     as the last column when **+e** is in effect.
 
@@ -92,18 +95,18 @@ Optional Arguments
 
 **-C**\ *cols*
     Select the columns that will be operated on until next occurrence of
-    **-C**. List columns separated by commas; ranges like 1,3-5,7 are
-    allowed, plus -Cx can be used for -C0 and -Cy can be used for -C1.
-    **-C** (no arguments) resets the default action of using
-    all columns except time column (see **-N**). **-Ca** selects all
+    |-C|. List columns separated by commas; ranges like 1,3-5,7 are
+    allowed, plus **-Cx** can be used for **-C**\ 0 and **-Cy** can be used for **-C**\ 1.
+    |-C| (no arguments) resets the default action of using
+    all columns except time column (see |-N|). **-Ca** selects all
     columns, including time column, while **-Cr** reverses (toggles) the
-    current choices.  When **-C** is in effect it also controls which
+    current choices.  When |-C| is in effect it also controls which
     columns from a file will be placed on the stack.
 
 .. _-E:
 
 **-E**\ *eigen*
-    Sets the minimum eigenvalue used by operators LSQFIT and SVDFIT [1e-7].
+    Sets the minimum eigenvalue used by operators **LSQFIT** and **SVDFIT** [1e-7].
     Smaller eigenvalues are set to zero and will not be considered in the
     solution.
 
@@ -117,20 +120,24 @@ Optional Arguments
 **-N**\ *n_col*\ [/*t_col*]
     Select the number of columns and optionally the column number that
     contains the "time" variable [0]. Columns are numbered starting at 0
-    [2/0]. If input files are specified then **-N** will add any missing
+    [2/0]. If input files are specified then |-N| will add any missing
     columns.
 
 .. _-Q:
 
-**-Q**
+**-Q**\ [**c**\|\ **i**\|\ **p**\|\ **n**]
     Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0  **-T**\ 0/0/1.
-    In this mode, constants may have plot units (i.e., c, i, p) and if so the final
-    answer will be reported in the unit set by :term:`PROJ_LENGTH_UNIT`.
+    In this mode, constants may have dimensional units (i.e., **c**, **i**, or **p**),
+    and will be converted to internal *inches* before computing. If one or more constants
+    with units are encountered then the final answer will be reported in the unit set by
+    :term:`PROJ_LENGTH_UNIT`, unless overridden by appending another unit. Alternatively,
+    append **n** for a non-dimensional result, meaning no unit conversion during output.
+    To avoid any unit conversion on input, just do not use units.
 
 .. _-S:
 
 **-S**\ [**f**\|\ **l**]
-    Only report the first or last row of the results [Default is all
+    Only report the first or last row of the results [Default outputs all
     rows]. This is useful if you have computed a statistic (say the
     **MODE**) and only want to report a single number instead of
     numerous records with identical values. Append **l** to get the last
@@ -138,17 +145,17 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
+**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **i**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
     Required when no input files are given. Builds an array for
-    the "time" column (see **-N**). If there is no time column
-    (i.e., your input has only data columns), give **-T** with
+    the "time" column (see |-N|). If there is no time column
+    (i.e., your input has only data columns), give |-T| with
     no arguments; this also implies **-Ca**.
     For details on array creation, see `Generate 1D Array`_.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bi.rst_
@@ -179,6 +186,8 @@ Optional Arguments
 
 .. include:: explain_-s.rst_
 
+.. include:: explain_-w.rst_
+
 .. include:: explain_help.rst_
 
 .. include:: explain_array.rst_
@@ -186,7 +195,7 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following 185 operators. Here, "args" are the number of input
+Choose among the following operators. Here, "args" are the number of input
 and output arguments.
 
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -196,11 +205,17 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ACOS**        | 1 1    | acos (A)                                                                                   |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **ACOSD**       | 1 1    | acosd (A)                                                                                  |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ACOSH**       | 1 1    | acosh (A)                                                                                  |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ACSC**        | 1 1    | acsc (A)                                                                                   |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **ACSCD**       | 1 1    | acscd (A)                                                                                  |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ACOT**        | 1 1    | acot (A)                                                                                   |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **ACOTD**       | 1 1    | acotd (A)                                                                                  |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ADD**         | 2 1    | A + B                                                                                      |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -208,13 +223,21 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ASEC**        | 1 1    | asec (A)                                                                                   |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **ASECD**       | 1 1    | asecd (A)                                                                                  |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ASIN**        | 1 1    | asin (A)                                                                                   |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **ASIND**       | 1 1    | asind (A)                                                                                  |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ASINH**       | 1 1    | asinh (A)                                                                                  |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ATAN**        | 1 1    | atan (A)                                                                                   |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **ATAND**       | 1 1    | atand (A)                                                                                  |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ATAN2**       | 2 1    | atan2 (A, B)                                                                               |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **ATAN2D**      | 2 1    | atan2d (A, B)                                                                              |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ATANH**       | 1 1    | atanh (A)                                                                                  |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -222,9 +245,9 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **BPDF**        | 3 1    | Binomial probability density function for p = A, n = B, and x = C                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **BEI**         | 1 1    | bei (A)                                                                                    |
+| **BEI**         | 1 1    | Kelvin function bei (A)                                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **BER**         | 1 1    | ber (A)                                                                                    |
+| **BER**         | 1 1    | Kelvin function ber (A)                                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **BITAND**      | 2 1    | A & B (bitwise AND operator)                                                               |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -272,7 +295,9 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **D2DT2**       | 1 1    | d^2(A)/dt^2 2nd derivative                                                                 |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **D2R**         | 1 1    | Converts Degrees to Radians                                                                |
+| **D2R**         | 1 1    | Converts degrees to radians                                                                |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **DEG2KM**      | 1 1    | Converts spherical degrees to kilometers                                                   |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **DENAN**       | 2 1    | Replace NaNs in A with values from B                                                       |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -356,11 +381,13 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **K1**          | 1 1    | Modified Bessel function of A (2nd kind, order 1)                                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **KM2DEG**      | 1 1    | Converts kilometers to spherical degrees                                                   |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **KN**          | 2 1    | Modified Bessel function of A (2nd kind, order B)                                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **KEI**         | 1 1    | kei (A)                                                                                    |
+| **KEI**         | 1 1    | Kelvin function kei (A)                                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **KER**         | 1 1    | ker (A)                                                                                    |
+| **KER**         | 1 1    | Kelvin function ker (A)                                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **KURT**        | 1 1    | Kurtosis of A                                                                              |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -428,7 +455,7 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **NEQ**         | 2 1    | 1 if A != B, else 0                                                                        |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **NORM**        | 1 1    | Normalize (A) so max(A)-min(A) = 1                                                         |
+| **NORM**        | 1 1    | Normalize (A) so min(A) = 0 and max(A) = 1                                                 |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **NOT**         | 1 1    | NaN if A == NaN, 1 if A == 0, else 0                                                       |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -484,7 +511,7 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **RPDF**        | 1 1    | Rayleigh probability density function for z = A                                            |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **ROLL**        | 2 0    | Cyclicly shifts the top A stack items by an amount B                                       |
+| **ROLL**        | 2 0    | Cyclically shifts the top A stack items by an amountB                                      |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ROTT**        | 2 1    | Rotate A by the (constant) shift B in the t-direction                                      |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -542,6 +569,8 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **VARW**        | 2 1    | Weighted variance of A for weights in B                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **VPDF**        | 3 1    | Von Mises density distribution V(x,mu,kappa), with angles = A, mu = B, and kappa = C       |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **WCDF**        | 3 1    | Weibull cumulative distribution function for x = A, scale = B, and shape = C               |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **WCRIT**       | 3 1    | Weibull distribution critical value for alpha = A, scale = B, and shape = C                |
@@ -589,19 +618,19 @@ The following symbols have special meaning:
 +-------------+-----------------------------------------+
 | **EPS_D**   | 2.2204460492503131e-16 (dbl. prec. eps) |
 +-------------+-----------------------------------------+
-| **TMIN**    | Minimum t value                         |
+| **TMIN**    | Minimum *t* value                       |
 +-------------+-----------------------------------------+
-| **TMAX**    | Maximum t value                         |
+| **TMAX**    | Maximum *t* value                       |
 +-------------+-----------------------------------------+
-| **TRANGE**  | Range of t values                       |
+| **TRANGE**  | Range of *t* values                     |
 +-------------+-----------------------------------------+
-| **TINC**    | t increment                             |
+| **TINC**    | *t* increment                           |
 +-------------+-----------------------------------------+
 | **N**       | The number of records                   |
 +-------------+-----------------------------------------+
-| **T**       | Table with t-coordinates                |
+| **T**       | Table with *t*-coordinates              |
 +-------------+-----------------------------------------+
-| **TNORM**   | Table with normalized t-coordinates     |
+| **TNORM**   | Table with normalized *t*-coordinates   |
 +-------------+-----------------------------------------+
 | **TROW**    | Table with row numbers 1, 2, ..., N-1   |
 +-------------+-----------------------------------------+
@@ -613,11 +642,11 @@ Notes On Operators
 ------------------
 
 #. The operators **PLM** and **PLMg** calculate the associated Legendre
-   polynomial of degree L and order M in x which must satisfy -1 <= x <= +1
-   and 0 <= M <= L. x, L, and M are the three arguments preceding the
+   polynomial of degree *L* and order *M* in *x* which must satisfy :math:`-1 \leq x \leq +1`
+   and :math:`0 \leq M \leq L`. Here, *x*, *L*, and *M* are the three arguments preceding the
    operator. **PLM** is not normalized and includes the Condon-Shortley
-   phase (-1)^M. **PLMg** is normalized in the way that is most commonly
-   used in geophysics. The C-S phase can be added by using -M as argument.
+   phase :math:`(-1)^M`. **PLMg** is normalized in the way that is most commonly
+   used in geophysics. The Condon-Shortley phase can be added by using *-M* as argument.
    **PLM** will overflow at higher degrees, whereas **PLMg** is stable
    until ultra high degrees (at least 3000).
 
@@ -650,19 +679,20 @@ Notes On Operators
    to 54 bits.  All bitwise operators return NaN if given NaN arguments or
    bit-settings <= 0.
 
-#. TAPER will interpret its argument to be a width in the same units as
+#. **TAPER** will interpret its argument to be a width in the same units as
    the time-axis, but if no time is provided (i.e., plain data tables) then
    the width is taken to be given in number of rows.
 
 #. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
-   only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
-   sRGB (x, y, z) conversions between all four color spaces.  These functions
-   behave differently whether **-Q** is used or not.  With **-Q** we expect
+   only *r,g,b* and *h,s,v* triplet conversions, but also *l,a,b* (CIE L a b ) and
+   sRGB (*x,y,z*) conversions between all four color spaces.  These functions
+   behave differently whether |-Q| is used or not.  With |-Q| we expect
    three input constants and we place three output results on the stack.  Since
-   only the top stack item is printed, you must use operators such as POP and
-   ROLL to get to the item of interest.  Without **-Q**, these operators work
+   only the top stack item is printed, you must use operators such as **POP** and
+   **ROLL** to get to the item of interest.  Without |-Q|, these operators work
    across the three columns and modify the three column entries, returning their
    result as a single three-column item on the stack.
+#. The **VPDF** operator expects angles in degrees.
 
 Macros
 ------
@@ -677,7 +707,7 @@ listed argument list. No macro may call another macro. As an example,
 the following macro expects that the time-column contains seafloor ages
 in Myr and computes the predicted half-space bathymetry:
 
-**DEPTH** = **SQRT 350 MUL 2500 ADD NEG** : *usage: DEPTH to return
+**DEPTH** = **SQRT** 350 **MUL** 2500 **ADD NEG** : *usage: DEPTH to return
 half-space seafloor depths*
 
 **Note**: Because geographic or time constants may be present in a macro, it
@@ -685,17 +715,44 @@ is required that the optional comment flag (:) must be followed by a space.
 As another example, we show a macro **GPSWEEK** which determines which GPS week
 a timestamp belongs to:
 
-**GPSWEEK** = **1980-01-06T00:00:00 SUB 86400 DIV 7 DIV FLOOR** : *usage: GPS week without rollover*
+**GPSWEEK** = 1980-01-06T00:00:00 **SUB** 86400 **DIV** 7 **DIV FLOOR** : *usage: GPS week without rollover*
 
 Active Column Selection
 -----------------------
 
 When **-C**\ *cols* is set then any operation, including loading of data from files, will
 restrict which columns are affected.
-To avoid unexpected results, note that if you issue a **-C**\ *cols* option before you load
+To avoid unexpected results, note that if you issue a **-C**\ *cols* option *before* you load
 in the data then only those columns will be updated, hence the unspecified columns will be zero.
-On the other hand, if you load the file first and then issue **-C**\ *cols* then the unspecified
-columns will have been loaded but are then ignored until you undo the effect of **-C**.
+On the other hand, if you load the file *first* and then issue **-C**\ *cols* then the unspecified
+columns will have been loaded but are then ignored until you undo the effect of |-C|.
+
+Absolute Time Column(s)
+-----------------------
+
+If input data have more than one column and the "time" column (set via |-N| [0])
+contains absolute time, then the default output format for any *other* columns containing
+absolute time will be reset to relative time.  Likewise, in scalar mode (|-Q|) the
+time column will be operated on and hence it also will be formatted as relative
+time.  Finally, if |-C| is used to include "time" in the columns operated on then
+we likewise will reset that column's format to relative time. The user can override this behavior with a
+suitable **-f** or **-fo** setting.  **Note**: We cannot guess what your operations on the
+time column will do, hence this default behavior.  As examples, if you are computing time differences
+then clearly relative time formatting is required, while if you are computing new absolute times
+by, say, adding an interval to absolute times then you will need to use **-fo** to set
+the output format for such columns to absolute time.
+
+Scalar Math with Units
+----------------------
+
+If you use |-Q| to do simple calculations, please note that the support for dimensional units is
+limited to converting a number ending in **c**, **i**, or **p** to internal *inches*.  Thus, while you can run
+"gmt -Qc 1c 1c MUL =", you may be surprised that the output area is not 1 cm squared.  The reason is
+that **gmt math** cannot keep track of what unit any particular item on the stack might be so it will
+assume it is internally in inches and then scale the final output to cm.  In this particular case,
+the unit is in inches squared and scaling by 2.54 once will give 0.3937 inch times cm as the unit.
+Thus, conversions only work for linear unit calculations, such as gmt math -Qp 1c 0.5i ADD =, which
+will return the result as 64.34 points.
 
 Examples
 --------
@@ -706,7 +763,13 @@ To add two plot dimensions of different units, we can run
 
    ::
 
-    length=`gmt math -Q 15c 2i SUB =`
+    length=$(gmt math -Q 15c 2i SUB =)
+
+To compute the ratio of two plot dimensions of different units, we select *non-dimensional* output and run
+
+   ::
+
+    ratio=$(gmt math -Qn 15c 2i DIV =)
 
 To take the square root of the content of the second data column being
 piped through **gmtmath** by process1 and pipe it through a 3rd process, use
@@ -741,7 +804,7 @@ assign it to a variable, try
 
    ::
 
-    mode_age=`gmt math -S -T ages.txt MODE =`
+    mode_age=$(gmt math -S -T ages.txt MODE =)
 
 To evaluate the dilog(x) function for coordinates given in the file t.txt:
 
@@ -758,49 +821,49 @@ trigonometric argument (2\*pi\*T/360):
     gmt math -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD @kT 3 MUL COS ADD = harmonics.txt
 
 To use **gmtmath** as a RPN Hewlett-Packard calculator on scalars (i.e., no
-input files) and calculate arbitrary expressions, use the **-Q** option.
+input files) and calculate arbitrary expressions, use the |-Q| option.
 As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) +
 cos (60)) and store the result in the shell variable z:
 
    ::
 
-    z=`gmt math -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
+    z=$(gmt math -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =)
 
 To convert the r,g,b value for yellow to h,s,v and save the hue, try
 
    ::
 
-    set hue = `gmt math -Q 255 255 0 RGB2HSV POP POP =`
+    hue=$(gmt math -Q 255 255 0 RGB2HSV POP POP =)
 
 
 To use **gmtmath** as a general least squares equation solver, imagine
-that the current table is the augmented matrix [ A \| b ] and you want
-the least squares solution x to the matrix equation A \* x = b. The
+that the current table is the augmented matrix [ **A** \| **b** ] and you want
+the least squares solution **x** to the matrix equation **A** \* **x** = **b**. The
 operator **LSQFIT** does this; it is your job to populate the matrix
-correctly first. The **-A** option will facilitate this. Suppose you
-have a 2-column file ty.txt with *t* and *b(t)* and you would like to fit
-a the model y(t) = a + b\*t + c\*H(t-t0), where H is the Heaviside step
+correctly first. The |-A| option will facilitate this. Suppose you
+have a 2-column file ty.txt with *t* and *y* and you would like to fit
+a the model *y(t) = a + b\*t + c\*H(t-t0)*, where *H(t)* is the Heaviside step
 function for a given t0 = 1.55. Then, you need a 4-column augmented
-table loaded with t in column 1 and your observed y(t) in column 3. The
+table loaded with *t* in column 1 and your observed *y* in column 3. The
 calculation becomes
 
    ::
 
     gmt math -N4/1 -Aty.txt -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.txt
 
-Note we use the **-C** option to select which columns we are working on,
+Note we use the |-C| option to select which columns we are working on,
 then make active all the columns we need (here all of them, with
 **-Ca**) before calling **LSQFIT**. The second and fourth columns (col
-numbers 1 and 3) are preloaded with t and y(t), respectively, the other
+numbers 1 and 3) are preloaded with *t* and *y*, respectively, the other
 columns are zero. If you already have a pre-calculated table with the
-augmented matrix [ A \| b ] in a file (say lsqsys.txt), the least squares
+augmented matrix [ **A** \| **b** ] in a file (say lsqsys.txt), the least squares
 solution is simply
 
    ::
 
     gmt math -T lsqsys.txt LSQFIT = solution.txt
 
-Users must be aware that when **-C** controls which columns are to be
+Users must be aware that when |-C| controls which columns are to be
 active the control extends to placing columns from files as well.
 Contrast the different result obtained by these very similar commands:
 

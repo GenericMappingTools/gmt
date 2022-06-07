@@ -1,19 +1,27 @@
-.. _-h_full:
+The **-h** option
+^^^^^^^^^^^^^^^^^
+
+**Syntax**
 
 **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*]
-    Primary input file(s) has *n* extra header record(s). If used, the default number of
-    header records is :term:`IO_N_HEADER_RECS` [0]. Use **-hi** if only
-    the primary input data should have header records [Default will write out header
-    records if the input data have them]. Blank lines and lines starting
-    with # are always skipped; to use another leading character for indicating header records,
-    please see :term:`IO_HEADER_MARKER`. Note that with **-h** in effect
-    the first *n* records are taken verbatim as headers and not skipped even if any is starting with #.
-    For output you may request additional headers
-    to be written via the option modifiers, and use **+d** to remove existing
-    header records. Append **+c** to issue a header comment with column names to the output [none].
-    Append **+m** to add a new segment header with a *segheader* to the output after the header block [none].
-    Append **+r** to add a *remark* comment to the output [none].
-    Append **+t** to add a *title* comment to the output [none].
-    These optional *remark* and *title* strings may contain \n to indicate line-breaks).
-    If used with native binary data we interpret *n* to instead mean the
-    number of bytes to skip on input or pad on output.
+    Specify that input and/or output file(s) have *n* header records [default is 0].
+
+**Description**
+
+Specify that the primary input file(s) has *n* header record(s). The default number of header records is set by
+:term:`IO_N_HEADER_RECS` [default is 0]. Use **-hi** if only the primary input data should have header records [Default
+will write out header records if the input data have them]. For output you may control the writing of header records
+using **-h**\ [**o**] and the optional modifiers:
+
+- **+d** to remove existing header records.
+- **+c** to add a header comment with column names to the output [default is no column names].
+- **+m** to add a segment header *segheader* to the output after the header block [default is no segment header].
+- **+r** to add a *remark* comment to the output [default is no comment]. The *remark* string may contain \\n to
+  indicate line-breaks.
+- **+t** to add a *title* comment to the output [default is no title]. The *title* string may contain \\n to indicate
+  line-breaks.
+
+**Note**: Blank lines and lines starting with # are always skipped. To use another leading character for indicating
+header records, set :term:`IO_HEADER_MARKER`. With **-h** in effect the first *n* records are taken verbatim as headers
+and not skipped even if any is starting with #. **Note**: If used with native binary data (using **-b**) we interpret
+*n* to instead mean the number of bytes to skip on input or pad on output.

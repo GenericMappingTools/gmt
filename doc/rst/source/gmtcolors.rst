@@ -41,7 +41,7 @@ GMT allows several ways to represent a color:
 
 **C/M/Y/K**
     Specify **C**\ yan, **M**\ agenta, **Y**\ ellow, and blac\ **K**\ . Each
-    number is in the range from 0 (no paint) to 1 (maximum paint). This
+    number is in the range from 0 (no paint) to 100 (maximum paint). This
     representation is used by most color printers.
 
 List Of Colors
@@ -50,9 +50,7 @@ List Of Colors
 The chart below lists the 663 unique color names that can be used in GMT.
 
 **Download PDF versions:**
-:download:`A4 size </_images/GMT_RGBchart_a4.pdf>`,
-:download:`US letter size </_images/GMT_RGBchart_letter.pdf>`,
-:download:`Tabloid size </_images/GMT_RGBchart_tabloid.pdf>`
+:download:`US tabloid size </_images/GMT_RGBchart.pdf>`
 
 .. _RGBchart:
 

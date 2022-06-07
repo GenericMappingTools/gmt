@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_anchor
+	gmt set GMT_THEME cookbook
 	gmt basemap -R0/1/0/1 -JX5i/2i -Ba1f0.5 -BwSnE+gbisque
 	gmt inset begin -DjTL+o0.7i/0.5i+w1.5i/0.75i -F+glightgreen+p1p
 	gmt inset end

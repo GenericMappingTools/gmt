@@ -1,5 +1,5 @@
 #
-#	Definition file a leftpointing crescent symbol.
+#	Definition file for a left-pointing crescent symbol.
 #
 0.25		0.5	M
 0.25		0	1 		90	270	A

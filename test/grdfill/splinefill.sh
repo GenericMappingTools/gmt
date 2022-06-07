@@ -2,7 +2,7 @@
 # Testing grdfill with spline infill of NaN areas
 gmt begin splinefill ps
 	# Get topo for Hawaiian Islands and set data on land to NaN
-	gmt grdclip @earth_relief_05m -R199:30/206/18/23 -Sa0/NaN -Gislands.nc
+	gmt grdclip @earth_relief_05m_p -R199:30/206/18/23 -Sa0/NaN -Gislands.nc
 	gmt makecpt -Csealand -T-5000/5000 -H > t.cpt
 	# Now replace NaN holes with cubic spline solutions
 	gmt grdfill islands.nc -As -Gnew.nc

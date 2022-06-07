@@ -18,6 +18,7 @@ xa=$(gmt math -Q $x 0.4 ADD =)
 a1=$(gmt math -Q $angle 180 ADD =)
 a2=$(gmt math -Q $angle 270 ADD =)
 gmt begin GMT_misfit ps
+	gmt set GMT_THEME cookbook
 	gmt plot -R1/6/0/3 -Jx2c -Glightgreen@35 <<- EOF
 	$x	1
 	4.5	1

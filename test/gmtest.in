@@ -5,6 +5,11 @@
 
 test -z "$1" && exit 1
 
+if [ -f ~/gmt.conf ]; then
+  echo "error: Cannot run tests with a gmt.conf file in the home directory." >&2
+  exit 1
+fi
+
 # Name of the script and the directory portion of it
 script_name="$1"
 script_dir=$(dirname "${script_name}")
@@ -12,15 +17,39 @@ local_script=$(basename "${script_name}")
 script="@GMT_SOURCE_DIR@/${script_name}"
 src="@GMT_SOURCE_DIR@/${script_dir}"
 
-# Is it a modern mode script?
-modern=$(grep "gmt begin" "$script" -c)
+if [[ $src == *"doc/examples"* ]]; then
+  baseline="@GMT_SOURCE_DIR@/doc/examples/images"
+elif [[ $src == *"doc/scripts"* ]]; then
+  baseline="@GMT_SOURCE_DIR@/doc/scripts/images"
+else
+  baseline="@GMT_SOURCE_DIR@/test/baseline/${script_dir#test}"
+fi
+
+# Skip tests with label GMT_DISABLE_TEST
+skip_this_test=$(grep GMT_DISABLE_TEST "$script" -c)
+if [ $skip_this_test -gt 0 ]; then	# Do not run this script, probably PS is too alrge
+		echo "warning: test disabled for script ${script}." >&2
+		exit 0
+fi
+
+# Is it a modern mode or one-liner script
+modern=$(grep "gmt begin\| -ps " "$script" -c)
 
 # Is it a script that is known to fail?
 if [ "@GMT_ENABLE_KNOWN2FAIL@" = "ON" ]; then
-	known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c)
+	# Check if the test is known to fail on a specific platform
+	# RUNNER_OS is an environmental variables defined by GitHub Actions
+	# RUNNER_OS is Linux, macOS or Windows
+	os=$(echo "$RUNNER_OS" | tr '[:lower:]' '[:upper:]')
+	known2fail=$(grep "GMT_KNOWN_FAILURE_${os}" "$script" -c -w)
+	# Check if the test is known to fail on all platforms
+	if [ "$known2fail" = 0 ]; then
+		known2fail=$(grep "GMT_KNOWN_FAILURE" "$script" -c -w)
+	fi
 else
 	known2fail=0
 fi
+
 # Any script override of GRAPHICSMAGICK_RMS?  Must be a comment line of the format
 # GRAPHICSMAGICK_RMS = <custom-limit>
 GRAPHICSMAGICK_RMS=$(grep "GRAPHICSMAGICK_RMS" "$script" | awk '{print $4}')
@@ -77,24 +106,32 @@ function psldemo()
 # Must have wrappers for all test programs not part of GMT distro:
 
 for apiprog in \
+	testapi_columns \
+    testapi_cube \
+    testapi_makecpt \
     testapi_matrix \
+    testapi_matrix_pad \
     testapi_matrix_plot \
     testapi_mixmatrix \
     testapi_userdataset \
     testapi_usergrid \
     testapi_uservectors \
     testapi_vector \
-    testapiconv \
+    testapi_conv \
     testgrdio \
     testapi_imageshading \
     testapi_matrix_as_grid \
     testapi_vector_strings \
     testapi_vector_plot \
+    testapi_vector_times \
     testapi_vector_io \
     testapi_matrix_io \
     testapi_matrix_360 \
     testapi_matrix_360_ref \
-    testapi_grid2matrix
+    testapi_grid2matrix \
+    testapi_putvector \
+    testapi_spatial \
+    testapi_text_legend
 do
     eval "${apiprog}() { valgrind_wrapper \"@GMT_BINARY_DIR@/src/${apiprog}\" \"\$@\"; }"
 done
@@ -129,7 +166,7 @@ for ps in *.ps ; do
       echo "$now ${script_dir}/${ps}: RMS Error = N/A Limit = $GRAPHICSMAGICK_RMS Failure = known" >> "@CMAKE_CURRENT_BINARY_DIR@/fail_count.txt"
   else
     # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-    rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/${psref:-$ps}") || pscmpfailed="yes"
+    rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}_diff.png" "$ps" "$baseline/${psref:-$ps}") || pscmpfailed="yes"
     rms=$(perl -ne 'print $1 if /Total: ([0-9.]+)/' <<< "$rms")
     if [ -z "$rms" ]; then
       rms="NA"

@@ -21,7 +21,7 @@ Synopsis
 [ |-G|\ *fill*\ [**+n**][**+p**] ]
 [ |-I|\ *fix_az* ]
 [ |-K| ]
-[ |-O| ] [ **-P** ]
+[ |-O| ] [ |-P| ]
 [ |-T|\ *pen* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -38,10 +38,13 @@ Synopsis
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-t| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: wiggle_common.rst_
+.. include:: wiggle.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
@@ -67,8 +70,8 @@ points, use
                  -C32000 -P -Gred -T0.25p,blue -DjRM+w1000+lnT -V > track_xym.ps
 
 and the positive anomalies will in general point in the north direction.
-We used **-D** to place a vertical scale bar indicating a 1000 nT anomaly.
-To instead enforce a fixed azimuth of 45 for the positive wiggles, we add **-I**
+We used |-D| to place a vertical scale bar indicating a 1000 nT anomaly.
+To instead enforce a fixed azimuth of 45 for the positive wiggles, we add |-I|
 and obtain
 
    ::
@@ -102,4 +105,4 @@ See Also
 :doc:`gmt`, :doc:`gmtcolors`,
 :doc:`filter1d`,
 :doc:`psbasemap`,
-:doc:`splitxyz`
+:doc:`gmtsplit`

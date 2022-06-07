@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_Defaults_1c
+	gmt set GMT_THEME cookbook
 	gmt set MAP_FRAME_TYPE plain FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh FONT_ANNOT_PRIMARY +8p
 	gmt basemap -R2001-9-11T/2001-9-13T/0.01/100 -JX2.25iT/2.25il -Bpxa6Hf1hg6h+l"x-axis label" -Bpya1g3p+l"y-axis label" -BWSne \
 		-X2i -Bsxa1D -U"Dazed and Confused"+o-0.75i/-0.85i --GMT_LANGUAGE=pt \

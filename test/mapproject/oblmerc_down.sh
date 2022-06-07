@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 #
+# GRAPHICSMAGICK_RMS = 0.01
+#
 # Tests mapproject for oblique Mercator -R-20/40/-15/65r -Joa-30/60/-75/1:30000000
 # This should be upside down
 

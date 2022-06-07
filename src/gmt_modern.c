@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -94,6 +94,7 @@ const char *gmt_get_full_name (struct GMTAPI_CTRL *API, const char *module) {
 
 	/* Look for classic modules that now have a different modern mode name */
 	if      (!strcmp (module, "2kml"))      return "gmt2kml";
+	else if (!strcmp (module, "binstats"))  return "gmtbinstats";
 	else if (!strcmp (module, "connect"))   return "gmtconnect";
 	else if (!strcmp (module, "convert"))   return "gmtconvert";
 	else if (!strcmp (module, "defaults"))  return "gmtdefaults";
@@ -184,7 +185,7 @@ bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, const char *module) {
 void gmtlib_set_KOP_strings (struct GMTAPI_CTRL *API) {
 	if (API->GMT->current.setting.use_modern_name || API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Must include the required "gmt " prefix */
 		API->K_OPT = API->O_OPT = API->P_OPT = "";	/* This are not part of modern mode */
-		API->c_OPT = "[-c[<row>,<col>|<index>]] ";	/* -c option for setting next subplot panel */
+		API->c_OPT = "[" GMT_c0_OPT "] ";	/* -c option for setting next subplot panel */
 	}
 	else {
 		API->K_OPT = "[-K] "; API->O_OPT = "[-O] "; API->P_OPT = "[-P] ";

@@ -4,9 +4,9 @@
 
 .. |gpsgridder_purpose| replace:: Interpolate GPS strains using Green's functions for elastic deformation
 
-.. |velo_purpose| replace:: Plot velocity vectors, crosses, and wedges
+.. |velo_purpose| replace:: Plot velocity vectors, crosses, anisotropy bars and wedges
 
-.. |psvelo_purpose| replace:: Plot velocity vectors, crosses, and wedges
+.. |psvelo_purpose| replace:: Plot velocity vectors, crosses, anisotropy bars and wedges
 
 .. |gshhg_purpose| replace:: Extract data tables from binary GSHHG or WDBII data files
 
@@ -36,13 +36,15 @@
 
 .. |gravfft_purpose| replace:: Spectral calculations of gravity, isostasy, admittance, and coherence for grids
 
+.. |gravprisms_purpose| replace:: Compute geopotential anomalies over 3-D vertical prisms
+
 .. |grdflexure_purpose| replace:: Compute flexural deformation of 3-D surfaces for various rheologies
 
 .. |grdgravmag3d_purpose| replace:: Computes the gravity effect of one (or two) grids by the method of Okabe
 
 .. |grdredpol_purpose| replace:: Compute the Continuous Reduction To the Pole, AKA differential RTP
 
-.. |grdseamount_purpose| replace:: Create synthetic seamounts (Gaussian, parabolic, cone or disc, circular or elliptical)
+.. |grdseamount_purpose| replace:: Create synthetic seamounts (Gaussian, parabolic, polynomial, cone or disc; circular or elliptical)
 
 .. |talwani2d_purpose| replace:: Compute geopotential anomalies over 2-D bodies by the method of Talwani
 

@@ -8,7 +8,7 @@ gmt begin vec_scales ps
   gmt set MAP_FRAME_TYPE plain
   echo 0 0 90 | gmt xyz2grd -R-3/3/-3/3 -I3 -Ga.nc
   echo 0 0 1  | gmt xyz2grd -R-3/3/-3/3 -I3 -Gr.nc
-  gmt subplot begin 3x2 -Fs6c -SCt -SRl -Bafg1 -M1c -R-3/3/-3/3 -JX6c -A+jBR+o0.5c+gwhite+p1p
+  gmt subplot begin 3x2 -Fs6c -Sct -Srl -Bafg1 -M1c -R-3/3/-3/3 -JX6c -A+jBR+o0.5c+gwhite+p1p
     gmt subplot set 0 -A"-S1i"					# 1 data unit per inch = 1 inch per data unit = 1 inch length
     gmt grdvector r.nc a.nc -A -S1i $arg
     gmt subplot set 1 -A"-Si1i"					# 1 inch per data unit = 1 inch length

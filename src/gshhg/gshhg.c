@@ -1,7 +1,20 @@
-/*
- *	Copyright (c) 1996-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+/*--------------------------------------------------------------------
+ *
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
+ *--------------------------------------------------------------------*/
+/*
  * PROGRAM:	gshhg.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
  * CREATED:	JAN. 28, 1996
@@ -84,22 +97,29 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GSHHG_CTRL *C) {	/* Dealloca
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>]\n\t[-Qe|i] [%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_Usage (API, 0, "usage: %s gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>] [-Qe|i] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tgshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b is a GSHHG polygon or line file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-        GMT_Message (API, GMT_TIME_NONE, "\t-A Extract polygons whose area is greater than or equal to <area> (in km^2) [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Write '%%' at start of each segment header [P or L] (overwrites -M)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and write 'NaN NaN' after each segment to enable import by MATLAB or GNU Octave.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L List header records only (no data records will be written).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Output data for polygon number <id> only.  Use -Ic to get all continent polygons\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is all polygons].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Output features whose level matches <level> [Default outputs all levels].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Control river-lakes: Use -Qe to exclude river-lakes, and -Qi to ONLY get river-lakes\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default outputs all polygons].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\ngshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b is a binary GSHHG polygon or line file.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<area>");
+	GMT_Usage (API, -2, "Extract polygons whose area is greater than or equal to <area> (in km^2) [all].");
+	GMT_Usage (API, 1, "\n-G Prepend '%%' at start of each segment header "
+		"and write a 'NaN NaN' record after each segment to enable import by MATLAB or GNU Octave.");
+	GMT_Usage (API, 1, "\n-L List header records only (no data records will be written).");
+	GMT_Usage (API, 1, "\n-I<id>");
+	GMT_Usage (API, -2, "Output data for polygon number <id> only.  Use -Ic to get all continent polygons "
+		"[Default is all polygons].");
+	GMT_Usage (API, 1, "\n-N<level>");
+	GMT_Usage (API, -2, "Output features whose level matches <level> [Default outputs all levels].");
+	GMT_Usage (API, 1, "\n-Qe|i");
+	GMT_Usage (API, -2, "Control handling of river-lakes; choose a directive:");
+	GMT_Usage (API, 3, "e: Exclude all river-lakes.");
+	GMT_Usage (API, 3, "i: Only output river-lakes.");
+	GMT_Usage (API, -2, "[Default outputs all polygons].");
 	GMT_Option (API, "V,bo2,do,o,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -112,38 +132,40 @@ static int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTI
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	int sval;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Count input files */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			case '>':	/* Got output file */
-				Ctrl->Out.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
-				Ctrl->A.active = true;
-				Ctrl->A.min = atof (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->A.min);
 				break;
 			case 'G':
-				Ctrl->G.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'L':
-				Ctrl->L.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'I':
-				Ctrl->I.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				if (opt->arg[0] == 'c')
 					Ctrl->I.mode = 1;
 				else {
@@ -153,13 +175,13 @@ static int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTI
 				}
 				break;
 			case 'N':
-				Ctrl->N.active = true;
-				sval = atoi (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &sval);
 				n_errors += gmt_M_check_condition (GMT, sval < 0, "Option -N: Level cannot be negative!\n");
 				Ctrl->N.level = sval;
 				break;
 			case 'Q':
-				Ctrl->Q.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				if (opt->arg[0] == 'e')
 					Ctrl->Q.mode = 1;
 				else if (opt->arg[0] == 'i')
@@ -168,13 +190,13 @@ static int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTI
 					Ctrl->Q.mode = 3;	/* Flag the error */
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "No data file specified!\n");
-	n_errors += gmt_M_check_condition (GMT, n_files == 1 && strstr (Ctrl->In.file, ".nc"), "gshhs does not read GMT netCDF coastline files!  See man page for binary files.\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "No data file specified!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.active && strstr (Ctrl->In.file, ".nc"), "gshhs does not read GMT netCDF coastline files!  See man page for binary files.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.min < 0.0, "Option -A: area cannot be negative!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.mode == 3, "Option -Q: Append e or i!\n");
 
@@ -377,7 +399,10 @@ EXTERN_MSC int GMT_gshhg (void *V_API, int mode, void *args) {
 				T[seg_no]->data[GMT_Y][row] = p.y * GSHHG_SCL;
 			}
 			T[seg_no]->n_rows = h.n;
-			if (Ctrl->G.active) T[seg_no]->data[GMT_X][row] = T[seg_no]->data[GMT_Y][row] = GMT->session.d_NaN;
+			if (Ctrl->G.active) {	/* Must add one more dummy NaN record and increment rows */
+				T[seg_no]->data[GMT_X][row] = T[seg_no]->data[GMT_Y][row] = GMT->session.d_NaN;
+				T[seg_no]->n_rows++;
+			}
 			D->n_records += T[seg_no]->n_rows;
 		}
 		seg_no++;

@@ -1,16 +1,16 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *      This program is free software; you can redistribute it and/or modify
- *      it under the terms of the GNU Lesser General Public License as published by
- *      the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- *      This program is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *      GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
@@ -18,7 +18,7 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
-#if defined(HAVE_GDAL) && ((GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)) || (GDAL_VERSION_MAJOR >= 3)
+#if ((GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)) || (GDAL_VERSION_MAJOR >= 3)
 
 #include <gdal_utils.h>
 
@@ -51,14 +51,14 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 	hDS = GDALCreate(hDriver, "mem", 0, 0, 0, GDT_Unknown, NULL);
 	if (hDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Creation of MEM file failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		return NULL;
 	}
 
 	hLayer = GDALDatasetCreateLayer(hDS, "point_out", NULL, wkbPoint, NULL);
 	if (hLayer == NULL ) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Layer creation failed.\n");
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		return NULL;
 	}
 
@@ -68,7 +68,7 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 
 	if (OGR_L_CreateField(hLayer, hFieldDefn, TRUE) != OGRERR_NONE) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Creating Name field failed.\n");
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		return NULL;
 	}
 
@@ -91,7 +91,7 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 
 				if (OGR_L_CreateFeature(hLayer, hFeature) != OGRERR_NONE) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to create feature in dataset.\n");
-					GDALDestroyDriverManager();
+					gmtlib_GDALDestroyDriverManager(GMT->parent);
 					return NULL;
 				}
 				OGR_F_Destroy(hFeature);
@@ -120,7 +120,7 @@ GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 		return NULL;
 
 	txt_in = strdup (in);
-	args = gmt_M_memory (GMT, NULL, n_alloc, char *);
+	if ((args = gmt_M_memory (GMT, NULL, n_alloc, char *)) == NULL) return NULL;
 
 	/* txt_in can contain options that take multi-word text strings, e.g., -B+t"My title".  We avoid the problem of splitting
 	 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
@@ -145,7 +145,7 @@ GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 
 		if (n_args == n_alloc) {
 			n_alloc += GMT_SMALL_CHUNK;
-			args = gmt_M_memory(GMT, args, n_alloc, char *);
+			if ((args = gmt_M_memory(GMT, args, n_alloc, char *)) == NULL) return NULL;
 		}
 	}
 	for (k = 0; txt_in[k]; k++)	/* Restore input string to prestine condition */
@@ -288,10 +288,10 @@ GMT_LOCAL int init_open(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 
 			if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, GDLL->fname_in, NULL)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to read input grid.\n");
-				return -1;
+				return GMT_NOTSET;
 			}
 
-			to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
+			if ((to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL)) == NULL) return GMT_NOTSET;
 			if (G->header->ProjRefPROJ4) {to_GDALW->P.ProjRefPROJ4 = G->header->ProjRefPROJ4;	to_GDALW->P.active = true;}
 			if (G->header->ProjRefWKT)   {to_GDALW->P.ProjRefWKT   = G->header->ProjRefWKT;	to_GDALW->P.active = true;}
 			if (G->header->ProjRefEPSG)   to_GDALW->P.ProjRefEPSG  = G->header->ProjRefEPSG;	// Not yet used
@@ -367,7 +367,7 @@ int gmt_gdal_info (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) 
 	if (args) free_args(GMT, args);
 	GDALClose(hSrcDS);
 	GDALInfoOptionsFree(psOptions);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	return 0;
 }
 
@@ -394,7 +394,7 @@ int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 
 	GDALDEMProcessingOptionsFree(psOptions);
     OGRCleanupAll();
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
@@ -427,7 +427,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "grid");
 
 	GDALGridOptionsFree(psOptions);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
@@ -460,7 +460,7 @@ int gmt_gdal_rasterize(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GD
 	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "rasterize");
 
 	GDALRasterizeOptionsFree(psOptions);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
@@ -483,7 +483,7 @@ int gmt_gdal_translate (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "translate");
 
 	GDALTranslateOptionsFree(psOptions);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
@@ -507,8 +507,8 @@ int gmt_gdal_warp (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) 
 	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "warp");
 
 	GDALWarpAppOptionsFree(psOptions);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
-#endif		//defined(HAVE_GDAL) && ...
+#endif		/* ((GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)) || (GDAL_VERSION_MAJOR >= 3) */

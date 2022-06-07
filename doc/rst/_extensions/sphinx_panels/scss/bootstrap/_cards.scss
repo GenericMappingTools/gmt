@@ -1,0 +1,225 @@
+// Bootstrap v4.4.1 (https://getbootstrap.com/)
+// Copyright 2011-2019 The Bootstrap Authors
+// Copyright 2011-2019 Twitter, Inc.
+// Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+
+.card {
+  background-clip: border-box;
+  background-color: $white;
+  border: 1px solid $black-12-5;
+  border-radius: .25rem;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+  word-wrap: break-word;
+
+  >hr {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  >.list-group:first-child .list-group-item:first-child {
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+  }
+
+  >.list-group:last-child .list-group-item:last-child {
+    border-bottom-left-radius: .25rem;
+    border-bottom-right-radius: .25rem;
+  }
+}
+
+.card-body {
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  min-height: 1px;
+  padding: 1.25rem;
+}
+
+.card-title {
+  margin-bottom: .75rem;
+}
+
+.card-subtitle {
+  margin-bottom: 0;
+  margin-top: -.375rem;
+}
+
+.card-text:last-child {
+  margin-bottom: 0;
+}
+
+.card-link:hover {
+  text-decoration: none;
+}
+
+.card-link+.card-link {
+  margin-left: 1.25rem;
+}
+
+.card-header {
+  background-color: $black-3;
+  border-bottom: 1px solid $black-12-5;
+  margin-bottom: 0;
+  padding: .75rem 1.25rem;
+}
+
+.card-header:first-child {
+  border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
+}
+
+.card-header+.list-group .list-group-item:first-child {
+  border-top: 0;
+}
+
+.card-footer {
+  background-color: $black-3;
+  border-top: 1px solid $black-12-5;
+  padding: .75rem 1.25rem;
+}
+
+.card-footer:last-child {
+  border-radius: 0 0 calc(.25rem - 1px) calc(.25rem - 1px);
+}
+
+.card-header-tabs {
+  border-bottom: 0;
+  margin-bottom: -.75rem;
+  margin-left: -.625rem;
+  margin-right: -.625rem;
+}
+
+.card-header-pills {
+  margin-left: -.625rem;
+  margin-right: -.625rem;
+}
+
+.card-img-overlay {
+  bottom: 0;
+  left: 0;
+  padding: 1.25rem;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.card-img,
+.card-img-bottom,
+.card-img-top {
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.card-img,
+.card-img-top {
+  border-top-left-radius: calc(.25rem - 1px);
+  border-top-right-radius: calc(.25rem - 1px);
+}
+
+.card-img,
+.card-img-bottom {
+  border-bottom-left-radius: calc(.25rem - 1px);
+  border-bottom-right-radius: calc(.25rem - 1px);
+}
+
+.w-100 {
+  width: 100% !important;
+}
+
+.shadow {
+  box-shadow: 0 .5rem 1rem $black-15 !important;
+}
+
+// scss-docs-start theme-colors-map
+$semantic-colors-text: map-merge(
+  $semantic-colors,
+  (
+  "white": $white,
+  "body": $gray-900,
+  "muted": $gray-600,
+  "black-50": $black-50,
+  "white-50": $white-50,
+  )
+) !default;
+// scss-docs-end theme-colors-map
+
+@each $color, $value in map-merge($semantic-colors, ("white": $white)) {
+  .bg-#{$color} {
+    background-color: $value !important;
+  }
+
+  button {
+
+    &.bg-#{$color}:focus,
+    &.bg-#{$color}:hover {
+      background-color: darken($value, 10%) !important;
+    }
+  }
+
+  a {
+
+    &.bg-#{$color}:focus,
+    &.bg-#{$color}:hover {
+      background-color: darken($value, 10%) !important;
+    }
+
+    &.text-#{$color}:focus,
+    &.text-#{$color}:hover {
+      color: darken($dark, 15%) !important;
+    }
+  }
+}
+
+@each $color, $value in $semantic-colors-text {
+  .text-#{$color} {
+    color: $value !important;
+  }
+}
+
+.bg-transparent {
+  background-color: transparent !important;
+}
+
+.text-justify {
+  text-align: justify !important;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.font-weight-light {
+  font-weight: 300 !important;
+}
+
+.font-weight-lighter {
+  font-weight: lighter !important;
+}
+
+.font-weight-normal {
+  font-weight: 400 !important;
+}
+
+.font-weight-bold {
+  font-weight: 700 !important;
+}
+
+.font-weight-bolder {
+  font-weight: bolder !important;
+}
+
+.font-italic {
+  font-style: italic !important;
+}

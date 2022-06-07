@@ -1,5 +1,6 @@
-#include "gmt_dev.h"
+#include "gmt.h"
 #include <math.h>
+#include <string.h>
 /*
  * Testing the use of user data provided via a GMT_MATRIX
  * to/from a module that expect to read/write GMT_GRIDs.

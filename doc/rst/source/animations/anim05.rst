@@ -3,22 +3,20 @@
 (5) Control spline gridding via eigenvalues
 -------------------------------------------
 
-Our next animation performs gridding using cubic splines but
-restricts the solution to using only the first *k* eigenvalues
-of the 52 that are required for an exact interpolation of this
-data set consisting of 52 points.  We use
-:doc:`greenspline </greenspline>` to grid the data and select
-an ever-increasing number of eigenvalues, then show a contour
-map of the evolving surface.  The data misfits are indicated
-by the colored circles; as we approach the full solution these
-all become white (no misfit). These 52 frames are well suited
-for an animated GIF.
+Our next animation performs gridding via Green's splines in :doc:`/greenspline`
+that allows to the selection of an approximate fit by ignoring the smaller
+eigenvalues.  However, it is not easy to know how many eigenvalues to include.
+This animation illustrates gridding of bathymetry data (squares) from ship data.
+We show the earth_relief_01m for comparison in the left panel and the gridded
+result in the middle panel as a function of the number of eigenvalues included.
+The right panel shows the incremental values added as new eigenvalues are included.
+Note the data distribution is such that we have a good coverage in the north with
+larger gaps in the south - the solution quality reflects this disparity.  The ship
+data also have a few bad tracks which stand out in the solution. We also report
+the RMS misfit between the model and the data as the solution builds incrementally.
 
 .. literalinclude:: /_verbatim/anim05.txt
    :language: bash
 
-.. figure:: /_images/anim05.*
-   :width: 400 px
-   :align: center
-
-   Evolution of a splined grid.
+..  youtube:: 7NQa4TORA3E
+    :width: 100%

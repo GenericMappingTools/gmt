@@ -1,16 +1,16 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *      This program is free software; you can redistribute it and/or modify
- *      it under the terms of the GNU Lesser General Public License as published by
- *      the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- *      This program is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *      GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
@@ -28,13 +28,6 @@
 #include <sys/utime.h>
 #endif
 
-#ifdef	__APPLE__
-	/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
-#ifndef _Nullable
-#	define _Nullable
-#	endif
-#	endif
-
 #define GMT_HASH_INDEX	0
 #define GMT_INFO_INDEX	1
 
@@ -44,7 +37,7 @@
  * 	   @earth_relief_<res>.grd	Various global relief grids
  * We may add more data later but this is our start.
  * 2. Data sets only used to run an example or a test script
- * and these are all called @*, i.e., a '@' is pre-pended to the name.
+ * and these are all called @*, i.e., a '@' is prepended to the name.
  * They live in a cache subdirectory under the GMT_DATA_SERVER
  * and will be placed in a cache directory in the users ~/.gmt directory.
  * 3. Generic URLs starting with http:, https:, or ftp:  These will be
@@ -221,12 +214,14 @@ GMT_LOCAL struct GMT_DATA_INFO *gmtremote_data_load (struct GMTAPI_CTRL *API, in
 	}
 	if ((k = gmtremote_parse_version (line))) {
 		fclose (fp);
+		gmt_chop (line);
 		if (k == 2)
 			GMT_Report (API, GMT_MSG_NOTICE, "Your GMT version too old to use the remote data mechanism - please upgrade to %s or later\n", line);
 		else
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to parse \"%s\" to extract GMT version\n", line);
+		*n = 0;	/* No good */
 		return NULL;
-	}	
+	}
 	if ((I = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_INFO)) == NULL) {
 		fclose (fp);
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to allocated %d GMT_DATA_INFO structures!\n", *n);
@@ -324,12 +319,105 @@ GMT_LOCAL int gmtremote_compare_key (const void *item_1, const void *item_2) {
 }
 
 int gmtremote_wind_to_file (const char *file) {
-	int k = strlen (file) - 2;	/* This jumps past any trailing / for tiles */
+	int k = (int)(strlen (file) - 2);	/* This jumps past any trailing / for tiles */
 	while (k >= 0 && file[k] != '/') k--;
 	return (k+1);
 }
 
-int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
+int gmt_remote_no_resolution_given (struct GMTAPI_CTRL *API, const char *rfile, int *registration) {
+	/* Return first entry to a list of different resolutions for the
+	 * same data set. For instance, if file is "earth_relief" then we
+	 * return the ID to the first one listed. */
+	char *c = NULL, *p = NULL, dir[GMT_LEN64] = {""}, file[GMT_LEN128] = {""};
+	int ID = GMT_NOTSET, reg = GMT_NOTSET;
+	size_t L;
+
+	if (rfile == NULL || rfile[0] == '\0') return GMT_NOTSET;	/* No file name given */
+	if (rfile[0] != '@') return GMT_NOTSET;	/* No remote file name given */
+	strcpy (file, &rfile[1]);	/* Make a copy but skipping leading @ character */
+	if ((c = strchr (file, '+'))) c[0] = '\0';	/* Chop of modifiers such as in grdimage -I */
+	L = strlen (file);
+	if (!strncmp (&file[L-2], "_g", 2U)) {	/* Want a gridline-registered version */
+		reg = GMT_GRID_NODE_REG;
+		file[L-2] = '\0';
+	}
+	else if (!strncmp (&file[L-2], "_p", 2U)) {	/* Want a pixel-registered version */
+		reg = GMT_GRID_PIXEL_REG;
+		file[L-2] = '\0';
+	}
+	for (int k = 0; ID == GMT_NOTSET && k < API->n_remote_info; k++) {
+		L = strlen (API->remote_info[k].dir) - 1;	/* Length of directory without the trailing slash */
+		strncpy (dir, API->remote_info[k].dir, L);	/* Make a copy without the trailing slash */
+		dir[L] = '\0';	/* Terminate string */
+		p = strrchr (dir, '/');	/* Start of final subdirectory */
+		p++;	/* Skip past the slash */
+		if (!strcmp (p, file)) ID = k;	/* Found it */
+	}
+	if (ID != GMT_NOTSET && registration)
+		*registration = reg;	/* Pass back desired [or any] registration */
+
+	return (ID);	/* Start of the family or -1 */
+}
+
+struct GMT_RESOLUTION *gmt_remote_resolutions (struct GMTAPI_CTRL *API, const char *rfile, unsigned int *n) {
+	/* Return list of available resolutions and registrations for the specified data set family.
+	 * For instance, if file is "earth_relief" then we return an array of structs
+	 * with the resolution and registration from 01d (g&p) to 91s (g) .*/
+	char *c = NULL, *p = NULL, dir[GMT_LEN64] = {""}, file[GMT_LEN128] = {""};
+	static char *registration = "gp";	/* The two types of registrations */
+	int reg = GMT_NOTSET;
+	unsigned int id = 0;
+	size_t L, n_alloc = GMT_SMALL_CHUNK;
+	struct GMT_RESOLUTION *R = NULL;
+
+	if (rfile == NULL || rfile[0] == '\0') return NULL;	/* No file name given */
+	if (rfile[0] != '@') return NULL;	/* No remote file name given */
+	strcpy (file, &rfile[1]);	/* Make a copy but skipping leading @ character */
+	if ((c = strchr (file, '+'))) c[0] = '\0';	/* Chop of modifiers such as in grdimage -I */
+	L = strlen (file);
+	if (!strncmp (&file[L-2], "_g", 2U)) {	/* Want a gridline-registered version */
+		reg = GMT_GRID_NODE_REG;
+		file[L-2] = '\0';
+	}
+	else if (!strncmp (&file[L-2], "_p", 2U)) {	/* Want a pixel-registered version */
+		reg = GMT_GRID_PIXEL_REG;
+		file[L-2] = '\0';
+	}
+	if ((R = gmt_M_memory (API->GMT, NULL, n_alloc, struct GMT_RESOLUTION)) == NULL)
+		return NULL;	/* No memory */
+
+	for (int k = 0; k < API->n_remote_info; k++) {
+		L = strlen (API->remote_info[k].dir) - 1;	/* Length of directory without the trailing slash */
+		strncpy (dir, API->remote_info[k].dir, L);	/* Make a copy without the trailing slash */
+		dir[L] = '\0';	/* Terminate string */
+		p = strrchr (dir, '/');	/* Start of final subdirectory */
+		p++;	/* Skip past the slash */
+		if (!strcmp (p, file) && (reg == GMT_NOTSET || registration[reg] == API->remote_info[k].reg)) {	/* Got one to keep */
+			R[id].resolution = urint (1.0 / API->remote_info[k].d_inc);	/* Number of nodes per degree */
+			strncpy (R[id].inc, API->remote_info[k].inc, GMT_LEN8);	/* Copy the formatted inc string */
+			R[id].reg = API->remote_info[k].reg;	/* Copy the registration */
+			id++;
+		}
+		if (id == n_alloc) {	/* Need more memory */
+			n_alloc += GMT_SMALL_CHUNK;
+			if ((R = gmt_M_memory (API->GMT, NULL, n_alloc, struct GMT_RESOLUTION)) == NULL)
+				return NULL;	/* No memory */
+		}
+	}
+	if (id) {	/* Did find some */
+		if ((R = gmt_M_memory (API->GMT, R, id, struct GMT_RESOLUTION)) == NULL)
+			return NULL;	/* No memory */
+		*n = id;
+	}
+	else {	/* No luck, probably filename typo */
+		gmt_M_free (API->GMT, R);
+		*n = 0;
+	}
+
+	return (R);
+}
+
+int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *ifile) {
 	/* Return the entry in the remote file table of file is found, else -1.
 	 * Complications to consider before finding a match:
 	 * Input file may or may not have leading @
@@ -338,16 +426,22 @@ int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
 	 * Key file may be a tiled data set and thus ends with '/'
 	 */
 	int pos = 0;
+	char file[PATH_MAX] = {""};
 	struct GMT_DATA_INFO *key = NULL;
-	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* No file name given */
-	if (file[0] == '@') pos = 1;	/* Skip any leading remote flag */
+	if (ifile == NULL || ifile[0] == '\0') return GMT_NOTSET;	/* No file name given */
+	if (ifile[0] == '@') pos = 1;	/* Skip any leading remote flag */
 	/* Exclude leading directory for local saved versions of the file */
-	if (pos == 0) pos = gmtremote_wind_to_file (file);	/* Skip any leading directories */
-	key = bsearch (&file[pos], API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
+	if (pos == 0) pos = gmtremote_wind_to_file (ifile);	/* Skip any leading directories */
+	/* Must handle the use of srtm_relief vs earth_relief for the 01s and 03s data */
+	if (strncmp (&ifile[pos], "srtm_relief_0", 13U) == 0)	/* Gave strm special name */
+		sprintf (file, "earth_%s", &ifile[pos+5]);	/* Replace srtm with earth */
+	else	/* Just copy as is from pos */
+		strcpy (file, &ifile[pos]);
+	key = bsearch (file, API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
 	if (key) {	/* Make sure we actually got a real hit since file = "earth" will find a key starting with "earth****" */
 		char *ckey = strrchr (key->file, '.');		/* Find location of the start of the key file extension (or NULL if no extension) */
-		char *cfile = strrchr (&file[pos], '.');	/* Find location of the start of the input file extension (or NULL if no extension) */
-		size_t Lfile = (cfile) ? (size_t)(cfile - &file[pos]) : strlen (&file[pos]);	/* Length of key file name without extension */
+		char *cfile = strrchr (file, '.');	/* Find location of the start of the input file extension (or NULL if no extension) */
+		size_t Lfile = (cfile) ? (size_t)(cfile - file) : strlen (file);	/* Length of key file name without extension */
 		size_t Lkey  = (ckey)  ? (size_t)(ckey  - key->file)  : strlen (key->file);		/* Length of key file name without extension */
 		if (ckey == NULL && Lkey > 1 && key->file[Lkey-1] == '/') Lkey--;	/* Skip trailing dir flag */
 		if (Lkey > Lfile && Lkey > 2 && key->file[Lkey-2] == '_' && strchr ("gp", key->file[Lkey-1])) Lkey -= 2;	/* Remove the length of _g or _p from Lkey */
@@ -371,9 +465,12 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	 * There are a few different scenarios where this can happen:
 	 * 1. Users of GMT <= 6.0.0 are used to say earth_relief_01m. These will now get p.
 	 * 2. Users who do not care about registration.  If so, they get p if available. */
-	char newfile[GMT_LEN256] = {""}, reg[2] = {'p', 'g'}, *file = NULL, *infile = NULL, *ext = NULL, *c = NULL;
-	int k_data, k;
+	char newfile[GMT_LEN256] = {""}, dir[GMT_LEN128] = {""}, reg[2] = {'p', 'g'};
+	char *file = NULL, *infile = NULL, *ext = NULL, *c = NULL, *p = NULL, *q = NULL;
+	int k_data, k, kstart = 0, kstop = 2, kinc = 1;
+	size_t L;
 	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') return;
+	if (gmt_M_file_is_memory (file)) return;	/* Not a remote file for sure */
 	if (file[0] != '@') return;
 	infile = strdup (file);
 	if ((c = strchr (infile, '+')))	/* Got modifiers, probably from grdimage or similar, chop off for now */
@@ -382,21 +479,34 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	ext = gmt_chop_ext (infile);
 	/* If the remote file is found then there is nothing to do */
 	if ((k_data = gmt_remote_dataset_id (API, infile)) == GMT_NOTSET) goto clean_up;
-	if (strstr (file, "_p") || strstr (file, "_g")) goto clean_up;	/* Already have the registration codes */
-	for (k = 0; k < 2; k++) {
+	API->remote_id = k_data;
+	L = strlen (API->remote_info[k_data].dir) - 1;	/* Length of dir minus trailing slash */
+	strncpy (dir, API->remote_info[k_data].dir, L);	dir[L] = '\0';	/* Duplicate dir without slash */
+	p = strrchr (dir, '/') + 1;	/* Start of final subdirectory (skipping over the slash we found) */
+	q = strstr (file, p);	/* Start of the file name (most likely the same as &file[1] but we want to make sure) */
+	if (q == NULL) return;	/* Should never happen but definitively nothing more to do here - just a safety valve */
+	q += strlen (p);	/* Move to the end of family name after which any registration codes would be found */
+	if (strstr (q, "_p") || strstr (q, "_g")) goto clean_up;	/* Already have the registration codes */
+	if (API->use_gridline_registration) {	/* Switch order so checking for g first, then p */
+		GMT_Report (API, GMT_MSG_WARNING, "Remote dataset given to a data processing module but no registration was specified - default to gridline registration (if available)\n");
+		kstart = 1; kstop = -1; kinc = -1;
+	}
+	for (k = kstart; k != kstop; k += kinc) {
 		/* First see if this _<reg> version exists of this dataset */
 		sprintf (newfile, "%s_%c", infile, reg[k]);
 		if ((k_data = gmt_remote_dataset_id (API, newfile)) != GMT_NOTSET) {
 			/* Found, replace given file name with this */
 			if (c) {	/* Restore the modifiers */
 				c[0] = '+';
-				if (strstr (c, "+s") || strstr (c, "+o"))
+				if (gmt_found_modifier (API->GMT, c, "os"))
 					GMT_Report (API, GMT_MSG_WARNING, "Cannot append +s<scl> and/or +o<offset> to the remote global grid %s - ignored\n", newfile);
 				else
 					strcat (newfile, c);
 			}
 			gmt_M_str_free (*file_ptr);
 			*file_ptr = strdup (newfile);
+			API->remote_id = k_data;
+			GMT_Report (API, GMT_MSG_DEBUG, "Input remote grid modified to have registration: %s\n", newfile);
 			goto clean_up;
 		}
 	}
@@ -419,19 +529,19 @@ GMT_LOCAL void gmtremote_display_attribution (struct GMTAPI_CTRL *API, int key, 
 		if ((c = strrchr (API->GMT->session.DATASERVER, '/')))	/* Found last slash in http:// */
 			strcpy (name, ++c);
 		else /* Just in case */
-			strncpy (name, gmtlib_dataserver_url (API), GMT_LEN128-1);
+			strncpy (name, gmt_dataserver_url (API), GMT_LEN128-1);
 		if ((c = strchr (name, '.'))) c[0] = '\0';	/* Chop off stuff after the initial name */
 		gmt_str_toupper (name);
-		GMT_Report (API, GMT_MSG_NOTICE, "Remote data courtesy of GMT data server %s [%s]\n\n", name, API->GMT->session.DATASERVER);
+		GMT_Report (API, GMT_MSG_NOTICE, "Remote data courtesy of GMT data server %s [%s]\n\n", API->GMT->session.DATASERVER, gmt_dataserver_url (API));
 		API->server_announced = true;
 	}
 	if (key == GMT_NOTSET) {	/* A Cache file */
 		if (strchr (file, ':'))	/* Generic URL */
-			GMT_Report (API, GMT_MSG_NOTICE, "  -> Download URL file: %s\n", file);
+			GMT_Report (API, GMT_MSG_INFORMATION, "  -> Download URL file: %s\n", file);
 		else
-			GMT_Report (API, GMT_MSG_NOTICE, "  -> Download cache file: %s\n", file);
+			GMT_Report (API, GMT_MSG_INFORMATION, "  -> Download cache file: %s\n", file);
 	}
-	else {
+	else {	/* Remote data sets */
 		if (!API->remote_info[key].used) {
 			GMT_Report (API, GMT_MSG_NOTICE, "%s.\n", API->remote_info[key].remark);
 			API->remote_info[key].used = true;
@@ -502,6 +612,8 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, s
 		/* No header output: TODO 14.1 http-style HEAD output for ftp */
 		curl_easy_setopt (curl, CURLOPT_HEADERFUNCTION, gmtremote_throw_away);
 		curl_easy_setopt (curl, CURLOPT_HEADER, 0L);
+		/* Complete connection within 10 seconds */
+		 curl_easy_setopt (curl, CURLOPT_CONNECTTIMEOUT, GMT_CONNECT_TIME_OUT);
 
 		res = curl_easy_perform (curl);
 
@@ -547,6 +659,10 @@ CURL * gmtremote_setup_curl (struct GMTAPI_CTRL *API, char *url, char *local_fil
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to read from %s\n", url);
 		return NULL;
 	}
+ 	if (curl_easy_setopt (Curl, CURLOPT_CONNECTTIMEOUT, GMT_CONNECT_TIME_OUT)) {	/* Set connection timeout to 10s [300] */
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to limit connection timeout to %lds\n", GMT_CONNECT_TIME_OUT);
+		return NULL;
+	}
 	if (time_out) {	/* Set a timeout limit */
 		if (curl_easy_setopt (Curl, CURLOPT_TIMEOUT, time_out)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to time out after %d seconds\n", time_out);
@@ -571,6 +687,7 @@ CURL * gmtremote_setup_curl (struct GMTAPI_CTRL *API, char *url, char *local_fil
 struct LOCFILE_FP *gmtremote_lock_on (struct GMT_CTRL *GMT, char *file) {
 	/* Creates filename for lock and activates the lock */
 	struct LOCFILE_FP *P = gmt_M_memory (GMT, NULL, 1, struct LOCFILE_FP);
+	if (P == NULL) return NULL;
 	P->file = gmtremote_lockfile (GMT, file);
 	if ((P->fp = fopen (P->file, "w")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to create lock file %s\n", P->file);
@@ -593,11 +710,9 @@ void gmtremote_lock_off (struct GMT_CTRL *GMT, struct LOCFILE_FP **P) {
 
 /* Deal with hash values of cache/data files */
 
-#define GMT_HASH_TIME_OUT 10L	/* Not waiting longer than this to time out on getting the hash file */
-
-GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig, unsigned int index) {
+GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig, unsigned int index, bool do_lock) {
 	bool turn_ctrl_C_off = false;
-	int curl_err = 0, error = 0;
+	int curl_err = 0, error = GMT_NOERROR;
 	long time_spent;
 	CURL *Curl = NULL;
 	struct LOCFILE_FP *LF = NULL;
@@ -612,8 +727,14 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	if (GMT->current.io.internet_error) return 1;   			/* Not able to use remote copying in this session */
 
 	/* Make a lock */
-	if ((LF = gmtremote_lock_on (GMT, file)) == NULL)
+	if (do_lock && (LF = gmtremote_lock_on (GMT, file)) == NULL)
 		return 1;
+
+	/* If file locking held us up as another process was downloading the same file,
+	 * then that file should now be available.  So we check again if it is before proceeding */
+
+	if (do_lock && !access (file, F_OK))
+		goto unlocking1;	/* Yes it was, unlock and return no error */
 
 	/* Initialize the curl session */
 	if ((Curl = gmtremote_setup_curl (API, url, file, &urlfile, GMT_HASH_TIME_OUT)) == NULL)
@@ -652,7 +773,7 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 unlocking1:
 
 	/* Remove lock file after successful download */
-	gmtremote_lock_off (GMT, &LF);
+	if (do_lock) gmtremote_lock_off (GMT, &LF);
 
 	if (turn_ctrl_C_off) gmtremote_turn_off_ctrl_C_check ();
 
@@ -678,7 +799,7 @@ GMT_LOCAL struct GMT_DATA_HASH *gmtremote_hash_load (struct GMT_CTRL *GMT, char 
 		fclose (fp);
 		return NULL;
 	}
-	L = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_HASH);
+	if ((L = gmt_M_memory (GMT, NULL, *n, struct GMT_DATA_HASH)) == NULL) return NULL;
 	for (k = 0; k < *n; k++) {
 		if (fgets (line, GMT_LEN256, fp) == NULL) break;	/* Next record */
 		sscanf (line, "%s %s %" PRIuS, L[k].name, L[k].hash, &L[k].size);
@@ -714,6 +835,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 	time_t mod_time, right_now = time (NULL);	/* Unix time right now */
 	char indexpath[PATH_MAX] = {""}, old_indexpath[PATH_MAX] = {""}, new_indexpath[PATH_MAX] = {""}, url[PATH_MAX] = {""};
 	const char *index_file = (index == GMT_HASH_INDEX) ? GMT_HASH_SERVER_FILE : GMT_INFO_SERVER_FILE;
+	struct LOCFILE_FP *LF = NULL;
 	struct GMT_CTRL *GMT = API->GMT;	/* Short hand */
 
 	if (GMT->current.io.refreshed[index]) return GMT_NOERROR;	/* Already been here */
@@ -727,9 +849,9 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create GMT server directory : %s\n", serverdir);
 			return 1;
 		}
-		snprintf (url, PATH_MAX, "%s/%s", gmtlib_dataserver_url (API), index_file);
+		snprintf (url, PATH_MAX, "%s/%s", gmt_dataserver_url (API), index_file);
 		GMT_Report (API, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
-		if (gmtremote_get_url (GMT, url, indexpath, NULL, index)) {
+		if (gmtremote_get_url (GMT, url, indexpath, NULL, index, true)) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Failed to get remote file %s\n", url);
 			if (!access (indexpath, F_OK)) gmt_remove_file (GMT, indexpath);	/* Remove index file just in case it got corrupted or zero size */
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;	/* Temporarily turn off auto download in this session only */
@@ -763,10 +885,26 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 		strcat (new_indexpath, ".new");		/* Append .new to the copied path */
 		strcpy (old_indexpath, indexpath);	/* Duplicate path name */
 		strcat (old_indexpath, ".old");		/* Append .old to the copied path */
-		snprintf (url, PATH_MAX, "%s/%s", gmtlib_dataserver_url (API), index_file);	/* Set remote path to new index file */
-		if (gmtremote_get_url (GMT, url, new_indexpath, indexpath, index)) {	/* Get the new index file from server */
+		snprintf (url, PATH_MAX, "%s/%s", gmt_dataserver_url (API), index_file);	/* Set remote path to new index file */
+
+		/* Here we will try to download a file */
+
+		/* Make a lock on the file */
+		if ((LF = gmtremote_lock_on (GMT, (char *)new_indexpath)) == NULL)
+			return 1;
+
+		/* If file locking held us up as another process was downloading the same file,
+		 * then that file should now be available.  So we check again if it is before proceeding */
+
+		if (!access (new_indexpath, F_OK)) {	/* Yes it was! Undo lock and return no error */
+			gmtremote_lock_off (GMT, &LF);	/* Remove lock file after successful download (unless query) */
+			return GMT_NOERROR;
+		}
+
+		if (gmtremote_get_url (GMT, url, new_indexpath, indexpath, index, false)) {	/* Get the new index file from server */
 			GMT_Report (API, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", url);
 			if (!access (new_indexpath, F_OK)) gmt_remove_file (GMT, new_indexpath);	/* Remove index file just in case it got corrupted or zero size */
+			gmtremote_lock_off (GMT, &LF);
 			return 1;	/* Unable to update the file (no Internet?) - skip the tests */
 		}
 		if (!access (old_indexpath, F_OK))
@@ -774,11 +912,13 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Rename %s to %s\n", indexpath, old_indexpath);
 		if (gmt_rename_file (GMT, indexpath, old_indexpath, GMT_RENAME_FILE)) {	/* Rename existing file to .old */
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", indexpath, old_indexpath);
+			gmtremote_lock_off (GMT, &LF);
 			return 1;
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Rename %s to %s\n", new_indexpath, indexpath);
 		if (gmt_rename_file (GMT, new_indexpath, indexpath, GMT_RENAME_FILE)) {	/* Rename newly copied file to existing file */
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", new_indexpath, indexpath);
+			gmtremote_lock_off (GMT, &LF);
 			return 1;
 		}
 
@@ -789,6 +929,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 
 			if ((N = gmtremote_hash_load (GMT, indexpath, &nN)) == 0) {	/* Read in the new array of hash structs, will return 0 if mismatch of entries */
 				gmt_remove_file (GMT, indexpath);	/* Remove corrupted index file */
+				gmtremote_lock_off (GMT, &LF);
 				return 1;
 			}
 
@@ -830,8 +971,10 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 			if (!access (old_indexpath, F_OK))
 				remove (old_indexpath);	/* Remove old index file if it exists */
 		}
-		else 
+		else
 			GMT->current.io.new_data_list = true;	/* Flag that we wish to delete datasets older than entries in this file */
+		/* Remove lock file after successful download */
+		gmtremote_lock_off (GMT, &LF);
 	}
 	else
 		GMT_Report (API, GMT_MSG_DEBUG, "File %s less than 24 hours old, refresh is premature.\n", indexpath);
@@ -848,29 +991,46 @@ void gmt_refresh_server (struct GMTAPI_CTRL *API) {
 	 *   sizes, or gone altogether).  In all these case we delete the file so that when the
 	 *   user requests it, it forces a download of the updated file.
 	 */
+	int err1 = GMT_NOERROR, err2 = GMT_NOERROR;
 
-	if (gmtremote_refresh (API, GMT_INFO_INDEX))	/* Watch out for changes on the server info once a day */
+	if ((err1 = gmtremote_refresh (API, GMT_INFO_INDEX)))	/* Watch out for changes on the server info once a day */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Unable to obtain remote information file %s\n", GMT_INFO_SERVER_FILE);
 	else if (API->remote_info == NULL) {	/* Get server file attribution info if not yet loaded */
 		if ((API->remote_info = gmtremote_data_load (API, &API->n_remote_info)) == NULL) {	/* Failed to load the info file */
+			err1 = GMT_RUNTIME_ERROR;
 			GMT_Report (API, GMT_MSG_INFORMATION, "Unable to read server information file\n");
 		}
 	}
 
-	if (gmtremote_refresh (API, GMT_HASH_INDEX)) {	/* Watch out for changes on the server hash once a day */
+	if ((err2 = gmtremote_refresh (API, GMT_HASH_INDEX))) {	/* Watch out for changes on the server hash once a day */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Unable to obtain remote hash table %s\n", GMT_HASH_SERVER_FILE);
+	}
+
+	if (err1 || err2) {	/* SCrewed, might as well turn off */
+		API->GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;	/* Temporarily turn off auto download in this session only */
+		API->GMT->current.io.internet_error = true;		/* No point trying again */
 	}
 }
 
-GMT_LOCAL char * gmtremote_get_jp2_tilename (char *file) {
-	/* Must do special legacy checks for  SRTMGL1|3 tag names for SRTM tiles.
+GMT_LOCAL char * gmtremote_switch_to_srtm (char *file, char *res, bool srtm) {
+	/* There may be more than one remote Earth DEM product that needs to share the
+	 * same 1x1 degree SRTM tiles.  This function handles this overlap; add more cases if needed. */
+	char *c;
+	if (!srtm) return NULL;	/* Not using SRTM tiles at all */
+	if ((c = strstr (file, "_01s_g")) || (c = strstr (file, "_03s_g"))) {
+		*res = c[2];	/* Get the '1' or '3' */
+		c = strchr (file, '.');	/* Start of "extension" */
+	}
+	return (c);	/* Returns pointer to this "extension" or NULL */
+}
+
+GMT_LOCAL char * gmtremote_get_jp2_tilename (char *file, bool srtm) {
+	/* Must do special legacy checks for SRTMGL1|3 tag names for SRTM tiles.
 	 * We also strip off the leading @ since we are building an URL for curl  */
-	char res = 0, *c = NULL, *new_file = NULL;
-	if ((c = strstr (file, ".earth_relief_01s_g")))
-		res = '1';
-	else if ((c = strstr (file, ".earth_relief_03s_g")))
-		res = '3';
-	if (c) {	/* Found one of the SRTM tile families */
+	char res, *c = NULL, *new_file = NULL;
+
+	if ((c = gmtremote_switch_to_srtm (file, &res, srtm))) {
+		/* Found one of the SRTM tile families, now replace the tag with SRTMGL1|3 */
 		char remote_name[GMT_LEN64] = {""};
 		c[0] = '\0';	/* Temporarily chop off tag and beyond */
 		sprintf (remote_name, "%s.SRTMGL%c.%s", &file[1], res, GMT_TILE_EXTENSION_REMOTE);
@@ -880,6 +1040,22 @@ GMT_LOCAL char * gmtremote_get_jp2_tilename (char *file) {
 	else
 		new_file = gmt_strrep (&file[1], GMT_TILE_EXTENSION_LOCAL, GMT_TILE_EXTENSION_REMOTE);
 	return (new_file);
+}
+
+bool gmt_use_srtm_coverage (struct GMTAPI_CTRL *API, char **file, int *k, unsigned int *res) {
+	char newfile[GMT_LEN128] = {""}, c_res = '\0', *c = NULL;
+
+	if (strcmp (API->remote_info[*k].coverage, "srtm_tiles.nc")) return false;	/* This tile does not use SRTM at this resolution */
+	/* Here, *file is something like @N33E044.earth_gebco_03s_g.nc, but we need to change it to @N33E044.earth_relief_03s_g.nc */
+	c = gmtremote_switch_to_srtm (*file, &c_res, true);	/* Set the resolution */
+	*res = c_res - '0';	/* Convert character digit to number */
+	c[0] = '\0';	/* Chop off the rest */
+	sprintf (newfile, "%s.earth_relief_0%cs_g.nc", *file, c_res);
+	c[0] = '.';	/* Restore the original file name */
+	gmt_M_str_free (*file);	/* Free the original name */
+	*file = strdup (newfile);	/* Replace with the new name */
+	*k = gmt_file_is_a_tile (API, newfile, GMT_LOCAL_DIR);	/* Update tile ID */
+	return (true);
 }
 
 GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localfile) {
@@ -905,7 +1081,7 @@ GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localf
 	}
 	strcat (cmd, args);	/* Append the common arguments */
 	GMT_Report (API, GMT_MSG_INFORMATION, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", ncfile);
-	GMT_Report (API, GMT_MSG_DEBUG, "Running: grdconvert %sn", cmd);
+	GMT_Report (API, GMT_MSG_DEBUG, "Running: grdconvert %s\n", cmd);
 	if (GMT_Call_Module (API, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", localfile);
 		gmt_M_free (API->GMT, ncfile);
@@ -932,7 +1108,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 
 	int k_data = GMT_NOTSET, t_data = GMT_NOTSET;
 	unsigned int pos;
-	bool is_url = false, is_query = false, is_tile = false;
+	bool is_url = false, is_query = false, is_tile = false, srtm_switch = false, skip_checks = false;
 	char was, *c = NULL, *jp2_file = NULL, *clean_file = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -978,7 +1154,10 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 	if (file[0] == '@') {	/* Either a cache file or a remote data set */
 		if ((k_data = gmt_remote_dataset_id (API, file)) != GMT_NOTSET) {
 			/* Got a valid remote server data filename and we know the local path to those */
-			if (GMT->session.USERDIR == NULL) goto not_local;	/* Cannot have server data if no user directory created yet */
+			if (GMT->session.USERDIR == NULL) {
+				GMT_Report (API, GMT_MSG_DEBUG, "No user directory yet to store %s!\n", file);
+				goto not_local;	/* Cannot have server data if no user directory created yet */
+			}
 			snprintf (local_path, PATH_MAX, "%s", GMT->session.USERDIR);	/* This is the top-level directory for user data */
 			if (access (local_path, R_OK)) goto not_local;	/* Have not made a user directory yet, so cannot have the file yet either */
 			strcat (local_path, GMT->parent->remote_info[k_data].dir);	/* Append the subdir (/ or /server/earth/earth_relief/, etc) */
@@ -987,13 +1166,17 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 		}
 		else if ((t_data = gmt_file_is_a_tile (API, file, GMT_LOCAL_DIR)) != GMT_NOTSET) {	/* Got a remote tile */
 			/* Got a valid remote server tile filename and we know the local path to those */
-			if (GMT->session.USERDIR == NULL) goto not_local;	/* Cannot have server data if no user directory created yet */
+			if (GMT->session.USERDIR == NULL) {
+				GMT_Report (API, GMT_MSG_DEBUG, "No user directory yet to store %s!\n", file);
+				goto not_local;	/* Cannot have server data if no user directory created yet */
+			}
 			snprintf (local_path, PATH_MAX, "%s", GMT->session.USERDIR);	/* This is the top-level directory for user data */
 			if (access (local_path, R_OK)) goto not_local;	/* Have not made a user directory yet, so cannot have the file yet either */
 			strcat (local_path, GMT->parent->remote_info[t_data].dir);	/* Append the subdir (/ or /server/earth/earth_relief/, etc) */
 			strcat (local_path, GMT->parent->remote_info[t_data].file);	/* Append the tiledir to get full path to dir for this type of tiles */
 			strcat (local_path, &file[1]);	/* Append filename */
 			is_tile = true;
+			srtm_switch = !strcmp (GMT->parent->remote_info[t_data].coverage, "srtm_tiles.nc");	/* true if this dataset switches to SRTM tiles for this resolutions */
 			if (access (local_path, R_OK)) {	/* A local tile in netCDF format was not found.  See if it exists as compressed JP2000 */
 				char *local_jp2 = gmt_strrep (local_path, GMT_TILE_EXTENSION_LOCAL, GMT_TILE_EXTENSION_REMOTE);
  				if (access (local_jp2, R_OK))
@@ -1006,7 +1189,10 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 			}
 		}
 		else {	/* Must be cache file */
-			if (GMT->session.CACHEDIR == NULL) goto not_local;	/* Cannot have cache data if no cache directory created yet */
+			if (GMT->session.CACHEDIR == NULL) {
+				GMT_Report (API, GMT_MSG_DEBUG, "No cache directory yet to store %s!\n", file);
+				goto not_local;	/* Cannot have cache data if no cache directory created yet */
+			}
 			clean_file = gmt_get_filename (API, file, gmtlib_valid_filemodifiers (GMT));	/* Strip off any file modifier or netCDF directives */
 			snprintf (local_path, PATH_MAX, "%s/%s", GMT->session.CACHEDIR, &clean_file[1]);	/* This is where all cache files live */
 			if ((c = strchr (local_path, '=')) || (c = strchr (local_path, '?'))) {
@@ -1027,15 +1213,15 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 not_local:	/* Get here if we failed to find a remote file already on disk */
 		/* Set remote path */
 		if (is_tile) {	/* Tile not yet downloaded, but must switch to .jp2 format on the server (and deal with legacy SRTM tile tags) */
-			jp2_file = gmtremote_get_jp2_tilename ((char *)file);
-			snprintf (remote_path, PATH_MAX, "%s%s%s%s", gmtlib_dataserver_url (API), GMT->parent->remote_info[t_data].dir, GMT->parent->remote_info[t_data].file, jp2_file);
+			jp2_file = gmtremote_get_jp2_tilename ((char *)file, srtm_switch);
+			snprintf (remote_path, PATH_MAX, "%s%s%s%s", gmt_dataserver_url (API), GMT->parent->remote_info[t_data].dir, GMT->parent->remote_info[t_data].file, jp2_file);
 		}
 		else if (k_data == GMT_NOTSET) {	/* Cache file not yet downloaded */
-			snprintf (remote_path, PATH_MAX, "%s/cache/%s", gmtlib_dataserver_url (API), &file[1]);
+			snprintf (remote_path, PATH_MAX, "%s/cache/%s", gmt_dataserver_url (API), &file[1]);
 			if (mode == 0) mode = GMT_CACHE_DIR;	/* Just so we default to the cache dir for cache files */
 		}
 		else	/* Remote data set */
-			snprintf (remote_path, PATH_MAX, "%s%s%s", gmtlib_dataserver_url (API), API->remote_info[k_data].dir, API->remote_info[k_data].file);
+			snprintf (remote_path, PATH_MAX, "%s%s%s", gmt_dataserver_url (API), API->remote_info[k_data].dir, API->remote_info[k_data].file);
 
 		/* Set local path */
 		switch (mode) {
@@ -1112,6 +1298,11 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 		was = c[0]; c[0] = '\0';
 	}
 
+	if (c && file[0] == '\0') {	/* Some distaster, such like my typo of =W1p instead of -W1p that lead to this check to prevent SEGV */
+		if (c) c[0] = was;	c = NULL; skip_checks = true;
+		GMT_Report (API, GMT_MSG_DEBUG, "Not able to understand the file name : %s\n", file);
+	}
+
 	if (is_url) {	/* A remote file or query given via an URL never exists locally */
 		pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
 		if (is_query) /* We have truncated off all the ?specifications part */
@@ -1127,7 +1318,7 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	/* Looking for local files given a relative path - must search directories we are allowed.
 	 * Note: Any netCDF files with directives have had those chopped off earlier, so file is a valid name */
 
-	clean_file = gmt_get_filename (API, file, gmtlib_valid_filemodifiers (GMT));	/* Strip off any file modifier or netCDF directives */
+	clean_file = (skip_checks) ? strdup (file) : gmt_get_filename (API, file, gmtlib_valid_filemodifiers (GMT));	/* Strip off any file modifier or netCDF directives */
 	if (gmt_getdatapath (GMT, clean_file, local_path, R_OK)) {	/* Found it */
 		/* Return full path */
 		if (c &&!is_query) {	/* We need to pass the ?var[]() or [id][+mods]stuff as part of the filename */
@@ -1187,6 +1378,15 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 	if (!query && (LF = gmtremote_lock_on (GMT, (char *)name)) == NULL)
 		return 1;
 
+	/* If file locking held us up as another process was downloading the same file,
+	 * then that file should now be available.  So we check again if it is before proceeding */
+
+	if (!access (localfile, F_OK)) {	/* Yes it was! Undo lock and return no error */
+		if (!query)	/* Remove lock file after successful download (unless query) */
+			gmtremote_lock_off (GMT, &LF);
+		return GMT_NOERROR;
+	}
+
 	/* Initialize the curl session */
 	if ((Curl = gmtremote_setup_curl (API, url, localfile, &urlfile, 0)) == NULL)
 		goto unlocking2;
@@ -1199,7 +1399,9 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		if (be_fussy || !(curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR)) {	/* Unexpected failure - want to bitch about it */
 			GMT_Report (API, GMT_MSG_ERROR, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
-			GMT_Report (API, GMT_MSG_WARNING, "You can turn remote file download off by setting GMT_DATA_UPDATE_INTERVAL to \"off\"\n");
+			if (curl_err == CURLE_HTTP_RETURNED_ERROR)
+				GMT_Report (API, GMT_MSG_ERROR, "Probably means %s does not exist on the remote server\n", name);
+			error = curl_err;
 			if (urlfile.fp != NULL) {
 				fclose (urlfile.fp);
 				urlfile.fp = NULL;
@@ -1242,6 +1444,9 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char *f
 	if (gmtlib_found_url_for_gdal ((char *)file)) return GMT_NOERROR;	/* /vis.../ files are read in GDAL */
 
 	be_fussy = ((mode & 4) == 0);	if (!be_fussy) mode -= 4;	/* Handle the optional 4 value */
+
+	if (file[0] == '@')	/* Make sure we have a refreshed server this session */
+		gmt_refresh_server (GMT->parent);
 
 	if (gmt_set_remote_and_local_filenames (GMT, file, local_path, remote_path, mode)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot find file %s\n", file);
@@ -1363,18 +1568,28 @@ int gmt_file_is_a_tile (struct GMTAPI_CTRL *API, const char *infile, unsigned in
 	return (k_data);
 }
 
-char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_data, unsigned int *n_tiles) {
-	/* Return the full list of tiles for this tiled dataset */
-	char **list = NULL, YS, XS, file[GMT_LEN64] = {""};
-	int x, lon, lat, iw, ie, is, in,  t_size;
+GMT_LOCAL bool gmtremote_is_earth_dem (struct GMT_DATA_INFO *I) {
+	/* Returns true if this data set is one of the earth_relief clones that must share SRTM tiles with @earth_relief.
+	 * Should we add more such DEMs then just add more cases like the synbath test */
+	if (strstr (I->tag, "synbath") && (!strcmp (I->inc, "03s") || !strcmp (I->inc, "01s"))) return true;
+	return false;
+}
+
+char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_data, unsigned int *n_tiles, bool *need_filler) {
+	/* Return the full list of tiles for this tiled dataset. If need_filler is not NULL we return
+	 * true if some of the tiles inside the wesn do not exist based on the coverage map. */
+	bool partial_tile = false;
+	char **list = NULL, YS, XS, file[GMT_LEN64] = {""}, tag[GMT_LEN64] = {""};
+	int x, lon, clat, iw, ie, is, in, t_size;
 	uint64_t node, row, col;
-	unsigned int n_alloc = GMT_CHUNK, n = 0;
+	unsigned int n_alloc = GMT_CHUNK, n = 0, n_missing = 0;
 	double wesn[4];
 	struct GMT_DATA_INFO *I = &API->remote_info[k_data];	/* Pointer to primary tiled dataset */
 	struct GMT_GRID *Coverage = NULL;
 
 	if (gmt_M_is_zero (I->tile_size)) return NULL;
 
+	strncpy (tag, I->tag, GMT_LEN64);	/* Initialize tag since it may change below */
 	if (strcmp (I->coverage, "-")) {	/* This primary tiled dataset has limited coverage as described by a named hit grid */
 		char coverage_file[GMT_LEN64] = {""};
 		sprintf (coverage_file, "@%s", I->coverage);	/* Prepend the remote flag since we may need to download the file */
@@ -1383,6 +1598,8 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 			API->error = GMT_RUNTIME_ERROR;
 			return NULL;
 		}
+		if (gmtremote_is_earth_dem (I))	/* Dataset shares SRTM1|3 tiles with @earth_relief */
+			sprintf (tag, "earth_relief_%s_%c", I->inc, I->reg);
 	}
 
 	if ((list = gmt_M_memory (API->GMT, NULL, n_alloc, char *)) == NULL) {
@@ -1405,36 +1622,45 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 	in = (int)( -90 + ceil  ((wesn[YHI] +  90) / I->tile_size) * I->tile_size);
 	t_size = rint (I->tile_size);
 
-	for (lat = is; lat < in; lat += t_size) {	/* Loop over the rows of tiles */
-		if (Coverage && (lat < Coverage->header->wesn[YLO] || lat > Coverage->header->wesn[YHI])) continue;	/* Outside Coverage band */
-		YS = (lat < 0) ? 'S' : 'N';
+	for (clat = is; clat < in; clat += t_size) {	/* Loop over the rows of tiles */
+		if (Coverage && (clat < Coverage->header->wesn[YLO] || clat >= Coverage->header->wesn[YHI])) continue;	/* Outside Coverage band */
+		YS = (clat < 0) ? 'S' : 'N';
 		for (x = iw; x < ie; x += t_size) {	/* Loop over the columns of tiles */
 			lon = (x < 0) ? x + 360 : x;	/* Get longitude in 0-360 range */
-			if (Coverage) {
-				if (lon < Coverage->header->wesn[XLO] || lon > Coverage->header->wesn[XHI]) continue;	/* Outside Coverage band */
-				row  = gmt_M_grd_y_to_row (GMT, (double)lat, Coverage->header);
-				col  = gmt_M_grd_x_to_col (GMT, (double)lon, Coverage->header);
+			if (Coverage) {	/* We will assume nothing about the west/east bounds of the coverage grid */
+				int clon = lon - 360;	/* Ensure we are far west */
+				while (clon < Coverage->header->wesn[XLO]) clon += 360;	/* Wind until past west */
+				if (clon > Coverage->header->wesn[XHI]) continue;	/* Outside Coverage band */
+				row  = gmt_M_grd_y_to_row (GMT, (double)clat, Coverage->header);
+				col  = gmt_M_grd_x_to_col (GMT, (double)clon, Coverage->header);
 				node = gmt_M_ijp (Coverage->header, row, col);
-				if (Coverage->data[node] == 0) continue;	/* No such tile exists */
+				if (Coverage->data[node] == GMT_NO_TILE) {	/* No such tile exists */
+					n_missing++;	/* Add up missing tiles */
+					continue;		/* Go to next tile */
+				}
+				else if (Coverage->data[node] == GMT_PARTIAL_TILE)	/* Not missing, but still need ocean filler for partial tile */
+					partial_tile = true;	/* Note: We also get here with GMT < 6.3 so that @earth_relief_15s is always considered */
 			}
 			lon = (x >= 180) ? x - 360 : x;	/* Need longitudes 0-179 for E and 1-180 for W */
 			XS = (lon < 0) ? 'W' : 'E';
 			/* Write remote tile name to list */
 			if (n >= n_alloc) {
-				n_alloc <<= 1; 
+				n_alloc <<= 1;
 				if ((list = gmt_M_memory (API->GMT, list, n_alloc, char *)) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "gmt_get_dataset_tiles: Unable to reallocate memory.\n");
 					API->error = GMT_RUNTIME_ERROR;
 					return NULL;
 				}
 			}
-			sprintf (file, "@%c%2.2d%c%3.3d.%s.%s", YS, abs(lat), XS, abs(lon), I->tag, GMT_TILE_EXTENSION_LOCAL);
+			sprintf (file, "@%c%2.2d%c%3.3d.%s.%s", YS, abs(clat), XS, abs(lon), tag, GMT_TILE_EXTENSION_LOCAL);
 			list[n++] = strdup (file);
 		}
 	}
 	if (Coverage && GMT_Destroy_Data (API, &Coverage) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_tile_list: Unable to destroy coverage grid.\n");
 	}
+
+	if (need_filler) *need_filler = (partial_tile || n_missing > 0);	/* Incomplete coverage of this data set within wesn */
 
 	*n_tiles = n;
 	if (n == 0) {	/* Nutin' */
@@ -1455,7 +1681,8 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, bool plot_region, unsigned int srtm_flag) {
 	/* Builds a list of the tiles to download for the chosen region, dataset and resolution.
 	 * Uses the optional tile information grid to know if a particular tile exists. */
-	char tile_list[PATH_MAX] = {""}, *file = NULL, **tile = NULL, datatype[3] = {'L', 'O', 'X'}, regtype[2] = {'G', 'P'};
+	bool need_filler;
+	char tile_list[PATH_MAX] = {""}, stem[GMT_LEN32] = {""}, *file = NULL, **tile = NULL, datatype[3] = {'L', 'O', 'X'}, regtype[2] = {'G', 'P'};
 	int k_filler = GMT_NOTSET;
 	unsigned int k, n_tiles = 0, ocean = (srtm_flag) ? 0 : 2;
 	FILE *fp = NULL;
@@ -1465,7 +1692,7 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 	if (strcmp (Ip->filler, "-") && srtm_flag == 0) {	/* Want background filler, except special case when srtm_relief is the given dataset name (srtm_flag == 1) */
 		if ((k_filler = gmt_remote_dataset_id (API, Ip->filler)) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Internal error - Filler grid %s is not a recognized remote data set.\n", Ip->filler);
-			return NULL;			
+			return NULL;
 		}
 		Is = &API->remote_info[k_filler];	/* Pointer to secondary tiled dataset */
 		ocean = (strcmp (Is->inc, "15s") == 0);
@@ -1473,73 +1700,36 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 
 	/* Create temporary filename for list of tiles */
 
-	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Isolation mode is baked in, so just use 000000 (or any 6 characters) as extension */
-		snprintf (tile_list, PATH_MAX, "%s/=tiled_%d_%c%c.000000", API->GMT->parent->gwf_dir, k_data, regtype[plot_region], datatype[ocean]);
-		file = tile_list;
-		if ((fp = fopen (file, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Unable to create list of tiles: %s.\n", file);
-			return NULL;
-		}
+	snprintf (stem, GMT_LEN32, "=tiled_%d_%c%c", k_data, regtype[plot_region], datatype[ocean]);
+	if ((fp = gmt_create_tempfile (API, stem, NULL, tile_list)) == NULL) {	/* Not good... */
+		GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Unable to create list of tiles from template: %s.\n", tile_list);
+		return NULL;
 	}
-	else {	/* Under classic mode we must create a unique filename for the list */
-		char name[GMT_LEN32] = {""};
-#ifndef _WIN32
-		int fd = 0;
-#endif
-		if (API->tmp_dir)	/* Have a recognized temp directory */
-			snprintf (tile_list, PATH_MAX, "%s/", API->tmp_dir);
-		snprintf (name, GMT_LEN32, "=tiled_%d_%c%c.XXXXXX", k_data, regtype[plot_region], datatype[ocean]);
-		strcat (tile_list, name);
-#ifdef _WIN32
-		if ((file = mktemp (tile_list)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Could not create temporary file name %s.\n", tile_list);
-			API->error = GMT_RUNTIME_ERROR;
-			return NULL;
-		}
-		if ((fp = fopen (file, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Unable to create list of tiles: %s.\n", file);
-			API->error = GMT_RUNTIME_ERROR;
-			return NULL;
-		}
-#else
-		if ((fd = mkstemp (tile_list)) == -1) {
-			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Could not create temporary file name %s.\n", tile_list);
-			API->error = GMT_RUNTIME_ERROR;
-			return NULL;
-		}
-		file = tile_list;
-		if ((fp = fdopen (fd, "w")) == NULL) {
-			API->error = GMT_RUNTIME_ERROR;
-			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Could not fdopen the temporary file %s.\n", file);
-			return NULL;
-		}
-#endif
-	}
+	file = tile_list;	/* Pointer to the buffer with the name */
 
-	/* Get the primary tiles */
-	tile = gmt_get_dataset_tiles (API, wesn, k_data, &n_tiles);
+	/* Get the primary tiles and determine if the filler grid is needed */
+	tile = gmt_get_dataset_tiles (API, wesn, k_data, &n_tiles, &need_filler);
 
 	/* Write primary tiles to list file */
 	for (k = 0; k < n_tiles; k++)
 		fprintf (fp, "%s\n", tile[k]);
 
 	gmt_free_list (API->GMT, tile, n_tiles);	/* Free the primary tile list */
-
 	if (k_filler != GMT_NOTSET) {	/* Want the secondary tiles */
-		if ((tile = gmt_get_dataset_tiles (API, wesn, k_filler, &n_tiles))) {
+		if (need_filler && (tile = gmt_get_dataset_tiles (API, wesn, k_filler, &n_tiles, NULL))) {
 			/* Write secondary tiles to list file */
 			for (k = 0; k < n_tiles; k++)
 				fprintf (fp, "%s\n", tile[k]);
 			gmt_free_list (API->GMT, tile, n_tiles);	/* Free the secondary tile list */
-			if (Ip->d_inc < Is->d_inc) {
-				/* If selected dataset has smaller increment that the filler grid then we adjust -R to be  a multiple of the larger spacing. */
-				/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given
-				 * region. The GMT_CONV8_LIMIT is there to ensure we won't round an almost exact x/dx away from the truth. */
-				wesn[XLO] = floor ((wesn[XLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
-				wesn[XHI] = ceil  ((wesn[XHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
-				wesn[YLO] = floor ((wesn[YLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
-				wesn[YHI] = ceil  ((wesn[YHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
-			}
+		}
+		if (Ip->d_inc < Is->d_inc) {
+			/* If selected dataset has smaller increment that the filler grid then we adjust -R to be  a multiple of the larger spacing. */
+			/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given
+			 * region. The GMT_CONV8_LIMIT is there to ensure we won't round an almost exact x/dx away from the truth. */
+			wesn[XLO] = floor ((wesn[XLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
+			wesn[XHI] = ceil  ((wesn[XHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
+			wesn[YLO] = floor ((wesn[YLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
+			wesn[YHI] = ceil  ((wesn[YHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
 		}
 	}
 	fclose (fp);
@@ -1553,10 +1743,10 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 	/* Get here if file is a =tiled_<id>_G|P.xxxxxx file.  Need to do:
 	 * Set up a grdblend command and return the assembled grid
 	 */
-	int k_data;
+	int k_data, v_level = API->verbose;
 	struct GMT_GRID *G = NULL;
 	double *wesn = (region) ? region : API->tile_wesn;	/* Default to -R */
-	char grid[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""}, code = 0;;
+	char grid[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""}, code = 0;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	(void) gmt_file_is_tiled_list (API, file, NULL, &code, NULL);	/* Just get the code*/
@@ -1566,23 +1756,23 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 		return NULL;
 	}
 
+	if (API->verbose == GMT_MSG_WARNING) API->verbose = GMT_MSG_ERROR;	/* Drop from warnings to errors only when calling grdblend to avoid annoying messages about phase/shift from SRTM01|3 and 15s */
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, grid);
 	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co+n to override using negative earth_relief_15s values */
 	snprintf (cmd, GMT_LEN256, "%s -R%.16g/%.16g/%.16g/%.16g -I%s -r%c -G%s -fg -Co+n", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], API->remote_info[k_data].inc, API->remote_info[k_data].reg, grid);
-	if (code != 'X') strcat (cmd, " -N0");	/* If ocean/land, set empty nodes to 0, else NaN */
+	if (code != 'X') strcat (cmd, " -N0 -Ve");	/* If ocean/land, set empty nodes to 0, else NaN. Also turn of warnings since mixing pixel and gridline grids, possibly */
 	if (GMT_Call_Module (API, "grdblend", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
+		API->verbose = v_level;
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to produce blended grid from %s\n", file);
 		return NULL;
 	}
 	if ((G = GMT_Read_VirtualFile (API, grid)) == NULL) {	/* Load in the resampled grid */
+		API->verbose = v_level;
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to receive blended grid from grdblend\n");
 		return NULL;
 	}
-	if (gmtlib_delete_virtualfile (API, grid)) {	/* Remove trace since passed upwards anyway */
-		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to destroy temporary object for assembled grid\n");
-		return NULL;
-	}
 
+	API->verbose = v_level;
 	HH = gmt_get_H_hidden (G->header);
 	HH->orig_datatype = GMT_SHORT;	/* Since we know this */
 	return (G);
@@ -1602,7 +1792,7 @@ int gmt_download_tiles (struct GMTAPI_CTRL *API, char *list, unsigned int mode) 
 	return GMT_NOERROR;
 }
 
-char *gmtlib_dataserver_url (struct GMTAPI_CTRL *API) {
+char *gmt_dataserver_url (struct GMTAPI_CTRL *API) {
 	/* Build the full URL to the currently selected data server */
 	static char URL[GMT_LEN256] = {""}, *link = URL;
 	if (strncmp (API->GMT->session.DATASERVER, "http", 4U)) {	/* Not an URL so must assume it is the country/unit name, e.g., oceania */

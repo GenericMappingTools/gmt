@@ -6,7 +6,7 @@ files and scripts useful for building the actual releases.**
 
 ## Prerequisites
 
-IN addition to the packages required for building all of GMT (including documentation),
+In addition to the packages required for building all of GMT (including documentation),
 you also need gnu-tar and coreutils.
 
 ## Contents

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_color_interpolate
+	gmt set GMT_THEME cookbook
 	gmt basemap -Jx1i -R0/6.8/0/2.0 -B0
 
 # Plot polar color map in the left; right (top) and wrong (bottom)

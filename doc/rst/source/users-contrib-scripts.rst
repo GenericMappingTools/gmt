@@ -1,9 +1,11 @@
+:orphan:
+
 .. _users_gallery:
 
 Users Script Contributions
 --------------------------
 
-.. cssclass:: gmtgallary
+.. cssclass:: gmtgallery
 
 .. jinja::
 

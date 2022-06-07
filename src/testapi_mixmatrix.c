@@ -1,4 +1,4 @@
-#include "gmt_dev.h"
+#include "gmt.h"
 /*
  * Testing the use of user data provided via a GMT_MATRIX
  * to psxy and pstext, passing both a coordinate matrix and a string array.

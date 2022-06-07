@@ -29,6 +29,8 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-j| ]
 [ |SYN_OPT-qi| ]
+[ |SYN_OPT-r| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -43,7 +45,7 @@ triangulation, i.e., it determines how the points should be connected to give
 the most equilateral triangulation possible on the sphere. Optionally,
 you may choose **-Qv** which will do further processing to obtain the
 Voronoi polygons. Normally, either set of polygons will be written as
-closed fillable segment output; use **-T** to write unique arcs instead. As an
+closed fillable segment output; use |-T| to write unique arcs instead. As an
 option, compute the area of each triangle or polygon. The algorithm used
 is STRIPACK.
 
@@ -60,7 +62,7 @@ Optional Arguments
 
 **-A**
     Compute the area of the spherical triangles (**-Qd**) or polygons
-    (**-Qv**) and write the areas (in chosen units; see **-L**) in the
+    (**-Qv**) and write the areas (in chosen units; see |-L|) in the
     output segment headers [no areas calculated].
 
 .. _-C:
@@ -82,7 +84,7 @@ Optional Arguments
 
 **-L**\ *unit*
     Specify the unit used for distance and area calculations. Choose
-    among **e** (m), **f** (foot), **k** (km), **m** (mile), **n**
+    among **e** (m), **f** (foot), **k** (km), **M** (mile), **n**
     (nautical mile), **u** (survey foot), or **d** (spherical degree). A
     spherical approximation is used unless **-je** is set,
     in which case we convert latitudes to authalic
@@ -93,8 +95,8 @@ Optional Arguments
 
 **-N**\ *file*
     Write the information pertaining to each polygon. For Delaunay: the
-    three node number and the triangle area (if **-A** was set); for
-    Voronoi the unique node lon, lat and polygon area (if **-A** was
+    three node number and the triangle area (if |-A| was set); for
+    Voronoi the unique node lon, lat and polygon area (if |-A| was
     set)) to a separate file. This information is also encoded in the
     segment headers of ASCII output files. Required if binary output is needed.
 
@@ -102,20 +104,20 @@ Optional Arguments
 
 **-Q**\ **d**\|\ **v**
     Append **d** for Delaunay triangles or **v** for Voronoi polygons [Delaunay].
-    If **-bo** is used then **-N** may be used to specify a separate file where the
+    If **-bo** is used then |-N| may be used to specify a separate file where the
     polygon information normally is written.
 
 .. _-T:
 
 **-T**
     Write the unique arcs of the construction [Default writes fillable
-    triangles or polygons]. When used with **-A** we store arc length in
-    the segment header in chosen unit (see **-L**).
+    triangles or polygons]. When used with |-A| we store arc length in
+    the segment header in chosen unit (see |-L|).
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -132,9 +134,11 @@ Optional Arguments
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
+.. include:: explain_distcalc.rst_
+
 .. include:: explain_-qi.rst_
 
-.. include:: explain_distcalc.rst_
+.. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
 
@@ -178,7 +182,7 @@ Notes
 The STRIPACK algorithm and implementation expect that there are no duplicate points
 in the input.  It is best that the user ensures that this is the case.  GMT has tools,
 such as :doc:`blockmean` and others, to combine close points into single entries.
-Also, **sphtriangulate** has a **-D** option to determine and exclude duplicates, but
+Also, **sphtriangulate** has a |-D| option to determine and exclude duplicates, but
 it is a very brute-force yet exact comparison that is very slow for large data sets.
 Detection of duplicates in the STRIPACK library will exit the module.
 

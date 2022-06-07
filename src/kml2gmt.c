@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -74,20 +74,20 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<kmlfiles>] [-E] [-Fs|l|p] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Usage (API, 0, "usage: %s [<kmlfiles>] [-E] [-Fs|l|p] [%s] [-Z] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_ho_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<kmlfiles> is one or more Google Earth KML files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  If no file(s) is given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<kmlfiles> is one or more KML files from Google Earth or similar.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Get Z from the ExtendData property (only single <SimpleData name=\"string\"> implemented so far).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Restrict feature type; choose from (s)symbol, (l)ine, or (p)olygon.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use to only output data for the selected feature type [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Output the z-column from the KML file [Only lon,lat is output].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<kmlfiles> is one or more Google Earth KML files. "
+		"If no file(s) is given, standard input is read.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-E Get z-values from the ExtendData property (only single <SimpleData name=\"string\"> implemented so far).");
+	GMT_Usage (API, 1, "\n-Fs|l|p");
+	GMT_Usage (API, -2, "Restrict feature type; choose from (s)symbol, (l)ine, or (p)olygon. "
+		"Use to only output data for the selected feature type [all].");
+	GMT_Usage (API, 1, "\n-Z Output the z-column from the KML file [Only lon,lat is output].");
 	GMT_Option (API, "V,bo,do,h,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -101,28 +101,28 @@ static int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) break;
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'E':	/* Feature type */
-		 		Ctrl->E.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
  				Ctrl->Z.active = true;	/* Needs this too */
 				break;
 			case 'F':	/* Feature type */
-		 		Ctrl->F.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				switch (opt->arg[0]) {
 					case 's':
 						Ctrl->F.mode = POINT;
@@ -136,22 +136,22 @@ static int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OP
 						Ctrl->F.geometry = GMT_IS_POLY;
 						break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad feature type. Use s, l or p.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Bad feature type. Use s, l or p.\n");
 						n_errors++;
 						break;
 				}
 				break;
 			case 'Z':
- 				Ctrl->Z.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one file can be processed at the time\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.active && access (Ctrl->In.file, R_OK), "Cannot read file %s\n", Ctrl->In.file);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

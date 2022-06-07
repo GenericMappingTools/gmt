@@ -158,16 +158,8 @@ if (NOT GMT_INCLUDEDIR)
 	set (GMT_INCLUDEDIR include/gmt${GMT_INSTALL_NAME_SUFFIX})
 endif(NOT GMT_INCLUDEDIR)
 
-include(JoinPaths)
-join_paths(GMT_BINDIR_FULL     ${CMAKE_INSTALL_PREFIX} ${GMT_BINDIR})
-join_paths(GMT_DATADIR_FULL    ${CMAKE_INSTALL_PREFIX} ${GMT_DATADIR})
-join_paths(GMT_DOCDIR_FULL     ${CMAKE_INSTALL_PREFIX} ${GMT_DOCDIR})
-join_paths(GMT_INCLUDEDIR_FULL ${CMAKE_INSTALL_PREFIX} ${GMT_INCLUDEDIR})
-join_paths(GMT_LIBDIR_FULL     ${CMAKE_INSTALL_PREFIX} ${GMT_LIBDIR})
-join_paths(GMT_MANDIR_FULL     ${CMAKE_INSTALL_PREFIX} ${GMT_MANDIR})
-
 if (GMT_DATA_URL) # Backwards compatibility with old ConfigUser.cmake files
-	message (WARNING "CMake variable GMT_DATA_URL is deprecated and will be removed in the futhure releases. Use GMT_DATA_SERVER instead.")
+	message (WARNING "CMake variable GMT_DATA_URL is deprecated and will be removed in the future releases. Use GMT_DATA_SERVER instead.")
 	set (GMT_DATA_SERVER ${GMT_DATA_URL})
 endif (GMT_DATA_URL)
 
@@ -205,14 +197,14 @@ else (GMT_INSTALL_RELOCATABLE)
 	if (APPLE)
 		# CMP0042: CMake 3.0: MACOSX_RPATH is enabled by default
 		set (CMAKE_MACOSX_RPATH OFF)
-		set (CMAKE_INSTALL_NAME_DIR "${GMT_LIBDIR_FULL}")
+		set (CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}")
 	else (APPLE)
 		# the RPATH to be used when installing, but only if it's not a
 		# system directory
 		list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES
-			"${GMT_LIBDIR_FULL}" isSystemDir)
+			"${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}" isSystemDir)
 		if ("${isSystemDir}" STREQUAL "-1")
-			set (CMAKE_INSTALL_RPATH "${GMT_LIBDIR_FULL}")
+			set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}")
 		endif ("${isSystemDir}" STREQUAL "-1")
 	endif (APPLE)
 endif (GMT_INSTALL_RELOCATABLE)

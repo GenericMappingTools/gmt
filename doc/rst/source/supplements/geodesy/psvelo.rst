@@ -12,32 +12,41 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt psvelo** [ *table* ] |-J|\ *parameters*
+**gmt psvelo**
+[ *table* ]
+|-J|\ *parameters*
 |SYN_OPT-R|
+|-S|\ *format*\ [*scale*][/*args*][**+f**\ *font*]
 [ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]
+[ |-C|\ *cpt*]
+[ |-D|\ *scale* ]
 [ |-E|\ *fill* ]
 [ |-G|\ *fill* ]
+[ |-H|\ [*scale*] ]
+[ |-I|\ [*intens*] ]
 [ |-K| ]
-[ |-L| ]
+[ |-L|\ [*pen*\ [**+c**\ [**f**\|\ **l**]]] ]
 [ |-N| ] [ |-O| ] [ |-P| ]
-[ |-S|\ *<format><args>*\ [**+f**\ *font*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ *pen* ]
+[ |-W|\ [*pen*][**+c**\ [**f**\|\ **l**]] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
+[ |-Z|\ [**m**\|\ **e**\|\ **n**\|\ **u**\ ][**+e**] ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
-[ |SYN_OPT-t| ]
+[ |SYN_OPT-tv| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: velo_common.rst_
+.. include:: velo.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: ../../common_classic.rst_
 
@@ -77,7 +86,7 @@ gray wedges to represent the 2-sigma uncertainties::
     241.1084 34.2565 2.17E-08 3.53E-08
     END
 
-`Kurt L. Feigl <http://www.geology.wisc.edu/~feigl/>`_, Department of Geology and
+`Kurt L. Feigl <https://geoscience.wisc.edu/people/feigl-kurt-l/>`_, Department of Geology and
 Geophysics at University of Wisconsin-Madison, Madison, Wisconsin, USA
 
 See Also

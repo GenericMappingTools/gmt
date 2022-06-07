@@ -16,8 +16,8 @@ gmt begin ex29
 	gmt grdmath -Rg -I4 -r X COSD %a% DIV DUP MUL X SIND %b% DIV DUP MUL ADD Y COSD DUP MUL MUL Y SIND %c% DIV DUP MUL ADD SQRT INV = PROJ_ELLIPSOID.nc
 
 	REM  Do both Parker and Wessel/Becker solutions (tension = 0.9975)
-	gmt greenspline -RPROJ_ELLIPSOID.nc @mars370.txt -D4 -Sp -Gmars.nc
-	gmt greenspline -RPROJ_ELLIPSOID.nc @mars370.txt -D4 -Sq0.9975 -Gmars2.nc
+	gmt greenspline -RPROJ_ELLIPSOID.nc @mars370.txt -Z4 -Sp -Gmars.nc
+	gmt greenspline -RPROJ_ELLIPSOID.nc @mars370.txt -Z4 -Sq0.9975 -Gmars2.nc
 	REM Scale to km and remove PROJ_ELLIPSOID
 	gmt grdmath mars.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars.nc
 	gmt grdmath mars2.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars2.nc

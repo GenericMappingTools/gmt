@@ -1,17 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 2016-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2016-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Lesser General Public License as published by
- *   the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
- *   Contact info: www.generic-mapping-tools.org
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * Program for averaging finite rotations, resulting in mean rotations
@@ -41,7 +42,7 @@
 #define THIS_MODULE_PURPOSE	"Get mean rotations and covariance matrices from set of finite rotations"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdefghios" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdefhios" GMT_OPT("HMm")
 
 struct ROTSMOOTHER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -102,28 +103,32 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A] [-C] [-N] [-S] [-T<time(s)>] [%s] [-W] [-Z] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C] [-N] [-S] [-T<time>] [%s] [-W] [-Z] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT,
+		GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII, binary, or netCDF) has 3 or more columns.  If no file(s) is given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   First 4 columns must have lon, lat (or lat, lon, see -:), time, and angle (degrees).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Use opening angles as time.  Input is <lon> <lat> <angle> [<weight>] and -T refers to angles.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default expects <lon> <lat> <time> <angle> [<weight>] and -T refers to time].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Compute covariance matrix for each mean rotation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Ensure all poles are in northern hemisphere [Default ensures positive opening angles].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Ensure all poles are in southern hemisphere [Default ensures positive opening angles].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set the output times when a mean rotation and covariance matrix is desired.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append a single time (-T<time>), an equidistant range of times (-T<min>/<max>/<inc>),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to t_inc to indicate the number of points instead of an increment.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give the name of a file with a list of times (-T<tfile>).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The times indicate bin-boundaries and we output the average rotation time per bin.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<table> (in ASCII, binary, or netCDF) has 3 or more columns.  If no file(s) is given, standard input is read. "
+		"First 4 columns must have lon, lat (or lat, lon, see -:), time, and angle (degrees).");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Use opening angles as time.  Input is <lon> <lat> <angle> [<weight>] and -T refers to angles "
+		"[Default expects <lon> <lat> <time> <angle> [<weight>] and -T refers to time].");
+	GMT_Usage (API, 1, "\n-C Compute covariance matrix for each mean rotation.");
+	GMT_Usage (API, 1, "\n-N Ensure all poles are in northern hemisphere [Default ensures positive opening angles].");
+	GMT_Usage (API, 1, "\n-S Ensure all poles are in southern hemisphere [Default ensures positive opening angles].");
+	GMT_Usage (API, 1, "\n-T<time>");
+	GMT_Usage (API, -2, "Set the output times when a mean rotation and covariance matrix is desired. "
+		"Append a single time (-T<time>), an equidistant range of times (-T<min>/<max>/<inc>), "
+		"Append +n to t_inc to indicate the number of points instead of an increment. "
+		"Alternatively, give the name of a file with a list of times (-T<tfile>). "
+		"The times indicate bin-boundaries and we output the average rotation time per bin.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Expect weights in last column for a weighted mean rotation [no weights].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Report negative opening angles [positive].\n");
-	GMT_Option (API, "bi3,bo,d,e,h,i,o,s,:,.");
+	GMT_Usage (API, 1, "\n-W Expect weights in last column for a weighted mean rotation [no weights].");
+	GMT_Usage (API, 1, "\n-Z Report negative opening angles [positive].");
+	GMT_Option (API, "bi3,bo,d,e,f,h,i,o,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -145,29 +150,33 @@ static int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Supplemental parameters */
 
 			case 'A':	/* Output only an age-limited segment of the track */
-				Ctrl->A.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'C':
-				Ctrl->C.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'N':	/* Ensure all poles reported are in northern hemisphere */
-				Ctrl->N.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'S':	/* Ensure all poles reported are in southern hemisphere */
-				Ctrl->S.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'T':	/* New: -Tage, -Tmin/max/inc, -Tmin/max/n+, -Tfile */
-				Ctrl->T.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a file with times in first column */
 					uint64_t seg, row;
 					struct GMT_DATASET *T = NULL;
@@ -215,14 +224,16 @@ static int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct GM
 				break;
 
 			case 'W':	/* Use weights */
-				Ctrl->W.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Z':	/* Report negative opening angles */
-				Ctrl->Z.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -430,7 +441,7 @@ EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Found %d rots for the time interval %g <= t < %g\n", n_use, t_lo, t_hi);
 		if (n_use < n_minimum) continue;	/* Need at least 1 or 2 poles to do anything useful */
 
-		/* Now extimate the average rotation */
+		/* Now estimate the average rotation */
 
 		gmt_M_memset (xyz_mean_pole, 3, double);	/* Reset sum of mean components and weight sums */
 		gmt_M_memset (xyz_mean_quat, 4, double);	/* Reset sum of mean components and weight sums */

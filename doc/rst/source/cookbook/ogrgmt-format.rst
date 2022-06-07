@@ -13,9 +13,9 @@ reformatting vector (spatial) data stored in a variety of formats and is
 part of the. The intention was to enable the easy rendering (using
 GMT) of spatial data held in non-\ GMT formats, and the export of
 vector data (e.g., contours) created by GMT for use with other GIS and
-mapping packages. While **ogr2ogr** has had the capability to write
-this new format since 2009, GMT 4 did not have the capability to use
-the extra information.
+mapping packages. While *ogr2ogr* (part of `GDAL <https://gdal.org/>`_
+has had the capability to write this new format since 2009,
+GMT 4 did not have the capability to use the extra information.
 
 GMT now allows for more advanced vector data, including donut
 polygons (polygons with holes) and aspatial attribute data. At the same
@@ -27,7 +27,7 @@ follows the technical description, (which is largely consistent with the
 OGC SFS specification). This specification provides for non-topological
 point, line and polygon (area) features, as well as multipoint,
 multiline and multipolygon features, and was written by
-`Brent Wood <http://www.niwa.co.nz/key-contacts/brent-wood/>`_
+`Brent Wood <https://niwa.co.nz/people/brent-wood/>`_
 based on input from Paul Wessel and others on the GMT team.
 
 The OGR/GMT format

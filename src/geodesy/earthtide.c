@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * 	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -50,6 +50,9 @@ struct EARTHTIDE_CTRL {
 		bool selected[N_COMPS];
 		int n_selected;
 	} C;
+	struct EARTHTIDE_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct EARTHTIDE_L {	/* -Cx/y */
 		bool active;
 		double x, y;
@@ -113,7 +116,8 @@ GMT_LOCAL double earthtide_getutcmtai (double tsec, bool *leapflag) {
 	/*  get utc - tai (s) */
 	/*  "Julian Date Converter" */
 	/*  http://aa.usno.navy.mil/data/docs/JulianDate.php */
-	/*  parameter (MJDUPPER=58299)    !*** upper limit, leap second table, 2018jun30 */
+	/*  or https://www.aavso.org/jd-calculator */
+	/*  parameter (MJDUPPER=59393)    !*** upper limit, leap second table, 28 June 2021 */
 	/* upper limit, leap second table, */
 	/* lower limit, leap second table, */
 	/* leap second table limit flag */
@@ -133,7 +137,7 @@ GMT_LOCAL double earthtide_getutcmtai (double tsec, bool *leapflag) {
 	}
 
 	/*  test upper table limit (upper limit set by bulletin C memos) */
-	if (mjd0t > 58664) {
+	if (mjd0t > 59393) {
 		*leapflag = true;		/* true means flag *IS* raised */
 		return -37;				/* return the upper table value */
 	}
@@ -1051,10 +1055,10 @@ GMT_LOCAL void earthtide_sun_moon_track (struct GMT_CTRL *GMT, struct GMT_GCAL *
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
-	gmt_set_column (GMT, GMT_OUT, 1, GMT_IS_LON);
-	gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_LAT);
-	gmt_set_column (GMT, GMT_OUT, 4, GMT_IS_LON);
-	gmt_set_column (GMT, GMT_OUT, 5, GMT_IS_LAT);
+	gmt_set_column_type (GMT, GMT_OUT, 1, GMT_IS_LON);
+	gmt_set_column_type (GMT, GMT_OUT, 2, GMT_IS_LAT);
+	gmt_set_column_type (GMT, GMT_OUT, 4, GMT_IS_LON);
+	gmt_set_column_type (GMT, GMT_OUT, 5, GMT_IS_LAT);
 
 	if (T.count){
 		tdel2 = (T.max-T.min) / ( (T.inc - 1) * 24 * 3600);
@@ -1175,7 +1179,7 @@ GMT_LOCAL void earthtide_solid_grd (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL 
 		}
 	}
 	if (leapflag)
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "time crossed leap seconds table boundaries. Boundary edge used instead.");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "time crossed leap seconds table boundaries. Boundary edge used instead.");
 
 	/* Free these that were never used anyway */
 	if (!Ctrl->G.do_north) free (grd_n);
@@ -1257,43 +1261,50 @@ GMT_LOCAL void earthtide_solid_ts (struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, d
 	gmt_M_free (GMT, Out);
 
 	if (leapflag)
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "time crossed leap seconds table boundaries. Boundary edge used instead.");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "time crossed leap seconds table boundaries. Boundary edge used instead.");
 }
 
 /* ------------------------------------------------------------------------------------------------------- */
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-G<outgrid>] [-C<comp>] [-L<lon>/<lat>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T[<min>/<max>/][-|+]<inc>[+n]]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_bo_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [-G<outgrid>] [-C<comp>] [%s] [-L<lon>/<lat>] [%s] [-S] [-T[<min>/<max>/]<inc>[+i|n]] "
+		"[%s] [%s] [%s] [%s]%s[%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT,
+		GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output grid file (s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If more than one component is set via -C then <outgrid> must contain %%s to format component code.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 2, "(Note: One of -G, -L, or -S is required.)");
+	gmt_outgrid_syntax (API, 'G', "Specify file name for output grid file (s). "
+		"If more than one component is set via -C then <outgrid> must contain %%s to format component code.");
+	GMT_Usage (API, 1, "\n-L<lon>/<lat>");
+	GMT_Usage (API, -2, "Geographical coordinate where to compute the time-series.");
+	GMT_Usage (API, 1, "\n-S Output position of Sun and Moon in geographical coordinates plus "
+		"distance in meters. Output is a Mx7 matrix, where M is the number of "
+		"times (set by -T) and columns are time, sun_lon, sun_lat, sun_dist "
+		"moon_lon, moon_lat, moon_dist.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C<comp>");
 	if (API->external)
-		GMT_Message (API, GMT_TIME_NONE, "\t-C List of comma-separated components to be written as grids. Choose from\n");
+		GMT_Usage (API, -2, "List of comma-separated components to be written as grids. Choose from");
 	else
-		GMT_Message (API, GMT_TIME_NONE, "\t-C List of comma-separated components to be written as grids (requires -G). Choose from\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   x|e, y|n, z|v. [Default is v (ertical) only].\n");
+		GMT_Usage (API, -2, "List of comma-separated components to be written as grids (requires -G). Choose from");
+	GMT_Usage (API, 3, "x|e: Get x|east component.");
+	GMT_Usage (API, 3, "y|n: Get y|north component.");
+	GMT_Usage (API, 3, "z|v: Get z|vertical component [Default].");
 	GMT_Option (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L <lon/lat> Geographical coordinate where to compute the time-series.\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Output position of Sun and Moon in geographical coordinates plus\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   distance in meters. Output is a Mx7 matrix, where M is the number of\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   times (set by -T) and columns are time, sun_lon, sun_lat, sun_dist\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   moon_lon, moon_lat, moon_dist.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce over the range instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append a valid time unit (%s) to the increment and add +t.\n", GMT_TIME_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no -T is provided get current time in UTC from the computer clock.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no -G or -S are provided then -T is interpreted to mean compute a time-series\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   at the location specified by -L, thus then -L becomes mandatory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   When -G and -T only first time T series is considered.\n");
-	GMT_Option (API, "V");
-	GMT_Option (API, "b,o,r,x,.");
+	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[+i|n]");
+	GMT_Usage (API, -2, "Make evenly spaced output time steps from <min> to <max> by <inc>. Optional modifiers:");
+	GMT_Usage (API, 3, "+n Indicate <inc> is the number of t-values to produce over the range instead of increment.");
+	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
+	GMT_Usage (API, -2, "Append a valid time unit (%s) to the increment. "
+		"Notes: If no -T is provided get current time in UTC from the computer clock. "
+		"If no -G or -S are provided then -T is interpreted to mean compute a time-series "
+		"at the location specified by -L, making -L mandatory. "
+		"When -G and -T only first time T series is considered.", GMT_TIME_UNITS_DISPLAY);
+	GMT_Option (API, "V,b,o,r,x,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -1308,44 +1319,45 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 	unsigned int n_errors = 0, pos = 0;
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, p[GMT_LEN16] = {""};
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Requires -G and selects which components should be written as grids */
-				Ctrl->C.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				while ( (gmt_strtok (opt->arg, ",", &pos, p)) && Ctrl->C.n_selected < N_COMPS) {
 					switch (p[0]) {
 						case 'x': case 'e':		Ctrl->C.selected[X_COMP] = Ctrl->G.do_east = true;	break;
 						case 'y': case 'n':		Ctrl->C.selected[Y_COMP] = Ctrl->G.do_north = true;	break;
 						case 'z': case 'v':		Ctrl->C.selected[Z_COMP] = Ctrl->G.do_up = true;		break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -C.!\n", p);
+							GMT_Report (API, GMT_MSG_ERROR, "Unrecognized field argument %s in -C.!\n", p);
 							n_errors++;
 							break;
 					}
 					Ctrl->C.n_selected++;
 				}
 				if (Ctrl->C.n_selected == 0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-C requires comma-separated component arguments.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "-C requires comma-separated component arguments.\n");
 					n_errors++;
 				}
 				break;
 			case 'G':	/* Output filename */
-				Ctrl->G.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G can only be set once!\n");
+					GMT_Report (API, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
 				}
 				else {
 					Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;
 				}
 
 				if (!GMT->parent->external) {		/* Copy the name into the 3 slots to simplify the grid writing algo */
@@ -1354,12 +1366,13 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':	/* Location for time-series */
-				Ctrl->L.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -C: Expected -C<lon>/<lat>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expected -C<lon>/<lat>\n");
 					n_errors++;
 				}
 				else {
@@ -1367,18 +1380,18 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 					                                     false, &Ctrl->L.x), txt_a);
 					n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, txt_b, GMT_IS_LAT,
 					                                     false, &Ctrl->L.y), txt_b);
-					if (n_errors) GMT_Report (GMT->parent, GMT_MSG_ERROR,
+					if (n_errors) GMT_Report (API, GMT_MSG_ERROR,
 					                          "Option -C: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 			case 'S':
-				Ctrl->S.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				if (gmt_set_datum (GMT, opt->arg, &Ctrl->S.datum) == -1) n_errors++;
 				break;
 			case 'T':	/* Select time range for time-series tide estimates */
-				Ctrl->T.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				if (!opt->arg) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T: must provide a valid date\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -T: must provide a valid date\n", opt->arg);
 					n_errors++;
 					break;
 				}
@@ -1386,14 +1399,14 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
 	if (Ctrl->G.active) {
 		if (Ctrl->C.active && Ctrl->C.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[X_COMP], "%s")) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G file format must contain a %%s for field type substitution.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "-G file format must contain a %%s for field type substitution.\n");
 			n_errors++;
 		}
 		if (!Ctrl->C.active) {	/* Default to vertical component */
@@ -1412,7 +1425,7 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_parse_inc_option (GMT, 'I', "0.5");
 		}
 		else if (!GMT->common.R.inc[0]) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "When setting -R must set -I too!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "When setting -R must set -I too!\n");
 			n_errors++;
 		}
 	}
@@ -1474,7 +1487,7 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {	/* Return/write 1-3 grids */
 		int k, kk;
-		char file[PATH_MAX] = {""}, *code[N_COMPS] = {"e", "n", "v"};
+		char file[PATH_MAX] = {""}, *code[N_COMPS] = {"e", "n", "v"}, *comp_info[3] = {"x|east solid Earth tide component", "y|north solid Earth tide component", "z|vertical solid Earth tide component"};
 		struct GMT_GRID *Grid[N_COMPS] = {NULL, NULL, NULL};
 
 		gmt_set_geographic (GMT, GMT_OUT);
@@ -1485,6 +1498,11 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 			                             GMT->common.R.registration, 0, NULL)) == NULL)
 				Return (API->error);
 
+			strcpy (Grid[k]->header->z_units, "solid-earth-tide [meter]");
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[k]))
+				Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, comp_info[k], Grid[k]))
+				Return (API->error);
 		}
 
 		earthtide_solid_grd (GMT, Ctrl, &cal_start, Grid);	/* Evaluate the chosen component (s) on the grids */
@@ -1492,9 +1510,6 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 		/* Now write the one to three grids */
 		for (k = kk = 0; k < N_COMPS; k++) {
 			if (!Ctrl->C.selected[k]) continue;
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[k]))
-				Return (API->error);
-
 			if (!API->external) kk = k;	/* On command line we pick item k from an array of 3 items */
 			if (strstr (Ctrl->G.file[kk], "%s"))
 				sprintf (file, Ctrl->G.file[kk], code[k]);
@@ -1538,7 +1553,7 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) 	/* Sets output geometry */
 			Return (API->error);
 
-		gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);	/* Common for both tables; other column types set in the two functions */
+		gmt_set_column_type (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);	/* Common for both tables; other column types set in the two functions */
 
 		if (Ctrl->S.active)
 			earthtide_sun_moon_track (GMT, &cal_start, Ctrl->T.T);

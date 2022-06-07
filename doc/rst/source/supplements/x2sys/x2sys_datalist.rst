@@ -17,7 +17,7 @@ Synopsis
 [ |-E| ]
 [ |-F|\ *name1*,\ *name2*,... ]
 [ |-I|\ [*list*] ]
-[ |-L|\ [*corrtable*] ]
+[ |-L|\ [*corrections*] ]
 [ |SYN_OPT-R| ]
 [ |-S| ] [
 [ |SYN_OPT-V| ]
@@ -77,7 +77,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [*corrtable*]
+**-L**\ [*corrections*]
     Apply optimal corrections to columns where such corrections are
     available. Append the correction table to use [Default uses the
     correction table *TAG*\ \_corrections.txt which is expected to
@@ -97,10 +97,10 @@ Optional Arguments
     Suppress output records where all the data columns are NaN [Default
     will output all records].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
@@ -126,9 +126,7 @@ recognized by the tag GMT:
 To make lon,lat, and depth input for :doc:`blockmean </blockmean>` and :doc:`surface </surface>` using
 all the files listed in the file tracks.lis and defined by the tag TRK,
 but only the data that are inside the specified area, and make output
-binary, run
-
-   ::
+binary, run::
 
     gmt x2sys_datalist =tracks.lis -TTRK -Flon,lat,depth -R40/-30/25/35 -bo > alltopo_bin.xyz
 
@@ -160,7 +158,7 @@ The argument *abbrev* is one of the abbreviations for columns known to
 this TAG. However, it can also be one of the three auxiliary terms
 **dist** (for along-track distances), **azim** for along-track azimuths,
 and **vel** (for along-track speed); these are all sensitive to the
-**-C** and **-N** settings used when defining the TAG; furthermore,
+**-C** and |-N| settings used when defining the TAG; furthermore,
 **vel** requires **time** to be present in the data. If *origin* is
 given as **T** it means that we should replace it with the value of
 *abbrev* for the very first record in the file (this is usually only
@@ -180,6 +178,8 @@ ABC obs 0.5\*exp(-1e-3(lat))^1.5
 ABC weight -1
 
 ABC fuel 0.02\*((dist))
+
+.. include:: x2sys_refs.rst_
 
 See Also
 --------

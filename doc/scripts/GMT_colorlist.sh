@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Illustrate 4 ways to build a CPT form a list of colors
 gmt begin GMT_colorlist
+	gmt set GMT_THEME cookbook
 	gmt makecpt -T0,2,6 -Cred,yellow,purple -Z
 	gmt colorbar -R0/4/0/4 -Jx1i -C -Bx -By+l"d)" -Dx0/0+w5i/0.2i+h+mu
 	echo "5.1 0 -T0,2,6 -Cred,yellow,purple -Z" | gmt text -F+f12p+jLB -N

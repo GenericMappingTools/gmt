@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,8 +42,8 @@ extern "C" {
 #endif
 
 enum GMT_enum_apidim {
-	GMTAPI_N_GRID_ARGS	= 4,	/* Minimum size of information array used to specify grid parameters */
-	GMTAPI_N_ARRAY_ARGS	= 8	/* Minimum size of information array used to specify array parameters */
+	GMTAPI_N_GRID_ARGS	= 6,	/* Minimum size of information array used to specify grid parameters */
+	GMTAPI_N_ARRAY_ARGS	= 8		/* Minimum size of information array used to specify array parameters */
 };
 
 /*! p_func_uint64_t is used as a pointer to functions that returns a uint64_t index */
@@ -69,6 +69,7 @@ enum GMT_enum_pars {GMTAPI_TYPE = 0,	/* ipar[0] = data type (GMTAPI_{BYTE|SHORT|
  *===================================================================================*/
 
 struct GMT_CTRL; /* forward declaration of GMT_CTRL */
+struct GMT_COMMON; /* forward declaration of GMT_COMMON */
 
 struct GMTAPI_DATA_OBJECT {
 	/* Information for each input or output data entity, including information
@@ -114,6 +115,7 @@ struct GMTAPI_DATA_OBJECT {
 	struct GMT_MATRIX *M;
 	struct GMT_VECTOR *V;
 	struct GMT_IMAGE *I;
+	struct GMT_CUBE *U;
 	/* End of temporary variables for API debug - will be removed eventually */
 #endif
 };
@@ -137,6 +139,7 @@ struct GMTAPI_CTRL {
 	unsigned int n_cores;			/* Number of available cores on this system */
 	unsigned int verbose;			/* Used until GMT is set up */
 	unsigned int n_tmp_headers;		/* Number of temporarily held table headers */
+	unsigned int terminal_width;	/* Width of the terminal */
 	bool registered[2];			/* true if at least one source/destination has been registered (in and out) */
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
 	bool module_input;			/* true when we are about to read inputs to the module (command line) */
@@ -145,6 +148,8 @@ struct GMTAPI_CTRL {
 	bool is_file;					/* True if current rec-by-rec i/o is from a physical file */
 	bool cache;					/* true if we want to read a cache file via GDAL */
 	bool no_history;					/* true if we want to disable the gmt.history mechanism */
+	bool got_remote_wesn;				/* true if we obtained w/e/sn via a remote grid/image with no resolution given */
+	bool use_gridline_registration;	/* true if default remote grid registration should be gridline, not pixel */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */
@@ -152,6 +157,8 @@ struct GMTAPI_CTRL {
 	unsigned int log_level;			/* 0 = stderr, 1 = just this module, 2 = set until unset */
 	unsigned int io_mode[2];		/* 1 if access as set, 0 if record-by-record */
 	double tile_wesn[GMTAPI_N_GRID_ARGS];	/* Original region used when getting tiles (perhaps result of -Roblique -J) */
+	double tile_inc;	/* Remote grid increment in degrees */
+	char tile_reg;		/* Remote grid registration */
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */
@@ -203,17 +210,24 @@ struct GMTAPI_CTRL {
 	char *O_OPT, *K_OPT, *P_OPT, *c_OPT;
 	/* structure array of remote file information (sorted alphabetically) */
 	int n_remote_info;	/* How many remote server files we know of */
+	int remote_id;	/* Currently used remote ID or -1 */
 	struct GMT_DATA_INFO *remote_info;
 	bool server_announced;	/* Set to true after we have announced which GMT data server we are using */
+	struct GMT_COMMON *common_snapshot;	/* Holds the latest GMT common option settings after a module completes. */
+	bool inset_shrink;	/* True if gmt inset gets a -R -J that forces us to shrink the scale to fit the inset size */
+	double inset_shrink_scale;	/* The amount of shrinking.  Reset to false and 1 in gmt inset end */
 };
 
 /* Macro to test if filename is a special name indicating memory location */
 
 #define GMTAPI_PREFIX_LEN 9U		/* The length of the unique leading prefix of virtual filenames */
 #define GMTAPI_MEMFILE_LEN 27U		/* The length of the virtual filenames (see gmtapi_encode_id) */
-#define GMTAPI_OBJECT_DIR_START 11U	/* Start position of the encoded object direction in the virtual filename */
-#define GMTAPI_OBJECT_ID_START 21U	/* Start position of the encoded object ID in the virtual filename */
+#define GMTAPI_OBJECT_DIR_START 11U		/* Start position of the encoded object direction in the virtual filename */
+#define GMTAPI_OBJECT_FAMILY_START 15U	/* Start position of the encoded actual family in the virtual filename */
+#define GMTAPI_OBJECT_ID_START 21U		/* Start position of the encoded object ID in the virtual filename */
 #define gmt_M_file_is_memory(file) (file && !strncmp (file, "@GMTAPI@-", GMTAPI_PREFIX_LEN) && strlen (file) == GMTAPI_MEMFILE_LEN)
+#define gmt_M_memfile_is_grid(file) (gmt_M_file_is_memory(file) && file[GMTAPI_OBJECT_FAMILY_START] == 'G')
+#define gmt_M_memfile_is_cube(file) (gmt_M_file_is_memory(file) && file[GMTAPI_OBJECT_FAMILY_START] == 'U')
 
 #ifdef __cplusplus
 }

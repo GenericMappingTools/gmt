@@ -1,14 +1,25 @@
-/*-------------------------------------------------------------------------
+/*--------------------------------------------------------------------
  *
- *    Copyright (c) 2005-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- *    See README file for copying and redistribution conditions.
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *  File:	mgd77.h
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
+ *--------------------------------------------------------------------*/
+/*  File:	mgd77.h
  *
  *  Include file for programs that plan to read/write MGD77[+] files
  *
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
- *		Michael Chandler, Affiliate Researcher, SOEST, U. of Hawaii
+ *		Michael Hamilton (nee Chandler), Affiliate Researcher, SOEST, U. of Hawaii
  *
  *  Version:	1.4
  *  Revised:	15-MAR-2006
@@ -507,6 +518,7 @@ EXTERN_MSC int MGD77_Write_Data (struct GMT_CTRL *GMT, char *file, struct MGD77_
 EXTERN_MSC int MGD77_Read_Data_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Read a single data record (selected columns only) */
 EXTERN_MSC int MGD77_Write_Data_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Write a single data record (selected columns only) */
 EXTERN_MSC void MGD77_Free_Dataset (struct GMT_CTRL *GMT, struct MGD77_DATASET **S);								/* Free memory allocated by MGD77_Read_File/MGD77_Read_Data */
+EXTERN_MSC int MGD77_Verify_Columns (struct GMT_CTRL *GMT, char *string);				/* Verify if the -F option only contains valid column names */
 EXTERN_MSC int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *string, struct MGD77_CONTROL *F, unsigned int option);				/* Decode the -F option specifying the desired columns */
 EXTERN_MSC int MGD77_Get_Column (struct GMT_CTRL *GMT, char *word, struct MGD77_CONTROL *F);							/* Get column number from column name (or -1 if not present) */
 EXTERN_MSC int MGD77_Info_from_Abbrev (struct GMT_CTRL *GMT, char *name, struct MGD77_HEADER *H, int *set, int *item);
@@ -554,7 +566,7 @@ EXTERN_MSC double MGD77_carter_correction (struct GMT_CTRL *GMT, double lon, dou
 
 EXTERN_MSC int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, double alt, double lon, double lat, double *out);
 EXTERN_MSC double MGD77_Theoretical_Gravity (struct GMT_CTRL *GMT, double lon, double lat, int version);
-EXTERN_MSC void MGD77_IGF_text (struct GMT_CTRL *GMT, FILE *fp, int version);
+EXTERN_MSC void MGD77_IGF_text (struct GMTAPI_CTRL *API, int indent, int version);
 EXTERN_MSC double MGD77_Recalc_Mag_Anomaly_IGRF (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, bool calc_date);
 EXTERN_MSC double MGD77_time_to_fyear (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time);
 EXTERN_MSC double MGD77_cal_to_fyear (struct GMT_CTRL *GMT, struct GMT_GCAL *cal);

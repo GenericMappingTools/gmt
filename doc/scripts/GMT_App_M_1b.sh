@@ -5,9 +5,9 @@
 #
 # We have four sets of CPT figures to make:
 # 1a) Our regular, traditional GMT CPTs [44]
-# 1b) The regular Scientific Color Maps* [24]
+# 1b) The regular Scientific Color Maps* [30]
 # 1c) Categorical CPTs (ours and SCM*)  [18]
-# 1d) Cyclic CPTs form SCM* [4]
+# 1d) Cyclic CPTs from SCM* [5]
 #
 # *from Fabio [www.fabiocrameri.ch/visualisation]
 
@@ -16,15 +16,20 @@ GMT_SHAREDIR=$(gmt --show-sharedir)
 # Here we list all the non-categorical/cyclic cpts from the SCM:
 cat << EOF > tt.lis
 acton
+bam
 bamako
 batlow
+batlowK
+batlowW
 berlin
 bilbao
 broc
 buda
+bukavu
 cork
 davos
 devon
+fes
 grayC
 hawaii
 imola
@@ -38,6 +43,7 @@ roma
 tofino
 tokyo
 turku
+vanimo
 vik
 EOF
 
@@ -49,6 +55,7 @@ dy=0.6
 y0=$(gmt math -Q $n2 $dy MUL 0.5 MUL 0.1 ADD =)
 
 gmt begin GMT_App_M_1b
+gmt set GMT_THEME cookbook
 gmt set MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
 gmt basemap -R0/6.1/0/$y0 -Jx1i -B0
 
@@ -57,9 +64,10 @@ y=0.375
 y2=0.25
 while [ $i -le $n2 ]
 do
-	j=$(expr $i + 1)
-	left=$(sed -n ${j}p tt.lis)
-	right=$(sed -n ${i}p tt.lis)
+	j1=$(expr $n2 - $i)
+	j2=$(expr $n2 - $i + 1)
+	left=$(sed -n ${j1}p tt.lis)
+	right=$(sed -n ${j2}p tt.lis)
 	gmt makecpt -H -C$left -T-1/1 > tt.left.cpt
 	gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
 	gmt makecpt -H -C$right -T-1/1 > tt.right.cpt

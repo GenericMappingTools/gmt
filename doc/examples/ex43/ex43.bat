@@ -31,7 +31,7 @@ gmt begin ex43
 	echo N 7 43 7 43 >> legend.txt
 	gawk -F"\t" "{printf \"L - C %%d.\nL - L %%s\n\", NR, $NF}" B.txt >> legend.txt
 	gmt legend -DjBR+w2.5i+o0.4c -F+p1p+gwhite+s+c3p+r legend.txt --FONT_LABEL=8p
-	gmt basemap -R0.5/28.5/-10/4 -J15c/5c -Y-7.5c -B+glightgoldenrod
+	gmt basemap -R0.5/28.5/-10/4 -JX15c/5c -Y-7.5c -B+glightgoldenrod
 	echo ^> > lines.txt
 	echo 0	-2.5	>> lines.txt
 	echo 30	-2.5	>> lines.txt
@@ -43,7 +43,7 @@ gmt begin ex43
 	echo 30	-2.5	>> lines.txt
 	echo 0	-2.5	>> lines.txt
 	gmt plot lines.txt -Gcornsilk1 -W0.25p,-
-	gawk "{print NR, $6, $7}" A.txt | gmt plot -Sb1ub0 -W0.25p -C
+	gawk "{print NR, $6, $7}" A.txt | gmt plot -Sb1q+b0 -W0.25p -C
 	gmt basemap -Bafg100 -Bx+l"Animal index number" -By+l"z-zcore" -BWSne
 	del *.txt
 gmt end show

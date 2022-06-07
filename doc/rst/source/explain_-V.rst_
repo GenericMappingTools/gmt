@@ -1,2 +1,25 @@
-**-V**\ [*level*] :ref:`(more ...) <-V_full>`
+The **-V** option
+^^^^^^^^^^^^^^^^^
+
+**Syntax**
+
+.. _-V:
+
+**-V**\ [*level*]
     Select verbosity level [**w**]. |Add_-V|
+
+**Description**
+
+The **-V** option controls the verbosity mode, which determines which messages are sent to standard error. Choose among
+7 levels of verbosity; each level adds more messages:
+
+- **q** - Quiet, not even fatal error messages are produced.
+- **e** - Error messages only.
+- **w** - Warnings (by default, same as running without **-V**)
+- **t** - Timings (report runtimes for time-intensive algorithms).
+- **i** - Informational messages (same as **-V** only).
+- **c** - Compatibility warnings (if compiled with backward-compatibility).
+- **d** - Debugging messages.
+
+This option can also be set by specifying the default :term:`GMT_VERBOSE` as **quiet**, **error**, **warning**,
+**timing**, **compat**, **information**, or **debug**, in order of increased verbosity [default is **warning**].

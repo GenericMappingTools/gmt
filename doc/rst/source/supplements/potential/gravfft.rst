@@ -12,17 +12,19 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt gravfft** *ingrid* [ *ingrid2* ] |-G|\ *outfile*
-[ |-C|\ *n/wavelength/mean\_depth/tbw* ]
+**gmt gravfft** *ingrid* [ *ingrid2* ]
+|-G|\ *outgrid*
+[ |-C|\ *n/wavelength/mean\_depth*/**t**\|\ **b**\|\ **w** ]
 [ |-D|\ *density*\|\ *rhogrid* ]
 [ |-E|\ *n_terms* ]
 [ |-F|\ [**f**\ [**+s**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**] ]
 [ |-I|\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k** ]
 [ |-N|\ *params* ]
 [ |-Q| ]
+[ |-S| ]
 [ |-T|\ *te/rl/rm/rw*\ [*/ri*]\ [**+m**] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ *wd*]
+[ |-W|\ *wd*\ [**k**] ]
 [ |-Z|\ *zm*\ [*zl*] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -44,15 +46,10 @@ isostatic model.  The available
 models are the "loading from top", or elastic plate model, and the
 "loading from below" which accounts for the plate's response to a
 sub-surface load (appropriate for hot spot modeling - if you believe
-them). In both cases, the model parameters are set with **-T** and
+them). In both cases, the model parameters are set with |-T| and
 **-Z** options. Mode 3: compute the admittance or coherence between
 two grids. The output is the average in the radial direction.
-Optionally, the model admittance may also be calculated. The horizontal
-dimensions of the grdfiles are assumed to be in meters. Geographical
-grids may be used by specifying the |SYN_OPT-f| option that scales degrees
-to meters. If you have grids with dimensions in km, you could change
-this to meters using :doc:`grdedit </grdedit>` or scale the output with
-:doc:`grdmath </grdmath>`.
+Optionally, the model admittance may also be calculated.
 Given the number of choices this program offers, is difficult to state
 what are options and what are required arguments. It depends on what you
 are doing; see the examples for further guidance.
@@ -60,27 +57,31 @@ are doing; see the examples for further guidance.
 Required Arguments
 ------------------
 
-*ingrid*
-    2-D binary grid file to be operated on. (See GRID FILE FORMATS below).
-    For cross-spectral operations, also give the second grid file *ingrid2*.
+.. |Add_ingrid| replace:: 2-D binary grid file to be operated on. For
+    cross-spectral operations, also give the second grid file *ingrid2*.
+.. include:: /explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 
-**-G**\ *outfile*
-    Specify the name of the output grid file or the 1-D spectrum table
-    (see **-E**). (See GRID FILE FORMATS below).
+.. |Add_outgrid| replace:: Specify the name of the output grid file or the 1-D spectrum table
+    (see |-E|)
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
 
 .. _-C:
 
-**-C**\ *n/wavelength/mean\_depth/tbw*
+**-C**\ *n/wavelength/mean\_depth*/**t**\|\ **b**\|\ **w**
     Compute only the theoretical admittance curves of the selected model
     and exit. *n* and *wavelength* are used to compute (n \* wavelength)
     the total profile length in meters. *mean\_depth* is the mean water
-    depth. Append dataflags (one or two) of *tbw* in any order. *t* =
-    use "from top" model, *b* = use "from below" model. Optionally
+    depth. Append data flags (one or two) of **t**\|\ **b**\|\ **w** in any order.
+    Here, *t* = use "from top" model, *b* = use "from below" model. Optionally
     specify *w* to write wavelength instead of frequency.
 
 .. _-D:
@@ -89,9 +90,10 @@ Optional Arguments
     Sets density contrast across surface. Used, for example, to compute
     the gravity attraction of the water layer that can later be combined
     with the free-air anomaly to get the Bouguer anomaly. In this case
-    do not use **-T**. It also implicitly sets **-N+h**.  Alternatively,
+    do not use |-T|. It also implicitly sets **-N+h**.  Alternatively,
     specify a co-registered grid with density contrasts if a variable
-    density contrast is required.
+    density contrast is required.  **Note**: Any NaNs found in the density
+    grid will be replaced with the minimum density found.
 
 .. _-E:
 
@@ -122,7 +124,7 @@ Optional Arguments
 
 **-I**\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k**
     Use *ingrid2* and *ingrid1* (a grid with topography/bathymetry) to estimate admittance\|coherence and
-    write it to stdout (**-G** ignored if set). This grid should contain
+    write it to standard output (**-G** ignored if set). This grid should contain
     gravity or geoid for the same region of *ingrid1*. Default
     computes admittance. Output contains 3 or 4 columns. Frequency
     (wavelength), admittance (coherence) one sigma error bar and,
@@ -140,8 +142,8 @@ Optional Arguments
 
 **-Q**
     Writes out a grid with the flexural topography (with z positive up)
-    whose average depth was set by **-Z**\ *zm* and model parameters by **-T**
-    (and output by **-G**). That is the "gravimetric Moho". **-Q**
+    whose average depth was set by **-Z**\ *zm* and model parameters by |-T|
+    (and output by |-G|). That is the "gravimetric Moho". |-Q|
     implicitly sets **-N+h**
 
 .. _-S:
@@ -149,7 +151,7 @@ Optional Arguments
 **-S**
     Computes predicted gravity or geoid grid due to a subplate load
     produced by the current bathymetry and the theoretical model. The
-    necessary parameters are set within **-T** and **-Z** options. The
+    necessary parameters are set within |-T| and |-Z| options. The
     number of powers in Parker expansion is restricted to 1.
     See an example further down.
 
@@ -159,35 +161,33 @@ Optional Arguments
     Compute the isostatic compensation from the topography load (input grid file) on
     an elastic plate of thickness *te*. Also append densities for load, mantle,
     water and infill in SI units. If *ri* is not provided it defaults to *rl*.
-    Give average mantle depth via **-Z**. If the elastic thickness
+    Give average mantle depth via |-Z|. If the elastic thickness
     is > 1e10 it will be interpreted as the flexural rigidity (by default it is
     computed from *te* and Young modulus). Optionally, append *+m* to write a grid
-    with the Moho's geopotential effect (see **-F**) from model selected by **-T**.
+    with the Moho's geopotential effect (see |-F|) from model selected by |-T|.
     If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
 
 .. _-W:
 
-**-W**\ *wd*
-    Set water depth (or observation height) relative to topography [0].  Append **k** to indicate km.
+**-W**\ *wd*\ [**k**]
+    Set water depth (or observation height) relative to topography in meters [0].  Append **k** to indicate km.
 
 .. _-Z:
 
-**-Z**\ *zm*\ [*zl*]
+**-Z**\ *zm*\ [/*zl*]
     Moho [and swell] average compensation depths (in meters positive down – the depth). For the "load from
-    top" model you only have to provide *zm*, but for the "loading from below" don't forget *zl*.
+    top" model you only have to provide *zm*, but for the "loading from below" don't forget to supply *zl*.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
 .. include:: ../../explain_help.rst_
-
-.. include:: ../../explain_grd_inout_short.rst_
 
 Grid Distance Units
 -------------------
@@ -331,13 +331,13 @@ References
 Luis, J.F. and M.C. Neves. 2006, The isostatic compensation of the
 Azores Plateau: a 3D admittance and coherence analysis. J. Geothermal
 Volc. Res. Volume 156, Issues 1-2, Pages 10–22,
-`http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010 <http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010>`_
+`https://doi.org/10.1016/j.jvolgeores.2006.03.010 <https://doi.org/10.1016/j.jvolgeores.2006.03.010>`_
 
 Parker, R. L., 1972, The rapid calculation of potential anomalies, Geophys. J., 31, 447–455.
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431–19,441,
-`http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/110.1029/2000JB000083>`_
+`https://doi.org/10.1029/2000JB000083 <https://doi.org/10.1029/2000JB000083>`_
 
 See Also
 --------

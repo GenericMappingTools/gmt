@@ -5,6 +5,7 @@
 # col 0 = x, col 1 = exact with shol != rhoi, 2 = exact solution (rhol), 3 = exact solution (rhoi), 4 approximate solution
 # Modified from Wessel [2016, GJI].
 gmt begin grdflexure_approx
+	gmt set GMT_THEME cookbook
 	gmt set FONT_ANNOT_PRIMARY 9p,Helvetica,black FONT_LABEL 12p,Helvetica,black PS_MEDIA letter MAP_VECTOR_SHAPE 0.5
 	# Normal
 	cat <<- EOF > line.txt

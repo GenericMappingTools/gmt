@@ -1,6 +1,6 @@
-/*
+/*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Linear regression of 1-D data sets"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vabdefghioqs"
+#define THIS_MODULE_OPTIONS "-:>Vabdefghioqsw"
 
 /* Various integer constants for flags and modes */
 
@@ -141,62 +141,78 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[<min>/<max>/<inc>]+f[n|p]] [-C<level>] [-Ex|y|o|r] [-F<flags>] [-N1|2|r|w]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[r]] [-T[<min>/<max>/]<inc>[+n] [%s] [-W[w][x][y][r]] [-Z<limit>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A[<min>/<max>/<inc>][+f[n|p]]] [-C<level>] [-Ex|y|o|r] [-F<flags>] "
+		"[-N1|2|r|w] [-S[r]] [-T[<min>/<max>/]<inc>[+i|n]] [%s] [-W[w][x][y][r]] [-Z<limit>] [%s] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
+		GMT_o_OPT, GMT_q_OPT, GMT_w_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Examine E as function of line slope; give angle range and increment [-90/+90/1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Option -F is not required as no model will be returned; instead we return\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   records of (angle, E, slope, intercept) for all angles specified.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   However, with +f we force LMS regressions to only search in the given angle range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give +fn or +fp for negative or positive slopes only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Select level (in %%) to use in confidence band calculations (see -Fc) [95].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Regression type. Select how misfit should be measured:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     x : Horizontally from data point to regression line.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     y : Vertically from data point to regression line [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     o : Orthogonally from data point to regression line.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     r : Use Reduced Major Axis area misfit.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Append desired output columns in any order; choose from:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     x : The x observations.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     y : The y observations.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     m : The estimated model values.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     r : The estimated residuals.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c : The confidence limits (to add/subtract from m).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     z : The standardized residuals (z-scores).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     w : The outlier flags (1 or 0), or Reweighted Least Squares weights (for -Nw).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t         A value of 0 identifies an outlier.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Note: Cannot use y|r|z|w with -T. With -T, x means locations implied by -T.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is %s].\n", GMTREGRESS_FARGS);
-	GMT_Message (API, GMT_TIME_NONE, "\t     Alternatively, choose -Fp to output only the model parameters:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     N meanX meanY angle misfit slope icept sigma_slope sigma_icept\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Append desired misfit norm; choose from:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     1 : L-1 measure (mean absolute residuals).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     2 : L-2 measure (mean squared residuals) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     r : LMS robust measure (median of squared residuals).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     w : RLS Reweighted L-2 measure (r followed by 2 after excluding outliers.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Skip records identified as outliers on output. Append r to reverse mode and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   only output the outlier records. Cannot be used with -T [output all records].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Evaluate model at the equidistant points implied by the arguments.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If only -T<inc>[+n] is given we reset <min> and <max> to the extreme x-values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   for each segment.  Append +n if <inc> is the number of t-values to produce instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time data, append a valid time unit (%s) to the increment.\n", GMT_TIME_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column, or a comma-separated list.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -T0 to bypass model evaluation entirely.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses locations of input data to evaluate the model].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A[<min>/<max>/<inc>][+f[n|p]]");
+	GMT_Usage (API, -2, "Examine misfit E as function of line slope; give angle range and increment [-90/+90/1]. "
+		"Option -F is not required as no model will be returned; instead we return "
+		"records of (angle, E, slope, intercept) for all angles specified. Optional modifier:");
+	GMT_Usage (API, 3, "+f Force LMS regressions to only search in the given angle range. "
+		"Optionally, append n or p for negative or positive slopes only [both].");
+	GMT_Usage (API, 1, "\n-C<level>");
+	GMT_Usage (API, -2, "Select level (in %%) to use in confidence band calculations (see -Fc) [95].");
+	GMT_Usage (API, 1, "\n-Ex|y|o|r");
+	GMT_Usage (API, -2, "Regression type. Select how misfit should be measured:");
+	GMT_Usage (API, 3, "x: Horizontally from data point to regression line.");
+	GMT_Usage (API, 3, "y: Vertically from data point to regression line [Default].");
+	GMT_Usage (API, 3, "o: Orthogonally from data point to regression line.");
+	GMT_Usage (API, 3, "r: Use Reduced Major Axis area misfit.");
+	GMT_Usage (API, 1, "\n-F<flags>");
+	GMT_Usage (API, -2, "Append desired output columns in any order; choose from:");
+	GMT_Usage (API, 3, "x: The x observations.");
+	GMT_Usage (API, 3, "y: The y observations.");
+	GMT_Usage (API, 3, "m: The estimated model values.");
+	GMT_Usage (API, 3, "r: The estimated residuals.");
+	GMT_Usage (API, 3, "c: The confidence limits (to add/subtract from m).");
+	GMT_Usage (API, 3, "z: The standardized residuals (z-scores).");
+	GMT_Usage (API, 3, "w: The outlier flags (1 or 0), or Reweighted Least Squares weights (for -Nw). "
+		"A value of 0 identifies an outlier.");
+	GMT_Usage (API, -2, "Note: Cannot use y|r|z|w with -T. With -T, x means locations implied by -T "
+		"Default is %s].", GMTREGRESS_FARGS);
+	GMT_Usage (API, -2, "Alternatively, choose -Fp to output only the model parameters: "
+		"N meanX meanY angle misfit slope icept sigma_slope sigma_icept r R N_effective");
+	GMT_Usage (API, 1, "\n-N1|2|r|w");
+	GMT_Usage (API, -2, "Append desired misfit norm; choose from:");
+	GMT_Usage (API, 3, "1: L-1 measure (mean absolute residuals).");
+	GMT_Usage (API, 3, "2: L-2 measure (mean squared residuals) [Default].");
+	GMT_Usage (API, 3, "r: LMS robust measure (median of squared residuals).");
+	GMT_Usage (API, 3, "w: RLS Reweighted L-2 measure (r followed by 2 after excluding outliers.");
+	GMT_Usage (API, 1, "\n-S[r]");
+	GMT_Usage (API, -2, "Skip records identified as outliers on output. Append r to reverse mode and "
+		"only output the outlier records. Cannot be used with -T [output all records].");
+	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[+i|n]");
+	GMT_Usage (API, -2, "Evaluate model at the equidistant points implied by the arguments. "
+		"If only -T<inc>[+i|n] is given we reset <min> and <max> to the extreme x-values "
+		"for each segment.");
+	GMT_Usage (API, 3, "+n Note that <inc> is the number of t-values to produce instead of increment.");
+	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
+	GMT_Usage (API, -2, "For absolute time data, append a valid time unit (%s) to the increment. "
+		"Alternatively, give a file with output times in the first column, or a comma-separated list. "
+		"Use -T0 to bypass model evaluation entirely "
+		"[Default uses locations of input data to evaluate the model].", GMT_TIME_UNITS_DISPLAY);
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Supply individual 1-sigma uncertainties for data points [no weights].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append x for sigma_x, y for sigma_y, and r for x-y correlation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   We then expect 1-3 extra columns with these data in the given order.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Given a sigma, the weight will be computed via weight = 1/sigma.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ww if weights are precomputed and not given as 1-sigma values.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Except for -N1 we square the weights when computing misfits.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set z-score absolute value cutoff for outlier detection [%g].\n", GMTREGRESS_ZSCORE_LIMIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t   To only flag negative or positive outliers, specify a leading sign.\n");
-	GMT_Option (API, "a,bi,bo,d,e,g,h,i,o,q,.");
+	GMT_Usage (API, 1, "\n-W[w][x][y][r]");
+	GMT_Usage (API, -2, "Supply individual 1-sigma uncertainties for data points [no weights]; append corresponding directives:");
+	GMT_Usage (API, 3, "x: Read sigma_x uncertainties.");
+	GMT_Usage (API, 3, "y: Read sigma_y uncertainties.");
+	GMT_Usage (API, 3, "r: Read r for x-y correlations.");
+	GMT_Usage (API, -2, "We then expect 1-3 extra columns with these data in the given order. "
+		"Given a sigma, the weight will be computed via weight = 1/sigma. "
+		"Use -Ww if weights are precomputed and not given as 1-sigma values. "
+		"Except for -N1 we square the weights when computing misfits.");
+	GMT_Usage (API, 1, "\n-Z<limit>");
+	GMT_Usage (API, -2, "Set z-score absolute value cutoff for outlier detection [%g]. "
+		"To only flag negative or positive outliers, specify a leading sign.", GMTREGRESS_ZSCORE_LIMIT);
+	GMT_Option (API, "a,bi,bo,d,e,g,h,i,o,q,w,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -210,26 +226,25 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 
 	char *c = NULL;
 	bool scan_slopes = false;
-	unsigned int n_errors = 0, j, k, n, col, n_files = 0;
+	unsigned int n_errors = 0, j, k, n, col;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+			case '<':	/* Skip input files after checking they exist */
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Explore E vs slope or force a limited angle range */
-				Ctrl->A.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				if ((c = strstr (opt->arg, "+f"))) {
 					Ctrl->A.force = true;
 					if (c[2] == 'n') Ctrl->A.max = 0.0;	/* -90 to 0 */
@@ -243,24 +258,25 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'C':	/* Set confidence level in %, convert to fraction */
-				Ctrl->C.active = true;
-				Ctrl->C.value = atof (opt->arg) * 0.01;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->C.value);
+				Ctrl->C.value *= 0.01;
 				break;
 			case 'E':	/* Select regression type */
-				Ctrl->E.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				switch (opt->arg[0]) {
 					case 'x': Ctrl->E.mode = GMTREGRESS_X;   break; /* Regress on x */
 					case 'y': Ctrl->E.mode = GMTREGRESS_Y;   break; /* Regress on y */
 					case 'o': Ctrl->E.mode = GMTREGRESS_XY;  break; /* Orthogonal Regression*/
 					case 'r': Ctrl->E.mode = GMTREGRESS_RMA; break; /* RMA Regression*/
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Unrecognized type %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -E: Unrecognized type %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
 				break;
 			case 'F':	/* Select output columns */
-				Ctrl->F.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				if (!strcmp (opt->arg, "p")) {	/* Just want to return model parameters */
 					Ctrl->F.param = true;
 					break;
@@ -269,7 +285,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					if (k < GMTREGRESS_N_FARGS) {
 						Ctrl->F.col[k] = opt->arg[j];
 						if (!strchr (GMTREGRESS_FARGS, opt->arg[j])) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Choose from -F%s\n", GMTREGRESS_FARGS);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -F: Choose from -F%s\n", GMTREGRESS_FARGS);
 							n_errors++;
 						}
 						Ctrl->F.n_cols++;
@@ -277,64 +293,64 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					}
 					else {
 						n_errors++;
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Too many output columns selected\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Too many output columns selected\n");
 					}
 				}
 				break;
 			case 'N':	/* Select Norm for misfit calculations */
-				Ctrl->N.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				switch (opt->arg[0]) {
 					case '1': Ctrl->N.mode = GMTREGRESS_NORM_L1;	break;
 					case '2': Ctrl->N.mode = GMTREGRESS_NORM_L2;	break;
 					case 'r': Ctrl->N.mode = GMTREGRESS_NORM_LMS;	break;
 					case 'w': Ctrl->N.mode = GMTREGRESS_NORM_RLS;	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -N: Unrecognized norm %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: Unrecognized norm %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
 				break;
 			case 'S':	/* Restrict output records */
-				Ctrl->S.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.mode = (opt->arg[0] == 'r') ? GMTREGRESS_OUTPUT_BAD : GMTREGRESS_OUTPUT_GOOD;
 				break;
 			case 'T':	/* Output lattice or length */
-				Ctrl->T.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				if (!strcmp (opt->arg, "0"))	/* -T0 means no model evaluation */
 					Ctrl->T.no_eval = true;
 				else
 					n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_UNIQUE, 0);
 				break;
 			case 'W':	/* Weights or not */
-				Ctrl->W.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				if (opt->arg[0] == 'w') Ctrl->W.type = 1;	/* Got weights; determine their column position */
 				for (k = Ctrl->W.type, col = GMT_Z; opt->arg[k]; k++) {
 					if (opt->arg[k] == 'x') Ctrl->W.col[GMT_X] = col++;
 					else if (opt->arg[k] == 'y') Ctrl->W.col[GMT_Y] = col++;
 					else if (opt->arg[k] == 'r') Ctrl->W.col[GMT_Z] = col++;
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -W: Specify -W[w][x][y][r]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Specify -W[w][x][y][r]\n");
 						n_errors++;
 					}
 					Ctrl->W.n_weights++;
 				}
 				if (Ctrl->W.n_weights > 3) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -W: Gave more than 3 uncertainty types\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -W: Gave more than 3 uncertainty types\n");
 					n_errors++;
 				}
 				break;
 			case 'Z':	/* Set new zscore limit */
-				Ctrl->Z.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.limit = fabs (atof (opt->arg));
 				switch (opt->arg[0]) {	/* Look for one-sided outliers */
 					case '-': Ctrl->Z.mode = -1;	break;
 					case '+': Ctrl->Z.mode = +1;	break;
-					default: Ctrl->Z.mode = 0;		break;
+					default:  Ctrl->Z.mode = 0;		break;
 				}
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -358,7 +374,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2,
 	                                   "Binary input data (-bi) must have at least 2 columns.\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -1196,7 +1211,7 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 	unsigned geometry = GMT_IS_NONE;
 
 	double *x = NULL, *U = NULL, *V = NULL, *W = NULL, *e = NULL, *w[3] = {NULL, NULL, NULL};
-	double t_scale = 0.0, range[2], par[GMTREGRESS_NPAR], out[9];
+	double t_scale = 0.0, range[2], par[GMTREGRESS_NPAR], out[GMTREGRESS_NPAR];
 
 	char buffer[GMT_LEN256];
 
@@ -1240,7 +1255,7 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 	}
 	else {	/* Work up best regression solution per input segment */
 		if (Ctrl->F.param)
-			n_columns = 9;
+			n_columns = GMTREGRESS_NPAR;
 		else {
 			if (!Ctrl->F.active) {	/* Default output includes all possible columns */
 				char *s = GMTREGRESS_FARGS;
@@ -1368,6 +1383,9 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 					out[6] = par[GMTREGRESS_ICEPT];
 					out[7] = par[GMTREGRESS_SIGSL];
 					out[8] = par[GMTREGRESS_SIGIC];
+					out[9] = par[GMTREGRESS_CORR];
+					out[10] = par[GMTREGRESS_R];	/* Only defined if we are doing regression on y */
+					out[11] = par[GMTREGRESS_N_EFF];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this record to output */
 				}
 				else {

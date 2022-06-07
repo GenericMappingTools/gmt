@@ -1,18 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *      Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- *      See LICENSE.TXT file for copying and redistribution conditions.
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *      This program is free software; you can redistribute it and/or modify
- *      it under the terms of the GNU Lesser General Public License as published by
- *      the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- *      This program is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *      GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
- *      Contact info: www.generic-mapping-tools.org
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /*
@@ -31,5 +31,7 @@
 #define gmt_get_cpt(GMT,file,flag,min,max) gmt_get_palette(GMT,file,flag,min,max,0.0)
 #define gmt_M_grd_is_global gmt_grd_is_global
 #define GMT_c_OPT	"-c<ncopies>"	/* OBSOLETE */
+
+#define gmt_input_is_nan_proxy(GMT,value) gmt_input_col_is_nan_proxy(GMT,value,0)    /* Deprecated in GMT 6.3.0 */
 
 #endif /* GMT_MB_H */

@@ -17,8 +17,8 @@ Synopsis
 [ |-C|\ [*cpt*]]
 [ |-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
 [ |-I|\ [*intensgrid*\|\ *intensity*\|\ *modifiers*] ]
-[ **-Jz**\|\ **Z**\ *parameters* ] [ **-K** ]
-[ |-N|\ *level*\ [**+g**\ *fill*] ] [ **-O** ] [ **-P** ]
+[ **-Jz**\|\ **Z**\ *parameters* ] [ |-K| ]
+[ |-N|\ *level*\ [**+g**\ *fill*] ] [ |-O| ] [ |-P| ]
 [ |-Q|\ *args*\ [**+m**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smooth* ]
@@ -33,7 +33,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: grdview_common.rst_
+.. include:: grdview.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
@@ -79,7 +81,9 @@ topo_intens.nc, and looking from the SE, run
     gmt grdview topography.nc -JM6i -Gmagnetics.nc -Cmag_intens.cpt \
                 -Qs -p140/30 -Itopo_intens.nc > draped3D.ps
 
-.. include:: grdview_notes.rst_
+.. include:: grdview.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------

@@ -21,6 +21,7 @@ $xwidth	$ywidth
 END
 
 gmt begin GMT_App_E
+gmt set GMT_THEME cookbook
 gmt basemap -R0/5.75/0/7.55 -Jx1i -B0
 gmt set MAP_FRAME_PEN thinner
 for iy in 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0

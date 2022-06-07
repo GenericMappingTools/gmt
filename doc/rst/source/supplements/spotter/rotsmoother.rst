@@ -24,6 +24,7 @@ Synopsis
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
@@ -54,8 +55,8 @@ Optional Arguments
 **-A**
     Use opening angles as a proxy for time.  Suitable when no time can be assigned to the
     rotations.  In this case, input is expected to contain *lon lat angle* [*weight*] records
-    and **-T** settings refer to angles instead of time.
-    [Default expects *lon lat time angle* [*weight*] and **-T** refers to time].
+    and |-T| settings refer to angles instead of time.
+    [Default expects *lon lat time angle* [*weight*] and |-T| refers to time].
 
 .. _-C:
 
@@ -87,10 +88,10 @@ Optional Arguments
     read or generated becomes the bin-boundaries and we output the average time of
     all rotations inside each bin.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -113,6 +114,9 @@ Optional Arguments
 
 .. |Add_-e| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-e.rst_
+
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-f.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_

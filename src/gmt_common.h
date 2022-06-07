@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -65,12 +65,14 @@ struct GMT_LEGEND_ITEM {	/* Information about one item in a legend */
 	char pen[3][GMT_LEN32];		/* Pens to use with +d and +v and +p */
 	int draw;			/* 0 no draw, 1 draw horizontal +d, 2 draw vertical +v */
 	int just;			/* Legend placement [TR] */
+	int label_type;			/* 0 if static string, 1 if integer format statement, 2 if list of labels, 3 if nothing (use segment header) */
 	char code;			/* Label justification code (L|C|R) [L] */
 	double size;			/* Fixed symbol size when otherwise cannot set it */
 	double size2;			/* 2nd size (height) for 2-D symbols */
 	double scale;			/* Scale all given sizes, including +s<length> of a line */
 	double width;			/* Override auto-width with a fixed legend width */
 	unsigned int ncols;		/* How many columns to use for symbols */
+	unsigned int ID;		/* ID to use if label contains C-format for integer */
 };
 
 /*! Structure with all information given via the common GMT command-line options -R -J .. */
@@ -105,6 +107,8 @@ struct GMT_COMMON {
 	struct R {	/* -Rw/e/s/n[/z_min/z_max][r] or -Rgridfile */
 		bool active[4];	/* RSET = 0: -R, ISET = 1: inc, GSET = 2: -r, FSET = 3: read grid */
 		bool oblique;	/* true when -R...r was given (oblique map, probably), else false (map borders are meridians/parallels) */
+		bool via_polygon;	/* Got -R<countrycode> so w/e/s/n may not perfectly fit a grid spacing, for instance */
+		int aspect;	/* -1/+1 when we get -R from a grid whose x and y coordinates are the same units, else 0 */
 		uint32_t registration;	/* Registration mode of a grid given via -r or -Rgrid */
 		int row_order;	/* Order of rows in NetCDF output: 0 (not set) or k_nc_start_north or k_nc_start_south */
 		unsigned int mode;	/* For modern mode only: 0 = get exact region from data, 1 = rounded region from data */
@@ -159,6 +163,7 @@ struct GMT_COMMON {
 	struct d {	/* -d[i][o]<nan_proxy> */
 		bool active[2];
 		bool is_zero[2];
+		unsigned int first_col[2];	/* Only apply from this column onward */
 		double nan_proxy[2];
 		char string[GMT_LEN64];
 	} d;
@@ -169,6 +174,8 @@ struct GMT_COMMON {
 	} e;
 	struct f {	/* -f[i|o]<col>|<colrange>[t|T|g],.. */
 		bool active[2];	/* For GMT_IN|OUT */
+		bool is_geo[2];	/* true if -f[i|o]g was set to force a Cartesian grid to be seen as geographic */
+		bool is_cart[2];	/* true if -f[i|o]c was set to force a geographic grid to be seen as Cartesian */
 		char string[GMT_LEN64];
 	} f;
 	struct g {	/* -g[+]x|x|y|Y|d|Y<gap>[unit]  */
@@ -209,9 +216,10 @@ struct GMT_COMMON {
 		bool active;
 		struct GMT_LEGEND_ITEM item;
 	} l;
-	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] */
+	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] (and +A for debugging) */
 		bool active;
 		bool antialias;		/* Defaults to true, if supported */
+		bool save_debug;	/* Write antialias counters to tmp grid */
 		bool truncate;		/* Defaults to false */
 		unsigned int interpolant;	/* Defaults to BCR_BICUBIC */
 		bool bc_set;		/* true if +b was parsed */
@@ -231,7 +239,7 @@ struct GMT_COMMON {
 		bool do_z_rotation;	/* true if rotating plot about a vertical axis */
 		double z_rotation;	/* Rotation of <angle> about vertical axis */
 	} p;
-	struct q {	/* -q[i|o]<rows>,...[+c<col>][+a|f|s] */
+	struct q {	/* -q[i|o]<rows>,...[+c<col>][+a|t|s] */
 		bool active[2];
 		bool inverse[2];
 		char string[2][GMT_LEN64];
@@ -250,6 +258,10 @@ struct GMT_COMMON {
 		unsigned int n_transparencies;	/* How many to read from file if no values given */
 		double value[2];
 	} t;
+	struct w {	/* -w[<col>]y|m|w|d|p<period>[/<phase>] */
+		bool active;
+		char string[GMT_LEN64];
+	} w;
 	struct x {	/* -x[[-]<n>] */
 		bool active;
 		int n_threads;

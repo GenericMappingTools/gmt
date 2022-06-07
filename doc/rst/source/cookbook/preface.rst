@@ -49,14 +49,14 @@ which needs to be manually sourced from either ``~/.bash_completion`` or
 ``~/.bashrc``.
 
 Mac users should note that bash-completion >=2.0 requires bash >=4.1.
-However, OS X won't ship anything that's licensed under GPL version 3.
+However, macOS won't ship anything that's licensed under GPL version 3.
 The last version of bash available under the GPLv2 is 3.2 from 2006.
 It is recommended that *bash-completion* is installed together with
 *bash* via `MacPorts <http://www.macports.org/>`_,
 `Fink <http://finkproject.org/>`_, or `Homebrew <http://brew.sh/>`_.
 You then need to change the shell used by your terminal application.
 The `bash-completion HOWTO from MacPorts
-<http://trac.macports.org/wiki/howto/bash-completion>`_
+<https://trac.macports.org/wiki/howto/bash-completion>`_
 explains how to change the preferences of Terminal.app and iTerm.app.
 Another way is to change the default shell by editing of the user
 database:

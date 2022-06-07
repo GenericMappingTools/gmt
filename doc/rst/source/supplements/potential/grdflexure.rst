@@ -12,22 +12,24 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdflexure** *topogrd*
+**gmt grdflexure** *input*
 |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw*
 |-E|\ [*Te*\ [**k**][/*Te2*\ [**k**]]]
 |-G|\ *outgrid*
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
-[ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
+[ |-C|\ **p**\|\ **y**\ *value* ]
 [ |-F|\ *nu_a*\ [/*h_a*\ [**k**]/*nu_m*] ]
+[ |-H|\ *rhogrid*
 [ |-L|\ *list* ]
 [ |-M|\ *tm* ]
 [ |-N|\ *params* ]
 [ |-Q| ]
 [ |-S|\ *beta* ]
-[ |-T|\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**] ]
+[ |-T|\ *t0*\ [/*t1*/*dt*\ [**+l**]]\ \|\ *file* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *wd*]\ [**k**]
 [ |-Z|\ *zm*]\ [**k**]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
 
@@ -59,18 +61,25 @@ rheology and related constants, including in-plate forces.
 Required Arguments
 ------------------
 
-*topogrd*
-    2-D binary grid file with the topography of the load (in meters);
-    See GRID FILE FORMATS below.
-    If **-T** is used, *topogrd* may be a filename template with a
-    floating point format (C syntax) and a different load file name
-    will be set and loaded for each time step.  The load times thus
-    coincide with the times given via **-T** (but not all times need
-    to have a corresponding file).  Alternatively, give *topogrd* as
-    =\ *flist*, where *flist* is an ASCII table with one *topogrd* filename
-    and load time per record.  These load times can be different from
-    the evaluation times given via **-T**.  For load time format, see
-    **-T**.
+*input*
+    Supplies the topographic load information in one of many forms:
+
+    - A single 2-D binary grid file with the topography of the load
+      (in meters); (See :ref:`Grid File Formats <grd_inout_full>`).
+    - If |-T| is used, *input* may be a filename *template* (See
+      `Name Template`_ for details).  The load times will thus
+      coincide with the times given via |-T| (but not all times need
+      to have a corresponding file). 
+    - A file list given as *flist*\ **+l**, where *flist* is an ASCII
+      table with one load time and topography grid filename per record (e.g.,
+      as produced by :doc:`grdseamount </supplements/potential/grdseamount>` |-M|).
+      These load times can be different from the evaluation times given
+      via |-T|.  For load time format, see |-T|. **Note**: If *flist* has
+      three trailing words the the second will be interpreted as a load
+      density grid name and used for that layer instead of the fixed *rl*
+      setting in |-D|. The last trailing word is a formatted age string.
+    - A file list with extension ".lis" does not need the **+l** modifier
+      and will be automatically recognized as a file list.
 
 .. _-D:
 
@@ -85,20 +94,19 @@ Required Arguments
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
     a flexural rigidity *D* (by default, *D* is computed from *Te*, Young's
-    modulus, and Poisson's ratio; see **-C** to change these values).
-    If just **-E** is given and **-F** is used it means no plate is given
+    modulus, and Poisson's ratio; see |-C| to change these values).
+    If just |-E| is given and |-F| is used it means no plate is given
     and we will return a purely viscous response with or without an asthenospheric layer.
     Select a general linear viscoelastic response by supplying both an initial and
-    final elastic thickness; this response also requires **-M**.
+    final elastic thickness *Te2*; this response also requires |-M|.
 
 .. _-G:
 
-**-G**\ *outfile*
-    If **-T** is set then *grdfile* must be a filename template that contains
-    a floating point format (C syntax).  If the filename template also contains
-    either %s (for unit name) or %c (for unit letter) then we use the corresponding time
-    (in units specified in **-T**) to generate the individual file names, otherwise
-    we use time in years with no unit.
+.. |Add_outgrid| replace:: If |-T| is set then *outgrid* must be a filename template
+    (See `Name Template`_ for details).
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -114,29 +122,38 @@ Optional Arguments
 
 .. _-C:
 
-**-Cp**\ *poisson*
-    Change the default value of Poisson's ratio [0.25].
-
-**-Cy**\ *Young*
-    Change the default value of Young's modulus [7.0e10 N/m^2].
+**-C**\ **p**\|\ **y**\ *value*
+    Append **p** or **y** to change the current value of Poisson's ratio [0.25]
+    or Young's modulus [7.0e10 N/m^2], respectively.
 
 .. _-F:
 
 **-F**\ *nu_a*\ [\ /*h_a*\ [**k**]/*nu_m*]
     Specify a firmoviscous model in conjunction with an elastic plate
-    thickness specified via **-E**.  Just give one viscosity (*nu_a*)
+    thickness specified via |-E|.  Just give one viscosity (*nu_a*)
     for an elastic plate over a viscous half-space, or also append
     the thickness of the asthenosphere (*h_a*) and the lower mantle
     viscosity (*nu_m*), with the first viscosity now being that of
     the asthenosphere. Give viscosities in Pa·s. If used, give the
     thickness of the asthenosphere in meter; append **k** for km.
-    Cannot be used in conjunctions with **-M**.
+    Cannot be used in conjunctions with |-M|.
+
+.. _-H:
+
+**-H**\ *rhogrid*
+    Supply optional variable load density grid.  It can be a single
+    grid or a grid name template (see `Name Template`_ for details). Requires
+    *rho_l* be set to - in |-D|.  **Note**: If *input* is given as
+    a list file then the optional density grids must be given as part of
+    the list and not via |-H|.
 
 .. _-L:
 
 **-L**\ *list*
     Write the names and evaluation times of all grids that were created
-    to the text file *list*. Requires **-T**.
+    to the text file *list*. Requires |-T|.  The leading numerical column
+    will be time in years, while the last trailing text word is formatted time. 
+    The output records thus contain *time flexuregrid timetag*.
 
 .. _-N:
 
@@ -146,9 +163,9 @@ Optional Arguments
 
 **-M**\ *tm*
     Specify a viscoelastic model in conjunction with a plate
-    thickness specified via **-E**.  Append the Maxwell time *tm* for the
+    thickness specified via |-E|.  Append the Maxwell time *tm* for the
     viscoelastic model (in years); add **k** for kyr and **M** for Myr.
-    Cannot be used in conjunctions with **-F**.
+    Cannot be used in conjunctions with |-F|.
 
 .. _-Q:
 
@@ -166,21 +183,26 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**]
+**-T**\ *t0*\ [/*t1*/*dt*\ [**+l**]]\ \|\ *file*
     Specify *t0*, *t1*, and time increment (*dt*) for a sequence of calculations
     [Default is one calculation, with no time dependency].  For a single specific time, just
     give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.
     For a logarithmic time scale, append **+l** and specify *n* steps instead of *dt*.
     Alternatively, give a *file* with the desired times in the first column (these times
     may have individual units appended, otherwise we assume year).
-    We then write a separate model grid file for each given time step; see *-G** for output
-    file template format.
+    We then write a separate model grid file for each given time step; see |-G| for output
+    and `Name Template`_ for the file template format.
+
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
 **-W**\ *wd*\ [**k**]
     Set reference water depth for the undeformed flexed surface in m.  Must be positive. [0].  Append **k** to indicate
-    km.  If **-W** is used and your load exceeds this depth then we scale the subaerial part of the
+    km.  If |-W| is used and your load exceeds this depth then we scale the subaerial part of the
     load to account for the change in surrounding density (air vs water).
 
 .. _-Z:
@@ -190,18 +212,33 @@ Optional Arguments
     Must be positive. [0].  We subtract this value from the flexed surface before
     writing the results.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
-
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-h.rst_
+
 .. include:: ../../explain_help.rst_
 
-.. include:: ../../explain_grd_inout_short.rst_
+.. _Name Template:
+
+Name Template
+-------------
+
+The format statements allowed in grid file templates require you to follow these rules:
+
+    - To use the formatted time-tag as part of the file name you must use just a single %s
+      format as part of the template (e.g., smt_%s.grd).
+    - If you want to control the numerical formatting of the names but still have the common
+      time unit appended then you must compose a template that has a floating point format
+      before a later %c format for the unit.  For example, smt_%05.1f%c.grd will create
+      names like smt_001.1M.grd names.  The times will be scaled to match the unit.
+    - If you do not want any units then simply give a template with just one floating point
+      format, e.g., smt_%05.1f_name.grd.  The times will be used as is (i.e, unscaled).
+
+For details on the format statements, see `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_ 
+C language format syntax.
 
 Grid Distance Units
 -------------------
@@ -222,7 +259,7 @@ setup instead; you can always project it back to geographic using :doc:`grdproje
 Transfer Functions
 ------------------
 
-If **-Q** is given we perform no actual flexure calculations and no input data file is required.
+If |-Q| is given we perform no actual flexure calculations and no input data file is required.
 Instead, we write the chosen transfer functions :math:`\Phi(\mathbf{k},t)` to 7 separate files for
 7 different Te values (1, 2, 5, 10, 20, 50, and 100 km). The first two columns are
 always wavelength in km and wavenumber (in 1/m) for a 1:1:3000 km range. The transfer
@@ -246,7 +283,7 @@ for a 10 km thick plate with typical densities, try::
 
     gmt grdflexure smt.nc -Gflex.nc -E10k -D2700/3300/1035
 
-To see how in-plane stresses affect the result, we use **-A**.  Remember that we need to depth-
+To see how in-plane stresses affect the result, we use |-A|.  Remember that we need to depth-
 integrated forces, not pressures, hence we try::
 
     gmt grdflexure smt.nc -Gflex.nc -E10k -D2700/3300/1035 -A-4e11/2e11/-1e12
@@ -340,7 +377,6 @@ In the most common scenario, :math:`N_s` are all zero and the elastic response f
 
     \Phi_e(k_r) = \left [ 1 + \alpha_r^4 \right ]^{-1}.
 
-
 Firmoviscous response function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -421,16 +457,16 @@ Karner, G. D., 1982, Spectral representation of isostatic models, *BMR J. Austra
 
 Nakada, M., 1986, Holocene sea levels in oceanic islands: Implications for the rheological
 structure of the Earth's mantle, *Tectonophysics, 121*, 263–276,
-`http://dx.doi.org/10.1016/0040-1951(86)90047-8 <http://dx.doi.org/10.1016/0040-1951(86)90047-8>`_.
+`https://doi.org/10.1016/0040-1951(86)90047-8 <https://doi.org/10.1016/0040-1951(86)90047-8>`_.
 
 Watts, A. B., 2001, *Isostasy and Flexure of the Lithosphere*, 458 pp., Cambridge University Press.
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
-`http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/10.1029/2000JB000083>`_.
+`https://doi.org/10.1029/2000JB000083 <https://doi.org/10.1029/2000JB000083>`_.
 
 Wessel, P., 2016, Regional–residual separation of bathymetry and revised estimates of Hawaii plume flux,
-*Geophys. J. Int., 204(2)*, 932-947, `http://dx.doi.org/10.1093/gji/ggv472 <http://dx.doi.org/10.1093/gji/ggv472>`_.
+*Geophys. J. Int., 204(2)*, 932-947, `https://doi.org/10.1093/gji/ggv472 <https://doi.org/10.1093/gji/ggv472>`_.
 
 See Also
 --------
@@ -438,6 +474,6 @@ See Also
 :doc:`gmt </gmt>`,
 :doc:`gmtflexure </supplements/potential/gmtflexure>`,
 :doc:`grdfft </grdfft>`,
-:doc:`gravfft </supplements/potential/gravfft>`
+:doc:`gravfft </supplements/potential/gravfft>`,
 :doc:`grdmath </grdmath>`, :doc:`grdproject </grdproject>`,
 :doc:`grdseamount </supplements/potential/grdseamount>`

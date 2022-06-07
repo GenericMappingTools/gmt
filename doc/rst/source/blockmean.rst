@@ -21,7 +21,7 @@ Synopsis
 [ |-G|\ [*grdfile*] ]
 [ |-S|\ [**m**\|\ **n**\|\ **s**\|\ **w**] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**i**\|\ **o**][**+s**] ]
+[ |-W|\ [**i**\|\ **o**][**+s**\|\ **w**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -32,6 +32,7 @@ Synopsis
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -43,8 +44,8 @@ Description
 **blockmean** reads arbitrarily located (*x*,\ *y*,\ *z*) triples [or
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output a mean position and
-value for every non-empty block in a grid region defined by the **-R**
-and **-I** arguments. See **-G** for writing gridded output directly.
+value for every non-empty block in a grid region defined by the |-R|
+and |-I| arguments. See |-G| for writing gridded output directly.
 Either **blockmean**, :doc:`blockmedian`, or
 :doc:`blockmode` should be used as a pre-processor before running
 :doc:`surface` to avoid aliasing short wavelengths. These routines are also
@@ -57,7 +58,7 @@ Required Arguments
 ------------------
 
 *table*
-    3 (or 4, see **-W**) column ASCII data table file(s) (or binary, see
+    3 (or 4, see |-W|) column ASCII data table file(s) (or binary, see
     **-bi**) holding (*x*,\ *y*,\ *z*\ [,\ *w*])
     data values, where [*w*] is an optional weight for the data. If no file
     is specified, **blockmean** will read from standard input.
@@ -66,8 +67,10 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -75,11 +78,11 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *fields*
-    Select which fields to write to individual grids.  Requires **-G**.
+    Select which fields to write to individual grids.  Requires |-G|.
     Append the codes for available fields: **z** (the mean
-    data z, but see **-S**), **s** (standard deviation), **l** (lowest
-    value), **h** (highest value) and **w** (the output weight; requires **-W**).
-    Note **s**\|\ **l**\|\ **h** requires **-E** [Default is just **z**].
+    data z, but see |-S|), **s** (standard deviation), **l** (lowest
+    value), **h** (highest value) and **w** (the output weight; requires |-W|).
+    Note **s**\|\ **l**\|\ **h** requires |-E| [Default is just **z**].
 
 .. _-C:
 
@@ -93,7 +96,7 @@ Optional Arguments
     about the mean), **l**, the lowest value, and **h**, the high value
     for each block. Output order becomes
     *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
-    *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for enabling *w* output.
+    *x*,\ *y*,\ *z*\ [,\ *w*]. See |-W| for enabling *w* output.
     If **-E+p**\|\ **P** is used then input data uncertainties are expected and *s*
     becomes the propagated error of the weighted (**+p**) or simple (**+P**) *z* mean.
 
@@ -101,33 +104,34 @@ Optional Arguments
 
 **-G**\ *grdfile*
     Write one or more fields directly to grids; no table data are written to
-    standard output.  If more than one fields are specified via **-A** then
+    standard output.  If more than one fields are specified via |-A| then
     *grdfile* must contain the format flag %s so that we can embed the field
-    code in the file names.
+    code in the file names.  **Note**: Option |-C| is irrelevant and not allowed.
 
 .. _-S:
 
 **-S**\ [**m**\|\ **n**\|\ **s**\|\ **w**]
     Use **-Sn** to report the number of input points inside each block,
     **-Ss** to report the sum of all *z*-values inside a block, **-Sw**
-    to report the sum of weights [Default (or **-Sm** reports mean value].
+    to report the sum of weights [Default or **-Sm** reports mean value].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
-**-W**\ [**i**\|\ **o**][**+s**]
-    Weighted modifier[s]. Unweighted input and output have 3 columns
-    *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
+**-W**\ [**i**\|\ **o**][**+s**\|\ **w**]
+    Compute weighted results. Unweighted input and output have 3 columns
+    *x*,\ *y*,\ *z*; weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
     Weights can be used in input to construct weighted mean values for
-    each block. Weight sums can be reported in output for later combining
-    several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
-    input only, and **-Wo** for weighted output only. [Default uses
+    each block. Weight sums can be reported to output for later combining
+    several runs, etc. Use |-W| for weighted i/o, **-Wi** for weighted
+    input only, and **-Wo** for weighted output only [Default uses
     unweighted i/o]. If your weights are actually uncertainties (one sigma)
-    then append **+s** and we compute weight = 1/sigma.
+    then append **+s** and we compute weight = 1/sigma^2.  Otherwise (or
+    via **+w**) we use the weights directly.
 
 .. include:: explain_-aspatial.rst_
 
@@ -135,7 +139,7 @@ Optional Arguments
 .. include:: explain_-bi.rst_
 
 
-.. |Add_-bo| replace:: [Default is 3 (or 4 if **-Wo** is set)]. **-E** adds 3 additional columns.
+.. |Add_-bo| replace:: [Default is 3 (or 4 if **-Wo** is set)]. |-E| adds 3 additional columns.
    The **-Sn** option will work with only 2 input columns (x and y).
 
 .. include:: explain_-bo.rst_
@@ -163,6 +167,8 @@ Optional Arguments
     (*x*,\ *y*) < 11 is one of 25 blocks; otherwise 9.5 <= (*x*,\ *y*)
     < 10.5 is one of 36 blocks.
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 .. include:: explain_help.rst_

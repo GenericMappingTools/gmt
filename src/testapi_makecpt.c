@@ -3,7 +3,7 @@
  * Fixed Nov. 17, 2020, P. Wessel
  */
 
-#include <gmt.h>
+#include "gmt.h"
 #include <string.h>
 int main () {
 	char output[GMT_VF_LEN] = {""};

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
  * Calculates gravity due to 2-D crossectional polygonal shapes
  * of an infinite horizontal body [or bodies]
  * It expects all distances to be in meters (you can override
- * with the -M option) and densities to be in kg/m^3.
+ * with the -M option) and densities to be in kg/m^3 or g/cm^3.
  *
  * Based on methods by:
  *
@@ -41,6 +41,7 @@
  */
 
 #include "gmt_dev.h"
+#include "newton.h"
 #include "talwani.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"talwani2d"
@@ -49,7 +50,7 @@
 #define THIS_MODULE_PURPOSE	"Compute geopotential anomalies over 2-D bodies by the method of Talwani"
 #define THIS_MODULE_KEYS	"<D{,ND(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-Vdehio" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-Vbdehio" GMT_ADD_x_OPT
 
 struct TALWANI2D_CTRL {
 	struct TALWANI2D_Out {	/* -> */
@@ -79,7 +80,7 @@ struct TALWANI2D_CTRL {
 		bool active;
 		struct GMT_ARRAY T;
 	} T;
-	struct TALWANI2D_Z {	/* Observation level constant */
+	struct TALWANI2D_Z {	/* -Z<zlevel>[/<ymin>/<ymax>] Observation level constant and optional 2.5D gravity limits */
 		bool active;
 		double level;
 		double ymin, ymax;
@@ -123,64 +124,73 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *C) {	/* Deal
 }
 
 static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_OPTION *options) {
-	unsigned int k, n_errors = 0, n_files = 0;
+	unsigned int k, n_errors = 0;
 	int n;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {		/* Process all the options given */
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			case 'A':	/* Specify z-axis is positive up [Default is down] */
-				Ctrl->A.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':
-				Ctrl->D.active = true;
-				Ctrl->D.rho = atof (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->D.rho);
+				if (fabs (Ctrl->D.rho) < 10.0) Ctrl->D.rho *= 1000;	/* Gave units of g/cm^3 */
 				break;
 			case 'F':
-				Ctrl->F.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				switch (opt->arg[0]) {
 					case 'v': Ctrl->F.mode = TALWANI2D_VGG;		break;
 					case 'n': Ctrl->F.mode = TALWANI2D_GEOID;
 						if (opt->arg[1]) Ctrl->F.lat = atof (&opt->arg[1]);
 						break;
-					default:  Ctrl->F.mode = TALWANI2D_FAA; 	break;
+					case 'f': case '\0':  Ctrl->F.mode = TALWANI2D_FAA; 	break;
+					default:
+						GMT_Report (API, GMT_MSG_WARNING, "Option -F: Unrecognized field %c\n", opt->arg[0]);
+						n_errors++;
+						break;
 				}
 				break;
 			case 'M':	/* Length units */
 				k = 0;
 				while (opt->arg[k]) {
 					switch (opt->arg[k]) {
-						case 'h': Ctrl->M.active[TALWANI2D_HOR] = true; break;
-						case 'z': Ctrl->M.active[TALWANI2D_VER] = true; break;
+						case 'h':
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI2D_HOR]);
+							break;
+						case 'z':
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI2D_VER]);
+							break;
 						default:
 							n_errors++;
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
 							break;
 					}
 					k++;
 				}
 				break;
 			case 'N':
-				Ctrl->N.active = true;
-				Ctrl->N.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file));
 				break;
 			case 'T':	/* Either get a file with time coordinate or a min/max/dt setting */
-				Ctrl->T.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_DIST | GMT_ARRAY_UNIQUE, 0);
 				break;
 			case 'Z':
-				Ctrl->Z.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				k = (opt->arg[0] == '/') ? 1 : 0;	/* In case someone gives -Z/ymin/ymax */
 				n = sscanf (&opt->arg[k], "%lf/%lf/%lf", &Ctrl->Z.level, &Ctrl->Z.ymin, &Ctrl->Z.ymax);
 				if (n == 3) Ctrl->Z.mode = 3;
@@ -188,7 +198,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 				else if (n == 1) Ctrl->Z.mode = 1;
 				break;
 			default:
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -200,7 +210,6 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 				         "Option -Z: The ymin >= ymax for 2.5-D body\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Z.mode & 2) && Ctrl->F.mode != TALWANI2D_FAA,
 				         "Option -Z: 2.5-D solution only available for FAA\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 	if ((Ctrl->Z.mode & 2) && Ctrl->F.mode == TALWANI2D_FAA) Ctrl->F.mode = TALWANI2D_FAA2;
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -208,33 +217,46 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <modelfile> [-A] [-D<rho>] [-Ff|n[<lat>]|v]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [-T[<xmin>/<xmax>/<xinc>[+n]]] [%s] [-Z[<level>][/<ymin/<ymax>]]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]%s [%s]\n\n", GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <modelfile> [-A] [-D<density>] [-Ff|n[<lat>]|v] [-M[hz]] "
+		"[-N<trktable>] [-T<xmin>/<xmax>/<xinc>[+i|n]|<file>|<list>] [%s] [-Z[<level>][/<ymin/<ymax>]] "
+		"[%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
+		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT,
+		GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<modelfile> is a multiple-segment ASCII file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A The z-axis is positive upwards [Default is positive down].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets fixed density contrast that overrides settings in model file (in kg/m^3).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify desired geopotential field component:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f = FAA Free-air anomalies (mGal) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n = Geoid anomalies (meter).  Optionally append <lat> for evaluation of normal gravity [45].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   v = VGG Vertical Gravity Gradient anomalies (Eotvos = 0.1 mGal/km).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M sets units used, as follows:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Mh indicates all x-distances are given in km [meters]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Mz indicates all z-distances are given in km [meters]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Gives file with output locations x[,z].  If there are\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   z-coordinates then these are used as observation levels.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   You can use -Z to override these by setting a constant level.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set domain from <xmin> to <xmax> in steps of <xinc>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to xinc to indicate the number of points instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output positions in the first column, or a comma-separated list.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<modelfile>");
+	GMT_Usage (API, -2, "One or more data files (in ASCII, binary, netCDF). If no files are given, standard "
+		"input is read. Contains (x,z) coordinates with <density> in the segment headers (or see -D).");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A The z-axis is positive upwards [Default is positive down].");
+	GMT_Usage (API, 1, "\n-D<density>");
+	GMT_Usage (API, -2, "Set fixed density contrast that overrides settings in model file (in kg/m^3 of g/cm^3). "
+		"Required if input files are binary.");
+	GMT_Usage (API, 1, "\n-Ff|n[<lat>]|v]");
+	GMT_Usage (API, -2, "Specify desired geopotential field component:");
+	GMT_Usage (API, 3, "f: Free-air anomalies (mGal) [Default].");
+	GMT_Usage (API, 3, "n: Geoid anomalies (meter).  Optionally append latitude for evaluation of normal gravity [45].");
+	GMT_Usage (API, 3, "v: Vertical Gravity Gradient anomalies (Eotvos = 0.1 mGal/km).");
+	GMT_Usage (API, 1, "\n-M[hz]");
+	GMT_Usage (API, -2, "Change distance units used, via one or two directives:");
+	GMT_Usage (API, 3, "h: All x-distances are given in km [meters].");
+	GMT_Usage (API, 3, "z: All z-distances are given in km [meters].");
+	GMT_Usage (API, 1, "\n-N<trktable>");
+	GMT_Usage (API, -2, "File with output locations x[,z].  If there are "
+		"z-coordinates then these are used as observation levels. "
+		"You can use -Z to override these by setting a constant level.");
+	GMT_Usage (API, 1, "\n-T<xmin>/<xmax>/<xinc>[+i|n]|<file>|<list>");
+	GMT_Usage (API, -2, "Set domain from <xmin> to <xmax> in steps of <xinc>.");
+	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
+	GMT_Usage (API, 3, "+n Indicate <inc> is the number of t-values to produce instead.");
+	GMT_Usage (API, -2, "Alternatively, give a <file> with output positions in the first column, or a comma-separated <list>.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set observation level for output locations [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For FAA only: Optionally append <ymin/ymax> to get a 2.5-D solution.\n");
-	GMT_Option (API, "d,e,h,i,o,x,.");
+	GMT_Usage (API, 1, "\n-Z[<level>][/<ymin/<ymax>]");
+	GMT_Usage (API, -2, "-Z Set observation level for output locations [0]. "
+		"For FAA only: Optionally append /<ymin/ymax> to get a 2.5-D solution.");
+	GMT_Option (API, "bi,bo,d,e,h,i,o,x,.");
 	return (GMT_MODULE_USAGE);
 }
 
@@ -247,9 +269,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
  */
 
 GMT_LOCAL double talwani2d_integralI1 (double xa, double xb, double za, double zb, double y) {
-	/* This function performs the integral I1 (i,Y) from
-	 * Rasmussen & Pedersen's paper
-	 */
+	/* This function performs the integral I1 (i,Y) from Rasmussen & Pedersen's paper */
 
 	double yy, xdiff, zdiff, side, cosfi, sinfi, ui, uii, wi, ri, rii, rri, rrii;
 	double part1, part2, part3, fact;
@@ -277,14 +297,14 @@ GMT_LOCAL double talwani2d_integralI1 (double xa, double xb, double za, double z
 }
 
 GMT_LOCAL double talwani2d_grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0, double rho, double ymin, double ymax) {
-/*  x0;		X-coordinate of observation point */
-/*  z0;		Z-coordinate of observation point */
-/*  x[];	Array of xpositions */
-/*  z[];	Array of zpositions */
-/*  n;		Number of corners */
-/*  rho;	Density contrast */
-/*  ymin;	Extent of body in y-direction */
-/*  ymax; */
+	/*  x0;		X-coordinate of observation point */
+	/*  z0;		Z-coordinate of observation point */
+	/*  x[];	Array of xpositions */
+	/*  z[];	Array of zpositions */
+	/*  n;		Number of corners */
+	/*  rho;	Density contrast */
+	/*  ymin;	Extent of body in y-direction */
+	/*  ymax; */
 
 	double xx0, zz0, xx1, zz1, part_1, part_2, sum;
 	int i, i1;
@@ -313,7 +333,7 @@ GMT_LOCAL double talwani2d_grav_2_5D (struct GMT_CTRL *GMT, double x[], double z
 		xx0 = xx1;
 		zz0 = zz1;
 	}
-	sum *= SI_GAMMA * rho * SI_TO_MGAL;	/* To get mGal */
+	sum *= NEWTON_G * rho * SI_TO_MGAL;	/* To get mGal */
 	return (sum);
 }
 
@@ -353,7 +373,7 @@ GMT_LOCAL double talwani2d_get_grav2d (struct GMT_CTRL *GMT, double x[], double 
 		ri = ri1;
 		phi_i = phi_i1;
 	}
-	sum *= 2.0 * SI_GAMMA * rho * SI_TO_MGAL;	/* To get mGal */
+	sum *= 2.0 * NEWTON_G * rho * SI_TO_MGAL;	/* To get mGal */
 	return (sum);
 }
 
@@ -394,7 +414,7 @@ GMT_LOCAL double talwani2d_get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z
 		}
 	}
 
-	sum *= (-SI_GAMMA * rho * SI_TO_EOTVOS);        /* To get Eotvos */
+	sum *= (-NEWTON_G * rho * SI_TO_EOTVOS);        /* To get Eotvos */
 	return (sum);
 }
 
@@ -482,7 +502,7 @@ GMT_LOCAL double talwani2d_get_geoid2d (struct GMT_CTRL *GMT, double y[], double
 		}
 		N = N + ni;
 	}
-	N *= (-SI_GAMMA * rho / G0);
+	N *= (-NEWTON_G * rho / G0);
 	return (N);
 }
 
@@ -513,13 +533,13 @@ GMT_LOCAL double talwani2d_get_one_output (struct GMT_CTRL *GMT, double x_obs, d
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
-	int srow, error = 0, ns;
+	int error = 0, ns;
 	unsigned int k, tbl, seg, n = 0, geometry, n_bodies, dup_node = 0, n_duplicate = 0;
 	size_t n_alloc = 0, n_alloc1 = 0;
+	int64_t srow;
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 2}, row;
 	double scl, rho = 0.0, G0, z_level, answer, min_answer = DBL_MAX, max_answer = -DBL_MAX;
 	bool first = true;
-
 	char *uname[2] = {"meter", "km"}, *kind[4] = {"FAA", "VGG", "GEOID", "FAA(2.5-D)"};
 	double *x = NULL, *z = NULL, *in = NULL;
 
@@ -565,7 +585,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 	}
 	else {	/* Got a dataset with output locations */
 		geometry = GMT_IS_PLP;	/* We don't really know */
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -C,-F,-L files */
 		if ((Out = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -573,7 +593,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 			gmt_adjust_dataset (GMT, Out, 2U);
 			geometry = GMT_IS_LINE;	/* Since we are making from scratch */
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 	}
 
 	/* Specify input expected columns to be at least 2 */
@@ -627,6 +647,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 					break;
 				/* Process the next segment header */
 				ns = sscanf (GMT->current.io.segment_header, "%lf",  &rho);
+				if (ns == 1 && fabs (rho) < 10.0) rho *= 1000.0;	/* Gave units of g/cm^3 */
 				if (ns == 0 && !Ctrl->D.active) {
 					GMT_Report (API, GMT_MSG_ERROR, "Neither segment header nor -D specified density - must quit\n");
 					gmt_M_free (GMT, body);
@@ -710,7 +731,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 
 	for (k = 0, rho = 0.0; k < n_bodies; k++) {
 		rho += body[k].rho;
-		GMT_Report (API, GMT_MSG_INFORMATION, "%lg Rho: %lg N-vertx: %4d\n", body[k].rho, body[k].n);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Rho: %lg N-vertices: %4d\n", body[k].rho, body[k].n);
 	}
 	GMT_Report (API, GMT_MSG_INFORMATION, "Start calculating %s\n", kind[Ctrl->F.mode]);
 
@@ -722,7 +743,7 @@ EXTERN_MSC int GMT_talwani2d (void *V_API, int mode, void *args) {
 			/* Spread calculation over selected cores */
 #pragma omp parallel for private(srow,z_level,answer) shared(GMT,Ctrl,S,scl,body,n_bodies, G0)
 #endif
-			for (srow = 0; srow < (int)S->n_rows; srow++) {	/* Calculate attraction at all output locations for this segment. OpenMP requires sign int srow */
+			for (srow = 0; srow < (int64_t)S->n_rows; srow++) {	/* Calculate attraction at all output locations for this segment. OpenMP requires sign int srow */
 				z_level = (S->n_columns == 2 && !(Ctrl->Z.mode & 1)) ? S->data[GMT_Y][srow] : Ctrl->Z.level;
 				answer = talwani2d_get_one_output (GMT, S->data[GMT_X][srow] * scl, z_level, body, n_bodies, Ctrl->F.mode, Ctrl->Z.ymin, Ctrl->Z.ymax, G0);
 				S->data[GMT_Y][srow] = answer;

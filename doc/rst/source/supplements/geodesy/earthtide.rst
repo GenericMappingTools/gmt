@@ -13,8 +13,8 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt earthtide**
-|-T|\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
-|-G|\ *grdfile*
+|-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
+|-G|\ *outgrid*
 [ |-C|\ *x|e,y|n,z|v* ]
 [ |SYN_OPT-I| ]
 [ |-L|\ *lon/lat* ]
@@ -30,24 +30,26 @@ Description
 -----------
 
 Compute the three components of solid Earth tides as time-series or grids. Optionally compute also Sun and Moon position in lon,lat.
-The output can be either in the form of a grid or as a table printed to stdout. The format of the table data is:
+The output can be either in the form of a grid or as a table printed to standard output. The format of the table data is:
 *time north east vertical* in units of meters.
 
 
 Required Arguments
 ------------------
 
-Either **-G**, **-S** or **-L**
+Either |-G|, |-S| or |-L| must be provided.
 
 .. _-G:
 
-**-G**\ *grdfile*
-    Write one or more tide component directly to grids; no table data are written to standard output.
-    If more than one component are specified via **-C** then *grdfile* must contain the format flag %s
-    so that we can embed the component code in the file names (*n* for north; *e* for east and *v* for vertical).
-    If only one component is selected with **-C** than no code is appended to grid name (an no need to
-    set the format flag %s). The grid(s) are computed at the time set by **-T**, if that option is used, or
+.. |Add_outgrid| replace:: Write one or more tide component directly to grids; no table data are written to standard
+    output. If more than one component are specified via |-C| then *outgrid* must contain the format flag %s so that
+    we can embed the component code in the file names (*n* for north; *e* for east and *v* for vertical).
+    If only one component is selected with |-C| than no code is appended to grid name (and no need to
+    set the format flag %s). The grid(s) are computed at the time set by |-T|, if that option is used, or
     at the *now* time calculated in UTC from the computer clock.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-S:
 
@@ -69,33 +71,33 @@ Optional Arguments
 .. _-C:
 
 **-C**\ **x**\|\ **e**,\ **y**\|\ **n**,\ **z**\|\ **v**
-    Select which component to write to individual grids. Requires **-G**.
+    Select which component to write to individual grids. Requires |-G|.
     Append comma-separated codes for available components: **x** or **e** for the east component;
     **y** or **n** for the north component; and **z** or **v** for the vertical component.
     For example, **-Ce**,\ **v**, will write 2 grids. One with east and other with the vertical components.
-    If **-G** is set but not **-C** then the default is to write the vertical component.
+    If |-G| is set but not |-C| then the default is to write the vertical component.
 
 .. _-I:
 
-.. |Add_-I| replace:: Used only with **-G**. If not set, defaults to **-I30m**
+.. |Add_-I| replace:: Used only with |-G|. If not set, defaults to **-I30m**
 .. include:: ../../explain_-I.rst_
 
 
-.. _-R:
-
-.. |Add_-R| replace:: Used only with **-G**. If not set, defaults to **-Rd**
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: ../../explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\|\ *list*
-    Make evenly spaced time-steps from *min* to *max* by *inc*. Append +n to indicate *inc* is the number of t-values
-    to produce over the range instead. Append a valid time unit (d|h|m|s) to the increment. If only *min* is given then
-    we use that date and time for the calculations.  If no **-T** is provided get
-    current time in UTC from the computer clock. If no **-G** or **-S** are provided then **-T** is interpreted to mean compute
-    a time-series at the location specified by **-L**, thus then **-L** becomes mandatory.
-    When **-G** and **-T**, only first time T series is considered. Finally, dates may range from 1901 through 2099.
-    For details on array creation, see `Generate 1D Array`_.
+**-T**\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
+    Make evenly spaced time-steps from *min* to *max* by *inc*. Append **+i** to indicate the reciprocal increment was given,
+    or append **+n** to indicate *inc* is the number of *t*-values to produce over the range instead. Append a valid time
+    unit (**d**\|\ **h**\|\ **m**\|\ **s**) to the increment. If only *min* is given then we use that date and time for the
+    calculations.  If no |-T| is provided get current time in UTC from the computer clock. If no |-G| or |-S| are
+    provided then |-T| is interpreted to mean compute a time-series at the location specified by |-L|, thus then |-L|
+    becomes mandatory. When |-G| and |-T|, only first time T series is considered. Finally, dates may range from 1901
+    through 2099. For details on array creation, see `Generate 1D Array`_.
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
@@ -105,10 +107,10 @@ Optional Arguments
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-..  include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: ../../explain_help.rst_
 
@@ -118,7 +120,7 @@ Examples
 --------
 
 To compute a global grid of the vertical component with a grid step of 30m at noon of 18 Jun 2018,
-(note: we are using the defaults for **-R** and **-I**) try
+(note: we are using the defaults for |-R| and |-I|) try
 
 ::
 

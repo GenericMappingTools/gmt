@@ -10,3 +10,9 @@ below at 300 dpi using the default black and white shades.
 .. figure:: /_images/GMT_App_E.*
    :width: 500 px
    :align: center
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_App_E.txt

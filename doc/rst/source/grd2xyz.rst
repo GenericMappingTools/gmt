@@ -12,11 +12,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2xyz** *grid*
+**gmt grd2xyz** *ingrid*
 [ |-C|\ [**f**\|\ **i**] ]
+[ |-L|\ [**c**\|\ **r**\|\ **x**\|\ **y**]\ *value* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**a**\|\ *weight*] ] [ |-Z|\ [*flags*] ]
+[ |-T|\ [**a**\|\ **b**][*base*] ]
+[ |-W|\ [**a**\ [**+u**\ *unit*]\|\ *weight*] ] [ |-Z|\ [*flags*] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -37,14 +39,16 @@ precision of the ASCII output format by editing the
 :term:`FORMAT_FLOAT_OUT` parameter in your :doc:`gmt.conf` file or use
 **--FORMAT_FLOAT_OUT**\ =\ *format* on the command line, or choose binary
 output using single or double precision storage. As an option you may
-output z-values without the (x,y) coordinates; see **-Z** below.
+output z-values without the (x,y) coordinates (see |-Z| below) or you can
+save the grid in the STL format for 3-D printers.
 
 Required Arguments
 ------------------
 
-*grid*
-    Names of 2-D binary grid files to be converted. (See GRID FILE
-    FORMATS below.)
+.. |Add_ingrid| replace:: Names of 2-D binary grid files to be converted.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -58,24 +62,57 @@ Optional Arguments
     **i** to write just the two columns *index* and *z*, where *index*
     is the 1-D indexing that GMT uses when referring to grid nodes.
 
-.. _-R:
+.. _-L:
 
-.. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of the grid. If this subsection exceeds the
-    boundaries of the grid, only the common region will be output.
+**-L**\ **c**\|\ **r**\|\ **x**\|\ **y**]\ *value*
+    Limit the output of records to a single row or column.  Identify the desired
+    vector either by *row* or *column* number (via directives **c** or **r**), or by the
+    constant *x* or *y* value (via directives **x** or **y**).  If your selection is outside
+    the valid range then no output will result and a warning is issued.  **Note**: For
+    directives **x** and **y** we find the nearest column or row, respectively.
+
+.. |Add_-R| replace:: Using the |-R| option will select a subsection of the grid. If this subsection exceeds the
+    boundaries of the grid, only the common region will be output. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
+.. _-T:
 
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-..  include:: explain_-V.rst_
+**-T**\ [**a**\|\ **b**][*base*]
+    Write STL triangulation for 3-D printing to standard output.  By default (or via **-Ta**) we write an STL ASCII file.
+    Append **b** to instead write the STL binary (little-endian) format. For more information on STL, see the
+    `STL overview on Wikipedia <https://en.wikipedia.org/wiki/STL_(file_format)>`_.  **Note**: All coordinates are
+    adjusted so that *xmin = ymin = zmin = 0*.  For other adjustments, see :doc:`grdedit`, :doc:`grdproject` and :doc:`grdmath`.
+    Optionally, append a lower *base* other than the grid's minimum value [Default]. **Note**: The grid must be free
+    of NaN values.  If your grid contains NaNs then we automatically replace these with the minimum value in the grid;
+    use :doc:`grdmath` to pre-process the grid if you wish to select another value.
+
+.. figure:: /_images/GMT_STL.jpg
+   :width: 600 px
+   :align: center
+
+   3-D print of Vailulu’u crater multibeam data (2006, R/V Kilo Moana off Samoa) via a GMT STL file.  Original
+   multibeam data processed with `MB-System <https://www.mbari.org/products/research-software/mb-system>`_ seen
+   on the right. Photos courtesy of Jasper Konter, U of Hawaii at Manoa.
+
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
-**-W**\ [**a**\|\ *weight*]
+**-W**\ [**a**\ [**+u**\ *unit*]\|\ *weight*]
     Write out *x,y,z,w*\ , where *w* is the supplied *weight* (or 1 if not
     supplied) [Default writes *x,y,z* only].  Choose **-Wa** to compute
-    weights equal to the area each node represents.
+    weights equal to the area each node represents.  For Cartesian grids this
+    is simply the product of the *x* and *y* increments (except for
+    gridline-registered grids at all sides [half] and corners [quarter]).
+    For geographic grids we default to a length unit of **k** (hence area is in km^2). Change
+    this by appending **+u**\ *unit* (see `Units`_). For such grids, the area
+    varies with latitude and also sees special cases for gridline-registered layouts
+    at sides, corners, and poles.
 
 .. _-Z:
 
@@ -110,7 +147,7 @@ Optional Arguments
     Default format is scanline orientation of ASCII numbers: **-ZTLa**.
 
 .. |Add_-bo| replace:: [Default is 3]. This option
-    only applies to xyz output; see **-Z** for z table output.
+    only applies to xyz output; see |-Z| for z table output.
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -122,6 +159,9 @@ Optional Arguments
     is selected. [Default is no header].
 ..  include:: explain_-f.rst_
 
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
+
 .. include:: explain_-ocols.rst_
 
 .. include:: explain_-qo.rst_
@@ -130,9 +170,9 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
-.. include:: explain_precision.rst_
+.. include:: explain_distunits.rst_
 
-.. include:: explain_grd_inout_short.rst_
+.. include:: explain_precision.rst_
 
 Non-equidistant x/y Coordinates
 -------------------------------
@@ -155,6 +195,16 @@ command line. The default output is relative time in that time system,
 or absolute time when using the option **-f0T**, **-f1T**, or **-f2T**
 for x, y, or z coordinate, respectively.
 
+Row Order
+---------
+
+The **-Lr** option allows you to output a specific row in the grid. Note that while
+a grid's y-coordinates are positive up, internal row numbers are scanline numbers
+and hence positive down.  Therefore, the first row (0) coincides with the largest *y*-value.
+This means that **-Lr**\ *0* and **-Ly**\ *ymax* (for the correct maximum y-value)
+will yield the same result.  In contrast, both *x* and column numbers are positive to the right,
+with **-Lc**\ *0* and **-Lx**\ *xmin* (for the correct minimum x-value) yielding the same output.
+
 Examples
 --------
 
@@ -166,6 +216,11 @@ To write a single precision binary file without the x,y positions from
 the remote file @AFR.nc file, using scanline orientation, run::
 
     gmt grd2xyz @AFR.nc -ZTLf > AFR.b
+
+To write out *lon, lat, topo, area* from the @AFR.nc file, selecting meter^2 as the area unit,
+and where *area* reflects the size of each grid box, run::
+
+    gmt grd2xyz @AFR.nc -Wa+ue > AFR.txt
 
 See Also
 --------

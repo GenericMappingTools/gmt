@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -190,9 +190,9 @@ int gmt_cdf_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	int ncid, err;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 	if (!strcmp (HH->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
-	gmt_M_err_trap (nc_open (HH->name, NC_NOWRITE, &ncid));
+	gmt_M_err_trap (gmt_nc_open (GMT, HH->name, NC_NOWRITE, &ncid));
 	gmt_M_err_trap (gmt_cdf_grd_info (GMT, ncid, header, 'r'));
-	gmt_M_err_trap (nc_close (ncid));
+	gmt_M_err_trap (gmt_nc_close (GMT, ncid));
 	return (GMT_NOERROR);
 }
 
@@ -200,10 +200,10 @@ int gmt_cdf_update_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	int ncid, old_fill_mode, err;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 	if (!strcmp (HH->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
-	gmt_M_err_trap (nc_open (HH->name, NC_WRITE, &ncid));
+	gmt_M_err_trap (gmt_nc_open (GMT, HH->name, NC_WRITE, &ncid));
 	gmt_M_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode));
 	gmt_M_err_trap (gmt_cdf_grd_info (GMT, ncid, header, 'u'));
-	gmt_M_err_trap (nc_close (ncid));
+	gmt_M_err_trap (gmt_nc_close (GMT, ncid));
 	return (GMT_NOERROR);
 }
 
@@ -211,10 +211,10 @@ int gmt_cdf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	int ncid, old_fill_mode, err;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 	if (!strcmp (HH->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
-	gmt_M_err_trap (nc_create (HH->name, NC_CLOBBER, &ncid));
+	gmt_M_err_trap (gmt_nc_create (GMT, HH->name, NC_CLOBBER, &ncid));
 	gmt_M_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode));
 	gmt_M_err_trap (gmt_cdf_grd_info (GMT, ncid, header, 'w'));
-	gmt_M_err_trap (nc_close (ncid));
+	gmt_M_err_trap (gmt_nc_close (GMT, ncid));
 	return (GMT_NOERROR);
 }
 
@@ -254,7 +254,7 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 		gmt_M_free (GMT, actual_col);
 		return (GMT_GRDIO_NC_NO_PIPE);
 	}
-	if ((err = nc_open (HH->name, NC_NOWRITE, &ncid)) != 0) {
+	if ((err = gmt_nc_open (GMT, HH->name, NC_NOWRITE, &ncid)) != 0) {
 		gmt_M_free (GMT, actual_col);
 		return err;
 	}
@@ -263,7 +263,7 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 	/* Load data row by row. The data in the file is stored in the same
 	 * "upside down" fashion as within GMT. The first row is the top row */
 
-	tmp = gmt_M_memory (GMT, NULL, header->n_columns, gmt_grdfloat);
+	if ((tmp = gmt_M_memory (GMT, NULL, header->n_columns, gmt_grdfloat)) == NULL) return GMT_MEMORY_ERROR;
 
 	edge[0] = header->n_columns;
 	ij = imag_offset + pad[YHI] * width_out + pad[XLO];
@@ -276,7 +276,7 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 		if ((err = gmt_nc_get_vara_grdfloat (ncid, HH->z_id, start, edge, tmp))) {	/* Get one row */
 			gmt_M_free (GMT, actual_col);
 			gmt_M_free (GMT, tmp);
-			nc_close (ncid);
+			gmt_nc_close (GMT, ncid);
 			return (err);
 		}
 		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
@@ -299,7 +299,7 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 
 	gmt_M_free (GMT, actual_col);
 	gmt_M_free (GMT, tmp);
-	gmt_M_err_trap (nc_close (ncid));
+	gmt_M_err_trap (gmt_nc_close (GMT, ncid));
 
 	return (GMT_NOERROR);
 }
@@ -364,7 +364,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 
 	/* Write grid header */
 
-	if ((err = nc_create (HH->name, NC_CLOBBER, &ncid))) {
+	if ((err = gmt_nc_create (GMT, HH->name, NC_CLOBBER, &ncid))) {
 		gmt_M_free (GMT, actual_col);
 		return (err);
 	}
@@ -387,7 +387,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	/* Store z-variable */
 
 	if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-		tmp_f = gmt_M_memory (GMT, NULL, width_in, gmt_grdfloat);
+		if ((tmp_f = gmt_M_memory (GMT, NULL, width_in, gmt_grdfloat)) == NULL) return GMT_MEMORY_ERROR;
 		for (j = 0; j < height_out; j++, ij += width_in) {
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {
@@ -412,7 +412,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		gmt_M_free (GMT, tmp_f);
 	}
 	else {
-		tmp_i = gmt_M_memory (GMT, NULL, width_in, long);
+		if ((tmp_i = gmt_M_memory (GMT, NULL, width_in, long)) == NULL) return GMT_MEMORY_ERROR;
 		for (j = 0; j < height_out; j++, ij += width_in) {
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {
@@ -456,7 +456,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 
 	/* Close grid */
 
-	gmt_M_err_trap (nc_close (ncid));
+	gmt_M_err_trap (gmt_nc_close (GMT, ncid));
 
 	return (GMT_NOERROR);
 }

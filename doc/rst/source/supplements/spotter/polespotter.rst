@@ -17,7 +17,7 @@ Synopsis
 [ |-D|\ *spacing* ]
 [ |-E|\ **a**\|\ **f**\ *sigma* ]
 [ |-F|\ *fracturezones* ]
-[ |-G|\ *grid* ]
+[ |-G|\ *outgrid* ]
 [ |SYN_OPT-I| ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
@@ -46,7 +46,7 @@ fracture zones and the great circle extensions of abyssal hills
 are expected to intersect at potential rotation poles.  The assumption
 is that abyssal hill lines are meridians and fracture zones are parallels
 with respect to the rotation pole.  Line density may be computed and returned
-via a grid, the great circle lines may be returned via stdout, and the
+via a grid, the great circle lines may be returned via standard output, and the
 intersections of the great circles may be saved to file.  In line mode
 it will determine which line segments are compatible with a given trial
 pole, while in pole mode it will compute chi-squared misfits for all the
@@ -86,14 +86,16 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *grid*
-    Specify name for output grid.  For spot mode we will accumulate
+.. |Add_outgrid| replace::  Specify name for output grid.  For spot mode we will accumulate
     great circle line density for the grid.  Each bin that is crossed
     by a great circle is incremented by 1, multiplied by cos(latitude),
     the length of the fracture zone or abyssal line segment used to
-    define the great circle, and any overall weight set via **-E**.
+    define the great circle, and any overall weight set via |-E|.
     In pole mode we return the chi-squared misfit surface.  Not used
     in line mode.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -130,7 +132,7 @@ Optional Arguments
 **-Sp**
     Pole mode means we search for all poles on the given grid and determine the
     weighted chi-square misfit to all given line constraints.  This mode requires
-    **-G**, **-R**, **-I** (and optionally **-r**).
+    |-G|, |-R|, |-I| (and optionally **-r**).
 
 **-Ss**\ [**+c**\ *xfile*][**+l**]
     Spot mode means we compute bisectors to fracture zones and meridians along abyssal hills
@@ -145,10 +147,10 @@ Optional Arguments
     2 (FZ intersect FZ), where AH means an abyssal hill great circle and FZ
     means a bisector great circle to a fracture zone.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 5 input columns].
 .. include:: ../../explain_-bi.rst_
@@ -160,7 +162,7 @@ Optional Arguments
 .. include:: ../../explain_-e.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-h.rst_../../explain_-V.rst_
+.. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_-ocols.rst_
@@ -180,7 +182,7 @@ Notes
    pairs of points define a great circle line segment.  For fracture zones,
    these points should be digitized often enough so that the great circle between
    then can approximate the small circle.
-#. All line segments are given equal angular uncertainty [1, unless changed by **-E**].  However,
+#. All line segments are given equal angular uncertainty [1, unless changed by |-E|].  However,
    individual line segments can override this weight by adding a **-D**\ *sigma*
    argument in the segment headers (in degrees).
 

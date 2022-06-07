@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_CPTscale
+	gmt set GMT_THEME cookbook
 	gmt plot -R0/6/0/6 -Jx1i -W0.25p << EOF
 > Normal scaling of whole CPT
 3	2.9

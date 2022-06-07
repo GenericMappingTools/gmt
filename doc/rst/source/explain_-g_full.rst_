@@ -1,26 +1,44 @@
-.. _-g_full:
+The **-g** option
+^^^^^^^^^^^^^^^^^
 
-**-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\ **z**\ *gap*\ [**+n**\|\ **p**]
-    Examine the spacing between consecutive data points in order to
-    impose breaks in the line. Append **x**\|\ **X** or
-    **y**\|\ **Y** to define a gap when there is a large enough change
-    in the x or y coordinates, respectively, or **d**\|\ **D** for
-    distance gaps; use upper case to calculate gaps from projected
-    coordinates. For gap-testing on other columns use [*col*]\ **z**;
-    if *col* is not prepended the it defaults to 2 (i.e., 3rd column).
-    Append *gap* and optionally a unit **u** and modifiers **+n** or **+p**.
-    Here, **+n** means previous minus current column value must exceed
-    *gap* to be a gap and **+p** means current minus previous column value
-    must exceed *gap*. Otherwise the *absolute value* of the
-    difference must exceed *gap*. For geographic data
-    (**x**\|\ **y**\|\ **d**), the unit **u** may be arc
-    **d**\ egree, **m**\ inute, or **s**\ econd, or m\ **e**\ ter
-    [Default], **f**\ oot, **k**\ ilometer, **M**\ ile, **n**\ autical
-    mile, or s\ **u**\ rvey foot. For projected data
-    (**X**\|\ **Y**\|\ **D**), choose from **i**\ nch,
-    **c**\ entimeter, or **p**\ oint [Default unit set by
-    :term:`PROJ_LENGTH_UNIT`]. **Note**: For **x**\|\ **y**\|\ **z** with
-    time data the unit is instead controlled by :term:`TIME_UNIT`. Repeat
-    the option to specify multiple criteria, of which any can be met to
-    produce a line break. Issue an additional **-ga** to indicate that
-    all criteria must be met instead.
+**Syntax**
+
+**-g**\ **x**\|\ **y**\|\ **z**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\ *gap*\ [**u**][**+a**][**+c**\ *col*][**+n**\|\ **p**]
+    Examine the spacing between consecutive data points in order to impose breaks in the line.
+
+**Description**
+
+The **-g** option is used to detect gaps based on one or more criteria. Repeat the option to specify multiple criteria.
+A criterion is specified using one of the **x**\|\ **y**\|\ **z**\|\ **d**\|\ **X**\|\ **Y**\|\ **D** directives. The
+upper-case directives specify that the criterion should be applied to the projected coordinates for
+modules that map data to map coordinates.
+
+- **x**\|\ **X** - define a gap when there is a large enough change in the x coordinates (upper case to use
+  projected coordinates).
+- **y**\|\ **Y** - define a gap when there is a large enough change in the y coordinates (upper case to use
+  projected coordinates).
+- **z** - define a gap when there is a large enough change in the z data. Use **+c**\ *col* to change
+  the z data column [Default *col* is 2 (i.e., 3rd column)].
+- **d**\|\ **D** - define a gap when there is a large enough distance between coordinates (upper case to use
+  projected coordinates).
+
+A unit **u** may be appended to the specified *gap*:
+
+- For geographic data (**x**\|\ **y**\|\ **d**), the unit may be arc **d**\ (egree), **m**\ (inute), and **s**\ (econd),
+  or (m)\ **e**\ (ter), **f**\ (eet), **k**\ (ilometer), **M**\ (iles), or **n**\ (autical miles) [Default is
+  (m)\ **e**\ (ter)].
+- For projected data (**X**\|\ **Y**\|\ **D**), the unit may be **i**\ (nch), **c**\ (entimeter), or **p**\ (oint)
+  [Default unit is set by :term:`PROJ_LENGTH_UNIT`].
+
+Append modifier **+a** to specify that *all* the criteria must be met [default imposes breaks if any one criterion is met].
+
+One of the following modifiers can be appended:
+
+- **+n** - specify that the previous value minus the current column value must exceed *gap* for a break to be imposed.
+- **+p** - specify that the current value minus the previous value must exceed *gap* for a break to be imposed.
+
+Default imposes breaks based on the absolute value of the difference between the current and previous value.
+**Note**: For **x**\|\ **y**\|\ **z** with time data the unit is instead controlled by :term:`TIME_UNIT`. **Note**: GMT
+has other mechanisms that can determine line segmentation, including segments defined by multiple segment header
+records (see the cookbook chapter :doc:`/cookbook/file-formats`) or segments defined by NaN values when
+:term:`IO_NAN_RECORDS` is set to *pass* [default skips NaN values].

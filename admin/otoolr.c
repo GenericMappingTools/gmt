@@ -7,6 +7,8 @@
  *
  * The <builddir> is prepended if any of the executables or dylib files have relative paths,
  * otherwise not used.
+ *
+ * P. Wessel, August 2020
  */
 
 #include <stdio.h>

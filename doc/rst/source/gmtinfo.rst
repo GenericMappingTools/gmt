@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt info** [ *table* ] [ |-A|\ **a**\|\ **f**\|\ **s** ]
+**gmt info** [ *table* ]
+[ |-A|\ **a**\|\ **t**\|\ **s** ]
 [ |-C| ]
 [ |-D|\ [*dx*\ [/*dy*]] ]
 [ |-E|\ **L**\|\ **l**\|\ **H**\|\ **h**\ [*col*] ]
@@ -20,7 +21,7 @@ Synopsis
 [ |-I|\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**] ]
 [ |-L| ]
 [ |-S|\ [**x**][**y**] ]
-[ |-T|\ *dz*\ [**+c**\ *col*] ]
+[ |-T|\ *dz*\ [**w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**][**+c**\ *col*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
@@ -34,6 +35,7 @@ Synopsis
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-s| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -46,13 +48,13 @@ Description
 extreme values in each of the columns reported as slash-separated min/max
 pairs. It recognizes NaNs and will print warnings if the number of columns
 vary from record to record. The pairs can be split into two separate columns
-by using the **-C** option.  As another option, **info** can find the extent
+by using the |-C| option.  As another option, **info** can find the extent
 of data in the first two columns rounded up and down to the nearest multiple of the
-supplied increments given by **-I**. Such output will be in the text form
+supplied increments given by |-I|. Such output will be in the text form
 **-R**\ *w/e/s/n*, which can be used directly on the command line for other
-modules (hence only *dx* and *dy* are needed).  If **-C** is combined with
+modules (hence only *dx* and *dy* are needed).  If |-C| is combined with
 **-I** then the output will be in column form and rounded up/down for as many
-columns as there are increments provided in **-I**. A similar option (**-T**)
+columns as there are increments provided in |-I|. A similar option (|-T|)
 will provide a **-T**\ *zmin/zmax/dz* string for makecpt.
 
 Required Arguments
@@ -66,11 +68,11 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **a**\|\ **f**\|\ **s**
+**-A**\ **a**\|\ **t**\|\ **s**
     Specify how the range should be reported. Choose **-Aa** for the
-    range of all files combined, **-Af** to report the range for each
-    file separately, and **-As** to report the range for each segment
-    (in multisegment files) separately. [Default is **-Aa**].
+    range of all tables combined, **-At** to report the range for each
+    table separately, and **-As** to report the range for each segment
+    (in multisegment tables) separately. [Default is **-Aa**].
 
 .. _-C:
 
@@ -82,7 +84,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ [*dx*\ [/*dy*]]
-    Modifies results obtained by **-I** by shifting the region to better
+    Modifies results obtained by |-I| by shifting the region to better
     align with the center of the data.  Optionally, append granularity
     for this shift [Default performs an exact shift].
 
@@ -104,15 +106,16 @@ Optional Arguments
     information for each segment in the virtual data set: *tbl_number, seg_number,
     n_rows, start_rec, stop_rec*. Mode **t** does the same but honors the input
     table organization and thus resets *seg_number, start_rec, stop_rec* at the
-    start of each new table.
+    start of each new table [Default is **i**].
 
 .. _-I:
 
 **-I**\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**]
-    Report the min/max of the first *n* columns to the nearest multiple
-    of the provided increments (separate the *n* increments by slashes),
-    and output results in the form **-R**\ *w/e/s/n* (unless **-C** is
-    set). If only one increment is given we also use it for the second
+    Compute the *min*\ /*max* values of the first *n* columns to the nearest multiple
+    of the provided increments (separate the *n* increments by slashes) [default is 2 columns].
+    By default, output results in the form **-R**\ *w/e/s/n*, unless |-C| is
+    set in which case we output each *min* and *max* value in separate output columns.
+    If only one increment is given we also use it for the second
     column (for backwards compatibility). To override this behavior, use
     **-Ip**\ *dx*. If the input *x*- and *y*-coordinates all have the
     same phase shift relative to the *dx* and *dy* increments then we
@@ -123,10 +126,11 @@ Optional Arguments
     to give grid dimensions for fastest results in programs using FFTs.
     Use **-Is**\ *dx*\ [/*dy*] to report an extended region optimized to
     give grid dimensions for fastest results in programs like surface.
-    Use **-Ib** to write the bounding box of the data table or segments (see **-A**)
+    Use **-Ib** to write the bounding box of the data table or segments (see |-A|)
     as a closed polygon segment. **Note**: For oblique projections you should
     use the **-Ap** option in :doc:`plot` to draw the box properly.
-    If **-Ie** is given then the exact min/max of the input is given in the **-R** string.
+    If **-Ie** is given then the exact min/max of the input is given in the |-R| string.
+    If you only want either the x-* or *y-* range to be exact and the other range rounded, give one of the increments as zero.
     Append **+r** to modify the min/max of the first *n* columns further:
     Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
     region to be a multiple of these steps [no adjustment]. Alternatively, use **+R** to extend the region
@@ -136,31 +140,33 @@ Optional Arguments
 .. _-L:
 
 **-L**
-    Determines common limits across tables (**-Af**) or segments (**-As**).
-    If used with **-I** it will round inwards so that the resulting bounds
+    Determines common limits across tables (**-At**) or segments (**-As**).
+    If used with |-I| it will round inwards so that the resulting bounds
     lie within the actual data domain.
 
 .. _-S:
 
 **-S**\ [**x**][**y**]
-    Add extra space for error bars. Useful together with **-I** option
-    and when later plotting with :doc:`plot` **-E**. **-Sx** leaves space
+    Add extra space for error bars. Useful together with |-I| option
+    and when later plotting with :doc:`plot` |-E|. **-Sx** leaves space
     for horizontal error bars using the values in third
     (2) column. **-Sy** leaves space for vertical error
-    bars using the values in fourth (3) column. **-S**
+    bars using the values in fourth (3) column. |-S|
     or **-Sxy** leaves space for both error bars using the values in
     third and fourth (2 and 3) columns.
 
 .. _-T:
 
-**-T**\ *dz*\ [**+c**\ *col*]
+**-T**\ *dz*\ [**w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**][**+c**\ *col*]
     Report the min/max of the first (0'th) column to the nearest multiple of *dz* and output this as the
-    string **-T**\ *zmin/zmax/dz*. To use another column, append **+c**\ *col*. Cannot be used together with **-I**.
+    string **-T**\ *zmin/zmax/dz*. To use another column, append **+c**\ *col*. Cannot be used together with |-I|.
+    **Note**: If your column has absolute time then you may append a valid fixed time unit to *dz*, or rely
+    on the current setting of :term:`TIME_UNIT` [**s**].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_-aspatial.rst_
 
@@ -193,6 +199,8 @@ Optional Arguments
 
 .. include:: explain_-s.rst_
 
+.. include:: explain_-w.rst_
+
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
@@ -206,7 +214,7 @@ Examples
 
 To find the extreme values in the remote file @ship_15.txt::
 
-    gmt info @ship_15.tx
+    gmt info @ship_15.txt
 
 Output should look like::
 
@@ -247,7 +255,7 @@ are and use
 Bugs
 ----
 
-The **-I** option does not yet work properly with time series data
+The |-I| option does not yet work properly with time series data
 (e.g., **-f**\ 0T). Thus, such variable intervals as months and years
 are not calculated. Instead, specify your interval in the same units as
 the current setting of :term:`TIME_UNIT`.
@@ -258,4 +266,3 @@ See Also
 :doc:`gmt`,
 :doc:`gmtconvert`,
 :doc:`plot`
-

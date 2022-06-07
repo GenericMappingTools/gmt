@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_tut_10
+	gmt set GMT_THEME cookbook
 	gmt text -R0/7/0/5 -Jx1i -B -F+f30p,Times-Roman,DarkOrange+jBL << EOF
 1  1  It's P@al, not Pal!
 1  2  Try @%33%ZapfChancery@%% today

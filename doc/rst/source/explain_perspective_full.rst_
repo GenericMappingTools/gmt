@@ -1,21 +1,31 @@
-.. _perspective_full:
+The **-p** option
+^^^^^^^^^^^^^^^^^
+
+**Syntax**
 
 **-p**\ [**x**\|\ **y**\|\ **z**]\ *azim*\ [/*elev*\ [/*zlevel*]][**+w**\ *lon0*/*lat0*\ [/*z0*]][**+v**\ *x0*/*y0*]
-    Select perspective view and set the azimuth and elevation of the
-    viewpoint [180/90]. When **-p** is used in consort with **-Jz** or
-    **-JZ**, a third value can be appended which indicates at which
-    z-level all 2D material, like the plot frame, is plotted (in
-    perspective). [Default is at the bottom of the z-axis]. Use **-px**
-    or **-py** to plot against the "wall" x = level or y = level
-    (default is on the horizontal plane, which is the same as using
-    **-pz**). For frames used for animation, note we fix the center of your
-    data domain.  Specify another center using a particular
-    world coordinate point with **+w**\ *lon0*/*lat0*\ [/*z0*]) which will
-    project to the center of your page size, or specify the coordinates
-    of the projected 2-D view point with **+v**\ *x0*/*y0*. When **-p** is
-    used without any further arguments, the values from the last use of
-    **-p** in a previous GMT command will be used (in modern mode this also supplies
-    the previous **-Jz** or **-JZ** if doing a 3-D region).  Alternatively, you
-    can perform a simple rotation about the z-axis by just giving the
-    rotation angle.  Optionally, use **+v** or **+w** to select another
-    axis location than the plot origin.
+    Select perspective view and set the azimuth and elevation of the viewpoint.
+
+**Description**
+
+All plotting programs that normally produce a flat, two-dimensional illustration can be told to view this flat
+illustration from a particular vantage point, resulting in a perspective view. You can select perspective view with
+the **-p** option by setting the azimuth (*azim*) of the viewpoint [Default is 180]. The following modifiers are
+supported:
+
+- **x**\|\ **y**\|\ **z** to plot against the "wall" x = level (using **x**) or y = level (using **y**) or the
+  horizontal plain (using **z**) [default is **z**].
+- */elev* to set the elevation of the viewport [Default is 90].
+- */zlevel* to indicate the z-level at which all 2D material, like the plot frame, is plotted (only valid when **-p**
+  is used in consort with **-Jz** or **-JZ**) [Default is at the bottom of the z-axis].
+
+For frames used for animation, we fix the center of your data domain. Specify another center using one of the following
+modifiers:
+
+- **+w** to project *lon0*/*lat0* (and *z0* if applicable) to the center of the page size.
+- **+v** to specify the coordinates of the projected 2-D view point as *x0*/*y0*.
+
+When **-p** is used without any further arguments, the values from the last use of **-p** in a previous GMT command
+will be used (in modern mode this also supplies the previous **-Jz** or **-JZ** if doing a 3-D region). Alternatively,
+you can perform a simple rotation about the z-axis by just giving the rotation angle. Optionally, use **+v** or **+w**
+to select another axis location than the plot origin.

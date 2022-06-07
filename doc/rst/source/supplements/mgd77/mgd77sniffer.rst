@@ -14,7 +14,7 @@ Synopsis
 
 **gmt mgd77sniffer** *GEODAS-ids* [ |-A|\ *fieldabbrev*,\ *scale*,\ *offset* ]
 [ |-C|\ *maxspd* ]
-[ |-D|\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [*r*] ]
+[ |-D|\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [**r**] ]
 [ |-E| ]
 [ |-G|\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode* or |-G|\ *fieldabbrev*,\ *grid* ]
 [ |-H| ]
@@ -47,7 +47,7 @@ resulting in multiple messages per scanned record. Data problems are
 optionally output (**-De** option) using a computer-parseable format
 (see E77 ERROR FORMAT description below). Default error thresholds are
 derived from histograms of all MGD77 geophysical data collected between
-1952 and January, 2006. Thresholds are adjustable with the **-L**
+1952 and January, 2006. Thresholds are adjustable with the |-L|
 option. Grids for comparison with cruise data may be downloaded via the web.
 
 Required Arguments
@@ -69,20 +69,20 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *maxspd*
-    Set maximum ship speed in m/s, or knots with **-N** option. Ship
+    Set maximum ship speed in m/s, or knots with |-N| option. Ship
     speeds exceeding 10 m/s (~20 knots) are flagged as excessive by default.
 
 .. _-D:
 
-**-D**\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [*r*]
+**-D**\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [**r**]
     Suppress default warning output and only dump cruise data row-by-row
     such as values, gradients, grid-cruise differences, E77 error
     summaries for each record, re-created MGD77 records or sniffer
-    limits. Append *r* to include all records (default omits records where
+    limits. Append **r** to include all records (default omits records where
     navigation errors were detected).
 
     **-Dd** output differences between cruise and grid data. Requires
-    **-G** option. Output columns include:
+    |-G| option. Output columns include:
 
     *lat lon dist cruiseZ gridZ diff [cruiseZ2 gridZ2 diff2 ...]*
 
@@ -110,7 +110,7 @@ Optional Arguments
     d[msd] ds d[gobs] ds d[eot] ds d[faa] ds*
 
     **-Dl** display mgd77sniffer limits. Customize this output to create
-    a custom limits file for the **-L** option. No additional arguments
+    a custom limits file for the |-L| option. No additional arguments
     are required. Output columns include:
 
     *fieldabbrev min max maxSlope maxArea*
@@ -124,7 +124,7 @@ Optional Arguments
 
     **-Ds** output calculated gradients for speed and geophysical
     fields. Gradients correspond to the gradient type selected in the
-    **-S** option (spatial derivatives by default). Output columns include:
+    |-S| option (spatial derivatives by default). Output columns include:
 
     *speed d[twt] d[depth] d[mtf1] d[mtf2] d[mag] d[diur] d[msd] d[gobs] d[eot] d[faa]*
 
@@ -166,7 +166,7 @@ Optional Arguments
     field abbreviation (see **MGD77 FIELD INFO** below) followed by a
     comma, then the path (if not in current directory) and grid
     filename. Multiple grid comparison is supported by using separate
-    **-G** calls for each grid. See **GRID FILE INFO** below.
+    |-G| calls for each grid. See **GRID FILE INFO** below.
 
     Grid comparison activates several additional error checks. (1)
     Re-weighted Least Squares Regression of ship versus grid data
@@ -175,7 +175,7 @@ Optional Arguments
     including incorrect units or instrument drift as well as erroneous
     gravity tie-in. (2) Accumulated ship grid offsets are computed
     along-track and excessive offsets are flagged according to *maxArea*
-    threshold (use **-L** option to adjust *maxArea*). Warning:
+    threshold (use |-L| option to adjust *maxArea*). Warning:
     predicted bathymetry grids are constrained by cruise data so grids
     and cruise data are not always independent. Comparison of cruise
     bathymetry with predicted bathymetry grids also activates a
@@ -213,7 +213,7 @@ Optional Arguments
     limits may be modified using one default file, one field per line.
     Field min, max, max slope and max area may be changed for each
     field. Max slope pertains to the gradient type selected using the
-    **-S** option. Max area is used by the **-G** option as the
+    |-S| option. Max area is used by the |-G| option as the
     threshold for flagging excessive offsets from the specified grid.
     Dump defaults **-Dl** to view syntax or to quickly create an
     editable custom limits file.
@@ -277,18 +277,18 @@ Optional Arguments
     (**o**)ffsets from grid (requires **-G**\|\ **g**), (**s**)peed
     out of range, (**t**)ime warnings, (**v**)alue out of range, (**x**)
     warning summaries. By default ALL warning messages are printed.Not
-    compatible with any **-D** options.
+    compatible with any |-D| options.
 
-.. _-V:
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
 **-Z**
     Flag regression statistics that are outside the specified confidence
     level. (i.e., **-Z**\ 5 flags coefficients m, b, rms, and r that fall outside 95%.)
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
 
 .. |Add_-bo| replace:: Output binary data for **-D**\ d\|f\|s\|v option.
 .. include:: ../../explain_-bo.rst_
@@ -499,7 +499,7 @@ Sandwell/Smith 2 min gravity version 11, try
 
    ::
 
-    mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
+    gmt mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
                  -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1
 
 See Also
@@ -514,3 +514,6 @@ References
 
 The Marine Geophysical Data Exchange Format - MGD77, see
 `<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_
+
+Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1023/A:1021744224009.

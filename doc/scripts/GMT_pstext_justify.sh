@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_pstext_justify
+gmt set GMT_THEME cookbook
 B=0.2
 M=0.38
 T=0.56

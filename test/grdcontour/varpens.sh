@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Test variable pens given to -C
-
 ps=varpens.ps
 cat << EOF > pens.txt
 0	A	1p,red

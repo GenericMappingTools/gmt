@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -341,7 +341,7 @@ int gmt_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	n2 = lrint (ceil (header->n_columns / 2.0)) * 2;	/* Sun 8-bit rasters are stored using 16-bit words */
-	tmp = gmt_M_memory (GMT, NULL, n2, unsigned char);
+	if ((tmp = gmt_M_memory (GMT, NULL, n2, unsigned char)) == NULL) return GMT_MEMORY_ERROR;
 
 	check = !isnan (header->nan_value);
 
@@ -450,7 +450,7 @@ int gmt_ras_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	h.maptype = h.maplength = 0;
 
 	n2 = irint (ceil (header->n_columns / 2.0)) * 2;
-	tmp = gmt_M_memory (GMT, NULL, n2, unsigned char);
+	if ((tmp = gmt_M_memory (GMT, NULL, n2, unsigned char)) == NULL) return GMT_MEMORY_ERROR;
 
 	check = !isnan (header->nan_value);
 
@@ -708,7 +708,7 @@ int gmt_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
 
-	tmp = gmt_M_memory (GMT, NULL, mx, unsigned int);
+	if ((tmp = gmt_M_memory (GMT, NULL, mx, unsigned int)) == NULL) return GMT_MEMORY_ERROR;
 
 	if (piping) {	/* Skip data by reading it */
 		for (j = 0; j < first_row; j++) if (gmt_M_fread (tmp, sizeof (unsigned int), mx, fp) < mx) {
@@ -846,7 +846,7 @@ int gmt_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	}
 
 	mx = urint (ceil (width_out / 32.0));
-	tmp = gmt_M_memory (GMT, NULL, mx, unsigned int);
+	if ((tmp = gmt_M_memory (GMT, NULL, mx, unsigned int)) == NULL) return GMT_MEMORY_ERROR;
 
 	i2 = first_col + pad[XLO];
 	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
@@ -989,7 +989,7 @@ int gmt_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, g
 	/* Allocate memory for one row of data (for reading purposes) */
 
 	n_expected = header->n_columns;
-	tmp = gmt_M_memory (GMT, NULL, n_expected * size, char);
+	if ((tmp = gmt_M_memory (GMT, NULL, n_expected * size, char)) == NULL) return GMT_MEMORY_ERROR;
 
 	/* Now deal with skipping */
 
@@ -1141,7 +1141,7 @@ int gmt_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	/* Allocate memory for one row of data (for writing purposes) */
 
 	n_expected = header->n_columns;
-	tmp = gmt_M_memory (GMT, NULL, n_expected * size, char);
+	if ((tmp = gmt_M_memory (GMT, NULL, n_expected * size, char)) == NULL) return GMT_MEMORY_ERROR;
 
 	i2 = first_col + pad[XLO];
 	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
@@ -1530,7 +1530,7 @@ int gmt_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 	/* Allocate memory for one row of data (for reading purposes) */
 
 	n_expected = header->n_columns;
-	tmp = gmt_M_memory (GMT, NULL, n_expected * size, char);
+	if ((tmp = gmt_M_memory (GMT, NULL, n_expected * size, char)) == NULL) return GMT_MEMORY_ERROR;
 
 	/* Now deal with skipping */
 
@@ -1623,13 +1623,8 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	if (GMT->session.grdformat[header->type][1] == 'd') {
-#ifdef HAVE_GDAL
 		GMT_Report(GMT->parent, GMT_MSG_INFORMATION,
 			"Surfer 7 format in GMT is read-only but you can do it via GDAL by appending '=gd:GS7BG' to the file name\n");
-#else
-		GMT_Report(GMT->parent, GMT_MSG_INFORMATION,
-			"As mentioned in the manual, Surfer 7 format in GMT is read-only\n");
-#endif
 		return (GMT_NOERROR);
 	}
 
@@ -1697,7 +1692,7 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	/* Allocate memory for one row of data (for writing purposes) */
 
 	n_expected = header->n_columns;
-	tmp = gmt_M_memory (GMT, NULL, n_expected * size, char);
+	if ((tmp = gmt_M_memory (GMT, NULL, n_expected * size, char)) == NULL) return GMT_MEMORY_ERROR;
 
 	i2 = first_col + pad[XLO];
 	for (ju = 0, j2 = last_row + pad[YHI]; ju < height_out; ju++, j2--) {
@@ -1719,7 +1714,6 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	return (GMT_NOERROR);
 }
 
-#ifdef HAVE_GDAL
 #include "gmt_gdalread.c"
 #include "gmt_gdalwrite.c"
 #include "gmt_ogrproj.c"		/* For coordinate conversions but can "enter" here too */
@@ -1760,8 +1754,8 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	}
 
 	/* Allocate new control structures */
-	to_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
-	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
+	if ((to_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL)) == NULL) return GMT_MEMORY_ERROR;
+	if ((from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL)) == NULL) return GMT_MEMORY_ERROR;
 
 	to_gdalread->M.active = true;		/* Metadata only */
 	if (HH->pocket) {	/* Have a band request. */
@@ -1852,8 +1846,8 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	/* Allocate new control structures */
-	to_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
-	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
+	if ((to_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL)) == NULL) return GMT_MEMORY_ERROR;
+	if ((from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL)) == NULL) return GMT_MEMORY_ERROR;
 
 	if (complex_mode & GMT_GRID_IS_COMPLEX_MASK) {
 		to_gdalread->Z.active = true;		/* Force reading into a complex array */
@@ -1909,7 +1903,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 			/* Here we assume that all pad[0] ... pad[3] are equal. Otherwise ... */
 			to_gdalread->mini_hdr.active = false;	/* Undo above setting */
 			to_gdalread->p.active = true;
-			to_gdalread->p.pad = (int)pad[XLO];
+			gmt_M_memcpy (to_gdalread->p.pad, pad, 4U, unsigned int);
 		}
 
 		/* OK, now test if we are under the condition of #403 (very small grids).
@@ -1917,7 +1911,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		if (to_gdalread->mini_hdr.active && (header->n_columns <= 4 || header->n_rows <= 4)) {
 			to_gdalread->mini_hdr.active = false;
 			to_gdalread->p.active = true;
-			to_gdalread->p.pad = (int)pad[XLO];
+			gmt_M_memcpy (to_gdalread->p.pad, pad, 4U, unsigned int);
 		}
 	}
 	if (HH->pocket) {	/* Have a band request. */
@@ -2061,7 +2055,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), HH->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
-	to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
+	if ((to_GDALW = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL)) == NULL) return GMT_MEMORY_ERROR;
 	if ((pch = strstr(HH->pocket, "+c")) != NULL) {		/* If we have a list of +c<options>, trim and save it */
 		to_GDALW->co_options = strdup (pch);
 		pch[0] = '\0';
@@ -2112,7 +2106,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 		return (GMT_NOERROR);
 	}
 	else if (gmt_strlcmp(type,"u8") || gmt_strlcmp(type,"u08")) {
-		zu8 = gmt_M_memory(GMT, NULL, imsize, unsigned char);
+		if ((zu8 = gmt_M_memory(GMT, NULL, imsize, unsigned char)) == NULL) return GMT_MEMORY_ERROR;
 		for (row = first_row; row < height_out; row++)
 			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zu8[node++] = (unsigned char)grid[ij];
@@ -2121,7 +2115,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 		to_GDALW->type = strdup("uint8");
 	}
 	else if (gmt_strlcmp(type,"i16")) {
-		zi16 = gmt_M_memory(GMT, NULL, imsize, short int);
+		if ((zi16 = gmt_M_memory(GMT, NULL, imsize, short int)) == NULL) return GMT_MEMORY_ERROR;
 		for (row = first_row; row < height_out; row++)
 			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zi16[node++] = (short int)grid[ij];
@@ -2130,7 +2124,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 		to_GDALW->type = strdup("int16");
 	}
 	else if (gmt_strlcmp(type,"u16")) {
-		zu16 = gmt_M_memory(GMT, NULL, imsize, unsigned short int);
+		if ((zu16 = gmt_M_memory(GMT, NULL, imsize, unsigned short int)) == NULL) return GMT_MEMORY_ERROR;
 		for (row = first_row; row < height_out; row++)
 			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zu16[node++] = (unsigned short int)grid[ij];
@@ -2139,7 +2133,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 		to_GDALW->type = strdup("uint16");
 	}
 	else if (gmt_strlcmp(type,"i32")) {
-		zi32 = gmt_M_memory(GMT, NULL, imsize, int);
+		if ((zi32 = gmt_M_memory(GMT, NULL, imsize, int)) == NULL) return GMT_MEMORY_ERROR;
 		for (row = first_row; row < height_out; row++)
 			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zi32[node++] = (int)grid[ij];
@@ -2148,7 +2142,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 		to_GDALW->type = strdup("int32");
 	}
 	else if (gmt_strlcmp(type,"u32")) {
-		zu32 = gmt_M_memory(GMT, NULL, imsize, unsigned int);
+		if ((zu32 = gmt_M_memory(GMT, NULL, imsize, unsigned int)) == NULL) return GMT_MEMORY_ERROR;
 		for (row = first_row; row < height_out; row++)
 			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zu32[node++] = (unsigned int)grid[ij];
@@ -2172,8 +2166,6 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	gmt_M_free (GMT, to_GDALW);
 	return (GMT_NOERROR);
 }
-
-#endif
 
 /* Add custom code here */
 
@@ -2432,21 +2424,12 @@ void gmtlib_grdio_init (struct GMT_CTRL *GMT) {
 	/* FORMAT: Import via the GDAL interface */
 
 	id                        = GMT_GRID_IS_GD;
-#ifdef HAVE_GDAL
 	GMT->session.grdformat[id]  = "gd = Import/export through GDAL";
 	GMT->session.readinfo[id]   = &gmt_gdal_read_grd_info;
 	GMT->session.updateinfo[id] = &gmt_gdal_write_grd_info;
 	GMT->session.writeinfo[id]  = &gmt_gdal_write_grd_info;
 	GMT->session.readgrd[id]    = &gmt_gdal_read_grd;
 	GMT->session.writegrd[id]   = &gmt_gdal_write_grd;
-#else
-	GMT->session.grdformat[id]  = "gd = Import/export through GDAL (not supported)";
-	GMT->session.readinfo[id]   = &gmt_dummy_grd_info;
-	GMT->session.updateinfo[id] = &gmt_dummy_grd_info;
-	GMT->session.writeinfo[id]  = &gmt_dummy_grd_info;
-	GMT->session.readgrd[id]    = &gmt_dummy_grd_read;
-	GMT->session.writegrd[id]   = &gmt_dummy_grd_read;
-#endif
 
 	/* ----------------------------------------------
 	 * ADD CUSTOM FORMATS BELOW AS THEY ARE NEEDED */

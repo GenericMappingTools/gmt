@@ -8,6 +8,7 @@ cat << EOF > line.txt
 EOF
 
 gmt begin GMT_bezier
+	gmt set GMT_THEME cookbook
 	gmt plot line.txt -R-0.25/4.25/-0.2/2.2 -JX3i/1.25i -W2p
 	gmt plot line.txt -Sc0.1i -Gred -Wfaint
 	gmt plot line.txt -W2p+s -X3i

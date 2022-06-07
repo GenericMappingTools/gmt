@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,9 +26,9 @@
 #define TOL		1.0e-7	/* Gotta leave a bit slack for these calculations */
 #define SI_TO_MGAL	1.0e5		/* Convert m/s^2 to mGal */
 #define SI_TO_EOTVOS	1.0e9		/* Convert (m/s^2)/m to Eotvos */
-#define DEG_TO_KM	111.319490793	/* For flat-Earth scaling of degrees to km on WGS-84 Equator */
-#define SI_GAMMA 	6.673e-11	/* Gravitational constant (SI units) */
-#define GAMMA 		6.673		/* Gravitational constant for distances in km and mass in kg/m^3 */
+#define DEG_TO_KM   111.319490793   /* For flat-Earth scaling of degrees to km on WGS-84 Equator */
+#define DEG_TO_M    111319.490793   /* For flat-Earth scaling of degrees to m on WGS-84 Equator */
+#define GAMMA 		(1.0e11 * NEWTON_G)		/* Gravitational constant for distances in km and mass in kg/m^3 */
 
 #include "../mgd77/mgd77_IGF_coeffs.h"	/* Normal gravity coefficients */
 
