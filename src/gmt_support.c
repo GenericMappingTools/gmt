@@ -15734,10 +15734,11 @@ openmp_int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, doub
 	 * in the same units as the radius.  We also return the widest value in the d_col array via
 	 * the actual_max_d_col value.
 	 */
-	openmp_int row, *d_col = gmt_M_memory (GMT, NULL, G->header->n_rows, unsigned int);
+	openmp_int row, limit, *d_col = gmt_M_memory (GMT, NULL, G->header->n_rows, unsigned int);
 	double dist_x, dist_y, lon, lat;
 
 	lon = G->header->wesn[XLO] + G->header->inc[GMT_X];	/* One step in from west */
+	limit = (G->header->registration == GMT_GRID_NODE_REG) ? G->header->n_columns - 1 : G->header->n_columns;
 	/* Set limit on +/- delta cols */
 	if (mode) {	/* Input data is geographical, so circle widens with latitude due to cos(lat) effect */
 		*actual_max_d_col = 0;
@@ -15745,15 +15746,15 @@ openmp_int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, doub
 			lat = gmt_M_grd_row_to_y (GMT, row, G->header);
 			/* Determine longitudinal width of one grid cell at this latitude */
 			dist_x = gmt_distance (GMT, G->header->wesn[XLO], lat, lon, lat);
-			d_col[row] = (fabs (lat) == 90.0) ? G->header->n_columns : urint (ceil (radius / dist_x) + 0.1);
-			if (d_col[row] > G->header->n_columns) d_col[row] = G->header->n_columns;	/* No point exceeding the upper limit */
+			d_col[row] = (fabs (lat) == 90.0) ? limit : urint (ceil (radius / dist_x) + 0.1);
+			if (d_col[row] > limit) d_col[row] = limit;	/* No point exceeding the upper limit */
 			if (d_col[row] > (*actual_max_d_col)) *actual_max_d_col = d_col[row];	/* Update the max range so far */
 		}
 	}
 	else {	/* Plain Cartesian data with rectangular box and no latitude variation */
 		dist_x = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], lon, G->header->wesn[YLO]);
 		*actual_max_d_col = urint (ceil (radius / dist_x) + 0.1);
-		if (*actual_max_d_col > G->header->n_columns) *actual_max_d_col = G->header->n_columns;	/* No point exceeding the upper limit */
+		if (*actual_max_d_col > limit) *actual_max_d_col = limit;	/* No point exceeding the upper limit */
 		for (row = 0; row < (openmp_int)G->header->n_rows; row++) d_col[row] = *actual_max_d_col;	/* Constant array */
 	}
 
