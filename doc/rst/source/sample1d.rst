@@ -67,7 +67,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+d**][**+l**]
-    For track resampling (if **-T**...\ *unit* is set) we can select how
+    For track resampling (if |-T|...\ *unit* is set) we can select how
     this is to be performed. Append **f** to keep original points, but
     add intermediate points if needed; note this selection does not
     necessarily yield equidistant points [Default], **m** as **f**, but
@@ -101,6 +101,14 @@ Optional Arguments
     You may optionally evaluate the first or second derivative of the spline
     by appending **+d1** or **+d2**, respectively.
 
+.. figure:: /_images/GMT_splines.*
+   :width: 500 px
+   :align: center
+
+   The |-F| option lets you choose among several interpolators, including
+   one that is approximate (the smoothing spline).  You can also specify
+   that you actually need a derivative of the solution instead of the value.
+
 .. _-N:
 
 **-N**\ *col*
@@ -128,7 +136,7 @@ Optional Arguments
     Sets the column number of the weights to be used with a smoothing cubic
     spline.  Requires **-Fs**.
 
-.. |Add_-bi| replace:: [Default is 2 (or at least the number of columns implied by **-T**)].
+.. |Add_-bi| replace:: [Default is 2 (or at least the number of columns implied by |-T|)].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].

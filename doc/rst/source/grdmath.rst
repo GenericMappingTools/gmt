@@ -47,7 +47,7 @@ syntax.  Arbitrarily complicated expressions may therefore be evaluated; the
 final result is written to an output grid file. Grid operations are
 element-by-element, not matrix manipulations. Some operators only
 require one operand (see below). If no grid files are used in the
-expression then options **-R**, **-I** must be set (and optionally
+expression then options |-R|, |-I| must be set (and optionally
 |SYN_OPT-r|). The expression **=** *outgrid* can occur as many times as
 the depth of the stack allows in order to save intermediate results.
 Complicated or frequently occurring expressions may be coded as a macro
@@ -70,13 +70,13 @@ Optional Arguments
 
 .. _-A:
 
-.. |Add_-A| replace:: (**-A** is only relevant to the **LDISTG** operator)
+.. |Add_-A| replace:: (|-A| is only relevant to the **LDISTG** operator)
 .. include:: explain_-A.rst_
 
 .. _-D:
 
 **-D**\ *resolution*\ [**+f**]
-    Selects the resolution of the data set to use with the operator LDISTG
+    Selects the resolution of the data set to use with the operator **LDISTG**
     ((**f**)ull, (**h**)igh, (**i**)ntermediate, (**l**)ow, and (**c**)rude). The
     resolution drops off by 80% between data sets [Default is **l**].
     Append **+f** to automatically select a lower resolution should the one
@@ -111,9 +111,10 @@ Optional Arguments
 **-S**
     Reduce (i.e., collapse) the entire stack to a single grid by applying the
     next operator to all co-registered nodes across the entire stack.  You
-    must specify **-S** *after* listing all of your grids.  **Note**: You can only
-    follow **-S** with a reducing operator, i.e., from the list ADD, AND, MAD,
-    LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB, VAR or XOR.
+    must specify |-S| *after* listing all of your grids.  **Note**: You can only
+    follow |-S| with a reducing operator, i.e., from the list **ADD**, **AND**, **MAD**,
+    **LMSSCL**, **MAX**, **MEAN**, **MEDIAN**, **MIN**, **MODE**, **MUL**, **RMS**,
+    **STD**, **SUB**, **VAR** or **XOR**.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -146,7 +147,7 @@ Optional Arguments
 
 .. include:: explain_-n.rst_
 
-.. |Add_nodereg| replace:: Only used with **-R** **-I**.
+.. |Add_nodereg| replace:: Only used with |-R| |-I|.
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_core.rst_
@@ -166,11 +167,17 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ACOS**      | 1 1   | acos (A)                                                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **ACOSD**     | 1 1   | acosd (A)                                                                                              |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ACOSH**     | 1 1   | acosh (A)                                                                                              |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ACOT**      | 1 1   | acot (A)                                                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **ACOTD**     | 1 1   | acotd (A)                                                                                              |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ACSC**      | 1 1   | acsc (A)                                                                                               |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **ACSCD**     | 1 1   | acscd (A)                                                                                              |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ADD**       | 2 1   | A + B                                                                                                  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -182,13 +189,21 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ASEC**      | 1 1   | asec (A)                                                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **ASECD**     | 1 1   | asecd (A)                                                                                              |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ASIN**      | 1 1   | asin (A)                                                                                               |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **ASIND**     | 1 1   | asind (A)                                                                                              |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ASINH**     | 1 1   | asinh (A)                                                                                              |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ATAN**      | 1 1   | atan (A)                                                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **ATAND**     | 1 1   | atand (A)                                                                                              |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ATAN2**     | 2 1   | atan2 (A, B)                                                                                           |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **ATAN2D**    | 2 1   | atan2d (A, B)                                                                                          |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ATANH**     | 1 1   | atanh (A)                                                                                              |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -434,7 +449,7 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **NEQ**       | 2 1   | 1 if A != B, else 0                                                                                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **NORM**      | 1 1   | Normalize (A) so max(A)-min(A) = 1                                                                     |
+| **NORM**      | 1 1   | Normalize (A) so min(A) = 0 and max(A) = 1                                                             |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **NOT**       | 1 1   | NaN if A == NaN, 1 if A == 0, else 0                                                                   |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -496,7 +511,7 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **RPDF**      | 1 1   | Rayleigh probability density function for z = A                                                        |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **ROLL**      | 2 0   | Cyclicly shifts the top A stack items by an amount B                                                   |
+| **ROLL**      | 2 0   | Cyclically shifts the top A stack items by an amount B                                                 |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ROTX**      | 2 1   | Rotate A by the (constant) shift B in x-direction                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -619,33 +634,33 @@ The following symbols have special meaning:
 +-------------+-------------------------------------------------+
 | **EPS_F**   | 1.192092896e-07 (single precision epsilon       |
 +-------------+-------------------------------------------------+
-| **XMIN**    | Minimum x value                                 |
+| **XMIN**    | Minimum *x* value                               |
 +-------------+-------------------------------------------------+
-| **XMAX**    | Maximum x value                                 |
+| **XMAX**    | Maximum *x* value                               |
 +-------------+-------------------------------------------------+
-| **XRANGE**  | Range of x values                               |
+| **XRANGE**  | Range of *x* values                             |
 +-------------+-------------------------------------------------+
-| **XINC**    | x increment                                     |
+| **XINC**    | The *x* increment                               |
 +-------------+-------------------------------------------------+
-| **NX**      | The number of x nodes                           |
+| **NX**      | The number of *x* nodes                         |
 +-------------+-------------------------------------------------+
-| **YMIN**    | Minimum y value                                 |
+| **YMIN**    | Minimum *y* value                               |
 +-------------+-------------------------------------------------+
-| **YMAX**    | Maximum y value                                 |
+| **YMAX**    | Maximum *y* value                               |
 +-------------+-------------------------------------------------+
-| **YRANGE**  | Range of y values                               |
+| **YRANGE**  | Range of *y* values                             |
 +-------------+-------------------------------------------------+
-| **YINC**    | y increment                                     |
+| **YINC**    | The *y* increment                               |
 +-------------+-------------------------------------------------+
-| **NY**      | The number of y nodes                           |
+| **NY**      | The number of *y* nodes                         |
 +-------------+-------------------------------------------------+
-| **X**       | Grid with x-coordinates                         |
+| **X**       | Grid with *x*-coordinates                       |
 +-------------+-------------------------------------------------+
-| **Y**       | Grid with y-coordinates                         |
+| **Y**       | Grid with *y*-coordinates                       |
 +-------------+-------------------------------------------------+
-| **XNORM**   | Grid with normalized [-1 to +1] x-coordinates   |
+| **XNORM**   | Grid with normalized [-1 to +1] *x*-coordinates |
 +-------------+-------------------------------------------------+
-| **YNORM**   | Grid with normalized [-1 to +1] y-coordinates   |
+| **YNORM**   | Grid with normalized [-1 to +1] *y*-coordinates |
 +-------------+-------------------------------------------------+
 | **XCOL**    | Grid with column numbers 0, 1, ..., NX-1        |
 +-------------+-------------------------------------------------+
@@ -679,22 +694,22 @@ Notes On Operators
 
    The operator **LDISTG** is a version of **LDIST** that operates on the
    GSHHG data. Instead of reading an ASCII file, it directly accesses one of
-   the GSHHG data sets as determined by the **-D** and **-A** options.
+   the GSHHG data sets as determined by the |-D| and |-A| options.
 
 #. The operator **POINT** reads a ASCII table, computes the mean x and mean
    y values and places these on the stack.  If geographic data then we use
    the mean 3-D vector to determine the mean location.
 
 #. The operator **PLM** calculates the associated Legendre polynomial
-   of degree L and order M (0 <= M <= L), and its argument is the sine of
+   of degree *L* and order *M* (:math:`0 \leq M \leq L)`, and its argument is the sine of
    the latitude. **PLM** is not normalized and includes the Condon-Shortley
-   phase (-1)^M. **PLMg** is normalized in the way that is most commonly
-   used in geophysics. The C-S phase can be added by using -M as argument.
+   phase :math:`(-1)^M`. **PLMg** is normalized in the way that is most commonly
+   used in geophysics. The Condon-Shortley phase can be added by using *-M* as argument.
    **PLM** will overflow at higher degrees, whereas **PLMg** is stable
    until ultra high degrees (at least 3000).
 
 #. The operators **YLM** and **YLMg** calculate normalized spherical
-   harmonics for degree L and order M (0 <= M <= L) for all positions in
+   harmonics for degree *L* and order *M* (:math:`0 \leq M \leq L)` for all positions in
    the grid, which is assumed to be in degrees. **YLM** and **YLMg** return
    two grids, the real (cosine) and imaginary (sine) component of the
    complex spherical harmonic. Use the **POP** operator (and **EXCH**) to
@@ -704,8 +719,8 @@ Notes On Operators
    physics and seismology. The square of **YLM** integrates to 1 over a
    sphere. In geophysics, **YLMg** is normalized to produce unit power when
    averaging the cosine and sine terms (separately!) over a sphere (i.e.,
-   their squares each integrate to 4 pi). The Condon-Shortley phase (-1)^M
-   is not included in **YLM** or **YLMg**, but it can be added by using -M
+   their squares each integrate to 4 pi). The Condon-Shortley phase :math:`(-1)^M`
+   is not included in **YLM** or **YLMg**, but it can be added by using *-M*
    as argument.
 
 #. All the derivatives are based on central finite differences, with
@@ -741,8 +756,8 @@ Notes On Operators
    For 3-D vector they are all unit vectors to begin with.
 
 #. The color-triplet conversion functions (**RGB2HSV**, etc.) includes not
-   only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
-   sRGB (x, y, z) conversions between all four color spaces.
+   only *r,g,b* and *h,s,v* triplet conversions, but also *l,a,b* (CIE L a b ) and
+   sRGB (*x,y,z*) conversions between all four color spaces.
 
 #. The **DAYNIGHT** operator returns a grid with ones on the side facing the given
    sun location at (A,B).  If the transition width (C) is zero then we get
@@ -834,7 +849,7 @@ geographic grid data.grd, run::
 
     gmt grdmath -Rdata.grd trace.txt LDIST = dist_from_line.grd
 
-To demonstrate the stack-reducing effect of **-S**, we compute the standard deviation
+To demonstrate the stack-reducing effect of |-S|, we compute the standard deviation
 per node of all the grids matching the name model_*.grd using::
 
     gmt grdmath model_*.grd -S STD = std_of_models.grd

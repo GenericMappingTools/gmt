@@ -132,7 +132,7 @@ static int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTI
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	int sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -141,34 +141,31 @@ static int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTI
 		switch (opt->option) {
 
 			case '<':	/* Count input files */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			case '>':	/* Got output file */
-				Ctrl->Out.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
-				Ctrl->A.min = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->A.min);
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (opt->arg[0] == 'c')
 					Ctrl->I.mode = 1;
 				else {
@@ -179,14 +176,12 @@ static int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTI
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
-				sval = atoi (opt->arg);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &sval);
 				n_errors += gmt_M_check_condition (GMT, sval < 0, "Option -N: Level cannot be negative!\n");
 				Ctrl->N.level = sval;
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e')
 					Ctrl->Q.mode = 1;
 				else if (opt->arg[0] == 'i')
@@ -200,8 +195,8 @@ static int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTI
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "No data file specified!\n");
-	n_errors += gmt_M_check_condition (GMT, n_files == 1 && strstr (Ctrl->In.file, ".nc"), "gshhs does not read GMT netCDF coastline files!  See man page for binary files.\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "No data file specified!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.active && strstr (Ctrl->In.file, ".nc"), "gshhs does not read GMT netCDF coastline files!  See man page for binary files.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.min < 0.0, "Option -A: area cannot be negative!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.mode == 3, "Option -Q: Append e or i!\n");
 

@@ -157,7 +157,7 @@ EXTERN_MSC int    GMT_Delete_Option                  (void *API, struct GMT_OPTI
 EXTERN_MSC int    GMT_Parse_Common                   (void *API, const char *given_options, struct GMT_OPTION *options);
 EXTERN_MSC char * GMT_Duplicate_String               (void *API, const char* string);
 
-/* 8 GMT_FFT_* functions */
+/* 9 GMT_FFT_* functions */
 EXTERN_MSC unsigned int GMT_FFT_Option (void *API, char option, unsigned int dim, const char *string);
 EXTERN_MSC void * GMT_FFT_Parse        (void *API, char option, unsigned int dim, const char *args);
 EXTERN_MSC void * GMT_FFT_Create       (void *API, void *data, unsigned int dim, unsigned int mode, void *info);
@@ -166,6 +166,7 @@ EXTERN_MSC int GMT_FFT                 (void *API, void *data, int direction, un
 EXTERN_MSC int GMT_FFT_Destroy         (void *API, void *info);
 EXTERN_MSC int GMT_FFT_1D              (void *API, gmt_grdfloat *data, uint64_t n, int direction, unsigned int mode);
 EXTERN_MSC int GMT_FFT_2D              (void *API, gmt_grdfloat *data, unsigned int n_columns, unsigned int n_rows, int direction, unsigned int mode);
+EXTERN_MSC int GMT_FFT_Reset           (void *API, void *data, unsigned int dim, unsigned int mode);
 
 /* 3 F77 basic grid i/o functions.  These give basic Fortran programs the ability to read and write any GMT-accessible grid */
 

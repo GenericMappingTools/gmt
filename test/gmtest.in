@@ -117,19 +117,21 @@ for apiprog in \
     testapi_usergrid \
     testapi_uservectors \
     testapi_vector \
-    testapiconv \
+    testapi_conv \
     testgrdio \
     testapi_imageshading \
     testapi_matrix_as_grid \
     testapi_vector_strings \
     testapi_vector_plot \
+    testapi_vector_times \
     testapi_vector_io \
     testapi_matrix_io \
     testapi_matrix_360 \
     testapi_matrix_360_ref \
     testapi_grid2matrix \
     testapi_putvector \
-    testapi_spatial
+    testapi_spatial \
+    testapi_text_legend
 do
     eval "${apiprog}() { valgrind_wrapper \"@GMT_BINARY_DIR@/src/${apiprog}\" \"\$@\"; }"
 done

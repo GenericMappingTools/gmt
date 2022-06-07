@@ -64,7 +64,7 @@ Optional Arguments
 
 *ingrid*
     Name of a grid file in geographical (lon, lat) coordinates with ages in Myr.
-    If no grid is provided then you may define the domain via **-R**, **-I**, and optionally **-r**.
+    If no grid is provided then you may define the domain via |-R|, |-I|, and optionally **-r**.
 
 .. _-F:
 
@@ -77,10 +77,10 @@ Optional Arguments
 
 .. |Add_outgrid| replace:: Name of output grid. This is the grid with the model predictions
     given the specified rotations. **Note**: If you specified more than one
-    model prediction in **-S** then the filename *must* be a template
+    model prediction in |-S| then the filename *must* be a template
     that contains the format %s; this will be replaced with the corresponding
     tags az, dist, stage, vel, omega, dlon, dlat, lon, lat.
-    If the **-G** option is not used then we create no grids and instead
+    If the |-G| option is not used then we create no grids and instead
     write *lon, lat, age, predictions* records to standard output.
 .. include:: /explain_grd_inout.rst_
     :start-after: outgrid-syntax-begins

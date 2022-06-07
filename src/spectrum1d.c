@@ -603,21 +603,19 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			case '>':	/* Got named output file */
-				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
+				n_files++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if (!opt->arg[0]) break;	/* Stay with the default order of output */
 				gmt_M_memset (Ctrl->C.col, SPECTRUM1D_N_OUTPUT_CHOICES, char);	/* Reset and read options */
 				for (j = 0; opt->arg[j]; j++) {
@@ -636,18 +634,17 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.inc = atof (opt->arg);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->D.inc);
 				break;
 			case 'L':	/* Leave trend alone */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				/* To use next line we need to use modes 1 2 3 instead of relying on L.active */
+				//n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				if (opt->arg[0] == 'm') Ctrl->L.mode = 1;
 				else if (opt->arg[0] == 'h') Ctrl->L.mode = 2;
 				else Ctrl->L.active = true;
 				break;
 			case 'N':	/* Set alternate file stem OR turn off multiple files */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (opt->arg[0]) {
 					if (opt->arg[0] == '+') {	/* Obsolete syntax */
 						if (gmt_M_compat_check (GMT, 5)) {
@@ -669,21 +666,20 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				sval = atoi (opt->arg);
 				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -S: segment size must be positive\n");
 				Ctrl->S.size = sval;
-				while (window_test < Ctrl->S.size) {
+				while (window_test < Ctrl->S.size) {	/* If size is radix-2 then window_test will equal size after this loop ends */
 					window_test += window_test;
 				}
 				break;
 			case 'T':	/* Turn off multicolumn single output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */
@@ -692,7 +688,8 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, window_test != Ctrl->S.size, "Option -S: Segment size not radix 2.  Try %d or %d\n", (window_test/2), window_test);
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active, "Option -S: Must supply required segment size (which must be radix 2)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && window_test != Ctrl->S.size, "Option -S: Segment size is not radix 2.  Try %d or %d (or possibly smaller; see -S documentation).\n", (window_test/2), window_test/4);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.inc <= 0.0, "Option -D: Sampling interval must be positive\n");
 	n_errors += gmt_check_binary_io (GMT, Ctrl->C.active + 1);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
@@ -763,6 +760,11 @@ EXTERN_MSC int GMT_spectrum1d (void *V_API, int mode, void *args) {
 	if (Din->n_columns < (1 + C.y_given)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least %d are needed\n", (int)Din->n_columns, 1 + C.y_given);
 		Return (GMT_DIM_TOO_SMALL);
+	}
+
+	if (Din->n_records < Ctrl->S.size) {
+		GMT_Report (API, GMT_MSG_ERROR, "Option -S: Specified segment size (%u) exceeds data set size (%" PRIu64 ")\n", Ctrl->S.size, Din->n_records);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	spectrum1d_alloc_arrays (GMT, &C);

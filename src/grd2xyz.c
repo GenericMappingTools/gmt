@@ -176,7 +176,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 
 			case 'C':	/* Write row,col or index instead of x,y */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if (opt->arg[0] == 'c') Ctrl->C.mode = 0;
 				else if (opt->arg[0] == 'f') Ctrl->C.mode = 1;
 				else if (opt->arg[0] == 'i') Ctrl->C.mode = 2;
@@ -194,7 +193,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 				break;
 			case 'L':	/* Select single row or column for output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case 'c':	Ctrl->L.mode = GRD2XYZ_COL;	Ctrl->L.item = atoi (&opt->arg[1]);	break;
 					case 'r':	Ctrl->L.mode = GRD2XYZ_ROW;	Ctrl->L.item = atoi (&opt->arg[1]);	break;
@@ -248,7 +246,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 				break;
 			case 'T':	/* Triangulation STL */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 'b': Ctrl->T.binary = true;	k = 1;	break;
 					case 'a':
@@ -265,7 +262,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 				break;
 			case 'W':	/* Add weight on output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg[0] == 'a') {
 					char *c = NULL;
 					Ctrl->W.area = true;
@@ -278,7 +274,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 				break;
 			case 'Z':	/* Control format */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				n_errors += gmt_parse_z_io (GMT, opt->arg, &Ctrl->Z);
 					break;
 

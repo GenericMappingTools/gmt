@@ -51,10 +51,10 @@ Required Arguments
 ------------------
 
 *raster?*
-    If only one is given and **-C** is not set then *raster1* must be an image.
+    If only one is given and |-C| is not set then *raster1* must be an image.
     If two are given then *raster1* and *raster2* must both be either
     images or grids.  If three are given then they must all be grids and
-    **-C** must be set.
+    |-C| must be set.
 
 .. _-G:
 
@@ -77,7 +77,7 @@ Optional Arguments
 **-C**
     **C**\ onstruct an output image from one or three normalized input grids;
     these grids must all have values in the 0-1 range only (see **-Ni** if they don't).
-    Optionally, use **-A** to add transparency and **-I** to add intensity
+    Optionally, use |-A| to add transparency and |-I| to add intensity
     to the colors before writing the image. For three layers the input order must
     be red grid first, then the green grid, and finally the blue grid.
 
@@ -88,7 +88,7 @@ Optional Arguments
     An extra grid will be written if the image contains an alpha (transparency layer).
     All grids written will reflect the original image values in the 0-255 range exclusively;
     however, you can use **-No** to normalize the values to the 0-1 range.
-    The output names uses the name template given by **-G** which must contain the
+    The output names uses the name template given by |-G| which must contain the
     C-format string "%c".  This code is replaced by the codes R, G, B and A for color
     images and g, A for gray-scale images.
 

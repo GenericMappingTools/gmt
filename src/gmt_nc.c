@@ -403,6 +403,7 @@ GMT_LOCAL int gmtnc_put_xy_vectors (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	double *xy = gmt_M_memory (GMT, NULL, MAX (header->n_columns,header->n_rows), double);
 	unsigned int col, row;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
+	if (xy == NULL) return (GMT_MEMORY_ERROR);
 
 	for (col = 0; col < header->n_columns; col++) xy[col] = gmt_M_grd_col_to_x (GMT, col, header);
 	gmt_M_err_trap (nc_put_var_double (HH->ncid, HH->xyz_id[GMT_X], xy));
@@ -510,6 +511,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			if (z_id < 0) {	/* No 2-D grid found, check if we found a higher dimension cube */
 				if (ID == GMT_NOTSET) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
 				z_id = ID;		/* Pick the higher dimensioned cube instead, get its name, and warn */
+				ndims = dim;	/* Recall the dimensions of this ID */
 				nc_inq_varname (ncid, z_id, HH->varname);
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, HH->varname);
 			}
@@ -629,6 +631,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		double dx = 0, dy = 0, threshold = 0.0;
 		/* Create enough memory to store the x- and y-coordinate values */
 		double *xy = gmt_M_memory (GMT, NULL, MAX (header->n_columns,header->n_rows), double);
+		if (xy == NULL) return (GMT_MEMORY_ERROR);
 		/* Get global information */
 		if (gmtlib_nc_get_att_vtext (GMT, ncid, NC_GLOBAL, "title", header, header->title, GMT_GRID_TITLE_LEN80))
 			gmtlib_nc_get_att_vtext (GMT, ncid, z_id, "long_name", header, header->title, GMT_GRID_TITLE_LEN80);
@@ -1557,6 +1560,7 @@ int gmtlib_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		if (z_id < 0) {	/* No 2-D grid found, check if we found a higher dimension cube */
 			if (ID == GMT_NOTSET) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
 			z_id = ID;	/* Pick the higher dimensioned cube instead, get its name, and warn */
+			ndims = dim;	/* Recall the dimensions of this ID */
 			nc_inq_varname (ncid, z_id, varname);
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, varname);
 		}
@@ -1651,12 +1655,12 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 
 	/* Read grid */
 	if (dim2[1] == 0)
-		gmtnc_io_nc_grid (GMT, header, dim, origin, HH->stride, k_get_netcdf, pgrid + HH->data_offset, false);
+		gmtnc_io_nc_grid (GMT, header, dim, origin, HH->stride, k_get_netcdf, pgrid, false);
 	else {
 		/* Read grid in two parts */
 		unsigned int stride_or_width = HH->stride != 0 ? HH->stride : width;
-		gmtnc_io_nc_grid (GMT, header, dim, origin, stride_or_width, k_get_netcdf, pgrid + HH->data_offset, false);
-		gmtnc_io_nc_grid (GMT, header, dim2, origin2, stride_or_width, k_get_netcdf, pgrid + HH->data_offset + dim[1], false);
+		gmtnc_io_nc_grid (GMT, header, dim, origin, stride_or_width, k_get_netcdf, pgrid, false);
+		gmtnc_io_nc_grid (GMT, header, dim2, origin2, stride_or_width, k_get_netcdf, pgrid + dim[1], false);
 	}
 
 	/* If we need to shift grid */
@@ -1721,7 +1725,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 
 	/* Flip grid upside down */
 	if (HH->row_order == k_nc_start_south)
-		gmt_grd_flip_vertical (pgrid + HH->data_offset, width, height, HH->stride, sizeof(grid[0]));
+		gmt_grd_flip_vertical (pgrid, width, height, HH->stride, sizeof(grid[0]));
 
 	/* Add padding with border replication */
 	gmtnc_pad_grid (pgrid, width, height, pad, sizeof(grid[0]), k_pad_fill_zero);
@@ -1731,7 +1735,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 		unsigned n;
 		unsigned pad_x = pad[XLO] + pad[XHI];
 		unsigned stride = HH->stride ? HH->stride : width;
-		gmt_grdfloat *p_data = pgrid + HH->data_offset;
+		gmt_grdfloat *p_data = pgrid;
 		for (n = 0; n < (stride + pad_x) * (height + pad[YLO] + pad[YHI]); n++) {
 			if (n % (stride + pad_x) == 0)
 				fprintf (stderr, "\n");
@@ -1982,6 +1986,7 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 			return GMT_GRDIO_NO_2DVAR;
 		}
 		z_id = ID;	/* Pick the higher dimensioned cube instead, get its name, and warn */
+		ndims = dim;	/* Recall the dimensions of this ID */
 		nc_inq_varname (ncid, z_id, varname);
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "No 3-D array in file %s.  Selecting first 3-D slice in the %d-D array %s\n", file, dim, varname);
 	}
@@ -1998,7 +2003,7 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 	n_layers = lens[z_dim];
 
 	/* Create enough memory to store the level-coordinate values */
-	z = gmt_M_memory (GMT, NULL, n_layers, double);
+	if ((z = gmt_M_memory (GMT, NULL, n_layers, double)) == NULL) return GMT_MEMORY_ERROR;
 
 	/* Get information about z variable */
 	gmtnc_get_units (GMT, ncid, ids[z_dim], z_units);

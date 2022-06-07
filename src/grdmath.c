@@ -193,21 +193,28 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"     -----------------------\n");
 	GMT_Message (API, GMT_TIME_NONE, "     ABS        1 1  ");	GMT_Usage (API, -21, "abs (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ACOS       1 1  ");	GMT_Usage (API, -21, "acos (A)");
+	GMT_Message (API, GMT_TIME_NONE, "     ACOSD      1 1  ");	GMT_Usage (API, -21, "acosd (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ACOSH      1 1  ");	GMT_Usage (API, -21, "acosh (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ACOT       1 1  ");	GMT_Usage (API, -21, "acot (A)");
+	GMT_Message (API, GMT_TIME_NONE, "     ACOTD      1 1  ");	GMT_Usage (API, -21, "acotd (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ACOTH      1 1  ");	GMT_Usage (API, -21, "acoth (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ACSC       1 1  ");	GMT_Usage (API, -21, "acsc (A)");
+	GMT_Message (API, GMT_TIME_NONE, "     ACSCD      1 1  ");	GMT_Usage (API, -21, "acscd (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ACSCH      1 1  ");	GMT_Usage (API, -21, "acsch (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ADD        2 1  ");	GMT_Usage (API, -21, "A + B");
 	GMT_Message (API, GMT_TIME_NONE, "     AND        2 1  ");	GMT_Usage (API, -21, "B if A == NaN, else A");
 	GMT_Message (API, GMT_TIME_NONE, "     ARC        2 1  ");	GMT_Usage (API, -21, "arc(A, B) = pi - |pi - |a-b|| for A, B in radians");
 	GMT_Message (API, GMT_TIME_NONE, "     AREA       0 1  ");	GMT_Usage (API, -21, "Area of each gridnode cell (spherical calculation in km^2 if geographic)");
 	GMT_Message (API, GMT_TIME_NONE, "     ASEC       1 1  ");	GMT_Usage (API, -21, "asec (A)");
+	GMT_Message (API, GMT_TIME_NONE, "     ASECD      1 1  ");	GMT_Usage (API, -21, "asecd (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ASECH      1 1  ");	GMT_Usage (API, -21, "asech (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ASIN       1 1  ");	GMT_Usage (API, -21, "asin (A)");
+	GMT_Message (API, GMT_TIME_NONE, "     ASIND      1 1  ");	GMT_Usage (API, -21, "asind (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ASINH      1 1  ");	GMT_Usage (API, -21, "asinh (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ATAN       1 1  ");	GMT_Usage (API, -21, "atan (A)");
+	GMT_Message (API, GMT_TIME_NONE, "     ATAND      1 1  ");	GMT_Usage (API, -21, "atand (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     ATAN2      2 1  ");	GMT_Usage (API, -21, "atan2 (A, B)");
+	GMT_Message (API, GMT_TIME_NONE, "     ATAN2D     2 1  ");	GMT_Usage (API, -21, "atan2d (A, B)");
 	GMT_Message (API, GMT_TIME_NONE, "     ATANH      1 1  ");	GMT_Usage (API, -21, "atanh (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     BCDF       3 1  ");	GMT_Usage (API, -21, "Binomial cumulative distribution function for p = A, n = B and x = C");
 	GMT_Message (API, GMT_TIME_NONE, "     BPDF       3 1  ");	GMT_Usage (API, -21, "Binomial probability density function for p = A, n = B and x = C");
@@ -333,7 +340,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     NAN        2 1  ");	GMT_Usage (API, -21, "NaN if A == B, else A");
 	GMT_Message (API, GMT_TIME_NONE, "     NEG        1 1  ");	GMT_Usage (API, -21, "-A");
 	GMT_Message (API, GMT_TIME_NONE, "     NEQ        2 1  ");	GMT_Usage (API, -21, "1 if A != B, else 0");
-	GMT_Message (API, GMT_TIME_NONE, "     NORM       1 1  ");	GMT_Usage (API, -21, "Normalize (A) so max(A)-min(A) = 1");
+	GMT_Message (API, GMT_TIME_NONE, "     NORM       1 1  ");	GMT_Usage (API, -21, "Normalize (A) so min(A) = 0 and max(A) = 1");
 	GMT_Message (API, GMT_TIME_NONE, "     NOT        1 1  ");	GMT_Usage (API, -21, "NaN if A == NaN, 1 if A == 0, else 0");
 	GMT_Message (API, GMT_TIME_NONE, "     NRAND      2 1  ");	GMT_Usage (API, -21, "Normal, random values with mean A and std. deviation B");
 	GMT_Message (API, GMT_TIME_NONE, "     OR         2 1  ");	GMT_Usage (API, -21, "NaN if B == NaN, else A");
@@ -364,7 +371,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     RMS        1 1  ");	GMT_Usage (API, -21, "Root-mean-square of A");
 	GMT_Message (API, GMT_TIME_NONE, "     RMSW       2 1  ");	GMT_Usage (API, -21, "Weighted Root-mean-square of A for weights in B");
 	GMT_Message (API, GMT_TIME_NONE, "     RPDF       1 1  ");	GMT_Usage (API, -21, "Rayleigh probability density function for z = A");
-	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclicly shifts the top A stack items by an amount B");
+	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclically shifts the top A stack items by an amount B");
 	GMT_Message (API, GMT_TIME_NONE, "     ROTX       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in x-direction");
 	GMT_Message (API, GMT_TIME_NONE, "     ROTY       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in y-direction");
 	GMT_Message (API, GMT_TIME_NONE, "     SDIST      2 1  ");	GMT_Usage (API, -21, "Spherical distance (in km) between grid nodes and stack lon,lat (A, B)");
@@ -506,27 +513,24 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OP
 
 			case 'A':	/* Restrict GSHHS features */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.set = opt->arg[0];
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->D.set);
 				Ctrl->D.force = (opt->arg[1] == '+');
 				break;
 			case 'I':	/* Grid spacings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'M':	/* Map units */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Relax domain check */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Only checked later */
 				break;
@@ -800,6 +804,18 @@ GMT_LOCAL void grdmath_ACOS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : d_acosf (stack[last]->G->data[node]);
 }
 
+GMT_LOCAL void grdmath_ACOSD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ACOSD 1 1 acosd (A).  */
+{
+	uint64_t node;
+	float a = 0.0f;
+
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACOSD!\n");
+	if (stack[last]->constant) a = (float)(R2D * d_acos (stack[last]->factor));
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : R2D * d_acosf (stack[last]->G->data[node]);
+}
+
 GMT_LOCAL void grdmath_ACOSH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: ACOSH 1 1 acosh (A).  */
 {
@@ -827,6 +843,20 @@ GMT_LOCAL void grdmath_ACOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : atanf (1.0f / stack[last]->G->data[node]);
 }
 
+GMT_LOCAL void grdmath_ACOTD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ACOTD 1 1 acotd (A).  */
+{
+	uint64_t node;
+	float a = 0.0f;
+
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0)
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACOTD!\n");
+	if (stack[last]->constant) a = (float)(R2D * atan (1.0 / stack[last]->factor));
+	for (node = 0; node < info->size; node++)
+		stack[last]->G->data[node] = (stack[last]->constant) ? a : R2D * atanf (1.0f / stack[last]->G->data[node]);
+}
+
 GMT_LOCAL void grdmath_ACOTH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: ACOTH 1 1 acoth (A).  */
 {
@@ -850,6 +880,20 @@ GMT_LOCAL void grdmath_ACSC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	if (stack[last]->constant) a = (float)d_asin (1.0 / stack[last]->factor);
 	for (node = 0; node < info->size; node++)
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : d_asinf (1.0f / stack[last]->G->data[node]);
+}
+
+GMT_LOCAL void grdmath_ACSCD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ACSCD 1 1 acscd (A).  */
+{
+	uint64_t node;
+	float a = 0.0f;
+
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0)
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACSCD!\n");
+	if (stack[last]->constant) a = (float)(R2D * d_asin (1.0 / stack[last]->factor));
+	for (node = 0; node < info->size; node++)
+		stack[last]->G->data[node] = (stack[last]->constant) ? a : R2D * d_asinf (1.0f / stack[last]->G->data[node]);
 }
 
 GMT_LOCAL void grdmath_ACSCH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -940,6 +984,18 @@ GMT_LOCAL void grdmath_ASEC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : d_acosf (1.0f / stack[last]->G->data[node]);
 }
 
+GMT_LOCAL void grdmath_ASECD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
+/*OPERATOR: ASECD 1 1 asecd (A).  */
+	uint64_t node;
+	float a = 0.0f;
+
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ASECD!\n");
+	if (stack[last]->constant) a = (float)(R2D * d_acos (1.0 / stack[last]->factor));
+	for (node = 0; node < info->size; node++)
+		stack[last]->G->data[node] = (stack[last]->constant) ? a : R2D * d_acosf (1.0f / stack[last]->G->data[node]);
+}
+
 GMT_LOCAL void grdmath_ASECH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
 /*OPERATOR: ASECH 1 1 asech (A).  */
 	uint64_t node;
@@ -963,6 +1019,19 @@ GMT_LOCAL void grdmath_ASIN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	if (stack[last]->constant) a = (float)d_asin (stack[last]->factor);
 	for (node = 0; node < info->size; node++)
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : d_asinf (stack[last]->G->data[node]);
+}
+
+GMT_LOCAL void grdmath_ASIND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ASIND 1 1 asind (A).  */
+{
+	uint64_t node;
+	float a = 0.0f;
+
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ASIND!\n");
+	if (stack[last]->constant) a = (float)(R2D * d_asin (stack[last]->factor));
+	for (node = 0; node < info->size; node++)
+		stack[last]->G->data[node] = (stack[last]->constant) ? a : R2D * d_asinf (stack[last]->G->data[node]);
 }
 
 GMT_LOCAL void grdmath_ASINH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -989,6 +1058,19 @@ GMT_LOCAL void grdmath_ATAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : atanf (stack[last]->G->data[node]);
 }
 
+GMT_LOCAL void grdmath_ATAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ATAND 1 1 atand (A).  */
+{
+	uint64_t node;
+	float a = 0.0f;
+	gmt_M_unused(GMT);
+
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	if (stack[last]->constant) a = (float)(R2D * atan (stack[last]->factor));
+	for (node = 0; node < info->size; node++)
+		stack[last]->G->data[node] = (stack[last]->constant) ? a : R2D * atanf (stack[last]->G->data[node]);
+}
+
 GMT_LOCAL void grdmath_ATAN2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: ATAN2 2 1 atan2 (A, B).  */
 {
@@ -1003,6 +1085,23 @@ GMT_LOCAL void grdmath_ATAN2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 		stack[prev]->G->data[node] = (float)d_atan2 (a, b);
+	}
+}
+
+GMT_LOCAL void grdmath_ATAN2D (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ATAN2D 2 1 atan2d (A, B).  */
+{
+	uint64_t node;
+	unsigned int prev = last - 1;
+	double a, b;
+
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for ATAN2D!\n");
+	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for ATAN2D!\n");
+	for (node = 0; node < info->size; node++) {
+		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
+		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
+		stack[prev]->G->data[node] = (float)R2D * d_atan2 (a, b);
 	}
 }
 
@@ -3956,7 +4055,7 @@ GMT_LOCAL void grdmath_NEQ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 }
 
 GMT_LOCAL void grdmath_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
-/*OPERATOR: NORM 1 1 Normalize (A) so max(A)-min(A) = 1.  */
+/*OPERATOR: NORM 1 1 Normalize (A) so min(A) = 0 and max(A) = 1.  */
 	uint64_t node, n = 0;
 	openmp_int row, col;
 	float z, zmin = FLT_MAX, zmax = -FLT_MAX;
@@ -3976,7 +4075,7 @@ GMT_LOCAL void grdmath_NORM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 		}
 		a = (n == 0 || zmax == zmin) ? GMT->session.f_NaN : (1.0 / (zmax - zmin));	/* Normalization scale */
 	}
-	gmt_M_grd_loop (GMT, info->G, row, col, node) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : a * stack[last]->G->data[node]);
+	gmt_M_grd_loop (GMT, info->G, row, col, node) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : a * (stack[last]->G->data[node] - zmin));
 }
 
 GMT_LOCAL void grdmath_NOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last) {
@@ -5894,7 +5993,7 @@ GMT_LOCAL void grdmath_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 227
+#define GRDMATH_N_OPERATORS 234
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -6127,6 +6226,13 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[224] = grdmath_VPDF;	n_args[224] = 3;	n_out[224] = 1;
 	ops[225] = grdmath_FISHER;	n_args[225] = 3;	n_out[225] = 1;
 	ops[226] = grdmath_CUMSUM;	n_args[226] = 2;	n_out[226] = 1;
+	ops[227] = grdmath_ASIND;	n_args[227] = 1;	n_out[227] = 1;
+	ops[228] = grdmath_ACOSD;	n_args[228] = 1;	n_out[228] = 1;
+	ops[229] = grdmath_ACOTD;	n_args[229] = 1;	n_out[229] = 1;
+	ops[230] = grdmath_ACSCD;	n_args[230] = 1;	n_out[230] = 1;
+	ops[231] = grdmath_ASECD;	n_args[231] = 1;	n_out[231] = 1;
+	ops[232] = grdmath_ATAND;	n_args[232] = 1;	n_out[232] = 1;
+	ops[233] = grdmath_ATAN2D;	n_args[233] = 2;	n_out[233] = 1;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -6547,6 +6653,13 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		"VPDF",	/* id = 224 */
 		"FISHER",	/* id = 225 */
 		"CUMSUM",	/* id = 226 */
+		"ASIND",	/* id = 227 */
+		"ACOSD",	/* id = 228 */
+		"ACOTD",	/* id = 229 */
+		"ACSCD",	/* id = 230 */
+		"ASECD",	/* id = 231 */
+		"ATAND",	/* id = 232 */
+		"ATAN2D",	/* id = 233 */
 		"" /* last element is intentionally left blank */
 	};
 

@@ -75,8 +75,11 @@ Required Arguments
 
 **-T**\ [*min/max*\ /]\ *inc*\ [**+n**] \|\ **-T**\ *file*\|\ *list*
     Make evenly spaced array of bin boundaries from *min* to *max* by *inc*.
-    If *min/max* are not given then we default to the range in **-R**.
-    For details on array creation, see `Generate 1D Array`_.
+    If *min/max* are not given then we default to the range in |-R|.
+    For details on array creation, see `Generate 1D Array`_. **Note**: If
+    *inc* is given with a trailing time unit then it takes precedence over
+    the current setting of :term:`TIME_UNIT`; otherwise that setting determines
+    the units used for the bin widths.
 
 Optional Arguments
 ------------------
@@ -98,7 +101,7 @@ Optional Arguments
 **-C**\ *cpt*\ [**+b**]
     Give a CPT. The mid-coordinate for each bar is used to look up
     the bar color.  Alternatively, append **+b** to use the *bin* value
-    as the look-up value, unless **-Z** involves percentages,
+    as the look-up value, unless |-Z| involves percentages,
     in which case the look-up value is the *percentage* computed. If
     we are in modern mode and no *cpt* is given then we select the
     current CPT.
@@ -115,7 +118,7 @@ Optional Arguments
 .. _-E:
 
 **-E**\ *width*\ [**+o**\ *offset*]
-    Use an alternative histogram bar width than the default set via **-T**,
+    Use an alternative histogram bar width than the default set via |-T|,
     and optionally shift all bars by an *offset*.  Here *width* is either
     an alternative width in data units, or the user may append a valid plot
     dimension unit (**c**\|\ **i**\|\ **p**) for a fixed dimension instead.
@@ -150,7 +153,7 @@ Optional Arguments
 
 **-Ll**\|\ **h**\|\ **b**
     The modifiers specify the handling of extreme values that fall outside the range
-    set by **-T**.  By default these values are ignored.  Append **b** to let
+    set by |-T|.  By default these values are ignored.  Append **b** to let
     these values be included in the first or last bins.  To only include
     extreme values below first bin into the first bin, use **l**, and to
     only include extreme values above the last bin into that last bin, use
@@ -166,7 +169,7 @@ Optional Arguments
     * 1 = median and L1 scale (1.4826 \* median absolute deviation; MAD);
     * 2 = LMS (least median of squares) mode and scale.
 
-    The **-N** option may be repeated to draw several of these curves.
+    The |-N| option may be repeated to draw several of these curves.
     **Note**: If **-w** is used then only *mode* = 0 is available and we will
     determine the parameters of the circular von Mises distribution instead.
 

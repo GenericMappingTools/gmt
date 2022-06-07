@@ -143,13 +143,11 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'D':	/* Draw map inset */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				n_errors += gmt_getinset (GMT, 'D', opt->arg, &Ctrl->D.inset);
 				break;
 
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->D.inset.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel for the map inset", 3);
 					n_errors++;
@@ -159,7 +157,7 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 			case 'M':	/* inset margins */
 				GMT_Report (API, GMT_MSG_COMPAT, "-M option is deprecated; use -C instead.\n");
 				/* Fall through on purpose */
-			case 'C':	/* Clearance/inside margins */
+			case 'C':	/* Clearance/inside margins (repeatable) */
 				Ctrl->C.active = true;
 				if (opt->arg[0] == 0) {	/* Gave nothing */
 					GMT_Report (API, GMT_MSG_ERROR, "Option -C: No clearance specified.\n");
@@ -175,7 +173,6 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 						case 'y':	side = YLO;	Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
 					}
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[side]);
-					Ctrl->C.set[side] = true;
 					if (strchr ("xy", opt->arg[0])) Ctrl->C.set[side+1] = true;	/* Since two margins are set */
 				}
 				else {	/* Process 1, 2, or 4 margin values (and also because of deprecated -M) */
@@ -194,14 +191,13 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 					for (k = 0; k < 4; k++) Ctrl->C.gap[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 					for (side = XLO; side <= YHI; side++) {
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[side]);
-						Ctrl->C.set[side] = true;
 					}
 				}
 				break;
 
 			case 'N':	/* Turn off clipping  */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */
@@ -451,6 +447,9 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Removed inset file\n");
 		gmt_reload_history (API->GMT);
 		gmt_reload_settings (API->GMT);
+		/* Undo any shrink scaling memory */
+		API->inset_shrink_scale = 1.0;
+		API->inset_shrink = false;
 	}
 
 	gmt_plotend (GMT);

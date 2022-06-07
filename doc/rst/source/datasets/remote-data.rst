@@ -22,6 +22,12 @@ GMT will do the following when you request a remote file in a GMT command:
 #. When the catalog is refreshed, we determine the publication date for each dataset on the server,
    and if any local copies you may have are now obsolete we will remove them to force a re-download from the server.
 
+Currently Available Remote Data Sets
+-------------------------------------
+
+Documentation for the individual remote datasets available through the GMT server and its
+mirrors can be found at `Remote Datasets <https://www.generic-mapping-tools.org/remote-datasets/>`_.
+
 Usage
 -----
 
@@ -32,12 +38,8 @@ and standardized their file names.  In GMT, you may access such data
    @remote_name_\ *rr*\ *u*\ [_\ *reg*\ ]
 
 where the leading @ symbol identifies the file as a remote data set, the *remote_name_* is specific
-to the dataset and the *rr* code is a 2-digit integer specifying the grid/image
-resolution in the unit *u*, where *u* is either **d**, **m** or **s** for arc degree, arc minute or
-arc second, respectively. Optionally, you can append _\ **g** or _\ **p** to specifically get the
-gridline-registered or pixel-registered version (if they both exist).  If *reg* is not specified we
-will return the pixel-registered version unless only the gridline-registered file is available.  If you
-do specify a specific registration and that version is not available you will get an error message.
+to the dataset and the *rr* code is a 2-digit integer specifying the grid/image resolution in the
+unit *u*, where *u* is either **d**, **m** or **s** for arc degree, arc minute or arc second, respectively.
 The codes for *rr*\ *u* and the optional *reg* that are supported will be listed in the sections
 below describing each of the available data sets.
 
@@ -54,6 +56,20 @@ Details about the remote datasets currently provided by GMT can be found at
 
 Many of the remote datasets have a preferred, default color table that will be used unless you
 override that default by giving your desired CPT information.
+
+Data Registration
+-----------------
+
+Optionally, you can append _\ **g** or _\ **p** to specifically get the gridline-registered or
+pixel-registered version (if they both exist).  If *reg* is not specified then the behavior
+depends on whether you are making a plot or processing/extracting a subset of the data:
+
+    - For plots we will return the pixel-registered version unless only the gridline-registered file is available.
+    - For grid processing modules we will return the gridline-registered version unless only the pixel-registered
+      file is available.  We will also issue a warning since for calculations you should ideally know and
+      specify exactly what you want.
+
+If you do specify a specific registration and that version is not available you will get an error message.
 
 Controlling the Process
 -----------------------
@@ -145,9 +161,3 @@ given a region and projection, you can inquire about this information by passing
 or obtain the required subset grid directly via::
 
     gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -Gsubset.grd -V
-
-Currently Available Remote Data Sets
--------------------------------------
-
-Documentation for the individual remote datasets available through the GMT server and its
-mirrors can be found at `Remote Datasets <https://www.generic-mapping-tools.org/remote-datasets/>`_.

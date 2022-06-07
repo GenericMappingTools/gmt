@@ -79,7 +79,7 @@ Required Arguments
 .. _-R:
 
 .. |Add_-Rgeo| replace:: If frame is defined from cross-section parameters
-   (see **-A** this option is not taken into account, but must be present.
+   (see |-A| this option is not taken into account, but must be present.
 .. include:: ../../explain_-Rgeo.rst_
 
 .. _-A:
@@ -184,7 +184,7 @@ Optional Arguments
     Draw a box behind the label (if any). [Default fill is white]
 
 **-Ft**\ [*pen*]
-    Draw the T axis outline using current pen (see **-W**), or sets pen attributes.
+    Draw the T axis outline using current pen (see |-W|), or sets pen attributes.
 
 .. _-G:
 
@@ -196,7 +196,7 @@ Optional Arguments
 **-H**\ [*scale*]
     Scale symbol sizes and pen widths on a per-record basis using the *scale* read from the
     data set, given as the first column after the (optional) *size* columns [no scaling].
-    The symbol size is either provided by **-S** or via the input *size* column.  Alternatively,
+    The symbol size is either provided by |-S| or via the input *size* column.  Alternatively,
     append a constant *scale* that should be used instead of reading a scale column.
 
 .. _-I:
@@ -205,7 +205,7 @@ Optional Arguments
     Use the supplied *intens* value (nominally in the -1 to +1 range) to
     modulate the compressional fill color by simulating illumination [none].
     If no intensity is provided we will instead read *intens* from an extra
-    data column after the required input columns determined by **-S**.
+    data column after the required input columns determined by |-S|.
 
 .. _-L:
 
@@ -236,9 +236,9 @@ Optional Arguments
     *2*: only the second nodal plane is plotted.
 
     Append **/**\ *pen* to set the pen attributes for this feature.
-    Default pen is as set by **-W**. [Default: 0].
+    Default pen is as set by |-W|. [Default: 0].
 
-    For double couple mechanisms, the **-T** option renders the beach ball transparent
+    For double couple mechanisms, the |-T| option renders the beach ball transparent
     by drawing only the nodal planes and the circumference.
     For non-double couple mechanisms, **-T**\ *0* option overlays best double couple transparently.
 
