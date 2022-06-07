@@ -196,7 +196,7 @@ FORMAT Parameters
     **FORMAT_CLOCK_IN**
         Formatting template that indicates how a clock string is formatted.
         This template is then used to guide the reading of clock strings in data fields.
-        For 12-hour clocks, append **am**, **AM**, **a.m.**, or **A.M.** (GMT will replace a|A with p|P for pm).
+        For 12-hour clocks, append **am**, **AM**, **a.m.**, or **A.M.** (GMT will replace a\|A with p\|P for pm).
         As examples, try hh:mm, hh:mm:ssAM, hh:mm:ss.xxxx etc. [default is **hh:mm:ss**].
 
     **FORMAT_CLOCK_MAP**
