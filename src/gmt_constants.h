@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -88,7 +88,7 @@
 #define GMT_TOP_MODULE	1	/* func_level of top-level module being called */
 
 #define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode, in points (~11.6 meters) */
-#define GMT_PAPER_MARGIN_AUTO	5	/* Default paper margin under modern mode, in inches (12.7 centimeter) for auto-size mode */
+#define GMT_PAPER_MARGIN_AUTO	40	/* Default paper margin under modern mode, in inches (101.6 centimeter) for auto-size mode */
 #define GMT_PAPER_MARGIN_FIXED	1	/* Default paper margin under modern mode, in inches (2.54 centimeter) for fixed-size mode */
 
 #define GMT_JPEG_DEF_QUALITY	90	/* Default JPG quality value for psconvert -Tj */
@@ -344,6 +344,9 @@ enum GMT_time_period {
 #define GMT_FRAME_MODIFIERS "bginotwxyz"
 /* Valid axis setting modifiers */
 #define GMT_AXIS_MODIFIERS "aefLlpsSu"
+
+/* Valid decorated line symbols */
+#define GMT_DECORATE_SYMBOLS "-+AaBbCcDdGgHhIikNnpSsTtxy"
 
 /* Settings for usage message indents and break/continue characters */
 

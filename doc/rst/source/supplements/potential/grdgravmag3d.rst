@@ -48,13 +48,14 @@ Required Arguments
 .. _-C:
 
 **-C**\ *density*
-    Sets body density in SI. This option is mutually exclusive with **-H**
+    Sets body density in SI. Append either a constant or the name of a grid file with variable densities.
+    This option is mutually exclusive with |-H|
 
 .. _-F:
 
 **-F**\ *xy_file*
     Provide locations where the anomaly will be computed. Note this
-    option is mutually exclusive with **-G**.
+    option is mutually exclusive with |-G|.
 
 .. _-G:
 
@@ -73,7 +74,7 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H+m**\ *magfile*  **-Hx**\|\ **y**\|\ **z**\|\ **h**\|\ **t** **-H+i**\|\ **g**\|\ **r**\|\ **f**\|\ **n**
+**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H**\ *magfile*  **-Hx**\|\ **y**\|\ **z**\|\ **h**\|\ **t** **-H+i**\|\ **g**\|\ **r**\|\ **f**\|\ **n**
     Sets parameters for computation of magnetic anomaly (Can be used multiple times).
 
       *f_dec/f_dip* -> geomagnetic declination/inclination
@@ -82,7 +83,7 @@ Optional Arguments
 
     OR for a grid mode
 
-      **+m**\ *magfile*, where *magfile* is the name of the magnetic intensity file.
+      *magfile*, where *magfile* is the name of the magnetic intensity file.
 
     To compute a component, specify any of:
 
@@ -113,13 +114,13 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ [**n**\ *n_pad*]\|\ [*pad_dist*]\|\ [*region*]
-    Extend the domain of computation with respect to output **-R** region.
+    Extend the domain of computation with respect to output |-R| region.
       **-Qn**\ *n_pad* artificially extends the width of the outer rim of
       cells to have a fake width of *n_pad* * dx[/dy].
 
       **-Q**\ *pad_dist* extend the region by west-pad, east+pad, etc.
 
-      **-Q**\ *region* Same syntax as **-R**.
+      **-Q**\ *region* Same syntax as |-R|.
 
 .. |Add_-R| replace:: **Note**: This overrides the source grid region (Default: use same region as input) |Add_-R_links|
 .. include:: ../../explain_-R.rst_
@@ -129,7 +130,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *radius*
-    Set search radius in km (valid only in the two grids mode OR when **-E**) [Default = 30 km].
+    Set search radius in km (valid only in the two grids mode OR when |-E|) [Default = 30 km].
     This option serves to speed up the computation by not computing the effect of prisms that
     are further away than *radius* from the current node.
 
@@ -197,6 +198,6 @@ See Also
 Reference
 ---------
 
-Okabe, M., Analytical expressions for gravity anomalies due to
+Okabe, M., 1979, Analytical expressions for gravity anomalies due to
 polyhedral bodies and translation into magnetic anomalies, *Geophysics*,
-44, (1979), p 730-741.
+44, 730-741.

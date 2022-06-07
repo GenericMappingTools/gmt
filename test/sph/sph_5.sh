@@ -4,7 +4,7 @@
 
 ps=sph_5.ps
 
-data=`gmt which -G @hotspots.txt`
+data=`gmt which -Gc @hotspots.txt`
 # Use the locations of a global hotspot file and fake z values
 gmt sphtriangulate @hotspots.txt -Qv -T > tt.arcs
 gmt makecpt -Ccategorical -T0/55/1 > t.cpt

@@ -1,9 +1,20 @@
+/*--------------------------------------------------------------------
+ *
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
+ *--------------------------------------------------------------------*/
 /*
- * Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- * See LICENSE.TXT file for copying and redistribution conditions.
- *
- * img2grd.c
- *
  * img2grd reads an "img" format file (used by Sandwell and Smith
  * in their estimates of gravity and depth from satellite altimetry),
  * extracts a Region [with optional N by N averaging], and writes out
@@ -224,7 +235,7 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	bool sec = false, min = false;
 	size_t L = 0;
 	struct GMT_OPTION *opt = NULL;
@@ -236,21 +247,18 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) break;
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'F':	/* Backwards helper for old non-C behavior */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				if (opt->arg[0] && (sscanf (opt->arg, "%lf/%lf", &Ctrl->D.min, &Ctrl->D.max)) != 2) {
 					n_errors++;
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Failed to decode <minlat>/<maxlat>.\n");
@@ -262,25 +270,22 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'E':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'm':
 				if (gmt_M_compat_check (GMT, 4))	/* Warn and fall through to 'I' on purpose */
 					GMT_Report (API, GMT_MSG_COMPAT, "-m<inc> is deprecated; use -I<inc> instead.\n");
 				else {
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 					break;
 				}
 				/* Intentionally fall through */
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				L = strlen (opt->arg);
 				if (strchr ("ms", opt->arg[L])) {	/* Valid minute or second unit */
 					if (opt->arg[L] == 's') sec = true;
@@ -300,45 +305,39 @@ static int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'M':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
-				Ctrl->N.value = atoi (opt->arg);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->N.value);
 				break;
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				if (sscanf (opt->arg, "%lf", &Ctrl->S.value) != 1) Ctrl->S.mode = 1;
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
-				if ((sscanf (opt->arg, "%d", &Ctrl->T.value)) != 1) {
+				if (gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->T.value)) {
 					n_errors++;
 					GMT_Report (API, GMT_MSG_ERROR, "Option -T requires an output type 0-3.\n");
 				}
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
-				if ((sscanf (opt->arg, "%lf", &Ctrl->W.value)) != 1) {
+				if (gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->W.value)) {
 					n_errors++;
 					GMT_Report (API, GMT_MSG_ERROR, "Option -W requires a longitude >= 360.0.\n");
 				}
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Must specify input imgfile name.\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "More than one world image file name given.\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option.\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI] || GMT->common.R.wesn[YLO] >= GMT->common.R.wesn[YHI]), "Must specify -R with west < east and south < north.\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active || Ctrl->G.file == NULL, "Must specify output grid file name with -G.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->D.min <= -90 || Ctrl->D.max >= 90.0 || Ctrl->D.max <= Ctrl->D.min), "Min/max latitudes are invalid.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.value < 0 || Ctrl->T.value > 3, "Must specify output type in the range 0-3 with -T.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.value < 360.0, "Requires a maximum longitude >= 360.0 with -W.\n");

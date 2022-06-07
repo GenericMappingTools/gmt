@@ -1,3 +1,5 @@
+:orphan:
+
 Maintainers Guide
 =================
 
@@ -18,13 +20,13 @@ Packaging
 ---------
 
 Currently, packaging with CPack works on macOS (Bundle, TGZ, TBZ2), Windows (ZIP, NSIS), and UNIX (TGZ, TBZ2). On
-Windows you need to install `NSIS <http://nsis.sourceforge.net/>`_. After building GMT and the documentation,
+Windows you need to install `NSIS <http://nsis.sourceforge.io/>`_. After building GMT and the documentation,
 build and place the executables, including the supplements, with::
 
    cmake --build . --target install
 
 
-and then create the package with either one of these:: 
+and then create the package with either one of these::
 
    cmake --build . --target package
    cpack -G TGZ|TBZ2|Bundle|ZIP|NSIS

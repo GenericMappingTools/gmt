@@ -93,7 +93,7 @@ axis), NOT the usual cartesian theta, which is counterclockwise from the
 :math:`x` axis. (i.e., :math:`azimuth = 90 - theta`).
 
 No assumptions are made regarding the units for :math:`x, y, r, s, p, q`, *dist*,
-:math:`l_{min}, l_{max}, w_{min}, w_{max}`. If |-Q| is
+:math:`l_{min}, l_{max}, w_{min}, w_{max}`. However, if |-Q| is
 selected, map units are assumed and :math:`x, y, r, s`, must be in
 degrees and :math:`p, q`, *dist*, :math:`l_{min}, l_{max}, w_{min}, w_{max}`
 will be in km.
@@ -112,7 +112,7 @@ back-azimuths or azimuths are better done using :doc:`mapproject` as
    the *p-q* coordinate system, defined by the center (**C**) and either the end-point
    (**E**) or azimuth (:math:`\alpha`), or for geographic data a rotation pole **T** (not shown).
    The blue point has projected coordinates (p,0) and is reported as (r,s) in the original
-   coordinate system.  Options **-L** (limit range of *p*) and **-W** (limit range of *q*)
+   coordinate system.  Options |-L| (limit range of *p*) and |-W| (limit range of *q*)
    can be used to exclude data outside the specified limits (light gray area).
 
 Required Arguments
@@ -187,7 +187,7 @@ Optional Arguments
 
 **-Q**
     Specify that  :math:`x`, :math:`y`, *r*, *s* are in degrees while *p*, *q*, *dist*, *lmin*, *lmax*, *wmin*,
-    *wmax* are in km. If **-Q** is not set, then all these are assumed to be in the same units.
+    *wmax* are in km. If |-Q| is not set, then all these are assumed to be in the same units.
 
 .. _-S:
 
@@ -273,7 +273,7 @@ that circle and only output the distance and the depths, try::
 
     gmt project @ship_03.txt -C330/-18 -T53/21 -S -Fpz -Q > ship_proj.txt
 
-To generate points every 10km along a great circle from 10N,50W to 30N,10W:
+To generate points every 10 km along a great circle from 10N,50W to 30N,10W:
 
    ::
 
@@ -288,7 +288,7 @@ azimuth 30 and covering a full 360, try:
 
     gmt project -C10W/30N -A30 -G1 -L-180/180 > great_circle.txt
 
-To generate points every 10km along a small circle of colatitude 60 from 10N,50W to 30N,10W:
+To generate points every 10 km along a small circle of colatitude 60 from 10N,50W to 30N,10W:
 
    ::
 

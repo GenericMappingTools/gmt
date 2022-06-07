@@ -25,6 +25,9 @@ The syntax for this special mechanism involves a few simple rules:
    leading hyphen for the format option.
 #. The one-liner command cannot itself be part of a longer modern mode session.
 
+**Note**: If the single module involves a CPT (either explicitly or implicitly) then a
+color bar will be plotted below the map.
+
 Examples
 --------
 

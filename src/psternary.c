@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -154,7 +154,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, ni_files = 0, no_files = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -162,65 +162,55 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 
 		switch (opt->option) {
 
-			case '<':	/* Input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
-				ni_files++;
+			case '<':	/* Skip input files after checking they exist */
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (no_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Turn off draw_arc mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
-				gmt_M_str_free (Ctrl->A.string);
-				Ctrl->A.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->A.string);
 				break;
 			case 'C':	/* Use CPT for coloring symbols */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.string);
 				if (opt->arg[0]) Ctrl->C.string = strdup (opt->arg);
 				break;
 			case 'G':	/* Fill */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				gmt_M_str_free (Ctrl->G.string);
-				Ctrl->G.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->G.string);
 				break;
 			case 'L':	/* Get the three labels separated by slashes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
-				sscanf (opt->arg, "%[^/]/%[^/]/%s", Ctrl->L.vlabel[GMT_X], Ctrl->L.vlabel[GMT_Y], Ctrl->L.vlabel[GMT_Z]);
+				if (sscanf (opt->arg, "%[^/]/%[^/]/%s", Ctrl->L.vlabel[GMT_X], Ctrl->L.vlabel[GMT_Y], Ctrl->L.vlabel[GMT_Z]) != 3) {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -L: Must provide three labels separated by slashes\n");
+					n_errors++;
+				}
 				break;
 			case 'M':	/* Convert a,b,c -> x,y and dump */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'N':	/* Use the outside of the polygons as clip area */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':	/* Plot symbols */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
-				gmt_M_str_free (Ctrl->S.string);
-				Ctrl->S.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->S.string);
 				break;
 			case 'W':	/* Pen settings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
-				gmt_M_str_free (Ctrl->W.string);
-				Ctrl->W.string = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->W.string);
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -473,9 +463,11 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		GMT->current.map.frame.paint[GMT_Z] = false;
 	}
 	/* Count how many of the three sides will be drawn */
-	if (GMT->current.map.frame.side[S_SIDE]) n_sides++;	/* The bottom (a) side */
-	if (GMT->current.map.frame.side[E_SIDE]) n_sides++;	/* The right (b) side */
-	if (GMT->current.map.frame.side[W_SIDE]) n_sides++;	/* The left (c) side */
+	if (GMT->common.B.active[GMT_PRIMARY]) {	/* -B was given */
+		if (GMT->current.map.frame.side[S_SIDE]) n_sides++;	/* The bottom (a) side */
+		if (GMT->current.map.frame.side[E_SIDE]) n_sides++;	/* The right (b) side */
+		if (GMT->current.map.frame.side[W_SIDE]) n_sides++;	/* The left (c) side */
+	}
 	if (n_sides) {	/* Draw some or all of the triangular sides */
 		PSL_comment (PSL, "Draw triangular frame sides\n");
 		gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
@@ -530,6 +522,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	if (reverse) {	/* Flip what is positive directions */
 		for (k = 0; k <= GMT_Z; k++) sign[k] = - sign[k];
 	}
+	if (n_sides == 0) gmt_M_memset (side, 3U, unsigned int);	/* No, nothing shall be drawn after all */
 
 	if (!Ctrl->S.active && (Ctrl->G.active || Ctrl->C.active)) {	/* Plot polygons before gridlines */
 		char vfile[GMT_VF_LEN] = {""};
@@ -585,7 +578,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	}
 
 	for (k = 0; k <= GMT_Z; k++) {
-		if (GMT_Free_Option (API, &boptions[k])) {
+		if (boptions[k] && GMT_Free_Option (API, &boptions[k])) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to free -B? option\n");
 			Return (API->error);
 		}

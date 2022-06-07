@@ -29,10 +29,10 @@ Description
 -----------
 
 **img2grd** reads an img format file, extracts a subset, and writes it
-to a grid file. The **-M** option dictates whether or not the Spherical
+to a grid file. The |-M| option dictates whether or not the Spherical
 Mercator projection of the img file is preserved or if a Geographic grid
 should be written by undoing the Mercator projection. If geographic grid
-is selected you can also request a resampling onto the exact **-R** given.
+is selected you can also request a resampling onto the exact |-R| given.
 
 Required Arguments
 ------------------
@@ -70,22 +70,22 @@ Optional Arguments
 .. _-E:
 
 **-E**
-    Can be used when **-M** is not set to force the final grid to have
-    the exact same region as requested with **-R**. By default, the
+    Can be used when |-M| is not set to force the final grid to have
+    the exact same region as requested with |-R|. By default, the
     final region is a direct projection of the original Mercator region
     and will typically extend slightly beyond the requested latitude
     range, and furthermore the grid increment in latitude does not match
     the longitude increment. However, the extra resampling introduces
     small interpolation errors and should only be used if the output
     grid must match the requested region and have x_inc = y_inc. In
-    this case the region set by **-R** must be given in multiples of the
+    this case the region set by |-R| must be given in multiples of the
     increment (e.g., **-R**\ 0/45/45/72).
 
 .. _-F:
 
 **-F**
     Translate the x and y Mercator coordinates so that they are relative
-    to the lower left corner, which then is (0,0). Requires **-M**.
+    to the lower left corner, which then is (0,0). Requires |-M|.
 
 .. _-I:
 
@@ -100,16 +100,16 @@ Optional Arguments
 **-M**
     Output a Spherical Mercator grid [Default is a geographic lon/lat
     grid]. The Spherical Mercator projection of the img file is
-    preserved, so that the region **-R** set by the user is modified
+    preserved, so that the region |-R| set by the user is modified
     slightly; the modified region corresponds to the edges of pixels [or
     groups of *navg* pixels]. The grid file header is set so that the x
     and y axis lengths represent distance relative to projection center
-    using a **-Jm**\ 1 projection.  See **-F** to set coordinates to
+    using a **-Jm**\ 1 projection.  See |-F| to set coordinates to
     instead be distances from the west and south edges
     of the image, measured in user default units, with **-Jm**\ 1 and
-    the adjusted **-R**. By setting the default **PROJ_ ELLIPSOID** =
-    Sphere, the user can make overlays with the adjusted **-R** so that
-    they match. See **EXAMPLES** below. The adjusted **-R** is also
+    the adjusted |-R|. By setting the default **PROJ_ ELLIPSOID** =
+    Sphere, the user can make overlays with the adjusted |-R| so that
+    they match. See **EXAMPLES** below. The adjusted |-R| is also
     written in the grid header remark, so it can be found later.
 
 .. _-N:
@@ -168,7 +168,7 @@ Optional Arguments
 Geographic Examples
 -------------------
 
-The **-M** option should be excluded if you need the output grid to be
+The |-M| option should be excluded if you need the output grid to be
 in geographic coordinates. To extract data in the region
 **-R**-40/40/-70/-30 from *world_grav.img.7.2* and reproject to yield
 geographic coordinates, you can try
@@ -178,10 +178,10 @@ geographic coordinates, you can try
     gmt img2grd world_grav.img.16.1 -Gmerc_grav.nc -R-40/40/-70/-30 -V
 
 Because the latitude spacing in the img file is equidistant in Mercator
-units, the resulting grid will not match the specified **-R** exactly,
+units, the resulting grid will not match the specified |-R| exactly,
 and the latitude spacing will not equal the longitude spacing. If you
-need an exact match with your **-R** and the same spacing in longitude
-and latitude, use the **-E** option:
+need an exact match with your |-R| and the same spacing in longitude
+and latitude, use the |-E| option:
 
    ::
 
@@ -193,7 +193,7 @@ Mercator Examples
 Since the img files are in a Mercator projection, you should NOT extract
 a geographic grid if your plan is to make a Mercator map. If you did
 that you end of projecting and reprojection the grid, losing
-short-wavelength detail. Better to use **-M** and plot the grid using a
+short-wavelength detail. Better to use |-M| and plot the grid using a
 linear projection with the same scale as the desired Mercator projection
 (see GMT Example 29).
 To extract data in the region **-R**-40/40/-70/-30 from
@@ -203,7 +203,7 @@ To extract data in the region **-R**-40/40/-70/-30 from
 
     gmt img2grd -M world_grav.img.7.2 -Gmerc_grav.nc -R-40/40/-70/-30 -V
 
-Note that the **-V** option tells us that the range was adjusted to
+Note that the |-V| option tells us that the range was adjusted to
 **-R**-40/40/-70.0004681551/-29.9945810754. For scripting purposes we
 can extract this original region string using :doc:`grdinfo </grdinfo>` **-Ii**.
 Furthermore, we can also use :doc:`grdinfo </grdinfo>`
@@ -233,7 +233,7 @@ To make a lon,lat grid from the above grid we can use
 
     gmt grdproject merc_grav.nc -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I -D2m -Ggrav.nc
 
-In some cases this will not be easy as the **-R** in the two coordinate
+In some cases this will not be easy as the |-R| in the two coordinate
 systems may not align well. When this happens, we can also use (in fact,
 it may be always better to use)
 
@@ -250,7 +250,7 @@ map 8 inches wide by using **-Jx**\ 0.1i on any map programs applied to
 this grid (e.g., :doc:`grdcontour </grdcontour>`,
 :doc:`grdimage </grdimage>`, :doc:`grdview </grdview>`), and then
 for overlays which work in lon,lat (e.g., :doc:`plot </plot>`, :doc:`coast </coast>`) we can
-use the above adjusted **-R** and **-Jm**\ 0.1 to get the two systems to
+use the above adjusted |-R| and **-Jm**\ 0.1 to get the two systems to
 match up.
 
 However, we can be smarter than this. Realizing that the input img file
@@ -261,7 +261,7 @@ is 300 pixels per inch. We decide we do not need that many and we will be
 satisfied with 100 pixels per inch, so we want to average the data into
 3 by 3 squares. (If we want a contour plot we will probably choose to
 average the data much more (e.g., 6 by 6) to get smooth contours.) Since
-2039 isn't divisible by 3 we will get a different adjusted **-R** this time:
+2039 isn't divisible by 3 we will get a different adjusted |-R| this time:
 
    ::
 

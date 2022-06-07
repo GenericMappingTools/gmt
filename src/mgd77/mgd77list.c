@@ -1,10 +1,20 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2004-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- *    See README file for copying and redistribution conditions.
+ *	Copyright (c) 2004-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
-/*
- * mgd77list produces ASCII listings of <ngdc-id>.mgd77 files. The *.mgd77
+/* mgd77list produces ASCII listings of <ngdc-id>.mgd77 files. The *.mgd77
  * files distributed from NGDC contain along-track geophysical observations
  * such as bathymetry, gravity, and magnetics, and the user may extract
  * any combination of these parameters as well as four generated quantities
@@ -399,7 +409,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 
 			case 'A':	/* Adjustment flags */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				k = 0;
 				if (opt->arg[k] == '+') {	/* Recalculate anomalies even if original anomaly == NaN [Default leaves NaNs unchanged] */
 					Ctrl->A.force = true;
@@ -513,7 +522,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							n_errors++;
 						}
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active[0]);
-						Ctrl->D.active[0] = true;
 						break;
 					case 'B':		/* Stop date, skip records with time = NaN */
 						Ctrl->D.mode = true;
@@ -525,7 +533,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							n_errors++;
 						}
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active[1]);
-						Ctrl->D.active[1] = true;
 						break;
 					default:
 						n_errors++;
@@ -535,12 +542,11 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 
 			case 'E':	/* Exact parameter match */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'F':	/* Selected output fields */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				strncpy (buffer, opt->arg, GMT_BUFSIZ-1);
 				if (!strcmp (buffer, "mgd77")) strncpy (buffer, MGD77_FMT, GMT_BUFSIZ);
 				if (!strcmp (buffer, "mgd77+")) {
@@ -586,12 +592,10 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				 	case 'a':		/* Start record */
 						Ctrl->G.start = atol (&opt->arg[1]);
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[0]);
-						Ctrl->G.active[0] = true;
 						break;
 					case 'b':		/* Stop record */
 						Ctrl->G.stop = atol (&opt->arg[1]);
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[1]);
-						Ctrl->G.active[1] = true;
 						break;
 					default:
 						n_errors++;
@@ -601,7 +605,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				if (Ctrl->I.n < 3) {
 					if (strchr ("acmt", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
@@ -618,8 +621,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 
 			case 'L':	/* Crossover correction table */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
-				Ctrl->L.file = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->L.file);
 				break;
 
 			case 'N':	/* Nautical units (knots, nautical miles) */
@@ -630,7 +632,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance unit selection */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[N_D]);
-						Ctrl->N.active[N_D] = true;
 						Ctrl->N.unit[N_D][0] = opt->arg[1];
 						if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.unit[N_D][0])) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Nd: Unit must be among %s\n", GMT_LEN_UNITS2_DISPLAY);
@@ -639,7 +640,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 						break;
 					case 's':	/* Speed unit selection */
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[N_S]);
-						Ctrl->N.active[N_S] = true;
 						Ctrl->N.unit[N_S][0] = opt->arg[1];
 						if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.unit[N_S][0])) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Nd: Unit must be among %s\n", GMT_LEN_UNITS2_DISPLAY);
@@ -661,7 +661,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							n_errors++;
 						}
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Q_A]);
-						Ctrl->Q.active[Q_A] = true;
 						break;
 					case 'C':	/* Course change min/max using absolute value of cc */
 						Ctrl->Q.c_abs = true;
@@ -672,7 +671,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							n_errors++;
 						}
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Q_C]);
-						Ctrl->Q.active[Q_C] = true;
 						break;
 					case 'v':	/* Velocity min/max */
 						code = sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->Q.min[Q_V], &Ctrl->Q.max[Q_V]);
@@ -683,7 +681,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							n_errors++;
 						}
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Q_V]);
-						Ctrl->Q.active[Q_V] = true;
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Syntax is -Qa|c|v<min>/<max>\n");
@@ -697,20 +694,17 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 					MGD77_Set_Unit (GMT, &opt->arg[1], &dist_scale, 1);
 					Ctrl->S.start = atof (&opt->arg[1]) * dist_scale;
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[0]);
-					Ctrl->S.active[0] = true;
 				}
 				else if (opt->arg[0] == 'b') {	/* Stop position */
 					MGD77_Set_Unit (GMT, &opt->arg[1], &dist_scale, 1);
 					Ctrl->S.stop = atof (&opt->arg[1]) * dist_scale;
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[1]);
-					Ctrl->S.active[1] = true;
 				}
 				else
 					n_errors++;
 				break;
 
 			case 'T':	/* Disable automatic corrections */
-				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case '\0':	/* Both sets */
 						Ctrl->T.mode = MGD77_NOT_SET;
@@ -729,13 +723,11 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				break;
 			case 'W':		/* Assign a weight to these data */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				Ctrl->W.value = (!strcmp (opt->arg, "NaN")) ? GMT->session.d_NaN : atof (opt->arg);
 				break;
 
 			case 'Z':		/* -Zn is negative down for depths */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				switch (opt->arg[0]) {
 					case '-':	case 'n':	Ctrl->Z.mode = true;	break;
 					case '+':	case 'p':	Ctrl->Z.mode = false;	break;
@@ -746,7 +738,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

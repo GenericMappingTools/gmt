@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -158,7 +158,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	 */
 
 	bool F_or_R_or_J, do_file_check = true;
-	unsigned int n_errors = 0, k, n_files = 0;
+	unsigned int n_errors = 0, k;
 	char za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -170,9 +170,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &(Ctrl->In.file));
 				if (do_file_check && GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 			break;
 
@@ -180,7 +179,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
 				if (strstr (opt->arg, "+t")) Ctrl->D.text = true;
 				if (opt->arg[0] && strstr (opt->arg, "done-in-gmt_init_module")) {
 					Ctrl->D.quit = true;	/* Reporting has already happened */
@@ -189,7 +187,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if (opt->arg[0]) {
 					if ((c = gmt_first_modifier (GMT, opt->arg, "ci"))) {	/* Process any modifiers */
 						unsigned int pos = 0;	/* Reset to start of new word */
@@ -214,18 +211,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'G':	/* Output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (opt->arg[0])
 					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (opt->arg);
 				break;
  			case 'S':	/* Origin and radius */
-				Ctrl->S.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				k = 0;
 				if ((c = strstr (opt->arg, "+n"))) {
 					Ctrl->S.set_nan = true;
@@ -244,7 +238,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'Z':	/* Detect region via z-range -Z[<min>/<max>][+n|N|r]*/
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				k = 0;
 				if ((c = strstr (opt->arg, "+n")))
 					Ctrl->Z.mode = NAN_IS_SKIPPED;
@@ -277,7 +270,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -289,7 +282,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, (F_or_R_or_J + Ctrl->S.active + Ctrl->Z.active) != 1,
 	                                   "Must specify only one of the -F, -R, -S or the -Z options\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->D.active, "Option -G: Must specify output grid file\n");
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify one input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "Must specify one input grid file\n");
 	if (n_errors == 0) {
 		int ftype = gmt_raster_type (GMT, Ctrl->In.file, true);
 		if (ftype == GMT_IS_IMAGE)	/* Must read file as an image */
@@ -486,7 +479,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
-		unsigned int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col, sum, side, count[4];
+		openmp_int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col;
+		unsigned int sum, side, count[4];
 		bool go;
 		struct GMT_GRID_HIDDEN *GH = NULL;
 
@@ -594,7 +588,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 				if (!go) col1 = col;	/* Found stopping col */
 			}
 		}
-		if (row0 == 0 && col0 == 0 && row1 == (h->n_rows-1) && col1 == (h->n_columns-1)) {
+		if (row0 == 0 && col0 == 0 && row1 == (openmp_int)(h->n_rows-1) && col1 == (openmp_int)(h->n_columns-1)) {
 			GMT_Report (API, GMT_MSG_WARNING, "Your -Z limits produced no subset - output grid is identical to input grid\n");
 			gmt_M_memcpy (wesn_new, h->wesn, 4, double);
 		}
@@ -887,7 +881,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	nx_old = h->n_columns;		ny_old = h->n_rows;
 
 	if (Ctrl->F.active && Ctrl->In.type == GMT_IS_GRID) {	/* Must reset nodes outside the polygon to NaN */
-		unsigned int row, col, set;
+		openmp_int row, col;
+		unsigned int set;
 		uint64_t n_nodes = 0;
 		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset (unless memory file) */
@@ -943,7 +938,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->N.active && extend) {	/* Now shrink pad back to default and simultaneously extend region and apply nodata values */
-		unsigned int xlo, xhi, ylo, yhi, row, col, n_zero, n_zero_e;
+		openmp_int xlo, xhi, ylo, yhi, row, col;
+		unsigned int n_zero, n_zero_e;
 		double dx, dy;
 		n_zero = 0;	/* Count zeros in the grid before extension */
 		gmt_M_grd_loop (GMT, G, row, col, node) {
@@ -957,20 +953,20 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		/* dx,dy are needed when the grid is pixel-registered as the w/e/s/n bounds are off by 0.5 {dx,dy} relative to node coordinates */
 		dx = h->inc[GMT_X] * h->xy_off;	dy = h->inc[GMT_Y] * h->xy_off;
 
-		xlo = outside[XLO] ? (unsigned int)gmt_M_grd_x_to_col (GMT, wesn_old[XLO] + dx, h) : 0;
-		xhi = outside[XHI] ? (unsigned int)gmt_M_grd_x_to_col (GMT, wesn_old[XHI] - dx, h) : h->n_columns - 1;
-		ylo = outside[YLO] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YLO] + dy, h) : h->n_rows - 1;
-		yhi = outside[YHI] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YHI] - dy, h) : 0;
+		xlo = outside[XLO] ? (openmp_int)gmt_M_grd_x_to_col (GMT, wesn_old[XLO] + dx, h) : 0;
+		xhi = outside[XHI] ? (openmp_int)gmt_M_grd_x_to_col (GMT, wesn_old[XHI] - dx, h) : h->n_columns - 1;
+		ylo = outside[YLO] ? (openmp_int)gmt_M_grd_y_to_row (GMT, wesn_old[YLO] + dy, h) : h->n_rows - 1;
+		yhi = outside[YHI] ? (openmp_int)gmt_M_grd_y_to_row (GMT, wesn_old[YHI] - dy, h) : 0;
 		if (outside[XLO]) {
-			for (row = 0; row < h->n_rows; row++)
+			for (row = 0; row < (openmp_int)h->n_rows; row++)
 				for (col = 0; col < xlo; col++) G->data[gmt_M_ijp(h,row,col)] = Ctrl->N.value;
 		}
 		if (outside[XHI]) {
-			for (row = 0; row < h->n_rows; row++)
-				for (col = xhi+1; col < h->n_columns; col++) G->data[gmt_M_ijp(h,row,col)] = Ctrl->N.value;
+			for (row = 0; row < (openmp_int)h->n_rows; row++)
+				for (col = xhi+1; col < (openmp_int)h->n_columns; col++) G->data[gmt_M_ijp(h,row,col)] = Ctrl->N.value;
 		}
 		if (outside[YLO]) {
-			for (row = ylo+1; row < h->n_rows; row++)
+			for (row = ylo+1; row < (openmp_int)h->n_rows; row++)
 				for (col = xlo; col <= xhi; col++) G->data[gmt_M_ijp(h,row,col)] = Ctrl->N.value;
 		}
 		if (outside[YHI]) {
@@ -1005,11 +1001,11 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->S.set_nan && Ctrl->In.type == GMT_IS_GRID) {	/* Set all nodes outside the circle to NaN */
-		unsigned int row, col;
+		openmp_int row, col;
 		uint64_t n_nodes = 0;
 
-		for (row = 0; row < h->n_rows; row++) {
-			for (col = 0; col < h->n_columns; col++) {
+		for (row = 0; row < (openmp_int)h->n_rows; row++) {
+			for (col = 0; col < (openmp_int)h->n_columns; col++) {
 				distance = gmt_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, G->x[col], G->y[row]);
 				if (distance > Ctrl->S.radius) {	/* Outside circle */
 					node = gmt_M_ijp (h, row, col);
@@ -1024,10 +1020,10 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	/* Send the subset of the grid or image to the gridfile destination. */
 
 	if (Ctrl->In.type == GMT_IS_GRID) {	/* Write a grid */
-		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G))
 			Return (API->error);
-		}
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR)
+			Return (API->error);
 	}
 	else {	/* Write an image */
 		if (do_via_gdal) {	/* Special case of multi-band geotiff */

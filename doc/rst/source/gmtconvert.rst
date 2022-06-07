@@ -17,12 +17,12 @@ Synopsis
 [ |-C|\ [**+l**\ *min*][**+u**\ *max*][**+i**]]
 [ |-D|\ [*template*\ [**+o**\ *orig*]] ]
 [ |-E|\ [**f**\|\ **l**\|\ **m**\|\ **M**\ *stride*] ]
-[ |-F|\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
+[ |-F|\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **t**\|\ **s**\|\ **r**\|\ *refpoint*] ]
 [ |-I|\ [**tsr**] ]
 [ |-L| ]
 [ |-N|\ *col*\ [**+a**\|\ **d**] ]
 [ |-Q|\ [**~**]\ *selection*]
-[ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
+[ |-S|\ [**~**]\ *"search string"*\|\ **+f**\|\ *file*\ [**+e**] \| |-S|\ [**~**]/\ *regexp*/[**i**][**+e**] ]
 [ |-T|\ [**h**][**d**\ [[**~**]\ *selection*]] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+n**] ]
@@ -116,7 +116,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*]
+**-F**\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **t**\|\ **s**\|\ **r**\|\ *refpoint*]
     Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
     Append one of four line connection schemes:
     **c**\ : Form continuous line segments for each group [Default].
@@ -126,7 +126,7 @@ Optional Arguments
     Optionally, append the one of four segmentation methods to define the group:
     **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
     and set group reference point to the very first point of the first file.
-    **f**\ : Consider all data in each file to be a single separate group and
+    **t**\ : Consider all data in each table to be a single separate group and
     reset the group reference point to the first point of each group.
     **s**\ : Segment headers are honored so each segment is a group; the group
     reference point is reset to the first point of each incoming segment [Default].
@@ -158,15 +158,15 @@ Optional Arguments
     Numerically sort each segment based on values in column *col*.
     The data records will be sorted such that the chosen column will
     fall into ascending order [**+a**\ , which is Default].  Append **+d**
-    to sort into descending order instead.  The **-N** option can be
-    combined with any other ordering scheme except **-F** (segmentation)
+    to sort into descending order instead.  The |-N| option can be
+    combined with any other ordering scheme except |-F| (segmentation)
     and is applied at the end.
 
 .. _-Q:
 
 **-Q**\ [**~**]\ *selection*
     Only write segments whose number is included in *selection* and skip
-    all others. Cannot be used with **-S**. The *selection* syntax is
+    all others. Cannot be used with |-S|. The *selection* syntax is
     *range*\ [,\ *range*,...] where each *range* of items is either a single
     segment *number* or a range with stepped increments given via *start*\ [:*step*:]\ :*stop*
     (*step* is optional and defaults to 1). A leading **~** will
@@ -175,13 +175,13 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**~**]\ *"search string"* or **-S**\ [**~**]/\ *regexp*/[**i**]
+**-S**\ [**~**]\ *"search string"*\|\ **+f**\|\ *file*\ [**+e**] \| |-S|\ [**~**]/\ *regexp*/[**i**][**+e**]
     Only output those segments whose header record contains the
     specified text string. To reverse the search, i.e., to output
     segments whose headers do *not* contain the specified pattern, use
     **-S~**. Should your pattern happen to start with ~ you need to
     escape this character with a backslash [Default output all
-    segments]. Cannot be used with **-Q**. For matching segments based
+    segments]. Cannot be used with |-Q|. For matching segments based
     on aspatial values (via OGR/GMT format), give the search string as
     *varname*\ =\ *value* and we will compare *value* against the value
     of *varname* for each segment. **Note**: If the features are polygons
@@ -190,7 +190,9 @@ Optional Arguments
     headers against extended regular expressions enclose the expression
     in slashes. Append **i** for case-insensitive matching.
     For a list of such patterns, give **+f**\ *file* with one pattern per line.
-    To give a single pattern starting with +f, escape it with a backslash.
+    To give a single pattern starting with "+f", escape it with a backslash.
+    Finally, append **+e** as last modifier to request an exact match [Default will
+    match any sub-string in the target].
 
 .. _-T:
 
@@ -199,7 +201,7 @@ Optional Arguments
     suppress segment headers [Default], and/or **d** to suppress duplicate
     data records.  Use **-Thd** to suppress both types of records.  By default,
     all columns must be identical across the two records to skip the record.
-    ALternatively, append a column *selection* to only use those columns
+    Alternatively, append a column *selection* to only use those columns
     in the comparisons instead.  The *selection* syntax is
     *range*\ [,\ *range*,...] where each *range* of items is either a single
     column *number* or a range with stepped increments given via *start*\ [:*step*:]\ :*stop*
@@ -294,6 +296,11 @@ To extract all segments in the file big_file.txt whose headers contain
 the string "RIDGE AXIS", try::
 
     gmt convert big_file.txt -S"RIDGE AXIS" > subset.txt
+
+To only get the segments in the file big_file.txt whose headers exactly
+matches the string "Spitsbergen", try::
+
+    gmt convert big_file.txt -SSpitsbergen+e > subset.txt
 
 To invert the selection of segments whose headers begin with "profile "
 followed by an integer number and any letter between "g" and "l", try::

@@ -1,0 +1,5 @@
+outs:
+- md5: 53d07fa45fe6a1ea795036f5a0b6fefb.dir
+  size: 347468
+  nfiles: 5
+  path: gmtregress

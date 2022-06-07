@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -370,7 +370,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			case 'R':	/* Normally processed internally but must be handled separately since it can take 1,2,3 dimensions */
@@ -466,7 +466,6 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 
 			case 'A':	/* Gradient data: -A<gradientfile>+f<format> */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (strchr (opt->arg, ',')) {	/* Old syntax: Specified a particular format with -A<mode>,<file> */
 					if (gmt_M_compat_check (API->GMT, 5)) {
 						GMT_Report (API, GMT_MSG_COMPAT, "Option -A<format>,<gradientfile> is deprecated; use -A<gradientfile>+f<format> instead\n");
@@ -498,7 +497,6 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				break;
 			case 'C':	/* Solve by SVD */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if (strchr (opt->arg, '/') && strstr (opt->arg, "+f") == NULL) {	/* Old-style file deprecated specification */
 					if (gmt_M_compat_check (API->GMT, 5)) {	/* OK */
 						sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, p);
@@ -550,19 +548,17 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				if (Ctrl->C.value < 0.0) Ctrl->C.dryrun = true, Ctrl->C.value = 0.0;	/* Check for deprecated syntax giving negative value */
 				break;
 			case 'D':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				if (gmt_M_compat_check (API->GMT, 6) && strlen (opt->arg) == 1) {	/* Old -D<mode> option supported for backwards compatibility (now -Z) */
 					Ctrl->Z.active = true;
 					Ctrl->Z.mode = atoi (opt->arg);	/* Since I added 0 to be 1-D later so now this is mode -1 */
 				}
 				else {	/* Give grid or cube information */
-					Ctrl->D.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 					Ctrl->D.information = strdup (opt->arg);
 				}
 				break;
 			case 'E':	/* Evaluate misfit -E[<file>]*/
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				if (opt->arg) {
 					Ctrl->E.file = strdup (opt->arg);
 					Ctrl->E.mode = 1;
@@ -570,12 +566,10 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				break;
 			case 'G':	/* Output file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'I':	/* Table or grid spacings */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				k = gmt_getincn (GMT, opt->arg, Ctrl->I.inc, 3);
 				if (k < 1) {
 					gmt_inc_syntax (GMT, 'I', 1);
@@ -586,22 +580,19 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				break;
 			case 'L':	/* Leave trend alone */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'M':	/* Read or write list of Green's function forces [NOT IMPLEMENTED YET] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
-				Ctrl->M.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->M.file))) n_errors++;
 				break;
 			case 'N':	/* Output locations */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
 				if (opt->arg[0]) Ctrl->N.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file))) n_errors++;
 				break;
 			case 'Q':	/* Directional derivative */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				if (strchr (opt->arg, '/')) {	/* Got 3-D vector components */
 					n_items = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Q.dir[0], &Ctrl->Q.dir[1], &Ctrl->Q.dir[2]);
 					if (n_items != 3) {
@@ -619,8 +610,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				break;
 			case 'S':	/* Spline selection */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
-				Ctrl->S.arg = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->S.arg);
 				switch (opt->arg[0]) {
 					case 'l':	/*  Cartesian linear spline in 1-D or 2-D (bilinear) */
 						Ctrl->S.mode = LINEAR_1D;
@@ -692,7 +682,6 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				break;
 			case 'T':	/* Input mask grid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->T.file)))
 					n_errors++;
@@ -715,12 +704,10 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				break;
 			case 'W':	/* Expect data uncertainty or weights in last column */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg[0] == 'w') Ctrl->W.mode = GSP_GOT_WEIGHTS;	/* Got weights instead of sigmas */
 				break;
 			case 'Z':	/* Distance mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
 				Ctrl->Z.mode = atoi (opt->arg);	/* Since I added 0 to be 1-D later so now this is mode -1 */
 				break;
 #ifdef DEBUG
@@ -732,7 +719,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				break;
 #endif
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -797,7 +784,6 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->S.mode == PARKER_1994 || Ctrl->S.mode == WESSEL_BECKER_2008) && Ctrl->Z.mode == 3, "Option -Sc|t|r: Cannot select -Z3\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == LINEAR_1D && Ctrl->Z.mode > 3, "Option -Sl: Cannot select -Z4 or higher\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || (dimension > 1 && Ctrl->I.inc[GMT_Y] <= 0.0) || (dimension == 3 && Ctrl->I.inc[GMT_Z] <= 0.0)), "Option -I: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, dimension == 2 && !Ctrl->N.active && !(Ctrl->G.active  || Ctrl->G.file), "Option -G: Must specify output grid file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.dryrun && !Ctrl->C.file, "Option -C: Must specify file name for eigenvalues if +n is set");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Option -T: Must specify mask grid file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && dimension != 2, "Option -T: Only applies to 2-D gridding\n");
@@ -1535,7 +1521,7 @@ GMT_LOCAL void greenspline_dump_system (double *A, double *b, uint64_t nm, char 
 GMT_LOCAL void greenspline_set_filename (char *name, unsigned int k, unsigned int width, unsigned int mode, char *file) {
 	/* Turn name, eigenvalue number k, precision width and mode into a filename, e.g.,
 	 * ("solution.grd", 33, 3, GMT_SVD_INCREMENTAL, file) will give solution_inc_033.grd */
-	unsigned int s = strlen (name) - 1;
+	unsigned int s = (unsigned int)strlen (name) - 1;
 	static char *type[3] = {"", "inc", "cum"};
 	while (name[s] != '.') s--;	/* Wind backwards to start of extension */
 	name[s] = '\0';	/* Temporarily chop off extension */
@@ -1547,7 +1533,8 @@ GMT_LOCAL void greenspline_set_filename (char *name, unsigned int k, unsigned in
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
-	uint64_t col, row, n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
+	openmp_int col, row;
+	uint64_t n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
 	unsigned int dimension = 0, normalize = 0, n_cols, n_layers = 1, w_col, L_Max = 0;
 	size_t n_alloc;
 	int error = GMT_NOERROR, out_ID, way, n_columns, n_use;
@@ -1849,7 +1836,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		n_skip = n_read = 0;
 		for (seg = k = 0, p = n; seg < Din->n_segments; seg++) {
 			Slp = Din->table[0]->segment[seg];
-			for (row = 0; row < Slp->n_rows; row++, k++, p++) {
+			for (row = 0; row < (openmp_int)Slp->n_rows; row++, k++, p++) {
 				for (ii = 0; ii < n_cols; ii++) X[p][ii] = Slp->data[ii][row];
 				switch (dimension) {
 					case 1:	/* 1-D: x, slope */
@@ -2196,16 +2183,16 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Build square linear system Ax = b using %s\n", method[Ctrl->S.mode]);
 
-	for (row = 0; row < nm; row++) {	/* For each value or slope constraint */
-		for (col = row; col < nm; col++) {
+	for (row = 0; row < (openmp_int)nm; row++) {	/* For each value or slope constraint */
+		for (col = row; col < (openmp_int)nm; col++) {
 			ij = row * nm + col;
 			ji = col * nm + row;
 			r = greenspline_get_radius (GMT, X[col], X[row], dimension);
-			if (row < n) {	/* Value constraint (so entire row uses G) */
+			if (row < (openmp_int)n) {	/* Value constraint (so entire row uses G) */
 				A[ij] = G (GMT, r, par, Lz);
 				if (ij == ji)	/* Do the diagonal terms only once */
 					continue;
-				if (col < n)
+				if (col < (openmp_int)n)
 					A[ji] = A[ij];
 				else {
 					/* Get D, the directional cosine between the two points */
@@ -2216,7 +2203,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 					A[ji] = grad * C;
 				}
 			}
-			else if (col > n) {	/* Remaining gradient constraints (entire row uses dGdr) */
+			else if (col > (openmp_int)n) {	/* Remaining gradient constraints (entire row uses dGdr) */
 				if (ij == ji) continue;	/* Diagonal gradient term from a point to itself is zero */
 				C = greenspline_get_dircosine (GMT, D[row-n], X[col], X[row], dimension, true);
 				grad = dGdr (GMT, r, par, Lg);
@@ -2252,18 +2239,18 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		S = gmt_M_memory (GMT, NULL, nm, double);
 		/* 1. Transpose A and set diagonal matrix with squared weights (here a vector) S */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Create S = W'*W diagonal matrix, A', and compute A' * S\n");
-		for (row = 0; row < nm; row++) {
+		for (row = 0; row < (openmp_int)nm; row++) {
 			/* Set the diagonal using (=1/sigma^2) if given sigmas or the weights as given */
 			S[row] = (Ctrl->W.mode == GSP_GOT_SIG) ? X[row][dimension] * X[row][dimension] : X[row][dimension];
-			for (col = 0; col < nm; col++) {
+			for (col = 0; col < (openmp_int)nm; col++) {
 				ij = row * nm + col;
 				ji = col * nm + row;
 				At[ji] = A[ij];
 			}
 		}
 		/* 2. Compute AtS = At * S.  This means scaling all terms in At columns by the corresponding S entry */
-		for (row = ij = 0; row < nm; row++) {
-			for (col = 0; col < nm; col++, ij++)
+		for (row = ij = 0; row < (openmp_int)nm; row++) {
+			for (col = 0; col < (openmp_int)nm; col++, ij++)
 				AtS[ij] = At[ij] * S[col];
 		}
 		/* 3. Compute r = AtS * obs (but we recycle S to hold r) */
@@ -2482,7 +2469,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		Rec->data = out;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline at %" PRIu64 " given locations\n", T->n_records);
 		for (seg = 0; seg < T->n_segments; seg++) {
-			for (row = 0; row < T->segment[seg]->n_rows; row++) {
+			for (row = 0; row < (openmp_int)T->segment[seg]->n_rows; row++) {
 				for (ii = 0; ii < dimension; ii++) out[ii] = T->segment[seg]->data[ii][row];
 				if (T->segment[seg]->text) Rec->text = T->segment[seg]->text[row];
 				out[dimension] = 0.0;
@@ -2545,8 +2532,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			 * gmt_solve_svd sets to zero those we don't want but we must still loop over its full length to ensure we
 			 * include the eigenvalues we want. */
 			unsigned int width = urint (floor (log10 ((double)n_use))) + 1;	/* Width of maximum integer needed */
-			int64_t row; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
-			uint64_t e, col, p;
+			uint64_t e, p;
 			gmt_grdfloat *current = NULL, *previous = NULL;
 			double l2_sum_n = 0.0, l2_sum_e = 0.0, predicted;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
@@ -2572,7 +2558,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				S->n_rows = n_use;
 			}
 
-			for (e = 0; e < n_use; e++) {	/* Only loop over the first n_use eigenvalues (if restricted) */
+			for (e = 0; e < (uint64_t)n_use; e++) {	/* Only loop over the first n_use eigenvalues (if restricted) */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline for eigenvalue # %d\n", (int)e);
 				gmt_M_memcpy (s, ssave, nm, double);	/* Restore original values before call */
 				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, (double)e, GMT_SVD_EIGEN_NUMBER_CUTOFF);
@@ -2581,9 +2567,9 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,col,ij,p,wp,r,C,part) shared(Grid,yp,xp,nm,GMT,Ctrl,X,G,par,Lz,alpha,Out,normalize,norm)
 #endif
-					for (row = 0; row < Grid->header->n_rows; row++) {
+					for (row = 0; row < (openmp_int)Grid->header->n_rows; row++) {
 						V[GMT_Y] = yp[row];
-						for (col = 0; col < Grid->header->n_columns; col++) {
+						for (col = 0; col < (openmp_int)Grid->header->n_columns; col++) {
 							ij = gmt_M_ijp (Grid->header, row, col);
 							if (gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
 							V[GMT_X] = xp[col];
@@ -2632,9 +2618,9 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,col,ij,p,wp,r,part) shared(Grid,yp,xp,nm,GMT,X,G,par,Lz,alpha,Out,normalize,norm)
 #endif
-					for (row = 0; row < Grid->header->n_rows; row++) {
+					for (row = 0; row < (openmp_int)Grid->header->n_rows; row++) {
 						V[GMT_Y] = yp[row];
-						for (col = 0; col < Grid->header->n_columns; col++) {
+						for (col = 0; col < (openmp_int)Grid->header->n_columns; col++) {
 							ij = gmt_M_ijp (Grid->header, row, col);
 							if (gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
 							V[GMT_X] = xp[col];
@@ -2710,11 +2696,11 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,ij,col,p,wp,r,C,part) shared(header,dimension,yp,z_layer,nz_off,data,xp,nm,GMT,X,Ctrl,dGdr,par,Lz,alpha,normalize,norm)
 #endif
-					for (row = 0; row < header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
+					for (row = 0; row < (openmp_int)header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
 						if (dimension > 1)  V[GMT_Y] = yp[row];
 						if (dimension == 3) V[GMT_Z] = z_layer;
 						ij = (dimension > 1) ? gmt_M_ijp (header, row, 0) + nz_off : 0;
-						for (col = 0; col < header->n_columns; col++, ij++) {	/* This loop is always active for 1,2,3D */
+						for (col = 0; col < (openmp_int)header->n_columns; col++, ij++) {	/* This loop is always active for 1,2,3D */
 							if (dimension == 2 && gmt_M_is_fnan (data[ij])) continue;	/* Only do solution where mask is not NaN */
 							V[GMT_X] = xp[col];
 							/* Here, V holds the current output coordinates */
@@ -2732,11 +2718,11 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,ij,col,p,wp,r,part) shared(header,dimension,yp,z_layer,nz_off,data,xp,nm,GMT,X,G,par,Lz,alpha,normalize,norm)
 #endif
-					for (row = 0; row < header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
+					for (row = 0; row < (openmp_int)header->n_rows; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
 						if (dimension > 1)  V[GMT_Y] = yp[row];
 						if (dimension == 3) V[GMT_Z] = z_layer;
 						ij = (dimension > 1) ? gmt_M_ijp (header, row, 0) + nz_off : 0;
-						for (col = 0; col < header->n_columns; col++, ij++) {	/* This loop is always active for 1,2,3D */
+						for (col = 0; col < (openmp_int)header->n_columns; col++, ij++) {	/* This loop is always active for 1,2,3D */
 							if (dimension == 2 && gmt_M_is_fnan (data[ij])) continue;	/* Only do solution where mask is not NaN */
 							V[GMT_X] = xp[col];
 							/* Here, V holds the current output coordinates */
@@ -2752,7 +2738,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 				if (write_3D_records) {	/* Must dump this slice of the 3-D cube as ASCII slices as a backwards compatibility option */
 					V[GMT_Z] = z_layer;
-					for (row = 0; row < header->n_rows; row++) {
+					for (row = 0; row < (openmp_int)header->n_rows; row++) {
 						V[GMT_Y] = yp[row];
 						for (col = 0; col < header->n_columns; col++) {
 							V[GMT_X] = xp[col];
@@ -2766,7 +2752,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 			/* Time to write output */
 			if (dimension == 1) {	/* Must dump 1-D records */
-				for (col = 0; col < header->n_columns; col++) {
+				for (col = 0; col < (openmp_int)header->n_columns; col++) {
 					V[GMT_X] = xp[col];
 					V[GMT_Y] = data[col];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Rec);

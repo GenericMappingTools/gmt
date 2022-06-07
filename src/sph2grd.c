@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -147,25 +147,22 @@ static int parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'D':	/* Evaluate derivative solutions */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.mode = opt->arg[0];
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->D.mode);
 				GMT_Report (API, GMT_MSG_ERROR, "Comment -D: Not implemented yet.\n");
 				break;
 			case 'E':	/* Evaluate on ellipsoid */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
 				GMT_Report (API, GMT_MSG_ERROR, "Comment -E: Not implemented yet.\n");
 				break;
 			case 'F':	/* Bandpass or Gaussian filter -F[k]<lc>/<lp>/<hp>/<hc> or -F[k]<lo>/<hi>*/
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				k = 0;
 				if (opt->arg[0] == 'k') Ctrl->F.km = true, k = 1;	/* Convert later when GMT is initialized */
 				n = sscanf (&opt->arg[k], "%[^/]/%[^/]/%[^/]/%s", A, B, D, E);
@@ -188,27 +185,23 @@ static int parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
-				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
-				Ctrl->N.mode = opt->arg[0];
+				n_errors += gmt_get_required_char (GMT, opt->arg, opt->option, 0, &Ctrl->N.mode);
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -228,7 +221,8 @@ static int parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT_OP
 
 EXTERN_MSC int GMT_sph2grd (void *V_API, int mode, void *args) {
 	bool ortho = false, duplicate_col;
-	int row, col, n_columns, error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0, kk = 0;
+	openmp_int row, col, n_columns;
+	int error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0, kk = 0;
 	unsigned int n_PLM, n_CS, n_CS_nx, next_10_percent = 10;
 	uint64_t tbl, seg, drow, node, k;
 	char text[GMT_LEN32] = {""};
@@ -417,7 +411,7 @@ EXTERN_MSC int GMT_sph2grd (void *V_API, int mode, void *args) {
 	}
 	percent_inc = 100.0 / Grid->header->n_rows;	/* Percentage of whole grid represented by one row */
 	duplicate_col = (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
-	n_columns = (duplicate_col) ? Grid->header->n_columns - 1 : Grid->header->n_columns;
+	n_columns = (duplicate_col) ? (openmp_int)Grid->header->n_columns - 1 : (openmp_int)Grid->header->n_columns;
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Start evaluating the spherical harmonic series\n");
 

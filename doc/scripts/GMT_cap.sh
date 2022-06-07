@@ -2,7 +2,7 @@
 #
 # Demonstrate the different line caps in PostScript
 #
-gmt begin GMT_cap ps
+gmt begin GMT_cap
 	gmt set GMT_THEME cookbook
 	cat <<-EOF > butt.txt
 	30	50

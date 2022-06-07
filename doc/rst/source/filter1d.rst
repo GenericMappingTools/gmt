@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt filter1d** [ *table* ]
-|-F|\ *type<width>*\ [**+l**\|\ **u**]
+|-F|\ **type**\ *width*\ [**+h**]
 [ |-D|\ *increment* ]
 [ |-E| ]
 [ |-L|\ *lack\_width* ]
@@ -43,10 +43,10 @@ Description
 
 **filter1d** is a general time domain filter for multiple column time
 series data. The user specifies which column is the time (i.e., the
-independent variable). (See **-N** option below). The fastest operation
+independent variable). (See |-N| option below). The fastest operation
 occurs when the input time series are equally spaced and have no gaps or
 outliers and the special options are not needed. **filter1d** has
-options **-L**, **-Q**, and **-S** for unevenly sampled data with gaps.
+options |-L|, |-Q|, and |-S| for unevenly sampled data with gaps.
 For spatial series there is an option to compute along-track distances
 and use that as the independent variable for filtering.
 
@@ -58,7 +58,7 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ **type**\ *width*\ [**+l**\|\ **u**]
+**-F**\ **type**\ *width*\ [**+h**]
     Sets the filter **type**. Choose among convolution and non-convolution
     filters. Append the filter code followed by the full filter
     *width* in same units as time column. By default we

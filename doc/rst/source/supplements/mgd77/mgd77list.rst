@@ -46,13 +46,13 @@ information such as leg-id, time and position, geophysical observables
 such as gravity, magnetics, and bathymetry, and control codes and
 corrections such as Eotvos and diurnal corrections. The MGD77+ extended
 netCDF files may also contain additional user columns (for a listing of
-available columns, use :doc:`mgd77info` **-C**, and to learn how to add
+available columns, use :doc:`mgd77info` |-C|, and to learn how to add
 your own custom columns, see :doc:`mgd77manage`). The user may extract any
 combination of these parameters, any of 8 computed quantities (distance,
 heading, course-change, velocity, Carter correction, Eotvos correction
 and gravity and magnetic global reference fields), calendar sub-units of
 time (year, month, day, hour, min, sec), the GEODAS id, and finally a
-preset weight (see **-W**). A sub-section can be specified by passing
+preset weight (see |-W|). A sub-section can be specified by passing
 time- or distance-intervals along track or by selecting a geographical
 region. Finally, each output record may be required to pass any number
 of logical tests involving data values or bit flags. If multiple cruises
@@ -158,19 +158,19 @@ Required Arguments
     **dist**
         Along-track distance from start of leg. For method of calculation,
         see **-j** [spherical great circle distances], and for distance
-        units, see **-N** [km].
+        units, see |-N| [km].
     **az**
         Ship azimuth (heading) measured clockwise from north (in degrees).
     **cc**
         Ship course change (change in heading) measured clockwise from north
         (in degrees).
     **vel**
-        Ship speed; see **-N** for units [m/s].
+        Ship speed; see |-N| for units [m/s].
 
     Finally, the following computed quantities can be requested:
 
     **weight**
-        Weight assigned to this data set (see **-W**).
+        Weight assigned to this data set (see |-W|).
     **carter**
         Carter depth correction, if **twt** is present in file (in m). Sign:
         Correction is to be added to uncorrected depths to yield a corrected
@@ -224,9 +224,9 @@ Required Arguments
     be included in the output stream; it must be present in *columns*
     for that to occur. (2) Some of the operators are special UNIX
     characters and you are advised to place quotes around the entire
-    argument to **-F**.  (3) The logical tests only apply to observed
+    argument to |-F|.  (3) The logical tests only apply to observed
     data; derived data (such as distances, velocities, etc.) must be
-    limited using program options such as **-D**, **-Q**, **-S**, etc.
+    limited using program options such as |-D|, |-Q|, |-S|, etc.
 
     Finally, for MGD77+ files you may optionally append :*bittests*
     which is : (a colon) followed by one or more comma-separated +-*col*
@@ -239,7 +239,7 @@ Required Arguments
     information to turn this behavior off (i.e., no bit flags will be
     consulted).  Note that these record-based flags are different from
     any systematic corrections along track; the latter are deactivated
-    by **-T**.
+    by |-T|.
 
 Optional Arguments
 ------------------
@@ -250,7 +250,7 @@ Optional Arguments
     By default, corrected depth (**depth**), magnetic residual anomaly
     (**mag**), free-air gravity anomaly (**faa**), and the derived
     quantity Carter depth correction (**carter**) are all output as is
-    (if selected in **-F**); this option adjusts that behavior. For each
+    (if selected in |-F|); this option adjusts that behavior. For each
     of these columns there are 2-4 ways to adjust the data. Append
     **c**\ (arter), **d**\ (epth), **f**\ (aa), or **m**\ (ag) and
     select the *code* for the procedure you want applied. You may select
@@ -305,7 +305,7 @@ Optional Arguments
 
     **-Af1**\ [,\ *field*] returns **faa** as stored in the data set
     [Default]. Optionally, sets the IGF *field* to use if you also have
-    requested **ngrav** as an output column in **-F**.
+    requested **ngrav** as an output column in |-F|.
 
     **-Af2**\ [,\ *field*] returns the difference between **gobs** and
     **ngrav** (with optional *field* directive).
@@ -397,7 +397,7 @@ Optional Arguments
 **-Nd**\|\ **s**\ *unit*
     Append **d** for distance or **s** for speed, then give the desired
     *unit* as **e** (meter or m/s), **f** (feet or feet/s), **k** (km or
-    km/hr), **m** (miles or miles/hr), **n** (nautical miles or knots),
+    km/hr), **M** (miles or miles/hr), **n** (nautical miles or knots),
     or **u** (survey feet or sfeet/s). [Default is **-Ndk** **-Nse** (km
     and m/s)].
 
@@ -426,12 +426,12 @@ Optional Arguments
 **-Sa**\ *startdist*
     Do not list data that are less than *startdist* meter along track
     from port of departure. Append **e** for meter, **f** for feet,
-    **k** for km, **m** for miles, **n** for nautical miles, or **u**
+    **k** for km, **M** for miles, **n** for nautical miles, or **u**
     for survey feet [Default is 0e (meters)].
 **-Sb**\ *stopdist*
     Do not list data that are *stopdist* or more meters along track from
     port of departure. Append **e** for meter, **f** for feet, **k** for
-    km, **m** for miles, **n** for nautical miles, or **u** for survey
+    km, **M** for miles, **n** for nautical miles, or **u** for survey
     feet [Default is end of track].
 
 .. _-T:
@@ -457,7 +457,7 @@ Optional Arguments
 
 **-W**\ *weight*
     Set the weight for these data. Weight output option must be set in
-    **-F**. This is useful if the data are to be processed with the
+    |-F|. This is useful if the data are to be processed with the
     weighted averaging techniques offered by :doc:`blockmean </blockmean>`,
     :doc:`blockmedian </blockmedian>`, and :doc:`blockmode </blockmode>` [1].
 
@@ -580,7 +580,7 @@ allowed. All correction records are of the form
 *cruiseID observation correction*
 
 where *cruiseID* is a NCEI prefix, *observation* is one of the
-abbreviations for geophysical observations listed under **-F** above,
+abbreviations for geophysical observations listed under |-F| above,
 and *correction* consists of one or more *term*\ s that will be summed
 up and then **subtracted** from the observation before output. Each
 *term* must have this exact syntax:
@@ -632,3 +632,6 @@ The Marine Geophysical Data Exchange Format - MGD77, see
 `<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
 
 IGRF, see `<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
+
+Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1023/A:1021744224009.

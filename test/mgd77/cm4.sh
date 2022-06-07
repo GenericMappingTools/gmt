@@ -40,7 +40,7 @@
 ps=cm4.ps
 
 gmt set FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
-dia=$(gmt which -G @clf20010501d.min)
+dia=$(gmt which -Gc @clf20010501d.min)
 
 # Get Station location
 lon=$(sed -n 6p $dia   | $AWK '{print $3}')

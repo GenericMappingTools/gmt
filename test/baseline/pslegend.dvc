@@ -1,0 +1,5 @@
+outs:
+- md5: d3e313ed08e46568f46d3692d8c25f0a.dir
+  size: 855500
+  nfiles: 19
+  path: pslegend

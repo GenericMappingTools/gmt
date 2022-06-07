@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -353,7 +353,6 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 
 			case 'A':	/* Enable subplot tags and get attributes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (Ctrl->In.mode == SUBPLOT_SET) {	/* Override the auto-annotation for this subplot only */
 					strncpy (Ctrl->A.format, opt->arg, GMT_LEN128);
 				}
@@ -440,7 +439,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				else if (strchr ("WESNwesnlrbt", opt->arg[0])) Bframe = opt;	/* Frame settings */
 				else Bxy = opt;	/* Shared by both x and y axes */
 				break;
-			case 'C':	/* Clearance/inside margins */
+			case 'C':	/* Clearance/inside margins (repeatable) */
 				Ctrl->C.active = true;
 				if (strchr ("wesnxy", opt->arg[0])) {	/* Gave a side directive */
 					switch (opt->arg[0]) {
@@ -452,25 +451,22 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 						case 'y':	side = YLO;	Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
 					}
 					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[side]);
-					Ctrl->C.set[side] = true;
 				}
 				else {	/* Constant clearance on all side */
 					Ctrl->C.gap[XLO] = Ctrl->C.gap[XHI] = Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, opt->arg);
 					for (side = XLO; side <= YHI; side++) {
 						n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[side]);
-						Ctrl->C.set[side] = true;
 					}
 				}
 				break;
 
 			case 'D':	/* Use -B, -C, -M -S, --MAP_*=value and gmt.conf for dimensions and spacing calculations but do not draw any frames or annotations */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'f':	Ctrl->F.mode = SUBPLOT_FIGURE;  n = 1;	break; /* Figure dimension */
 					case 's':	Ctrl->F.mode = SUBPLOT_PANEL;   n = 1;	break; /* Panel dimension */
@@ -604,7 +600,6 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					break;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S[k].active);
-				Ctrl->S[k].active = true;	/* Selected this once */
 				/* Determine if we are to place annotations on the minimum or maximum side of the feature, or both sides: */
 				if ((k == GMT_X && opt->arg[1] == 'b') || (k == GMT_Y && opt->arg[1] == 'l')) Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_MIN;
 				else if ((k == GMT_X && opt->arg[1] == 't') || (k == GMT_Y && opt->arg[1] == 'r')) Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_MAX;
@@ -632,7 +627,6 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 
 			case 'M':	/* Margins between subplots */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
-				Ctrl->M.active = true;
 				if (opt->arg[0] == 0) {	/* Got nothing */
 					GMT_Report (API, GMT_MSG_ERROR, "Option -M: No margins given.\n");
 					n_errors++;
@@ -656,12 +650,11 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 
 			case 'T':	/* Gave figure heading */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
-				Ctrl->T.title = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->T.title);
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 		opt = opt->next;

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -186,7 +186,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 	 */
 
 	char *c = NULL;
-	unsigned int n_errors = 0, n_files = 0, j;
+	unsigned int n_errors = 0, j;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -195,24 +195,19 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 			/* Common parameters */
 
 			case '<':	/* Input file (only one is accepted) */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.file));
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				/* Must check for both -N[r]<n_model> and -N<n_model>[r] due to confusion */
-				Ctrl->N.active = true;
 				if (strchr (opt->arg, 'r')) Ctrl->N.robust = true;
 				if (strstr (opt->arg, "+x"))
 					Ctrl->N.x_only = true;
@@ -223,13 +218,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
-				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->T.file))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->T.file));
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
-				Ctrl->W.active = true;
 				if (opt->arg[0] != '+' && (c = strstr (opt->arg, "+s"))) {	/* Gave a file arg plus a +s modifier */
 					Ctrl->W.mode = 2;
 					c[0] = '\0';	/* Chop off modifier */
@@ -238,7 +230,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 					Ctrl->W.mode = 1;
 				/* OK if this file doesn't exist; we always write to that file on output */
 				Ctrl->W.file = strdup (opt->arg);
-				if (!gmt_access (GMT, Ctrl->W.file, R_OK)) {	/* FOund the file */
+				if (!gmt_access (GMT, Ctrl->W.file, R_OK)) {	/* Found the file */
 					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->W.file))) n_errors++;
 				}
 				else {
@@ -247,12 +239,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify an input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.active, "Must specify an input grid file\n");
 	if (Ctrl->N.x_only || Ctrl->N.y_only)
 		n_errors += gmt_M_check_condition (GMT, Ctrl->N.value == 0 || Ctrl->N.value > 4, "Option -N: Specify 1-4 model parameters when +x or +y are active\n");
 	else
@@ -341,7 +333,8 @@ GMT_LOCAL void grdtrend_load_pstuff_xy (double *pstuff, unsigned int n_model, do
 
 GMT_LOCAL void grdtrend_compute_trend (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_GRID *T, double *xval, double *yval, double *gtd, double *pstuff, p_to_eval_func eval) {
 	/* Find trend from a model  */
-	unsigned int row, col, k;
+	openmp_int row, col;
+	unsigned int k;
 	uint64_t ij;
 	gmt_M_unused(GMT);
 
@@ -354,7 +347,7 @@ GMT_LOCAL void grdtrend_compute_trend (struct GMT_CTRL *GMT, struct GRDTREND_CTR
 
 GMT_LOCAL void grdtrend_compute_resid (struct GMT_CTRL *GMT, struct GMT_GRID *D, struct GMT_GRID *T, struct GMT_GRID *R) {
 	/* Find residuals from a trend  */
-	unsigned int row, col;
+	openmp_int row, col;
 	uint64_t ij;
 	gmt_M_unused(GMT);
 
@@ -367,7 +360,7 @@ GMT_LOCAL void grdtrend_grd_trivial_model (struct GMT_CTRL *GMT, struct GRDTREND
 	where x,y are normalized to range [-1,1] and there are no
 	NaNs in grid file, and problem is unweighted least squares.  */
 
-	unsigned int row, col;
+	openmp_int row, col;
 	uint64_t ij;
 	double x2, y2, sumx2 = 0.0, sumy2 = 0.0, sumx2y2 = 0.0;
 	gmt_M_unused(GMT);
@@ -420,7 +413,7 @@ GMT_LOCAL void grdtrend_grd_trivial_model (struct GMT_CTRL *GMT, struct GRDTREND
 
 GMT_LOCAL double grdtrend_compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W, double scale) {
 	/* Find Chi-Squared from weighted residuals  */
-	unsigned int row, col;
+	openmp_int row, col;
 	uint64_t ij;
 	double tmp, chisq = 0.0;
 	gmt_M_unused(GMT);
@@ -438,7 +431,7 @@ GMT_LOCAL double grdtrend_compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *
 
 GMT_LOCAL double grdtrend_compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W) {
 	/* Find weights from residuals  */
-	unsigned int row, col;
+	openmp_int row, col;
 	uint64_t j = 0, j2, ij;
 	gmt_grdfloat r, mad, scale;
 
@@ -514,7 +507,8 @@ GMT_LOCAL void grdtrend_load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID 
 	loading only lower triangular part of gtg and then filling
 	by symmetry after row,col loop.  */
 
-	unsigned int row, col, k, l, n_used = 0;
+	openmp_int row, col;
+	unsigned int k, l, n_used = 0;
 	uint64_t ij;
 	gmt_M_unused(GMT);
 
@@ -577,11 +571,12 @@ GMT_LOCAL void grdtrend_load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID 
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdtrend (void *V_API, int mode, void *args) {
-	/* High-level function that implements the grdcontour task */
+	/* High-level function that implements the grdtrend task */
 
 	bool trivial, weighted, set_ones = true;
 	int error = 0;
-	unsigned int row, col, iterations;
+	openmp_int row, col;
+	unsigned int iterations;
 
 	uint64_t ij;
 
@@ -701,14 +696,14 @@ EXTERN_MSC int GMT_grdtrend (void *V_API, int mode, void *args) {
 	/* Set up xval and yval lookup tables */
 
 	dv = 2.0 / (double)(G->header->n_columns - 1);
-	for (col = 0; col < G->header->n_columns - 1; col++) xval[col] = -1.0 + col * dv;
+	for (col = 0; col < (openmp_int)G->header->n_columns - 1; col++) xval[col] = -1.0 + col * dv;
 	xval[G->header->n_columns - 1] = 1.0;
 	dv = 2.0 / (double)(G->header->n_rows - 1);
-	for (row = 0; row < G->header->n_rows - 1; row++) yval[row] = -1.0 + row * dv;
+	for (row = 0; row < (openmp_int)G->header->n_rows - 1; row++) yval[row] = -1.0 + row * dv;
 	yval[G->header->n_rows - 1] = 1.0;
 	/* In the above cases, this will cause the existence of a bad last row (or col)
 	   but cannot set it to zero because: "grdtrend [ERROR]: Gauss returns error code 3".
-	   Leaving last value assugned to a value, even if 1e-15, results in a bad last line. 
+	   Leaving last value assigned to a value, even if 1e-15, results in a bad last line. 
 	   The solution is to call the grdtrend_fix_trend function, which is done in grdtrend_compute_trend
 	*/
 	xval[G->header->n_columns - 1] = yval[G->header->n_rows - 1] = 1.0;

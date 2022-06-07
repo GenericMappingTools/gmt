@@ -16,6 +16,7 @@ Synopsis
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
+[ |-C|\ **f**\|\ **l**\|\ **o**\|\ **u** ]
 [ |-N|\ [**z**\|\ **Z**\|\ **p**\|\ **P**]\ *values* ]
 [ |-S|\ *search\_radius*\|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
@@ -44,7 +45,9 @@ Description
 *pathfiles* that each define a closed polygon. The nodes defined by the
 specified region and lattice spacing will be set equal to one of three
 possible values depending on whether the node is outside, on the polygon
-perimeter, or inside the polygon. The resulting mask may be used in
+perimeter, or inside the polygon, with the assigned  *z* value selected
+via |-N|.  If multiple polygons overlap the same nodes then the polygon
+selected depends on the |-C| selection.  The resulting mask may be used in
 subsequent operations involving :doc:`grdmath` to mask out data from
 polygonal areas. 2. The *pathfiles* simply represent data point locations
 and the mask is set to the inside or outside value depending on whether
@@ -83,7 +86,7 @@ Optional Arguments
 **-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**]
     If the input data are geographic (as indicated by **-f**) then the
     sides in the polygons will be approximated by great circle arcs.
-    When using the **-A** sides will be regarded as straight lines.
+    When using the |-A| sides will be regarded as straight lines.
     Alternatively, append **m** to have sides first follow meridians,
     then parallels. Or append **p** to first follow parallels, then meridians.
     For Cartesian data, points are simply connected, unless you append
@@ -91,6 +94,16 @@ Optional Arguments
     *x* or *y*, respectively.  If your Cartesian data are polar (*theta*, *r*), append
     **t** or **r** to construct stair-case paths whose first move is along
     *theta* or *r*, respectively.
+
+.. _-C:
+
+**-C**\ **f**\|\ **l**\|\ **o**\|\ **u**
+    Clobber mode: Selects the polygon whose *z*-value will determine the
+    grid nodes. Choose from the following modes: **f** for the first polygon
+    to overlap a node; **o** for the last polygon to overlap a node; **l**
+    for the polygon with the lowest *z*-value, and **u** for the polygon with
+    the uppermost *z*-value [Default is **o**]. **Note**: Does not apply to |-S|.
+    For polygon *z*-values, see |-N|.
 
 .. _-N:
 
@@ -117,7 +130,7 @@ Optional Arguments
     (see `Units`_). If *radius* is given as **z** then we instead read
     individual radii from the 3rd input column.  Unless Cartesian data,
     specify the unit of these radii by appending it after **-Sz**.
-    If **-S** is not set then we consider the input data to define
+    If |-S| is not set then we consider the input data to define
     one or more closed polygon(s) instead.  For Cartesian data with
     different units you can instead append *xlim*\ /*ylim* which will
     perform a rectangular search where all nodes within ±\ *xlim* and

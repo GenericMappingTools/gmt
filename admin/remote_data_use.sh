@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2012-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 2012-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This script determines which remote data files are used across

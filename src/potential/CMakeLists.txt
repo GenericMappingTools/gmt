@@ -1,6 +1,5 @@
 #
-#
-# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,8 +25,8 @@
 #
 
 set (SUPPL_NAME potential)
-set (SUPPL_HEADERS okbfuns.h talwani.h)
+set (SUPPL_HEADERS okbfuns.h newton.h modeltime.h talwani.h)
 set (SUPPL_PROGS_SRCS grdredpol.c gmtgravmag3d.c gmtflexure.c gravfft.c
-	grdflexure.c grdgravmag3d.c grdseamount.c talwani2d.c talwani3d.c)
+	gravprisms.c grdflexure.c grdgravmag3d.c grdseamount.c talwani2d.c talwani3d.c)
 set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} okbfuns.c)
 set (SUPPL_EXAMPLE_FILES README.potential)

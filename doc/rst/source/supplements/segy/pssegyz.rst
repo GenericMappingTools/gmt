@@ -15,7 +15,7 @@ Synopsis
 **gmt pssegyz** *SEGYfile* |-J|\ *parameters*
 |-J|\ **z**\|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
-|-D|\ *deviation* |-F|\ [*color*] **-W**
+|-D|\ *deviation* |-F|\ [*color*] |-W|
 [ |-C|\ *clip* ]
 [ |-I| ] [ |-K| ] [ |-L|\ *nsamp* ]
 [ |-M|\ *ntrace* ]

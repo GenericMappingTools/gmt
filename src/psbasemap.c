@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -155,23 +155,20 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 
 			case 'A':	/* No plot, just output region outline  */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Draw map inset */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				if (classic) {
-					Ctrl->D.active = true;
 					n_errors += gmt_getinset (GMT, 'D', opt->arg, &Ctrl->D.inset);
 				}
 				else {
-					GMT_Report (API, GMT_MSG_COMPAT, "Option -D is not available in modern mode - see inset instead\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -D is not available in modern mode - see inset instead\n");
 					n_errors++;
 				}
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'd': get_panel[0] = true; break;
 					case 'l': get_panel[1] = true; break;
@@ -206,11 +203,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'L':	/* Draw map scale */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				if (opt->arg[0])
 					Ctrl->L.arg = strdup (opt->arg);
 				else {
@@ -220,7 +216,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 				break;
 			case 'T':	/* Draw map rose */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				n_errors += gmt_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
 				break;
 #ifdef DEBUG
@@ -231,7 +226,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 				break;
 #endif
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}

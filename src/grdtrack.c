@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -304,7 +304,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 	 */
 
 	int j, mode;
-	unsigned int pos, n_errors = 0, ng = 0, n_files = 0, n_units = 0, n_modes = 0;
+	unsigned int pos, n_errors = 0, ng = 0, n_units = 0, n_modes = 0;
 	char ta[GMT_LEN64] = {""}, tb[GMT_LEN64] = {""};
 	char tc[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *c = NULL, X;
 	struct GMT_OPTION *opt = NULL;
@@ -313,21 +313,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+			case '<':	/* Skip input files after checking they exist */
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Specified output file */
-				if (n_files++ > 0) {n_errors++; continue; }
-				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change track resampling mode */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'f': Ctrl->A.mode = GMT_TRACK_FILL;   break;
 					case 'm': Ctrl->A.mode = GMT_TRACK_FILL_M; break;
@@ -340,7 +337,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'C':	/* Create cross profiles */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				Ctrl->C.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "adflrv"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'C', c, "adflrv", &pos, p, &n_errors) && n_errors == 0) {
@@ -380,17 +376,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'D':	/* Dump resampled lines */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
-				Ctrl->D.active = true;
-				Ctrl->D.file = strdup (opt->arg);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.file));
 				break;
 			case 'E':	/* Create input tracks instead of reading tracks */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
-				Ctrl->E.active = true;
-				Ctrl->E.lines = strdup (opt->arg);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->E.lines);
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
-				Ctrl->F.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "bnrz"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'C', c, "bnrz", &pos, p, &n_errors) && n_errors == 0) {
@@ -404,23 +397,32 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 					}
 				}
 				break;
-			case 'G':	/* Input grid file */
+			case 'G':	/* Input grid file(s) */
 				if (ng == MAX_GRIDS) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -G: Too many grids (max = %d)\n", MAX_GRIDS);
 					n_errors++;
 					break;
 				}
 				if ((c = strstr (opt->arg, "+l"))) {	/* Gave +l<listofgrids> */
-					FILE *fp = NULL;
 					char file[PATH_MAX] = {""};
-					if ((fp = gmt_fopen (GMT, &c[2], "r")) == NULL) {
-						GMT_Report (API, GMT_MSG_WARNING, "Error opening list file %s\n", &c[2]);
+					struct GMT_DATASET *L = NULL;
+					struct GMT_DATASEGMENT *S = NULL;
+					uint64_t row;
+					if (c[2] == '\0') {	/* No list file given */
+						GMT_Report (API, GMT_MSG_ERROR, "Option -G: No listfile appended after modifier +l\n");
 						n_errors++;
 						break;
 					}
-					/* Process all the grids listed in this text table */
-					while (fgets (file, PATH_MAX, fp)) {
-						if (file[0] == '#') continue;	/* Skip all headers */
+					if ((L = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &c[2], NULL)) == NULL) {
+						GMT_Report (API, GMT_MSG_WARNING, "Error reading list file %s\n", &c[2]);
+						n_errors++;
+						break;
+					}
+					/* Process all the grids listed in this table's first trailing word */
+					S = L->table[0]->segment[0];	/* Shorthand to the single segment expected */
+					for (row = 0; row < S->n_rows; row++) {
+						if (S->text == NULL || S->text[0] == NULL) continue;	/* Skip all blank trailing text */
+						sscanf (S->text[row], "%s", file);	/* Get the first word */
 						if (grdtrack_process_one (GMT, file, Ctrl, ng) == 0)
 							n_errors++;
 						else
@@ -430,7 +432,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 							n_errors++;
 						}
 					}
-					fclose (fp);
+					if (GMT_Destroy_Data (API, &L) != GMT_NOERROR) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -G: Unable to destroy list table\n");
+						n_errors++;
+					}
 				}
 				else {	/* Got a single grid */
 					if (grdtrack_process_one (GMT, opt->arg, Ctrl, ng) == 0)
@@ -458,11 +463,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 					}
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'S':
 				if (opt->arg[0] == 0 && gmt_M_compat_check (GMT, 4)) {	/* Under COMPAT: Interpret -S (no args) as old-style -S option to skip output with NaNs */
@@ -473,7 +478,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 					break;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
-				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->S.mode = STACK_MEAN;   break;
 					case 'm': Ctrl->S.mode = STACK_MEDIAN; break;
@@ -506,7 +510,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'T':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
-				Ctrl->T.active = true;
 				Ctrl->T.unit = 'X';	/* Cartesian units unless override later */
 				if ((c = strstr (opt->arg, "+p"))) {	/* Gave +p modifier */
 					Ctrl->T.mode = 1;	/* Report coordinates of non-NaN node instead of input coordinates */
@@ -520,11 +523,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'Z':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				Ctrl->Z.active = true;
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -541,7 +544,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.n_grids == 0, "Must specify -G at least once\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.length < 0.0),
 	                                   "Option -C: Arguments must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.n_grids == 1 && Ctrl->G.type[0] == 0),
 	                                   "Option -T: Only one non-img input grid can be specified\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
@@ -977,14 +979,15 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				T = Dout->table[tbl];
 				M = Stack->table[0]->segment[tbl];	/* Current stack */
 				M->n_rows = n_rows;
-				for (k = 0; k < Ctrl->G.n_grids; k++) {	/* Reset arrays and extremes */
+				for (k = 0; k < Ctrl->G.n_grids; k++)	/* Allocate arrays for stack */
 					stack[k] = gmt_M_memory (GMT, NULL, T->n_segments, double);
-					stacked_hi[k] = -DBL_MAX;
-					stacked_lo[k] = +DBL_MAX;
-				}
 				if (Ctrl->S.mode == STACK_MEDIAN || Ctrl->S.mode == STACK_MODE) dev = gmt_M_memory (GMT, NULL, Dout->table[tbl]->n_segments, double);	/* Ned temp array for these methods */
 				for (row = 0; row < n_rows; row++) {	/* For each row to stack across all segments, per data grid */
 					gmt_M_memset (stacked_n, Ctrl->G.n_grids, uint64_t);	/* Reset counts for new stack */
+					for (k = 0; k < Ctrl->G.n_grids; k++) {	/* Reset extremes upon starting new stack */
+						stacked_hi[k] = -DBL_MAX;
+						stacked_lo[k] = +DBL_MAX;
+					}
 					for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
 						for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) {	/* Collect sampled values across all profiles for same row into temp array */
 							if (gmt_M_is_dnan (T->segment[seg]->data[col][row])) continue;	/* Must skip any NaN entries in any profile */

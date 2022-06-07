@@ -23,7 +23,7 @@ Synopsis
 [ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
 [ |-M| ]
 [ |-N| ]
-[ |-Q|\ [*color*] ]
+[ |-Q|\ [*color*][**+z**\ *value*] ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -49,15 +49,15 @@ intensities in the (-1,+1) range or instructions to derive intensities
 from the input data grid. Values outside this range will be
 clipped. Such intensity files can be created from the grid using
 :doc:`grdgradient` and, optionally, modified by :doc:`grdmath` or
-:doc:`grdhisteq`. A third alternative is available when GMT is built
-with GDAL support. Pass *image* which can be an image file (geo-referenced or not).
+:doc:`grdhisteq`. Alternatively , pass *image* which can be an image
+file (geo-referenced or not).
 In this case the image can optionally be illuminated with the
-file provided via the **-I** option. Here, if image has no coordinates
+file provided via the |-I| option. Here, if image has no coordinates
 then those of the intensity file will be used.
 
 When using map projections, the grid is first resampled on a new
 rectangular grid with the same dimensions. Higher resolution images can
-be obtained by using the **-E** option. To obtain the resampled value
+be obtained by using the |-E| option. To obtain the resampled value
 (and hence shade or color) of each map pixel, its location is inversely
 projected back onto the input grid after which a value is interpolated
 between the surrounding input grid values. By default bi-cubic
@@ -66,7 +66,7 @@ the input grid nodes. If two or more nodes are projected onto the same
 pixel, their average will dominate in the calculation of the pixel
 value. Interpolation and aliasing is controlled with the **-n** option.
 
-The **-R** option can be used to select a map region larger or smaller
+The |-R| option can be used to select a map region larger or smaller
 than that implied by the extent of the grid.
 
 Required Arguments
@@ -87,9 +87,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *out_img*\ [**=**\ *driver*]
-    Save an image in a raster format instead of PostScript. Use extension .ppm for a Portable
-    Pixel Map format which is the only raster format GMT can natively write. For GMT installations
-    configured with GDAL support there are more choices: Append *out_img* to select
+    Save an image in a raster format instead of PostScript. Append *out_img* to select
     the image file name and extension. If the extension is one of .bmp, .gif, .jpg, .png, or .tif
     then no driver information is required. For other output formats you must append the required
     GDAL driver. The *driver* is the driver code name used by GDAL; see your GDAL installation's
@@ -113,9 +111,9 @@ Optional Arguments
 **-D**\ [**r**]
     GMT will automatically detect standard image files (Geotiff, TIFF,
     JPG, PNG, GIF, etc.) and will read those via GDAL.  For very
-    obscure image formats you may need to explicitly set **-D**, which
+    obscure image formats you may need to explicitly set |-D|, which
     specifies that the grid is in fact an image file to be read via
-    GDAL. Append **r** to assign the region specified by **-R** to the image.
+    GDAL. Append **r** to assign the region specified by |-R| to the image.
     For example, if you have used **-Rd** then the image will be
     assigned a global domain. This mode allows you to project a raw image
     (an image without referencing coordinates).
@@ -158,7 +156,7 @@ Optional Arguments
 
 **-M**
     Force conversion to monochrome image using the (old-style television) YIQ
-    transformation. Cannot be used with **-Q**.
+    transformation. Cannot be used with |-Q|.
 
 .. _-N:
 
@@ -168,9 +166,10 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*color*]
+**-Q**\ [*color*][**+z**\ *value*]
     Make grid nodes with NaN values transparent, using the color-masking
     feature in PostScript Level 3 (the PS device must support PS Level 3).
+    Use **+z** to select another grid value than NaN.
     If input is instead an image then black pixels are set to be transparent;
     append an alternate color to select another pixel value to be transparent.
 
@@ -214,8 +213,6 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
-.. include:: earth_relief.rst_
-
 .. module_common_ends
 
 .. module_note_begins
@@ -241,9 +238,9 @@ be interpolated (i.e., categories 4 and 5 should never be averaged to give
 a new category 4.5).  However, imaging such grids using map projections
 requires a resampling onto an equidistant Cartesian lattice that usually
 will result in such blending.  We do not know if a grid is categorical but
-if the CPT provided via **-C** is categorical we will override any **-n** setting you
+if the CPT provided via |-C| is categorical we will override any **-n** setting you
 have chosen (perhaps implicitly) with **-nn+a** that turns *on* nearest neighbor
-gridding and turns *off* anti-aliasing.  Alternatively, use :doc:`grdview` **-T**
+gridding and turns *off* anti-aliasing.  Alternatively, use :doc:`grdview` |-T|
 instead to plot individual polygons centered on each node.
 
 Image formats recognized
@@ -253,6 +250,8 @@ We automatically recognize image formats via their magic bytes.  For formats
 that could contain either an image or a data set (e.g., geotiff) we determine
 which case it is and act accordingly.  If your favorite image format is not
 automatically detected then please let us know its magic bytes so we can add it.
+
+.. include:: macos_preview_issue.rst_
 
 .. module_note_ends
 
@@ -289,8 +288,7 @@ tickmarks every 5 units::
 
     gmt grdimage red.nc green.nc blue.nc -Jx10i -B5 -pdf rgbimage
 
-When GDAL support is built in: To create a sinusoidal projection of a
-remotely located Jessica Rabbit::
+To create a sinusoidal projection of a remotely located Jessica Rabbit::
 
     gmt grdimage -JI15c -Rd http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -pdf jess
 
