@@ -4004,7 +4004,7 @@ GMT_LOCAL uint64_t gmtsupport_delaunay_watson (struct GMT_CTRL *GMT, double *x_i
 	r2_circum = gmt_M_memory (GMT, NULL, size, double);
 	x = gmt_M_memory (GMT, NULL, n, double);
 	y = gmt_M_memory (GMT, NULL, n, double);
-	if (index == NULL || istack == NULL || x_tmp == NULL || y_tmp == NULL || x_circum == NULL | y_circum == NULL \
+	if (index == NULL || istack == NULL || x_tmp == NULL || y_tmp == NULL || x_circum == NULL || y_circum == NULL \
 		|| r2_circum == NULL || x == NULL || y == NULL)
 		return (0);
 	x[0] = x[1] = -1.0;	x[2] = 5.0;
