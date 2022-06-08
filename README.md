@@ -112,7 +112,6 @@ GDAL (ogr2ogr, gdal_translate), [Ghostscript](https://www.ghostscript.com),
 
 GMT uses (or can access) raster data derived from these sources:
 
-- [Scientific Color Maps (CPT)](http://www.fabiocrameri.ch/visualisation.php)
 - [Earth 15" IGPP DEM](https://www.essoar.org/doi/10.1002/essoar.10508279.1)
 - [Earth 15" GEBCO DEM](https://www.gebco.net/data_and_products/gridded_bathymetry_data/)
 - [Earth 1" SRTM DEM](https://lpdaac.usgs.gov/products/srtmgl3v003)
@@ -125,3 +124,13 @@ GMT uses (or can access) raster data derived from these sources:
 - [Earth 1' Vertical Gravity Gradients from Altimetry](https://topex.ucsd.edu/marine_grav/mar_grav.html)
 - [Earth 2' EMAG2 Magnetic Anomalies](https://www.ncei.noaa.gov)
 - [Earth 3' WDMAM Magnetic Anomalies](https://wdmam.org)
+
+GMT provides several color maps from these sources:
+
+- [SCM (Scientific Color Maps)](http://www.fabiocrameri.ch/visualisation.php)
+- [cmocean](https://github.com/kthyng/cmocean-gmt)
+- [cpt-city](http://soliton.vm.bytemark.co.uk/pub/cpt-city/views/totp-cpt.html)
+- [google](https://ai.googleblog.com/2019/08/turbo-improved-rainbow-colormap-for.html)
+- [matlab](https://www.mathworks.com/help/matlab/colors-1.html)
+- [matplotlib](https://matplotlib.org/stable/tutorials/colors/colormaps.html)
+- [panoply](https://www.giss.nasa.gov/tools/panoply/)
