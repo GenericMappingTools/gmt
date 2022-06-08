@@ -115,7 +115,7 @@ Optional Arguments
     When no |-S| is given we expect to read lines or polygons.  Two different forms for input are
     supported and specified via the chosen |-A| directives:
 
-    - Choose **-Ar** if your input data are *trajectories* (for more details, see `Trajectories`_), the data
+    - Choose **-Ar** if your input data are *trajectories* (for more details, see `Drawing trajectories`_), the data
       format is given as *x, y, time*, and the "event" is the portion of that trajectories limited by the current
       time (*now*), event duration (via |-L|) and rise/fade periods (via **-Es**). If current time falls between
       two points on the trajectory then we linearly interpolate to find the current end point.
@@ -470,8 +470,6 @@ While only the events that should be visible will be plotted at the given time s
 the order of plotting is simply given by the order of records in the file.  Thus, if the
 file is *not* sorted into ascending time then later events might plot *beneath* earlier events.
 To prevent this, you can sort your file into ascending order via the :doc:`gmtconvert` |-N| option.
-
-.. _Trajectories:
 
 Drawing trajectories
 --------------------
