@@ -1572,7 +1572,7 @@ GMT_LOCAL int gmtfft_1d_brenner (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsig
         gmt_grdfloat *work = NULL;
 
         ksign = (direction == GMT_FFT_INV) ? +1 : -1;
-        if ((work_size = gmtfft_brenner_worksize (GMT, n, 1))) work = gmt_M_memory (GMT, NULL, work_size, gmt_grdfloat);
+        if ((work_size = gmtfft_brenner_worksize (GMT, n, 1)) && (work = gmt_M_memory (GMT, NULL, work_size, gmt_grdfloat)) == NULL) return GMT_MEMORY_ERROR;
         (void) gmtfft_brenner_fourt_f (data, &n_signed, &ndim, &ksign, &kmode, work);
         gmt_M_free (GMT, work);
         return (GMT_OK);
@@ -1591,7 +1591,7 @@ GMT_LOCAL int gmtfft_2d_brenner (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsig
         gmt_grdfloat *work = NULL;
 
         ksign = (direction == GMT_FFT_INV) ? +1 : -1;
-        if ((work_size = gmtfft_brenner_worksize (GMT, n_columns, n_rows))) work = gmt_M_memory (GMT, NULL, work_size, gmt_grdfloat);
+        if ((work_size = gmtfft_brenner_worksize (GMT, n_columns, n_rows)) && (work = gmt_M_memory (GMT, NULL, work_size, gmt_grdfloat)) == NULL) return GMT_MEMORY_ERROR;
         GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Brenner_fourt_ work size = %" PRIuS "\n", work_size);
         (void) gmtfft_brenner_fourt_f (data, nn, &ndim, &ksign, &kmode, work);
         gmt_M_free (GMT, work);

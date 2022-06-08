@@ -532,10 +532,11 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	if (pad[XHI] > 0) width_out += pad[XHI];
 	n_expected = header->n_columns;
 
-	if (nBits == 32)		/* Either an ASCII file or ESRI .HDR with NBITS = 32, in which case we assume it's a file of floats */
-		tmp = gmt_M_memory (GMT, NULL, n_expected, float);
-	else
-		tmp16 = gmt_M_memory (GMT, NULL, n_expected, int16_t);
+	if (nBits == 32) {		/* Either an ASCII file or ESRI .HDR with NBITS = 32, in which case we assume it's a file of floats */
+		if ((tmp = gmt_M_memory (GMT, NULL, n_expected, float)) == NULL) return GMT_MEMORY_ERROR;
+	}
+	else if ((tmp16 = gmt_M_memory (GMT, NULL, n_expected, int16_t)) == NULL)
+		return GMT_MEMORY_ERROR;
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */

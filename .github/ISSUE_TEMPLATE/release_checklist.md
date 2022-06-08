@@ -18,7 +18,7 @@ assignees: ''
 	- [ ] MB-System (@PaulWessel)
 	- [ ] GMTSAR (@PaulWessel)
 	- [ ] GMT.jl (@joa-quim)
-	- [ ] PyGMT (@leouieda, @seisman, @weiji14)
+	- [ ] PyGMT (@leouieda, @seisman, @weiji14, @meghanrjones)
 	- [ ] gmtmex (@PaulWessel, @joa-quim)
 - [ ] reserve a DOI on [zenodo](https://zenodo.org) (@PaulWessel)
 - [ ] run `src/gmt_make_*.sh` to update some .c and .h files
@@ -38,11 +38,11 @@ assignees: ''
 
 **Release**:
 
-- [ ] create source tarballs (tar.gz and tar.xz) (@PaulWessel, @meghanrjones)
-- [ ] create macOS bundle (@PaulWessel, @meghanrjones)
+- [ ] create source tarballs (tar.gz and tar.xz) (@PaulWessel)
+- [ ] create macOS bundle (@PaulWessel)
 - [ ] create Windows installers (win32 and win64) (@joa-quim)
 - [ ] check if the source tarballs, macOS bundle and Windows installers work well
-- [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel, @meghanrjones)
+- [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
 - [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
 - [ ] make a tag and push it to github (**Must be done after uploading packages to the GMT FTP**)
     ```bash
@@ -85,7 +85,7 @@ assignees: ''
 - [ ] update [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmt.rb) (@claudiodsf, @seisman)
 - [ ] update [macports ports](https://github.com/macports/macports-ports/blob/master/science/gmt5/Portfile) (@remkos, @seisman)
 - [ ] update [the RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt/) (@seisman)
-- [ ] update the [try-gmt](https://github.com/GenericMappingTools/try-gmt) Jupyter lab (@weiji14, @seisman)
+- [ ] update the [try-gmt](https://github.com/GenericMappingTools/try-gmt) Jupyter lab (@weiji14, @seisman, @meghanrjones)
 - [ ] update [winget manifest file](https://github.com/microsoft/winget-pkgs/tree/master/manifests/g/GenericMappingTools/gmt) (@seisman)
 
 ---

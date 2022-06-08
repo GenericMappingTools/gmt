@@ -246,9 +246,11 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 			/* Convert colormap from integer to unsigned char and count colors */
 			unsigned char *colormap = gmt_M_memory (GMT, NULL, 4*256, unsigned char);
 			int64_t n, j, k;
+			if (colormap == NULL) return (GMT_MEMORY_ERROR);
 			n = gmt_unpack_rgbcolors (GMT, fill->I, colormap);	/* colormap will be RGBARGBA... */
 			/* Expand 8-bit indexed image to 24-bit image */
-			fill->I->data = gmt_M_memory (GMT, fill->I->data, 3 * fill->I->header->nm, unsigned char);
+			if ((fill->I->data = gmt_M_memory (GMT, fill->I->data, 3 * fill->I->header->nm, unsigned char)) == NULL)
+				return (GMT_MEMORY_ERROR);
 			n = 3 * fill->I->header->nm - 1;
 			for (j = (int64_t)fill->I->header->nm - 1; j >= 0; j--) {
 				k = 4 * fill->I->data[j] + 3;
@@ -1167,7 +1169,8 @@ GMT_LOCAL void gmtsupport_copy_palette_hdrs (struct GMT_CTRL *GMT, struct GMT_PA
 	if (P_from->n_headers == 0) return;	/* Nothing to do */
 	/* Must duplicate the header records */
 	P_to->n_headers = P_from->n_headers;
-	if (P_to->n_headers) P_to->header = gmt_M_memory (GMT, NULL, P_from->n_headers, char *);
+	if (P_to->n_headers && (P_to->header = gmt_M_memory (GMT, NULL, P_from->n_headers, char *)) == NULL)
+		return;
 	for (hdr = 0; hdr < P_from->n_headers; hdr++) P_to->header[hdr] = strdup (P_from->header[hdr]);
 }
 
@@ -1216,7 +1219,7 @@ GMT_LOCAL struct CPT_Z_SCALE *gmtsupport_cpt_parse (struct GMT_CTRL *GMT, char *
 		return NULL;
 	}
 	/* Got a valid unit */
-	Z = gmt_M_memory (GMT, NULL, 1, struct CPT_Z_SCALE);
+	if ((Z = gmt_M_memory (GMT, NULL, 1, struct CPT_Z_SCALE)) == NULL) return (NULL);
 	Z->z_unit_to_meter = GMT->current.proj.m_per_unit[u_number];	/* Converts unit to meters */
 	if (mode) Z->z_unit_to_meter = 1.0 / Z->z_unit_to_meter;	/* Wanted the inverse */
 	Z->z_unit = u_number;	/* Unit ID */
@@ -1415,7 +1418,7 @@ int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w,
 	double *lambda = NULL, *dtau = NULL, *inv_dtau = NULL, *c = NULL, *s = NULL;
 
 	/* Create the inverse lambda diagonal vector (assume w[k] = sigma_k) */
-	lambda = gmt_M_memory (GMT, NULL, n, double);
+	if ((lambda = gmt_M_memory (GMT, NULL, n, double)) == NULL) return (GMT_RUNTIME_ERROR);
 	for (k = 0; k < n; k++) {
 		lambda[k] = (w == NULL) ? 1.0 : w[k] * w[k];
 		sum_w += lambda[k];
@@ -1425,14 +1428,14 @@ int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w,
 		lambda[k] *= ip;
 	}
 	/* Create dtau and inv_dtau vectors */
-	dtau = gmt_M_memory (GMT, NULL, n1, double);
-	inv_dtau = gmt_M_memory (GMT, NULL, n1, double);
+	if ((dtau = gmt_M_memory (GMT, NULL, n1, double)) == NULL) return (GMT_RUNTIME_ERROR);
+	if ((inv_dtau = gmt_M_memory (GMT, NULL, n1, double)) == NULL) return (GMT_RUNTIME_ERROR);
 	for (k = 0; k < n1; k++) {
 		dtau[k] = x[k+1] - x[k];
 		inv_dtau[k] = 1.0 / dtau[k];
 	}
 	/* Create B matrix */
-	B = gmt_M_memory (GMT, NULL, n2*n2, double);
+	if ((B = gmt_M_memory (GMT, NULL, n2*n2, double)) == NULL) return (GMT_RUNTIME_ERROR);
 	for (k = 0; k < n2; k++) {	/* For rows 0 to n-3, a total of n-2 rows in B */
 		kk = k * n2 + k;	/* Diagonal index */
 		B[kk] = (dtau[k] + dtau[k+1]) / 3.0;
@@ -1441,9 +1444,9 @@ int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w,
 	}
 
 	/* Create D and Dt matrix and temp matrix K = inv_lambd * Dt */
-	D  = gmt_M_memory (GMT, NULL, n2*n, double);
-	Dt = gmt_M_memory (GMT, NULL, n*n2, double);
-	K  = gmt_M_memory (GMT, NULL, n2*n, double);
+	if ((D = gmt_M_memory (GMT, NULL, n2*n, double)) == NULL) return (GMT_RUNTIME_ERROR);
+	if ((Dt = gmt_M_memory (GMT, NULL, n*n2, double)) == NULL) return (GMT_RUNTIME_ERROR);
+	if ((K = gmt_M_memory (GMT, NULL, n2*n, double)) == NULL) return (GMT_RUNTIME_ERROR);
 	for (k = 0; k < n2; k++) {	/* For rows 0 to n-3, a total of n-2 rows in D */
 		kk = k * n + k;	/* Diagonal index in D */
 		kkt = k * n2 + k;	/* Diagonal index in transpose */
@@ -1455,12 +1458,12 @@ int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w,
 		K[kkt+2*n2] = Dt[kkt+2*n2] * lambda[k+2];
 	}
 	/* Need to compute Q = D * K */
-	Q = gmt_M_memory (GMT, NULL, n2*n2, double);
+	if ((Q = gmt_M_memory (GMT, NULL, n2*n2, double)) == NULL) return (GMT_RUNTIME_ERROR);
 	gmt_matrix_matrix_mult (GMT, D, K, n2, n, n2, Q);
 	/* Now add B to Q */
 	gmt_matrix_matrix_add (GMT, Q, B, n2, n2, Q);
 	/* Set c = D * y */
-	c = gmt_M_memory (GMT, NULL, n, double);
+	if ((c = gmt_M_memory (GMT, NULL, n, double)) == NULL) return (GMT_RUNTIME_ERROR);
 	gmt_matrix_matrix_mult (GMT, D, y, n2, n, 1U, c);
 	/* Solve Q*x = c, with x returned in c; these are the curvatures (s" in the notes) */
 	error = gmt_gauss (GMT, Q, c, n2, n2, true);
@@ -1472,7 +1475,7 @@ int gmtlib_smooth_spline (struct GMT_CTRL *GMT, double *x, double *y, double *w,
 	/* Set Q = K * c  which is a vector of length n */
 	gmt_matrix_matrix_mult (GMT, K, c, n, n2, 1, Q);
 	/* Solution for s = y - Q as in the notes */
-	s = gmt_M_memory (GMT, NULL, n, double);
+	if ((s = gmt_M_memory (GMT, NULL, n, double)) == NULL) return (GMT_RUNTIME_ERROR);
 	for (k = 0; k < n; k++) s[k] = y[k] - Q[k];
 	/* Adjust c (n-2 items) by adding the first and last c = conditions */
 	for (k = n2; k > 1; k--) c[k] = c[k-1];
@@ -1536,15 +1539,15 @@ GMT_LOCAL int gmtsupport_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y,
 	/* Allocate memory for spline factors */
 
 	if (spline_mode == GMT_SPLINE_AKIMA) {	/* Akima's spline */
-		c = gmt_M_memory (GMT, NULL, 3*n, double);
+		if ((c = gmt_M_memory (GMT, NULL, 3*n, double)) == NULL) return (GMT_RUNTIME_ERROR);
 		err_flag = gmtlib_akima (GMT, x, y, n, c);
 	}
 	else if (spline_mode == GMT_SPLINE_CUBIC) {	/* Natural cubic spline */
-		c = gmt_M_memory (GMT, NULL, 3*n, double);
+		if ((c = gmt_M_memory (GMT, NULL, 3*n, double)) == NULL) return (GMT_RUNTIME_ERROR);
 		err_flag = gmtlib_cspline (GMT, x, y, n, c);
 	}
 	else if (spline_mode == GMT_SPLINE_SMOOTH) {	/* Smoothing spline */
-		c = gmt_M_memory (GMT, NULL, 4*n, double);
+		if ((c = gmt_M_memory (GMT, NULL, 4*n, double)) == NULL) return (GMT_RUNTIME_ERROR);
 		err_flag = gmtlib_smooth_spline (GMT, x, y, w, p, n, deriv, c);
 	}
 	if (err_flag != 0) {
@@ -1980,8 +1983,8 @@ GMT_LOCAL void gmtsupport_contlabel_fixpath (struct GMT_CTRL *GMT, double **xin,
 	if (G->n_label > 1) qsort (G->L, G->n_label, sizeof (struct GMT_LABEL *), gmtsupport_sort_label_struct);
 
 	np = *n + G->n_label;	/* Length of extended path that includes inserted label coordinates */
-	xp = gmt_M_memory (GMT, NULL, np, double);
-	yp = gmt_M_memory (GMT, NULL, np, double);
+	if ((xp = gmt_M_memory (GMT, NULL, np, double)) == NULL) return;
+	if ((yp = gmt_M_memory (GMT, NULL, np, double)) == NULL) return;
 	x = *xin;	y = *yin;	/* Input coordinate arrays */
 
 	/* Make sure the xp, yp array contains the exact points at which labels should be placed */
@@ -2024,25 +2027,25 @@ GMT_LOCAL void gmtsupport_contlabel_addpath (struct GMT_CTRL *GMT, double x[], d
 
 	if (G->n_alloc == 0 || G->n_segments == G->n_alloc) {
 		G->n_alloc = (G->n_alloc == 0) ? GMT_CHUNK : (G->n_alloc << 1);
-		G->segment = gmt_M_memory (GMT, G->segment, G->n_alloc, struct GMT_CONTOUR_LINE *);
+		if ((G->segment = gmt_M_memory (GMT, G->segment, G->n_alloc, struct GMT_CONTOUR_LINE *)) == NULL) return;
 	}
-	G->segment[G->n_segments] = gmt_M_memory (GMT, NULL, 1, struct GMT_CONTOUR_LINE);
+	if ((G->segment[G->n_segments] = gmt_M_memory (GMT, NULL, 1, struct GMT_CONTOUR_LINE)) == NULL) return;
 	L = G->segment[G->n_segments];	/* Pointer to current segment */
 	L->n = n;
-	L->x = gmt_M_memory (GMT, NULL, L->n, double);
-	L->y = gmt_M_memory (GMT, NULL, L->n, double);
+	if ((L->x = gmt_M_memory (GMT, NULL, L->n, double)) == NULL) return;
+	if ((L->y = gmt_M_memory (GMT, NULL, L->n, double)) == NULL) return;
 	gmt_M_memcpy (L->x, x, L->n, double);
 	gmt_M_memcpy (L->y, y, L->n, double);
 	gmt_M_memcpy (&L->pen, &G->line_pen, 1, struct GMT_PEN);
 	/* gmt_M_memcpy (L->rgb,&G->rgb, 4, double); */
 	gmt_M_memcpy (L->rgb, &G->font_label.fill.rgb, 4, double);
-	L->name = gmt_M_memory (GMT, NULL, strlen (label)+1, char);
+	if ((L->name = gmt_M_memory (GMT, NULL, strlen (label)+1, char)) == NULL) return;
 	strcpy (L->name, label);
 	L->annot = annot;
 	L->z = zval;
 	if (G->n_label) {	/* There are labels */
 		L->n_labels = G->n_label;
-		L->L = gmt_M_memory (GMT, NULL, L->n_labels, struct GMT_LABEL);
+		if ((L->L = gmt_M_memory (GMT, NULL, L->n_labels, struct GMT_LABEL)) == NULL) return;
 		for (i = 0; i < L->n_labels; i++) {
 			L->L[i].x = G->L[i]->x;
 			L->L[i].y = G->L[i]->y;
@@ -2206,8 +2209,8 @@ GMT_LOCAL uint64_t gmtsupport_trace_contour (struct GMT_CTRL *GMT, struct GMT_GR
 	n_alloc = GMT_CHUNK;
 	m = n_alloc - 2;
 
-	xx = gmt_M_memory (GMT, NULL, n_alloc, double);
-	yy = gmt_M_memory (GMT, NULL, n_alloc, double);
+	if ((xx = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return (0);
+	if ((yy = gmt_M_memory (GMT, NULL, n_alloc, double)) == NULL) return (0);
 
 	gmtsupport_edge_contour (GMT, G, col, row, side, z[0] / (z[0] - z[1]), &(xx[0]), &(yy[0]));
 	edge[edge_word] |= bit[edge_bit];
@@ -2261,8 +2264,8 @@ GMT_LOCAL uint64_t gmtsupport_trace_contour (struct GMT_CTRL *GMT, struct GMT_GR
 		if (n > m) {	/* Must try to allocate more memory */
 			n_alloc <<= 1;
 			m = n_alloc - 2;
-			xx = gmt_M_memory (GMT, xx, n_alloc, double);
-			yy = gmt_M_memory (GMT, yy, n_alloc, double);
+			if ((xx = gmt_M_memory (GMT, xx, n_alloc, double)) == NULL) return (0);
+			if ((yy = gmt_M_memory (GMT, yy, n_alloc, double)) == NULL) return (0);
 		}
 
 		/* These are the possible outcomes of n_exits:
@@ -2346,6 +2349,7 @@ GMT_LOCAL uint64_t gmtsupport_trace_contour (struct GMT_CTRL *GMT, struct GMT_GR
 
 	} while (more);
 
+	/* Reduce memory to what is needed */
 	xx = gmt_M_memory (GMT, xx, n, double);
 	yy = gmt_M_memory (GMT, yy, n, double);
 
@@ -2374,7 +2378,7 @@ GMT_LOCAL int64_t gmtsupport_smooth_contour (struct GMT_CTRL *GMT, double **x_in
 
 	n_out = sfactor * n - 1;	/* Number of new points */
 
-	t_in  = gmt_M_memory (GMT, NULL, n, double);
+	if ((t_in = gmt_M_memory (GMT, NULL, n, double)) == NULL) return (-GMT_MEMORY_ERROR);
 
 	/* Create dummy distance values for input points, and throw out duplicate points while at it */
 
@@ -2399,10 +2403,10 @@ GMT_LOCAL int64_t gmtsupport_smooth_contour (struct GMT_CTRL *GMT, double **x_in
 		return (n);
 	}
 
-	t_out = gmt_M_memory (GMT, NULL, n_out + n, double);
-	x_tmp = gmt_M_memory (GMT, NULL, n_out + n, double);
-	y_tmp = gmt_M_memory (GMT, NULL, n_out + n, double);
-	flag  = gmt_M_memory (GMT, NULL, n_out + n, bool);
+	if ((t_out = gmt_M_memory (GMT, NULL, n_out + n, double)) == NULL) return (-GMT_MEMORY_ERROR);
+	if ((x_tmp = gmt_M_memory (GMT, NULL, n_out + n, double)) == NULL) return (-GMT_MEMORY_ERROR);
+	if ((y_tmp = gmt_M_memory (GMT, NULL, n_out + n, double)) == NULL) return (-GMT_MEMORY_ERROR);
+	if ((flag  = gmt_M_memory (GMT, NULL, n_out + n, bool))   == NULL) return (-GMT_MEMORY_ERROR);
 
 	/* Create equidistant output points */
 
@@ -2497,8 +2501,8 @@ GMT_LOCAL uint64_t gmtsupport_splice_contour (struct GMT_CTRL *GMT, double **x, 
 	/* Make more space */
 
 	x1 = *x;	y1 = *y;
-	x1 = gmt_M_memory (GMT, x1, m, double);
-	y1 = gmt_M_memory (GMT, y1, m, double);
+	if ((x1 = gmt_M_memory (GMT, x1, m, double)) == NULL) return (0);
+	if ((y1 = gmt_M_memory (GMT, y1, m, double)) == NULL) return (0);
 
 	/* Move first piece to the back */
 
@@ -2712,10 +2716,10 @@ GMT_LOCAL void gmtsupport_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, 
 		/* Calculate distance along contour and store in track_dist array */
 
 		if (G->dist_kind == 1) gmt_xy_to_geo (GMT, &lon[1], &lat[1], xx[0], yy[0]);
-		map_dist = gmt_M_memory (GMT, NULL, nn, double);	/* Distances on map in inches */
-		track_dist = gmt_M_memory (GMT, NULL, nn, double);	/* May be km ,degrees or whatever */
-		value_dist = gmt_M_memory (GMT, NULL, nn, double);	/* May be km ,degrees or whatever */
-		radii = gmt_M_memory (GMT, NULL, nn, double);	/* Radius of curvature, in inches */
+		if ((map_dist = gmt_M_memory (GMT, NULL, nn, double)) == NULL) return;	/* Distances on map in inches */
+		if ((track_dist = gmt_M_memory (GMT, NULL, nn, double)) == NULL) return;	/* May be km ,degrees or whatever */
+		if ((value_dist = gmt_M_memory (GMT, NULL, nn, double)) == NULL) return;	/* May be km ,degrees or whatever */
+		if ((radii = gmt_M_memory (GMT, NULL, nn, double)) == NULL) return;	/* Radius of curvature, in inches */
 
 		/* We will calculate the radii of curvature at all points.  By default we don't care and
 		 * will place labels at whatever distance we end up with.  However, if the user has asked
@@ -2761,7 +2765,7 @@ GMT_LOCAL void gmtsupport_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, 
 		 * GMT_contlabel_draw has been called we will free up the memory as the labels are kept in
 		 * the linked list starting at G->anchor. */
 
-		G->L = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_LABEL *);
+		if ((G->L = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_LABEL *)) == NULL) return;
 
 		if (G->spacing) {	/* Place labels based on distance along contours */
 			double last_label_dist, dist_offset, dist;
@@ -2797,7 +2801,7 @@ GMT_LOCAL void gmtsupport_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, 
 						if (G->n_label == n_alloc) {
 							size_t old_n_alloc = n_alloc;
 							n_alloc <<= 1;
-							G->L = gmt_M_memory (GMT, G->L, n_alloc, struct GMT_LABEL *);
+							if ((G->L = gmt_M_memory (GMT, G->L, n_alloc, struct GMT_LABEL *)) == NULL) return;
 							gmt_M_memset (&(G->L[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LABEL *);	/* Set to NULL */
 						}
 					}
@@ -2872,7 +2876,7 @@ GMT_LOCAL void gmtsupport_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, 
 						if (G->n_label == n_alloc) {
 							size_t old_n_alloc = n_alloc;
 							n_alloc <<= 1;
-							G->L = gmt_M_memory (GMT, G->L, n_alloc, struct GMT_LABEL *);
+							if ((G->L = gmt_M_memory (GMT, G->L, n_alloc, struct GMT_LABEL *)) == NULL) return;
 							gmt_M_memset (&(G->L[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LABEL *);	/* Set to NULL */
 						}
 						last_dist = new_label->dist;
@@ -2925,7 +2929,7 @@ GMT_LOCAL void gmtsupport_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, 
 						if (G->n_label == n_alloc) {
 							size_t old_n_alloc = n_alloc;
 							n_alloc <<= 1;
-							G->L = gmt_M_memory (GMT, G->L, n_alloc, struct GMT_LABEL *);
+							if ((G->L = gmt_M_memory (GMT, G->L, n_alloc, struct GMT_LABEL *)) == NULL) return;
 							gmt_M_memset (&(G->L[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LABEL *);	/* Set to NULL */
 						}
 					}
@@ -2963,7 +2967,7 @@ GMT_LOCAL void gmtsupport_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, 
 						if (G->n_label == n_alloc) {
 							size_t old_n_alloc = n_alloc;
 							n_alloc <<= 1;
-							G->L = gmt_M_memory (GMT, G->L, n_alloc, struct GMT_LABEL *);
+							if ((G->L = gmt_M_memory (GMT, G->L, n_alloc, struct GMT_LABEL *)) == NULL) return;
 							gmt_M_memset (&(G->L[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LABEL *);	/* Set to NULL */
 						}
 					}
@@ -3002,10 +3006,10 @@ GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATAS
 		uint64_t col;
 		SH->n_alloc += GMT_SMALL_CHUNK;
 		for (col = 0; col < S->n_columns; col++) {
-			S->data[col] = gmt_M_memory (GMT, S->data[col], SH->n_alloc, double);
+			if ((S->data[col] = gmt_M_memory (GMT, S->data[col], SH->n_alloc, double)) == NULL) return;
 			SH->alloc_mode[col] = GMT_ALLOC_INTERNALLY;
 		}
-		S->text = gmt_M_memory (GMT, S->text, SH->n_alloc, char *);
+		if ((S->text = gmt_M_memory (GMT, S->text, SH->n_alloc, char *)) == NULL) return;
 	}
 	/* Deal with any justifications or nudging */
 	if (G->nudge_flag) {	/* Must adjust point a bit */
@@ -3047,9 +3051,9 @@ GMT_LOCAL void gmtsupport_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, 
 	/* Calculate distance along line and store in track_dist array */
 
 	if (G->dist_kind == 1) gmt_xy_to_geo (GMT, &lon[1], &lat[1], xx[0], yy[0]);
-	map_dist   = gmt_M_memory (GMT, NULL, nn, double);	/* Distances on map in inches */
-	track_dist = gmt_M_memory (GMT, NULL, nn, double);	/* May be km, degrees or whatever */
-	value_dist = gmt_M_memory (GMT, NULL, nn, double);	/* May be km, degrees or whatever */
+	if ((map_dist = gmt_M_memory (GMT, NULL, nn, double)) == NULL) return;	/* Distances on map in inches */
+	if ((track_dist = gmt_M_memory (GMT, NULL, nn, double)) == NULL) return;	/* May be km, degrees or whatever */
+	if ((value_dist = gmt_M_memory (GMT, NULL, nn, double)) == NULL) return;	/* May be km, degrees or whatever */
 
 	map_dist[0] = track_dist[0] = value_dist[0] = 0.0;	/* Unnecessary, just so we understand the logic */
 	for (i = 1; i < nn; i++) {
@@ -3435,7 +3439,7 @@ GMT_LOCAL uint64_t gmtsupport_delaunay_shewchuk (struct GMT_CTRL *GMT, double *x
 	/* Allocate memory for input points */
 
 	In.numberofpoints = (int)n;
-	In.pointlist = gmt_M_memory (GMT, NULL, 2 * n, double);
+	if ((In.pointlist = gmt_M_memory (GMT, NULL, 2 * n, double)) == NULL) return (0);
 
 	/* Copy x,y points to In structure array */
 
@@ -3510,7 +3514,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 	/* Allocate memory for input points */
 
 	In.numberofpoints = n = (int)n64;
-	In.pointlist = gmt_M_memory (GMT, NULL, 2 * n, double);
+	if ((In.pointlist = gmt_M_memory (GMT, NULL, 2 * n, double)) == NULL) return (0);
 
 	/* Copy x,y points to In structure array */
 
@@ -3584,7 +3588,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 		geometry = GMT_IS_POLY;	/* Since we will be making closed polygons */
 		/* Allocate array for point type.  This holds which side we exited.  Normally 0-3, here we add 1 to use 1-4
 		 * instead since here, 0 means interior point.  1 is south and then we go CCW to 2 (east), 3 (north) and 4 (west) */
-		point_type = gmt_M_memory (GMT, NULL, n_int_edges + n_int_vertex + corners, char);
+		if ((point_type = gmt_M_memory (GMT, NULL, n_int_edges + n_int_vertex + corners, char)) == NULL) return (0);
 	}
 	else {	/* Want line edges only, all dimensions are already known */
 		dim[GMT_SEG] = n_int_edges;	/* All dimensions are known since we issue just 1 line per segment */
@@ -3759,7 +3763,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 
 		/* Precalculate dx, dy for each edge and store these in normlist (which we need to reallocate first) */
 		n_edges_2 = n_edges / 2;
-		edge_use = gmt_M_memory (GMT, NULL, n_edges_2, signed char);	/* 0 = unused, +/-1 = used once in normal or reverse direction, 2 = used twice and done with */
+		if ((edge_use = gmt_M_memory (GMT, NULL, n_edges_2, signed char)) == NULL) return (0);	/* 0 = unused, +/-1 = used once in normal or reverse direction, 2 = used twice and done with */
 		dx = vorOut.normlist;	dy = &vorOut.normlist[1];	/* So we can use dx[index] and dy[index] */
 		start_vertex = vorOut.edgelist;	stop_vertex = &vorOut.edgelist[1];
 		x_pos = vorOut.pointlist;	y_pos = &vorOut.pointlist[1];
@@ -3772,8 +3776,8 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_shewchuk (struct GMT_CTRL *GMT
 		}
 		/* Need temp array to hold the coordinates of a single polygon [I hope this is large enough - don't know yet] */
 		np_alloc = 2 * n_int_edges;
-		xcoord = gmt_M_memory (GMT, NULL, np_alloc, double);
-		ycoord = gmt_M_memory (GMT, NULL, np_alloc, double);
+		if ((xcoord = gmt_M_memory (GMT, NULL, np_alloc, double)) == NULL) return (0);
+		if ((ycoord = gmt_M_memory (GMT, NULL, np_alloc, double)) == NULL) return (0);
 
 		/* Now stitch together the closed polygons */
 		seg = 0;
@@ -3967,6 +3971,7 @@ GMT_LOCAL uint64_t gmtsupport_delaunay_watson (struct GMT_CTRL *GMT, double *x_i
 
 		struct GMT_PAIR *P = gmt_M_memory (GMT, NULL, n, struct GMT_PAIR);
 		uint64_t n_duplicates = 0;
+		if (P == NULL) return (0);
 		for (i = 0; i < n; i++) {
 			P[i].x = x_in[i];
 			P[i].y = y_in[i];
@@ -3999,7 +4004,9 @@ GMT_LOCAL uint64_t gmtsupport_delaunay_watson (struct GMT_CTRL *GMT, double *x_i
 	r2_circum = gmt_M_memory (GMT, NULL, size, double);
 	x = gmt_M_memory (GMT, NULL, n, double);
 	y = gmt_M_memory (GMT, NULL, n, double);
-
+	if (index == NULL || istack == NULL || x_tmp == NULL || y_tmp == NULL || x_circum == NULL || y_circum == NULL \
+		|| r2_circum == NULL || x == NULL || y == NULL)
+		return (0);
 	x[0] = x[1] = -1.0;	x[2] = 5.0;
 	y[0] = y[2] = -1.0;	y[1] = 5.0;
 	x_circum[0] = y_circum[0] = 2.0;	r2_circum[0] = 18.0;
@@ -4180,7 +4187,7 @@ int64_t gmt_read_triangulation (struct GMT_CTRL *GMT, char option, char *file, b
 		return (GMT_NOTSET);
 	}
 	T = Tin->table[0];	/* Since we only have one table here */
-	ind = gmt_M_memory (GMT, NULL, 3 * T->n_records, int);	/* Allocate the integer index array */
+	if ((ind = gmt_M_memory (GMT, NULL, 3 * T->n_records, int)) == NULL) return (GMT_MEMORY_ERROR);	/* Allocate the integer index array */
 	for (seg = ij = n_skipped = n_bad = 0; seg < T->n_segments; seg++) {
 		for (row = 0; row < T->segment[seg]->n_rows; row++) {
 			if (T->segment[seg]->data[0][row] > d_n || T->segment[seg]->data[1][row] > d_n || T->segment[seg]->data[2][row] > d_n)
@@ -4906,8 +4913,8 @@ GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS * gmtsupport_load_eps_symbol (struct GMT_
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find custom symbol %s\n", path);
 		return NULL;
 	}
-	E = gmt_M_memory (GMT, NULL, 1U, struct GMT_CUSTOM_SYMBOL_EPS);
-	E->macro = gmt_M_memory (GMT, NULL, (size_t)buf.st_size, char);
+	if ((E = gmt_M_memory (GMT, NULL, 1U, struct GMT_CUSTOM_SYMBOL_EPS)) == NULL) return NULL;
+	if ((E->macro = gmt_M_memory (GMT, NULL, (size_t)buf.st_size, char)) == NULL) return NULL;
 	E->name = strdup (name);
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
 		for (bb = 0; bb < 2; bb++) {	/* Check for both flavors of BoundingBox unless found */
@@ -5039,9 +5046,9 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 
 	if (type == GMT_CUSTOM_EPS) {	/* Must replace EPS symbol with a simple 1-action custom symbol EPS command */
 		/* Single action with x=y=0, set size=1, and add in EPS loaded */
-		head = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
+		if ((head = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL)) == NULL) return GMT_MEMORY_ERROR;
 		strncpy (head->name, basename (&name[pos]), GMT_LEN64-1);
-		s = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL_ITEM);
+		if ((s = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL_ITEM)) == NULL) return GMT_MEMORY_ERROR;
 		head->first = s;
 		s->action = GMT_SYMBOL_EPS;
 		s->p[0] = 1.0;
@@ -5055,7 +5062,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 		return GMT_ERROR_ON_FOPEN;
 	}
 
-	head = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
+	if ((head = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL)) == NULL) return GMT_MEMORY_ERROR;
 	strncpy (head->name, basename (&name[pos]), GMT_LEN64-1);
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
 		if (buffer[0] == '#') continue;	/* Skip comments */
@@ -5066,7 +5073,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
 			char flags[GMT_LEN64] = {""};
 			nc = sscanf (&buffer[2], "%d %s", &head->n_required, flags);
-			head->type = gmt_M_memory (GMT, NULL, head->n_required, unsigned int);
+			if ((head->type = gmt_M_memory (GMT, NULL, head->n_required, unsigned int)) == NULL) return GMT_MEMORY_ERROR;
 			if (nc == 2) {	/* Got optional types argument */
 				if (strlen (flags) != head->n_required) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Custom symbol %s has inconsistent N: <npar> [<types>] declaration\n", &name[pos]);
@@ -5094,7 +5101,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 			}
 			continue;
 		}
-		s = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL_ITEM);
+		if ((s = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL_ITEM)) == NULL) return GMT_MEMORY_ERROR;
 		if (first) head->first = s;
 		first = false;
 		for (k = 0; k < 8; k++) col[k][0] = '\0';	/* Reset col array */
@@ -5246,7 +5253,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 			case '?':		/* Any one of these standard types, obtained from last item in data record */
 				var_symbol++;
 				if (var_symbol == 1) {	/* First time we augment the type array by one to avoid bad memory access in psxy */
-					head->type = gmt_M_memory (GMT, head->type, head->n_required+1, unsigned int);
+					if ((head->type = gmt_M_memory (GMT, head->type, head->n_required+1, unsigned int)) == NULL) return GMT_MEMORY_ERROR;
 					head->type[head->n_required] = GMT_IS_DIMENSION;	/* It is actually a symbol code but this gets us passed the test */
 				}
 				/* Intentionally fall through */
@@ -6068,7 +6075,7 @@ uint64_t gmt_read_list (struct GMT_CTRL *GMT, char *file, char ***list) {
 		return (0);
 	}
 
-	p = gmt_M_memory (GMT, NULL, n_alloc, char *);
+	if ((p = gmt_M_memory (GMT, NULL, n_alloc, char *)) == NULL) return (0);
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		gmt_chop (line);	/* Remove trailing CR or LF */
@@ -6220,7 +6227,7 @@ uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern, char ***li
 	char **p = NULL, **file = NULL;
 	if ((p = gmtlib_get_dir_list (GMT, ".", NULL)) == NULL) return 0;
 
-	file = gmt_M_memory (GMT, NULL, n_alloc, char *);
+	if ((file = gmt_M_memory (GMT, NULL, n_alloc, char *)) == NULL) return 0;
 
 	while (p[k]) {	/* A NULL marks the end for us */
 		if (gmtsupport_matchwild (p[k], pattern)) {	/* Found a match */
@@ -7632,6 +7639,7 @@ struct GMT_PALETTE * gmtlib_create_palette (struct GMT_CTRL *GMT, uint64_t n_col
 	/* Makes an empty palette table with a blank hidden struct */
 	struct GMT_PALETTE *P = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE);
 	struct GMT_PALETTE_HIDDEN *PH = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE_HIDDEN);
+	if (P == NULL || PH == NULL) return NULL;
 	P->hidden = PH;
 	if (n_colors > 0) P->data = gmt_M_memory (GMT, NULL, n_colors, struct GMT_LUT);
 	P->n_colors = (unsigned int)n_colors;
@@ -7729,10 +7737,10 @@ void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 /*! Adds listing of available GMT cpt choices to a program's usage message */
 int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	char line[GMT_LEN256] = {""};
-	char divider[110] = {"-----------------------------------------------------------------------------------------------------------"};
+	char divider[115] = {"----------------------------------------------------------------------------------------------------------------"};
 	struct GMTAPI_CTRL *API = GMT->parent;
-	/* Note: 108 is the max length of entries in gmt_cpt_masters.h.  Update 110 and 108 if that changes */
-	int L = MAX (MIN (API->terminal_width-5, 108), 0);	/* Number of dashes to print in divider line */
+	/* Note: 108 is the max length of entries in gmt_cpt_masters.h.  Update 115 and 113 if that changes */
+	int L = MAX (MIN (API->terminal_width-5, 113), 0);	/* Number of dashes to print in divider line */
 	GMT_Usage (API, 1, "\n-%c Specify a colortable [Default is %s]:", option, GMT->current.setting.cpt);
 	GMT_Usage (API, 2, "[Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]");
 	divider[L] = '\0';	/* Truncate the line */
@@ -7752,16 +7760,20 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL bool gmtsupport_cpt_master_index (struct GMT_CTRL *GMT, char *name) {
+/*! . */
+GMT_LOCAL char *gmtsupport_cpt_master_index (struct GMT_CTRL *GMT, char *name) {
+	/* Returns the full cpt name after looking it up in the master list. NULL if not master. */
 	size_t len;
 	gmt_M_unused(GMT);
-	if (name == NULL) return true;	/* true, because no name means we default to GMT->current.setting.cpt */
 	len = strlen (name);	/* Length of the master table name so we can limit comparison to just those characters */
-	/* Note: THere are near-duplicate names like broc and brocO, but since they are ordered alphabetically our
-	 * search for broc will first compare with broc before broc0 so not an issue. */
-	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) if (!strncmp (name, GMT_CPT_master[k], len))
-		return true;
-	return false;
+	/* Note: There are near-duplicate names like broc and brocO, but since they are ordered alphabetically our
+	 * search for broc will first compare with broc before brocO so not an issue. */
+	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) {
+		char *c = strchr(GMT_CPT_master[k], ' ');
+		if (!strncmp (name, c - len, len))	/* Match the end of the cpt name */
+			return strndup (GMT_CPT_master[k], c - GMT_CPT_master[k]);	/* Return the full cpt name */
+	}
+	return NULL;
 }
 
 /*! . */
@@ -7814,6 +7826,7 @@ char ** gmt_cat_cpt_strings (struct GMT_CTRL *GMT, char *in_label, unsigned int 
 	char all_items[12*GMT_LEN16] = {""};
 	char *label = NULL, **Clabel = gmt_M_memory (GMT, NULL, n, char *);
 
+	if (Clabel == NULL) return NULL;
 	if (n == 12 && !strcmp (in_label, "M")) {	/* Create a month-list from current defaults */
 		gmtlib_set_case_and_kind (GMT, GMT->current.setting.format_time[GMT_PRIMARY], &upper, &kind);
 		strcpy (all_items, GMT->current.language.month_name[kind][0]);
@@ -8445,23 +8458,20 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file, struct G
 	return (strdup (API->remote_info[k_data].CPT));
 }
 
-bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
-	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
-	char *c = NULL, *f = NULL;
-	if (cpt == NULL) return true;	/* No cpt given means use GMT->current.setting.cpt master */
-	if (gmt_M_file_is_memory (cpt)) return false;	/* A CPT was given via memory location so cannot be a master reference */
+char *gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
+	/* If cpt is the name of a GMT CPT master table, return that name, otherwise NULL */
+	char *c = NULL, *f = NULL, *master = NULL;
+	if (!cpt || !cpt[0]) return gmtsupport_cpt_master_index (GMT, GMT->current.setting.cpt);	/* No cpt given means use GMT->current.setting.cpt master */
+	if (gmt_M_file_is_memory (cpt)) return NULL;	/* A CPT was given via memory location so cannot be a master reference */
 	if ((f = gmt_strrstr (cpt, GMT_CPT_EXTENSION)))	/* Only examine modifiers from there onwards */
 		c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
 	else	/* Must examine the entire file name for modifiers */
 		c = gmtlib_last_valid_file_modifier (GMT->parent, cpt, GMT_CPTFILE_MODIFIERS);
 	if (c && (f = gmt_first_modifier (GMT, c, GMT_CPTFILE_MODIFIERS)))
 		f[0] = '\0';	/* Must chop off modifiers for further checks to work */
-	if (gmtsupport_cpt_master_index (GMT, cpt)) {
-		if (c && f) f[0] = '+';	/* Restore modifier before we return */
-		return true;
-	}
-	if (cpt[0] && !gmt_access (GMT, cpt, R_OK)) return false;	/* A CPT was given and exists */
-	return false;	/* Well, what can we do at this point */
+	if (gmt_access (GMT, cpt, R_OK)) master = gmtsupport_cpt_master_index (GMT, cpt);
+	if (c && f) f[0] = '+';	/* Restore modifier before we return */
+	return master;
 }
 
 int gmtlib_set_current_item_file (struct GMT_CTRL *GMT, const char *item, char *file) {
@@ -8567,7 +8577,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 
 	struct GMT_PALETTE *P = NULL;
 	unsigned int continuous = (file && strchr(file,',')), first = 0;
-	bool is_cpt_master = false;
+	char *master = NULL;
 
 	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT to be present; GMT_Read_Data will work or fail accordingly */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|continuous, NULL, file, NULL);
@@ -8588,9 +8598,9 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 	if (gmt_file_is_cache (GMT->parent, file))	/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, file, 0);
 	if (first == 0)	/* Check if given a master or a real file */
-		is_cpt_master = gmt_is_cpt_master (GMT, file);
-	if (is_cpt_master) {	/* Take master cpt and stretch to fit data range using continuous colors */
-		char *master = NULL, *current_cpt = NULL;
+		master = gmt_is_cpt_master (GMT, file);
+	if (master) {	/* Take master cpt and stretch to fit data range using continuous colors */
+		char *current_cpt = NULL;
 		double noise;
 		struct GMT_PALETTE_HIDDEN *PH = NULL;
 
@@ -8610,7 +8620,6 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			return (P);
 		}
 
-		master = (file && file[0]) ? file : GMT->current.setting.cpt;	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
 		/* Stretch to fit the data range */
@@ -9668,6 +9677,8 @@ int gmtlib_akima (struct GMT_CTRL *GMT, double *x, double *y, uint64_t nx, doubl
 int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c) {
 	uint64_t i, k;
 	double ip, s, dx1, i_dx2, *u = gmt_M_memory (GMT, NULL, n, double);
+
+	if (u == NULL) return GMT_MEMORY_ERROR;
 
 	/* Assumes that n >= 4 and x is monotonically increasing */
 
@@ -15723,10 +15734,11 @@ openmp_int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, doub
 	 * in the same units as the radius.  We also return the widest value in the d_col array via
 	 * the actual_max_d_col value.
 	 */
-	openmp_int row, *d_col = gmt_M_memory (GMT, NULL, G->header->n_rows, unsigned int);
+	openmp_int row, limit, *d_col = gmt_M_memory (GMT, NULL, G->header->n_rows, unsigned int);
 	double dist_x, dist_y, lon, lat;
 
 	lon = G->header->wesn[XLO] + G->header->inc[GMT_X];	/* One step in from west */
+	limit = (G->header->registration == GMT_GRID_NODE_REG) ? G->header->n_columns - 1 : G->header->n_columns;
 	/* Set limit on +/- delta cols */
 	if (mode) {	/* Input data is geographical, so circle widens with latitude due to cos(lat) effect */
 		*actual_max_d_col = 0;
@@ -15734,15 +15746,15 @@ openmp_int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, doub
 			lat = gmt_M_grd_row_to_y (GMT, row, G->header);
 			/* Determine longitudinal width of one grid cell at this latitude */
 			dist_x = gmt_distance (GMT, G->header->wesn[XLO], lat, lon, lat);
-			d_col[row] = (fabs (lat) == 90.0) ? G->header->n_columns : urint (ceil (radius / dist_x) + 0.1);
-			if (d_col[row] > G->header->n_columns) d_col[row] = G->header->n_columns;	/* No point exceeding the upper limit */
+			d_col[row] = (fabs (lat) == 90.0) ? limit : urint (ceil (radius / dist_x) + 0.1);
+			if (d_col[row] > limit) d_col[row] = limit;	/* No point exceeding the upper limit */
 			if (d_col[row] > (*actual_max_d_col)) *actual_max_d_col = d_col[row];	/* Update the max range so far */
 		}
 	}
 	else {	/* Plain Cartesian data with rectangular box and no latitude variation */
 		dist_x = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], lon, G->header->wesn[YLO]);
 		*actual_max_d_col = urint (ceil (radius / dist_x) + 0.1);
-		if (*actual_max_d_col > G->header->n_columns) *actual_max_d_col = G->header->n_columns;	/* No point exceeding the upper limit */
+		if (*actual_max_d_col > limit) *actual_max_d_col = limit;	/* No point exceeding the upper limit */
 		for (row = 0; row < (openmp_int)G->header->n_rows; row++) d_col[row] = *actual_max_d_col;	/* Constant array */
 	}
 

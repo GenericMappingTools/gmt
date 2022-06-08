@@ -19,7 +19,7 @@ Synopsis
 [ |-G| ]
 [ |-I|\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**] ]
 [ |-L|\ [**0**\|\ **1**\|\ **2**\|\ **p**\|\ **a**] ]
-[ |-M| ]
+[ |-M|\ [**c**\|\ **f**] ]
 [ |SYN_OPT-R| ]
 [ |-T|\ [*dv*]\ [**+a**\ [*alpha*]]\ [**+s**] ]
 [ |SYN_OPT-V| ]
@@ -65,8 +65,8 @@ Optional Arguments
     *name w e s n {b t} v0 v1 dx dy {dz} nx ny {nz}* [*x0 y0 {z0} x1 y1 {z1}*] [*med scale*] [*mean std rms*] [*n\_nan*] *registration gtype*
 
     The data in brackets are
-    output only if the corresponding options |-M|, **-L1**, **-L2**,
-    and |-M| are used, respectively, while the data in braces only apply if
+    output only if the corresponding options |-M| (with no directive), **-L1**, and **-L2**
+    are used, respectively, while the data in braces only apply if
     used with 3-D data cubes. Use **-Ct** to place file *name*
     at the end of the output record or **-Cn** to only output numerical
     columns.  The *registration* is either 0 (gridline) or 1 (pixel),
@@ -145,9 +145,12 @@ Optional Arguments
 
 .. _-M:
 
-**-M**
+**-M**\ [**c**\|\ **f**]
     Find and report the location of min/max *v*-values, and count and
-    report the number of nodes set to NaN, if any.
+    report the number of nodes set to NaN, if any [Default]. Use directive
+    **f** to instead force an update of the *v*-value min/max by reading the
+    matrix, or use **c** for conditionally doing so if the header information
+    does not contain a valid *v* range.
 
 .. |Add_-R| replace:: Using the |-R| option will select a subsection of the input grid(s). If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. For cubes you must also
