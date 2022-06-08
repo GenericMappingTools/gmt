@@ -403,6 +403,7 @@ GMT_LOCAL int gmtnc_put_xy_vectors (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	double *xy = gmt_M_memory (GMT, NULL, MAX (header->n_columns,header->n_rows), double);
 	unsigned int col, row;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
+	if (xy == NULL) return (GMT_MEMORY_ERROR);
 
 	for (col = 0; col < header->n_columns; col++) xy[col] = gmt_M_grd_col_to_x (GMT, col, header);
 	gmt_M_err_trap (nc_put_var_double (HH->ncid, HH->xyz_id[GMT_X], xy));
@@ -630,6 +631,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		double dx = 0, dy = 0, threshold = 0.0;
 		/* Create enough memory to store the x- and y-coordinate values */
 		double *xy = gmt_M_memory (GMT, NULL, MAX (header->n_columns,header->n_rows), double);
+		if (xy == NULL) return (GMT_MEMORY_ERROR);
 		/* Get global information */
 		if (gmtlib_nc_get_att_vtext (GMT, ncid, NC_GLOBAL, "title", header, header->title, GMT_GRID_TITLE_LEN80))
 			gmtlib_nc_get_att_vtext (GMT, ncid, z_id, "long_name", header, header->title, GMT_GRID_TITLE_LEN80);
@@ -2001,7 +2003,7 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 	n_layers = lens[z_dim];
 
 	/* Create enough memory to store the level-coordinate values */
-	z = gmt_M_memory (GMT, NULL, n_layers, double);
+	if ((z = gmt_M_memory (GMT, NULL, n_layers, double)) == NULL) return GMT_MEMORY_ERROR;
 
 	/* Get information about z variable */
 	gmtnc_get_units (GMT, ncid, ids[z_dim], z_units);

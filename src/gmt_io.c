@@ -538,8 +538,8 @@ GMT_LOCAL unsigned int gmtio_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, c
 
 	if (S->n_aspatial == 0) return (0);	/* Nothing to do */
 	if (S->tvalue == NULL) {			/* First time, allocate space */
-		S->tvalue = gmt_M_memory (GMT, S->tvalue, S->n_aspatial, char *);
-		S->dvalue = gmt_M_memory (GMT, S->dvalue, S->n_aspatial, double);
+		if ((S->tvalue = gmt_M_memory (GMT, S->tvalue, S->n_aspatial, char *)) == NULL) return 0;
+		if ((S->dvalue = gmt_M_memory (GMT, S->dvalue, S->n_aspatial, double)) == NULL) return 0;
 	}
 	strncpy (buffer, record, GMT_BUFSIZ-1); /* working copy */
 	gmtio_handle_bars (GMT, buffer, 0);	/* Replace vertical bars inside quotes with ASCII 1 */

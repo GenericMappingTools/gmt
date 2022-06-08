@@ -4066,6 +4066,7 @@ void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods, unsigned 
 		size_t n = (mods) ? strlen (mods) : 0;	/* Since mods may be NULL */
 		char *c = in, *p = NULL;
 		unsigned int *used = gmt_M_memory (GMT, NULL, n, unsigned int);
+		if (used == NULL) return;
 		for ( ;; ) { /* Replace super-script escape sequence @+ with @1 */
 			c = strstr (c, "@+");
 			if (c == NULL) break;
@@ -7014,7 +7015,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmtinit_new_GMT_ctrl\n");
 	/* Alloc using calloc since gmt_M_memory may use resources not yet initialized */
-	GMT = calloc (1U, sizeof (struct GMT_CTRL));
+	if ((GMT = calloc (1U, sizeof (struct GMT_CTRL))) == NULL) return NULL;
 	gmt_M_memcpy (GMT->current.setting.ref_ellipsoid, ref_ellipsoid, 1, ref_ellipsoid);
 	gmt_M_memcpy (GMT->current.setting.proj_datum, datum, 1, datum);
 
@@ -7092,7 +7093,8 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	gmtlib_grdio_init (GMT);
 	gmt_set_pad (GMT, pad); /* Sets default number of rows/cols for boundary padding in this session */
 	GMT->current.proj.f_horizon = 90.0;
-	GMT->current.proj.proj4 = gmt_M_memory (GMT, NULL, GMT_N_PROJ4, struct GMT_PROJ4);
+	if ((GMT->current.proj.proj4 = gmt_M_memory (GMT, NULL, GMT_N_PROJ4, struct GMT_PROJ4)) == NULL)
+		return NULL;
 	for (i = 0; i < GMT_N_PROJ4; i++) {	/* Load up proj4 structure once and for all */
 		GMT->current.proj.proj4[i].name = strdup (GMT_proj4[i].name);
 		GMT->current.proj.proj4[i].id = GMT_proj4[i].id;
@@ -13795,17 +13797,17 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_begin_module_sub (struct GMTAPI_CTRL *API, co
 	/* GMT_INIT */
 	if (GMT->session.n_user_media) {
 		Csave->session.n_user_media = GMT->session.n_user_media;
-		Csave->session.user_media = gmt_M_memory (GMT, NULL, GMT->session.n_user_media, struct GMT_MEDIA);
-		Csave->session.user_media_name = gmt_M_memory (GMT, NULL, GMT->session.n_user_media, char *);
+		if ((Csave->session.user_media = gmt_M_memory (GMT, NULL, GMT->session.n_user_media, struct GMT_MEDIA)) == NULL) return NULL;
+		if ((Csave->session.user_media_name = gmt_M_memory (GMT, NULL, GMT->session.n_user_media, char *)) == NULL) return NULL;
 		for (i = 0; i < GMT->session.n_user_media; i++) Csave->session.user_media_name[i] = strdup (GMT->session.user_media_name[i]);
 	}
 
 	/* GMT_PLOT */
 	if (GMT->current.plot.n_alloc) {
 		Csave->current.plot.n_alloc = GMT->current.plot.n_alloc;
-		Csave->current.plot.x = gmt_M_memory (GMT, NULL, GMT->current.plot.n_alloc, double);
-		Csave->current.plot.y = gmt_M_memory (GMT, NULL, GMT->current.plot.n_alloc, double);
-		Csave->current.plot.pen = gmt_M_memory (GMT, NULL, GMT->current.plot.n_alloc, unsigned int);
+		if ((Csave->current.plot.x = gmt_M_memory (GMT, NULL, GMT->current.plot.n_alloc, double)) == NULL) return NULL;
+		if ((Csave->current.plot.y = gmt_M_memory (GMT, NULL, GMT->current.plot.n_alloc, double)) == NULL) return NULL;
+		if ((Csave->current.plot.pen = gmt_M_memory (GMT, NULL, GMT->current.plot.n_alloc, unsigned int)) == NULL) return NULL;
 		gmt_M_memcpy (Csave->current.plot.x, GMT->current.plot.x, GMT->current.plot.n_alloc, double);
 		gmt_M_memcpy (Csave->current.plot.y, GMT->current.plot.y, GMT->current.plot.n_alloc, double);
 		gmt_M_memcpy (Csave->current.plot.pen, GMT->current.plot.pen, GMT->current.plot.n_alloc, unsigned int);
@@ -15997,8 +15999,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	/* Now fix things that were allocated separately */
 	if (Ccopy->session.n_user_media) {
 		GMT->session.n_user_media = Ccopy->session.n_user_media;
-		GMT->session.user_media = gmt_M_memory (GMT, NULL, Ccopy->session.n_user_media, struct GMT_MEDIA);
-		GMT->session.user_media_name = gmt_M_memory (GMT, NULL, Ccopy->session.n_user_media, char *);
+		if ((GMT->session.user_media = gmt_M_memory (GMT, NULL, Ccopy->session.n_user_media, struct GMT_MEDIA)) == NULL) return;
+		if ((GMT->session.user_media_name = gmt_M_memory (GMT, NULL, Ccopy->session.n_user_media, char *)) == NULL) return;
 		for (i = 0; i < Ccopy->session.n_user_media; i++) GMT->session.user_media_name[i] = strdup (Ccopy->session.user_media_name[i]);
 	}
 
@@ -18491,7 +18493,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	gmtinit_set_today (GMT);	/* Determine today's rata die value */
 
-	API->common_snapshot = gmt_M_memory (GMT, NULL, 1U, struct GMT_COMMON);	/* For holding snapshots of common options */
+	if ((API->common_snapshot = gmt_M_memory (GMT, NULL, 1U, struct GMT_COMMON)) == NULL) return NULL;	/* For holding snapshots of common options */
 
 	return (GMT);
 }
@@ -18713,7 +18715,7 @@ GMT_LOCAL int gmtinit_read_figures (struct GMT_CTRL *GMT, unsigned int mode, str
 		return 0;
 	}
 	/* Here the file gmt.figures may exists and we must read in the entries */
-	if (mode > 0) fig = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_FIGURE);
+	if (mode > 0 && (fig = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_FIGURE)) == NULL) return 0;
 	if (mode == 2) {	/* Insert default session figure */
 		gmtinit_get_session_name_format (GMT->parent, fig[0].prefix, fig[0].formats);
 		fig[0].ID = 0;	k = 1;
@@ -18732,7 +18734,7 @@ GMT_LOCAL int gmtinit_read_figures (struct GMT_CTRL *GMT, unsigned int mode, str
 			if (n == 3) fig[k].options[0] = '\0';
 			if (++k >= n_alloc) {
 				n_alloc += GMT_TINY_CHUNK;
-				fig = gmt_M_memory (GMT, fig, n_alloc, struct GMT_FIGURE);
+				if ((fig = gmt_M_memory (GMT, fig, n_alloc, struct GMT_FIGURE)) == NULL) return 0;
 			}
 		}
 		else	/* Just count them */

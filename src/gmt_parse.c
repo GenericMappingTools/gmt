@@ -482,7 +482,7 @@ GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_and_dash_options_order (struct G
 	if (options == NULL) return NULL;	/* Nothing to do */
 
 	for (np = 0, opt = options; opt; opt = opt->next, np++);	/* Count the options */
-	priority = gmt_M_memory (GMT, NULL, np, struct B_PRIORITY);
+	if ((priority = gmt_M_memory (GMT, NULL, np, struct B_PRIORITY)) == NULL) return NULL;
 
 	for (opt = options, k = 0; opt; opt = opt->next, k++) {
 		priority[k].opt = opt;
@@ -584,7 +584,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		bool quoted;
 		size_t n_alloc = GMT_SMALL_CHUNK;
 		char p[GMT_BUFSIZ] = {""}, *txt_in = strdup (in);	/* Passed a single text string */
-		new_args = gmt_M_memory (G, NULL, n_alloc, char *);
+		if ((new_args = gmt_M_memory (G, NULL, n_alloc, char *)) == NULL) return NULL;
 		/* txt_in can contain options that take multi-word text strings, e.g., -B+t"My title".  We avoid the problem of splitting
 		 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
 		 * space, and then replace all ASCII 31 with space at the end (we do the same for tab using ASCII 29 GS (group separator) */
@@ -602,7 +602,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			new_args[new_n_args++] = strdup (p);
 			if (new_n_args == n_alloc) {
 				n_alloc += GMT_SMALL_CHUNK;
-				new_args = gmt_M_memory (G, new_args, n_alloc, char *);
+				if ((new_args = gmt_M_memory (G, new_args, n_alloc, char *)) == NULL) return NULL;
 			}
 		}
 		for (k = 0; txt_in[k]; k++)	/* Restore input string to prestine condition */
@@ -808,7 +808,7 @@ char ** GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head) {
 	if (*argc == 0) return NULL;		/* Found no options, so we are done */
 
 	G = API->GMT;	/* GMT control structure */
-	txt = gmt_M_memory (G, NULL, *argc, char *);	/* Allocate text arg array of given length */
+	if ((txt = gmt_M_memory (G, NULL, *argc, char *)) == NULL) return NULL;	/* Allocate text arg array of given length */
 
 	for (opt = head; opt; opt = opt->next) {	/* Loop over all options in the linked list */
 		if (!opt->option) continue;			/* Skip all empty options */
@@ -878,7 +878,7 @@ char *GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
 
 	G = API->GMT;	/* GMT control structure */
-	txt = gmt_M_memory (G, NULL, n_alloc, char);
+	if ((txt = gmt_M_memory (G, NULL, n_alloc, char)) == NULL) return NULL;
 
 	for (opt = head; opt; opt = opt->next) {	/* Loop over all options in the linked list */
 		if (!opt->option) continue;			/* Skip all empty options */
@@ -914,7 +914,7 @@ char *GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 		if (!first) inc++;	/* Count the space between args */
 		if ((length + inc) >= n_alloc) {	/* Will need more memory */
 			n_alloc <<= 1;
-			txt = gmt_M_memory (G, txt, n_alloc, char);
+			if ((txt = gmt_M_memory (G, txt, n_alloc, char)) == NULL) return NULL;
 		}
 		if (!first) strcat (txt, " ");	/* Add space between args */
 		strcat (txt, buffer);
@@ -952,7 +952,7 @@ struct GMT_OPTION *GMT_Make_Option (void *V_API, char option, const char *arg) {
 
 	/* Here we have a program-specific option or a file name.  In either case we create a new option structure */
 
-	new_opt = gmt_M_memory (API->GMT, NULL, 1, struct GMT_OPTION);	/* Allocate one option structure */
+	if ((new_opt = gmt_M_memory (API->GMT, NULL, 1, struct GMT_OPTION)) == NULL) return NULL;	/* Allocate one option structure */
 
 	new_opt->option = option;		/* Assign which option character was used */
 	if (!arg)				/* If arg is a NULL pointer: */
