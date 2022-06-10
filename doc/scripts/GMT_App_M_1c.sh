@@ -14,8 +14,8 @@
 
 GMT_SHAREDIR=$(gmt --show-sharedir)
 
-# Here we list all the categorical cpts:
-sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | egrep categorical | awk '{print $1}' | sort -r > tt.lis
+# Here we list all the categorical cpts (Leaving out c|C in Categorical since cases vary):
+sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | egrep ategorical | awk '{print $1}' | sort -r > tt.lis
 
 n=$(cat tt.lis | wc -l)
 let n2=n/2
