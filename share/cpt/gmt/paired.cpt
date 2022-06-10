@@ -1,0 +1,23 @@
+#
+# gmt/paired : Categorical color map with 6 pairs of colors [C=RGB]
+#
+# This color table is based on the specifications and designs
+# developed by Cynthia Brewer (http://colorbrewer.org/)
+# Here reproduced as a categorical table
+#
+#----------------------------------------------------------
+# COLOR_MODEL = RGB
+#----------------------------------------------------------
+0	166/206/227
+1	31/120/180
+2	178/223/138
+3	51/160/44
+4	251/154/153
+5	227/26/28
+6	253/191/111
+7	darkorange1
+8	202/178/214
+9	106/61/154
+10	255/255/153
+11	177/89/40
+#----------------------------------------------------------

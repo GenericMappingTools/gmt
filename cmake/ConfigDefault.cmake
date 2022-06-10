@@ -56,7 +56,7 @@ set (GMT_PACKAGE_VERSION_PATCH 0)
 # Whether to make a public release.
 # When making internal releases or just an ordinary developer build, it is set to FALSE.
 # When making *public* release, uncomment to set it to TRUE.
-#set (GMT_PUBLIC_RELEASE TRUE)
+set (GMT_PUBLIC_RELEASE TRUE)
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}${GMT_PACKAGE_VERSION_SUFFIX}")
