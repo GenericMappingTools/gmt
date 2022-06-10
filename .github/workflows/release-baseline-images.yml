@@ -29,7 +29,12 @@ jobs:
     - name: Create the baseline image asset in zip format
       run: |
         mkdir baseline-images
-        cp -r test/baseline/* baseline-images/
+        mkdir baseline-images/test
+        mkdir baseline-images/examples
+        mkdir baseline-images/scripts
+        cp -r test/baseline/* baseline-images/test
+        cp doc/examples/images/*.ps baseline-images/examples
+        cp doc/scripts/images/*.ps baseline-images/scripts
         zip -r baseline-images baseline-images/ -x "*.dvc"
         shasum -a 256 baseline-images.zip
 
