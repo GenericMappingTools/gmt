@@ -6606,14 +6606,14 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 		}
 		if (GMT_n_annotations_skip[side]) {
 			static char *name[4] = {"bottom", "right", "top", "left"};
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "%d annotations along the %s border were skipped due to crowding.\n", GMT_n_annotations_skip[side], name[side]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%d annotations along the %s border were skipped due to crowding.\n", GMT_n_annotations_skip[side], name[side]);
 			too_crowded = true;
 			GMT_n_annotations_skip[side] = 0;
 		}
 	}
 	if (too_crowded) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Crowding decisions is controlled by MAP_ANNOT_MIN_SPACING, currently set to %s.\n", GMT->current.setting.map_annot_min_spacing_txt);
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Decrease or increase MAP_ANNOT_MIN_SPACING to see more or fewer annotations, with 0 showing all annotations.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Crowding decisions is controlled by MAP_ANNOT_MIN_SPACING, currently set to %s.\n", GMT->current.setting.map_annot_min_spacing_txt);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Decrease or increase MAP_ANNOT_MIN_SPACING to see more or fewer annotations, with 0 showing all annotations.\n");
 	}
 	PSL_setcolor (PSL, GMT->current.setting.map_default_pen.rgb, PSL_IS_STROKE);
 
