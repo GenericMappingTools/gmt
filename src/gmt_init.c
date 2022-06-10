@@ -13463,7 +13463,7 @@ char *gmtlib_putcmyk (struct GMT_CTRL *GMT, double *cmyk) {
 	if (cmyk[0] < -0.5)
 		strcpy (text, "-");
 	else
-		snprintf (text, GMT_LEN256, "%.5g/%.5g/%.5g/%.5g", gmt_M_q(cmyk[0]), gmt_M_q(cmyk[1]), gmt_M_q(cmyk[2]), gmt_M_q(cmyk[3]));
+		snprintf (text, GMT_LEN256, "%.5g/%.5g/%.5g/%.5g", 100.0*gmt_M_q(cmyk[0]), 100.0*gmt_M_q(cmyk[1]), 100.0*gmt_M_q(cmyk[2]), 100.0*gmt_M_q(cmyk[3]));
 	gmtinit_append_trans (text, cmyk[4]);
 	return (text);
 }
