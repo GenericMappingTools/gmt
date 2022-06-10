@@ -487,16 +487,19 @@ GMT_LOCAL void gmtsupport_rgb_to_cmyk (double rgb[], double cmyk[]) {
 	int i;
 
 	cmyk[4] = rgb[3];	/* Pass transparency unchanged */
-	for (i = 0; i < 3; i++) cmyk[i] = 1.0 - rgb[i];
-	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Default Black generation */
+	cmyk[3] = 1.0 - MAX (cmyk[0], MAX (cmyk[1], cmyk[2]));	/* Default Black generation */
+	if (cmyk[3] == 1.0)
+		cmyk[0] = cmyk[1] = cmyk[2] = 0.0;
+	else
+		for (i = 0; i < 3; i++) cmyk[i] = (1.0 - rgb[i] - cmyk[3]) / (1.0 - cmyk[3]);
 	if (cmyk[3] < GMT_CONV8_LIMIT) cmyk[3] = 0.0;
 
 	/* To implement device-specific blackgeneration, supply lookup table K = BG[cmyk[3]] */
 
-	for (i = 0; i < 3; i++) {
-		cmyk[i] -= cmyk[3];		/* Default undercolor removal */
-		if (cmyk[i] < GMT_CONV8_LIMIT) cmyk[i] = 0.0;
-	}
+//	for (i = 0; i < 3; i++) {
+//		cmyk[i] -= cmyk[3];		/* Default undercolor removal */
+//		if (cmyk[i] < GMT_CONV8_LIMIT) cmyk[i] = 0.0;
+//	}
 
 	/* To implement device-specific undercolor removal, supply lookup table u = UR[cmyk[3]] */
 }
@@ -509,7 +512,7 @@ GMT_LOCAL void gmtsupport_cmyk_to_rgb (double rgb[], double cmyk[]) {
 	int i;
 
 	rgb[3] = cmyk[4];	/* Pass transparency unchanged */
-	for (i = 0; i < 3; i++) rgb[i] = 1.0 - cmyk[i] - cmyk[3];
+	for (i = 0; i < 3; i++) rgb[i] = (1.0 - cmyk[i]) * (1.0 - cmyk[3]);
 }
 
 /*! . */
