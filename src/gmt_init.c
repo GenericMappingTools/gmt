@@ -5660,7 +5660,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 				error += gmtinit_parse_genper_deprecated (GMT, args, k >= 0, width_given);
 			break;
 
-		case GMT_OBLIQUE_MERC:		/* Oblique mercator, specifying origin and azimuth or second point */
+		case GMT_OBLIQUE_MERC:		/* Oblique Mercator, specifying origin and azimuth or second point */
 			if ((d = strstr (args, "+v"))) {
 				GMT->current.proj.obl_flip = true;
 				d[0] = '\0';	/* Chop off modifier */
@@ -5690,7 +5690,11 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 			if (d) d[0] = '+';	/* Restore modifier */
 			break;
 
-		case GMT_OBLIQUE_MERC_POLE:	/* Oblique mercator, specifying origin and pole */
+		case GMT_OBLIQUE_MERC_POLE:	/* Oblique Mercator, specifying origin and pole */
+			if ((d = strstr (args, "+v"))) {
+				GMT->current.proj.obl_flip = true;
+				d[0] = '\0';	/* Chop off modifier */
+			}
 			GMT->current.proj.N_hemi = (GMT->common.J.string[1] != 'C') ? true : false;	/* Upper case -JoC allows S pole views */
 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
