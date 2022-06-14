@@ -207,7 +207,7 @@ modify the appearance of plots or affect the manipulation of data. When
 a new session starts (unless **-C** is given), it initializes all parameters to the
 GMT defaults [9]_, then tries to open the file ``gmt.conf`` in the current
 directory [10]_. If not found, it will look for that file in a
-sub-directory ``/.gmt`` of your home directory, and finally in your home directory
+sub-directory ``.gmt`` of your home directory, and finally in your home directory
 itself. If successful, the session will read the contents and set the
 default values to those provided in the file. By editing this file you
 can affect features such as pen thicknesses used for maps, fonts and
@@ -317,6 +317,7 @@ are known. The **auto** flag is supported for the following parameters:
 :term:`MAP_ANNOT_MIN_SPACING`      Minimum space between annotations [11.00p]
 :term:`MAP_ANNOT_OFFSET_PRIMARY`   Primary annotation offset from axis [3.30p]
 :term:`MAP_ANNOT_OFFSET_SECONDARY` Secondary annotation offset from axis [3.30p]
+:term:`MAP_EMBELLISHMENT_MODE`     Scales attributes relative to feature size
 :term:`MAP_FRAME_AXES`             Axes that are drawn and annotated
 :term:`MAP_FRAME_PEN`              Pen width of plain frame [1.65p]
 :term:`MAP_FRAME_WIDTH`            Width of fancy frame [3.30p]
@@ -339,7 +340,7 @@ annotation font size will be computed as::
 
     size = (2/15) * (map_size_in_cm - 10) + 9 [in points]
 
-where :math:`map\_size\_in\_cm = sqrt(map\_height  x  map\_width)`.  All other
+where :math:`map\_size\_in\_cm = \sqrt(map\_height  \times  map\_width)`.  All other
 items will have their reference sizes scaled by :math:`scale = size / 10`. In
 modern mode, if you do nothing then all of the above dimensions will be
 automatically set based on your plot dimensions.  However, you are free to
@@ -351,21 +352,26 @@ font sizes and dimensions for a 10 x 1 cm plot. **Note**: The particular scaling
 relationship is experimental in 6.2 and we reserve the right to adjust it
 pending further experimentation and user feedback.
 
-For **MAP_POLAR_CAP**, **auto** will determine a suitable *pc_lat* for your
+For :term:`MAP_POLAR_CAP`, **auto** will determine a suitable *pc_lat* for your
 region for all azimuthal projections and a few others in which the geographic
 poles are plotted as points (Lambert Conic, Oblique Mercator, Hammer, Mollweide,
 Sinusoidal, and van der Grinten).
 
-For **MAP_FRAME_AXES**, **auto** will determine a suitable setting based on the
+For :term:`MAP_FRAME_AXES`, **auto** will determine a suitable setting based on the
 projection, type of plot, perspective, etc. For example, GMT will determine the
 position of different quadrants for perspective and polar plots and select the
 equivalent of **WrStZ**. The default for the Gnomonic and general perspective
 projections is **WESNZ**. The default for non-perspective, non-Gnomonic, and
 non-polar plots using **MAP_FRAME_AXES**\ =\ **auto** is **WrStZ**.
 
-For **MAP_LABEL_OFFSET, **auto** will scale the offset based on figure size if
-**MAP_LABEL_MODE** is set to **annot**, but will default to **32p** if
-**MAP_LABEL_MODE** is set to **axis**.
+For :term:`MAP_LABEL_OFFSET`, **auto** will scale the offset based on figure size if
+:term:`MAP_LABEL_MODE` is set to **annot**, but will default to **32p** if
+:term:MAP_LABEL_MODE` is set to **axis**.
+
+For :term:`MAP_EMBELLISHMENT_MODE`, **auto** means we uses the given size of the
+embellishment to set relative sizes of ticks, texts and labels, and offsets.
+These are otherwise controlled by numerous default settings; see discussion
+under :ref:`Embellishments <GMT_Embellishments>`.
 
 Changing GMT defaults
 ~~~~~~~~~~~~~~~~~~~~~
@@ -471,7 +477,7 @@ Standard input or file, header records
 
 Most of the programs which expect table data input can read either
 standard input or input in one or several files. These programs will try
-to read *stdin* unless you type the filename(s) on the command line
+to read standard input unless you type the filename(s) on the command line
 without the above hyphens. (If the program sees a hyphen, it reads the
 next character as an instruction; if an argument begins without a
 hyphen, it tries to open this argument as a filename).  This feature
@@ -858,9 +864,9 @@ point, as shown in Figures :ref:`Cap <Cap_settings>` and :ref:`Miter <Miter_sett
    .. literalinclude:: /_verbatim/GMT_joint.txt
 
 By default, line segments have rectangular ends, but this can
-change to give rounded ends. When :term:`PS_LINE_CAP` is set to round the
+change to give rounded ends. When :term:`PS_LINE_CAP` is set to round then
 a segment length of zero will appear as a circle. This can be used to
-created circular dotted lines, and by manipulating the phase shift in
+create circular dotted lines, and by manipulating the *phase* shift in
 the *style* attribute and plotting the same line twice one can even
 alternate the color of adjacent items.
 Figure :ref:`Line appearance <Line_appearance>` shows various lines made in this
@@ -1028,8 +1034,8 @@ use **-G** for this task and some have several options specifying different fill
 Due to PostScript implementation limitations the raster images used
 with **-G** must be less than 146 x 146 pixels in size; for larger
 images see :doc:`/image`. The format of Sun raster files [18]_ is
-outlined in Chapter :doc:`file-formats`. However, if you built GMT
-with GDAL then other image formats can be used as well. Note that under
+outlined in Chapter :doc:`file-formats`; other image formats can be
+used as well. Note that under
 PostScript Level 1 the patterns are filled by using the polygon as a
 *clip path*. Complex clip paths may require more memory than the
 PostScript interpreter has been assigned. There is therefore the
@@ -2104,7 +2110,7 @@ supply suitable required and optional modifiers:
 
    Color bar placed beneath a map (here truncated).  We extended the bar to show background and foreground
    colors, and used the frame-annotation machinery to add labels.  The bar was placed with
-   **-D**\ *JBC*\ **+o**\ 0/0.35i\ **+w**\ 4.5i/0.1i\ **+h**.
+   **-D**\ *JBC*\ **+e**.
 
 .. toggle::
 
@@ -2391,7 +2397,7 @@ approach should contact the GMT team for guidance.
 +----------+---------------------------------------------------------------+
 | ef       | ESRI Arc/Info ASCII Grid Interchange format (ASCII float)     |
 +----------+---------------------------------------------------------------+
-| gd       | Import/export via GDAL [19]_                                  |
+| gd       | Import/export via GDAL                                        |
 +----------+---------------------------------------------------------------+
 
 Because some formats have limitations on the range of values they can
@@ -2579,7 +2585,7 @@ indicate the second layer of the 3-D variable "slp" use as file name: ``file.nc?
 
 When you supply the numerical value for the third variable using
 "(*level*)", GMT will pick the layer closest to that value. No
-interpolation is performed.
+interpolation is performed (for such interpolations, see :doc:`/grdinterpolate`).
 
 Note that the question mark, brackets and parentheses have special
 meanings on Unix-based platforms. Therefore, you will need to either
@@ -2685,8 +2691,7 @@ unit of the z-coordinate. The default is simply "z".
 Modifiers to read and write grids and images via GDAL
 -----------------------------------------------------
 
-If the support has been configured during installation, then GMT can
-read and write a variety of grid and image formats via GDAL. This
+GMT can read and write a variety of grid and image formats via GDAL. This
 extends the capability of GMT to handle data sets from a variety of
 sources.
 
@@ -2734,7 +2739,7 @@ Reading more complex multi-band IMAGES or GRIDS
 It is also possible to access to sub-datasets in a multi-band grid. The
 next example shows how we can extract the SST from the MODIS file ``A20030012003365.L3m_YR_NSST_9``
 that is stored in the HDF "format". We need to run the GDAL program
-**gdalinfo** on the file because we first
+*gdalinfo* on the file because we first
 must extract the necessary metadata from the file:
 
 .. code-block:: none
@@ -2804,7 +2809,7 @@ Writing grids and images
 Saving images in the common raster formats is possible but, for the time being, only from :doc:`/grdimage` and even
 that is restricted to raster type information. That is, vector data (for instance, coast lines) or text will not
 be saved. To save an image with :doc:`/grdimage` use the **-A**\ *outimg=driver* mechanism, where *driver*
-is the driver code name used by GDAL (e.g. GTiff) (run `gdal_translate --formats` for the full list.)
+is the driver code name used by GDAL (e.g. GTiff) (run *gdal_translate --formats* for the full list.)
 
 For all other programs that create grids, it is also possible to save them using GDAL. To do it one need to use
 the =gd appended with the necessary information regarding the driver and the data type to use. Generically,
@@ -2958,6 +2963,3 @@ Footnotes
 
 .. [18]
    Convert other graphics formats to Sun ras format using GraphicsMagick's or ImageMagick's **convert** program.
-
-.. [19]
-   Requires building GMT with GDAL.

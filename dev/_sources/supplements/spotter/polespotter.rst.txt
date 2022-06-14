@@ -46,7 +46,7 @@ fracture zones and the great circle extensions of abyssal hills
 are expected to intersect at potential rotation poles.  The assumption
 is that abyssal hill lines are meridians and fracture zones are parallels
 with respect to the rotation pole.  Line density may be computed and returned
-via a grid, the great circle lines may be returned via stdout, and the
+via a grid, the great circle lines may be returned via standard output, and the
 intersections of the great circles may be saved to file.  In line mode
 it will determine which line segments are compatible with a given trial
 pole, while in pole mode it will compute chi-squared misfits for all the
@@ -132,7 +132,7 @@ Optional Arguments
 **-Sp**
     Pole mode means we search for all poles on the given grid and determine the
     weighted chi-square misfit to all given line constraints.  This mode requires
-    **-G**, **-R**, **-I** (and optionally **-r**).
+    |-G|, |-R|, |-I| (and optionally **-r**).
 
 **-Ss**\ [**+c**\ *xfile*][**+l**]
     Spot mode means we compute bisectors to fracture zones and meridians along abyssal hills
@@ -182,7 +182,7 @@ Notes
    pairs of points define a great circle line segment.  For fracture zones,
    these points should be digitized often enough so that the great circle between
    then can approximate the small circle.
-#. All line segments are given equal angular uncertainty [1, unless changed by **-E**].  However,
+#. All line segments are given equal angular uncertainty [1, unless changed by |-E|].  However,
    individual line segments can override this weight by adding a **-D**\ *sigma*
    argument in the segment headers (in degrees).
 

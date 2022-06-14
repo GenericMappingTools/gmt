@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gmtset &mdash; GMT 6.3.0 documentation</title>
+  <title>gmtset &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="gmtset">
-<h1>gmtset<a class="headerlink" href="#gmtset" title="Permalink to this headline">¶</a></h1>
+<h1>gmtset<a class="headerlink" href="#gmtset" title="Permalink to this heading">¶</a></h1>
 <p>Change individual GMT default settings</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt set</strong> [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> | <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<strong>s</strong>|<strong>u</strong>] |
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>defaultsfile</em> ] [ <strong>-</strong><strong>B</strong>|<strong>J</strong>|<strong>R</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>p</strong><em>value</em> ]
 PARAMETER1 <em>value1</em> PARAMETER2 <em>value2</em> PARAMETER3 <em>value3</em>
@@ -153,7 +159,7 @@ PARAMETER1 <em>value1</em> PARAMETER2 <em>value2</em> PARAMETER3 <em>value3</em>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>set</strong> will adjust individual GMT defaults settings in the
 current directory’s <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file (under classic mode) or in the
 current session directory (modern mode). If no such file exists one will
@@ -167,7 +173,7 @@ for that command and do not permanently change the default settings on
 disk.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt>PARAMETER <em>value</em></dt><dd><p>Provide one or several pairs of parameter/value combinations that
 you want to modify. For a complete listing of available parameters
@@ -176,7 +182,7 @@ and their meaning, see the <a class="reference internal" href="gmt.conf.html"><s
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="c">
 <dt><strong>-C</strong></dt><dd><p>Convert a .gmtdefaults4 file created by GMT4 to a <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file
 used by modern GMT. The original file is retained.</p>
@@ -184,7 +190,7 @@ used by modern GMT. The original file is retained.</p>
 </dl>
 <dl class="simple" id="d">
 <dt><strong>-D</strong>[<strong>s</strong>|<strong>u</strong>]</dt><dd><p>Modify the GMT defaults based on the system settings. Append
-<strong>u</strong> for US defaults or <strong>s</strong> for SI defaults. [<strong>-D</strong> alone gives
+<strong>u</strong> for US defaults or <strong>s</strong> for SI defaults. [<a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> alone gives
 the version selected at compile time]</p>
 </dd>
 </dl>
@@ -197,7 +203,7 @@ first in current directory, then in your home directory, then in
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -209,7 +215,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To change annotation font to 12-point Helvetica, select grid-crosses of
 size 0.1 inch, and set annotation offset to 0.2 cm:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt <span class="nb">set</span> FONT_ANNOT_PRIMARY 12p,Helvetica MAP_GRID_CROSS_SIZE_PRIMARY <span class="m">0</span>.1i MAP_ANNOT_OFFSET_PRIMARY <span class="m">0</span>.2c
@@ -217,7 +223,7 @@ size 0.1 inch, and set annotation offset to 0.2 cm:</p>
 </div>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
 <a class="reference internal" href="gmtdefaults.html"><span class="doc">gmtdefaults</span></a>, <a class="reference internal" href="gmtget.html"><span class="doc">gmtget</span></a></p>
 </section>
@@ -234,8 +240,8 @@ size 0.1 inch, and set annotation offset to 0.2 cm:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

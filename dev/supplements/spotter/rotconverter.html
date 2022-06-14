@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rotconverter &mdash; GMT 6.3.0 documentation</title>
+  <title>rotconverter &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="rotconverter">
-<h1>rotconverter<a class="headerlink" href="#rotconverter" title="Permalink to this headline">¶</a></h1>
+<h1>rotconverter<a class="headerlink" href="#rotconverter" title="Permalink to this heading">¶</a></h1>
 <p>Manipulate total reconstruction and stage rotations</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt rotconverter</strong> [ <strong>±</strong> ] <em>rotA</em> [ <strong>±</strong> <em>rotB</em> ] [ <strong>±</strong> <em>rotC</em> ] …
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> ] [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><strong>s</strong>|<strong>t</strong> ]
@@ -159,7 +165,7 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>rotconverter</strong> reads one or more plate motion models (stage or total
 reconstruction rotations) stored in the given files. If more than one
 plate motion model is given we will add or subtract them in the order
@@ -169,7 +175,7 @@ opened we will attempt to decode the file name as a single rotation
 whose parameters are separated by slashes.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>rotX</em></dt><dd><p>Name of a file with a plate motion model. Separate several files
 with desired operator (+ or -). The very first file may also have a
@@ -187,7 +193,7 @@ time information, give <em>lon/lat/angle</em> only.</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong></dt><dd><p>Indicate that times are actually just opening angles [times in Myr].</p>
 </dd>
@@ -210,7 +216,7 @@ reconstruction rotations)].</p>
 <dl class="simple" id="m">
 <dt><strong>-M</strong>[<em>fact</em>]</dt><dd><p>Scale opening angles by <em>fact</em> on output [0.5].
 Typically used to get half-rates needed for flowlines.
-Requires stage pole output (see <strong>-F</strong>).</p>
+Requires stage pole output (see <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>).</p>
 </dd>
 </dl>
 <dl class="simple" id="n">
@@ -238,7 +244,7 @@ Requires stage pole output (see <strong>-F</strong>).</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -250,11 +256,11 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="limitations">
-<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading">¶</a></h2>
 <p>Note that only one of <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>, <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>, and <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> can be used at the same time.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To convert the total reconstruction rotations in the file
 model_total_reconstruction.APM to stage poles, run</p>
 <blockquote>
@@ -298,13 +304,13 @@ GPlates rotations database, try</p>
 </div></blockquote>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
 <p>GMT distributes the EarthByte rotation model Global_EarthByte_230-0Ma_GK07_AREPS.rot.
 To use an alternate rotation file, create an environmental parameters named
 <strong>GPLATES_ROTATIONS</strong> that points to an alternate rotation file.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="backtracker.html"><span class="doc">backtracker</span></a>,
 <a class="reference internal" href="grdrotater.html"><span class="doc">grdrotater</span></a>,
 <a class="reference internal" href="grdspotter.html"><span class="doc">grdspotter</span></a>,
@@ -327,8 +333,8 @@ To use an alternate rotation file, create an environmental parameters named
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

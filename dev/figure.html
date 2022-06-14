@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>figure &mdash; GMT 6.3.0 documentation</title>
+  <title>figure &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,16 +148,16 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="figure">
-<h1>figure<a class="headerlink" href="#figure" title="Permalink to this headline">¶</a></h1>
+<h1>figure<a class="headerlink" href="#figure" title="Permalink to this heading">¶</a></h1>
 <p>Set attributes for the current modern mode session figure</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt figure</strong> <em>prefix</em> [<em>formats</em>] [<em>options</em>]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>A GMT modern session can make any number of illustrations (including none).
 In situations when multiple illustrations will be made during a single session ,
 the <strong>figure</strong> module is used to specify the name and format(s) to use for the next plot.
@@ -166,7 +172,7 @@ Each figure maintains its own history and settings, so
 memory of region and projection settings only apply on a per figure basis.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>prefix</em></dt><dd><p>Name stem used to construct the figure name.  The extension(s) are appended
 automatically from your <em>formats</em> selection(s).
@@ -176,7 +182,7 @@ prefix in single quotes.</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="figure-formats">
 <dt><em>formats</em></dt><dd><p>Give one or more comma-separated graphics extensions from the list of allowable graphics
 <a class="reference internal" href="begin.html#tbl-formats"><span class="std std-ref">formats</span></a> (default is configurable via setting GMT_GRAPHICS_FORMAT [pdf]).
@@ -197,7 +203,7 @@ See the <a class="reference internal" href="psconvert.html"><span class="doc">ps
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exits (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exits.</p>
@@ -207,18 +213,19 @@ any module-specific option (but not the GMT common options), then exits.</p>
 </dl>
 </section>
 <section id="note-on-postscript">
-<h2>Note on PostScript<a class="headerlink" href="#note-on-postscript" title="Permalink to this headline">¶</a></h2>
+<h2>Note on PostScript<a class="headerlink" href="#note-on-postscript" title="Permalink to this heading">¶</a></h2>
 <p>If the user selects <strong>ps</strong> as one of the formats, then please be aware that
 it is recommended you first set the desired paper size.  With <strong>ps</strong>, GMT needs to
 work with a fixed paper size since, unlike the <strong>eps</strong> format, there will be
-no cropping to BoundingBox.  If no paper size is specified via <a class="reference internal" href="gmt.conf.html#term-PS_MEDIA"><span class="xref std std-term">PS_MEDIA</span></a>
+no cropping to a tight BoundingBox.  If no paper size is specified via <a class="reference internal" href="gmt.conf.html#term-PS_MEDIA"><span class="xref std std-term">PS_MEDIA</span></a>
 then GMT will default to A4 and issue a warning; GMT is unable to determine if that
 size is adequate for your plot but if the canvas width exceeds A4 paper width we will
-switch page orientation to landscape. For all other formats the final dimension will
+switch page orientation to landscape. Note that any other graphics formats specified
+with <strong>ps</strong> will also not be cropped.  Otherwise, for all other formats the final dimension will
 be determined automatically.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To start a new figure in your current modern mode session by the name Regional and
 request we make both a PDF and an EPS file, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin
@@ -266,13 +273,13 @@ gmt end show
 </div>
 </section>
 <section id="technical-note">
-<h2>Technical Note<a class="headerlink" href="#technical-note" title="Permalink to this headline">¶</a></h2>
+<h2>Technical Note<a class="headerlink" href="#technical-note" title="Permalink to this heading">¶</a></h2>
 <p>If you are calling <strong>figure</strong> from an external environment and you do not want the plot to
 be converted automatically when the session ends, perhaps because you wish to do this yourself,
 you can specify the file name or figure format as - (i.e., just a hyphen).</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="begin.html"><span class="doc">begin</span></a>,
 <a class="reference internal" href="clear.html"><span class="doc">clear</span></a>,
 <a class="reference internal" href="docs.html"><span class="doc">docs</span></a>,
@@ -294,8 +301,8 @@ you can specify the file name or figure format as - (i.e., just a hyphen).</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

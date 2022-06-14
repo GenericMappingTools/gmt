@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grd2xyz &mdash; GMT 6.3.0 documentation</title>
+  <title>grd2xyz &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grd2xyz">
-<h1>grd2xyz<a class="headerlink" href="#grd2xyz" title="Permalink to this headline">¶</a></h1>
+<h1>grd2xyz<a class="headerlink" href="#grd2xyz" title="Permalink to this heading">¶</a></h1>
 <p>Convert grid to data table</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grd2xyz</strong> <em>ingrid</em>
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<strong>f</strong>|<strong>i</strong>] ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<strong>c</strong>|<strong>r</strong>|<strong>x</strong>|<strong>y</strong>]<em>value</em> ]
@@ -154,7 +160,7 @@
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<strong>a</strong>|<strong>b</strong>][<em>base</em>] ]
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>a</strong>[<strong>+u</strong><em>unit</em>]|<em>weight</em>] ] [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[<em>flags</em>] ]
 [ <strong>-bo</strong><a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-d</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-ho</strong>[<em>n</em>] ]
 [ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
@@ -164,20 +170,19 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grd2xyz</strong> reads one or more binary 2-D grid files and writes out
 xyz-triplets in ASCII [or binary] format to standard output. Modify the
 precision of the ASCII output format by editing the
 <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> parameter in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file or use
 <strong>--FORMAT_FLOAT_OUT</strong>=<em>format</em> on the command line, or choose binary
 output using single or double precision storage. As an option you may
-output z-values without the (x,y) coordinates (see <strong>-Z</strong> below) or you can
+output z-values without the (x,y) coordinates (see <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> below) or you can
 save the grid in the STL format for 3-D printers.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
 <blockquote>
 <div><p>Names of 2-D binary grid files to be converted. Optionally, append =<em>ID</em> for reading a specific file
 format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
@@ -197,7 +202,7 @@ supported:</p>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="c">
 <dt><strong>-C</strong>[<strong>f</strong>|<strong>i</strong>]</dt><dd><p>Replace the x- and y-coordinates on output with the corresponding
 column and row numbers. These start at 0 (C-style counting); append
@@ -215,7 +220,7 @@ directives <strong>x</strong> and <strong>y</strong> we find the nearest column 
 </dd>
 </dl>
 <dl class="simple" id="r">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. Using the <strong>-R</strong> option will select a subsection of the grid. If this subsection exceeds the
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. Using the <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> option will select a subsection of the grid. If this subsection exceeds the
 boundaries of the grid, only the common region will be output. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
@@ -286,7 +291,7 @@ appending <strong>y</strong>. If the byte-order needs to be swapped, append
 </dl>
 <dl class="simple">
 <dt><strong>-bo</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for table output. [Default is 3]. This option
-only applies to xyz output; see <strong>-Z</strong> for z table output.</p>
+only applies to xyz output; see <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> for z table output.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -309,7 +314,7 @@ is selected. [Default is no header].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-qo</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output rows or data limit(s) [default is all rows].</p>
+<dt><strong>-qo</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output rows or data limit(s) [default is all rows].</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -317,7 +322,7 @@ is selected. [Default is no header].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -329,9 +334,9 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="units">
-<h2>Units<a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this heading">¶</a></h2>
 <p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
-minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default unless stated otherwise], <strong>f</strong>
 for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
 and <strong>u</strong> for US survey foot. By default we compute such distances using
 a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
@@ -341,7 +346,7 @@ exact geodesic calculations (slower but more accurate; see
 <a class="reference internal" href="gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a> for method used).</p>
 </section>
 <section id="ascii-format-precision">
-<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this heading">¶</a></h2>
 <p>The ASCII output formats of numerical data are controlled by parameters
 in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
 according to <a class="reference internal" href="gmt.conf.html#term-FORMAT_GEO_OUT"><span class="xref std std-term">FORMAT_GEO_OUT</span></a>, absolute time is
@@ -354,14 +359,14 @@ precision, consider switching to binary output (<strong>-bo</strong> if availabl
 specify more decimals using the <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> setting.</p>
 </section>
 <section id="non-equidistant-x-y-coordinates">
-<h2>Non-equidistant x/y Coordinates<a class="headerlink" href="#non-equidistant-x-y-coordinates" title="Permalink to this headline">¶</a></h2>
+<h2>Non-equidistant x/y Coordinates<a class="headerlink" href="#non-equidistant-x-y-coordinates" title="Permalink to this heading">¶</a></h2>
 <p>In general, GMT modules cannot accept grids with variable <em>x</em> and/or <em>y</em> coordinates as most
 algorithms and plotting options expect equidistant grids.  However, you can use <strong>grd2xyz</strong>
 to dump the original <em>x y z</em> triplets and then reprocess the data onto an equidistant
 lattice via <a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a>, <a class="reference internal" href="nearneighbor.html"><span class="doc">nearneighbor</span></a> or <a class="reference internal" href="surface.html"><span class="doc">surface</span></a>, for instance.</p>
 </section>
 <section id="time-coordinates">
-<h2>Time Coordinates<a class="headerlink" href="#time-coordinates" title="Permalink to this headline">¶</a></h2>
+<h2>Time Coordinates<a class="headerlink" href="#time-coordinates" title="Permalink to this heading">¶</a></h2>
 <p>Time coordinates in netCDF grids, be it the x, y, or z coordinate, will
 be recognized as such. The variable’s <strong>unit</strong> attribute is parsed to
 determine the unit and epoch of the time coordinate in the grid. Values
@@ -373,7 +378,7 @@ or absolute time when using the option <strong>-f0T</strong>, <strong>-f1T</stro
 for x, y, or z coordinate, respectively.</p>
 </section>
 <section id="row-order">
-<h2>Row Order<a class="headerlink" href="#row-order" title="Permalink to this headline">¶</a></h2>
+<h2>Row Order<a class="headerlink" href="#row-order" title="Permalink to this heading">¶</a></h2>
 <p>The <strong>-Lr</strong> option allows you to output a specific row in the grid. Note that while
 a grid’s y-coordinates are positive up, internal row numbers are scanline numbers
 and hence positive down.  Therefore, the first row (0) coincides with the largest <em>y</em>-value.
@@ -382,7 +387,7 @@ will yield the same result.  In contrast, both <em>x</em> and column numbers are
 with <strong>-Lc</strong><em>0</em> and <strong>-Lx</strong><em>xmin</em> (for the correct minimum x-value) yielding the same output.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To edit individual values in the 2’ by 2’ remote AFR.nc file, dump the .nc to ASCII:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grd2xyz @AFR.nc &gt; AFR.xyz
 </pre></div>
@@ -399,7 +404,7 @@ and where <em>area</em> reflects the size of each grid box, run:</p>
 </div>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>, <a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a>, <a class="reference internal" href="grdconvert.html"><span class="doc">grdconvert</span></a>,
 <a class="reference internal" href="xyz2grd.html"><span class="doc">xyz2grd</span></a></p>
@@ -417,8 +422,8 @@ and where <em>area</em> reflects the size of each grid box, run:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

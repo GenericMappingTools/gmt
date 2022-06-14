@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>text &mdash; GMT 6.3.0 documentation</title>
+  <title>text &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="text">
-<h1>text<a class="headerlink" href="#text" title="Permalink to this headline">¶</a></h1>
+<h1>text<a class="headerlink" href="#text" title="Permalink to this heading">¶</a></h1>
 <p>Plot or typeset text</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt text</strong> [ <em>textfiles</em> ]
 <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]
@@ -177,38 +183,76 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>text</strong> plots text strings of variable size, font type, and
 orientation. Various map projections are provided, with the option to
-draw and annotate the map boundaries. Greek characters, subscript, superscript, and small
-caps are supported as follows: The sequence &#64;~ toggles between the
-selected font and Greek (Symbol). &#64;%<em>font</em>% switches to <em>font</em> where
-<em>font</em> can either be a font <em>number</em> or <em>name</em> (see <strong>-L</strong>); &#64;%%
-resets the font to the starting font, &#64;- toggles subscripts on/off, &#64;+
-toggles superscript on/off, &#64;# toggles small caps on/off, &#64;;<em>color</em>;
-changes the font color (&#64;;; resets it), &#64;:<em>size</em>: changes the font
-size (&#64;:: resets it), and &#64;_ toggles underline on/off. &#64;&#64; prints the &#64;
-sign while &#64;. prints the degree symbol. &#64;a, &#64;c, &#64;e, &#64;i, &#64;n, &#64;o, &#64;s, &#64;u, &#64;A, &#64;C, &#64;E, &#64;N, &#64;O, and &#64;U
-give various accented European characters, as indicated in Table <a class="reference internal" href="cookbook/features.html#tbl-shorthand"><span class="std std-ref">escape</span></a>.
-Composite characters (overstrike) may be indicated with the
-&#64;!&lt;char1&gt;&lt;char2&gt; sequence, which will print the two characters on top of
-each other. To learn the octal codes for symbols not available on the
+draw and annotate the map boundaries.</p>
+<p>Greek characters, subscript, superscript, and small
+caps are supported as follows:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Behavior</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>&#64;~</p></td>
+<td><p>Toggles between the selected font and Greek (Symbol)</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;%<em>font</em>%</p></td>
+<td><p>Switches to <em>font</em> where <em>font</em> can either be a font <em>number</em> or <em>name</em> (see <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>) (&#64;%% resets it)</p></td>
+</tr>
+<tr class="row-even"><td><p>&#64;-</p></td>
+<td><p>Toggles subscripts on/off</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;+</p></td>
+<td><p>Toggles superscript on/off</p></td>
+</tr>
+<tr class="row-even"><td><p>&#64;#</p></td>
+<td><p>Toggles small caps on/off</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;;<em>color</em></p></td>
+<td><p>Changes the font color (&#64;;; resets it)</p></td>
+</tr>
+<tr class="row-even"><td><p>&#64;:<em>size</em></p></td>
+<td><p>Changes the font size (&#64;:: resets it)</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;_</p></td>
+<td><p>Toggles underline on/off</p></td>
+</tr>
+<tr class="row-even"><td><p>&#64;&#64;</p></td>
+<td><p>Prints the &#64; sign</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;.</p></td>
+<td><p>Prints the degree symbol</p></td>
+</tr>
+</tbody>
+</table>
+<p>&#64;a, &#64;c, &#64;e, &#64;i, &#64;n, &#64;o, &#64;s, &#64;u, &#64;A, &#64;C, &#64;E, &#64;N, &#64;O, and &#64;U give various accented European
+characters, as indicated in Table <a class="reference internal" href="cookbook/features.html#tbl-shorthand"><span class="std std-ref">escape</span></a>. Composite characters
+(overstrike) may be indicated with the &#64;!&lt;char1&gt;&lt;char2&gt; sequence, which will print the
+two characters on top of each other.</p>
+<p>To learn the octal codes for symbols not available on the
 keyboard and some accented European characters, see Section <a class="reference internal" href="cookbook/features.html#char-esc-seq"><span class="std std-ref">Character escape sequences</span></a> and
 Appendix <a class="reference internal" href="cookbook/octal-codes.html#chart-octal-codes-for-chars"><span class="std std-ref">Chart of Octal Codes for Characters</span></a> in the GMT Technical Reference and Cookbook. Note that
 <a class="reference internal" href="gmt.conf.html#term-PS_CHAR_ENCODING"><span class="xref std std-term">PS_CHAR_ENCODING</span></a> must be set to an extended character set in your
-<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file in order to use the accented characters. Using the
-<strong>-G</strong> or <strong>-W</strong> options, a rectangle underlying the text may be plotted
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file in order to use the accented characters.</p>
+<p>Using the <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> or <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
-characters, except in paragraph mode (<strong>-M</strong>)).  Finally, you may typeset
-LaTeX expressions provided they are enclosed in &#64;[ … &#64;[ or &lt;math&gt; … &lt;/math&gt;;
+characters, except in paragraph mode (<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>)).</p>
+<p>Finally, you may typeset LaTeX expressions provided they are enclosed in &#64;[ … &#64;[ or &lt;math&gt; … &lt;/math&gt;;
 see Chapter <a class="reference internal" href="cookbook/gmt-latex.html"><span class="doc">Using LaTeX Expressions in GMT</span></a> for more details.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>textfiles</em></dt><dd><p>This is one or more files containing 1 or more records with (<em>x</em>
 <em>y</em> [<em>font</em> <em>angle</em> <em>justify</em>] <em>text</em>). The presence or absence of
-items in the brackets are determined by <strong>-F</strong>. If no files
+items in the brackets are determined by <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>. If no files
 are given, <strong>text</strong> will read standard input. <em>font</em> is a font
 specification with format [<em>size</em>,][<em>font</em>,][<em>color</em>] where
 <em>size</em> is text size in points, <em>font</em> is the font to use, and
@@ -216,11 +260,11 @@ specification with format [<em>size</em>,][<em>font</em>,][<em>color</em>] where
 =<em>pen</em> to the font specification. The <em>angle</em> is measured in degrees
 counter-clockwise from horizontal, and <em>justify</em> sets the alignment.
 If <em>font</em> is not an integer, then it is taken to be a text string
-with the desired font name (see <strong>-L</strong> for available fonts). The
+with the desired font name (see <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> for available fonts). The
 alignment refers to the part of the text string that will be mapped
-onto the (<em>x</em>,<em>y</em>) point. Choose a 2 character combination of L,
-C, R (for left, center, or right) and T, M, B for top, middle, or
-bottom. e.g., BL for lower left.</p>
+onto the (<em>x</em>,<em>y</em>) point. Choose a 2 character combination of <strong>L</strong>,
+<strong>C</strong>, <strong>R</strong> (for left, center, or right) and <strong>T</strong>, <strong>M</strong>, <strong>B</strong>
+for top, middle, or bottom. e.g., <strong>BL</strong> for bottom left.</p>
 </dd>
 </dl>
 <dl class="simple" id="j">
@@ -237,7 +281,7 @@ bottom. e.g., BL for lower left.</p>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong></dt><dd><p>Angles are given as azimuths; convert them to directions using the
 current projection.</p>
@@ -249,13 +293,13 @@ current projection.</p>
 </dl>
 <dl class="simple" id="c">
 <dt><strong>-C</strong>[<em>dx/dy</em>][<strong>+to</strong>|<strong>O</strong>|<strong>c</strong>|<strong>C</strong>]</dt><dd><p>Adjust the clearance between the text and the surrounding box [15%].
-Only used if <strong>-W</strong> or <strong>-G</strong> are specified. Append the unit you
+Only used if <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> or <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> are specified. Append the unit you
 want (<strong>c</strong>m, <strong>i</strong>nch, or <strong>p</strong>oint; if not given we consult
 <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>) or % for a percentage of the font size.
-Optionally, use modifier <strong>+t</strong> to set the shape of the textbox when using <strong>-G</strong> and/or <strong>-W</strong>.
+Optionally, use modifier <strong>+t</strong> to set the shape of the textbox when using <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> and/or <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>.
 Append lower case <strong>o</strong> to get a straight rectangle [Default].
 Append upper case <strong>O</strong> to get a rounded rectangle. In paragraph
-mode (<strong>-M</strong>) you can also append lower case <strong>c</strong> to get a concave
+mode (<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>) you can also append lower case <strong>c</strong> to get a concave
 rectangle or append upper case <strong>C</strong> to get a convex rectangle.</p>
 </dd>
 </dl>
@@ -272,9 +316,9 @@ selection cannot be used with paragraph mode (<a class="reference internal" href
 </dd>
 </dl>
 <dl class="simple" id="f">
-<dt><strong>-F</strong>[<strong>+a</strong>[<em>angle</em>]][<strong>+c</strong>[<em>justify</em>]][<strong>+f</strong>[<em>font</em>]][<strong>+j</strong>[<em>justify</em>]][<strong>+h</strong>|<strong>l</strong>|<strong>r</strong>[<em>first</em>] |<strong>t</strong><em>text</em>|<strong>z</strong>[<em>format</em>]]</dt><dd><p>By default, text will be placed horizontally, using the primary
+<dt><strong>-F</strong>[<strong>+a</strong>[<em>angle</em>]][<strong>+c</strong>[<em>justify</em>]][<strong>+f</strong>[<em>font</em>]][<strong>+j</strong>[<em>justify</em>]][<strong>+h</strong>|<strong>l</strong>|<strong>r</strong>[<em>first</em>]|<strong>t</strong><em>text</em>|<strong>z</strong>[<em>format</em>]]</dt><dd><p>By default, text will be placed horizontally, using the primary
 annotation font attributes (<a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a>), and centered
-on the data point. Use <strong>-F</strong> to override these defaults by
+on the data point. Use <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> to override these defaults by
 specifying up to three text attributes (font, angle, and
 justification) directly on the command line. Use modifier <strong>+f</strong> to set the
 font ([<em>size</em>][,<em>fontname</em>][,<em>color</em>]); if no font info is given then the input
@@ -284,20 +328,20 @@ this as a column. Alternatively, use <strong>+A</strong> to force text-baselines
 to convert into the -90/+90 range.  Use <strong>+j</strong> to set the justification; if no
 justification is given then the input file must have this item as a
 column. Items read from the data file should be in the same order as
-the modifiers are specified with the <strong>-F</strong> option. Example:
+the modifiers are specified with the <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> option. Example:
 <strong>-F</strong><strong>+f</strong>12p,Helvetica-Bold,red<strong>+j+a</strong> selects a 12p red
 Helvetica-Bold font and expects to read the justification and angle
 from the file, in that order, after <em>x</em> <em>y</em> and before <em>text</em>.
-In addition, the <strong>+c</strong> justification lets us use <em>x,y</em> coordinates extracted from the
-<strong>-R</strong> string instead of providing them in the input file. For example <strong>-F+c</strong>TL
-gets the <em>x_min</em>, <em>y_max</em> from the <strong>-R</strong> string and plots the text
+In addition, the <strong>+c</strong><em>justification</em> lets us use <em>x,y</em> coordinates extracted from the
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> string instead of providing them in the input file. For example <strong>-F+c</strong>TL
+gets the <em>x_min</em>, <em>y_max</em> from the <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> string and plots the text
 at the Upper Left corner of the map.  Normally, the text to be plotted
 comes from the data record.  Instead, use <strong>+h</strong> or <strong>+l</strong> to select the
 text as the most recent segment header or segment label, respectively in
 a multisegment input file, <strong>+r</strong> to use the record number (counting up from <em>first</em>),
 <strong>+t</strong><em>text</em> to set a fixed text string (if <em>text</em> contains plus characters then the
-<strong>+t</strong> modifier must be the last modifier in <strong>-F</strong>), or <strong>+z</strong> to format incoming <em>z</em> values
-to a string using the supplied <em>format</em> [use <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_MAP"><span class="xref std std-term">FORMAT_FLOAT_MAP</span></a>].  <strong>Note</strong>: If <strong>-Z</strong> is
+<strong>+t</strong> modifier must be the last modifier in <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>), or <strong>+z</strong> to format incoming <em>z</em> values
+to a string using the supplied <em>format</em> [use <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_MAP"><span class="xref std std-term">FORMAT_FLOAT_MAP</span></a>].  <strong>Note</strong>: If <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> is
 in effect then the <em>z</em> value used for formatting is in the 4th, not 3rd column.
 If you only want a specific word from the trailing text and not the whole line,
 use <strong>-it</strong><em>word</em> to indicate which word (0 is the first word) you want.</p>
@@ -306,8 +350,8 @@ use <strong>-it</strong><em>word</em> to indicate which word (0 is the first wor
 <dl class="simple" id="g">
 <dt><strong>-G</strong>[<em>fill</em>][<strong>+n</strong>]</dt><dd><p>Sets the shade or color used for filling the text box [Default is no
 fill]. Alternatively, give no <em>fill</em> to plot text and then use the
-text dimensions (and <strong>-C</strong>) to build clip paths and turn clipping on.
-This clipping can then be turned off later with <a class="reference internal" href="clip.html"><span class="doc">clip</span></a> <strong>-C</strong>.
+text dimensions (and <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>) to build clip paths and turn clipping on.
+This clipping can then be turned off later with <a class="reference internal" href="clip.html"><span class="doc">clip</span></a> <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>.
 To <strong>not</strong> plot the text but activate clipping, use <strong>-G+n</strong> instead.
 <strong>Note</strong>: cannot be used with LaTeX expressions.</p>
 </dd>
@@ -324,7 +368,7 @@ information pertaining to the typesetting of a text paragraph (the
 remaining lines until next segment header). The information expected
 is (<em>x y</em> [<em>font angle justify</em>] <em>linespace parwidth parjust</em>),
 where <em>x y font angle justify</em> are defined above (the presence or
-absence of <em>font</em>, <em>angle</em>, and <em>justify</em> are determined by <strong>-F</strong>), while <em>linespace</em> and
+absence of <em>font</em>, <em>angle</em>, and <em>justify</em> are determined by <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>), while <em>linespace</em> and
 <em>parwidth</em> are the linespacing and paragraph width, respectively.
 The justification of the text paragraph is governed by <em>parjust</em>
 which may be <strong>l</strong>(eft), <strong>c</strong>(enter), <strong>r</strong>(ight), or
@@ -362,7 +406,7 @@ sets the fill color to use for shading [gray50].</p>
 </dl>
 <dl class="simple" id="w">
 <dt><strong>-W</strong><em>pen</em></dt><dd><p>Sets the pen used to draw a rectangle around the text string (see
-<strong>-C</strong>) [Default is width = default, color = black, style = solid].
+<a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>) [Default is width = default, color = black, style = solid].
 <strong>Note</strong>: cannot be used with LaTeX expressions.</p>
 </dd>
 </dl>
@@ -376,7 +420,7 @@ sets the fill color to use for shading [gray50].</p>
 </dl>
 <dl class="simple" id="z">
 <dt><strong>-Z</strong></dt><dd><p>For 3-D projections: expect each item to have its own level given in
-the 3rd column, and <strong>-N</strong> is implicitly set. (Not implemented for
+the 3rd column, and <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> is implicitly set. (Not implemented for
 paragraph mode).  <strong>Note</strong>: If <strong>-F+z</strong> is used then the text level
 is based on the 4th data column instead.</p>
 </dd>
@@ -408,7 +452,7 @@ the word order, with the first word being 0.  No numerical columns can be specif
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
+<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
 </dd>
 </dl>
 <dl class="simple" id="tv-full">
@@ -433,7 +477,7 @@ interpret it to mean <strong>-t+f</strong> for fill transparency only.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -445,7 +489,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -483,7 +527,7 @@ file text.txt on a Mercator plot with the given specifications, use:</p>
 </div>
 </section>
 <section id="windows-remarks">
-<h2>Windows Remarks<a class="headerlink" href="#windows-remarks" title="Permalink to this headline">¶</a></h2>
+<h2>Windows Remarks<a class="headerlink" href="#windows-remarks" title="Permalink to this heading">¶</a></h2>
 <p>Note that under Windows, the percent sign (%) is a variable indicator
 (like $ under Unix). To indicate a plain percentage sign in a batch
 script you need to repeat it (%%); hence the font switching mechanism
@@ -493,7 +537,7 @@ by DOS. Data files that are opened and read by the module do not need
 such duplication.</p>
 </section>
 <section id="composite-characters">
-<h2>Composite Characters<a class="headerlink" href="#composite-characters" title="Permalink to this headline">¶</a></h2>
+<h2>Composite Characters<a class="headerlink" href="#composite-characters" title="Permalink to this heading">¶</a></h2>
 <p>If the two characters that are to be combined come from different
 fonts (say, Symbol and Times), then it is allowed for the <em>second</em>
 character (but not the first) to be surrounded by escape codes to
@@ -504,7 +548,7 @@ over-printed dot (octal code \227 from the current font, assuming the
 ISOLatin1 character set).</p>
 </section>
 <section id="limitations">
-<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading">¶</a></h2>
 <p>In paragraph mode, the presence of composite characters and other escape
 sequences may lead to unfortunate word splitting. Also, if a font is
 requested with an outline pen it will not be used in paragraph mode.
@@ -512,20 +556,20 @@ Note if any single word is wider than your chosen paragraph width then
 the paragraph width is automatically enlarged to fit the widest word.</p>
 </section>
 <section id="use-from-external-interface">
-<h2>Use from external interface<a class="headerlink" href="#use-from-external-interface" title="Permalink to this headline">¶</a></h2>
+<h2>Use from external interface<a class="headerlink" href="#use-from-external-interface" title="Permalink to this heading">¶</a></h2>
 <p>When the module is called from external interfaces then we impose the following
-condition on the <strong>-F</strong> setting: We require that <strong>+a</strong> (read angle from
+condition on the <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> setting: We require that <strong>+a</strong> (read angle from
 input), if specified, must appear before either of <strong>+f</strong> (read font from input) and <strong>+j</strong>
 (read justification from input), if these are present.  This is necessary because the
 angle is a numerical column while font and justification must be encoded as part of the
 trailing text.</p>
 </section>
 <section id="adding-more-fonts">
-<h2>Adding more fonts<a class="headerlink" href="#adding-more-fonts" title="Permalink to this headline">¶</a></h2>
+<h2>Adding more fonts<a class="headerlink" href="#adding-more-fonts" title="Permalink to this heading">¶</a></h2>
 <p>To add custom fonts, please see <a class="reference internal" href="cookbook/postscript-fonts.html#non-default-fonts"><span class="std std-ref">General Features</span></a>.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
 <a class="reference internal" href="clip.html"><span class="doc">clip</span></a>,
 <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
@@ -546,8 +590,8 @@ trailing text.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

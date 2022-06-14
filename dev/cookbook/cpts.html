@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>17. Of Colors and Color Legends &mdash; GMT 6.3.0 documentation</title>
+  <title>17. Of Colors and Color Legends &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
@@ -169,9 +175,9 @@
            <div itemprop="articleBody">
              
   <section id="of-colors-and-color-legends">
-<span id="id1"></span><h1><span class="section-number">17. </span>Of Colors and Color Legends<a class="headerlink" href="#of-colors-and-color-legends" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1><span class="section-number">17. </span>Of Colors and Color Legends<a class="headerlink" href="#of-colors-and-color-legends" title="Permalink to this heading">¶</a></h1>
 <section id="built-in-color-palette-tables-cpt">
-<h2><span class="section-number">17.1. </span>Built-in color palette tables (CPT)<a class="headerlink" href="#built-in-color-palette-tables-cpt" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">17.1. </span>Built-in color palette tables (CPT)<a class="headerlink" href="#built-in-color-palette-tables-cpt" title="Permalink to this heading">¶</a></h2>
 <p>Figures <a class="reference internal" href="#cpt-files-a"><span class="std std-ref">CPTs a</span></a>, <a class="reference internal" href="#cpt-files-b"><span class="std std-ref">b</span></a>,
 <a class="reference internal" href="#cpt-files-c"><span class="std std-ref">c</span></a> and <a class="reference internal" href="#cpt-files-d"><span class="std std-ref">d</span></a> show the built-in
 color palettes, stored in so-called CPTs. The programs
@@ -185,6 +191,21 @@ bar are built by using <a class="reference internal" href="../makecpt.html"><spa
 Black and white triangles indicate which tables have hard or soft hinges,
 respectively. Some CPTs have a default <em>z</em>-range while others are dynamic.
 Default ranges, if available, are indicated on the top-right of the scales.</p>
+<p>The color maps are subdivided into a number of sections relating to their source. This avoids name clashes and improves recognision of the color maps as well as their
+authors:</p>
+<ul class="simple">
+<li><p><strong>gmt</strong>: color maps originally produced by the GMT authors and available in GMT for a long time;</p></li>
+<li><p><strong>SCM</strong>: Scientific Colour Maps by Fabio Crameri;</p></li>
+<li><p><strong>cmocean</strong>: ocean color maps by Kirsten Thyng;</p></li>
+<li><p><strong>cpt-city</strong>: color maps ported from the cpt-city archive;</p></li>
+<li><p><strong>google</strong>: color maps promoted by Google;</p></li>
+<li><p><strong>matlab</strong>: a selection of color maps supported by Matlab;</p></li>
+<li><p><strong>matplotlib</strong>: popular color maps from the matplotlib selection;</p></li>
+<li><p><strong>panoply</strong>: color maps from the Panoply application.</p></li>
+</ul>
+<p>Color maps can be selected in various of the GMT tools using <strong>-C</strong>[<em>section</em>/] <em>cpt</em>, where <em>cpt</em> is the color map name (without the <strong>.cpt</strong> extension) and
+<em>section</em> is one of the color map sections mentioned above. If <em>section</em> is omitted, the first matching <em>cpt</em> in those sections is used. Thus <strong>-Cglobe</strong> and
+<strong>-Cgmt/globe</strong> are equivalent.</p>
 <figure class="align-center" id="id2">
 <span id="cpt-files-a"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1a.png"><img alt="../_images/GMT_App_M_1a.png" src="../_images/GMT_App_M_1a.png" style="width: 500px;" /></a>
 <figcaption>
@@ -195,42 +216,7 @@ Default ranges, if available, are indicated on the top-right of the scales.</p>
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GMT_SHAREDIR</span><span class="o">=</span><span class="k">$(</span>gmt --show-sharedir<span class="k">)</span>
 
-cat <span class="s">&lt;&lt; EOF &gt; skip.lis</span>
-<span class="s">acton</span>
-<span class="s">bam</span>
-<span class="s">bamako</span>
-<span class="s">batlow</span>
-<span class="s">batlowK</span>
-<span class="s">batlowW</span>
-<span class="s">berlin</span>
-<span class="s">bilbao</span>
-<span class="s">broc</span>
-<span class="s">buda</span>
-<span class="s">bukavu</span>
-<span class="s">cork</span>
-<span class="s">davos</span>
-<span class="s">devon</span>
-<span class="s">fes</span>
-<span class="s">grayC</span>
-<span class="s">hawaii</span>
-<span class="s">imola</span>
-<span class="s">lajolla</span>
-<span class="s">lapaz</span>
-<span class="s">lisbon</span>
-<span class="s">nuuk</span>
-<span class="s">oleron</span>
-<span class="s">oslo</span>
-<span class="s">roma</span>
-<span class="s">tofino</span>
-<span class="s">tokyo</span>
-<span class="s">turku</span>
-<span class="s">vanimo</span>
-<span class="s">vik</span>
-<span class="s">srtm</span>
-<span class="s">categorical</span>
-<span class="s">paired</span>
-<span class="s">EOF</span>
-sed -e <span class="s1">&#39;s/&quot;//g&#39;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">GMT_SOURCE_DIR</span><span class="si">}</span><span class="s2">&quot;</span>/src/gmt_cpt_masters.h <span class="p">|</span> fgrep -v -f skip.lis <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span> <span class="p">|</span> sort -r &gt; tt.lis
+sed -e <span class="s1">&#39;s/&quot;//g&#39;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">GMT_SOURCE_DIR</span><span class="si">}</span><span class="s2">&quot;</span>/src/gmt_cpt_masters.h <span class="p">|</span> egrep -v <span class="s2">&quot;cyclic|categorical|cmocean|SCM|srtm&quot;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span> <span class="p">|</span> sort -r &gt; tt.lis
 
 <span class="nv">n</span><span class="o">=</span><span class="k">$(</span>cat tt.lis <span class="p">|</span> wc -l<span class="k">)</span>
 <span class="nb">let</span> <span class="nv">n2</span><span class="o">=</span>n/2
@@ -282,7 +268,7 @@ gmt basemap -R0/6.1/0/<span class="nv">$y0</span> -Jx1i -B0
 	<span class="nv">y</span><span class="o">=</span><span class="k">$(</span>gmt math -Q <span class="nv">$y</span> <span class="nv">$dy</span> <span class="nv">ADD</span> <span class="o">=</span><span class="k">)</span>
 	<span class="nv">y2</span><span class="o">=</span><span class="k">$(</span>gmt math -Q <span class="nv">$y2</span> <span class="nv">$dy</span> <span class="nv">ADD</span> <span class="o">=</span><span class="k">)</span>
 <span class="k">done</span>
-rm -f tt.* skip.lis
+rm -f tt.*
 gmt end show
 </pre></div>
 </div>
@@ -297,38 +283,7 @@ gmt end show
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GMT_SHAREDIR</span><span class="o">=</span><span class="k">$(</span>gmt --show-sharedir<span class="k">)</span>
 
-cat <span class="s">&lt;&lt; EOF &gt; tt.lis</span>
-<span class="s">acton</span>
-<span class="s">bam</span>
-<span class="s">bamako</span>
-<span class="s">batlow</span>
-<span class="s">batlowK</span>
-<span class="s">batlowW</span>
-<span class="s">berlin</span>
-<span class="s">bilbao</span>
-<span class="s">broc</span>
-<span class="s">buda</span>
-<span class="s">bukavu</span>
-<span class="s">cork</span>
-<span class="s">davos</span>
-<span class="s">devon</span>
-<span class="s">fes</span>
-<span class="s">grayC</span>
-<span class="s">hawaii</span>
-<span class="s">imola</span>
-<span class="s">lajolla</span>
-<span class="s">lapaz</span>
-<span class="s">lisbon</span>
-<span class="s">nuuk</span>
-<span class="s">oleron</span>
-<span class="s">oslo</span>
-<span class="s">roma</span>
-<span class="s">tofino</span>
-<span class="s">tokyo</span>
-<span class="s">turku</span>
-<span class="s">vanimo</span>
-<span class="s">vik</span>
-<span class="s">EOF</span>
+sed -e <span class="s1">&#39;s/&quot;//g&#39;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">GMT_SOURCE_DIR</span><span class="si">}</span><span class="s2">&quot;</span>/src/gmt_cpt_masters.h <span class="p">|</span> egrep SCM <span class="p">|</span> egrep -v <span class="s2">&quot;categorical|cyclic&quot;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span> <span class="p">|</span> sort -r &gt; tt.lis
 
 <span class="nv">n</span><span class="o">=</span><span class="k">$(</span>cat tt.lis <span class="p">|</span> wc -l<span class="k">)</span>
 <span class="nb">let</span> <span class="nv">n2</span><span class="o">=</span>n/2
@@ -384,7 +339,7 @@ gmt end show
 <figure class="align-center" id="id4">
 <span id="cpt-files-c"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1c.png"><img alt="../_images/GMT_App_M_1c.png" src="../_images/GMT_App_M_1c.png" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-text">The 18 categorical CPTs (those ending in “S” are the categorical
+<p><span class="caption-text">The 18 categorical color maps (those ending in “S” are the categorical
 scientific color maps by Fabio Crameri) supported by GMT.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -392,26 +347,7 @@ scientific color maps by Fabio Crameri) supported by GMT.</span><a class="header
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GMT_SHAREDIR</span><span class="o">=</span><span class="k">$(</span>gmt --show-sharedir<span class="k">)</span>
 
-cat <span class="s">&lt;&lt; EOF &gt; tt.lis</span>
-<span class="s">actonS</span>
-<span class="s">bamakoS</span>
-<span class="s">batlowS</span>
-<span class="s">bilbaoS</span>
-<span class="s">budaS</span>
-<span class="s">categorical</span>
-<span class="s">davosS</span>
-<span class="s">devonS</span>
-<span class="s">grayCS</span>
-<span class="s">hawaiiS</span>
-<span class="s">imolaS</span>
-<span class="s">lajollaS</span>
-<span class="s">lapazS</span>
-<span class="s">nuukS</span>
-<span class="s">osloS</span>
-<span class="s">paired</span>
-<span class="s">tokyoS</span>
-<span class="s">turkuS</span>
-<span class="s">EOF</span>
+sed -e <span class="s1">&#39;s/&quot;//g&#39;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">GMT_SOURCE_DIR</span><span class="si">}</span><span class="s2">&quot;</span>/src/gmt_cpt_masters.h <span class="p">|</span> egrep ategorical <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span> <span class="p">|</span> sort -r &gt; tt.lis
 
 <span class="nv">n</span><span class="o">=</span><span class="k">$(</span>cat tt.lis <span class="p">|</span> wc -l<span class="k">)</span>
 <span class="nb">let</span> <span class="nv">n2</span><span class="o">=</span>n/2
@@ -467,8 +403,9 @@ gmt end show
 <figure class="align-center" id="id5">
 <span id="cpt-files-d"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1d.png"><img alt="../_images/GMT_App_M_1d.png" src="../_images/GMT_App_M_1d.png" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-text">The 5 cyclic scientific color maps by Fabio Crameri supported by GMT.
-<strong>Note</strong>: Any GMT CPT can be made cyclic by running <a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a>
+<p><span class="caption-text">The 7 cyclic color maps (those ending in “O” are the cyclic
+scientific color maps by Fabio Crameri) supported by GMT.
+<strong>Note</strong>: Any GMT colormap can be made cyclic by running <a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a>
 with the <strong>-Ww</strong> option (wrapped = cyclic).</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
@@ -476,13 +413,7 @@ with the <strong>-Ww</strong> option (wrapped = cyclic).</span><a class="headerl
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GMT_SHAREDIR</span><span class="o">=</span><span class="k">$(</span>gmt --show-sharedir<span class="k">)</span>
 
-cat <span class="s">&lt;&lt; EOF &gt; tt.lis</span>
-<span class="s">bamO</span>
-<span class="s">brocO</span>
-<span class="s">corkO</span>
-<span class="s">romaO</span>
-<span class="s">vikO</span>
-<span class="s">EOF</span>
+sed -e <span class="s1">&#39;s/&quot;//g&#39;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">GMT_SOURCE_DIR</span><span class="si">}</span><span class="s2">&quot;</span>/src/gmt_cpt_masters.h <span class="p">|</span> egrep cyclic <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span> <span class="p">|</span> sort -r &gt; tt.lis
 
 <span class="nv">n</span><span class="o">=</span><span class="k">$(</span>cat tt.lis <span class="p">|</span> wc -l<span class="k">)</span>
 <span class="nb">let</span> <span class="nv">n2</span><span class="o">=</span>n/2
@@ -528,12 +459,79 @@ gmt end show
 </pre></div>
 </div>
 </div>
+<figure class="align-center" id="id6">
+<span id="cpt-files-e"></span><a class="reference internal image-reference" href="../_images/GMT_App_M_1e.png"><img alt="../_images/GMT_App_M_1e.png" src="../_images/GMT_App_M_1e.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">The 22 color maps from cmocean by Kristen M. Thyng supported by GMT.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="toggle docutils container">
+<p>Here is the source script for the figure above:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GMT_SHAREDIR</span><span class="o">=</span><span class="k">$(</span>gmt --show-sharedir<span class="k">)</span>
+
+sed -e <span class="s1">&#39;s/&quot;//g&#39;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">GMT_SOURCE_DIR</span><span class="si">}</span><span class="s2">&quot;</span>/src/gmt_cpt_masters.h <span class="p">|</span> egrep cmocean <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span> <span class="p">|</span> sort -r &gt; tt.lis
+
+<span class="nv">n</span><span class="o">=</span><span class="k">$(</span>cat tt.lis <span class="p">|</span> wc -l<span class="k">)</span>
+<span class="nb">let</span> <span class="nv">n2</span><span class="o">=</span>n/2
+<span class="nv">dy</span><span class="o">=</span><span class="m">0</span>.6
+<span class="nv">y0</span><span class="o">=</span><span class="k">$(</span>gmt math -Q <span class="nv">$n2</span> <span class="nv">$dy</span> MUL <span class="m">0</span>.1 <span class="nv">ADD</span> <span class="o">=</span><span class="k">)</span>
+
+gmt begin GMT_App_M_1e
+gmt <span class="nb">set</span> GMT_THEME cookbook
+gmt <span class="nb">set</span> MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY <span class="m">0</span>.1i MAP_ANNOT_OFFSET_PRIMARY <span class="m">0</span>.04i
+gmt basemap -R0/6.1/0/<span class="nv">$y0</span> -Jx1i -B0
+
+<span class="nb">let</span> <span class="nv">i</span><span class="o">=</span><span class="m">1</span>
+<span class="nv">y</span><span class="o">=</span><span class="m">0</span>.375
+<span class="nv">y2</span><span class="o">=</span><span class="m">0</span>.25
+<span class="k">while</span> <span class="o">[</span> <span class="nv">$i</span> -le <span class="nv">$n</span> <span class="o">]</span>
+<span class="k">do</span>
+	<span class="nv">j</span><span class="o">=</span><span class="k">$(</span>expr <span class="nv">$i</span> + <span class="m">1</span><span class="k">)</span>
+	<span class="nv">left</span><span class="o">=</span><span class="k">$(</span>sed -n <span class="si">${</span><span class="nv">j</span><span class="si">}</span>p tt.lis<span class="k">)</span>
+	<span class="nv">right</span><span class="o">=</span><span class="k">$(</span>sed -n <span class="si">${</span><span class="nv">i</span><span class="si">}</span>p tt.lis<span class="k">)</span>
+	gmt makecpt -H -C<span class="nv">$left</span> -T-1/1 &gt; tt.left.cpt
+	gmt makecpt -H -C<span class="nv">$left</span> -T-1/1/0.25 &gt; tt.left2.cpt
+	gmt makecpt -H -C<span class="nv">$right</span> -T-1/1 &gt; tt.right.cpt
+	gmt makecpt -H -C<span class="nv">$right</span> -T-1/1/0.25 &gt; tt.right2.cpt
+	gmt colorbar -Dx1.55i/<span class="si">${</span><span class="nv">y</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e -Ctt.left.cpt -B0
+	gmt colorbar -Dx4.50i/<span class="si">${</span><span class="nv">y</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e -Ctt.right.cpt -B0
+	gmt colorbar -Dx1.55i/<span class="si">${</span><span class="nv">y2</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e -Ctt.left2.cpt -Bf0.25
+	gmt colorbar -Dx4.50i/<span class="si">${</span><span class="nv">y2</span><span class="si">}</span>i+w2.70i/0.125i+h+jTC+e -Ctt.right2.cpt -Bf0.25
+	gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC <span class="s">&lt;&lt;- END</span>
+<span class="s">	1.55 $y ${left}</span>
+<span class="s">	4.50 $y ${right}</span>
+<span class="s">	END</span>
+	<span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>grep -c RANGE <span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt<span class="k">)</span> -eq <span class="m">1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="c1"># Plot default range for left CPT</span>
+		grep RANGE <span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt <span class="p">|</span> awk <span class="s1">&#39;{printf &quot;2.9 %g %s\n&quot;, &quot;&#39;</span><span class="nv">$y</span><span class="s1">&#39;&quot;, $4}&#39;</span> <span class="p">|</span> gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N
+	<span class="k">fi</span>
+	<span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>grep -c HARD_HINGE <span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt<span class="k">)</span> -eq <span class="m">1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="c1"># Plot hard hinge symbol for left CPT</span>
+		<span class="nb">echo</span> <span class="m">1</span>.55 <span class="nv">$y</span> <span class="p">|</span> gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i
+	<span class="k">elif</span> <span class="o">[</span> <span class="k">$(</span>grep -c SOFT_HINGE <span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">left</span><span class="si">}</span>.cpt<span class="k">)</span> -eq <span class="m">1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="c1"># Plot soft hinge symbol for left CPT</span>
+		<span class="nb">echo</span> <span class="m">1</span>.55 <span class="nv">$y</span> <span class="p">|</span> gmt plot -St0.2c -Gwhite -Wfaint -D0/-0.29i
+	<span class="k">fi</span>
+	<span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>grep -c RANGE <span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt<span class="k">)</span> -eq <span class="m">1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="c1"># Plot default range for left CPT</span>
+		grep RANGE <span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt <span class="p">|</span> awk <span class="s1">&#39;{printf &quot;5.85 %g %s\n&quot;, &quot;&#39;</span><span class="nv">$y</span><span class="s1">&#39;&quot;, $4}&#39;</span> <span class="p">|</span> gmt text -F+f6p,Helvetica+jRB -D0/0.025i -N
+	<span class="k">fi</span>
+	<span class="k">if</span> <span class="o">[</span> <span class="k">$(</span>grep -c HARD_HINGE <span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt<span class="k">)</span> -eq <span class="m">1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="c1"># Plot hard hinge symbol for right CPT</span>
+		<span class="nb">echo</span> <span class="m">4</span>.50 <span class="nv">$y</span> <span class="p">|</span> gmt plot -St0.2c -Gblack -Wfaint -D0/-0.29i
+	<span class="k">elif</span> <span class="o">[</span> <span class="k">$(</span>grep -c SOFT_HINGE <span class="si">${</span><span class="nv">GMT_SHAREDIR</span><span class="si">}</span>/cpt/<span class="si">${</span><span class="nv">right</span><span class="si">}</span>.cpt<span class="k">)</span> -eq <span class="m">1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="c1"># Plot soft hinge symbol for right CPT</span>
+		<span class="nb">echo</span> <span class="m">4</span>.50 <span class="nv">$y</span> <span class="p">|</span> gmt plot -St0.2c -Gwhite -Wfaint -D0/-0.29i
+	<span class="k">fi</span>
+	<span class="nv">i</span><span class="o">=</span><span class="k">$(</span>expr <span class="nv">$i</span> + <span class="m">2</span><span class="k">)</span>
+	<span class="nv">y</span><span class="o">=</span><span class="k">$(</span>gmt math -Q <span class="nv">$y</span> <span class="nv">$dy</span> <span class="nv">ADD</span> <span class="o">=</span><span class="k">)</span>
+	<span class="nv">y2</span><span class="o">=</span><span class="k">$(</span>gmt math -Q <span class="nv">$y2</span> <span class="nv">$dy</span> <span class="nv">ADD</span> <span class="o">=</span><span class="k">)</span>
+<span class="k">done</span>
+rm -f tt.*
+gmt end show
+</pre></div>
+</div>
+</div>
 <p>For additional color tables, visit
 <a class="reference external" href="http://soliton.vm.bytemark.co.uk/pub/cpt-city/">cpt-city</a> and
 <a class="reference external" href="http://www.fabiocrameri.ch/colourmaps.php">Scientific Colour-Maps</a>.</p>
 </section>
 <section id="labeled-and-non-equidistant-color-legends">
-<h2><span class="section-number">17.2. </span>Labeled and non-equidistant color legends<a class="headerlink" href="#labeled-and-non-equidistant-color-legends" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">17.2. </span>Labeled and non-equidistant color legends<a class="headerlink" href="#labeled-and-non-equidistant-color-legends" title="Permalink to this heading">¶</a></h2>
 <p>The use of color legends has already been introduced in Examples
 <a class="reference internal" href="../gallery/ex02.html#example-02"><span class="std std-ref">2</span></a>, <a class="reference internal" href="../gallery/ex16.html#example-16"><span class="std std-ref">16</span></a>, and <a class="reference internal" href="../gallery/ex17.html#example-17"><span class="std std-ref">17</span></a>.
 Things become a bit more
@@ -610,8 +608,8 @@ gmt end show
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

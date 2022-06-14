@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdblend &mdash; GMT 6.3.0 documentation</title>
+  <title>grdblend &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdblend">
-<h1>grdblend<a class="headerlink" href="#grdblend" title="Permalink to this headline">¶</a></h1>
+<h1>grdblend<a class="headerlink" href="#grdblend" title="Permalink to this heading">¶</a></h1>
 <p>Blend several partially overlapping grids into one larger grid</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdblend</strong>
 [ <em>blendfile</em> | <em>grid1</em> <em>grid2</em> … ]
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
@@ -156,7 +162,7 @@
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>scale</em> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>z</strong>] ]
-[ <strong>-di</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-n</strong><a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-r</strong><a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">reg</span></a> ]
@@ -164,7 +170,7 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdblend</strong> reads a listing of grid files and blend parameters and
 creates a binary grid file by blending the other grids using
 cosine-taper weights. <strong>grdblend</strong> will report if some of the nodes are
@@ -177,7 +183,7 @@ row-by-row i/o nature of operations in <strong>grdblend</strong> we only support
 netCDF and native binary grid formats for both input and output.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>blendfile</em></dt><dd><p>ASCII file with one record per grid file to include in the blend.
 Each record may contain up to three items, separated by spaces or tabs:
@@ -198,11 +204,22 @@ should use their actual region as the interior region, then you may simply
 list all the grids on the command line instead of providing a
 <em>blendfile</em>. You must specify at least 2 input grids for this
 mechanism to work. Any grid that is not co-registered with the
-desired output layout implied by <strong>-R</strong>, <strong>-I</strong> (and <strong>-r</strong><a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">reg</span></a>) will
+desired output layout implied by <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>, <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> (and <strong>-r</strong><a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">reg</span></a>) will
 first be resampled via <a class="reference internal" href="grdsample.html"><span class="doc">grdsample</span></a>. Also, grids that are not in
 netCDF or native binary format will first be reformatted via <a class="reference internal" href="grdconvert.html"><span class="doc">grdconvert</span></a>.</p>
 </dd>
 </dl>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/GMT_blend.png"><img alt="_images/GMT_blend.png" src="_images/GMT_blend.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Each input grid has its full region (heavy line) and optionally an inner
+region (dashed line). The area between these bounds are subject to cosine
+tapering, where the weight will go from 0 to 1 (or the specified relative
+weight per grid).  Any output grid node is then a weighted sum of the grids
+that overlap the node.  Blue line shows a crossection of how the blending
+and tapering works.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <dl class="simple" id="g">
 <dt><strong>-G</strong><em>outgrid</em></dt><dd><p><em>outgrid</em> is the name of the binary output grid file. (See
 <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>). Only netCDF and native binary
@@ -248,7 +265,7 @@ to override these values.</p></li>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="c">
 <dt><strong>-C</strong><strong>f</strong>|<strong>l</strong>|<strong>o</strong>|<strong>u</strong>[<strong>+n</strong>|<strong>p</strong>]</dt><dd><p>Clobber mode: Instead of blending, simply pick the value of one of
 the grids that covers a node. Select from the following modes: <strong>f</strong>
@@ -299,7 +316,7 @@ Append <strong>z</strong> to write the weight*z sum instead.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -311,7 +328,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="geographical-and-time-coordinates">
-<h2>Geographical And Time Coordinates<a class="headerlink" href="#geographical-and-time-coordinates" title="Permalink to this headline">¶</a></h2>
+<h2>Geographical And Time Coordinates<a class="headerlink" href="#geographical-and-time-coordinates" title="Permalink to this heading">¶</a></h2>
 <p>When the output grid type is netCDF, the coordinates will be labeled
 “longitude”, “latitude”, or “time” based on the attributes of the input
 data or grid (if any) or on the <strong>-f</strong> or <strong>-R</strong> options. For example,
@@ -324,14 +341,14 @@ command line. In addition, the <strong>unit</strong> attribute of the time varia
 will indicate both this unit and epoch.</p>
 </section>
 <section id="tapering">
-<h2>Tapering<a class="headerlink" href="#tapering" title="Permalink to this headline">¶</a></h2>
+<h2>Tapering<a class="headerlink" href="#tapering" title="Permalink to this heading">¶</a></h2>
 <p>While the weights computed are tapered from 1 to 0, we are computing weighted
 averages, so if there is only a single grid given then the weighted output
 will be identical to the input.  If you are looking for a way to taper your
 data grid, see grdmath’s TAPER operator.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -355,7 +372,7 @@ piece_4.nc -R&lt;subregion_4&gt; <span class="m">1</span>
 </div>
 </section>
 <section id="warning-on-large-file-sets">
-<h2>Warning on large file sets<a class="headerlink" href="#warning-on-large-file-sets" title="Permalink to this headline">¶</a></h2>
+<h2>Warning on large file sets<a class="headerlink" href="#warning-on-large-file-sets" title="Permalink to this heading">¶</a></h2>
 <p>While <strong>grdblend</strong> can process any number of files, it works by keeping those
 files open that are being blended, and close files as soon as they are finished.
 Depending on your session, many files may remain open at the same time.
@@ -365,7 +382,7 @@ run into this problem then you can change this limit; see your operating system
 documentation for how to change system limits.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a>,
 <a class="reference internal" href="grdconvert.html"><span class="doc">grdconvert</span></a>,
@@ -385,8 +402,8 @@ documentation for how to change system limits.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

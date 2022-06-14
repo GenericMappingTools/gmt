@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>colorbar &mdash; GMT 6.3.0 documentation</title>
+  <title>colorbar &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="colorbar">
-<h1>colorbar<a class="headerlink" href="#colorbar" title="Permalink to this headline">¶</a></h1>
+<h1>colorbar<a class="headerlink" href="#colorbar" title="Permalink to this heading">¶</a></h1>
 <p>Plot gray scale or color scale bar</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt colorbar</strong>
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em> ]
@@ -172,13 +178,13 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>Plots gray scales or color scales on maps. Both horizontal
 and vertical scales are supported. For color palette tables (CPTs) with gradational
 colors (i.e., the lower and upper boundary of an interval have different
 colors) we will interpolate to give a continuous scale.
 Variations in intensity due to shading/illumination may be displayed by
-setting the option <strong>-I</strong>. Colors may be spaced according to a linear
+setting the option <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>. Colors may be spaced according to a linear
 scale, all be equal size, or by providing a file with individual tile
 widths. The font used for the annotations along the scale and optional
 units is specified by <a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a>.
@@ -192,34 +198,34 @@ a full overview of CPTs, see the Cookbook section on <a class="reference interna
 </figure>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <p>None.</p>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="b">
 <dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set annotation, tick, and gridline interval for the colorbar. The
 x-axis label will plot beneath a horizontal bar (or vertically to
-the right of a vertical bar), except when using the <strong>+m</strong> modifier of the <strong>-D</strong> option. As an
+the right of a vertical bar), except when using the <strong>+m</strong> modifier of the <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> option. As an
 option, use the y-axis label to plot the data unit to the right of a
-horizontal bar (and above a vertical bar). If <strong>-B</strong> is omitted, or no annotation intervals are
+horizontal bar (and above a vertical bar). If <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong> is omitted, or no annotation intervals are
 provided (classic mode only), the default is to annotate every color level based on the
 numerical entries in the CPT (which may be overridden by ULB
 flags in the CPT). The exception to this rule is for CPT files that were scaled to fit the range
 of a grid exactly and thus have arbitrary color levels; these will trigger an automatic <strong>-Baf</strong> setting.
 To specify custom text annotations for
-intervals, you must append ;<em>annotation</em> to each z-slice in the CPT. <strong>Note</strong>: The <strong>-B</strong>
-option relies on the <strong>-R</strong> and <strong>-J</strong> settings of the <a class="reference internal" href="cookbook/features.html#gmt-modern-mode-hierarchical-levels"><span class="std std-ref">given hierarchical level</span></a>
-to plot correctly. For standard <strong>-B</strong> operations, <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+intervals, you must append ;<em>annotation</em> to each z-slice in the CPT. <strong>Note</strong>: The <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>
+option relies on the <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> settings of the <a class="reference internal" href="cookbook/features.html#gmt-modern-mode-hierarchical-levels"><span class="std std-ref">given hierarchical level</span></a>
+to plot correctly. For standard <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong> operations, <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="c">
-<dt><strong>-C</strong>[<em>cpt</em>]</dt><dd><p><em>cpt</em> is the CPT to be used. If no <em>cpt</em> is appended or no <strong>-C</strong> is given
-then we use the current CPT (modern mode only).  In classic mode, if no <strong>-C</strong>
-is given then we read stdin.  By default all
+<dt><strong>-C</strong>[<em>cpt</em>]</dt><dd><p><em>cpt</em> is the CPT to be used. If no <em>cpt</em> is appended or no <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> is given
+then we use the current CPT (modern mode only).  In classic mode, if no <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>
+is given then we read standard input.  By default all
 color changes are annotated. To use a subset, add an extra column to
 the CPT with a L, U, or B to annotate Lower, Upper, or Both
-color segment boundaries (but see <strong>-B</strong>). Like <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>, we can understand
+color segment boundaries (but see <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>). Like <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>, we can understand
 pattern specifications in the CPT. For CPTs where the
 <em>z</em> range is in meters, it may be useful to change to another unit
 when plotting.  To do so, append <strong>+U</strong><em>unit</em> to the file name.
@@ -318,11 +324,11 @@ asymmetric range [Default is no illumination].</p>
 <p id="l"><strong>-L</strong>[<strong>i</strong>][<em>gap</em>]</p>
 <blockquote>
 <div><p>Gives equal-sized color rectangles. Default scales rectangles
-according to the z-range in the CPT (Also see <strong>-Z</strong>). If
+according to the z-range in the CPT (Also see <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>). If
 <em>gap</em> is appended and the CPT is discrete we will center each
 annotation on each rectangle, using the lower boundary z-value for
 the annotation. If <strong>i</strong> is prepended we annotate the interval range
-instead. If <strong>-I</strong> is used then each rectangle will have its
+instead. If <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> is used then each rectangle will have its
 constant color modified by the specified intensity.</p>
 </div></blockquote>
 <dl class="simple" id="m">
@@ -347,12 +353,9 @@ values will be annotated using the 10^p format [Default is linear scale].</p>
 <div><p>Specify the region of interest.  </p>
 <p>The region may be specified in one of several ways:</p>
 <ol class="arabic">
-<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>+u</strong><em>unit</em>]. This is the standard way to specify geographic regions
+<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>. This is the standard way to specify geographic regions
 when using map projections where meridians and parallels are rectilinear. The coordinates may be specified in
-decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format. Optionally, append
-<strong>+u</strong><em>unit</em> to specify a region in projected units (e.g., UTM meters) where <em>west</em>/<em>east</em>/<em>south</em>/<em>north</em> are
-Cartesian projected coordinates compatible with the chosen projection (<strong>-J</strong>) and <em>unit</em> is an allowable
-<a class="reference internal" href="cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a>; we inversely project to determine the actual rectangular geographic region.</p></li>
+decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format.</p></li>
 <li><p><strong>-R</strong><em>west</em>/<em>south</em>/<em>east</em>/<em>north</em><strong>+r</strong>. This form is useful for map projections that are oblique,
 making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner
 and upper right corner geographic coordinates, followed by the modifier <strong>+r</strong>. This form guarantees a
@@ -361,24 +364,34 @@ rectangular map even though lines of equal longitude and latitude are not straig
 and -180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).</p></li>
 <li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
 consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
-countries given by the codes. Simply append one or more comma-separated countries using the two-character
-<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a>. To select a state within a
-country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent, prepend <strong>=</strong> to any
-of the continent codes <strong>AF</strong> (Africa), <strong>AN</strong> (Antarctica), <strong>AS</strong> (Asia), <strong>EU</strong> (Europe), <strong>OC</strong> (Oceania),
-<strong>NA</strong> (North America), or <strong>SA</strong> (South America). The following modifiers can be appended:</p>
+countries given by the codes. Simply append one or more comma-separated countries using either the two-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
+country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
+or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
+Finally, append any <a class="reference internal" href="coast.html#id1"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
+the collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
 <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
-national bounding box of France rounded to nearest integer degree.</p></li>
-<li><p><strong>+R</strong> to extend the region outward by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension].</p></li>
+national bounding box of France rounded to nearest integer degree, where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+R</strong> to adjust the region by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension], where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
 <li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box extends by at least 0.25 times the increment
-[default is no adjustment].</p></li>
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box is adjusted by at least 0.25 times the
+increment [default is no adjustment], where <em>inc</em> can be positive to expand the region or negative to shrink
+the region.</p></li>
 </ul>
 </div></blockquote>
 </li>
+<li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+u</strong><em>unit</em>] specifies a region in projected units (e.g., UTM meters)
+where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible with the chosen projection
+(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
+actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
+<strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults to <em>halfwidth</em> if not given.
+This short-hand requires the <strong>+u</strong> modifier.</p></li>
 <li><p><strong>-R</strong><em>justify</em><em>lon0</em>/<em>lat0</em>/<em>nx</em>/<em>ny</em>, where <em>justify</em> is a 2-character combination of
 <strong>L</strong>|<strong>C</strong>|<strong>R</strong> (for left, center, or right) and <strong>T</strong>|<strong>M</strong>|<strong>B</strong> (for top, middle, or bottom)
 (e.g., <strong>BL</strong> for lower left). The two character code <em>justify</em> indicates which point on a rectangular region
@@ -398,12 +411,12 @@ the data range using <strong>-Ra</strong>.</p></li>
 <div><p>For perspective view <strong>-p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a>  </p>
 </div></blockquote>
 <dl class="simple" id="s">
-<dt><strong>-S</strong>[<strong>+a</strong><em>angle</em>][<strong>+c</strong>|<strong>n</strong>][<strong>+s</strong>][<strong>+x</strong><em>label</em>][<strong>+y</strong><em>unit</em>]</dt><dd><p>Control various aspects of color bar appearance when <strong>-B</strong> is <em>not</em> used.
+<dt><strong>-S</strong>[<strong>+a</strong><em>angle</em>][<strong>+c</strong>|<strong>n</strong>][<strong>+s</strong>][<strong>+x</strong><em>label</em>][<strong>+y</strong><em>unit</em>]</dt><dd><p>Control various aspects of color bar appearance when <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong> is <em>not</em> used.
 Append <strong>+a</strong> to place annotations at the given <em>angle</em> [default is no slanting].
 Append <strong>+c</strong> to use custom labels if given in the CPT as annotations.
 Append <strong>+n</strong> to use numerical labels [Default].
 Append <strong>+s</strong> to skip drawing gridlines separating different color intervals [Default draws gridlines].
-If <strong>-L</strong> is used then <strong>-B</strong> cannot be used, hence you may optionally set a bar label via <strong>+x</strong><em>label</em>
+If <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> is used then <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong> cannot be used, hence you may optionally set a bar label via <strong>+x</strong><em>label</em>
 and any unit (i.e., y-label) via <strong>+y</strong><em>unit</em>.</p>
 </dd>
 </dl>
@@ -431,13 +444,13 @@ By default the CPT is used as is.</p>
 <dl class="simple" id="z">
 <dt><strong>-Z</strong><em>widthfile</em></dt><dd><p>File with colorbar-width per color entry. By default, width of entry
 is scaled to color range, i.e., z = 0-100 gives twice the width as z
-= 100-150 (Also see <strong>-L</strong>). <strong>Note</strong>: The widths may be in plot distance
+= 100-150 (Also see <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>). <strong>Note</strong>: The widths may be in plot distance
 units or given as relative fractions and will be automatically scaled
 so that the sum of the widths equals the requested bar length.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select perspective view. (Required <strong>-R</strong> and <strong>-J</strong> for proper functioning).</p>
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select perspective view. (Required <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> for proper functioning).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -445,7 +458,7 @@ so that the sum of the widths equals the requested bar length.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -456,8 +469,18 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dd>
 </dl>
 </section>
+<section id="macos-preview-warning">
+<h2>MacOS Preview Warning<a class="headerlink" href="#macos-preview-warning" title="Permalink to this heading">¶</a></h2>
+<p>Low-resolution raster-images appearing in PDF or PostScript files may look blurry when viewed
+with the Preview application under macOS. This happens because Preview decides to resample very
+coarse (low dpi) images instead of leaving them alone; we do not know of a simple way to turn
+this feature off.  It is most noticeable in color bars for discrete CPTs (we now use <strong>-Np</strong> as
+the default setting for such CPTs) and very small grids plotted in either <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> or
+<a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a> <strong>-Qi</strong>|<strong>c</strong>. However, if a raster format (such as JPG or PNG) is selected instead
+then here is no such blurring.  Other PDF viewers (e.g., Adobe Acrobat) do not seem similarly affected.</p>
+</section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Since many GMT plot examples are very short (i.e., one module call between the
 <strong>gmt begin</strong> and <strong>gmt end</strong> commands), we will often present them using the quick
 modern mode <a class="reference internal" href="cookbook/one-liner.html"><span class="doc">GMT Modern Mode One-line Commands</span></a> syntax, which simplifies such short scripts.</p>
@@ -489,12 +512,12 @@ Mercator map produced by a previous call, ensuring a 2 cm offset from the map fr
 </div></blockquote>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
 <ol class="arabic simple">
 <li><p>When the CPT is discrete and no illumination is specified, the
 color bar will be painted using polygons. For all other cases we must
 paint with an image. Some color printers may give slightly different
-colors for the two methods given identical RGB values.  See option <strong>-N</strong>
+colors for the two methods given identical RGB values.  See option <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>
 for affecting these decisions.  Also note that for years now, Apple’s
 Preview insists on smoothing deliberately course CPT color images to a blur.
 Use another PDF viewer if this bothers you.</p></li>
@@ -506,7 +529,7 @@ Continuous CPTs may have transparency applied to all slices, but not just some.<
 </ol>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a>
 <a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a>, <a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a>
 <a class="reference internal" href="image.html"><span class="doc">image</span></a>, <a class="reference internal" href="legend.html"><span class="doc">legend</span></a></p>
@@ -524,8 +547,8 @@ Continuous CPTs may have transparency applied to all slices, but not just some.<
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

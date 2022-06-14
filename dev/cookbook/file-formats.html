@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>8. GMT File Formats &mdash; GMT 6.3.0 documentation</title>
+  <title>8. GMT File Formats &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -49,7 +53,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
@@ -184,17 +190,18 @@
            <div itemprop="articleBody">
              
   <section id="gmt-file-formats">
-<span id="id1"></span><h1><span class="section-number">8. </span>GMT File Formats<a class="headerlink" href="#gmt-file-formats" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1><span class="section-number">8. </span>GMT File Formats<a class="headerlink" href="#gmt-file-formats" title="Permalink to this heading">¶</a></h1>
 <section id="table-data">
-<h2><span class="section-number">8.1. </span>Table data<a class="headerlink" href="#table-data" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">8.1. </span>Table data<a class="headerlink" href="#table-data" title="Permalink to this heading">¶</a></h2>
 <p>These files have <em>N</em> records which have <em>M</em> fields each. All programs
 that handle tables can read multicolumn files. GMT can read both
-ASCII, native binary, netCDF table data, and ESRI shapefiles (which
-we convert to GMT/OGR format via GDAL’s ogr2ogr tool under the hood).</p>
+ASCII, native binary, netCDF table data, and ESRI shapefiles
+(which we convert to <a class="reference internal" href="ogrgmt-format.html#ogr-compat"><span class="std std-ref">GMT/OGR format</span></a> via
+<a class="reference external" href="https://gdal.org/">GDAL’s</a> <em>ogr2ogr</em> tool under the hood).</p>
 <section id="ascii-tables">
-<h3><span class="section-number">8.1.1. </span>ASCII tables<a class="headerlink" href="#ascii-tables" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">8.1.1. </span>ASCII tables<a class="headerlink" href="#ascii-tables" title="Permalink to this heading">¶</a></h3>
 <section id="optional-file-header-records">
-<h4><span class="section-number">8.1.1.1. </span>Optional file header records<a class="headerlink" href="#optional-file-header-records" title="Permalink to this headline">¶</a></h4>
+<h4><span class="section-number">8.1.1.1. </span>Optional file header records<a class="headerlink" href="#optional-file-header-records" title="Permalink to this heading">¶</a></h4>
 <p>The first data record may be preceded by one or more header records. Any
 records that has ‘#’ as the <em>first</em> character is considered a header or comment line and
 are always processed correctly. If your data file has leading header
@@ -213,7 +220,7 @@ files, including numbers given in double quotes.  On output, fields will be sepa
 given by the parameter <a class="reference internal" href="../gmt.conf.html#term-IO_COL_SEPARATOR"><span class="xref std std-term">IO_COL_SEPARATOR</span></a>, which by default is a TAB.</p>
 </section>
 <section id="optional-segment-header-records">
-<h4><span class="section-number">8.1.1.2. </span>Optional segment header records<a class="headerlink" href="#optional-segment-header-records" title="Permalink to this headline">¶</a></h4>
+<h4><span class="section-number">8.1.1.2. </span>Optional segment header records<a class="headerlink" href="#optional-segment-header-records" title="Permalink to this heading">¶</a></h4>
 <p>When dealing with time- or (<em>x,y</em>)-series it is usually convenient to
 have each profile in separate files. However, this may sometimes prove
 impractical due to large numbers of profiles. An example is files of
@@ -246,13 +253,13 @@ and processed if converting a file to the OGR format.</p>
 </section>
 </section>
 <section id="binary-tables">
-<h3><span class="section-number">8.1.2. </span>Binary tables<a class="headerlink" href="#binary-tables" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">8.1.2. </span>Binary tables<a class="headerlink" href="#binary-tables" title="Permalink to this heading">¶</a></h3>
 <p>GMT programs also support native binary tables to speed up
 input-output for i/o-intensive tasks like gridding and preprocessing.
 This is discussed in more detail in section <a class="reference internal" href="options.html#option-b"><span class="std std-ref">Map frame and axes annotations: The -B option</span></a>.</p>
 </section>
 <section id="netcdf-tables">
-<h3><span class="section-number">8.1.3. </span>NetCDF tables<a class="headerlink" href="#netcdf-tables" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">8.1.3. </span>NetCDF tables<a class="headerlink" href="#netcdf-tables" title="Permalink to this heading">¶</a></h3>
 <p>More and more programs are now producing binary data in the netCDF
 format, and so GMT programs started to support tabular netCDF data
 (files containing one or more 1-dimensional arrays) starting with
@@ -270,14 +277,14 @@ the <strong>-bic</strong> option will apply to all files. Currently, GMT only
 reads, but does not write, netCDF tabular data.</p>
 </section>
 <section id="shapefiles">
-<h3><span class="section-number">8.1.4. </span>Shapefiles<a class="headerlink" href="#shapefiles" title="Permalink to this headline">¶</a></h3>
-<p>GMT programs that read tables also support ESRI shapefiles, provided GMT was compiled
-with GDAL support.  By default, only the geographic coordinates are read.  To select
-some or all aspatial fields, see the <a class="reference internal" href="../gmt.html#aspatial-full"><span class="std std-ref">-a option</span></a>.</p>
+<h3><span class="section-number">8.1.4. </span>Shapefiles<a class="headerlink" href="#shapefiles" title="Permalink to this heading">¶</a></h3>
+<p>GMT programs that read tables also support ESRI shapefiles.  By default,
+only the geographic coordinates are read.  To select some or all aspatial
+fields, see the <a class="reference internal" href="../gmt.html#aspatial-full"><span class="std std-ref">-a option</span></a>.</p>
 </section>
 </section>
 <section id="grid-files">
-<h2><span class="section-number">8.2. </span>Grid files<a class="headerlink" href="#grid-files" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">8.2. </span>Grid files<a class="headerlink" href="#grid-files" title="Permalink to this heading">¶</a></h2>
 <p>GMT allows numerous grid formats to be read. In addition to the default
 netCDF format it can use binary floating points, short integers, bytes, and
 bits, as well as 8-bit Sun raster files (colormap ignored).  Additional
@@ -286,7 +293,7 @@ the GMT libraries. The source file <code class="docutils literal notranslate"><s
 that programmers will need to augment GMT to read custom grid files. See
 Section <a class="reference internal" href="features.html#grid-file-format"><span class="std std-ref">Grid file format specifications</span></a> for more information.</p>
 <section id="netcdf-files">
-<h3><span class="section-number">8.2.1. </span>NetCDF files<a class="headerlink" href="#netcdf-files" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">8.2.1. </span>NetCDF files<a class="headerlink" href="#netcdf-files" title="Permalink to this heading">¶</a></h3>
 <p>By default, GMT stores 2-D grids as COARDS-compliant netCDF files.
 COARDS (which stands for Cooperative Ocean/Atmosphere Research Data
 Service) is a convention used by many agencies distributing gridded data
@@ -303,10 +310,6 @@ CF-1.5 compliant netCDF files can be read by GMT.</p>
 that deals with netCDF grid files is sufficiently flexible so that grid files
 slightly deviating from the standards used by GMT can also be read.</p>
 <table class="docutils align-default" id="tbl-netcdf-format">
-<colgroup>
-<col style="width: 24%" />
-<col style="width: 76%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Attribute</strong></p></th>
 <th class="head"><p><strong>Description</strong></p></th>
@@ -377,7 +380,7 @@ handled appropriately.</p>
 to load multi-dimensional grids, read Section <a class="reference internal" href="features.html#modifiers-for-cf"><span class="std std-ref">Modifiers for COARDS-compliant netCDF files</span></a>.</p>
 </section>
 <section id="chunking-and-compression-with-netcdf">
-<h3><span class="section-number">8.2.2. </span>Chunking and compression with netCDF<a class="headerlink" href="#chunking-and-compression-with-netcdf" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">8.2.2. </span>Chunking and compression with netCDF<a class="headerlink" href="#chunking-and-compression-with-netcdf" title="Permalink to this heading">¶</a></h3>
 <p>GMT supports reading and writing of netCDF-4 files since release 5.0.  For
 performance reasons with ever-increasing grid sizes, the default output format
 of GMT is netCDF-4 with chunking enabled for grids with more than 16384 cells.
@@ -417,7 +420,7 @@ export your grids in the old classic format.  This can be achieved by setting
 </ul>
 </section>
 <section id="gridline-and-pixel-node-registration">
-<h3><span class="section-number">8.2.3. </span>Gridline and Pixel node registration<a class="headerlink" href="#gridline-and-pixel-node-registration" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">8.2.3. </span>Gridline and Pixel node registration<a class="headerlink" href="#gridline-and-pixel-node-registration" title="Permalink to this heading">¶</a></h3>
 <p>Scanline format means that the data are stored in rows (<em>y</em> = constant)
 going from the “top” (<span class="math notranslate nohighlight">\(y = y_{max}\)</span> (north)) to the “bottom”
 (<span class="math notranslate nohighlight">\(y = y_{min}\)</span> (south)). Data within each row are ordered from
@@ -442,7 +445,7 @@ pixel-registered grid can be 1x1 (storing a single value), while a
 gridline-registered grid cannot be smaller than 2x2.</p>
 </section>
 <section id="boundary-conditions-for-operations-on-grids">
-<h3><span class="section-number">8.2.4. </span>Boundary Conditions for operations on grids<a class="headerlink" href="#boundary-conditions-for-operations-on-grids" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">8.2.4. </span>Boundary Conditions for operations on grids<a class="headerlink" href="#boundary-conditions-for-operations-on-grids" title="Permalink to this heading">¶</a></h3>
 <p>GMT has the option to specify boundary conditions in some programs
 that operate on grids (e.g.,
 <a class="reference internal" href="../grdsample.html"><span class="doc">grdsample</span></a>, <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a>,
@@ -502,7 +505,7 @@ in the direction normal to a boundary, and</p>
 </dl>
 </section>
 <section id="native-binary-grid-files">
-<h3><span class="section-number">8.2.5. </span>Native binary grid files<a class="headerlink" href="#native-binary-grid-files" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">8.2.5. </span>Native binary grid files<a class="headerlink" href="#native-binary-grid-files" title="Permalink to this heading">¶</a></h3>
 <p>The old-style native grid file format that was common in earlier version
 of GMT is still supported, although the use of netCDF files is
 strongly recommended. The file starts with a header of 892 bytes
@@ -518,10 +521,6 @@ does not occur on a 16-byte alignment. While GMT handles the reading
 of these structures correctly, enterprising programmers must take care
 to read this header correctly (see our code for details).</p>
 <table class="docutils align-default" id="tbl-grdheader">
-<colgroup>
-<col style="width: 38%" />
-<col style="width: 62%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Parameter</strong></p></th>
 <th class="head"><p><strong>Description</strong></p></th>
@@ -593,7 +592,7 @@ to read this header correctly (see our code for details).</p>
 </section>
 </section>
 <section id="sun-raster-files">
-<h2><span class="section-number">8.3. </span>Sun raster files<a class="headerlink" href="#sun-raster-files" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">8.3. </span>Sun raster files<a class="headerlink" href="#sun-raster-files" title="Permalink to this heading">¶</a></h2>
 <p>The Sun raster file format consists of a header followed by a series of
 unsigned 1-byte integers that represents the bit-pattern. Bits are
 scanline oriented, and each row must contain an even number of bytes.
@@ -601,10 +600,6 @@ The predefined 1-bit patterns in GMT have dimensions of 64 by 64, but
 other sizes will be accepted when using the <strong>-Gp|P</strong> option. The Sun
 header structure is outline in Table <a class="reference internal" href="#tbl-sunheader"><span class="std std-ref">sunheader</span></a>.</p>
 <table class="docutils align-default" id="tbl-sunheader">
-<colgroup>
-<col style="width: 42%" />
-<col style="width: 58%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Parameter</strong></p></th>
 <th class="head"><p><strong>Description</strong></p></th>
@@ -642,10 +637,6 @@ follows for <em>ras_maplength</em> bytes, followed by an image of
 <em>ras_length</em> bytes. Some related definitions are given in
 Table <a class="reference internal" href="#tbl-sundef"><span class="std std-ref">sundef</span></a>.</p>
 <table class="docutils align-default" id="tbl-sundef">
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 67%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Macro name</strong></p></th>
 <th class="head"><p><strong>Description</strong></p></th>
@@ -692,8 +683,8 @@ translated into the right raster format.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>20. The GMT Vector Data Format for OGR Compatibility &mdash; GMT 6.3.0 documentation</title>
+  <title>20. The GMT Vector Data Format for OGR Compatibility &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
@@ -182,9 +188,9 @@
            <div itemprop="articleBody">
              
   <section id="the-gmt-vector-data-format-for-ogr-compatibility">
-<span id="ogr-compat"></span><h1><span class="section-number">20. </span>The GMT Vector Data Format for OGR Compatibility<a class="headerlink" href="#the-gmt-vector-data-format-for-ogr-compatibility" title="Permalink to this headline">¶</a></h1>
+<span id="ogr-compat"></span><h1><span class="section-number">20. </span>The GMT Vector Data Format for OGR Compatibility<a class="headerlink" href="#the-gmt-vector-data-format-for-ogr-compatibility" title="Permalink to this heading">¶</a></h1>
 <section id="background">
-<h2><span class="section-number">20.1. </span>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">20.1. </span>Background<a class="headerlink" href="#background" title="Permalink to this heading">¶</a></h2>
 <p>The National Institute for Water and Atmospheric Research (NIWA) in New
 Zealand has funded the implementation of a GMT driver (read and write)
 for the OGR package. OGR is an Open Source toolkit for accessing or
@@ -192,9 +198,9 @@ reformatting vector (spatial) data stored in a variety of formats and is
 part of the. The intention was to enable the easy rendering (using
 GMT) of spatial data held in non-GMT formats, and the export of
 vector data (e.g., contours) created by GMT for use with other GIS and
-mapping packages. While <strong>ogr2ogr</strong> has had the capability to write
-this new format since 2009, GMT 4 did not have the capability to use
-the extra information.</p>
+mapping packages. While <em>ogr2ogr</em> (part of <a class="reference external" href="https://gdal.org/">GDAL</a>
+has had the capability to write this new format since 2009,
+GMT 4 did not have the capability to use the extra information.</p>
 <p>GMT now allows for more advanced vector data, including donut
 polygons (polygons with holes) and aspatial attribute data. At the same
 time, the spatial data implementation will not disrupt older GMT 4
@@ -208,7 +214,7 @@ multiline and multipolygon features, and was written by
 based on input from Paul Wessel and others on the GMT team.</p>
 </section>
 <section id="the-ogr-gmt-format">
-<h2><span class="section-number">20.2. </span>The OGR/GMT format<a class="headerlink" href="#the-ogr-gmt-format" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">20.2. </span>The OGR/GMT format<a class="headerlink" href="#the-ogr-gmt-format" title="Permalink to this heading">¶</a></h2>
 <p>Several key properties of the OGR/GMT format is summarized below:</p>
 <ul class="simple">
 <li><p>All new data fields are stored as comment lines, i.e., in lines
@@ -262,21 +268,16 @@ data in a single file.</p></li>
 </ul>
 </section>
 <section id="ogr-gmt-metadata">
-<h2><span class="section-number">20.3. </span>OGR/GMT Metadata<a class="headerlink" href="#ogr-gmt-metadata" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">20.3. </span>OGR/GMT Metadata<a class="headerlink" href="#ogr-gmt-metadata" title="Permalink to this heading">¶</a></h2>
 <p>Several pieces of metadata information must be present in the header of
 the OGR/GMT file, followed by both spatial and aspatial data. In this
 section we look at the metadata.</p>
 <section id="format-version">
-<h3><span class="section-number">20.3.1. </span>Format version<a class="headerlink" href="#format-version" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">20.3.1. </span>Format version<a class="headerlink" href="#format-version" title="Permalink to this heading">¶</a></h3>
 <p>The comment header line will include a version identifier providing for
 possible different versions in future. It is indicated by the <strong>&#64;V</strong>
 sequence.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 12%" />
-<col style="width: 16%" />
-<col style="width: 72%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Code</strong></p></th>
 <th class="head"><p><strong>Argument</strong></p></th>
@@ -300,16 +301,11 @@ sequence.</p>
 code-sequence has been found.</p>
 </section>
 <section id="geometry-types">
-<h3><span class="section-number">20.3.2. </span>Geometry types<a class="headerlink" href="#geometry-types" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">20.3.2. </span>Geometry types<a class="headerlink" href="#geometry-types" title="Permalink to this heading">¶</a></h3>
 <p>The words and characters used to specify the geometry type (preceded by
 the <strong>&#64;G</strong> code sequence on the header comment line), are listed in
 Table <a class="reference internal" href="#tbl-geometries"><span class="std std-ref">geometries</span></a>.</p>
 <table class="docutils align-default" id="tbl-geometries">
-<colgroup>
-<col style="width: 9%" />
-<col style="width: 15%" />
-<col style="width: 76%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Code</strong></p></th>
 <th class="head"><p><strong>Geometry</strong></p></th>
@@ -387,7 +383,7 @@ Table <a class="reference internal" href="#tbl-geometries"><span class="std std-
 </div></blockquote>
 </section>
 <section id="domain-and-map-projections">
-<h3><span class="section-number">20.3.3. </span>Domain and map projections<a class="headerlink" href="#domain-and-map-projections" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">20.3.3. </span>Domain and map projections<a class="headerlink" href="#domain-and-map-projections" title="Permalink to this heading">¶</a></h3>
 <p>The new format will also support region and projection information. The
 region will be stored in GMT <strong>-R</strong> format (i.e., <strong>-R</strong><em>W/E/S/N</em>,
 where the <em>W/E/S/N</em> values represent the extent of features); the <strong>&#64;R</strong>
@@ -402,10 +398,6 @@ prefixed by <strong>&#64;J</strong> (J being the GMT character for projection
 information. The <strong>&#64;J</strong> code will be followed by a character identifying
 the format, as shown in Table <a class="reference internal" href="#tbl-projectspec"><span class="std std-ref">projectspec</span></a>.</p>
 <table class="docutils align-default" id="tbl-projectspec">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 89%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Code</strong></p></th>
 <th class="head"><p><strong>Projection Specification</strong></p></th>
@@ -445,15 +437,10 @@ One relatively simple approach, (with some limitations), would be a
 lookup table matching EPSG codes to GMT strings.</p>
 </section>
 <section id="declaration-of-aspatial-fields">
-<h3><span class="section-number">20.3.4. </span>Declaration of aspatial fields<a class="headerlink" href="#declaration-of-aspatial-fields" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">20.3.4. </span>Declaration of aspatial fields<a class="headerlink" href="#declaration-of-aspatial-fields" title="Permalink to this heading">¶</a></h3>
 <p>The string describing the aspatial field names associated with the
 features is flagged by the <strong>&#64;N</strong> prefix.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 27%" />
-<col style="width: 61%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Code</strong></p></th>
 <th class="head"><p><strong>Argument</strong></p></th>
@@ -471,11 +458,6 @@ features is flagged by the <strong>&#64;N</strong> prefix.</p>
 combined with a matching string specifying the data type for each of the
 named fields, using the <strong>&#64;T</strong> prefix.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 12%" />
-<col style="width: 28%" />
-<col style="width: 60%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Code</strong></p></th>
 <th class="head"><p><strong>Argument</strong></p></th>
@@ -502,7 +484,7 @@ will be stored as appropriately formatted text strings.</p>
 </section>
 </section>
 <section id="ogr-gmt-data">
-<h2><span class="section-number">20.4. </span>OGR/GMT Data<a class="headerlink" href="#ogr-gmt-data" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">20.4. </span>OGR/GMT Data<a class="headerlink" href="#ogr-gmt-data" title="Permalink to this heading">¶</a></h2>
 <p>All generic fields must be at the start of the file before any
 feature-specific content (feature attribute data follow the metadata, as
 do the feature coordinates, separated by a comment line comprising “#
@@ -512,7 +494,7 @@ free form, in that as many comment lines as desired may be used, with
 one or more parameter strings in any order in any line. E.g., one
 parameter per line, or all parameters on one line.</p>
 <section id="embedding-aspatial-data">
-<h3><span class="section-number">20.4.1. </span>Embedding aspatial data<a class="headerlink" href="#embedding-aspatial-data" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">20.4.1. </span>Embedding aspatial data<a class="headerlink" href="#embedding-aspatial-data" title="Permalink to this heading">¶</a></h3>
 <p>Following this header line is the data itself, both aspatial and
 spatial. For line and polygon (including multiline and multipolygon)
 data, features are separated using a predefined character, by default
@@ -546,7 +528,7 @@ and corresponding data line for points are</p>
 </div></blockquote>
 </section>
 <section id="polygon-topologies">
-<h3><span class="section-number">20.4.2. </span>Polygon topologies<a class="headerlink" href="#polygon-topologies" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">20.4.2. </span>Polygon topologies<a class="headerlink" href="#polygon-topologies" title="Permalink to this heading">¶</a></h3>
 <p>New to GMT is the concept of polygon holes. Most other formats do
 support this structure, so that a polygon is specified as a sequence of
 point defining the perimeter, optionally followed by similar coordinate
@@ -568,7 +550,7 @@ such features manually.</p>
 </section>
 </section>
 <section id="examples">
-<h2><span class="section-number">20.5. </span>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">20.5. </span>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>Sample point, line and polygon files are (the new data structures are in
 lines starting with “#” in strings prefixed with “&#64;”). Here is a typical
 point file:</p>
@@ -651,8 +633,8 @@ point file:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

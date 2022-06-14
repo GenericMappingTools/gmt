@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdimage &mdash; GMT 6.3.0 documentation</title>
+  <title>grdimage &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdimage">
-<h1>grdimage<a class="headerlink" href="#grdimage" title="Permalink to this headline">¶</a></h1>
+<h1>grdimage<a class="headerlink" href="#grdimage" title="Permalink to this heading">¶</a></h1>
 <p>Project and plot grids or images</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdimage</strong> <em>grid</em> | <em>image</em>
 <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>out_img</em>[<strong>=</strong><em>driver</em>] ]
@@ -157,7 +163,7 @@
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>intensfile</em>|<em>intensity</em>|<em>modifiers</em>] ]
 [ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ]
-[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<em>color</em>] ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<em>color</em>][<strong>+z</strong><em>value</em>] ]
 [ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>] ]
 [ <a class="reference internal" href="#u"><span><strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
@@ -171,7 +177,7 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdimage</strong> reads a 2-D grid file and produces a gray-shaded (or
 colored) map by building a rectangular image and assigning pixels
 a gray-shade (or color) based on the z-value and the CPT file.
@@ -180,14 +186,14 @@ intensities in the (-1,+1) range or instructions to derive intensities
 from the input data grid. Values outside this range will be
 clipped. Such intensity files can be created from the grid using
 <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> and, optionally, modified by <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> or
-<a class="reference internal" href="grdhisteq.html"><span class="doc">grdhisteq</span></a>. A third alternative is available when GMT is built
-with GDAL support. Pass <em>image</em> which can be an image file (geo-referenced or not).
+<a class="reference internal" href="grdhisteq.html"><span class="doc">grdhisteq</span></a>. Alternatively , pass <em>image</em> which can be an image
+file (geo-referenced or not).
 In this case the image can optionally be illuminated with the
-file provided via the <strong>-I</strong> option. Here, if image has no coordinates
+file provided via the <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> option. Here, if image has no coordinates
 then those of the intensity file will be used.</p>
 <p>When using map projections, the grid is first resampled on a new
 rectangular grid with the same dimensions. Higher resolution images can
-be obtained by using the <strong>-E</strong> option. To obtain the resampled value
+be obtained by using the <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> option. To obtain the resampled value
 (and hence shade or color) of each map pixel, its location is inversely
 projected back onto the input grid after which a value is interpolated
 between the surrounding input grid values. By default bi-cubic
@@ -195,11 +201,11 @@ interpolation is used. Aliasing is avoided by also forward projecting
 the input grid nodes. If two or more nodes are projected onto the same
 pixel, their average will dominate in the calculation of the pixel
 value. Interpolation and aliasing is controlled with the <strong>-n</strong> option.</p>
-<p>The <strong>-R</strong> option can be used to select a map region larger or smaller
+<p>The <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> option can be used to select a map region larger or smaller
 than that implied by the extent of the grid.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>grid</em> | <em>image</em></dt><dd><p>2-D gridded data set or image to be plotted (see <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
 </dd>
@@ -211,11 +217,9 @@ than that implied by the extent of the grid.</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
-<dt><strong>-A</strong><em>out_img</em>[<strong>=</strong><em>driver</em>]</dt><dd><p>Save an image in a raster format instead of PostScript. Use extension .ppm for a Portable
-Pixel Map format which is the only raster format GMT can natively write. For GMT installations
-configured with GDAL support there are more choices: Append <em>out_img</em> to select
+<dt><strong>-A</strong><em>out_img</em>[<strong>=</strong><em>driver</em>]</dt><dd><p>Save an image in a raster format instead of PostScript. Append <em>out_img</em> to select
 the image file name and extension. If the extension is one of .bmp, .gif, .jpg, .png, or .tif
 then no driver information is required. For other output formats you must append the required
 GDAL driver. The <em>driver</em> is the driver code name used by GDAL; see your GDAL installation’s
@@ -250,9 +254,9 @@ then under modern mode we select the current CPT.</p>
 <dl class="simple" id="d">
 <dt><strong>-D</strong>[<strong>r</strong>]</dt><dd><p>GMT will automatically detect standard image files (Geotiff, TIFF,
 JPG, PNG, GIF, etc.) and will read those via GDAL.  For very
-obscure image formats you may need to explicitly set <strong>-D</strong>, which
+obscure image formats you may need to explicitly set <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>, which
 specifies that the grid is in fact an image file to be read via
-GDAL. Append <strong>r</strong> to assign the region specified by <strong>-R</strong> to the image.
+GDAL. Append <strong>r</strong> to assign the region specified by <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> to the image.
 For example, if you have used <strong>-Rd</strong> then the image will be
 assigned a global domain. This mode allows you to project a raw image
 (an image without referencing coordinates).</p>
@@ -291,7 +295,7 @@ must be provided.</p>
 </dl>
 <dl class="simple" id="m">
 <dt><strong>-M</strong></dt><dd><p>Force conversion to monochrome image using the (old-style television) YIQ
-transformation. Cannot be used with <strong>-Q</strong>.</p>
+transformation. Cannot be used with <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="n">
@@ -300,8 +304,9 @@ non-rectangular maps).</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
-<dt><strong>-Q</strong>[<em>color</em>]</dt><dd><p>Make grid nodes with NaN values transparent, using the color-masking
+<dt><strong>-Q</strong>[<em>color</em>][<strong>+z</strong><em>value</em>]</dt><dd><p>Make grid nodes with NaN values transparent, using the color-masking
 feature in PostScript Level 3 (the PS device must support PS Level 3).
+Use <strong>+z</strong> to select another grid value than NaN.
 If input is instead an image then black pixels are set to be transparent;
 append an alternate color to select another pixel value to be transparent.</p>
 </dd>
@@ -353,7 +358,7 @@ subset of the grid [Default is the region given by the grid file].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -364,131 +369,8 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dd>
 </dl>
 </section>
-<section id="global-relief-datasets">
-<h2>Global Relief Datasets<a class="headerlink" href="#global-relief-datasets" title="Permalink to this headline">¶</a></h2>
-<p>By using grids named &#64;earth_relief_<em>res</em>[_<em>reg</em>] we download global relief grids (or only
-the needed tiles) from the GMT server. Here, <em>rr</em> is a 2-digit integer specifying the grid resolution
-in the unit <em>u</em>, where <em>u</em> is either <strong>d</strong>, <strong>m</strong> or <strong>s</strong> for arc degree, arc minute or arc second,
-respectively.  Optionally, you can append _<strong>g</strong> or _<strong>p</strong> to specifically get the gridline-registered or
-pixel-registered version (if they both exist).  If <em>reg</em> is not specified we will return
-the pixel-registered version unless only the gridline-registered file is available.
-The following codes for <em>rr</em><em>u</em> and the optional <em>reg</em> are supported.  These grids are saved in
-folders under your ~/.gmt/server/earth directory.  Files and tiles are only downloaded once and are
-later accessed from ~/.gmt.  You can clear your data via gmt <a class="reference internal" href="clear.html"><span class="doc">clear</span></a> data and you can pre-download
-data via gmt <a class="reference internal" href="gmtget.html"><span class="doc">gmtget</span></a>.  Dimensions are listed for pixel-registered grids; gridline-registered
-grids increment dimensions by one.</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 5%" />
-<col style="width: 21%" />
-<col style="width: 4%" />
-<col style="width: 9%" />
-<col style="width: 62%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Code</p></th>
-<th class="head"><p>Dimensions</p></th>
-<th class="head"><p>Reg</p></th>
-<th class="head"><p>Size</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>01d</p></td>
-<td><p>360 x    180</p></td>
-<td><p>g,p</p></td>
-<td><p>128 KB</p></td>
-<td><p>1 arc degree global relief (SRTM15+V2.1 &#64; 111 km)</p></td>
-</tr>
-<tr class="row-odd"><td><p>30m</p></td>
-<td><p>720 x    360</p></td>
-<td><p>g,p</p></td>
-<td><p>435 KB</p></td>
-<td><p>30 arc minute global relief (SRTM15+V2.1 &#64; 55 km)</p></td>
-</tr>
-<tr class="row-even"><td><p>20m</p></td>
-<td><p>1080 x    540</p></td>
-<td><p>g,p</p></td>
-<td><p>918 KB</p></td>
-<td><p>20 arc minute global relief (SRTM15+V2.1 &#64; 37 km)</p></td>
-</tr>
-<tr class="row-odd"><td><p>15m</p></td>
-<td><p>1440 x    720</p></td>
-<td><p>g,p</p></td>
-<td><p>1.6 MB</p></td>
-<td><p>15 arc minute global relief (SRTM15+V2.1 &#64; 28 km)</p></td>
-</tr>
-<tr class="row-even"><td><p>10m</p></td>
-<td><p>2160 x   1080</p></td>
-<td><p>g,p</p></td>
-<td><p>3.4 MB</p></td>
-<td><p>10 arc minute global relief (SRTM15+V2.1 &#64; 18 km)</p></td>
-</tr>
-<tr class="row-odd"><td><p>06m</p></td>
-<td><p>3600 x   1800</p></td>
-<td><p>g,p</p></td>
-<td><p>8.8 MB</p></td>
-<td><p>6 arc minute global relief (SRTM15+V2.1 &#64; 10 km)</p></td>
-</tr>
-<tr class="row-even"><td><p>05m</p></td>
-<td><p>4320 x   2160</p></td>
-<td><p>g,p</p></td>
-<td><p>13 MB</p></td>
-<td><p>5 arc minute global relief (SRTM15+V2.1 &#64; 9 km)</p></td>
-</tr>
-<tr class="row-odd"><td><p>04m</p></td>
-<td><p>5400 x   2700</p></td>
-<td><p>g,p</p></td>
-<td><p>19 MB</p></td>
-<td><p>4 arc minute global relief (SRTM15+V2.1 &#64; 7.5 km)</p></td>
-</tr>
-<tr class="row-even"><td><p>03m</p></td>
-<td><p>7200 x   3600</p></td>
-<td><p>g,p</p></td>
-<td><p>33 MB</p></td>
-<td><p>3 arc minute global relief (SRTM15+V2.1 &#64; 5.6 km)</p></td>
-</tr>
-<tr class="row-odd"><td><p>02m</p></td>
-<td><p>10800 x   5400</p></td>
-<td><p>g,p</p></td>
-<td><p>71 MB</p></td>
-<td><p>2 arc minute global relief (SRTM15+V2.1 &#64; 3.7 km)</p></td>
-</tr>
-<tr class="row-even"><td><p>01m</p></td>
-<td><p>21600 x  10800</p></td>
-<td><p>g,p</p></td>
-<td><p>258 MB</p></td>
-<td><p>1 arc minute global relief (SRTM15+V2.1 &#64; 1.9 km)</p></td>
-</tr>
-<tr class="row-odd"><td><p>30s</p></td>
-<td><p>43200 x  21600</p></td>
-<td><p>g,p</p></td>
-<td><p>935 MB</p></td>
-<td><p>30 arc second global relief (SRTM15+V2.1 &#64; 1.0 km)</p></td>
-</tr>
-<tr class="row-even"><td><p>15s</p></td>
-<td><p>86400 x  43200</p></td>
-<td><p>p</p></td>
-<td><p>3.2 GB</p></td>
-<td><p>15 arc second global relief (SRTM15+V2.1)</p></td>
-</tr>
-<tr class="row-odd"><td><p>03s</p></td>
-<td><p>432000 x 216000</p></td>
-<td><p>g</p></td>
-<td><p>6.8 GB</p></td>
-<td><p>3 arc second global relief (SRTM3S)</p></td>
-</tr>
-<tr class="row-even"><td><p>01s</p></td>
-<td><p>1296000 x 432000</p></td>
-<td><p>g</p></td>
-<td><p>41 GB</p></td>
-<td><p>1 arc second global relief (SRTM1S)</p></td>
-</tr>
-</tbody>
-</table>
-</section>
 <section id="imaging-grids-with-nans">
-<h2>Imaging Grids With Nans<a class="headerlink" href="#imaging-grids-with-nans" title="Permalink to this headline">¶</a></h2>
+<h2>Imaging Grids With Nans<a class="headerlink" href="#imaging-grids-with-nans" title="Permalink to this heading">¶</a></h2>
 <p>Be aware that if your input grid contains patches of NaNs, these patches
 can become larger as a consequence of the resampling that must take
 place with most map projections. Because <strong>grdimage</strong> uses the
@@ -498,7 +380,7 @@ find that the NaN areas are not treated adequately, consider (a) use a
 linear projection, or (b) use <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a> <strong>-Ts</strong> instead.</p>
 </section>
 <section id="consequences-of-grid-resampling">
-<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this headline">¶</a></h2>
+<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this heading">¶</a></h2>
 <p>Except for Cartesian cases, we need to resample your geographic grid onto
 an equidistant projected grid. In doing so various algorithms come into play
 that projects data from one lattice to another while avoiding anti-aliasing,
@@ -510,29 +392,40 @@ map areas may show up with fore- or background color due to the resampling.
 In that case you have two options: (1) Modify your CPT to fit the resampled
 extrema (reported with <strong>-V</strong>) or (2) Impose clipping of resampled values
 so they do not exceed the input min/max values (add <strong>+c</strong> to your <strong>-n</strong>
-option).</p>
+option). <strong>Note</strong>: If <strong>-n</strong> is not set and no CPT is given (or a master
+CPT is given or implied), we automatically set <strong>-nc+c</strong>.</p>
 </section>
 <section id="imaging-categorical-grids">
-<h2>Imaging Categorical Grids<a class="headerlink" href="#imaging-categorical-grids" title="Permalink to this headline">¶</a></h2>
+<h2>Imaging Categorical Grids<a class="headerlink" href="#imaging-categorical-grids" title="Permalink to this heading">¶</a></h2>
 <p>Geographical categorical grids have values at the nodes that should not
 be interpolated (i.e., categories 4 and 5 should never be averaged to give
 a new category 4.5).  However, imaging such grids using map projections
 requires a resampling onto an equidistant Cartesian lattice that usually
 will result in such blending.  We do not know if a grid is categorical but
-if the CPT provided via <strong>-C</strong> is categorical we will override any <strong>-n</strong> setting you
+if the CPT provided via <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> is categorical we will override any <strong>-n</strong> setting you
 have chosen (perhaps implicitly) with <strong>-nn+a</strong> that turns <em>on</em> nearest neighbor
-gridding and turns <em>off</em> anti-aliasing.  Alternatively, use <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a> <strong>-T</strong>
+gridding and turns <em>off</em> anti-aliasing.  Alternatively, use <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a> <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>
 instead to plot individual polygons centered on each node.</p>
 </section>
 <section id="image-formats-recognized">
-<h2>Image formats recognized<a class="headerlink" href="#image-formats-recognized" title="Permalink to this headline">¶</a></h2>
+<h2>Image formats recognized<a class="headerlink" href="#image-formats-recognized" title="Permalink to this heading">¶</a></h2>
 <p>We automatically recognize image formats via their magic bytes.  For formats
 that could contain either an image or a data set (e.g., geotiff) we determine
 which case it is and act accordingly.  If your favorite image format is not
 automatically detected then please let us know its magic bytes so we can add it.</p>
 </section>
+<section id="macos-preview-warning">
+<h2>MacOS Preview Warning<a class="headerlink" href="#macos-preview-warning" title="Permalink to this heading">¶</a></h2>
+<p>Low-resolution raster-images appearing in PDF or PostScript files may look blurry when viewed
+with the Preview application under macOS. This happens because Preview decides to resample very
+coarse (low dpi) images instead of leaving them alone; we do not know of a simple way to turn
+this feature off.  It is most noticeable in color bars for discrete CPTs (we now use <strong>-Np</strong> as
+the default setting for such CPTs) and very small grids plotted in either <a class="reference internal" href="#"><span class="doc">grdimage</span></a> or
+<a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a> <strong>-Qi</strong>|<strong>c</strong>. However, if a raster format (such as JPG or PNG) is selected instead
+then here is no such blurring.  Other PDF viewers (e.g., Adobe Acrobat) do not seem similarly affected.</p>
+</section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -567,19 +460,18 @@ tickmarks every 5 units:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdimage red.nc green.nc blue.nc -Jx10i -B5 -pdf rgbimage
 </pre></div>
 </div>
-<p>When GDAL support is built in: To create a sinusoidal projection of a
-remotely located Jessica Rabbit:</p>
+<p>To create a sinusoidal projection of a remotely located Jessica Rabbit:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdimage -JI15c -Rd http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -pdf jess
 </pre></div>
 </div>
 </section>
 <section id="note-on-cpts-in-modern-mode">
-<h2>Note on CPTs in Modern Mode<a class="headerlink" href="#note-on-cpts-in-modern-mode" title="Permalink to this headline">¶</a></h2>
+<h2>Note on CPTs in Modern Mode<a class="headerlink" href="#note-on-cpts-in-modern-mode" title="Permalink to this heading">¶</a></h2>
 <p>In modern mode, CPTs are rarely needed to be named explicitly.  Instead, when
 a module that may create a CPT, such as <a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a> and <a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a> (or even
 <a class="reference internal" href="#"><span class="doc">grdimage</span></a> when no color table is available), the behavior under modern mode
 is to write that CPT to a hidden file in the session directory.  When a module
-requires a CPT (e.g., <strong>grdimage</strong> not given <strong>-C</strong> or <strong>plot</strong> given <strong>-C</strong> with no name)
+requires a CPT (e.g., <strong>grdimage</strong> not given <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> or <strong>plot</strong> given <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> with no name)
 then we read this hidden CPT (if it exists).  This file is called the <em>current</em> CPT.
 In fact, there are several levels of current CPTs that may all be different, and
 some may not be present.  If you create a CPT within an <strong>inset</strong> operation then
@@ -601,7 +493,7 @@ each movie frame is a <em>separate session</em> there is no cross-session sharin
 CPTs.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
 <a class="reference internal" href="grd2kml.html"><span class="doc">grd2kml</span></a>,
@@ -623,8 +515,8 @@ CPTs.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

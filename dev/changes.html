@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; GMT 6.3.0 documentation</title>
+  <title>Changelog &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -49,7 +53,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -75,6 +81,15 @@
 <p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-4">New Features in GMT 6.4</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#new-modules-in-gmt-6-4">New Modules in GMT 6.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#new-core-module-features-in-gmt-6-4">New Core Module Features in GMT 6.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#supplement-updates-in-gmt-6-4">Supplement updates in GMT 6.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enhancements-in-gmt-6-4">Enhancements in GMT 6.4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#maintenance-updates-in-gmt-6-4-0">Maintenance updates in GMT 6.4.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deprecations-in-gmt-6-4">Deprecations in GMT 6.4</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#new-features-in-gmt-6-3">New Features in GMT 6.3</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#new-modules-in-gmt-6-3">New Modules in GMT 6.3</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#new-core-module-features-in-gmt-6-3">New Core Module Features in GMT 6.3</a></li>
@@ -207,9 +222,97 @@
            <div itemprop="articleBody">
              
   <section id="changelog">
-<span id="id1"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this heading">¶</a></h1>
+<section id="new-features-in-gmt-6-4">
+<h2>New Features in GMT 6.4<a class="headerlink" href="#new-features-in-gmt-6-4" title="Permalink to this heading">¶</a></h2>
+<p>GMT 6.4 includes a new supplement module, many new features, general code and documentation improvements, and numerous
+bug fixes! Here are the general updates included in 6.4:</p>
+<p>Colormaps:</p>
+<ul class="simple">
+<li><p>Add <a class="reference internal" href="cookbook/cpts.html"><span class="doc">cmocean colour maps</span></a> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6446">#6446</a>)</p></li>
+<li><p>Let one-liners with CPTs add colorbar (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6427">#6427</a>)</p></li>
+<li><p>Save any default CPT for remote datasets in hidden grid header (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6178">#6178</a>)</p></li>
+<li><p><a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a>: Let -D+c allow setting/removing default CPT for grid (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6223">#6223</a>)</p></li>
+<li><p><a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a>: Report default CPT for a grid (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6220">#6220</a>)</p></li>
+</ul>
+<p>Vector plotting:</p>
+<ul class="simple">
+<li><p>Add optional fraction for terminal shrinking value (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6115">#6115</a>)</p></li>
+<li><p>Enable plain geovector heads (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6113">#6113</a>)</p></li>
+<li><p>Further vector scale improvements and enhancements (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6194">#6194</a>, <a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6197">#6197</a>)</p></li>
+<li><p>Let shrink length for geovector be accepted in any valid map unit (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6155">#6155</a>)</p></li>
+</ul>
+<p>Auto-legend:</p>
+<ul class="simple">
+<li><p>New default legend symbol dimensions when no details are provided (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6165">#6165</a>)</p></li>
+<li><p><a class="reference internal" href="events.html"><span class="doc">events</span></a>, <a class="reference internal" href="grdvector.html"><span class="doc">grdvector</span></a>: Allow -l for auto-legends (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6182">#6182</a>, <a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6199">#6199</a>)</p></li>
+</ul>
+<p>DCW/GSHHG:</p>
+<ul class="simple">
+<li><p>Add --show-gshhg and --show-dcw to gmt (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6042">#6042</a>)</p></li>
+<li><p>Implement DCW collections and allow full continent, country, and state names in -R -E (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6064">#6064</a>)</p></li>
+</ul>
+<section id="new-modules-in-gmt-6-4">
+<h3>New Modules in GMT 6.4<a class="headerlink" href="#new-modules-in-gmt-6-4" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="supplements/potential/gravprisms.html"><span class="doc">gravprisms</span></a>: New module for computing geopotential anomalies (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6445">#6445</a>)</p></li>
+</ul>
+</section>
+<section id="new-core-module-features-in-gmt-6-4">
+<h3>New Core Module Features in GMT 6.4<a class="headerlink" href="#new-core-module-features-in-gmt-6-4" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a>: Let -W extend segments from one of both ends (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6255">#6255</a>)</p></li>
+<li><p><a class="reference internal" href="grdfill.html"><span class="doc">grdfill</span></a>: Add grid sampling as new algorithm (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6678">#6678</a>)</p></li>
+<li><p><a class="reference internal" href="grdmask.html"><span class="doc">grdmask</span></a>: Enhanced node determination for polygon input (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6289">#6289</a>)</p></li>
+</ul>
+</section>
+<section id="supplement-updates-in-gmt-6-4">
+<h3>Supplement updates in GMT 6.4<a class="headerlink" href="#supplement-updates-in-gmt-6-4" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="supplements/potential/gravprisms.html"><span class="doc">gravprisms</span></a>: Add option to save mean prism densities (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6453">#6453</a>)</p></li>
+<li><p><a class="reference internal" href="supplements/potential/grdseamount.html"><span class="doc">grdseamount</span></a>: Add landslide option -S (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6548">#6548</a>)</p></li>
+<li><p><a class="reference internal" href="supplements/potential/grdseamount.html"><span class="doc">grdseamount</span></a>, <a class="reference internal" href="supplements/potential/grdflexure.html"><span class="doc">grdflexure</span></a>: Seamount density enhancements (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6430">#6430</a>)</p></li>
+<li><p><a class="reference internal" href="supplements/x2sys/x2sys_cross.html"><span class="doc">x2sys_cross</span></a>: Add option to exclude crossings from acutely intersection lines (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6346">#6346</a>)</p></li>
+</ul>
+</section>
+<section id="enhancements-in-gmt-6-4">
+<h3>Enhancements in GMT 6.4<a class="headerlink" href="#enhancements-in-gmt-6-4" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="contour.html"><span class="doc">contour</span></a>, <a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a>: Allow contour files to only list contour level (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6522">#6522</a>)</p></li>
+<li><p><a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>: Add operators DEG2KM and KM2DEG (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6177">#6177</a>)</p></li>
+<li><p><a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a>: Introduce directives -Mc and -Mf (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6767">#6767</a>)</p></li>
+<li><p><a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a>: Let -Q+zvalue set the transparent pixel indirectly (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6232">#6232</a>)</p></li>
+<li><p><a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a>: Add -Wo for oblique domain in degrees (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6474">#6474</a>)</p></li>
+<li><p><a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a>: Find encompassing rectangular regions for non-oblique projections (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6669">#6669</a>)</p></li>
+<li><p><a class="reference internal" href="plot.html"><span class="doc">plot</span></a>, <a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a>: Allow -SE, -SJ, -SW options to parse appended map units (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6282">#6282</a>)</p></li>
+<li><p><a class="reference internal" href="plot.html"><span class="doc">plot</span></a>, <a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a>: Allow -Sl to plot angled text symbol (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6290">#6290</a>)</p></li>
+<li><p><a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a>: Better handling of trailing text (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6098">#6098</a>)</p></li>
+<li><p><a class="reference internal" href="surface.html"><span class="doc">surface</span></a>: Use optimal region under the hood (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6537">#6537</a>)</p></li>
+<li><p><a class="reference internal" href="triangulate.html"><span class="doc">triangulate</span></a>: Add ability to read prior triangulation (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6701">#6701</a>)</p></li>
+<li><p><a class="reference internal" href="triangulate.html"><span class="doc">triangulate</span></a>: Report triangle areas in -S with new -A (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6691">#6691</a>)</p></li>
+<li><p>Add two -R shorthands for projected coordinates (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6094">#6094</a>)</p></li>
+<li><p>Allow use of GMT_GRAPHICS_FORMAT for one-liners (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6520">#6520</a>)</p></li>
+<li><p>Handle longer strings for netCDF history, remark and title (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6084">#6084</a>)</p></li>
+<li><p>Let -X -Y also handle multipliers and not just divisors (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6305">#6305</a>)</p></li>
+</ul>
+</section>
+<section id="maintenance-updates-in-gmt-6-4-0">
+<h3>Maintenance updates in GMT 6.4.0<a class="headerlink" href="#maintenance-updates-in-gmt-6-4-0" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Initialize data version control for managing test images (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5888">#5888</a>)</p></li>
+</ul>
+</section>
+<section id="deprecations-in-gmt-6-4">
+<h3>Deprecations in GMT 6.4<a class="headerlink" href="#deprecations-in-gmt-6-4" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="inset.html"><span class="doc">inset</span></a>: Let inset take -C instead of -M (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6297">#6297</a>)</p></li>
+<li><p>Ensure consistent use of table, t, +t when discussing tables (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6237">#6237</a>)</p></li>
+<li><p>Switch to using q instead of u for user unit (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/6196">#6196</a>)</p></li>
+</ul>
+</section>
+</section>
 <section id="new-features-in-gmt-6-3">
-<h2>New Features in GMT 6.3<a class="headerlink" href="#new-features-in-gmt-6-3" title="Permalink to this headline">¶</a></h2>
+<h2>New Features in GMT 6.3<a class="headerlink" href="#new-features-in-gmt-6-3" title="Permalink to this heading">¶</a></h2>
 <p>GMT 6.3 includes a new module, many new features, general code and documentation improvements, and numerous
 bug fixes! Here are the general updates included in 6.3:</p>
 <ul class="simple">
@@ -219,13 +322,13 @@ bug fixes! Here are the general updates included in 6.3:</p>
 <li><p>Simplify conversions between km and degrees (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5824">#5824</a>)</p></li>
 </ul>
 <section id="new-modules-in-gmt-6-3">
-<h3>New Modules in GMT 6.3<a class="headerlink" href="#new-modules-in-gmt-6-3" title="Permalink to this headline">¶</a></h3>
+<h3>New Modules in GMT 6.3<a class="headerlink" href="#new-modules-in-gmt-6-3" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="grdselect.html"><span class="doc">grdselect</span></a>: Make selections or determine common regions from 2-D grids, images or 3-D cubes (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5929">#5929</a>)</p></li>
 </ul>
 </section>
 <section id="new-core-module-features-in-gmt-6-3">
-<h3>New Core Module Features in GMT 6.3<a class="headerlink" href="#new-core-module-features-in-gmt-6-3" title="Permalink to this headline">¶</a></h3>
+<h3>New Core Module Features in GMT 6.3<a class="headerlink" href="#new-core-module-features-in-gmt-6-3" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="begin.html"><span class="doc">begin</span></a>, <a class="reference internal" href="figure.html"><span class="doc">figure</span></a>, and <a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a>: JPEG quality and recognition of modifiers (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5574">#5574</a>)</p></li>
 <li><p><a class="reference internal" href="coast.html"><span class="doc">coast</span></a>: Enable country-based clipping in -E (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5334">#5334</a>)</p></li>
@@ -247,7 +350,7 @@ bug fixes! Here are the general updates included in 6.3:</p>
 <li><p><a class="reference internal" href="grdtrack.html"><span class="doc">grdtrack</span></a>: Let -C also accept a fixed azimuth for all profiles (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5849">#5849</a>)</p></li>
 <li><p><a class="reference internal" href="grdtrend.html"><span class="doc">grdtrend</span></a>: Fit model along xx or yy only. (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5496">#5496</a>)</p></li>
 <li><p><a class="reference internal" href="inset.html"><span class="doc">inset</span></a>: Let begin optionally take -R -J to determine inset size instead of via -D (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5903">#5903</a>)</p></li>
-<li><p><a class="reference internal" href="plot.html"><span class="doc">plot</span></a>:Add inverted triangle to front symbol choices (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5983">#5983</a>)</p></li>
+<li><p><a class="reference internal" href="plot.html"><span class="doc">plot</span></a>: Add inverted triangle to front symbol choices (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5983">#5983</a>)</p></li>
 <li><p><a class="reference internal" href="plot.html"><span class="doc">plot</span></a>: For error bars, allow asymmetrical bounds as well (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5844">#5844</a>)</p></li>
 <li><p><a class="reference internal" href="plot.html"><span class="doc">plot</span></a>, <a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a>, and <a class="reference internal" href="clip.html"><span class="doc">clip</span></a>: Add polar resampling via -Ar|t (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5263">#5263</a>)</p></li>
 <li><p><a class="reference internal" href="project.html"><span class="doc">project</span></a>: Let -G accept increment unit and +n modifier (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5984">#5984</a>)</p></li>
@@ -258,7 +361,7 @@ bug fixes! Here are the general updates included in 6.3:</p>
 </ul>
 </section>
 <section id="supplement-updates-in-gmt-6-3">
-<h3>Supplement updates in GMT 6.3<a class="headerlink" href="#supplement-updates-in-gmt-6-3" title="Permalink to this headline">¶</a></h3>
+<h3>Supplement updates in GMT 6.3<a class="headerlink" href="#supplement-updates-in-gmt-6-3" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="supplements/seis/coupe.html"><span class="doc">coupe</span></a> and <a class="reference internal" href="supplements/seis/meca.html"><span class="doc">meca</span></a>: Add linear moment scaling (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5649">#5649</a>)</p></li>
 <li><p><a class="reference internal" href="supplements/potential/grdflexure.html"><span class="doc">grdflexure</span></a>: Let input list of grids and load times optionally also have load density (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5249">#5249</a>)</p></li>
@@ -266,17 +369,17 @@ bug fixes! Here are the general updates included in 6.3:</p>
 </ul>
 </section>
 <section id="enhancements-in-gmt-6-3">
-<h3>Enhancements in GMT 6.3<a class="headerlink" href="#enhancements-in-gmt-6-3" title="Permalink to this headline">¶</a></h3>
+<h3>Enhancements in GMT 6.3<a class="headerlink" href="#enhancements-in-gmt-6-3" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Add v (vector) to custom symbol kit, plus handle azimuth vs angle (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5606">#5606</a>)</p></li>
 <li><p>Allow trailing comments in custom symbol files (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5610">#5610</a>)</p></li>
 <li><p>Let -d set starting column via modifier (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5966">#5966</a>)</p></li>
-<li><p>Let -f<em>col</em> explicity set start of input trailing text (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5370">#5370</a>)</p></li>
-<li><p>Let multi-layer geotiff files be cut via gdal_translate (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5819">#5819</a>)</p></li>
+<li><p>Let -f<em>col</em> explicitly set start of input trailing text (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5370">#5370</a>)</p></li>
+<li><p>Let multi-layer geotiff files be cut via <em>gdal_translate</em> (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5819">#5819</a>)</p></li>
 </ul>
 </section>
 <section id="documentation-updates-in-gmt-6-3">
-<h3>Documentation updates in GMT 6.3<a class="headerlink" href="#documentation-updates-in-gmt-6-3" title="Permalink to this headline">¶</a></h3>
+<h3>Documentation updates in GMT 6.3<a class="headerlink" href="#documentation-updates-in-gmt-6-3" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Add a GMT team page and update contributor recognition model (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5589">#5589</a>)</p></li>
 <li><p>Add deprecations section to ReST documentation (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5847">#5847</a>)</p></li>
@@ -287,7 +390,7 @@ bug fixes! Here are the general updates included in 6.3:</p>
 </ul>
 </section>
 <section id="deprecations-in-gmt-6-3">
-<h3>Deprecations in GMT 6.3<a class="headerlink" href="#deprecations-in-gmt-6-3" title="Permalink to this headline">¶</a></h3>
+<h3>Deprecations in GMT 6.3<a class="headerlink" href="#deprecations-in-gmt-6-3" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Clean up aspects of SVD function usage in GMT (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5725">#5725</a>)</p></li>
 <li><p>Complete -D parsing update (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5827">#5827</a>)</p></li>
@@ -300,7 +403,7 @@ bug fixes! Here are the general updates included in 6.3:</p>
 </section>
 </section>
 <section id="new-features-in-gmt-6-2">
-<h2>New Features in GMT 6.2<a class="headerlink" href="#new-features-in-gmt-6-2" title="Permalink to this headline">¶</a></h2>
+<h2>New Features in GMT 6.2<a class="headerlink" href="#new-features-in-gmt-6-2" title="Permalink to this heading">¶</a></h2>
 <p>GMT 6.2 includes a new module, new common option, general code and documentation improvements, and numerous
 bug fixes! Here are the general updates included in 6.2:</p>
 <ol class="arabic simple">
@@ -321,19 +424,19 @@ add support for subtitles.</p></li>
 <li><p>Various improvements to the API in support of developments taking place in the external wrappers (Python, Julia, Matlab).</p></li>
 </ol>
 <section id="new-common-options-in-gmt-6-2">
-<h3>New Common Options in GMT 6.2:<a class="headerlink" href="#new-common-options-in-gmt-6-2" title="Permalink to this headline">¶</a></h3>
+<h3>New Common Options in GMT 6.2:<a class="headerlink" href="#new-common-options-in-gmt-6-2" title="Permalink to this heading">¶</a></h3>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="gmt.html#the-w-option"><span class="std std-ref">-w</span></a>: Convert selected coordinate to repeating cycles.</p></li>
 </ol>
 </section>
 <section id="new-modules-in-gmt-6-2">
-<h3>New Modules in GMT 6.2:<a class="headerlink" href="#new-modules-in-gmt-6-2" title="Permalink to this headline">¶</a></h3>
+<h3>New Modules in GMT 6.2:<a class="headerlink" href="#new-modules-in-gmt-6-2" title="Permalink to this heading">¶</a></h3>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="gmtbinstats.html"><span class="doc">gmtbinstats</span></a>: Bin spatial data and determine statistics per bin, with support for both hexagonal and rectangular tiling.</p></li>
 </ol>
 </section>
 <section id="new-core-module-features-in-gmt-6-2">
-<h3>New Core Module Features in GMT 6.2:<a class="headerlink" href="#new-core-module-features-in-gmt-6-2" title="Permalink to this headline">¶</a></h3>
+<h3>New Core Module Features in GMT 6.2:<a class="headerlink" href="#new-core-module-features-in-gmt-6-2" title="Permalink to this heading">¶</a></h3>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: New <strong>+x</strong> and <strong>+y</strong> modifiers to the <strong>-S</strong> option for setting axis label and unit; Support
 slanted annotations with <strong>-S</strong>.</p></li>
@@ -360,7 +463,7 @@ Support sequential auto-colors for polygon fills or line pens.</p></li>
 </ol>
 </section>
 <section id="supplement-updates-in-gmt-6-2">
-<h3>Supplement updates in GMT 6.2:<a class="headerlink" href="#supplement-updates-in-gmt-6-2" title="Permalink to this headline">¶</a></h3>
+<h3>Supplement updates in GMT 6.2:<a class="headerlink" href="#supplement-updates-in-gmt-6-2" title="Permalink to this heading">¶</a></h3>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="supplements/seis/coupe.html"><span class="doc">coupe</span></a>: Updated syntax for the <strong>-A</strong> option.</p></li>
 <li><p><a class="reference internal" href="supplements/seis/coupe.html"><span class="doc">coupe</span></a>, <a class="reference internal" href="supplements/seis/meca.html"><span class="doc">meca</span></a>,
@@ -373,13 +476,13 @@ ellipsoids, etc.) and compute their effect.</p></li>
 </section>
 </section>
 <section id="release-of-gmt-6-1-1">
-<h2>Release of GMT 6.1.1<a class="headerlink" href="#release-of-gmt-6-1-1" title="Permalink to this headline">¶</a></h2>
+<h2>Release of GMT 6.1.1<a class="headerlink" href="#release-of-gmt-6-1-1" title="Permalink to this heading">¶</a></h2>
 <p>The GMT 6.1.1 release adds no new features but fixes a number of bugs that have been reported
 since the release of 6.1. As such, it is a stable and recommended upgrade for all 6.1 users.
 For new features in 6.1.x in general, please read the following sections.</p>
 </section>
 <section id="new-features-in-gmt-6-1">
-<h2>New Features in GMT 6.1<a class="headerlink" href="#new-features-in-gmt-6-1" title="Permalink to this headline">¶</a></h2>
+<h2>New Features in GMT 6.1<a class="headerlink" href="#new-features-in-gmt-6-1" title="Permalink to this heading">¶</a></h2>
 <p>GMT 6.1 may be a minor revision to 6.0 but packs quite a punch. For general
 changes, we mention</p>
 <blockquote>
@@ -407,7 +510,7 @@ capabilities for annotating azimuths, depths or radii.</p></li>
 </ol>
 </div></blockquote>
 <section id="new-common-options-in-gmt-6-1">
-<h3>New Common Options in GMT 6.1:<a class="headerlink" href="#new-common-options-in-gmt-6-1" title="Permalink to this headline">¶</a></h3>
+<h3>New Common Options in GMT 6.1:<a class="headerlink" href="#new-common-options-in-gmt-6-1" title="Permalink to this heading">¶</a></h3>
 <blockquote>
 <div><ol class="arabic simple">
 <li><p><strong>-l</strong>: Add automatic legend entries from the modules <a class="reference internal" href="plot.html"><span class="doc">plot</span></a>, <a class="reference internal" href="plot3d.html"><span class="doc">plot3d</span></a>,
@@ -417,16 +520,17 @@ capabilities for annotating azimuths, depths or radii.</p></li>
 </div></blockquote>
 </section>
 <section id="new-modules-in-gmt-6-1">
-<h3>New Modules in GMT 6.1:<a class="headerlink" href="#new-modules-in-gmt-6-1" title="Permalink to this headline">¶</a></h3>
+<h3>New Modules in GMT 6.1:<a class="headerlink" href="#new-modules-in-gmt-6-1" title="Permalink to this heading">¶</a></h3>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="batch.html"><span class="doc">batch</span></a>: Automate batch job processing by replicating a master script with job-specific parameters.</p></li>
 <li><p><a class="reference internal" href="grdmix.html"><span class="doc">grdmix</span></a>: Blending and transforming grids and images, including manipulating transparency.</p></li>
 <li><p><a class="reference internal" href="grdinterpolate.html"><span class="doc">grdinterpolate</span></a>: Interpolate new 2-D grids or 1-D data series from a 3-D data cube.</p></li>
-<li><p><a class="reference internal" href="grdgdal.html"><span class="doc">grdgdal</span></a>: Execute GDAL raster programs (such as info, dem, grid, translate, rasterize or warp), from GMT.</p></li>
+<li><p><a class="reference internal" href="grdgdal.html"><span class="doc">grdgdal</span></a>: Execute <a class="reference external" href="https://gdal.org/programs/index.html#raster-programs">GDAL raster programs</a>
+(such as <em>gdalinfo</em>, <em>gdaldem</em>, <em>gdal_grid</em>, <em>gdal_translate</em>, <em>gdal_rasterize</em> or <em>gdalwarp</em>), from GMT.</p></li>
 </ol>
 </section>
 <section id="new-core-module-features-in-gmt-6-1">
-<h3>New Core Module Features in GMT 6.1:<a class="headerlink" href="#new-core-module-features-in-gmt-6-1" title="Permalink to this headline">¶</a></h3>
+<h3>New Core Module Features in GMT 6.1:<a class="headerlink" href="#new-core-module-features-in-gmt-6-1" title="Permalink to this heading">¶</a></h3>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="begin.html"><span class="doc">begin</span></a>: Ignore the user’s <em>gmt.conf</em> files normally included by using <strong>-C</strong>.</p></li>
 <li><p><a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a>: Option <strong>-S</strong> has been enhanced to handle bar appearance when <strong>-B</strong> is not used.</p></li>
@@ -462,7 +566,7 @@ and <strong>-P</strong> for adding one of six progress indicators.</p></li>
 </ol>
 </section>
 <section id="supplement-updates-in-gmt-6-1">
-<h3>Supplement updates in GMT 6.1:<a class="headerlink" href="#supplement-updates-in-gmt-6-1" title="Permalink to this headline">¶</a></h3>
+<h3>Supplement updates in GMT 6.1:<a class="headerlink" href="#supplement-updates-in-gmt-6-1" title="Permalink to this heading">¶</a></h3>
 <ol class="arabic simple">
 <li><p><em>seis</em>: Update all module syntax to GMT 6 standards and make their i/o more robust.</p></li>
 <li><p><em>potential</em>: <a class="reference internal" href="supplements/potential/grdflexure.html"><span class="doc">grdflexure</span></a> adds new transfer functions now documented with equations.</p></li>
@@ -470,7 +574,7 @@ and <strong>-P</strong> for adding one of six progress indicators.</p></li>
 </section>
 </section>
 <section id="new-features-in-gmt-6-0">
-<h2>New Features in GMT 6.0<a class="headerlink" href="#new-features-in-gmt-6-0" title="Permalink to this headline">¶</a></h2>
+<h2>New Features in GMT 6.0<a class="headerlink" href="#new-features-in-gmt-6-0" title="Permalink to this heading">¶</a></h2>
 <p>GMT 6.0 is a major revision of GMT and its eco-system.  At the top level,
 there are numerous changes:</p>
 <ol class="arabic simple">
@@ -490,7 +594,7 @@ a few modules have entirely different names in modern mode (<em>psxy</em> is <em
 existing classic mode GMT 4 and 5 scripts will run as before.</p></li>
 </ol>
 <section id="modern-mode-modules-in-gmt-6-0">
-<h3>Modern mode modules in GMT 6.0<a class="headerlink" href="#modern-mode-modules-in-gmt-6-0" title="Permalink to this headline">¶</a></h3>
+<h3>Modern mode modules in GMT 6.0<a class="headerlink" href="#modern-mode-modules-in-gmt-6-0" title="Permalink to this heading">¶</a></h3>
 <p>GMT modern mode is supported by five new commands:</p>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="begin.html"><span class="doc">begin</span></a> starts a new GMT modern mode session.</p></li>
@@ -513,7 +617,7 @@ the default graphics format is PDF and scripts can open up the plots in the defa
 viewer automatically.</p>
 </section>
 <section id="new-modules-in-gmt-6-0">
-<h3>New modules in GMT 6.0<a class="headerlink" href="#new-modules-in-gmt-6-0" title="Permalink to this headline">¶</a></h3>
+<h3>New modules in GMT 6.0<a class="headerlink" href="#new-modules-in-gmt-6-0" title="Permalink to this heading">¶</a></h3>
 <p>Apart from modern mode we have added a few modules that are accessible to all users:</p>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="events.html"><span class="doc">events</span></a> makes a snapshot of all time-dependent events.</p></li>
@@ -521,7 +625,7 @@ viewer automatically.</p>
 </ol>
 </section>
 <section id="general-improvements-in-gmt-6-0">
-<h3>General improvements in GMT 6.0<a class="headerlink" href="#general-improvements-in-gmt-6-0" title="Permalink to this headline">¶</a></h3>
+<h3>General improvements in GMT 6.0<a class="headerlink" href="#general-improvements-in-gmt-6-0" title="Permalink to this heading">¶</a></h3>
 <p>While our focus has been almost exclusively on GMT modern mode, there is a
 range of new capabilities have been added to all of GMT; here is a
 summary of these changes:</p>
@@ -570,7 +674,7 @@ respectively.</p></li>
 </ul>
 </section>
 <section id="module-enhancements-in-gmt-6-0">
-<h3>Module enhancements in GMT 6.0<a class="headerlink" href="#module-enhancements-in-gmt-6-0" title="Permalink to this headline">¶</a></h3>
+<h3>Module enhancements in GMT 6.0<a class="headerlink" href="#module-enhancements-in-gmt-6-0" title="Permalink to this heading">¶</a></h3>
 <p>Several modules have obtained new options to extend their capabilities:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a> now accepts the <strong>-r</strong> option to set grid node registration.</p></li>
@@ -641,7 +745,7 @@ always include the last point.</p></li>
 </section>
 </section>
 <section id="new-features-in-gmt-5-4">
-<h2>New Features in GMT 5.4<a class="headerlink" href="#new-features-in-gmt-5-4" title="Permalink to this headline">¶</a></h2>
+<h2>New Features in GMT 5.4<a class="headerlink" href="#new-features-in-gmt-5-4" title="Permalink to this heading">¶</a></h2>
 <p>Between 5.3 and 5.4 we continued to work on the underlying API
 needed to support the modules and especially the external interfaces
 we are building toward MATLAB, Julia and Python.  We have introduced the use of
@@ -651,7 +755,7 @@ to standardize GMT non-common option usage across the suite.
 Nevertheless, there have been many user-level enhancements as well.
 Here is a summary of these changes in three key areas:</p>
 <section id="new-modules-in-gmt-5-4">
-<h3>New modules in GMT 5.4<a class="headerlink" href="#new-modules-in-gmt-5-4" title="Permalink to this headline">¶</a></h3>
+<h3>New modules in GMT 5.4<a class="headerlink" href="#new-modules-in-gmt-5-4" title="Permalink to this heading">¶</a></h3>
 <p>We have added a new module to the GMT core called
 <a class="reference internal" href="ternary.html"><span class="doc">ternary</span></a>.
 This module allows for the construction of ternary diagram, currently
@@ -661,7 +765,7 @@ for creating a valid MGD77-format header from basic metadata and information
 determined from the header-less data file.</p>
 </section>
 <section id="general-improvements-in-gmt-5-4">
-<h3>General improvements in GMT 5.4<a class="headerlink" href="#general-improvements-in-gmt-5-4" title="Permalink to this headline">¶</a></h3>
+<h3>General improvements in GMT 5.4<a class="headerlink" href="#general-improvements-in-gmt-5-4" title="Permalink to this heading">¶</a></h3>
 <p>A range of new capabilities have been added to all of GMT; here is a
 summary of these changes:</p>
 <ul class="simple">
@@ -733,7 +837,7 @@ will require the use of the new (and standard) syntax.</p></li>
 </ul>
 </section>
 <section id="module-enhancements-in-gmt-5-4">
-<h3>Module enhancements in GMT 5.4<a class="headerlink" href="#module-enhancements-in-gmt-5-4" title="Permalink to this headline">¶</a></h3>
+<h3>Module enhancements in GMT 5.4<a class="headerlink" href="#module-enhancements-in-gmt-5-4" title="Permalink to this heading">¶</a></h3>
 <p>Several modules have obtained new options to extend their capabilities:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a> has new session management option that lets you clear various
@@ -788,7 +892,7 @@ and more.</p></li>
 </ul>
 </section>
 <section id="api-changes-in-gmt-5-4">
-<h3>API changes in GMT 5.4<a class="headerlink" href="#api-changes-in-gmt-5-4" title="Permalink to this headline">¶</a></h3>
+<h3>API changes in GMT 5.4<a class="headerlink" href="#api-changes-in-gmt-5-4" title="Permalink to this heading">¶</a></h3>
 <p>We have introduced one change that breaks backwards compatibility for users of
 the API functions.  We don’t do this lightly but given the API is still considered
 beta it was the best solution.  Function GMT_Create_Data now requires the mode to
@@ -801,7 +905,7 @@ are no projections involved (hence GMT does not know a grid is geographic).
 Passing this constant will be required in MB-System.</p>
 </section>
 <section id="backwards-compatible-syntax-changes">
-<h3>Backwards-compatible syntax changes<a class="headerlink" href="#backwards-compatible-syntax-changes" title="Permalink to this headline">¶</a></h3>
+<h3>Backwards-compatible syntax changes<a class="headerlink" href="#backwards-compatible-syntax-changes" title="Permalink to this heading">¶</a></h3>
 <p>We strive to keep the GMT user interface consistent.  The common options help
 with that, but the module-specific options have often used very different
 forms to achieve similar goals.  We have revised the syntax of numerous options
@@ -842,14 +946,14 @@ match the other labeling options.</p></li>
 </section>
 </section>
 <section id="new-features-in-gmt-5-3">
-<h2>New Features in GMT 5.3<a class="headerlink" href="#new-features-in-gmt-5-3" title="Permalink to this headline">¶</a></h2>
+<h2>New Features in GMT 5.3<a class="headerlink" href="#new-features-in-gmt-5-3" title="Permalink to this heading">¶</a></h2>
 <p>Between 5.2 and 5.3 we spent much time working on the underlying API
 needed to support the modules and especially the external interfaces
 we are building toward MATLAB and Python.  Nevertheless, there have
 been many user-level enhancements as well.
 Here is a summary of these changes in three key areas:</p>
 <section id="new-modules-in-gmt-5-3">
-<h3>New modules in GMT 5.3<a class="headerlink" href="#new-modules-in-gmt-5-3" title="Permalink to this headline">¶</a></h3>
+<h3>New modules in GMT 5.3<a class="headerlink" href="#new-modules-in-gmt-5-3" title="Permalink to this heading">¶</a></h3>
 <p>We have added a new module to the GMT core called
 <a class="reference internal" href="solar.html"><span class="doc">solar</span></a>.
 This module plots various day-light terminators and other sunlight parameters.</p>
@@ -867,7 +971,7 @@ that grids vector data assumed to be coupled via an elastic model.  The prime
 usage is for gridding GPS velocity components.</p>
 </section>
 <section id="general-improvements-in-gmt-5-3">
-<h3>General improvements in GMT 5.3<a class="headerlink" href="#general-improvements-in-gmt-5-3" title="Permalink to this headline">¶</a></h3>
+<h3>General improvements in GMT 5.3<a class="headerlink" href="#general-improvements-in-gmt-5-3" title="Permalink to this heading">¶</a></h3>
 <p>There are many changes to GMT, mostly under the hood, but also changes that
 affect users directly.  We have added four new examples and one new animation
 to highlight recently added capabilities.  There have been many bug fixes
@@ -970,7 +1074,7 @@ EarthByte, U. of Sydney.</p></li>
 </ul>
 </section>
 <section id="the-api">
-<h3>The API<a class="headerlink" href="#the-api" title="Permalink to this headline">¶</a></h3>
+<h3>The API<a class="headerlink" href="#the-api" title="Permalink to this heading">¶</a></h3>
 <p>We have spend most of our time strengthening the API, in particular in support
 of the GMT/MATLAB toolbox.  A few new API functions have been added since the
 initial release, including GMT_Get_Pixel, GMT_Set_Index, GMT_Open_VirtualFile,
@@ -979,13 +1083,13 @@ see the API <a class="reference internal" href="devdocs/api.html#api"><span clas
 </section>
 </section>
 <section id="new-features-in-gmt-5-2">
-<h2>New Features in GMT 5.2<a class="headerlink" href="#new-features-in-gmt-5-2" title="Permalink to this headline">¶</a></h2>
+<h2>New Features in GMT 5.2<a class="headerlink" href="#new-features-in-gmt-5-2" title="Permalink to this heading">¶</a></h2>
 <p>While the GMT 5.1-series has seen bug-fixes since its release, new features were
 only added to the 5.2-series.  All in all, almost 200 new features (a combination
 of new programs, new options, and enhancements) have been implemented.
 Here is a summary of these changes in six key areas:</p>
 <section id="new-modules-in-gmt-5-2">
-<h3>New modules in GMT 5.2<a class="headerlink" href="#new-modules-in-gmt-5-2" title="Permalink to this headline">¶</a></h3>
+<h3>New modules in GMT 5.2<a class="headerlink" href="#new-modules-in-gmt-5-2" title="Permalink to this heading">¶</a></h3>
 <p>There are two new modules in the core system:</p>
 <p><a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a> is modeled after the shell script with the same
 name but is now a regular C module that can be used to add the
@@ -1023,7 +1127,7 @@ to PostScriptLight to avoid package name conflicts.  This library will eventuall
 become decoupled from GMT and end up as a required prerequisite.</p>
 </section>
 <section id="new-common-options-in-gmt-5-2">
-<h3>New common options in GMT 5.2<a class="headerlink" href="#new-common-options-in-gmt-5-2" title="Permalink to this headline">¶</a></h3>
+<h3>New common options in GMT 5.2<a class="headerlink" href="#new-common-options-in-gmt-5-2" title="Permalink to this heading">¶</a></h3>
 <p>We have added two new lower-case GMT common options:</p>
 <ul class="simple">
 <li><p>Programs that need to specify which values should represent “no data”
@@ -1044,7 +1148,7 @@ This list will grow longer with time.</p></li>
 </ul>
 </section>
 <section id="new-default-parameters-in-gmt-5-2">
-<h3>New default parameters in GMT 5.2<a class="headerlink" href="#new-default-parameters-in-gmt-5-2" title="Permalink to this headline">¶</a></h3>
+<h3>New default parameters in GMT 5.2<a class="headerlink" href="#new-default-parameters-in-gmt-5-2" title="Permalink to this heading">¶</a></h3>
 <p>There have been a few changes to the GMT Defaults parameters.  All changes
 are backwards compatible:</p>
 <ul class="simple">
@@ -1066,7 +1170,7 @@ and Rudoe (from GMT4).</p></li>
 </ul>
 </section>
 <section id="updated-common-options-in-gmt-5-2">
-<h3>Updated common options in GMT 5.2<a class="headerlink" href="#updated-common-options-in-gmt-5-2" title="Permalink to this headline">¶</a></h3>
+<h3>Updated common options in GMT 5.2<a class="headerlink" href="#updated-common-options-in-gmt-5-2" title="Permalink to this heading">¶</a></h3>
 <p>Two of the established GMT common options have seen minor improvements:</p>
 <ul class="simple">
 <li><p>Implemented modifier <strong>-B+n</strong> to <em>not</em> draw the frame at all.</p></li>
@@ -1080,7 +1184,7 @@ keys specify how the reference point relate to the grid region.</p></li>
 </ul>
 </section>
 <section id="general-improvements-in-gmt-5-2">
-<h3>General improvements in GMT 5.2<a class="headerlink" href="#general-improvements-in-gmt-5-2" title="Permalink to this headline">¶</a></h3>
+<h3>General improvements in GMT 5.2<a class="headerlink" href="#general-improvements-in-gmt-5-2" title="Permalink to this heading">¶</a></h3>
 <p>Several changes have affects across GMT; these are:</p>
 <ul class="simple">
 <li><p>Added optional multi-threading capabilities to several modules, such as
@@ -1117,7 +1221,7 @@ symbols must be specified with uppercase <strong>-SK</strong>.</p></li>
 </ul>
 </section>
 <section id="program-specific-improvements-in-gmt-5-2">
-<h3>Program-specific improvements in GMT 5.2<a class="headerlink" href="#program-specific-improvements-in-gmt-5-2" title="Permalink to this headline">¶</a></h3>
+<h3>Program-specific improvements in GMT 5.2<a class="headerlink" href="#program-specific-improvements-in-gmt-5-2" title="Permalink to this heading">¶</a></h3>
 <p>Finally, here is a list of enhancements to individual modules.  Any
 changes to existing syntax will be backwards compatible:</p>
 <ul class="simple">
@@ -1250,7 +1354,7 @@ Finally, to match <a class="reference internal" href="plot.html"><span class="do
 <li><p><a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a> spline selection option <strong>-F</strong> can now accept the optional
 modifiers <strong>+1</strong> or <strong>+2</strong> which will compute
 the first or second derivatives of the spline, respectively.</p></li>
-<li><p><a class="reference internal" href="spectrum1d.html"><span class="doc">spectrum1d</span></a> can now turn off single-output data to stdout via <strong>-T</strong>
+<li><p><a class="reference internal" href="spectrum1d.html"><span class="doc">spectrum1d</span></a> can now turn off single-output data to standard output via <strong>-T</strong>
 or turn off multi-file output via <strong>-N</strong>.</p></li>
 <li><p><a class="reference internal" href="sphdistance.html"><span class="doc">sphdistance</span></a> can now also perform a nearest-neighbor gridding where
 all grid nodes inside a Voronoi polygon is set to the same value as the
@@ -1269,13 +1373,13 @@ decimate the trackline coordinates by only plotting every <em>gap</em> point.</p
 observation level.</p></li>
 <li><p><a class="reference internal" href="supplements/potential/grdgravmag3d.html"><span class="doc">grdgravmag3d</span></a> adds <strong>-H</strong> to compute magnetic anomaly.</p></li>
 <li><p><a class="reference internal" href="supplements/spotter/grdpmodeler.html"><span class="doc">grdpmodeler</span></a> can now output more than one model
-prediction into several grids or as a record written to stdout.  Also gains the <strong>-N</strong> option
+prediction into several grids or as a record written to standard output.  Also gains the <strong>-N</strong> option
 used by other spotter tools to extend the model duration.</p></li>
 </ul>
 </section>
 </section>
 <section id="new-features-in-gmt-5">
-<h2>New Features in GMT 5<a class="headerlink" href="#new-features-in-gmt-5" title="Permalink to this headline">¶</a></h2>
+<h2>New Features in GMT 5<a class="headerlink" href="#new-features-in-gmt-5" title="Permalink to this heading">¶</a></h2>
 <p>GMT 5 represents a new branch of GMT development that mostly preserves the
 capabilities of the previous versions while adding over 200 new features
 to an already extensive bag of tricks.  Our PostScript library
@@ -1297,7 +1401,7 @@ thus allowing the use of many obsolete default names and command
 switches (you will receive a warning instead).  This is discussed below.</p>
 <p>Below are six key areas of improvements in GMT 5.</p>
 <section id="new-programs-in-gmt-5">
-<h3>New programs in GMT 5<a class="headerlink" href="#new-programs-in-gmt-5" title="Permalink to this headline">¶</a></h3>
+<h3>New programs in GMT 5<a class="headerlink" href="#new-programs-in-gmt-5" title="Permalink to this heading">¶</a></h3>
 <p>First, a few new programs have been added and some have been
 promoted (and possibly renamed) from earlier supplements:</p>
 <dl class="simple">
@@ -1374,13 +1478,13 @@ found in the sph supplement.</p>
 </dl>
 </section>
 <section id="new-common-options-in-gmt-5">
-<h3>New common options in GMT 5<a class="headerlink" href="#new-common-options-in-gmt-5" title="Permalink to this headline">¶</a></h3>
+<h3>New common options in GMT 5<a class="headerlink" href="#new-common-options-in-gmt-5" title="Permalink to this heading">¶</a></h3>
 <p>First we discuss changes that have been
 implemented by a series of new lower-case GMT common options:</p>
 <ul class="simple">
 <li><p>Programs that read data tables can now process the aspatial metadata
 in OGR/GMT files with the new <strong>-a</strong> option. These can be produced by
-<strong>ogr2ogr</strong> (a GDAL tool) when selecting the -f “GMT” output
+<em>ogr2ogr</em> (a <a class="reference external" href="https://gdal.org/">GDAL tool</a>) when selecting the -f “GMT” output
 format. See Chapter <a class="reference internal" href="cookbook/ogrgmt-format.html#ogr-compat"><span class="std std-ref">The GMT Vector Data Format for OGR Compatibility</span></a> for an explanation of the OGR/GMT file format.
 Because all GIS information is encoded via GMT comment lines these
 files can also be used in GMT 4 (the GIS metadata is simply
@@ -1407,7 +1511,7 @@ transparency you can only see the effect if you convert it to PDF.</p></li>
 </ul>
 </section>
 <section id="updated-common-options-in-gmt-5">
-<h3>Updated common options in GMT 5<a class="headerlink" href="#updated-common-options-in-gmt-5" title="Permalink to this headline">¶</a></h3>
+<h3>Updated common options in GMT 5<a class="headerlink" href="#updated-common-options-in-gmt-5" title="Permalink to this heading">¶</a></h3>
 <p>Some of the established GMT common options have seen significant
 improvements; these include:</p>
 <ul class="simple">
@@ -1428,7 +1532,7 @@ line arguments, we now also support giving + which in addition will list
 the explanations for all options that are not among the GMT common set.</p>
 </section>
 <section id="new-default-parameters-in-gmt-5">
-<h3>New default parameters in GMT 5<a class="headerlink" href="#new-default-parameters-in-gmt-5" title="Permalink to this headline">¶</a></h3>
+<h3>New default parameters in GMT 5<a class="headerlink" href="#new-default-parameters-in-gmt-5" title="Permalink to this heading">¶</a></h3>
 <p>Most of the GMT default parameters have changed names in order to
 group parameters into logical groups and to use more consistent naming.
 However, under compatibility mode (see below) the old names are still recognized.
@@ -1474,7 +1578,7 @@ gmt.conf file as well. So the environment variable <strong>$GMT_TMPDIR</strong> 
 </ul>
 </section>
 <section id="general-improvements-in-gmt-5">
-<h3>General improvements in GMT 5<a class="headerlink" href="#general-improvements-in-gmt-5" title="Permalink to this headline">¶</a></h3>
+<h3>General improvements in GMT 5<a class="headerlink" href="#general-improvements-in-gmt-5" title="Permalink to this heading">¶</a></h3>
 <p>Other wide-ranging changes have been implemented in different
 ways, such as</p>
 <ul class="simple">
@@ -1517,7 +1621,7 @@ limitations on how to visualize this transparency.</p></li>
 </ul>
 </section>
 <section id="program-specific-improvements-in-gmt-5">
-<h3>Program-specific improvements in GMT 5<a class="headerlink" href="#program-specific-improvements-in-gmt-5" title="Permalink to this headline">¶</a></h3>
+<h3>Program-specific improvements in GMT 5<a class="headerlink" href="#program-specific-improvements-in-gmt-5" title="Permalink to this heading">¶</a></h3>
 <p>Finally, here is a list of numerous enhancements to individual programs:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="blockmean.html"><span class="doc">blockmean</span></a> added <strong>-Ep</strong> for error propagation and
@@ -1712,8 +1816,8 @@ simply process their PostScript files via <a class="reference internal" href="ps
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

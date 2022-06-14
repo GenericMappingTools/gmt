@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>1. Preface &mdash; GMT 6.3.0 documentation</title>
+  <title>1. Preface &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
@@ -169,9 +175,9 @@
            <div itemprop="articleBody">
              
   <section id="preface">
-<h1><span class="section-number">1. </span>Preface<a class="headerlink" href="#preface" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">1. </span>Preface<a class="headerlink" href="#preface" title="Permalink to this heading">¶</a></h1>
 <p>While GMT has served the map-making and data processing needs of
-scientists since 1988 <a class="footnote-reference brackets" href="#id3" id="id1">1</a>, the current global use was heralded by the
+scientists since 1988 <a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, the current global use was heralded by the
 first official release in <em>EOS Trans. AGU</em> in the fall of 1991. Since
 then, GMT has grown to become a standard tool for many users,
 particularly in the Earth and Ocean Sciences but the global collective
@@ -190,7 +196,7 @@ you should you have any suggestions for future enhancements and
 modification. Please submit a bug report or a feature request
 on GitHub (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/issues">https://github.com/GenericMappingTools/gmt/issues</a>).</p>
 <section id="command-line-completion">
-<span id="id2"></span><h2><span class="section-number">1.1. </span>Command-line completion<a class="headerlink" href="#command-line-completion" title="Permalink to this headline">¶</a></h2>
+<span id="id2"></span><h2><span class="section-number">1.1. </span>Command-line completion<a class="headerlink" href="#command-line-completion" title="Permalink to this heading">¶</a></h2>
 <p>GMT provides basic command-line completion (tab completion) for bash.
 The easiest way to use the feature is to install the
 <a class="reference external" href="https://github.com/scop/bash-completion/">bash-completion</a> package
@@ -209,7 +215,7 @@ Custom GMT builds provide <code class="docutils literal notranslate"><span class
 which needs to be manually sourced from either <code class="docutils literal notranslate"><span class="pre">~/.bash_completion</span></code> or
 <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code>.</p>
 <p>Mac users should note that bash-completion &gt;=2.0 requires bash &gt;=4.1.
-However, OS X won’t ship anything that’s licensed under GPL version 3.
+However, macOS won’t ship anything that’s licensed under GPL version 3.
 The last version of bash available under the GPLv2 is 3.2 from 2006.
 It is recommended that <em>bash-completion</em> is installed together with
 <em>bash</em> via <a class="reference external" href="http://www.macports.org/">MacPorts</a>,
@@ -227,12 +233,11 @@ chsh -s /opt/local/bin/bash
 accordingly.</p>
 </section>
 <section id="footnote">
-<h2><span class="section-number">1.2. </span>Footnote<a class="headerlink" href="#footnote" title="Permalink to this headline">¶</a></h2>
-<dl class="footnote brackets">
-<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Version 1.0 was then informally released at the Lamont-Doherty Earth Observatory.</p>
-</dd>
-</dl>
+<h2><span class="section-number">1.2. </span>Footnote<a class="headerlink" href="#footnote" title="Permalink to this heading">¶</a></h2>
+<aside class="footnote brackets" id="id3" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Version 1.0 was then informally released at the Lamont-Doherty Earth Observatory.</p>
+</aside>
 </section>
 </section>
 
@@ -247,8 +252,8 @@ accordingly.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

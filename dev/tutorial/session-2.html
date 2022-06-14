@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Session Two &mdash; GMT 6.3.0 documentation</title>
+  <title>Session Two &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -49,7 +53,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -62,9 +66,9 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="session-1.html">Session One</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Session Two</a><ul>
@@ -79,6 +83,8 @@
 <li class="toctree-l2"><a class="reference internal" href="session-4.html">Session Four</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -145,7 +151,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../tutorial.html">Tutorial</a> &raquo;</li>
+          <li><a href="../tutorial.html">Tutorial in Bash</a> &raquo;</li>
       <li>Session Two</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/tutorial/session-2.rst" class="fa fa-github"> Edit on GitHub</a>
@@ -157,9 +163,9 @@
            <div itemprop="articleBody">
              
   <section id="session-two">
-<h1>Session Two<a class="headerlink" href="#session-two" title="Permalink to this headline">¶</a></h1>
+<h1>Session Two<a class="headerlink" href="#session-two" title="Permalink to this heading">¶</a></h1>
 <section id="general-information">
-<h2>General Information<a class="headerlink" href="#general-information" title="Permalink to this headline">¶</a></h2>
+<h2>General Information<a class="headerlink" href="#general-information" title="Permalink to this heading">¶</a></h2>
 <p>There are 18 GMT modules that directly create (or add overlays to)
 plots; the remaining 45 are mostly concerned with data
 processing.  This session will focus on the task of plotting
@@ -168,10 +174,6 @@ we acquired while familiarizing ourselves with the various
 GMT map projections as well as how to select a data domain
 and boundary annotations.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 26%" />
-<col style="width: 74%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Program</p></th>
 <th class="head"><p>Purpose</p></th>
@@ -259,10 +261,6 @@ depending on what action has been selected.  These circumstances make
 <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> harder to master than most GMT tools.  The table below
 shows an abbreviated list of the options:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 51%" />
-<col style="width: 49%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Purpose</p></th>
@@ -303,10 +301,6 @@ file.  The <em>size</em> is optional since individual sizes for
 symbols may also be provided by the input data.  The main symbols available to
 us are shown in the table below:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 72%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Symbol</p></th>
@@ -582,7 +576,7 @@ sizes are interpreted to be in cm.  Your plot should look like <a class="referen
 </figcaption>
 </figure>
 <section id="more-exercises">
-<h3>More exercises<a class="headerlink" href="#more-exercises" title="Permalink to this headline">¶</a></h3>
+<h3>More exercises<a class="headerlink" href="#more-exercises" title="Permalink to this heading">¶</a></h3>
 <ol class="arabic simple">
 <li><p>Select another symbol.</p></li>
 <li><p>Let the deep earthquakes be cyan instead of blue.</p></li>
@@ -590,15 +584,11 @@ sizes are interpreted to be in cm.  Your plot should look like <a class="referen
 </section>
 </section>
 <section id="plotting-text-strings">
-<h2>Plotting text strings<a class="headerlink" href="#plotting-text-strings" title="Permalink to this headline">¶</a></h2>
+<h2>Plotting text strings<a class="headerlink" href="#plotting-text-strings" title="Permalink to this heading">¶</a></h2>
 <p>In many situations we need to annotate plots or maps with text strings;
 in GMT this is done using <a class="reference internal" href="../text.html"><span class="doc">text</span></a>.  Apart from the common
 switches, there are 9 options that are particularly useful.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 73%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Purpose</p></th>
@@ -651,10 +641,6 @@ the relevant two-character codes used for justification.</p>
 special characters and escape-sequences used to select subscripts or symbol
 fonts. The escape sequences that are recognized by GMT are given below:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 23%" />
-<col style="width: 78%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Code</p></th>
 <th class="head"><p>Effect</p></th>
@@ -722,12 +708,6 @@ Your plot should look like <a class="reference internal" href="#gmt-tut-10"><spa
 </figcaption>
 </figure>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 22%" />
-<col style="width: 35%" />
-<col style="width: 17%" />
-<col style="width: 26%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Code</p></th>
 <th class="head"><p>Effect</p></th>
@@ -792,8 +772,8 @@ Your plot should look like <a class="reference internal" href="#gmt-tut-10"><spa
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

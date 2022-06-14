@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>18. Custom Plot Symbols &mdash; GMT 6.3.0 documentation</title>
+  <title>18. Custom Plot Symbols &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -49,7 +53,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
@@ -181,9 +187,9 @@
            <div itemprop="articleBody">
              
   <section id="custom-plot-symbols">
-<span id="app-custom-symbols"></span><h1><span class="section-number">18. </span>Custom Plot Symbols<a class="headerlink" href="#custom-plot-symbols" title="Permalink to this headline">¶</a></h1>
+<span id="app-custom-symbols"></span><h1><span class="section-number">18. </span>Custom Plot Symbols<a class="headerlink" href="#custom-plot-symbols" title="Permalink to this heading">¶</a></h1>
 <section id="background">
-<h2><span class="section-number">18.1. </span>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">18.1. </span>Background<a class="headerlink" href="#background" title="Permalink to this heading">¶</a></h2>
 <p>The GMT tools <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> and <a class="reference internal" href="../plot3d.html"><span class="doc">plot3d</span></a> are capable of using custom
 symbols as alternatives to the built-in, standard geometrical shapes
 such as circles, triangles, and many others. On the command line, custom
@@ -292,7 +298,7 @@ you can use the symbol <strong>QR</strong> to place the GMT QR Code that links t
 alternatively use <strong>QR_transparent</strong> to <em>not</em> plot the background opaque white square.</p>
 </section>
 <section id="the-macro-language">
-<h2><span class="section-number">18.2. </span>The macro language<a class="headerlink" href="#the-macro-language" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">18.2. </span>The macro language<a class="headerlink" href="#the-macro-language" title="Permalink to this heading">¶</a></h2>
 <p>To make your own custom plot symbol, you will need to design your own
 *.def files. This section defines the language used to build custom
 symbols. You can place these definition files in your current directory
@@ -309,13 +315,13 @@ template for you to draw your design:</p>
 </pre></div>
 </div>
 <section id="comment-lines">
-<h3><span class="section-number">18.2.1. </span>Comment lines<a class="headerlink" href="#comment-lines" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">18.2.1. </span>Comment lines<a class="headerlink" href="#comment-lines" title="Permalink to this heading">¶</a></h3>
 <p>Your definition file may have any number of comment lines, defined to
 begin with the character #. These are skipped by GMT but provides a
 mechanism for you to clarify what your symbol does.</p>
 </section>
 <section id="symbol-variables">
-<h3><span class="section-number">18.2.2. </span>Symbol variables<a class="headerlink" href="#symbol-variables" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">18.2.2. </span>Symbol variables<a class="headerlink" href="#symbol-variables" title="Permalink to this heading">¶</a></h3>
 <p>Simple symbols, such as circles and triangles, only take a single
 parameter: the symbol size, which is either given on the command line
 (via <strong>-Sk</strong>) or as part of the input data. However, more complicated
@@ -351,7 +357,7 @@ the input file you use $t and for a particular word (number k = 0, 1, …) in th
 trailing text you use $t<em>k</em>.</p>
 </section>
 <section id="angles-and-azimuths">
-<h3><span class="section-number">18.2.3. </span>Angles and azimuths<a class="headerlink" href="#angles-and-azimuths" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">18.2.3. </span>Angles and azimuths<a class="headerlink" href="#angles-and-azimuths" title="Permalink to this heading">¶</a></h3>
 <figure class="align-center" id="id2">
 <span id="angle-azimuths"></span><a class="reference internal image-reference" href="../_images/GMT_angle-azim.png"><img alt="../_images/GMT_angle-azim.png" src="../_images/GMT_angle-azim.png" style="width: 500px;" /></a>
 <figcaption>
@@ -369,7 +375,7 @@ symbols are remote files and can be downloaded and used as starting points for m
 symbols.</p>
 </section>
 <section id="macro-commands">
-<h3><span class="section-number">18.2.4. </span>Macro commands<a class="headerlink" href="#macro-commands" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">18.2.4. </span>Macro commands<a class="headerlink" href="#macro-commands" title="Permalink to this heading">¶</a></h3>
 <p>The custom symbol language contains commands to rotate the relative
 coordinate system, draw free-form polygons and lines, change the current
 fill and/or pen, place text, and include basic geometric symbols as part of the
@@ -378,12 +384,6 @@ are listed in Table <a class="reference internal" href="#tbl-custsymb"><span cla
 in the arguments can be provided as variables while the remaining parameters
 are constants.</p>
 <table class="docutils align-default" id="tbl-custsymb">
-<colgroup>
-<col style="width: 14%" />
-<col style="width: 11%" />
-<col style="width: 36%" />
-<col style="width: 40%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Name</strong></p></th>
 <th class="head"><p><strong>Code</strong></p></th>
@@ -544,7 +544,7 @@ Note for <strong>v</strong>: The vector stem and head outline are always drawn. 
 the <em>width</em> of the pen only (head length = 8 times pen width, apex = 30 degrees, shape = 0.5).</p>
 </section>
 <section id="symbol-fill-and-outline">
-<h3><span class="section-number">18.2.5. </span>Symbol fill and outline<a class="headerlink" href="#symbol-fill-and-outline" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">18.2.5. </span>Symbol fill and outline<a class="headerlink" href="#symbol-fill-and-outline" title="Permalink to this heading">¶</a></h3>
 <p>Normally, symbols, polygons and lines will be rendered using any
 fill and outline options you have given on the command line, similarly to how
 the regular built-in symbols behave. For <strong>M</strong>, <strong>T</strong>, and all the lower-case
@@ -570,7 +570,7 @@ current fill instead of the current pen; do this by appending <strong>+g</strong
 the color from the current fill”.</p>
 </section>
 <section id="symbol-substitution">
-<h3><span class="section-number">18.2.6. </span>Symbol substitution<a class="headerlink" href="#symbol-substitution" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">18.2.6. </span>Symbol substitution<a class="headerlink" href="#symbol-substitution" title="Permalink to this heading">¶</a></h3>
 <p>Custom symbols that need to plot any of the standard geometric symbols
 (i.e., those controlled by a single size) can make the symbol code a variable.  By specifying <strong>?</strong> instead
 of the symbol codes <strong>a</strong>, <strong>c</strong>, <strong>d</strong>, <strong>g</strong>, <strong>h</strong>, <strong>i</strong>, <strong>n</strong>, <strong>+</strong>, <strong>s</strong>, <strong>t</strong>,
@@ -578,7 +578,7 @@ of the symbol codes <strong>a</strong>, <strong>c</strong>, <strong>d</strong>, 
 each data record.  Such custom symbols must be invoked with <strong>-SK</strong> rather than <strong>-Sk</strong>.</p>
 </section>
 <section id="text-substitution">
-<h3><span class="section-number">18.2.7. </span>Text substitution<a class="headerlink" href="#text-substitution" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">18.2.7. </span>Text substitution<a class="headerlink" href="#text-substitution" title="Permalink to this heading">¶</a></h3>
 <p>Normally, the <strong>l</strong> macro code will place a hard-wired text string.  However,
 you can also obtain the entire string from your input file via a single symbol
 variable <strong>$t</strong> that must be declared with type <strong>s</strong> (string).  The string will be taken
@@ -597,7 +597,7 @@ unless you append the modifiers <strong>+X</strong> (format as longitude via <a 
 <a class="reference internal" href="../gmt.conf.html#term-FORMAT_DATE_MAP"><span class="xref std std-term">FORMAT_DATE_MAP</span></a> and <a class="reference internal" href="../gmt.conf.html#term-FORMAT_CLOCK_MAP"><span class="xref std std-term">FORMAT_CLOCK_MAP</span></a>.</p>
 </section>
 <section id="text-alignment-and-font-attributes">
-<h3><span class="section-number">18.2.8. </span>Text alignment and font attributes<a class="headerlink" href="#text-alignment-and-font-attributes" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">18.2.8. </span>Text alignment and font attributes<a class="headerlink" href="#text-alignment-and-font-attributes" title="Permalink to this heading">¶</a></h3>
 <p>Like the <strong>Sl</strong> symbol in <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a>, you can change the current
 font by appending to <strong>l</strong> the modifier <strong>+f</strong><em>font</em> [<a class="reference internal" href="../gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a>] and change the text justification
 by appending the modifier <strong>+j</strong><em>justify</em> [CM]. <strong>Note</strong>: Here, the <em>font</em> specification
@@ -609,16 +609,12 @@ Without the trailing <strong>p</strong> we interpret the size as a relative size
 font size will then scale with the symbol size, just like other symbol items.</p>
 </section>
 <section id="conditional-statements">
-<h3><span class="section-number">18.2.9. </span>Conditional statements<a class="headerlink" href="#conditional-statements" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">18.2.9. </span>Conditional statements<a class="headerlink" href="#conditional-statements" title="Permalink to this heading">¶</a></h3>
 <p>There are two types of conditional statements in the macro language: A
 simple condition preceding a single command, or a more elaborate
 if-then-elseif-else construct. In any test you may use one (and only
 one) of many logical operators, as listed in Table <a class="reference internal" href="#tbl-custop"><span class="std std-ref">custop</span></a>.</p>
 <table class="docutils align-default" id="tbl-custop">
-<colgroup>
-<col style="width: 22%" />
-<col style="width: 78%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Operator</strong></p></th>
 <th class="head"><p><strong>Purpose</strong></p></th>
@@ -674,7 +670,7 @@ Note that symbol size internally is converted to inches so any test you write th
 the size to a constant should use a constant with the appropriate unit appended (e.g., 2c).
 For text comparison note that case will be considered, so “A” does not equal “a”.</p>
 <section id="simple-conditional-test">
-<h4><span class="section-number">18.2.9.1. </span>Simple conditional test<a class="headerlink" href="#simple-conditional-test" title="Permalink to this headline">¶</a></h4>
+<h4><span class="section-number">18.2.9.1. </span>Simple conditional test<a class="headerlink" href="#simple-conditional-test" title="Permalink to this heading">¶</a></h4>
 <p>The simple if-test uses a one-line format, defined as</p>
 <blockquote>
 <div><p><strong>if</strong> <em>left</em> <em>operator</em> <em>right</em> <strong>then</strong> <em>command</em></p>
@@ -708,7 +704,7 @@ Using a comparison between variables is similarly straightforward:</p>
 the other side would be a string constant (in quotes if containing spaces).</p>
 </section>
 <section id="complete-conditional-test">
-<h4><span class="section-number">18.2.9.2. </span>Complete conditional test<a class="headerlink" href="#complete-conditional-test" title="Permalink to this headline">¶</a></h4>
+<h4><span class="section-number">18.2.9.2. </span>Complete conditional test<a class="headerlink" href="#complete-conditional-test" title="Permalink to this heading">¶</a></h4>
 <p>The complete conditional test uses a multi-line format, such as</p>
 <div class="line-block">
 <div class="line"><strong>if</strong> <em>left</em> <em>operator</em> <em>right</em> <strong>then</strong> {</div>
@@ -765,8 +761,8 @@ levels deep), e.g.,</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

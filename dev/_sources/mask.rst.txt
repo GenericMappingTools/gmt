@@ -56,10 +56,10 @@ option, you may specify a radius of influence. Then, all grid cells that
 are within *radius* of a data point are considered reliable.
 Furthermore, an option is provided to reverse the sense of the test.
 Having found the reliable/not reliable points, the module will either
-paint tiles to mask these nodes (with the **-T** switch), or use
+paint tiles to mask these nodes (with the |-T| switch), or use
 contouring to create polygons that will clip out regions of no interest.
 When clipping is initiated, it will stay in effect until turned off by a
-second call to the module using the **-C** option.
+second call to the module using the |-C| option.
 
 Required Arguments
 ------------------
@@ -96,19 +96,19 @@ Optional Arguments
 
 **-C**
     Mark end of existing clip path. No input file is needed. Implicitly
-    sets **-O**. Also supply **-X** and **-Y** settings if you have
+    sets |-O|. Also supply |-X| and |-Y| settings if you have
     moved since the clip started.
 
 .. _-D:
 
 **-D**\ *dumpfile*
     Dump the (x,y) coordinates of each clipping polygon to one or more
-    output files (or *stdout* if *template* is not given). No plotting
+    output files (or standard output if *template* is not given). No plotting
     will take place. If *template* contains the C-format specifier %d
     (including modifications like %05d) then polygons will be written to
     different files; otherwise all polygons are written to the specified
     file (*template*). The files are ASCII unless
-    **-bo** is used. See **-Q** to exclude small
+    **-bo** is used. See |-Q| to exclude small
     polygons from consideration.
 
 .. _-F:
@@ -116,7 +116,7 @@ Optional Arguments
 **-F**\ [**l**\|\ **r**]
     Force clip contours (polygons) to be oriented so that data points are to the
     left (**-Fl** [Default]) or right (**-Fr**) as we move along the perimeter
-    [Default is arbitrary orientation]. Requires **-D**.
+    [Default is arbitrary orientation]. Requires |-D|.
 
 .. _-G:
 
@@ -144,7 +144,7 @@ Optional Arguments
 
 **-Q**\ *cut*
     Do not dump polygons with less than *cut* number of points [Dumps
-    all polygons]. Only applicable if **-D** has been specified.
+    all polygons]. Only applicable if |-D| has been specified.
 
 .. _-S:
 
@@ -156,8 +156,8 @@ Optional Arguments
 .. _-T:
 
 **-T**
-    Plot tiles instead of clip polygons. Use **-G** to set tile color or
-    pattern. Cannot be used with **-D**.
+    Plot tiles instead of clip polygons. Use |-G| to set tile color or
+    pattern. Cannot be used with |-D|.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_

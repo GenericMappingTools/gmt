@@ -23,9 +23,9 @@ the lower left and upper right corner of region. In our case we choose
 We again set up a 2 by 1 subplot layout and specify the actual region and
 map projection we wish to use for the two map panels.
 We use :doc:`makecpt </makecpt>` to generate a linear color
-palette file ``geoid.cpt`` for the geoid and use
+palette file for the geoid and use
 :doc:`grd2cpt </grd2cpt>` to get a histogram-equalized
-CPT ``topo.cpt`` for the topography data.  We run
+CPT for the topography data.  We run
 :doc:`grdimage </grdimage>` to create a color-coded image
 of the topography, and to emphasize the structures in the
 data we use the slopes in the north-south direction to

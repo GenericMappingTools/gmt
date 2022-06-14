@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gshhg &mdash; GMT 6.3.0 documentation</title>
+  <title>gshhg &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,20 +148,20 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="gshhg">
-<h1>gshhg<a class="headerlink" href="#gshhg" title="Permalink to this headline">¶</a></h1>
+<h1>gshhg<a class="headerlink" href="#gshhg" title="Permalink to this heading">¶</a></h1>
 <p>Extract data tables from binary GSHHG or WDBII data files</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt gshhg</strong> <em>binaryfile.b</em> [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>min</em> ] [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> ] [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>id</em> ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> ] [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>level</em> ] [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><strong>e</strong>|<strong>i</strong> ]
 [ <strong>-bo</strong><a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-do</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="../../gmt.html#do-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-do</strong><a class="reference internal" href="../../gmt.html#do-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-o</strong><a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>gshhg</strong> reads the binary coastline (GSHHG) or political boundary or
 river (WDBII) files and writes an ASCII (or binary; see <strong>-b</strong>) listing
 to standard output. It automatically
@@ -176,7 +182,7 @@ hierarchical-level source west east south north</em>. For more information
 about the file formats, see TECHNICAL INFORMATION below.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>binaryfile.b</em></dt><dd><p>GSHHG or WDBII binary data file as distributed with the GSHHG data
 supplement. Any of the 5 standard resolutions (full, high,
@@ -185,7 +191,7 @@ intermediate, low, crude) can be used.</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong><em>min</em></dt><dd><p>Only output information for the polygon if its area equals or
 exceeds <em>min</em> [Default outputs all polygons].</p>
@@ -233,7 +239,7 @@ polygons].</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To convert the entire intermediate GSHHG binary data to ASCII files for
 Octave/Matlab, run</p>
 <blockquote>
@@ -257,15 +263,11 @@ file, try</p>
 </div></blockquote>
 </section>
 <section id="specific-polygons">
-<h2>Specific Polygons<a class="headerlink" href="#specific-polygons" title="Permalink to this headline">¶</a></h2>
+<h2>Specific Polygons<a class="headerlink" href="#specific-polygons" title="Permalink to this heading">¶</a></h2>
 <p>None of the polygons have any name information associated with them (i.e.,
 the metadata does not contain this information).  However, here are the
 largest polygons:</p>
 <table class="docutils align-default" id="tbl-polygons">
-<colgroup>
-<col style="width: 15%" />
-<col style="width: 85%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>ID</p></th>
 <th class="head"><p>Landmass</p></th>
@@ -315,7 +317,7 @@ largest polygons:</p>
 </table>
 </section>
 <section id="data-files">
-<h2>Data Files<a class="headerlink" href="#data-files" title="Permalink to this headline">¶</a></h2>
+<h2>Data Files<a class="headerlink" href="#data-files" title="Permalink to this heading">¶</a></h2>
 <p>The data files read by gshhg are the native binary polygon files,
 available from <a class="reference external" href="https://www.ngdc.noaa.gov/mgg/shorelines/">NCEI Shoreline Coastline Resources</a> or
 the <a class="reference external" href="https://www.soest.hawaii.edu/pwessel/gshhg">SOEST GSHHG Site</a>. Note that these
@@ -324,7 +326,7 @@ modules <a class="reference internal" href="../../gmtselect.html"><span class="d
 or <a class="reference internal" href="../../coast.html"><span class="doc">coast</span></a>.</p>
 </section>
 <section id="technical-information">
-<h2>Technical Information<a class="headerlink" href="#technical-information" title="Permalink to this headline">¶</a></h2>
+<h2>Technical Information<a class="headerlink" href="#technical-information" title="Permalink to this heading">¶</a></h2>
 <p>Users who wish to access the GSHHG or WDBII data directly from their
 custom programs should consult the gshhg.c and gshhg.h source code and
 familiarize themselves with the data format and how various information
@@ -337,7 +339,7 @@ technical comments on the binary data files are given.
 <strong>GSHHG</strong>: These files contain completely closed polygons of continents
 and islands (level 1), lakes (level 2), islands-in-lakes (level 3) and
 ponds-in-islands-in-lakes (level 4); a particular level can be extracted
-using the <strong>-N</strong> option. Continents are identified as the first 6
+using the <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> option. Continents are identified as the first 6
 polygons and can be extracted via the <strong>-Ic</strong> option. The IDs for the
 continents are Eurasia (0), Africa (1), North America
 (2), South America (3), Antarctica (4), and Australia
@@ -345,7 +347,7 @@ continents are Eurasia (0), Africa (1), North America
 There are two sub-groups for level 2: Regular lakes and the so-called
 “river-lakes”, the latter being sections of a river that are so wide to
 warrant a polygon representation. These river-lakes are flagged in the
-header (also see <strong>-Q</strong>). All five resolutions are free of
+header (also see <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>). All five resolutions are free of
 self-intersections. Areas of all features have been computed using a
 Lambert azimuthal equal-area projection centered on the polygon
 centroids, using WGS-84 as the ellipsoid. GMT use the GSHHG as a
@@ -373,10 +375,10 @@ major rivers (1), Additional major rivers
 three levels: National boundaries (1), Internal
 domestic boundaries (2), and international
 maritime boundaries (3). Individual levels or
-classes may be extracted via <strong>-N</strong>.</p>
+classes may be extracted via <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>.</p>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
 <p>Douglas, D. H., and T. K. Peucker, 1973, Algorithms for the reduction of
 the number of points required to represent a digitized line of its
 caricature, <em>Can. Cartogr., 10</em>, 112–122.</p>
@@ -386,10 +388,10 @@ caricature, <em>Can. Cartogr., 10</em>, 112–122.</p>
 Hydrograph. Rev., LXVII(1)</em>, 27–35.</p>
 <p>Wessel, P., and W. H. F. Smith, 1996, A global, self-consistent,
 hierarchical, high-resolution shoreline database, <em>J. Geophys. Res.,
-101(B4)</em>, 8741–8743.</p>
+101(B4)</em>, 8741–8743, <a class="reference external" href="https://doi.org/10.1029/96JB00104">https://doi.org/10.1029/96JB00104</a>.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a></p>
 </section>
 </section>
@@ -405,8 +407,8 @@ hierarchical, high-resolution shoreline database, <em>J. Geophys. Res.,
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

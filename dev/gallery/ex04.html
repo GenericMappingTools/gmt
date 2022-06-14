@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>(4) A 3-D perspective mesh plot &mdash; GMT 6.3.0 documentation</title>
+  <title>(4) A 3-D perspective mesh plot &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -130,7 +136,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+          <li><a href="../gallery.html">Illustration Gallery</a> &raquo;</li>
       <li>(4) A 3-D perspective mesh plot</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex04.rst" class="fa fa-github"> Edit on GitHub</a>
@@ -142,9 +148,9 @@
            <div itemprop="articleBody">
              
   <section id="a-3-d-perspective-mesh-plot">
-<span id="example-04"></span><h1>(4) A 3-D perspective mesh plot<a class="headerlink" href="#a-3-d-perspective-mesh-plot" title="Permalink to this headline">¶</a></h1>
+<span id="example-04"></span><h1>(4) A 3-D perspective mesh plot<a class="headerlink" href="#a-3-d-perspective-mesh-plot" title="Permalink to this heading">¶</a></h1>
 <p>This example will illustrate how to make a fairly complicated composite
-figure. We need a subset of the ETOPO5 bathymetry <a class="footnote-reference brackets" href="#id2" id="id1">1</a> and Geosat geoid
+figure. We need a subset of the ETOPO5 bathymetry <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> and Geosat geoid
 data sets which we have extracted from the global data grids using
 <a class="reference internal" href="../grdcut.html"><span class="doc">grdcut</span></a> and access those files here as remote files
 on the GMT data server. We would like to show a
@@ -157,21 +163,21 @@ how to do it:</p>
 <span class="c1">#		GMT EXAMPLE 04</span>
 <span class="c1">#</span>
 <span class="c1"># Purpose:	3-D mesh and color plot of Hawaiian topography and geoid</span>
-<span class="c1"># GMT modules:	grdcontour, grdimage, grdview, basemap, coast, text, makecpt</span>
+<span class="c1"># GMT modules:	colorbar, grdcontour, grdimage, grdview, basemap, coast, text, makecpt</span>
 <span class="c1"># Unix progs:	echo, rm</span>
 <span class="c1">#</span>
 gmt begin
 	gmt figure ex04
 	gmt makecpt -C255,100 -T-10/10/10 -N
 	gmt grdcontour @HI_geoid_04.nc -R195/210/18/25 -Jm1c -p60/30 -C1 -A5+o -Gd10c
-	gmt coast -p -B2 -BNEsw -Gblack -TdjBR+o0.3c+w3c+l
+	gmt coast -p -B2 -BNEsw -Gblack -TdjBR+l
 	gmt grdview @HI_topo_04.nc -R195/210/18/25/-6/4 -Jz0.8c -p -C -N-6+glightgray -Qsm -B2 -Bz2+l<span class="s2">&quot;Topo (km)&quot;</span> <span class="se">\</span>
 		-BneswZ+t<span class="s2">&quot;H@#awaiian@# R@#idge@#&quot;</span> -Y5c --FONT_TITLE<span class="o">=</span>50p,ZapfChancery-MediumItalic --MAP_TITLE_OFFSET<span class="o">=</span>-3.5c
 
 	gmt figure ex04c
 	gmt grdimage @HI_geoid_04.nc -I+a0+nt0.75 -R195/210/18/25 -JM15c -p60/30 -C@geoid_04.cpt
 	gmt coast -p -B2 -BNEsw -Gblack
-	gmt basemap -p -TdjBR+o0.3c+w3c+l --COLOR_BACKGROUND<span class="o">=</span>red --FONT<span class="o">=</span>red --MAP_TICK_PEN_PRIMARY<span class="o">=</span>thinner,red
+	gmt basemap -p -TdjBR+l --COLOR_BACKGROUND<span class="o">=</span>red --FONT<span class="o">=</span>red --MAP_TICK_PEN_PRIMARY<span class="o">=</span>thinner,red
 	gmt colorbar -p240/30 -DJBC+o0/1c+w13c/0.75c+h -C@geoid_04.cpt -I -Bx2+l<span class="s2">&quot;Geoid (m)&quot;</span>
 	gmt grdview @HI_topo_04.nc -I+a0+nt0.75 -R195/210/18/25/-6/4 -JZ8c -p60/30 -C@topo_04.cpt <span class="se">\</span>
 		-N-6+glightgray -Qc100 -B2 -Bz2+l<span class="s2">&quot;Topo (km)&quot;</span> -Y5c -BneswZ+t<span class="s2">&quot;H@#awaiian@# R@#idge@#&quot;</span> <span class="se">\</span>
@@ -205,12 +211,11 @@ the resulting image compresses. A higher value for dpi in <strong>-Qc</strong> w
 have resulted in a much larger output file. The CPTs were taken
 from Example <a class="reference internal" href="ex02.html#example-02"><span class="std std-ref">(2) Image presentations</span></a>.</p>
 <section id="footnote">
-<h2>Footnote<a class="headerlink" href="#footnote" title="Permalink to this headline">¶</a></h2>
-<dl class="footnote brackets">
-<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>These data are available from NCEI (www.ncei.noaa.gov).</p>
-</dd>
-</dl>
+<h2>Footnote<a class="headerlink" href="#footnote" title="Permalink to this heading">¶</a></h2>
+<aside class="footnote brackets" id="id2" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>These data are available from NCEI (www.ncei.noaa.gov).</p>
+</aside>
 </section>
 </section>
 
@@ -225,8 +230,8 @@ from Example <a class="reference internal" href="ex02.html#example-02"><span cla
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

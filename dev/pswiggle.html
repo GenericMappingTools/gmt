@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pswiggle &mdash; GMT 6.3.0 documentation</title>
+  <title>pswiggle &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="pswiggle">
-<h1>pswiggle<a class="headerlink" href="#pswiggle" title="Permalink to this headline">¶</a></h1>
+<h1>pswiggle<a class="headerlink" href="#pswiggle" title="Permalink to this heading">¶</a></h1>
 <p>Plot z = f(x,y) anomalies along tracks</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt pswiggle</strong> [ <em>table</em> ] <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em> <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>scale</em>
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<em>azimuth</em>] ]
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
@@ -155,7 +161,7 @@
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>fill</em>[<strong>+n</strong>][<strong>+p</strong>] ]
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>fix_az</em> ]
 [ <a class="reference internal" href="#k"><span><strong>-K</strong></span></a></strong> ]
-[ <a class="reference internal" href="#o"><span><strong>-O</strong></span></a></strong> ] [ <strong>-P</strong> ]
+[ <a class="reference internal" href="#o"><span><strong>-O</strong></span></a></strong> ] [ <a class="reference internal" href="#p"><span><strong>-P</strong></span></a></strong> ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>pen</em> ]
 [ <a class="reference internal" href="#u"><span><strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
@@ -163,7 +169,7 @@
 [ <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
 [ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
 [ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-di</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
@@ -177,7 +183,7 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>Reads (<em>x</em>,<em>y</em>,<em>z</em>) triplets from files [or standard
 input] and plots z as a function of distance along track. This means
 that two consecutive (<em>x</em>,<em>y</em>) points define the local distance axis,
@@ -189,7 +195,7 @@ preferred direction, then 180 degrees are added to the direction. Either
 the positive or the negative wiggle (or both) may be shaded.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
@@ -220,7 +226,7 @@ is controlled by <a class="reference internal" href="gmt.conf.html#term-PROJ_LEN
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong>[<em>azimuth</em>]</dt><dd><p>Sets the preferred positive azimuth. Positive wiggles will
 “gravitate” towards that direction, i.e., azimuths of the
@@ -288,13 +294,13 @@ individual <a class="reference internal" href="cookbook/features.html#plt-units"
 wiggles [Default is no fill]. Optionally, append <strong>+p</strong> to fill
 positive areas (this is the default behavior). Append <strong>+n</strong> to fill
 negative areas. Append <strong>+n+p</strong> to fill both positive and negative
-areas with the same fill.  <strong>Note</strong>: You will need to repeat the <strong>-G</strong> option
+areas with the same fill.  <strong>Note</strong>: You will need to repeat the <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> option
 to select different fills for the positive and negative wiggles.</p>
 </dd>
 </dl>
 <dl class="simple" id="i">
 <dt><strong>-I</strong><em>fix_az</em></dt><dd><p>Set a fixed azimuth projection for wiggles [Default uses track
-azimuth, but see <strong>-A</strong>]. With this option, the calculated
+azimuth, but see <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>]. With this option, the calculated
 track-normal azimuths are overridden by <em>fixed_az</em>.</p>
 </dd>
 </dl>
@@ -356,7 +362,7 @@ track-normal azimuths are overridden by <em>fixed_az</em>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
+<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -372,7 +378,7 @@ track-normal azimuths are overridden by <em>fixed_az</em>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -384,7 +390,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="classic-mode-arguments">
-<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this heading">¶</a></h2>
 <p>These options are used to manipulate the building of layered GMT PostScript plots in classic mode.
 They are not available when using GMT modern mode.</p>
 <dl class="simple" id="k">
@@ -401,7 +407,7 @@ They are not available when using GMT modern mode.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -424,8 +430,8 @@ points, use</p>
 </div>
 </div></blockquote>
 <p>and the positive anomalies will in general point in the north direction.
-We used <strong>-D</strong> to place a vertical scale bar indicating a 1000 nT anomaly.
-To instead enforce a fixed azimuth of 45 for the positive wiggles, we add <strong>-I</strong>
+We used <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> to place a vertical scale bar indicating a 1000 nT anomaly.
+To instead enforce a fixed azimuth of 45 for the positive wiggles, we add <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>
 and obtain</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt pswiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5 <span class="se">\</span>
@@ -435,7 +441,7 @@ and obtain</p>
 </div></blockquote>
 </section>
 <section id="bugs">
-<h2>Bugs<a class="headerlink" href="#bugs" title="Permalink to this headline">¶</a></h2>
+<h2>Bugs<a class="headerlink" href="#bugs" title="Permalink to this heading">¶</a></h2>
 <p>Sometimes the (x,y) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot. To
 see if this is the problem, you should do this:</p>
@@ -454,7 +460,7 @@ see if this is the problem, you should do this:</p>
 <p>which performs a 5-point boxcar filter, and plot this data set instead.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
 <a class="reference internal" href="filter1d.html"><span class="doc">filter1d</span></a>,
 <a class="reference internal" href="psbasemap.html"><span class="doc">psbasemap</span></a>,
@@ -473,8 +479,8 @@ see if this is the problem, you should do this:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

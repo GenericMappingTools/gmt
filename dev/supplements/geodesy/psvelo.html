@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>psvelo &mdash; GMT 6.3.0 documentation</title>
+  <title>psvelo &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -49,7 +53,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -143,10 +149,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="psvelo">
-<h1>psvelo<a class="headerlink" href="#psvelo" title="Permalink to this headline">¶</a></h1>
+<h1>psvelo<a class="headerlink" href="#psvelo" title="Permalink to this heading">¶</a></h1>
 <p>Plot velocity vectors, crosses, anisotropy bars and wedges</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt psvelo</strong>
 [ <em>table</em> ]
 <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
@@ -169,7 +175,7 @@
 [ <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
 [ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[<strong>m</strong>|<strong>e</strong>|<strong>n</strong>|<strong>u</strong>][<strong>+e</strong>] ]
-[ <strong>-di</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
 [ <strong>-i</strong><a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
@@ -180,7 +186,7 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>Reads data values from <em>files</em> [or standard input] and
 will plot the selected geodesy symbol on a map.
 You may choose from velocity vectors and their uncertainties,
@@ -198,7 +204,7 @@ symbol and its error component.</span><a class="headerlink" href="#id1" title="P
 </figure>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
@@ -219,12 +225,9 @@ provided, the region will be automatically determined based on the data in <em>t
 (equivalent to using <strong>-Ra</strong>). <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 <p>The region may be specified in one of several ways:</p>
 <ol class="arabic">
-<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>+u</strong><em>unit</em>]. This is the standard way to specify geographic regions
+<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>. This is the standard way to specify geographic regions
 when using map projections where meridians and parallels are rectilinear. The coordinates may be specified in
-decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format. Optionally, append
-<strong>+u</strong><em>unit</em> to specify a region in projected units (e.g., UTM meters) where <em>west</em>/<em>east</em>/<em>south</em>/<em>north</em> are
-Cartesian projected coordinates compatible with the chosen projection (<strong>-J</strong>) and <em>unit</em> is an allowable
-<a class="reference internal" href="../../cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a>; we inversely project to determine the actual rectangular geographic region.</p></li>
+decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format.</p></li>
 <li><p><strong>-R</strong><em>west</em>/<em>south</em>/<em>east</em>/<em>north</em><strong>+r</strong>. This form is useful for map projections that are oblique,
 making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner
 and upper right corner geographic coordinates, followed by the modifier <strong>+r</strong>. This form guarantees a
@@ -233,24 +236,34 @@ rectangular map even though lines of equal longitude and latitude are not straig
 and -180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).</p></li>
 <li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
 consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
-countries given by the codes. Simply append one or more comma-separated countries using the two-character
-<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a>. To select a state within a
-country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent, prepend <strong>=</strong> to any
-of the continent codes <strong>AF</strong> (Africa), <strong>AN</strong> (Antarctica), <strong>AS</strong> (Asia), <strong>EU</strong> (Europe), <strong>OC</strong> (Oceania),
-<strong>NA</strong> (North America), or <strong>SA</strong> (South America). The following modifiers can be appended:</p>
+countries given by the codes. Simply append one or more comma-separated countries using either the two-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
+country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
+or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
+Finally, append any <a class="reference internal" href="../../coast.html#id1"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
+the collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
 <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
-national bounding box of France rounded to nearest integer degree.</p></li>
-<li><p><strong>+R</strong> to extend the region outward by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension].</p></li>
+national bounding box of France rounded to nearest integer degree, where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+R</strong> to adjust the region by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension], where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
 <li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box extends by at least 0.25 times the increment
-[default is no adjustment].</p></li>
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box is adjusted by at least 0.25 times the
+increment [default is no adjustment], where <em>inc</em> can be positive to expand the region or negative to shrink
+the region.</p></li>
 </ul>
 </div></blockquote>
 </li>
+<li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+u</strong><em>unit</em>] specifies a region in projected units (e.g., UTM meters)
+where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible with the chosen projection
+(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="../../cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
+actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
+<strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults to <em>halfwidth</em> if not given.
+This short-hand requires the <strong>+u</strong> modifier.</p></li>
 <li><p><strong>-R</strong><em>justify</em><em>lon0</em>/<em>lat0</em>/<em>nx</em>/<em>ny</em>, where <em>justify</em> is a 2-character combination of
 <strong>L</strong>|<strong>C</strong>|<strong>R</strong> (for left, center, or right) and <strong>T</strong>|<strong>M</strong>|<strong>B</strong> (for top, middle, or bottom)
 (e.g., <strong>BL</strong> for lower left). The two character code <em>justify</em> indicates which point on a rectangular region
@@ -279,18 +292,18 @@ Use <strong>+f</strong> to set the font and size of the text [9p,Helvetica,black
 The arrow will be drawn with the pen attributes specified by the <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> option and arrow-head can be colored via <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>.
 The ellipse will be filled with the color or shade specified by the <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> option [default is transparent],
 and its outline will be drawn if <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> is selected using the pen selected (by <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> if not given by <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>).
-<strong>Note</strong>: If <em>confidence</em> is nonzero and neither <strong>-L</strong> nor <strong>-E</strong> are set then we use <strong>-W</strong> (or default) to draw ellipse outlines.
+<strong>Note</strong>: If <em>confidence</em> is nonzero and neither <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> nor <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> are set then we use <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> (or default) to draw ellipse outlines.
 Parameters are expected to be in the following columns:</p>
 <blockquote>
 <div><p><strong>1</strong>,<strong>2</strong>:
-longitude, latitude of station (<strong>-:</strong> option interchanges order)
-<strong>3</strong>,<strong>4</strong>:
-eastward, northward velocity (<strong>-:</strong> option interchanges order)
-<strong>5</strong>,<strong>6</strong>:
-uncertainty of eastward, northward velocities (1-sigma) (<strong>-:</strong> option interchanges order)
-<strong>7</strong>:
-correlation between eastward and northward components
-<strong>Trailing text</strong>:
+longitude, latitude of station (<strong>-:</strong> option interchanges order)</p>
+<p><strong>3</strong>,<strong>4</strong>:
+eastward, northward velocity (<strong>-:</strong> option interchanges order)</p>
+<p><strong>5</strong>,<strong>6</strong>:
+uncertainty of eastward, northward velocities (1-sigma) (<strong>-:</strong> option interchanges order)</p>
+<p><strong>7</strong>:
+correlation between eastward and northward components</p>
+<p><strong>Trailing text</strong>:
 name of station (optional).</p>
 </div></blockquote>
 </div></blockquote>
@@ -298,12 +311,12 @@ name of station (optional).</p>
 <blockquote>
 <div><p>Anisotropy bars. The <em>barscale</em> sets the scaling of the bars.
 If <em>barscale</em> is not given the we read it from the data file as an extra column.
-Unless <strong>-A</strong> is used to change it via modifier <strong>+h</strong><em>shape</em>, the vector shape defaults to 0.1.
+Unless <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> is used to change it via modifier <strong>+h</strong><em>shape</em>, the vector shape defaults to 0.1.
 Parameters are expected to be in the following columns:</p>
 <blockquote>
 <div><p><strong>1</strong>,<strong>2</strong>:
-longitude, latitude of station (<strong>-:</strong> option interchanges order)
-<strong>3</strong>,<strong>4</strong>:
+longitude, latitude of station (<strong>-:</strong> option interchanges order)</p>
+<p><strong>3</strong>,<strong>4</strong>:
 eastward, northward components of anisotropy vector (<strong>-:</strong> option interchanges order)</p>
 </div></blockquote>
 </div></blockquote>
@@ -316,18 +329,18 @@ Use <strong>+f</strong> to set the font and size of the text [9p,Helvetica,black
 The arrow will be drawn with the pen attributes specified by the <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> option and arrow-head can be colored via <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>.
 The ellipse will be filled with the color or shade specified by the <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> option [default is transparent],
 and its outline will be drawn if <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> is selected using the pen selected (by <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> if not given by <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>).
-<strong>Note</strong>: If <em>confidence</em> is nonzero and neither <strong>-L</strong> nor <strong>-E</strong> are set then we use <strong>-W</strong> (or default) to draw ellipse outlines.
+<strong>Note</strong>: If <em>confidence</em> is nonzero and neither <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> nor <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> are set then we use <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> (or default) to draw ellipse outlines.
 Parameters are expected to be in the following columns:</p>
 <blockquote>
 <div><p><strong>1</strong>,<strong>2</strong>:
-longitude, latitude, of station (<strong>-:</strong> option interchanges order)
-<strong>3</strong>,<strong>4</strong>:
-eastward, northward velocity (<strong>-:</strong> option interchanges order)
-<strong>5</strong>,<strong>6</strong>:
-semi-major, semi-minor axes
-<strong>7</strong>:
-counter-clockwise angle, in degrees, from horizontal axis to major axis of ellipse.
-<strong>Trailing text</strong>:
+longitude, latitude, of station (<strong>-:</strong> option interchanges order)</p>
+<p><strong>3</strong>,<strong>4</strong>:
+eastward, northward velocity (<strong>-:</strong> option interchanges order)</p>
+<p><strong>5</strong>,<strong>6</strong>:
+semi-major, semi-minor axes</p>
+<p><strong>7</strong>:
+counter-clockwise angle, in degrees, from horizontal axis to major axis of ellipse.</p>
+<p><strong>Trailing text</strong>:
 name of station (optional)</p>
 </div></blockquote>
 </div></blockquote>
@@ -342,10 +355,10 @@ and <a class="reference internal" href="#e"><span><strong>-E</strong></span></a>
 expected to be in the following columns:</p>
 <blockquote>
 <div><p><strong>1</strong>,<strong>2</strong>:
-longitude, latitude, of station (<strong>-:</strong> option interchanges order)
-<strong>3</strong>:
-rotation in radians
-<strong>4</strong>:
+longitude, latitude, of station (<strong>-:</strong> option interchanges order)</p>
+<p><strong>3</strong>:
+rotation in radians</p>
+<p><strong>4</strong>:
 rotation uncertainty in radians</p>
 </div></blockquote>
 </div></blockquote>
@@ -356,13 +369,13 @@ If <em>cross_scale</em> is not given the we read it from the data file as an ext
 Parameters are expected to be in the following columns:</p>
 <blockquote>
 <div><p><strong>1</strong>,<strong>2</strong>:
-longitude, latitude, of station (<strong>-:</strong> option interchanges order)
-<strong>3</strong>:
+longitude, latitude, of station (<strong>-:</strong> option interchanges order)</p>
+<p><strong>3</strong>:
 eps1, the most extensional eigenvalue of strain tensor, with
-extension taken positive.
-<strong>4</strong>:
-eps2, the most compressional eigenvalue of strain tensor, with extension taken positive.
-<strong>5</strong>:
+extension taken positive.</p>
+<p><strong>4</strong>:
+eps2, the most compressional eigenvalue of strain tensor, with extension taken positive.</p>
+<p><strong>5</strong>:
 azimuth of eps2 in degrees CW from North.</p>
 </div></blockquote>
 </div></blockquote>
@@ -370,7 +383,7 @@ azimuth of eps2 in degrees CW from North.</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong><em>parameters</em></dt><dd><p>Modify vector parameters. For vector heads, append vector head <em>size</em> [Default is 9p].
 See <a class="reference internal" href="#vector-attributes">Vector Attributes</a> for specifying additional attributes.</p>
@@ -382,7 +395,7 @@ See <a class="reference internal" href="#vector-attributes">Vector Attributes</a
 </dl>
 <dl class="simple" id="c">
 <dt><strong>-C</strong><em>cpt</em></dt><dd><p>Give a CPT and let symbol color normally set by <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> be
-determined from the magnitude.  See <strong>-Z</strong> for other selections.</p>
+determined from the magnitude.  See <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> for other selections.</p>
 </dd>
 </dl>
 <dl class="simple" id="d">
@@ -393,21 +406,21 @@ determined from the magnitude.  See <strong>-Z</strong> for other selections.</p
 <dl class="simple" id="e">
 <dt><strong>-E</strong><em>fill</em> <a class="reference internal" href="../../cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Sets the color or shade used for filling uncertainty wedges
 (<strong>-Sw</strong>) or velocity error ellipses (<strong>-Se</strong> or <strong>-Sr</strong>). If
-<strong>-E</strong> is not specified, the uncertainty regions will be transparent.
-<strong>Note</strong>: Using <strong>-C</strong> and <strong>-Z+e</strong> will update the uncertainty fill
-color based on the selected measure in <strong>-Z</strong> [magnitude error].</p>
+<a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> is not specified, the uncertainty regions will be transparent.
+<strong>Note</strong>: Using <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> and <strong>-Z+e</strong> will update the uncertainty fill
+color based on the selected measure in <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> [magnitude error].</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
 <dt><strong>-G</strong><em>fill</em> <a class="reference internal" href="../../cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select color or pattern for filling of symbols [Default is no fill].
-<strong>Note</strong>: Using <strong>-C</strong> (and optionally <strong>-Z</strong>) will update the symbol fill
-color based on the selected measure in <strong>-Z</strong> [magnitude].</p>
+<strong>Note</strong>: Using <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> (and optionally <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>) will update the symbol fill
+color based on the selected measure in <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> [magnitude].</p>
 </dd>
 </dl>
 <dl class="simple" id="h">
 <dt><strong>-H</strong>[<em>scale</em>]</dt><dd><p>Scale symbol sizes and pen widths on a per-record basis using the <em>scale</em> read from the
 data set, given as the first column after the (optional) <em>z</em> and <em>size</em> columns [no scaling].
-The symbol size is either provided by <strong>-S</strong> or via the input <em>size</em> column.  Alternatively,
+The symbol size is either provided by <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> or via the input <em>size</em> column.  Alternatively,
 append a constant <em>scale</em> that should be used instead of reading a scale column.</p>
 </dd>
 </dl>
@@ -415,22 +428,22 @@ append a constant <em>scale</em> that should be used instead of reading a scale 
 <dt><strong>-I</strong><em>intens</em></dt><dd><p>Use the supplied <em>intens</em> value (nominally in the -1 to +1 range) to
 modulate the symbol fill color by simulating illumination [none].
 If no intensity is provided we will instead read <em>intens</em> from an extra
-data column after the required input columns determined by <strong>-S</strong>.</p>
+data column after the required input columns determined by <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="l">
 <dt><strong>-L</strong>[<em>pen</em>[<strong>+c</strong>[<strong>f</strong>|<strong>l</strong>]]]</dt><dd><p>Draw lines. Ellipses and rotational wedges will have their outlines drawn
-using current pen (see <strong>-W</strong>).  Alternatively, append a separate pen to
+using current pen (see <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>).  Alternatively, append a separate pen to
 use for the error outlines.
 If the modifier <strong>+cl</strong> is appended then the color of the pen are updated from the CPT (see
-<strong>-C</strong>). If instead modifier <strong>+cf</strong> is appended then the color from the cpt
+<a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>). If instead modifier <strong>+cf</strong> is appended then the color from the cpt
 file is applied to error fill only [Default].  Use just <strong>+c</strong> to set both
 pen and fill color.</p>
 </dd>
 </dl>
 <dl class="simple" id="n">
 <dt><strong>-N</strong></dt><dd><p>Do <strong>NOT</strong> skip symbols that fall outside the frame boundary
-specified by <strong>-R</strong>. [Default plots symbols inside frame only].</p>
+specified by <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>. [Default plots symbols inside frame only].</p>
 </dd>
 </dl>
 <dl class="simple" id="u">
@@ -445,7 +458,7 @@ specified by <strong>-R</strong>. [Default plots symbols inside frame only].</p>
 <dt><strong>-W</strong>[<em>pen</em>][<strong>+c</strong>[<strong>f</strong>|<strong>l</strong>]]</dt><dd><p>Set pen attributes for velocity arrows, ellipse circumference and
 fault plane edges. [Defaults: width = default, color = black, style = solid].
 If the modifier <strong>+cl</strong> is appended then the color of the pen are updated from the CPT (see
-<strong>-C</strong>). If instead modifier <strong>+cf</strong> is appended then the color from the cpt
+<a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>). If instead modifier <strong>+cf</strong> is appended then the color from the cpt
 file is applied to symbol fill only [Default].  Use just <strong>+c</strong> to set both
 pen and fill color.</p>
 </dd>
@@ -459,7 +472,7 @@ pen and fill color.</p>
 </dd>
 </dl>
 <dl class="simple" id="z">
-<dt><strong>-Z</strong>[<strong>m</strong>|<strong>e</strong>|<strong>n</strong>|<strong>u</strong>][<strong>+e</strong>]</dt><dd><p>Select the quantity that will be used with the CPT given via <strong>-C</strong> to
+<dt><strong>-Z</strong>[<strong>m</strong>|<strong>e</strong>|<strong>n</strong>|<strong>u</strong>][<strong>+e</strong>]</dt><dd><p>Select the quantity that will be used with the CPT given via <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> to
 set the fill color.  Choose from <strong>m</strong>agnitude (vector magnitude or
 rotation magnitude), <strong>e</strong>ast-west velocity, <strong>n</strong>orth-south velocity,
 or <strong>u</strong>ser-supplied data column (supplied after the required columns).
@@ -489,7 +502,7 @@ instead, append <strong>+e</strong>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="../../gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
+<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="../../gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
 </dd>
 </dl>
 <dl class="simple" id="tv-full">
@@ -510,7 +523,7 @@ interpret it to mean <strong>-t+f</strong> for fill transparency only.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -522,7 +535,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="vector-attributes">
-<h2>Vector Attributes<a class="headerlink" href="#vector-attributes" title="Permalink to this headline">¶</a></h2>
+<h2>Vector Attributes<a class="headerlink" href="#vector-attributes" title="Permalink to this heading">¶</a></h2>
 <figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="../../_images/GMT_vector.png"><img alt="../../_images/GMT_vector.png" src="../../_images/GMT_vector.png" style="width: 600px;" /></a>
 <figcaption>
@@ -543,13 +556,16 @@ end point (<strong>e</strong>) of a line segment:</p>
 <p><strong>+b</strong> places a vector head at the <strong>b</strong>eginning of the vector path [none].
 Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
 <strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
-and <strong>I</strong> for plain open tail.
+and <strong>I</strong> for plain open tail. <strong>Note</strong>: For geovectors only <strong>a</strong> and <strong>A</strong> are available.
 Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
 half-sides of this head [both sides].</p>
+<p><strong>+c</strong> selects the vector data quantity <em>magnitude</em> for use with CPT color look-up [Default
+requires a separate data column following the 2 or 3 coordinates]. Requires that data
+quantity scaling (with unit <strong>q</strong> via <strong>+v</strong> or <strong>+z</strong>) and a CPT have been selected.</p>
 <p><strong>+e</strong> places a vector head at the <strong>e</strong>nd of the vector path [none].
 Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
 <strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
-and <strong>I</strong> for plain open tail.
+and <strong>I</strong> for plain open tail. <strong>Note</strong>: For geovectors only <strong>a</strong> and <strong>A</strong> are available.
 Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
 half-sides of this head [both sides].</p>
 <p><strong>+g</strong>[<em>fill</em>] sets the vector head fill [Default fill is used, which may be no fill].
@@ -565,14 +581,20 @@ Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> fo
 <strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
 and <strong>I</strong> for plain open tail. Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
 half-sides of this head [both sides].  Cannot be combined with <strong>+b</strong> or <strong>+e</strong>.</p>
-<p><strong>+n</strong><em>norm</em> scales down vector attributes (pen thickness, head size)
+<p><strong>+n</strong>[<em>norm</em>[/<em>min</em>]] scales down vector attributes (pen thickness, head size)
 with decreasing length, where vector plot lengths shorter than <em>norm</em> will have
-their attributes scaled by length/<em>norm</em> [arrow attributes remains
-invariant to length]. For Cartesian vectors specify a length in plot units, while
-for geovectors specify a length in km.</p>
+their attributes scaled by length/<em>norm</em> [other arrow attributes remain
+invariant to length]. Optionally, append /<em>min</em> for the minimum shrink factor (in the
+0-1 range) that we will shrink to [0.25]. For Cartesian vectors, please specify a <em>norm</em>
+in plot units, while for geovectors specify a <em>norm</em> in map units (see <a class="reference internal" href="../../cookbook/features.html#distance-units"><span class="std std-ref">Distance units</span></a>) [k].
+Alternatively, append unit <strong>q</strong> to indicate we should use user quantity units in making the
+decision; this means the user also must select user quantity input via <strong>+v</strong> or <strong>+z</strong>.</p>
+<p>If no argument is given then <strong>+n</strong> ensures vector heads are not shrunk and always
+plotted regardless of vector length [Vector heads are not plotted if exceeding vector length].</p>
 <p><strong>+o</strong>[<em>plon</em>/<em>plat</em>] specifies the oblique pole for the great or
 small circles.  Only needed for great circles if <strong>+q</strong> is given. If no
-pole is appended then we default to the north pole.</p>
+pole is appended then we default to the north pole. Input arguments are then
+<em>lon lat arclength</em> with the latter in map distance units; see <strong>+q</strong> of angular limits instead.</p>
 <p><strong>+p</strong>[<em>pen</em>] sets the vector pen attributes. If no <em>pen</em> is appended
 then the head outline is not drawn. [Default pen is half the width of stem pen, and
 head outline is drawn]. Above, we used <strong>+p</strong>2p,orange.  The vector stem attributes are
@@ -593,10 +615,23 @@ vector. Choose from <strong>b</strong>eginning [default], <strong>e</strong>nd, 
 <p><strong>+s</strong> means the input <em>angle</em>, <em>length</em> are instead the <span class="math notranslate nohighlight">\(x_e, y_e\)</span>
 coordinates of the vector end point.</p>
 </div></blockquote>
-<p>Finally, Cartesian vectors may take these modifiers:</p>
+<p>Finally, Cartesian vectors and geovectors may take these modifiers (except in <a class="reference internal" href="../../grdvector.html"><span class="doc">grdvector</span></a>)
+which can be used to convert vector components to polar form or magnify user quantity magnitudes
+into plot lengths.</p>
 <blockquote>
-<div><p><strong>+z</strong><em>scale</em> expects input <span class="math notranslate nohighlight">\(\Delta x, \Delta y\)</span> vector components and
-uses the <em>scale</em> to convert to polar coordinates with length in given unit.</p>
+<div><p><strong>+v</strong>[<strong>i</strong>|<strong>l</strong>]<em>scale</em> expects a <em>scale</em> to magnify the polar length in the given
+unit.  If <strong>i</strong> is prepended we use the inverse scale while if <strong>l</strong> is prepended then it is
+taken as a fixed length to override input lengths. Append unit <strong>q</strong> if input magnitudes are
+given in user quantity units and we will scale them to current plot unit for Cartesian vectors
+(see <a class="reference internal" href="../../gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> for how to change the plot unit) or to km for geovectors.  In addition,
+if <strong>+c</strong> is selected then the vector magnitudes may be used for CPT color-lookup (and no extra data
+column is required by <strong>-C</strong>).</p>
+<p><strong>+z</strong>[<em>scale</em>] expects input <span class="math notranslate nohighlight">\(\Delta x, \Delta y\)</span> vector components and
+uses the <em>scale</em> [1] to convert to polar coordinates with length in given unit.
+Append unit <strong>q</strong> if input components are given in user quantity units and we will scale to current plot unit
+for Cartesian vectors (see <a class="reference internal" href="../../gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> for how to change the plot unit) or to
+km for geovectors.  In addition, if <strong>+c</strong> is selected then the vector magnitudes may be used
+for CPT color-lookup (and no extra data column is required by <strong>-C</strong>).</p>
 </div></blockquote>
 <p><strong>Note</strong>: Vectors were completely redesigned for GMT5 which separated the vector head (a polygon)
 from the vector stem (a line).  In GMT4, the entire vector was a polygon and it could only
@@ -609,7 +644,8 @@ where vectors shorter than <em>norm</em> will have their attributes scaled by <e
 To center the vector on the balance point, use <strong>-Svb</strong>; to align point with the vector head,
 use <strong>-Svh</strong>; to align point with the vector tail, use <strong>-Svt</strong> [Default]. To give the
 head point’s coordinates instead of direction and length, use <strong>-Svs</strong>. Upper case
-<strong>B</strong>, <strong>H</strong>, <strong>T</strong>, <strong>S</strong> will draw a double-headed vector [Default is single head].</p>
+<strong>B</strong>, <strong>H</strong>, <strong>T</strong>, <strong>S</strong> will draw a double-headed vector [Default is single head].
+<strong>Note</strong>: If <span class="math notranslate nohighlight">\(h_l/h_w\)</span> are given as 0/0 then only the head-less vector stick will be plotted.</p>
 <figure class="align-center" id="id3">
 <a class="reference internal image-reference" href="../../_images/GMT_vector4.png"><img alt="../../_images/GMT_vector4.png" src="../../_images/GMT_vector4.png" style="width: 600px;" /></a>
 <figcaption>
@@ -623,10 +659,10 @@ blue lines indicate these three parameters).</span><a class="headerlink" href="#
 </figure>
 </section>
 <section id="data-column-order">
-<h2>Data Column Order<a class="headerlink" href="#data-column-order" title="Permalink to this headline">¶</a></h2>
-<p>The <strong>-S</strong> option determines how many data columns are required to generate
-the selected symbol.  In addition, your use of options <strong>-H</strong>,  <strong>-I</strong> and <strong>-t</strong> will
-require extra columns, as will a <strong>-S</strong> option without the <em>size</em> or a user-column
+<h2>Data Column Order<a class="headerlink" href="#data-column-order" title="Permalink to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> option determines how many data columns are required to generate
+the selected symbol.  In addition, your use of options <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>,  <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> and <strong>-t</strong> will
+require extra columns, as will a <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> option without the <em>size</em> or a user-column
 selected via <strong>-Zu</strong> for color lookup purposes.  The order of the data record
 is fixed regardless of option order, even if not all items may be activated.
 We expect data columns to come in the following order:</p>
@@ -639,7 +675,7 @@ given in brackets are optional and under the control of the stated options
 rearrange your data record to match the expected format.</p>
 </section>
 <section id="classic-mode-arguments">
-<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this heading">¶</a></h2>
 <p>These options are used to manipulate the building of layered GMT PostScript plots in classic mode.
 They are not available when using GMT modern mode.</p>
 <dl class="simple" id="k">
@@ -656,7 +692,7 @@ They are not available when using GMT modern mode.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>The following should make big red arrows with green ellipses, outlined
 in red. Note that the 39% confidence scaling will give an ellipse which
 fits inside a rectangle of dimension Esig by Nsig:</p>
@@ -690,11 +726,11 @@ gray wedges to represent the 2-sigma uncertainties:</p>
 <span class="s">END</span>
 </pre></div>
 </div>
-<p><a class="reference external" href="http://www.geology.wisc.edu/~feigl/">Kurt L. Feigl</a>, Department of Geology and
+<p><a class="reference external" href="https://geoscience.wisc.edu/people/feigl-kurt-l/">Kurt L. Feigl</a>, Department of Geology and
 Geophysics at University of Wisconsin-Madison, Madison, Wisconsin, USA</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="../../psbasemap.html"><span class="doc">psbasemap</span></a>, <a class="reference internal" href="../../psxy.html"><span class="doc">psxy</span></a></p>
 </section>
 </section>
@@ -710,8 +746,8 @@ Geophysics at University of Wisconsin-Madison, Madison, Wisconsin, USA</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

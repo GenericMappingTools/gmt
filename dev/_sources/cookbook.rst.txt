@@ -1,3 +1,5 @@
+:orphan:
+
 ########
 Cookbook
 ########
@@ -21,7 +23,7 @@ Cookbook
 #. Universidade do Algarve, Faro, Portugal
 #. University of Liverpool, UK
 #. Sea and Sun Technology, Germany
-#. Michigan State University
+#. China University of Geosciences, Wuhan, China
 
 .. figure:: /_images/GMT6_Summit_2019.jpg
    :width: 1200 px

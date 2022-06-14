@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>(50) Probability distributions &mdash; GMT 6.3.0 documentation</title>
+  <title>(50) Probability distributions &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -130,7 +136,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+          <li><a href="../gallery.html">Illustration Gallery</a> &raquo;</li>
       <li>(50) Probability distributions</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex50.rst" class="fa fa-github"> Edit on GitHub</a>
@@ -142,7 +148,7 @@
            <div itemprop="articleBody">
              
   <section id="probability-distributions">
-<span id="example-50"></span><h1>(50) Probability distributions<a class="headerlink" href="#probability-distributions" title="Permalink to this headline">¶</a></h1>
+<span id="example-50"></span><h1>(50) Probability distributions<a class="headerlink" href="#probability-distributions" title="Permalink to this heading">¶</a></h1>
 <p>This example presents visually the various probability
 distributions available in <a class="reference internal" href="../gmtmath.html"><span class="doc">gmtmath</span></a> (as well
 as <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a>).  We evaluate and display both
@@ -163,10 +169,10 @@ gmt begin ex50
 	<span class="c1"># Left column have all the PDFs</span>
 	<span class="c1"># Binomial distribution</span>
 	gmt math -T0/8/1 <span class="m">0</span>.25 <span class="m">8</span> T <span class="nv">BPDF</span> <span class="o">=</span> p.txt
-	gmt plot -R-0.6/8.6/0/0.35 -JX7.5c/1.25c -Glightgreen p.txt -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf
+	gmt plot -R-0.6/8.6/0/0.35 -JX7.5c/1.25c -Glightgreen p.txt -Sb0.8q -W0.5p -BWS -Bxa1 -Byaf
 	<span class="c1"># Poisson distribution</span>
 	gmt math -T0/8/1 T <span class="m">2</span> <span class="nv">PPDF</span> <span class="o">=</span> p.txt
-	gmt plot -R-0.6/8.6/0/0.3 -Glightgreen p.txt -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Y2.25c
+	gmt plot -R-0.6/8.6/0/0.3 -Glightgreen p.txt -Sb0.8q -W0.5p -BWS -Bxa1 -Byaf -Y2.25c
 	<span class="c1"># Plot normal distribution</span>
 	gmt math -T-4/4/0.1 T <span class="nv">ZPDF</span> <span class="o">=</span> p.txt
 	gmt plot -R-4/4/0/0.4 p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y2.25c
@@ -195,10 +201,10 @@ gmt begin ex50
 	<span class="c1"># Right column has all the CDF</span>
 	<span class="c1"># Plot binomial cumulative distribution</span>
 	gmt math -T0/8/1 <span class="m">0</span>.25 <span class="m">8</span> T <span class="nv">BCDF</span> <span class="o">=</span> p.txt
-	gmt plot -R-0.6/8.6/0/1.02 -Glightred p.txt -Sb0.8u -W0.5p -BES -Bxa1 -Byaf -X9c -Y-8.1i
+	gmt plot -R-0.6/8.6/0/1.02 -Glightred p.txt -Sb0.8q -W0.5p -BES -Bxa1 -Byaf -X9c -Y-8.1i
 	<span class="c1"># Plot Poisson cumulative distribution</span>
 	gmt math -T0/8/1 T <span class="m">2</span> <span class="nv">PCDF</span> <span class="o">=</span> p.txt
-	gmt plot -R-0.6/8.6/0/1.02 -Glightred p.txt -Sb0.8u -W0.5p -BES -Bxa1 -Byaf -Y2.25c
+	gmt plot -R-0.6/8.6/0/1.02 -Glightred p.txt -Sb0.8q -W0.5p -BES -Bxa1 -Byaf -Y2.25c
 	<span class="c1"># Plot normal cumulative distribution</span>
 	gmt math -T-4/4/0.1 T <span class="nv">ZCDF</span> <span class="o">=</span> p.txt
 	gmt plot -R-4/4/0/1.02 p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y2.25c
@@ -260,8 +266,8 @@ gmt end show
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

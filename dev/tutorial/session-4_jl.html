@@ -1,0 +1,608 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Session Four &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Modules" href="../modules.html" />
+    <link rel="prev" title="Session Three" href="session-3_jl.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="intro_jl.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="session-1_jl.html">Session One</a></li>
+<li class="toctree-l2"><a class="reference internal" href="session-2_jl.html">Session Two</a></li>
+<li class="toctree-l2"><a class="reference internal" href="session-3_jl.html">Session Three</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Session Four</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cpts">CPTs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#illumination-and-intensities">Illumination and intensities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#color-images">Color images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-dimensional-maps">Multi-dimensional maps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#perspective-views">Perspective views</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mesh-plot">Mesh-plot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#color-coded-view">Color-coded view</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../tutorial_jl.html">Tutorial in Julia</a> &raquo;</li>
+      <li>Session Four</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/tutorial/session-4_jl.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="session-four">
+<h1>Session Four<a class="headerlink" href="#session-four" title="Permalink to this heading">¶</a></h1>
+<p>In our final session we will concentrate on color images and perspective views of gridded data sets.
+Before we start that discussion we need to cover three important aspects of plotting that must be understood.
+These are</p>
+<ol class="arabic simple">
+<li><p>Color tables and pseudo-colors in GMT.</p></li>
+<li><p>Artificial illumination and how it affects colors.</p></li>
+<li><p>Multi-dimensional grids.</p></li>
+</ol>
+<section id="cpts">
+<h2>CPTs<a class="headerlink" href="#cpts" title="Permalink to this heading">¶</a></h2>
+<p>The CPT is discussed in detail in the GMT Technical Reference and Cookbook. Please review the format before
+experimenting further.</p>
+<p>CPTs can be created in any number of ways. GMT provides two mechanisms:</p>
+<ol class="arabic simple">
+<li><p>Create simple, linear color tables given a master color table
+(several are built-in) and the desired <em>z</em>-values at color boundaries
+(<a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/">makecpt</a>)</p></li>
+<li><p>Create color tables based on a master CPT color table and the histogram-equalized distribution of <em>z</em>-values
+in a gridded data file (<a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/#GMT.grd2cpt">grd2cpt</a>)</p></li>
+</ol>
+<p>One can also make these files manually. Here we will limit our discussion to
+<a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/">makecpt</a>.
+Its main argument is the name of the master color table (a list is
+shown if you run the module with no arguments) and the equidistant
+<em>z</em>-values to go with it.  The main options are given below.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>cmap</strong></p></td>
+<td><p>Set the name of the master CPT to use</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>inverse</strong></p></td>
+<td><p>Reverse the sense of the color progression</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>verbose</strong></p></td>
+<td><p>Run in verbose mode</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>continuous</strong></p></td>
+<td><p>Make a continuous rather than discrete table</p></td>
+</tr>
+</tbody>
+</table>
+<p>To make discrete and continuous color CPTs for data that ranges
+from -20 to 60, with color changes at every 10, try these two variants:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>makecpt<span class="o">(</span><span class="nv">cmap</span><span class="o">=</span>:rainbow, <span class="nv">range</span><span class="o">=(</span>-20,60,10<span class="o">)</span>, <span class="nv">write</span><span class="o">=</span><span class="s2">&quot;disc.cpt&quot;</span><span class="o">)</span>
+makecpt<span class="o">(</span><span class="nv">cmap</span><span class="o">=</span>:rainbow, <span class="nv">range</span><span class="o">=(</span>-20,60,10<span class="o">)</span>, <span class="nv">continuous</span><span class="o">=</span>true, <span class="nv">write</span><span class="o">=</span><span class="s2">&quot;cont.cpt&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>We can plot these color tables with <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/colorbar/">colorbar</a>;
+the options worth mentioning here are listed below. The placement of the color bar is particularly important
+and we refer you to the <a class="reference internal" href="../cookbook/features.html#gmt-embellishments"><span class="std std-ref">Plot embellishments</span></a> section for all the details. In addition,
+the <strong>frame</strong> option can be used to set the title and unit label (and optionally to set the annotation-, tick-,
+and grid-line intervals for the color bars.).  Note that the makecpt commands above are done in classic mode.
+If you run <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/">makecpt</a> in modern mode then you usually
+do not specify an output file via standard output since modern mode maintains what is known as the current CPT.
+However, if you must explicitly name an output CPT then you will need to add the -H option for modern mode to
+allow output to standard output.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>cmap</strong>=<em>cpt</em></p></td>
+<td><p>The required CPT</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>position</strong>=(paper=(xpos,ypos), length=(length,width) [,horizontal=true])</p></td>
+<td><p>Sets the position and dimensions of scale bar.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>shade</strong>=<em>max_intensity</em></p></td>
+<td><p>Add illumination effects</p></td>
+</tr>
+</tbody>
+</table>
+<p>Here is an example of four different ways of presenting the color bar:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">C1</span> <span class="o">=</span> makecpt<span class="o">(</span><span class="nv">cmap</span><span class="o">=</span>:rainbow, <span class="nv">range</span><span class="o">=(</span>-20,60,10<span class="o">))</span><span class="p">;</span>
+<span class="nv">C2</span> <span class="o">=</span> makecpt<span class="o">(</span><span class="nv">cmap</span><span class="o">=</span>:rainbow, <span class="nv">range</span><span class="o">=(</span>-20,60,10<span class="o">)</span>, <span class="nv">continuous</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span><span class="p">;</span>
+basemap<span class="o">(</span><span class="nv">region</span><span class="o">=(</span><span class="m">0</span>,15,0,22<span class="o">)</span>, <span class="nv">scale</span><span class="o">=</span><span class="m">1</span>, <span class="nv">frame</span><span class="o">=</span>:noannot, <span class="nv">x_offset</span><span class="o">=</span>:c<span class="o">)</span>
+colorbar!<span class="o">(</span>C1, <span class="nv">pos</span><span class="o">=(</span><span class="nv">paper</span><span class="o">=(</span><span class="m">2</span>.5,2.5<span class="o">)</span>,  <span class="nv">size</span><span class="o">=(</span><span class="m">10</span>,1.25<span class="o">)</span>, <span class="nv">horizontal</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>, <span class="nv">frame</span><span class="o">=</span>:auto, <span class="nv">title</span><span class="o">=</span>:discrete<span class="o">)</span>
+colorbar!<span class="o">(</span>C2, <span class="nv">pos</span><span class="o">=(</span><span class="nv">paper</span><span class="o">=(</span><span class="m">2</span>.5,7.5<span class="o">)</span>,  <span class="nv">size</span><span class="o">=(</span><span class="m">10</span>,1.25<span class="o">)</span>, <span class="nv">horizontal</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>, <span class="nv">frame</span><span class="o">=</span>:auto, <span class="nv">title</span><span class="o">=</span>:continuous<span class="o">)</span>
+colorbar!<span class="o">(</span>C1, <span class="nv">pos</span><span class="o">=(</span><span class="nv">paper</span><span class="o">=(</span><span class="m">2</span>.5,12.5<span class="o">)</span>, <span class="nv">size</span><span class="o">=(</span><span class="m">10</span>,1.25<span class="o">)</span>, <span class="nv">horizontal</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>, <span class="nv">frame</span><span class="o">=</span>:auto, <span class="nv">title</span><span class="o">=</span>:discrete, <span class="nv">shade</span><span class="o">=</span><span class="m">0</span>.5<span class="o">)</span>
+colorbar!<span class="o">(</span>C2, <span class="nv">pos</span><span class="o">=(</span><span class="nv">paper</span><span class="o">=(</span><span class="m">2</span>.5,17.5<span class="o">)</span>, <span class="nv">size</span><span class="o">=(</span><span class="m">10</span>,1.25<span class="o">)</span>, <span class="nv">horizontal</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>, <span class="nv">frame</span><span class="o">=</span>:auto, <span class="nv">title</span><span class="o">=</span>:continuous, <span class="nv">shade</span><span class="o">=</span><span class="m">0</span>.5<span class="o">)</span>
+showfig<span class="o">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-14-jl"><span class="std std-ref">our example 14 below</span></a></p>
+<figure class="align-center" id="id6">
+<span id="gmt-tut-14-jl"></span><a class="reference internal image-reference" href="../_images/GMT_tut_14.png"><img alt="../_images/GMT_tut_14.png" src="../_images/GMT_tut_14.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Result of GMT Tutorial example 14</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li><p>Redo the <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/">makecpt</a> exercise using the
+master table <em>hot</em> and redo the bar plot.</p></li>
+<li><p>Try specifying <strong>frame</strong>=(annot=10, grid=5).</p></li>
+</ol>
+</section>
+<section id="illumination-and-intensities">
+<h2>Illumination and intensities<a class="headerlink" href="#illumination-and-intensities" title="Permalink to this heading">¶</a></h2>
+<p>GMT allows for artificial illumination and shading. What this means is that we imagine an artificial sun
+placed at infinity in some azimuth and elevation position illuminating our surface. The parts of the surface
+that slope toward the sun should brighten while those sides facing away should become darker; no shadows are
+cast as a result of topographic undulations.</p>
+<p>While it is clear that the actual slopes of the surface and the orientation of the sun enter into these
+calculations, there is clearly an arbitrary element when the surface is not topographic relief but some
+other quantity. For instance, what does the slope toward the sun mean if we are plotting a grid of heat
+flow anomalies?  While there are many ways to accomplish what we want, GMT offers a relatively simple way:
+We may calculate the gradient of the surface in the direction of the sun and normalize these values to fall
+in the -1 to +1 range; +1 means maximum sun exposure and -1 means complete shade. Although we will not
+show it here, it should be added that GMT treats the intensities as a separate data set. Thus, while these
+values are often derived from the relief surface we want to image they could be separately observed
+quantities such as back-scatter information.</p>
+<p>Colors in GMT are specified in the RGB system used for computer screens; it mixes red, green, and blue
+light to achieve other colors.  The RGB system is a Cartesian coordinate system and produces a color cube.
+For reasons better explained in Appendix I in the Reference book it is difficult to darken and brighten a
+color based on its RGB values and an alternative coordinate system is used instead; here we use the HSV system.
+If you hold the color cube so that the black and white corners are along a vertical axis, then the other
+6 corners project onto the horizontal plane to form a hexagon; the corners of this hexagon are the primary
+colors Red, Yellow, Green, Cyan, Blue, and Magenta. The CMY colors are the complimentary colors and are used
+when paints are mixed to produce a new color (this is how printers operate; they also add pure black (K) to
+avoid making gray from CMY). In this coordinate system the angle 0-360° is the hue (H); the Saturation and
+Value are harder to explain. Suffice it to say here that we intend to darken any pure color (on the cube facets)
+by keeping H fixed and adding black and brighten it by adding white; for interior points in the cube we will
+add or remove gray. This operation is efficiently done in the HSV coordinate system; hence all GMT shading
+operations involve translating from RGB to HSV, do the illumination effect, and transform back the modified RGB values.</p>
+</section>
+<section id="color-images">
+<h2>Color images<a class="headerlink" href="#color-images" title="Permalink to this heading">¶</a></h2>
+<p>Once a CPT has been made it is relatively straightforward to generate a color image of a gridded data.
+Here, we will extract a subset of the global 30” DEM called SRTM30+:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">G</span> <span class="o">=</span> grdcut<span class="o">(</span><span class="s2">&quot;@earth_relief_30s&quot;</span>, <span class="nv">region</span><span class="o">=(</span>-108,-103,35,40<span class="o">))</span><span class="p">;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Using <a class="reference internal" href="../grdinfo.html"><span class="doc">grdinfo</span></a> we find that the data ranges from about 1000m to
+about 4300m so we need to make a CPT with that range.</p>
+<p>Color images are made with <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/grdimage/">grdimage</a>
+which takes the usual common command options (by default the <strong>region</strong> is taken from the data set) and a CPT;
+the main other options are:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>dpi</strong>=val</p></td>
+<td><p>Sets the desired resolution of the image [Default is data resolution]</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>shade</strong>=grid</p></td>
+<td><p>Use artificial illumination using intensities from a grid or <em>intensfile</em></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>monochrom</strong>=true</p></td>
+<td><p>Force gray shade using the (television) YIQ conversion</p></td>
+</tr>
+</tbody>
+</table>
+<p>We want to make a plain color map with a color bar superimposed above the plot. We try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">C</span> <span class="o">=</span> makecpt<span class="o">(</span><span class="nv">cmap</span><span class="o">=</span>:rainbow, <span class="nv">range</span><span class="o">=(</span><span class="m">1000</span>,5000<span class="o">))</span><span class="p">;</span>
+grdimage<span class="o">(</span><span class="s2">&quot;@earth_relief_30s&quot;</span>, <span class="nv">region</span><span class="o">=(</span>-108,-103,35,40<span class="o">)</span>, <span class="nv">proj</span><span class="o">=</span>:merc, <span class="nv">frame</span><span class="o">=(</span><span class="nv">axes</span><span class="o">=</span>:WSnE,<span class="o">))</span>
+colorbar!<span class="o">(</span><span class="nv">pos</span><span class="o">=(</span><span class="nv">outside</span><span class="o">=</span>:TC,<span class="o">)</span>, <span class="nv">shade</span><span class="o">=</span><span class="m">0</span>.4, <span class="nv">xaxis</span><span class="o">=(</span><span class="nv">annot</span><span class="o">=</span>:auto,<span class="o">)</span>, <span class="nv">ylabel</span><span class="o">=</span>:m, <span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-15-jl"><span class="std std-ref">our example 15 below</span></a></p>
+<figure class="align-center" id="id7">
+<span id="gmt-tut-15-jl"></span><a class="reference internal image-reference" href="../_images/GMT_tut_15.png"><img alt="../_images/GMT_tut_15.png" src="../_images/GMT_tut_15.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Result of GMT Tutorial example 15</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The plain color map lacks detail and fails to reveal the topographic complexity of this Rocky Mountain region.
+What it needs is artificial illumination. We want to simulate shading by a sun source in the east, hence we
+derive the required intensities from the gradients of the topography in the N90°E direction using
+<a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/grdgradient/">grdgradient</a>.
+Other than the required input and output filenames, the available options are</p>
+<blockquote>
+<div><table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>Option
+<strong>azim</strong>=*azimuth*</p></td>
+<td><p>Purpose
+Azimuthal direction for gradients</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>colinfo</strong>=*:g*</p></td>
+<td><p>Indicates that this is a geographic grid</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>norm</strong>=*([laplace=true, cauchy=true,]*
+<em>[amp=val,] [sigma=val, offset=val])</em></p></td>
+<td><p>Normalize gradients by <em>norm/offset</em> [= 1/0 by default].</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>Use <strong>cauchy</strong>=true to normalize by the inverse tangent transformation.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>Insert <strong>laplace</strong>=true normalize by the cumulative Laplace distribution.</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>The <a class="reference internal" href="#gmt-atan-jl"><span class="std std-ref">GMT inverse tangent transformation</span></a> shows that raw slopes from bathymetry tend to be far
+from normally distributed (left). By using the inverse tangent transformation we can ensure a more uniform
+distribution (right). The inverse tangent transform simply takes the raw slope estimate (the <em>x</em> value at the arrow)
+and returns the corresponding inverse tangent value (normalized to fall in the plus/minus 1 range; horizontal
+arrow pointing to the <em>y</em>-value).</p>
+<figure class="align-center" id="id8">
+<span id="gmt-atan-jl"></span><a class="reference internal image-reference" href="../_images/GMT_atan.png"><img alt="../_images/GMT_atan.png" src="../_images/GMT_atan.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">How the inverse tangent operation works. Raw slope values (left) are processed
+via the inverse tangent operator, turning tan(x) into x and thus compressing
+the data range. The transformed slopes are more normally distributed (right).</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p><strong>cauchy</strong>=true and <strong>laplace</strong>=true yield well behaved gradients. Personally, we prefer to use the
+<strong>laplace</strong>=true option; the value of <em>norm</em> is subjective and you may experiment somewhat in the 0.5-5 range.
+For our case we choose</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">Ggrad</span> <span class="o">=</span> grdgradient<span class="o">(</span>G, <span class="nv">norm</span><span class="o">=(</span><span class="nv">laplace</span><span class="o">=</span><span class="m">0</span>.8,<span class="o">))</span>, <span class="nv">azim</span><span class="o">=</span><span class="m">100</span>, <span class="nv">colinfo</span><span class="o">=</span>:g<span class="o">)</span><span class="p">;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Given the CPT and the two gridded data sets we can create the shaded relief image:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">C</span> <span class="o">=</span> makecpt<span class="o">(</span><span class="nv">cmap</span><span class="o">=</span>:rainbow, <span class="nv">range</span><span class="o">=(</span><span class="m">1000</span>,5000<span class="o">))</span><span class="p">;</span>
+<span class="nv">G</span> <span class="o">=</span> grdcut<span class="o">(</span><span class="s2">&quot;@earth_relief_30s&quot;</span>, <span class="nv">region</span><span class="o">=(</span>-108,-103,35,40<span class="o">))</span><span class="p">;</span>
+<span class="nv">Ggrad</span> <span class="o">=</span> grdgradient<span class="o">(</span>G, <span class="nv">norm</span><span class="o">=(</span><span class="nv">laplace</span><span class="o">=</span><span class="m">0</span>.8,<span class="o">)</span>, <span class="nv">azim</span><span class="o">=</span><span class="m">100</span>, <span class="nv">colinfo</span><span class="o">=</span>:g<span class="o">)</span><span class="p">;</span>
+grdimage<span class="o">(</span>G, <span class="nv">shade</span><span class="o">=</span>Ggrad, <span class="nv">proj</span><span class="o">=</span>:merc, <span class="nv">frame</span><span class="o">=(</span><span class="nv">axes</span><span class="o">=</span>:WSnE,<span class="o">))</span>
+colorbar!<span class="o">(</span><span class="nv">pos</span><span class="o">=(</span><span class="nv">outside</span><span class="o">=</span>:TC,<span class="o">)</span>, <span class="nv">shade</span><span class="o">=</span><span class="m">0</span>.4, <span class="nv">xaxis</span><span class="o">=(</span><span class="nv">annot</span><span class="o">=</span>:auto,<span class="o">)</span>, <span class="nv">ylabel</span><span class="o">=</span>:m, <span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-16-jl"><span class="std std-ref">our example 16 below</span></a></p>
+<figure class="align-center" id="id9">
+<span id="gmt-tut-16-jl"></span><a class="reference internal image-reference" href="../_images/GMT_tut_16.png"><img alt="../_images/GMT_tut_16.png" src="../_images/GMT_tut_16.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Result of GMT Tutorial example 16</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li><p>Force a gray-shade image.</p></li>
+<li><p>Rerun <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/grdgradient/">grdgradient</a> with <strong>norm</strong>=1.</p></li>
+</ol>
+</section>
+<section id="multi-dimensional-maps">
+<h2>Multi-dimensional maps<a class="headerlink" href="#multi-dimensional-maps" title="Permalink to this heading">¶</a></h2>
+<p>Climate data, like ocean temperatures or atmospheric pressure, are often provided as multi-dimensional
+(3-D, 4-D or 5-D) grids in netCDF format. This section will demonstrate that GMT is able to plot
+“horizontal” slices (spanning latitude and longitude) of such grids without much effort.</p>
+<p>As an example we will download the Seasonal Analysed Mean Temperature from the
+<a class="reference external" href="https://psl.noaa.gov/data/gridded/data.nodc.woa98.html">World Ocean Atlas 1998</a>
+The file in question is named
+otemp.anal1deg.nc (<a class="reference external" href="ftp://ftp.cdc.noaa.gov/Datasets/nodc.woa98/temperat/seasonal/otemp.anal1deg.nc">ftp://ftp.cdc.noaa.gov/Datasets/nodc.woa98/temperat/seasonal/otemp.anal1deg.nc</a>).</p>
+<p>You can look at the information pertained in this file using the program ncdump and
+notice that the variable that we want to plot (otemp) is a four-dimensional variable of time,
+level (i.e., depth), latitude and longitude.</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ncdump -h otemp.anal1deg.nc
+</pre></div>
+</div>
+</div></blockquote>
+<p>We will need to make an appropriate color scale, running from -2°C (freezing temperature of salt
+water) to 30°C (highest likely ocean temperature).
+Let us focus on the temperatures in Summer (that is the third season, July through
+September) at sea level (that is the first level). To plot these in a Mollweide projection we
+use:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">C</span> <span class="o">=</span> makecpt<span class="o">(</span><span class="nv">cmap</span><span class="o">=</span>:no_green, <span class="nv">range</span><span class="o">=(</span>-2,30,2<span class="o">))</span><span class="p">;</span>
+grdimage<span class="o">(</span><span class="s2">&quot;@otemp.anal1deg.nc?otemp[2,0]&quot;</span>, <span class="nv">region</span><span class="o">=</span>:global360, <span class="nv">proj</span><span class="o">=(</span><span class="nv">name</span><span class="o">=</span>:Mollweide, <span class="nv">center</span><span class="o">=</span><span class="m">180</span><span class="o">)</span>,
+         <span class="nv">frame</span><span class="o">=(</span><span class="nv">annot</span><span class="o">=</span>:auto, <span class="nv">grid</span><span class="o">=</span>:auto<span class="o">)</span>, <span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The addition “?otemp[2,0]” indicates which variable to retrieve from the netCDF
+file (otemp) and that we need the third time step and first level. The numbering of the
+time steps and levels starts at zero, therefore “[2,0]”.
+Your plot should look like <a class="reference internal" href="#gmt-tut-17-jl"><span class="std std-ref">our example 17 below</span></a></p>
+<figure class="align-center" id="id10">
+<span id="gmt-tut-17-jl"></span><a class="reference internal image-reference" href="../_images/GMT_tut_17.png"><img alt="../_images/GMT_tut_17.png" src="../_images/GMT_tut_17.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Result of GMT Tutorial example 17</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li><p>Plot the temperatures for Spring at 5000 m depth. (Hint: use ncdump -v level to figure out what level number that is).</p></li>
+<li><p>Include a color scale at the bottom of the plot.</p></li>
+</ol>
+</section>
+<section id="perspective-views">
+<h2>Perspective views<a class="headerlink" href="#perspective-views" title="Permalink to this heading">¶</a></h2>
+<p>Our final undertaking in this tutorial is to examine three-dimensional perspective views. The GMT module that
+produces perspective views of gridded data files is <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/grdview/">grdview</a>.
+It can make two kinds of plots:</p>
+<ol class="arabic simple">
+<li><p>Mesh or wire-frame plot (with or without superimposed contours)</p></li>
+<li><p>Color-coded surface (with optional shading, contours, or draping).</p></li>
+</ol>
+<p>Regardless of plot type, some arguments must be specified; these are</p>
+<ol class="arabic simple">
+<li><p><em>relief_file</em>; a gridded data set of the surface.</p></li>
+<li><p><strong>proj</strong> for the desired map projection.</p></li>
+<li><p><strong>zscale</strong>=<em>height</em> for the vertical scaling.</p></li>
+<li><p><strong>view</strong>=<em>(azimuth,elevation)</em> for the vantage point.</p></li>
+</ol>
+<p>In addition, some options may be required:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>cmap</strong>=<em>cpt</em></p></td>
+<td><p>The <em>cpt</em> is required for color-coded surfaces and for contoured mesh plots</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>drape</strong>=<em>drape_file</em></p></td>
+<td><p>Assign colors using <em>drape_file</em> instead of <em>relief_file</em></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>shade</strong>=<em>intens_file</em></p></td>
+<td><p>File with illumination intensities</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>surftype</strong>=<em>(mesh=true,)</em></p></td>
+<td><p>Selects mesh plot</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>surftype</strong>=<em>(surface=true</em></p></td>
+<td><p>Surface plot using polygons; append <strong>+m</strong> to show mesh.</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>[,monochrome=true])</em></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>surftype</strong>=<em>(image=dpi[g])</em></p></td>
+<td><p>Image by scan-line conversion. Specify <em>dpi</em>; append <strong>g</strong> to force gray-shade image.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>pen</strong>= <em>pen</em></p></td>
+<td><p>Draw contours on top of surface (except with <strong>-Qi</strong>)</p></td>
+</tr>
+</tbody>
+</table>
+<section id="mesh-plot">
+<h3>Mesh-plot<a class="headerlink" href="#mesh-plot" title="Permalink to this heading">¶</a></h3>
+<p>Mesh plots work best on smaller data sets. We again use the small subset of the ETOPO5 data over Bermuda and
+will use the ocean CPT. A simple mesh plot can therefore be obtained with</p>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-18-jl"><span class="std std-ref">our example 18 below</span></a></p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>grdview<span class="o">(</span><span class="s2">&quot;@earth_relief_05m&quot;</span>, <span class="nv">region</span><span class="o">=(</span>-66,-60,30,35<span class="o">)</span>, <span class="nv">proj</span><span class="o">=</span>:merc, <span class="nv">zsize</span><span class="o">=</span><span class="m">5</span>, <span class="nv">figsize</span><span class="o">=</span><span class="m">13</span>, <span class="nv">view</span><span class="o">=(</span><span class="m">135</span>,30<span class="o">)</span>, <span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<figure class="align-center" id="id11">
+<span id="gmt-tut-18-jl"></span><a class="reference internal image-reference" href="../_images/GMT_tut_18.png"><img alt="../_images/GMT_tut_18.png" src="../_images/GMT_tut_18.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Result of GMT Tutorial example 18</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li><p>Select another vantage point and vertical height.</p></li>
+</ol>
+</section>
+<section id="color-coded-view">
+<h3>Color-coded view<a class="headerlink" href="#color-coded-view" title="Permalink to this heading">¶</a></h3>
+<p>We will make a perspective, color-coded view of the US Rockies from the southeast. This is done using</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">C</span> <span class="o">=</span> makecpt<span class="o">(</span><span class="nv">cmap</span><span class="o">=</span>:dem2, <span class="nv">range</span><span class="o">=(</span><span class="m">1000</span>,5000<span class="o">))</span><span class="p">;</span>
+<span class="nv">G</span> <span class="o">=</span> grdcut<span class="o">(</span><span class="s2">&quot;@earth_relief_30s&quot;</span>, <span class="nv">region</span><span class="o">=(</span>-108,-103,35,40<span class="o">))</span><span class="p">;</span>
+<span class="nv">Ggrad</span> <span class="o">=</span> grdgradient<span class="o">(</span>G, <span class="nv">norm</span><span class="o">=(</span><span class="nv">laplace</span><span class="o">=</span><span class="m">0</span>.8,<span class="o">)</span>, <span class="nv">azim</span><span class="o">=</span><span class="m">100</span>, <span class="nv">colinfo</span><span class="o">=</span>:g<span class="o">)</span><span class="p">;</span>
+grdview<span class="o">(</span>G, <span class="nv">proj</span><span class="o">=</span>:merc, <span class="nv">figsize</span><span class="o">=</span><span class="m">10</span>, <span class="nv">view</span><span class="o">=(</span><span class="m">135</span>,35<span class="o">)</span>, <span class="nv">surftype</span><span class="o">=(</span><span class="nv">image</span><span class="o">=</span><span class="m">50</span>,<span class="o">)</span>, <span class="nv">shade</span><span class="o">=</span>Ggrad, <span class="nv">zsize</span><span class="o">=</span><span class="m">1</span>.25, <span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-19-jl"><span class="std std-ref">our example 19 below</span></a></p>
+<figure class="align-center" id="id12">
+<span id="gmt-tut-19-jl"></span><a class="reference internal image-reference" href="../_images/GMT_tut_19.png"><img alt="../_images/GMT_tut_19.png" src="../_images/GMT_tut_19.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Result of GMT Tutorial example 19</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>This plot is pretty crude since we selected 50 dpi but it is fast to render and allows us to try alternate
+values for vantage point and scaling. When we settle on the final values we select the appropriate <em>dpi</em>
+for the final output device and let it rip.</p>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li><p>Choose another vantage point and scaling.</p></li>
+<li><p>Redo <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/grdgradient/">grdgradient</a> with another illumination
+direction and plot again.</p></li>
+<li><p>Select a higher <em>dpi</em>, e.g., 200.</p></li>
+</ol>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="session-3_jl.html" class="btn btn-neutral float-left" title="Session Three" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../modules.html" class="btn btn-neutral float-right" title="Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

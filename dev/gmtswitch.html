@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gmtswitch &mdash; GMT 6.3.0 documentation</title>
+  <title>gmtswitch &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,14 +148,14 @@
            <div itemprop="articleBody">
              
   <section id="gmtswitch">
-<span id="index-0"></span><h1>gmtswitch<a class="headerlink" href="#gmtswitch" title="Permalink to this headline">¶</a></h1>
+<span id="index-0"></span><h1>gmtswitch<a class="headerlink" href="#gmtswitch" title="Permalink to this heading">¶</a></h1>
 <p>Switching between different GMT versions</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmtswitch</strong> [ D | <em>version</em> ]</p>
 </section>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmtswitch</strong> helps you modify your environment to allow for the
 switching back and forth between several installed GMT versions. It works by
 maintaining a list of directories to GMT installations in a file in your
@@ -158,13 +164,13 @@ directory whose executables we wish to use [The Windows version works a
 bit differently; see WINDOWS below].</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <p>None. If no arguments are given you are presented with a menu of
 installed GMT versions from 1 to <em>n</em> and you specify which one you wish
 to switch to.</p>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><strong>D</strong></dt><dd><p>Select the default GMT version. This is the first entry in the
 ~/.gmtversions file</p>
@@ -177,7 +183,7 @@ those that pertain to that particular program.</p>
 </dl>
 </section>
 <section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">¶</a></h2>
 <p>If you have official versions installed then running gmtswitch the very
 first time will examine your hard disk starting at / and look for
 directories with GMT4, GMT5, etc., in the names. This will fail to find the
@@ -217,7 +223,7 @@ make sure that you can switch between the versions.</p>
 </ol>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To switch to GMT version 4.5.18 (assuming it was installed as such and not
 via a package manager), try</p>
 <blockquote>
@@ -240,7 +246,7 @@ via a package manager), try</p>
 <p>and pick the one you want.</p>
 </section>
 <section id="beware">
-<h2>Beware<a class="headerlink" href="#beware" title="Permalink to this headline">¶</a></h2>
+<h2>Beware<a class="headerlink" href="#beware" title="Permalink to this heading">¶</a></h2>
 <p>GMT remembers where it was installed the first time and uses that dir to
 find the default GMT share directory. If you move entire GMT
 installation after compilation then you may have to set GMT_SHAREDIR to
@@ -248,7 +254,7 @@ point to the top dir in order for things to work. It is best not to move
 things after installation.</p>
 </section>
 <section id="windows">
-<h2>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h2>
+<h2>Windows<a class="headerlink" href="#windows" title="Permalink to this heading">¶</a></h2>
 <p>Under Windows use gmtswitch.bat which is a batch script that changes the
 Windows PATH variable so that the BIN directory of the preferred version
 always comes first. To do that the batch works in two alternative modes:</p>
@@ -294,8 +300,8 @@ section) To run in the temporary mode just give a second argument
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

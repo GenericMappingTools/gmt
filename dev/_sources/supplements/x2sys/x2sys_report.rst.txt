@@ -29,7 +29,7 @@ Description
 -----------
 
 **x2sys_report** will read the input crossover ASCII data base
-*coedbase.txt* (or *stdin*) and report on the statistics of crossovers
+*coedbase.txt* (or standard input) and report on the statistics of crossovers
 (*n*, *mean*, *stdev*, *rms*, *weight*) for each track. Options are
 available to let you exclude tracks and limit the output.
 
@@ -114,20 +114,15 @@ Examples
 
 To report statistics of all the external magnetic crossovers associated
 with the tag MGD77 from the file COE_data.txt, restricted to occupy a
-certain region in the south Pacific, try
-
-   ::
+certain region in the south Pacific, try::
 
     gmt x2sys_report COE_data.txt -V -TMGD77 -R180/240/-60/-30 -Cmag > mag_report.txt
 
-To report on the faa crossovers globally that involves track 12345678, try
-
-   ::
+To report on the faa crossovers globally that involves track 12345678, try::
 
     gmt x2sys_report COE_data.txt -V -TMGD77 -Cfaa -S2345678 > faa_report.txt
 
-References
-----------
+.. include:: x2sys_refs.rst_
 
 Mittal, P. K. (1984), Algorithm for error adjustment of potential field
 data along a survey network, *Geophysics*, **49**\ (4), 467-469.

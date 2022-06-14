@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>(43) Robust regression and outlier detection &mdash; GMT 6.3.0 documentation</title>
+  <title>(43) Robust regression and outlier detection &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -130,7 +136,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+          <li><a href="../gallery.html">Illustration Gallery</a> &raquo;</li>
       <li>(43) Robust regression and outlier detection</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex43.rst" class="fa fa-github"> Edit on GitHub</a>
@@ -142,7 +148,7 @@
            <div itemprop="articleBody">
              
   <section id="robust-regression-and-outlier-detection">
-<span id="example-43"></span><h1>(43) Robust regression and outlier detection<a class="headerlink" href="#robust-regression-and-outlier-detection" title="Permalink to this headline">¶</a></h1>
+<span id="example-43"></span><h1>(43) Robust regression and outlier detection<a class="headerlink" href="#robust-regression-and-outlier-detection" title="Permalink to this heading">¶</a></h1>
 <p>In this example show how <a class="reference internal" href="../gmtregress.html"><span class="doc">gmtregress</span></a> can be used to determine a
 robust regression line using <em>reweighted least squares</em> and from
 this fit we are able to identify outliers with respect to the
@@ -163,7 +169,7 @@ mammals doing alright. Band shows 99% confidence internal on regression.</p>
 <span class="c1"># Data from Table 7 in Rousseeuw and Leroy, 1987.</span>
 gmt begin ex43
 
-	<span class="nv">file</span><span class="o">=</span><span class="k">$(</span>gmt which -G @bb_weights.txt<span class="k">)</span>
+	<span class="nv">file</span><span class="o">=</span><span class="k">$(</span>gmt which -Gc @bb_weights.txt<span class="k">)</span>
 	gmt regress -Ey -Nw -i0:1+l <span class="nv">$file</span> &gt; model.txt
 	gmt regress -Ey -Nw -i0:1+l <span class="nv">$file</span> -Fxmc -T-2/6/0.1 -C99 &gt; rls_line.txt
 	gmt regress -Ey -N2 -i0:1+l <span class="nv">$file</span> -Fxm -T-2/6/2+n &gt; ls_line.txt
@@ -201,7 +207,7 @@ gmt begin ex43
 <span class="s">	0	-2.5</span>
 
 <span class="s">	EOF</span>
-	<span class="nv">$AWK</span> <span class="s1">&#39;{print NR, $6, $7}&#39;</span> A.txt <span class="p">|</span> gmt plot -Sb1ub0 -W0.25p -C
+	<span class="nv">$AWK</span> <span class="s1">&#39;{print NR, $6, $7}&#39;</span> A.txt <span class="p">|</span> gmt plot -Sb1q+b0 -W0.25p -C
 	gmt basemap -Bafg100 -Bx+l<span class="s2">&quot;Animal index number&quot;</span> -By+l<span class="s2">&quot;z-zcore&quot;</span> -BWSne
 	rm -f *.txt
 gmt end show
@@ -226,8 +232,8 @@ gmt end show
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

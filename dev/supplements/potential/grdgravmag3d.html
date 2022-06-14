@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdgravmag3d &mdash; GMT 6.3.0 documentation</title>
+  <title>grdgravmag3d &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdgravmag3d">
-<h1>grdgravmag3d<a class="headerlink" href="#grdgravmag3d" title="Permalink to this headline">¶</a></h1>
+<h1>grdgravmag3d<a class="headerlink" href="#grdgravmag3d" title="Permalink to this heading">¶</a></h1>
 <p>Computes the gravity effect of one (or two) grids by the method of Okabe</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdgravmag3d</strong> <em>grdfile_top</em> [<em>grdfile_bot</em>] [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>density</em> ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>thickness</em> ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>xy_file</em> ]
@@ -164,31 +170,30 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdgravmag3d</strong> will compute the gravity anomaly of a body described by
 one or (optionally) two grids The output can either be along a given set
 of xy locations or on a grid. This method is not particularly fast but
 allows computing the anomaly of arbitrarily complex shapes.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>grdfile_top</em> [<em>grdfile_bot</em>]</dt><dd><p>Grid file whose gravity effect is going to be computed. If two grids are
 provided then the gravity/magnetic effect of the volume between them is computed.</p>
 </dd>
 </dl>
 <dl class="simple" id="c">
-<dt><strong>-C</strong><em>density</em></dt><dd><p>Sets body density in SI. This option is mutually exclusive with <strong>-H</strong></p>
+<dt><strong>-C</strong><em>density</em></dt><dd><p>Sets body density in SI. Append either a constant or the name of a grid file with variable densities.
+This option is mutually exclusive with <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong></p>
 </dd>
 </dl>
 <dl class="simple" id="f">
 <dt><strong>-F</strong><em>xy_file</em></dt><dd><p>Provide locations where the anomaly will be computed. Note this
-option is mutually exclusive with <strong>-G</strong>.</p>
+option is mutually exclusive with <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>.</p>
 </dd>
 </dl>
-<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>]
-[:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
 <div><p>Give the name of the output grid file. Optionally, append =<em>ID</em> for writing a specific file format
 (<a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
@@ -206,7 +211,7 @@ is 1].</p></li>
 </ul>
 </div></blockquote>
 <p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
-(unless overridden). To write specific formats via GDAL, use = <em>gd</em>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
 the <a class="reference internal" href="../../cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
@@ -214,20 +219,20 @@ for more details.</p>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="e">
 <dt><strong>-E</strong><em>thickness</em></dt><dd><p>To provide the layer thickness in m [Default = 500 m].</p>
 </dd>
 </dl>
 <dl id="h">
-<dt><strong>-H</strong><em>f_dec/f_dip/m_int/m_dec/m_dip</em> <strong>-H+m</strong><em>magfile</em>  <strong>-Hx</strong>|<strong>y</strong>|<strong>z</strong>|<strong>h</strong>|<strong>t</strong> <strong>-H+i</strong>|<strong>g</strong>|<strong>r</strong>|<strong>f</strong>|<strong>n</strong></dt><dd><p>Sets parameters for computation of magnetic anomaly (Can be used multiple times).</p>
+<dt><strong>-H</strong><em>f_dec/f_dip/m_int/m_dec/m_dip</em> <strong>-H</strong><em>magfile</em>  <strong>-Hx</strong>|<strong>y</strong>|<strong>z</strong>|<strong>h</strong>|<strong>t</strong> <strong>-H+i</strong>|<strong>g</strong>|<strong>r</strong>|<strong>f</strong>|<strong>n</strong></dt><dd><p>Sets parameters for computation of magnetic anomaly (Can be used multiple times).</p>
 <blockquote>
 <div><p><em>f_dec/f_dip</em> -&gt; geomagnetic declination/inclination</p>
 <p><em>m_int/m_dec/m_dip</em> -&gt; body magnetic intensity/declination/inclination</p>
 </div></blockquote>
 <p>OR for a grid mode</p>
 <blockquote>
-<div><p><strong>+m</strong><em>magfile</em>, where <em>magfile</em> is the name of the magnetic intensity file.</p>
+<div><p><em>magfile</em>, where <em>magfile</em> is the name of the magnetic intensity file.</p>
 </div></blockquote>
 <p>To compute a component, specify any of:</p>
 <blockquote>
@@ -281,10 +286,10 @@ which anomalies are computed.</p>
 </dl>
 <dl id="q">
 <dt><strong>-Q</strong>[<strong>n</strong><em>n_pad</em>]|[<em>pad_dist</em>]|[<em>region</em>]</dt><dd><dl>
-<dt>Extend the domain of computation with respect to output <strong>-R</strong> region.</dt><dd><p><strong>-Qn</strong><em>n_pad</em> artificially extends the width of the outer rim of
+<dt>Extend the domain of computation with respect to output <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> region.</dt><dd><p><strong>-Qn</strong><em>n_pad</em> artificially extends the width of the outer rim of
 cells to have a fake width of <em>n_pad</em> * dx[/dy].</p>
 <p><strong>-Q</strong><em>pad_dist</em> extend the region by west-pad, east+pad, etc.</p>
-<p><strong>-Q</strong><em>region</em> Same syntax as <strong>-R</strong>.</p>
+<p><strong>-Q</strong><em>region</em> Same syntax as <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>.</p>
 </dd>
 </dl>
 </dd>
@@ -294,7 +299,7 @@ cells to have a fake width of <em>n_pad</em> * dx[/dy].</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
-<dt><strong>-S</strong><em>radius</em></dt><dd><p>Set search radius in km (valid only in the two grids mode OR when <strong>-E</strong>) [Default = 30 km].
+<dt><strong>-S</strong><em>radius</em></dt><dd><p>Set search radius in km (valid only in the two grids mode OR when <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>) [Default = 30 km].
 This option serves to speed up the computation by not computing the effect of prisms that
 are further away than <em>radius</em> from the current node.</p>
 </dd>
@@ -323,7 +328,7 @@ meters via a “Flat Earth” approximation using the current ellipsoid paramete
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -335,12 +340,12 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="grid-distance-units">
-<h2>Grid Distance Units<a class="headerlink" href="#grid-distance-units" title="Permalink to this headline">¶</a></h2>
+<h2>Grid Distance Units<a class="headerlink" href="#grid-distance-units" title="Permalink to this heading">¶</a></h2>
 <p>If the grid does not have meter as the horizontal unit, append <strong>+u</strong><em>unit</em> to the input file name to convert from the
 specified unit to meter. If your grid is geographic, convert distances to meters by supplying <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> instead.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>Suppose you want to compute the gravity effect of the phantom “Sandy
 Island” together with its not phantom seamount</p>
 <blockquote>
@@ -358,16 +363,16 @@ processors, do:</p>
 </div></blockquote>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtgravmag3d.html"><span class="doc">gmtgravmag3d</span></a>,
 <a class="reference internal" href="talwani2d.html"><span class="doc">talwani2d</span></a>,
 <a class="reference internal" href="talwani3d.html"><span class="doc">talwani3d</span></a></p>
 </section>
 <section id="reference">
-<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h2>
-<p>Okabe, M., Analytical expressions for gravity anomalies due to
+<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this heading">¶</a></h2>
+<p>Okabe, M., 1979, Analytical expressions for gravity anomalies due to
 polyhedral bodies and translation into magnetic anomalies, <em>Geophysics</em>,
-44, (1979), p 730-741.</p>
+44, 730-741.</p>
 </section>
 </section>
 
@@ -382,8 +387,8 @@ polyhedral bodies and translation into magnetic anomalies, <em>Geophysics</em>,
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

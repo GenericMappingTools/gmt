@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdview &mdash; GMT 6.3.0 documentation</title>
+  <title>grdview &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,17 +148,17 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdview">
-<h1>grdview<a class="headerlink" href="#grdview" title="Permalink to this headline">¶</a></h1>
+<h1>grdview<a class="headerlink" href="#grdview" title="Permalink to this heading">¶</a></h1>
 <p>Create 3-D perspective image or surface mesh from a grid</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdview</strong> <em>reliefgrid</em> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<em>cpt</em>]]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>drapegrid</em> | <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_r</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_g</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_b</em> ]
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>intensgrid</em>|<em>intensity</em>|<em>modifiers</em>] ]
 [ <a class="reference internal" href="#jz"><span><strong>-Jz</strong></span></a></strong>|<strong>Z</strong><em>parameters</em> ]
-[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>level</em>[<strong>+g</strong><em>fill</em>] ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<em>level</em>][<strong>+g</strong><em>fill</em>] ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>args</em>[<strong>+m</strong>] ]
 [ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>] ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>smooth</em> ]
@@ -169,7 +175,7 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdview</strong> reads a 2-D grid file and produces a 3-D perspective plot by
 drawing a mesh, painting a colored/gray-shaded surface made up of
 polygons, or by scanline conversion of these polygons to a raster image.
@@ -178,7 +184,7 @@ contours on top of the surface, and apply artificial illumination based
 on intensities provided in a separate grid file.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>reliefgrid</em></dt><dd><p>2-D gridded data set to be imaged (the relief of the surface). (See
 <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
@@ -191,7 +197,7 @@ on intensities provided in a separate grid file.</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="b">
 <dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
@@ -216,14 +222,14 @@ then under modern mode we select the current CPT.</p>
 <dl class="simple" id="g">
 <dt><a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>drapegrid</em> | <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_r</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_g</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_b</em></dt><dd><p>Drape the image in <em>drapegrid</em> on top of the relief provided by
 <em>reliefgrid</em>. [Default determines colors from <em>reliefgrid</em>]. Note that <strong>-Jz</strong> and
-<strong>-N</strong> always refers to the <em>reliefgrid</em>. The <em>drapegrid</em> only
+<a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> always refers to the <em>reliefgrid</em>. The <em>drapegrid</em> only
 provides the information pertaining to colors, which (if <em>drapegrid</em> is a grid) will be looked-up
-via the CPT (see <strong>-C</strong>). Instead, you may give three grid files
-via separate <strong>-G</strong> options in the specified order. These files must contain the red, green, and
+via the CPT (see <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>). Instead, you may give three grid files
+via separate <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> options in the specified order. These files must contain the red, green, and
 blue colors directly (in 0-255 range) and no CPT is needed. The
 <em>drapegrid</em> may be of a different resolution than the <em>reliefgrid</em>.
 Finally, <em>drapegrid</em> may be an image to be draped over the surface, in which
-case the <strong>-C</strong> option is not required.</p>
+case the <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> option is not required.</p>
 </dd>
 </dl>
 <dl class="simple" id="i">
@@ -244,10 +250,13 @@ If we should derive intensities from another file than <em>reliefgrid</em>, spec
 </dd>
 </dl>
 <dl class="simple" id="n">
-<dt><strong>-N</strong><em>level</em>[<strong>+g</strong><em>fill</em>]</dt><dd><p>Draws a plane at this z-level. If the optional <em>color</em> is provided
+<dt><strong>-N</strong>[<em>level</em>][<strong>+g</strong><em>fill</em>]</dt><dd><p>Draws a plane at this z-level. If the optional <em>color</em> is provided
 via the <strong>+g</strong> modifier, and the projection is not oblique,
 the frontal facade between the plane and the data perimeter is
-colored. See <strong>-Wf</strong> for setting the pen used for the outline.</p>
+colored. See <strong>-Wf</strong> for setting the pen used for the outline.
+If no <em>level</em> is set then we default to the minimum value in the
+<em>reliefgrid</em>. However, if <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> was used to set <em>zmin/zmax</em> then we
+use that value if it is less than the grid minimum value.</p>
 </dd>
 </dl>
 <dl id="q">
@@ -262,7 +271,7 @@ converted to shades of gray using the (monochrome television) YIQ transformation
 <li><p>Specify <strong>c</strong>. Same as <strong>-Qi</strong> but will make nodes with z = NaN transparent, using the colormasking
 feature in PostScript Level 3 (the PS device must support PS Level 3).</p></li>
 </ol>
-<p><strong>Note</strong>: If the CPT is categorical then only <strong>-Qm</strong> is available (but see <strong>-T</strong>).</p>
+<p><strong>Note</strong>: If the CPT is categorical then only <strong>-Qm</strong> is available (but see <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>).</p>
 </dd>
 </dl>
 <dl class="simple" id="r">
@@ -285,7 +294,7 @@ specified in the <em>reliefgrid</em> will result in a subset of the grid.</p>
 node-centered bin into a polygon which is then painted separately.
 Append <strong>+s</strong> to skip nodes with z = NaN. This option is suitable for
 categorical data where interpolating between values is meaningless
-and a categorical CPT has been provided via <strong>-C</strong>.
+and a categorical CPT has been provided via <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>.
 Optionally, append <strong>+o</strong> to draw the tile outlines, and specify a
 custom pen if the default pen is not to your liking. As this option
 produces a flat surface it cannot be combined with <strong>-JZ</strong> or <strong>-Jz</strong>.</p>
@@ -311,7 +320,7 @@ color = black, style = solid]. You must also select <strong>-Qm</strong> or
 <strong>-Qsm</strong> for meshlines to be drawn.</p>
 </dd>
 <dt><strong>-Wf</strong></dt><dd><p>Sets the pen attributes used for the facade. [Default: width =
-0.25p, color = black, style = solid]. You must also select <strong>-N</strong>
+0.25p, color = black, style = solid]. You must also select <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>
 for the facade outline to be drawn.</p>
 </dd>
 </dl>
@@ -341,7 +350,7 @@ for the facade outline to be drawn.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -353,7 +362,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="consequences-of-grid-resampling">
-<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this headline">¶</a></h2>
+<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this heading">¶</a></h2>
 <p>Except for Cartesian cases, we need to resample your geographic grid onto
 an equidistant projected grid. In doing so various algorithms come into play
 that projects data from one lattice to another while avoiding anti-aliasing,
@@ -365,10 +374,11 @@ map areas may show up with fore- or background color due to the resampling.
 In that case you have two options: (1) Modify your CPT to fit the resampled
 extrema (reported with <strong>-V</strong>) or (2) Impose clipping of resampled values
 so they do not exceed the input min/max values (add <strong>+c</strong> to your <strong>-n</strong>
-option).</p>
+option). <strong>Note</strong>: If <strong>-n</strong> is not set and no CPT is given (or a master
+CPT is given or implied), we automatically set <strong>-nc+c</strong>.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -406,7 +416,7 @@ topo_intens.nc, and looking from the SE, run:</p>
 </div>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
 <p>For the <strong>-Qs</strong> option: The PostScript language has no mechanism for smoothly varying
 colors within a polygon, so colors can only vary from polygon to
 polygon. To obtain smooth images this way you may resample the grid
@@ -416,8 +426,18 @@ this produces huge PostScript files. The alternative is to use the
 <strong>-Qi</strong> option, which computes bilinear or bicubic continuous color
 variations within polygons by using scanline conversion to image the polygons.</p>
 </section>
+<section id="macos-preview-warning">
+<h2>MacOS Preview Warning<a class="headerlink" href="#macos-preview-warning" title="Permalink to this heading">¶</a></h2>
+<p>Low-resolution raster-images appearing in PDF or PostScript files may look blurry when viewed
+with the Preview application under macOS. This happens because Preview decides to resample very
+coarse (low dpi) images instead of leaving them alone; we do not know of a simple way to turn
+this feature off.  It is most noticeable in color bars for discrete CPTs (we now use <strong>-Np</strong> as
+the default setting for such CPTs) and very small grids plotted in either <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> or
+<a class="reference internal" href="#"><span class="doc">grdview</span></a> <strong>-Qi</strong>|<strong>c</strong>. However, if a raster format (such as JPG or PNG) is selected instead
+then here is no such blurring.  Other PDF viewers (e.g., Adobe Acrobat) do not seem similarly affected.</p>
+</section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
 <a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a>,
@@ -441,8 +461,8 @@ variations within polygons by using scanline conversion to image the polygons.</
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

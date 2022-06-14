@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>trend2d &mdash; GMT 6.3.0 documentation</title>
+  <title>trend2d &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -49,7 +53,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -143,17 +149,17 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="trend2d">
-<h1>trend2d<a class="headerlink" href="#trend2d" title="Permalink to this headline">¶</a></h1>
+<h1>trend2d<a class="headerlink" href="#trend2d" title="Permalink to this heading">¶</a></h1>
 <p>Fit [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt trend2d</strong> [ <em>table</em> ] <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><strong>xyzmrw</strong>|<strong>p</strong> <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>n_model</em>[<strong>+r</strong>]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>condition_number</em> ]
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>confidence_level</em>] ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>+s</strong>|<strong>w</strong>] ]
 [ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-d</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
@@ -166,7 +172,7 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>trend2d</strong> reads x,y,z [and w] values from the first three [four]
 columns on standard input [or <em>xyz[w]file</em>] and fits a regression model
 z = f(x,y) + e by [weighted] least squares. The fit may be made robust
@@ -187,7 +193,7 @@ outliers. This may be handy when separating a “regional” field from a
 a regional surface.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII [or binary, see <strong>-bi</strong>]
 files containing x,y,z [w] values in the first 3 [4] columns. If no
@@ -210,7 +216,7 @@ report the model parameters, specify <strong>-Fp</strong>.</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="c">
 <dt><strong>-C</strong><em>condition_number</em></dt><dd><p>Set the maximum allowed condition number for the matrix solution.
 <strong>trend2d</strong> fits a damped least squares model, retaining only that
@@ -223,7 +229,7 @@ eigenvalue to the smallest eigenvalue is <em>condition_#</em>. [Default:
 <dt><strong>-I</strong>[<em>confidence_level</em>]</dt><dd><p>Iteratively increase the number of model parameters, starting at
 one, until <em>n_model</em> is reached or the reduction in variance of the
 model is not significant at the <em>confidence_level</em> level. You may
-set <strong>-I</strong> only, without an attached number; in this case the fit
+set <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> only, without an attached number; in this case the fit
 will be iterative with a default confidence level of 0.51. Or choose
 your own level between 0 and 1. See remarks section.</p>
 </dd>
@@ -241,11 +247,11 @@ and create weights as 1/sigma^2, or use the weights as read (<strong>+w</strong>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-bi</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for primary table input. [Default is 3 (or 4 if <strong>-W</strong> is set) input columns].</p>
+<dt><strong>-bi</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for primary table input. [Default is 3 (or 4 if <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> is set) input columns].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-bo</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for table output. [Default is 1-6 columns as set by <strong>-F</strong>].</p>
+<dt><strong>-bo</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for table output. [Default is 1-6 columns as set by <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>].</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -269,7 +275,7 @@ and create weights as 1/sigma^2, or use the weights as read (<strong>+w</strong>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input or output rows or data limit(s) [all].</p>
+<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input or output rows or data limit(s) [all].</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -285,7 +291,7 @@ and create weights as 1/sigma^2, or use the weights as read (<strong>+w</strong>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -297,7 +303,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="remarks">
-<h2>Remarks<a class="headerlink" href="#remarks" title="Permalink to this headline">¶</a></h2>
+<h2>Remarks<a class="headerlink" href="#remarks" title="Permalink to this heading">¶</a></h2>
 <p>The domain of x and y will be shifted and scaled to [-1, 1] and the
 basis functions are built from Chebyshev polynomials. These have a
 numerical advantage in the form of the matrix which must be inverted and
@@ -310,15 +316,15 @@ instead, it may find that the matrix problem has deficient rank.
 However, the solution is computed using the generalized inverse and
 should still work out OK. The user should check the results graphically
 if <strong>trend2d</strong> shows deficient rank. NOTE: The model parameters listed
-with <strong>-V</strong> are Chebyshev coefficients; they are not numerically
+with <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong> are Chebyshev coefficients; they are not numerically
 equivalent to the m#s in the equation described above. The description
-above is to allow the user to match <strong>-N</strong> with the order of the
+above is to allow the user to match <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> with the order of the
 polynomial surface. For evaluating Chebyshev polynomials, see
 <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>.</p>
-<p>The <strong>-N</strong><em>n_model</em><strong>r</strong> (robust) and <strong>-I</strong> (iterative) options
+<p>The <strong>-N</strong><em>n_model</em><strong>r</strong> (robust) and <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> (iterative) options
 evaluate the significance of the improvement in model misfit Chi-Squared
 by an F test. The default confidence limit is set at 0.51; it can be
-changed with the <strong>-I</strong> option. The user may be surprised to find that
+changed with the <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> option. The user may be surprised to find that
 in most cases the reduction in variance achieved by increasing the
 number of terms in a model is not significant at a very high degree of
 confidence. For example, with 120 degrees of freedom, Chi-Squared must
@@ -337,7 +343,7 @@ attenuate their effect, the significance level of the F test must be
 kept low.</p>
 </section>
 <section id="ascii-format-precision">
-<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this heading">¶</a></h2>
 <p>The ASCII output formats of numerical data are controlled by parameters
 in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
 according to <a class="reference internal" href="gmt.conf.html#term-FORMAT_GEO_OUT"><span class="xref std std-term">FORMAT_GEO_OUT</span></a>, absolute time is
@@ -350,7 +356,7 @@ precision, consider switching to binary output (<strong>-bo</strong> if availabl
 specify more decimals using the <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> setting.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -383,14 +389,14 @@ significant in fitting data.xyz, use</p>
 </div></blockquote>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>,
 <a class="reference internal" href="grdtrend.html"><span class="doc">grdtrend</span></a>,
 <a class="reference internal" href="trend1d.html"><span class="doc">trend1d</span></a></p>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
 <p>Huber, P. J., 1964, Robust estimation of a location parameter, <em>Ann.
 Math. Stat.</em>, <strong>35</strong>, 73-101.</p>
 <p>Menke, W., 1989, Geophysical Data Analysis: Discrete Inverse Theory,
@@ -409,8 +415,8 @@ Revised Edition, Academic Press, San Diego.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdproject &mdash; GMT 6.3.0 documentation</title>
+  <title>grdproject &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdproject">
-<h1>grdproject<a class="headerlink" href="#grdproject" title="Permalink to this headline">¶</a></h1>
+<h1>grdproject<a class="headerlink" href="#grdproject" title="Permalink to this heading">¶</a></h1>
 <p>Forward and inverse map transformation of grids</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdproject</strong> <em>ingrid</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<em>dx/dy</em>] ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>xinc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<strong>+e</strong>|<strong>n</strong>]] ]
@@ -158,8 +164,8 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><strong>grdproject</strong> will do one of two things depending whether <strong>-I</strong> has
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>grdproject</strong> will do one of two things depending whether <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> has
 been set. If set, it will transform a gridded data set from a
 rectangular coordinate system onto a geographical system by resampling
 the surface at the new nodes. If not set, it will project a geographical
@@ -174,13 +180,12 @@ controlled with the <strong>-n</strong> option. The new node spacing may be
 determined in one of several ways by specifying the grid spacing, number
 of nodes, or resolution. Nodes not constrained by input data are set to
 NaN.</p>
-<p>The <strong>-R</strong> option can be used to select a map region larger or smaller
+<p>The <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> option can be used to select a map region larger or smaller
 than that implied by the extent of the grid file.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
 <blockquote>
 <div><p>2-D gridded data set to be transformed. Optionally, append =<em>ID</em> for reading a specific file
 format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
@@ -198,9 +203,7 @@ supported:</p>
 </div></blockquote>
 <p>Note: Any offset is added after any scaling.</p>
 </div></blockquote>
-<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>]
-[:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
 <div><p>Give the name of the output grid file. Optionally, append =<em>ID</em> for writing a specific file format
 (<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
@@ -218,7 +221,7 @@ is 1].</p></li>
 </ul>
 </div></blockquote>
 <p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
-(unless overridden). To write specific formats via GDAL, use = <em>gd</em>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
 the <a class="reference internal" href="cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
@@ -231,17 +234,17 @@ for more details.</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="c">
 <dt><strong>-C</strong>[<em>dx/dy</em>]</dt><dd><p>Let projected coordinates be relative to projection center [Default
 is relative to lower left corner]. Optionally, add offsets in the
-projected units to be added (or subtracted when <strong>-I</strong> is set) to
+projected units to be added (or subtracted when <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> is set) to
 (from) the projected coordinates, such as false eastings and
 northings for particular projection zones [0/0].</p>
 </dd>
 </dl>
 <dl class="simple" id="d">
-<dt><strong>-D</strong><em>xinc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p>Set the grid spacing for the new grid.  If neither <strong>-D</strong> nor <strong>-E</strong> are set then we
+<dt><strong>-D</strong><em>xinc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p>Set the grid spacing for the new grid.  If neither <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> nor <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> are set then we
 select the same number of output nodes as there are input nodes.
 Optionally append a suffix modifier.
 <strong>Geographical (degrees) coordinates</strong>: Append
@@ -262,7 +265,7 @@ recalculated from the number of nodes and the domain. The resulting
 increment value depends on whether you have selected a
 gridline-registered or pixel-registered grid; see <a class="reference internal" href="cookbook/file-formats.html#gmt-file-formats"><span class="std std-ref">GMT File Formats</span></a> for
 details. <strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used then the grid spacing (and registration) have
-already been initialized; use <strong>-D</strong> (and <strong>-r</strong>) to override the values.</p>
+already been initialized; use <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> (and <strong>-r</strong>) to override the values.</p>
 </dd>
 </dl>
 <dl class="simple" id="e">
@@ -270,12 +273,12 @@ already been initialized; use <strong>-D</strong> (and <strong>-r</strong>) to o
 </dd>
 </dl>
 <dl class="simple" id="f">
-<dt><strong>-F</strong>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>|<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>]</dt><dd><p>Force 1:1 scaling, i.e., output (or input, see <strong>-I</strong>) data are in
+<dt><strong>-F</strong>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>|<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>]</dt><dd><p>Force 1:1 scaling, i.e., output (or input, see <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>) data are in
 actual projected meters [<strong>e</strong>]. To specify other units, append
 <strong>f</strong> (foot), <strong>k</strong> (km), <strong>M</strong> (statute mile), <strong>n</strong> (nautical
 mile), <strong>u</strong> (US survey foot), <strong>i</strong> (inch), <strong>c</strong> (cm), or <strong>p</strong>
-(point). Without <strong>-F</strong>, the output (or input, see <strong>-I</strong>) are in
-the units specified by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> (but see <strong>-M</strong>).</p>
+(point). Without <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>, the output (or input, see <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>) are in
+the units specified by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> (but see <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>).</p>
 </dd>
 </dl>
 <dl class="simple" id="i">
@@ -285,7 +288,7 @@ the units specified by <a class="reference internal" href="gmt.conf.html#term-PR
 <dl class="simple" id="m">
 <dt><strong>-Mc</strong>|<strong>i</strong>|<strong>p</strong></dt><dd><p>Append <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> to indicate that cm, inch, or point
 should be the projected measure unit [Default is set by
-<a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> in <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>]. Cannot be used with <strong>-F</strong>.</p>
+<a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> in <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>]. Cannot be used with <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="r">
@@ -306,7 +309,7 @@ should be the projected measure unit [Default is set by
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -318,7 +321,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -358,7 +361,7 @@ as the measure unit:</p>
 </div></blockquote>
 </section>
 <section id="restrictions">
-<h2>Restrictions<a class="headerlink" href="#restrictions" title="Permalink to this headline">¶</a></h2>
+<h2>Restrictions<a class="headerlink" href="#restrictions" title="Permalink to this heading">¶</a></h2>
 <p>The boundaries of a projected (rectangular) data set will not
 necessarily give rectangular geographical boundaries (Mercator is one
 exception). In those cases some nodes may be unconstrained (set to NaN).
@@ -366,7 +369,7 @@ To get a full grid back, your input grid may have to cover a larger area
 than you are interested in.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>, <a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a></p>
 </section>
 </section>
@@ -382,8 +385,8 @@ than you are interested in.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>events &mdash; GMT 6.3.0 documentation</title>
+  <title>events &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,16 +148,16 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="events">
-<h1>events<a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h1>
+<h1>events<a class="headerlink" href="#events" title="Permalink to this heading">¶</a></h1>
 <p>Plot event symbols, lines, polygons and labels for one moment in time</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt events</strong>
 <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]
 <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>now</em>
 [ <em>table</em> ]
-[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>r</strong>[<em>dpu</em>[<strong>c</strong>|<strong>i</strong>][<strong>+z</strong>[<em>z</em>]]]|<strong>s</strong> ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>r</strong>[<em>dpu</em>[<strong>c</strong>|<strong>i</strong>][<strong>+v</strong>[<em>value</em>]]]|<strong>s</strong> ]
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em> ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<strong>j</strong>|<strong>J</strong>]<em>dx</em>[/<em>dy</em>][<strong>+v</strong>[<em>pen</em>]] ]
@@ -160,7 +166,7 @@
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>color</em> ]
 [ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong><em>labelbox</em> ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<em>length</em>|<strong>t</strong>] ]
-[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><strong>i</strong>|<strong>s</strong>|<strong>t</strong>|<strong>z</strong><em>val1</em>[<strong>+c</strong><em>val2</em>] ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><strong>i</strong>|<strong>s</strong>|<strong>t</strong>|<strong>v</strong><em>val1</em>[<strong>+c</strong><em>val2</em>] ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<strong>c</strong>|<strong>r</strong>] ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>prefix</em> ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>symbol</em>[<em>size</em>] ]
@@ -172,11 +178,12 @@
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>command</em> ]
 [ <strong>-a</strong><a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-di</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
 [ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-l</strong><a class="reference internal" href="gmt.html#l-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-qi</strong><a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-w</strong><a class="reference internal" href="gmt.html#w-full"><span class="std std-ref">flags</span></a> ]
@@ -184,19 +191,32 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>Reads (<em>x</em>, <em>y</em>[, <em>z</em>] [, <em>size</em>], <em>time</em> [, <em>length</em>] [, <em>label</em>]) data from <em>table</em> [or standard
-input] and plots how the symbol for each event should look for the specified time <em>now</em>.
+input] and plots how the symbol for each event should look for the single specified time <em>now</em>.
 The reason they may differ is that events may have different <em>durations</em> and we may
 wish to <em>accentuate</em> the symbol attributes in ways to draw attention to an event when
-it first appears and perhaps tone it down after a while to reduce clutter and focus
-on more recent events. Optionally, each symbol may have a label that can be displayed at the
-same time or delayed with respect to the symbol. This module is typically used in conjunction with <a class="reference internal" href="movie.html"><span class="doc">movie</span></a>
+it first appears, and perhaps tone it down after a while to reduce clutter and focus
+on more recent events. You may also wish for symbols to disappear completely after they reach
+their end time (we call this period the coda), or perhaps remain visible but faded, shrunk, or darkened.
+Optionally, each symbol may have a label that can be displayed for a prescribed length of time at the
+same time as the symbol or delayed a bit. This module is typically used in conjunction with <a class="reference internal" href="movie.html"><span class="doc">movie</span></a>
 where the implicit loop over time is used to call <strong>events</strong> over a time-sequence and
 thus plot symbols as the events unfold.</p>
+<div class="youtube_wrapper" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; width: 100%">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/iWt0yZICKlM?autoplay=1" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
+</iframe></div><p>Animation of two events over the time window -0.5 to 1.5. The events are only active during times
+0 to 1. One symbol (blue) is plotted normally only while active (size follows the light-blue time-curve,
+while the other (red) is highlighted when it first arrives by adding a rise, plateau, decay, and fade
+interval, and finally then let to fade to a persistent but smaller, darker and partly transparent
+symbol after it is no longer active; its size follows the red time-curve. In contrast, the
+blue symbol just turns on and off.  We also delay the red symbol’s label by 0.25 time units.
+Red event was plotted using -Es+r0.25+p0.25+d0.25+f0.25 -Et+o0.25 while the blue event used the
+default settings (i.e., the light-blue time curve). <strong>Note</strong>: The time curves are plotted here just
+to illustrate what is happening under the hood. The movie we make is really about the two events only.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
@@ -216,37 +236,41 @@ then we read from standard input.  </p>
 <div><p>For perspective view <strong>-p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a>  </p>
 </div></blockquote>
 <dl class="simple" id="t">
-<dt><strong>-T</strong><em>now</em></dt><dd><p>Set the current plot time. The time shifts and increments set in <strong>-E</strong> are all relative to this
-current time.  If an absolute time is given you may need to  use <a class="reference internal" href="gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a> to indicate
-the unit of the values given in options like <strong>-E</strong> and <strong>-L</strong>.</p>
+<dt><strong>-T</strong><em>now</em></dt><dd><p>Set the current plot time. The time shifts and increments set in <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> are all <em>relative</em> to this
+current time.  If an absolute time is given you will need to use <a class="reference internal" href="gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a> to indicate
+the unit of the values given in options like <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> and <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>.</p>
 </dd>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple" id="a">
-<dt><strong>-A</strong><strong>r</strong>[<em>dpu</em>[<strong>c</strong>|<strong>i</strong>][<strong>+z</strong>[<em>z</em>]]]|<strong>s</strong></dt><dd><p>When no <strong>-S</strong> is given we expect to read lines or polygons.  Two different forms for input are
-supported and specified via the chosen <strong>-A</strong> directives: (1) Choose <strong>-Ar</strong> if your input data are <em>trajectories</em>, the data
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl id="a">
+<dt><strong>-A</strong><strong>r</strong>[<em>dpu</em>[<strong>c</strong>|<strong>i</strong>][<strong>+v</strong>[<em>value</em>]]]|<strong>s</strong></dt><dd><p>When no <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> is given we expect to read lines or polygons.  Two different forms for input are
+supported and specified via the chosen <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> directives:</p>
+<ul class="simple">
+<li><p>Choose <strong>-Ar</strong> if your input data are <em>trajectories</em> (for more details, see <a class="reference internal" href="#drawing-trajectories">Drawing trajectories</a>), the data
 format is given as <em>x, y, time</em>, and the “event” is the portion of that trajectories limited by the current
-time (<em>now</em>), event duration (via <strong>-L</strong>) and rise/fade periods (via <strong>-Es</strong>). If current time falls between
-two points on the trajectory then we linearly interpolate to find the current end point. Alternatively, (2) choose <strong>-As</strong>
-to read each complete segment (i.e., a polygon or line with just <em>x, y</em> coordinates) from a multisegment
-file and get a common <em>time</em> for each segment via a required <strong>-T</strong><em>string</em> specified in the segment
-header.  Here, the entire polygon or line is the “event” if inside the limits of current time (<em>now</em>), event
-duration (via <strong>-L</strong>) and rise/fade periods (via <strong>-Es</strong>).  If <strong>-L</strong>[<strong>t</strong>] is set then the <em>string</em>
+time (<em>now</em>), event duration (via <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>) and rise/fade periods (via <strong>-Es</strong>). If current time falls between
+two points on the trajectory then we linearly interpolate to find the current end point.</p></li>
+<li><p>Choose <strong>-As</strong> to read each complete segment (i.e., a polygon or line with just <em>x, y</em> coordinates)
+from a multisegment file and get a common <em>time</em> for each segment via a required <strong>-T</strong><em>string</em> specified
+in the segment header.  Here, the entire polygon or line is the “event” if inside the limits of current time
+(<em>now</em>), event duration (via <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>) and rise/fade periods (via <strong>-Es</strong>).  If <strong>-L</strong>[<strong>t</strong>] is set then the <em>string</em>
 must be either of the format <em>begin</em>/<em>length</em>|<em>end</em> or <em>begin</em>,<em>length</em>|<em>end</em>.  Use a comma to
-separate absolute time specifications, otherwise a slash is also supported. <strong>Note</strong>:
-Neither lines nor polygons allow for any labels to be placed. Finally, you can use <strong>-Ar</strong><em>dpu</em> to
+separate absolute time specifications, otherwise a slash is also supported.</p></li>
+</ul>
+<p><strong>Note</strong>: Neither lines nor polygons allow for any labels to be placed.</p>
+<p>Alternatively, you can use <strong>-Ar</strong><em>dpu</em> to
 perform no plotting but instead convert your <em>x, y</em>[, <em>zcols</em> ], <em>time</em> data into <em>densely sampled points</em> so that
-later calls to <strong>events</strong> may use this sampled data set instead and plot it as circles with <strong>-Sc</strong>[<em>width</em>].
+a later call to <strong>events</strong> may use this sampled data set instead and plot it as circles with <strong>-Sc</strong>[<em>width</em>].
 This way you can plot “lines” that can have variable pen color and fixed or variable pen width as well as
-taking advantage of the full machinery of <strong>-Es</strong> and <strong>-Et</strong> and all the effects controlled by <strong>-M</strong> for symbols.
-The <em>dpu</em> must match the intended dpu when running <a class="reference internal" href="movie.html"><span class="doc">movie</span></a>. Note <em>dpu</em> means pixels per cm if you are using
+taking advantage of the full machinery of <strong>-Es</strong> and <strong>-Et</strong> and all the effects controlled by <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> for symbols.
+The <em>dpu</em> must match the intended dpu when running <a class="reference internal" href="movie.html"><span class="doc">movie</span></a>. Note that <em>dpu</em> means pixels per cm if you are using
 SI units and pixels per inch if you are using US units (hence it depends on your <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> setting).
 Alternatively, append <strong>c</strong> or <strong>i</strong> to set the unit used explicitly. Also note that if your movie involves
 changes to the region or the map projection then you may need to run the <strong>-Ar</strong><em>dpu</em> as part of the main script.
-Finally, use <strong>+z</strong>[<em>z</em>] to insert a <em>z</em>-column (initialized to zero unless another <em>z</em> value is appended) in
-the dense point data file for use with <strong>-Mz</strong>.</p>
+Finally, you can use <strong>+v</strong>[<em>value</em>] to insert a <em>z</em>-column (initialized to zero unless another <em>z</em> value is appended) in
+the dense point data file for use with <strong>-Mv</strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="b">
@@ -269,30 +293,39 @@ a line from the original point to the shifted point; append a <em>pen</em>
 to change the attributes for this line.</p>
 </dd>
 </dl>
-<dl class="simple" id="e">
-<dt><strong>-E</strong>[<strong>s</strong>|<strong>t</strong>][<strong>+o</strong>|<strong>O</strong><em>dt</em>][<strong>+r</strong><em>dt</em>][<strong>+p</strong><em>dt</em>][<strong>+d</strong><em>dt</em>][<strong>+f</strong><em>dt</em>][<strong>+l</strong><em>dt</em>]</dt><dd><p>Set the time knots for the <strong>s</strong>ymbol or <strong>t</strong>ext time-functions.  Append
-<strong>+o</strong> to shift the event start and end times by a constant offset (basically shifting
-the event in time by <em>dt</em>; or use <strong>+O</strong> to only shift the start time, effectively shortening
-the duration of the event), <strong>+r</strong> to indicate the
-duration of the rise phase, <strong>+p</strong> to set the duration of the plateau phase, <strong>+d</strong>
-to specify the duration of the decay phase, and <strong>+f</strong> to set the duration of the
-fade phase.  These are all optional [and default to zero], and can be set separately for symbols and texts.
-If neither <strong>s</strong> or <strong>t</strong> is given then we set the time knots for both features. <strong>Note 1</strong>: The <strong>+l</strong> modifier is
-restricted to <strong>-Et</strong> and specifies an alternative duration (visibility) of the text [same duration as symbol].
-Furthermore, the <strong>+p</strong> and <strong>+d</strong> periods do not apply to text labels.  <strong>Note 2</strong>: The <strong>-Et</strong> option is
-required if you wish to plot labels [plot symbols only].  <strong>Note 3</strong>: For lines or polygons the <strong>+p</strong>
-and <strong>+d</strong> periods do not apply, and for lines none of the modifiers are allowed.</p>
+<dl id="e">
+<dt><strong>-E</strong>[<strong>s</strong>|<strong>t</strong>][<strong>+o</strong>|<strong>O</strong><em>dt</em>][<strong>+r</strong><em>dt</em>][<strong>+p</strong><em>dt</em>][<strong>+d</strong><em>dt</em>][<strong>+f</strong><em>dt</em>][<strong>+l</strong><em>dt</em>]</dt><dd><p>Set the relative time knots for the <strong>s</strong>ymbol or <strong>t</strong>ext time-functions (see <a class="reference internal" href="#the-four-time-functions">The four time-functions</a>) via
+these modifiers:</p>
+<ul class="simple">
+<li><p><strong>+o</strong> will shift both the event start and end times by a constant offset (basically delaying
+the event in time by <em>dt</em>.</p></li>
+<li><p><strong>+O</strong> is similar to <strong>+o</strong> but will only shift the start time, effectively shortening
+the duration of the event).</p></li>
+<li><p><strong>+l</strong> specifies an alternative duration (visibility) of the text (<strong>-Et</strong> only) [same duration as symbol].</p></li>
+<li><p><strong>+r</strong> sets the duration of the rise phase.</p></li>
+<li><p><strong>+p</strong> sets the duration of the plateau phase.</p></li>
+<li><p><strong>+d</strong> sets the duration of the decay phase.</p></li>
+<li><p><strong>+f</strong> sets the duration of the fade phase.</p></li>
+</ul>
+<p>These are all optional [and default to zero], and can be set separately for symbols and texts.
+If neither the <strong>s</strong> or <strong>t</strong> directive is given then we set the time knots for both features.
+<strong>Note 1</strong>: The <strong>+p</strong> and <strong>+d</strong> periods do not apply to text labels, lines or polygons.
+<strong>Note 2</strong>: The <strong>-Et</strong> option is required if you wish to plot labels [Default plots symbols only].
+<strong>Note 3</strong>: None of the modifiers are allowed for lines.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
-<dt><strong>-F</strong>[<strong>+a</strong><em>angle</em>][<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+r</strong>[<em>first</em>]|<strong>z</strong>[<em>format</em>]]</dt><dd><p>By default, event label text will be placed horizontally, using the primary
-annotation font attributes (<a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a>), and centered
-on the data point. Use this option to override these defaults by specifying up to three
-text attributes (font, angle, and justification) directly on the command line. Use <strong>+f</strong>
-to set the font (size,fontname,color), <strong>+a</strong> to set the angle, and <strong>+j</strong> to set the justification.
-Normally, the text to be plotted is the trailing text.  Instead, use <strong>+r</strong> to use the
-record number (counting up from <em>first</em> [0]) or <strong>+z</strong> to format incoming <em>z</em> values (requires <strong>-C</strong>)
-to a string using the supplied <em>format</em> [use <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_MAP"><span class="xref std std-term">FORMAT_FLOAT_MAP</span></a>].</p>
+<dt><strong>-F</strong>[<strong>+a</strong><em>angle</em>][<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+r</strong>[<em>first</em>]|<strong>z</strong>[<em>format</em>]]</dt><dd><p>By default, event label text will be placed horizontally, using the primary annotation font
+attributes, and centered on the data point. Normally, the text to be plotted is the trailing text.
+Use this option’s modifiers to override these defaults by specifying alternative attributes:</p>
+<ul class="simple">
+<li><p><strong>+f</strong> sets the font (size,fontname,color) [<a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a>].</p></li>
+<li><p><strong>+a</strong> sets the angle of the baseline relative to the horizontal [0].</p></li>
+<li><p><strong>+j</strong> sets the justification of the label relative to the coordinates given [CM].</p></li>
+<li><p><strong>+r</strong> will use the record number (counting up from <em>first</em> [0]) as the text label.</p></li>
+<li><p><strong>+z</strong> will format incoming <em>z</em> value and use it as the text label (requires <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> and
+the optional <em>format</em> [<a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_MAP"><span class="xref std std-term">FORMAT_FLOAT_MAP</span></a>]).</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="simple" id="g">
@@ -300,14 +333,16 @@ to a string using the supplied <em>format</em> [use <a class="reference internal
 </dd>
 </dl>
 <dl class="simple" id="h">
-<dt><strong>-H</strong>[<strong>+c</strong><em>dx</em>/<em>dy</em>][<strong>+g</strong><em>fill</em>][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]]]</dt><dd><p>Enable bounding boxes around text labels and provide one or more of these specific parameters:
-Add <strong>+c</strong> to adjust the clearance between the text and the surrounding box [15% of font size].
-Add <strong>+p</strong> to draw the box outline with <a class="reference internal" href="gmt.conf.html#term-MAP_DEFAULT_PEN"><span class="xref std std-term">MAP_DEFAULT_PEN</span></a> or append a different pen.
-Add <strong>+g</strong><em>fill</em> to fill the text box [no fill].
-Append <strong>+r</strong> to use a rounded rectangular box instead of straight rectangular box.
-Append <strong>+s</strong> to place an offset, background shaded box behind the text box. Here, <em>dx</em>/<em>dy</em>
+<dt><strong>-H</strong>[<strong>+c</strong><em>dx</em>/<em>dy</em>][<strong>+g</strong><em>fill</em>][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]]]</dt><dd><p>Enable bounding boxes around text labels and provide one or more of these specific parameters:</p>
+<ul class="simple">
+<li><p><strong>+c</strong> adjusts the clearance between the text and the surrounding box [15% of font size].</p></li>
+<li><p><strong>+g</strong><em>fill</em> will fill the text box [no fill].</p></li>
+<li><p><strong>+p</strong> draws the box outline with <a class="reference internal" href="gmt.conf.html#term-MAP_DEFAULT_PEN"><span class="xref std std-term">MAP_DEFAULT_PEN</span></a> or append a different pen.</p></li>
+<li><p><strong>+r</strong> will use a rounded rectangular box [straight rectangular box].</p></li>
+<li><p><strong>+s</strong> places an offset, background shaded box behind the text box. Here, <em>dx</em>/<em>dy</em>
 indicates the shift relative to the foreground text box [4<strong>p</strong>/-4<strong>p</strong>] and <em>shade</em> changes
-the fill used for shading [gray50]. <strong>Note</strong>: Modifier <strong>+s</strong> requires <strong>+g</strong> as well.</p>
+the fill used for shading [gray50]. <strong>Note</strong>: Modifier <strong>+s</strong> requires <strong>+g</strong> as well.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="simple">
@@ -317,31 +352,48 @@ the fill used for shading [gray50]. <strong>Note</strong>: Modifier <strong>+s</
 <dl class="simple" id="l">
 <dt><strong>-L</strong>[<em>length</em>|<strong>t</strong>]</dt><dd><p>Specify the length (i.e., duration) of the event.  Append a <em>length</em> if all events have the same length,
 append <strong>t</strong> if end-times instead of lengths are given in the file after the <em>time</em> column,
-or leave blank if lengths can be read from the input file after the <em>time</em> column.  If <strong>-L</strong> is not
-given we assume events have an infinite duration. See <strong>-A</strong> for how duration is handled for lines and
+or leave blank if lengths can be read from the input file after the <em>time</em> column.  If <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> is not
+given we assume events have an infinite duration. See <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> for how duration is handled for lines and
 polygons.</p>
 </dd>
 </dl>
-<p id="m"><strong>-M</strong><strong>i</strong>|<strong>s</strong>|<strong>t</strong>|<strong>z</strong><em>val1</em>[<strong>+c</strong><em>val2</em>] ]</p>
+<p id="m"><strong>-M</strong><strong>i</strong>|<strong>s</strong>|<strong>t</strong>|<strong>v</strong><em>val1</em>[<strong>+c</strong><em>val2</em>]</p>
 <blockquote>
-<div><p>Modify the initial <strong>i</strong>ntensity of the color, the <strong>s</strong>ize of the symbol, its <strong>t</strong>ransparency
-or the <strong>z</strong> data value during the <em>rise</em> interval [Defaults are 1, 1, 100, and 0 respectively].
-Option <strong>-M</strong> is repeatable for the different attributes. Optionally, for finite-duration events you
-may append <strong>+c</strong> to set the corresponding terminal value during the coda [0, 0, 100, 0, respectively].
-The intensity setting (normally in the interval ±1, with 0 having no effect) is used to brighten
-(<em>intensity</em> &gt; 0) or darken (<em>intensity</em> &lt; 0) the symbol color during this period (hue is kept fixed).
-The size setting is a magnifying factor that temporarily changes the size of the symbol. The transparency
-setting affects temporary changes to the symbol’s transparency. Finally, the z-data setting temporarily
-adds <em>val1</em> to the data set’s <em>z</em>-values per the time function, and thus can change the symbol’s color
-via the CPT (hence <strong>-C</strong> is a required option for <strong>-Mz</strong>). <strong>Note</strong>: Polygons can only use <strong>-Mt</strong> setting.</p>
+<div><blockquote>
+<div><p>Controls how each symbol’s four attributes (<strong>i</strong>ntensity, <strong>s</strong>ize, <strong>t</strong>ransparency, and <strong>v</strong>alue)
+should change from when the symbol first appears, during its active duration, and optionally its fate as time
+moves past its end time. First supply the directive [default <em>val1</em> values are given in brackets]:</p>
+<ul class="simple">
+<li><p><strong>i</strong> will modify the intensity of the color [1].</p></li>
+<li><p><strong>s</strong> will modify the relative size of the symbol [1].</p></li>
+<li><p><strong>t</strong> will modify the transparency [100].</p></li>
+<li><p><strong>v</strong> will modify the data value (to change symbol color via CPT lookup) during the <em>rise</em> interval [0].</p></li>
+</ul>
+<p>The appended <em>val1</em> represents the maximum amplitude that is scaled by the corresponding time-function
+created by <strong>-Es</strong> (see <a class="reference internal" href="#the-four-time-functions">The four time-functions</a>). Option <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> is repeatable for the different directives;
+here are some further guidelines:</p>
+<ul class="simple">
+<li><p>The intensity directive (<strong>i</strong>; normally with <em>val1</em> in the range ±1, with 0 having no effect) is used to brighten
+(<em>val1</em> &gt; 0) or darken (<em>val1</em> &lt; 0) the symbol color during this period (the hue is kept fixed).</p></li>
+<li><p>The size directive (<strong>s</strong>) is a magnifying factor that temporarily changes the size of the symbol by the factor <em>val1</em>.</p></li>
+<li><p>The transparency directive (<strong>t</strong>) affects temporary changes to the symbol’s transparency.</p></li>
+<li><p>The value directive (<strong>v</strong>) temporarily adds <em>val1</em> to the data set’s <em>z</em>-values, scaled by the corresponding time
+function, and thus can change the symbol’s <em>color</em> via the CPT (hence <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> is a required option for <strong>-Mv</strong>).</p></li>
+</ul>
+<p>Optionally, for finite-duration events that should remain visible for all times <em>after</em> their event end time has
+been reached you must append <strong>+c</strong> (for coda) to set the corresponding terminal value during the coda. If <strong>+c</strong>
+is not given then the defaults are 0 (intensity), 0 (size), 100 (transparency) and 0 (value), meaning the symbols
+are not plotted unless you change these attributes with one or more <strong>+c</strong> modifiers (one per directive).</p>
+</div></blockquote>
+<p><strong>Note</strong>: Polygons can only use <strong>-Mt</strong> setting.</p>
 </div></blockquote>
 <dl class="simple" id="n">
 <dt><strong>-N</strong>[<strong>c</strong>|<strong>r</strong>]</dt><dd><p>Do NOT clip symbols that fall outside map border [Default plots points
 whose coordinates are strictly inside the map border only]. For periodic (360-longitude)
 maps we must plot all symbols twice in case they are clipped by the repeating
-boundary. The <strong>-N</strong> will turn off clipping and not plot repeating symbols.
+boundary. The <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> will turn off clipping and not plot repeating symbols.
 Use <strong>-Nr</strong> to turn off clipping but retain the plotting of such repeating symbols, or
-use <strong>-Nc</strong> to retain clipping but turn off plotting of repeating symbols. If set, <strong>-N</strong>
+use <strong>-Nc</strong> to retain clipping but turn off plotting of repeating symbols. If set, <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>
 will also apply to any labels.</p>
 </dd>
 </dl>
@@ -351,15 +403,15 @@ Files will be named <em>prefix</em>_symbols.txt and <em>prefix</em>_labels.txt.<
 </dd>
 </dl>
 <dl class="simple" id="s">
-<dt><strong>-S</strong><em>symbol</em>[<em>size</em>]</dt><dd><p>Specify the symbol to use for the event [Default plots lines or polygons; see <strong>-A</strong>].
+<dt><strong>-S</strong><em>symbol</em>[<em>size</em>]</dt><dd><p>Specify the symbol to use for the event [Default plots lines or polygons; see <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>].
 Optionally, append symbol <em>size</em> with unit from
 (<strong>c</strong>|<strong>i</strong>|<strong>p</strong>).  If no <em>size</em> is given then we read an event-specific size
-from the data file’s third column (fourth if <strong>-C</strong> is used). <strong>Note</strong>: Not all the symbols that
+from the data file’s third column (fourth if <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> is used). <strong>Note</strong>: Not all the symbols that
 are available in <a class="reference internal" href="plot.html"><span class="doc">plot</span></a> can be used here.  At the moment we only support the basic
 symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
 be specified.  Symbols sizes read from a data file will be assumed to be in the unit controlled
 by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> unless they have <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> appended.  If you are only
-plotting labels then <strong>-S</strong> is not required.</p>
+plotting labels then <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> is not required.</p>
 </dd>
 </dl>
 <dl class="simple" id="u">
@@ -387,15 +439,15 @@ plotting labels then <strong>-S</strong> is not required.</p>
 <a class="reference internal" href="supplements/seis/meca.html"><span class="doc">meca</span></a>, or <a class="reference internal" href="supplements/geodesy/velo.html"><span class="doc">velo</span></a>.
 The quoted <em>command</em> must start with one of these module names, then
 supply all the module-specific options that the selected module requires to
-normally define a plot, excluding any of <strong>-C</strong>, <strong>-G</strong>, <strong>-J</strong>, <strong>-N</strong>, <strong>-R</strong>, and
-<strong>-W</strong> (those options may be required by <strong>events</strong> though).  Also, you may
-not use the <strong>-I</strong> or <strong>-t</strong> options since these will be set automatically
+normally define a plot, excluding any of <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>, <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>, <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong>, <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>, <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>, and
+<a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> (those options may be required by <strong>events</strong> though).  Also, you may
+not use the <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> or <strong>-t</strong> options since these will be set automatically
 as part of the variations imposed by <strong>-Mi</strong> and <strong>-Mt</strong>.  As an example, the
 custom command to plot a beachball may be <strong>-Z</strong>“meca -Sa5c+f0”, while
-displaying a crossection of one may require the more elaborate command
+displaying beachballs in a crossection may require the more elaborate command
 <strong>-Z</strong>“coupe -Q -L -Sc3c -Ab128/11/120/250/90/400/0/100+f -Fa0.1i/cc”.
 <strong>Note</strong>: If you are running a simple classic command then you must use
-classic module names.</p>
+the corresponding classic module names.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -427,11 +479,15 @@ classic module names.</p>
 </dd>
 </dl>
 <dl class="simple">
+<dt><strong>-l</strong>[<em>label</em>][<strong>+D</strong><em>pen</em>][<strong>+G</strong><em>gap</em>][<strong>+H</strong><em>header</em>][<strong>+L</strong>[<em>code</em>/]<em>txt</em>][<strong>+N</strong><em>cols</em>][<strong>+S</strong><em>size</em>[/<em>height</em>]][<strong>+V</strong>[<em>pen</em>]][<strong>+f</strong><em>font</em>][<strong>+g</strong><em>fill</em>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>off</em>][<strong>+p</strong><em>pen</em>][<strong>+s</strong><em>scale</em>][<strong>+w</strong><em>width</em>] <a class="reference internal" href="gmt.html#l-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Add a legend entry for the symbol or line being plotted.  </p>
+</dd>
+</dl>
+<dl class="simple">
 <dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select perspective view.  </p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
+<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -439,7 +495,7 @@ classic module names.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -451,22 +507,22 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="the-meaning-of-time">
-<h2>The meaning of time<a class="headerlink" href="#the-meaning-of-time" title="Permalink to this headline">¶</a></h2>
-<p>While normally the meaning of “time” (e.g., such as in the argument to <strong>-T</strong>)
+<h2>The meaning of time<a class="headerlink" href="#the-meaning-of-time" title="Permalink to this heading">¶</a></h2>
+<p>While normally the meaning of “time” (e.g., such as in the argument to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>)
 is in fact the time of the phenomenon being plotted, it may also be any other monotonically
 increasing quantity of convenience, such as elapsed time, model time, frame number, or other physical
 quantities such as distance.  It all depends on the context of the movie.  The values
-given for delays, fades, etc. in <strong>-E</strong> are assumed to be in the same unit as the
-given <em>time</em> argument to <strong>-T</strong>.  Thus, if <em>time</em> is a monotonically increasing frame
-counter then the values in <strong>-E</strong> and <strong>-L</strong> refer to number of frames.  A special
+given for delays, fades, etc. in <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> are assumed to be in the same unit as the
+given <em>time</em> argument to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>.  Thus, if <em>time</em> is a monotonically increasing frame
+counter then the values in <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> and <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> refer to number of frames.  A special
 situation occurs when <em>time</em> is in fact actual calendar time given by date/clock markers.
-Here, the unit of the arguments in <strong>-E</strong> and <strong>-L</strong> is determined by the <a class="reference internal" href="gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a>
+Here, the unit of the arguments in <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> and <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> is determined by the <a class="reference internal" href="gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a>
 setting [second].  You will need to specify the desired time unit that should be used when
-interpreting your <strong>-E</strong> and <strong>-L</strong> arguments.  The example below for seismicity uses
+interpreting your <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> and <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> arguments.  The example below for seismicity uses
 actual earthquake times but we use days as the unit as second is too small.</p>
 </section>
 <section id="the-four-time-functions">
-<h2>The four time-functions<a class="headerlink" href="#the-four-time-functions" title="Permalink to this headline">¶</a></h2>
+<h2>The four time-functions<a class="headerlink" href="#the-four-time-functions" title="Permalink to this heading">¶</a></h2>
 <p>Events typically have either a finite length, e.g., the temporal extent of
 the reign of a particular monarch, or are infinite.  Here, infinite simply means
 its length exceeds the temporal extent of the time we are plotting.  In a movie,
@@ -496,7 +552,7 @@ illustrates how intensity may vary accordingly.</p>
 <p><span class="caption-text">Implied evolution of one symbol’s color intensity as a function of time
 given the time-knots from <strong>-Es</strong> and the intensities from <strong>-Mi</strong>.  Here we
 seek to whiten the symbol during the event arrival, as well as darken it
-during a permanent code phase.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+during a permanent coda phase.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>Next, for finite events you may wish to either fade them out completely or
@@ -511,10 +567,10 @@ at the event begin time, finally fading to a near-invisible stage after reaching
 its length.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>Finally, instead of selecting a fixed color for a symbol you can use <strong>-C</strong> to set a
+<p>Finally, instead of selecting a fixed color for a symbol you can use <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> to set a
 color table that we will use to modulate the color of the symbol.  It is done by adding
 a variable fraction of <em>dz</em> to the data’s <em>z</em>-column and hence the CPT lookup will
-return different colors at different times. The amplitude is controlled with the <strong>-Mz</strong>
+return different colors at different times. The amplitude is controlled with the <strong>-Mv</strong>
 option which will create <em>dz</em> values in the range 0-<em>val1</em> [Default is 0-1]. In most
 cases the data set will have a zero z-value and hence the CPT will be set up for the
 0-1 range (but note that the coda <em>val2</em> value may be negative so compose your CPT
@@ -529,7 +585,7 @@ CPT-lookup occurs.</span><a class="headerlink" href="#id5" title="Permalink to t
 </figcaption>
 </figure>
 <p>While shown in these examples, the rise, plateau, fade, and coda periods are all optional
-and can be selected or ignored as you wish via <strong>-E</strong>.  You can choose to specify any or none
+and can be selected or ignored as you wish via <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>.  You can choose to specify any or none
 of the three time histories.  By default the symbol size is constant, there is no intensity
 variation, and all symbols are opaque.</p>
 <p>If trailing text is plotted (i.e., by selecting <strong>-Et</strong>) then only the transparency time-function
@@ -547,14 +603,14 @@ fade away completely. For labels, the plateau and decay periods do not apply.</s
 </figure>
 </section>
 <section id="sorting-the-data">
-<h2>Sorting the data<a class="headerlink" href="#sorting-the-data" title="Permalink to this headline">¶</a></h2>
-<p>While only the events that should be visible will be plotted at the given time set via <strong>-T</strong>,
+<h2>Sorting the data<a class="headerlink" href="#sorting-the-data" title="Permalink to this heading">¶</a></h2>
+<p>While only the events that should be visible will be plotted at the given time set via <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>,
 the order of plotting is simply given by the order of records in the file.  Thus, if the
 file is <em>not</em> sorted into ascending time then later events might plot <em>beneath</em> earlier events.
-To prevent this, you can sort your file into ascending order via the <a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a> <strong>-N</strong> option.</p>
+To prevent this, you can sort your file into ascending order via the <a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a> <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> option.</p>
 </section>
 <section id="drawing-trajectories">
-<h2>Drawing trajectories<a class="headerlink" href="#drawing-trajectories" title="Permalink to this headline">¶</a></h2>
+<h2>Drawing trajectories<a class="headerlink" href="#drawing-trajectories" title="Permalink to this heading">¶</a></h2>
 <p>If <strong>-Ar</strong> is used to draw trajectories (lines with <em>x,y,t</em> coordinates) then, as stated, we will
 use a linear interpolation to find intermediate terminal points.  For geographic data, and especially
 if your original point spacing is large, you may wish to first interpolate such trajectories along
@@ -564,7 +620,7 @@ is affected by the current spline interpolator, controlled by <a class="referenc
 any departures from straigh line segments you will need to select a linear interpolant.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To show the display of events visible for May 1, 2018 given the catalog of
 large (&gt;5) magnitude earthquakes that year, using a 2-day rise time during
 which we boost symbol size by a factor of 5 and wash out the color, followed
@@ -588,8 +644,9 @@ a <em>dpu</em> of 80 pixels per cm (HD movie) and the projection parameters we w
 or you specify <strong>-Ar</strong>200<strong>i</strong>.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
 <a class="reference internal" href="plot.html"><span class="doc">plot</span></a>,
 <a class="reference internal" href="movie.html"><span class="doc">movie</span></a></p>
 </section>
@@ -606,8 +663,8 @@ or you specify <strong>-Ar</strong>200<strong>i</strong>.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdfill &mdash; GMT 6.3.0 documentation</title>
+  <title>grdfill &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -49,7 +53,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -143,12 +149,12 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdfill">
-<h1>grdfill<a class="headerlink" href="#grdfill" title="Permalink to this headline">¶</a></h1>
+<h1>grdfill<a class="headerlink" href="#grdfill" title="Permalink to this heading">¶</a></h1>
 <p>Interpolate across holes in a grid</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdfill</strong> <em>ingrid</em>
-[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>c</strong>|<strong>n</strong>|<strong>s</strong>[<em>arg</em>] ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>c</strong>|<strong>g</strong>|<strong>n</strong>|<strong>s</strong>[<em>arg</em>] ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em> ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<strong>p</strong>] ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>value</em> ]
@@ -159,16 +165,16 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdfill</strong> reads a grid that presumably has unfilled holes that the user
 wants to fill in some fashion.  Holes are identified by NaN values but
-this criteria can be changed via <strong>-N</strong>.  There are several different algorithms that
-can be used to replace the hole values.  <strong>Note</strong>: One of <strong>-A</strong> or <strong>-L</strong> is required.</p>
+this criteria can be changed via <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>.  There are several different algorithms that
+can be used to replace the hole values.  <strong>Note</strong>: One of <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> or <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> is required,
+and if no holes are found we output the original unchanged grid.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
 <blockquote>
 <div><p>This is the input grid file. Optionally, append =<em>ID</em> for reading a specific file
 format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
@@ -188,18 +194,17 @@ supported:</p>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
-<dt><strong>-A</strong><strong>c</strong>|<strong>n</strong>|<strong>s</strong>[<em>arg</em>]</dt><dd><p>Specify the hole-filling algorithm to use.  Choose among <strong>c</strong> for constant
-fill (and append the constant fill <em>value</em>), <strong>n</strong> for nearest neighbor (and optionally
-append a search <em>radius</em> in pixels [default radius is <span class="math notranslate nohighlight">\(r = \sqrt{X^2 + Y^2}\)</span>,
-where (<em>X,Y</em>) are the node dimensions of the grid]), or
+<dt><strong>-A</strong><strong>c</strong>|<strong>g</strong>|<strong>n</strong>|<strong>s</strong>[<em>arg</em>]</dt><dd><p>Specify the hole-filling algorithm to use.  Choose among <strong>c</strong> for constant
+fill (and append the constant fill <em>value</em>), <strong>g</strong> to sample the (possibly coarser)
+grid <em>arg</em> at the nodes making up the holes, <strong>n</strong> for nearest neighbor (and optionally
+append a search <em>radius</em> in pixels [default radius is <span class="math notranslate nohighlight">\(r = \sqrt{n^2 + m^2}\)</span>,
+where (<em>n,m</em>) are the node dimensions of the grid]), or
 <strong>s</strong> for bicubic spline (optionally append a <em>tension</em> parameter [no tension]).</p>
 </dd>
 </dl>
-<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>]
-[:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
 <div><p>Give the name of the output grid file. Optionally, append =<em>ID</em> for writing a specific file format
 (<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
@@ -217,7 +222,7 @@ is 1].</p></li>
 </ul>
 </div></blockquote>
 <p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
-(unless overridden). To write specific formats via GDAL, use = <em>gd</em>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
 the <a class="reference internal" href="cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
@@ -233,7 +238,7 @@ for more details.</p>
 </dl>
 <dl class="simple" id="l">
 <dt><strong>-L</strong>[<strong>p</strong>]</dt><dd><p>Just list the rectangular subregions west east south north of each hole.
-No grid fill takes place and <strong>-G</strong> is ignored. Optionally, append <strong>p</strong>
+No grid fill takes place and <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> is ignored. Optionally, append <strong>p</strong>
 to instead write closed polygons for all subregions.</p>
 </dd>
 </dl>
@@ -246,7 +251,7 @@ to instead write closed polygons for all subregions.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -258,7 +263,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="geographical-and-time-coordinates">
-<h2>Geographical And Time Coordinates<a class="headerlink" href="#geographical-and-time-coordinates" title="Permalink to this headline">¶</a></h2>
+<h2>Geographical And Time Coordinates<a class="headerlink" href="#geographical-and-time-coordinates" title="Permalink to this heading">¶</a></h2>
 <p>When the output grid type is netCDF, the coordinates will be labeled
 “longitude”, “latitude”, or “time” based on the attributes of the input
 data or grid (if any) or on the <strong>-f</strong> or <strong>-R</strong> options. For example,
@@ -271,7 +276,7 @@ command line. In addition, the <strong>unit</strong> attribute of the time varia
 will indicate both this unit and epoch.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -300,9 +305,13 @@ nearest non-NaN neighbor, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfill data.grd -As0.2 -Gno_NaNs_spline_data.grd
 </pre></div>
 </div>
+<p>To replace all NaN values in the file data.grd by sampling another grid named background.grd, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfill data.grd -Agbackground.grd -Gno_NaNs_sampled_data.grd
+</pre></div>
+</div>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a>,
 <a class="reference internal" href="grdclip.html"><span class="doc">grdclip</span></a>,
@@ -322,8 +331,8 @@ nearest non-NaN neighbor, try:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

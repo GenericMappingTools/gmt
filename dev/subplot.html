@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>subplot &mdash; GMT 6.3.0 documentation</title>
+  <title>subplot &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,14 +148,14 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="subplot">
-<h1>subplot<a class="headerlink" href="#subplot" title="Permalink to this headline">¶</a></h1>
+<h1>subplot<a class="headerlink" href="#subplot" title="Permalink to this heading">¶</a></h1>
 <p>Manage modern mode figure subplot configuration and selection</p>
 <p>The <strong>subplot</strong> module is used to split the current figure into a rectangular layout of subplots
 that each may contain a single self-contained figure.  A subplot setup is started with the <strong>begin</strong>
 directive that defines the layout of the subplots, while positioning to a particular subplot for
 plotting is done via the <strong>set</strong> directive.  The subplot process is completed via the <strong>end</strong> directive.</p>
 <section id="synopsis-begin-mode">
-<h2>Synopsis (begin mode)<a class="headerlink" href="#synopsis-begin-mode" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis (begin mode)<a class="headerlink" href="#synopsis-begin-mode" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt subplot begin</strong> <em>nrows</em><strong>x</strong><em>ncols</em>
 <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>f</strong>|<strong>s</strong>]<em>width</em>/<em>height</em>[<strong>+f</strong><em>wfracs</em>/<em>hfracs</em>][<strong>+af</strong>|<strong>s</strong>][<strong>+c</strong><em>dx/dy</em>][<strong>+g</strong><em>fill</em>][<strong>+p</strong><em>pen</em>][<strong>+w</strong><em>pen</em>]
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>autotag</em> ]
@@ -168,12 +174,12 @@ plotting is done via the <strong>set</strong> directive.  The subplot process is
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>The <strong>begin</strong> directive of subplot defines the layout of the entire multi-panel illustration.  Several
 options are available to specify the systematic layout, labeling, dimensions, and more for the subplots.</p>
 </section>
 <section id="required-arguments-begin-mode">
-<h2>Required Arguments (begin mode)<a class="headerlink" href="#required-arguments-begin-mode" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments (begin mode)<a class="headerlink" href="#required-arguments-begin-mode" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>nrows</em><strong>x</strong><em>ncols</em></dt><dd><p>Specifies the number of rows and columns of subplots.  Each row will have
 the same number of subplots.
@@ -201,7 +207,7 @@ a slash, and then the comma-separated list of heights.  A single number means co
 For example <strong>-Fs</strong>5c,8c/8c will make the first column 5 cm wide and the second column 8 cm wide, with
 all having a constant height of 8 cm. The number of values must either be one (constant across the rows or columns)
 or exactly match the number of rows (or columns). For geographic maps, the height of each subplot depends on
-your map region and projection.  There are two options: (1) Specify both <strong>-R</strong> and <strong>-J</strong> and we use these
+your map region and projection.  There are two options: (1) Specify both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> and we use these
 to compute the height of each subplot.  All subplots must share the same region and projection and you specify
 a zero <em>height</em>, or (2) you can select <em>height</em> based on trial and error to suit your plot layout.</p>
 <p>Optionally, you may draw the outline (<strong>+p</strong><em>pen</em>) or paint (<strong>+g</strong><em>fill</em>) the figure rectangle behind the
@@ -213,7 +219,7 @@ Append <strong>+as</strong> to instead determine the scaling from the geometric 
 </dl>
 </section>
 <section id="optional-arguments-begin-mode">
-<h2>Optional Arguments (begin mode)<a class="headerlink" href="#optional-arguments-begin-mode" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments (begin mode)<a class="headerlink" href="#optional-arguments-begin-mode" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong>[<em>autotag</em>][<strong>+c</strong><em>dx</em>[/<em>dy</em>]][<strong>+g</strong><em>fill</em>][<strong>+j</strong>|<strong>J</strong><em>refpoint</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+p</strong><em>pen</em>][<strong>+r</strong>|<strong>R</strong>][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>][/<em>shade</em>]]][<strong>+v</strong>]</dt><dd><p>Specify automatic tagging of each subplot.  Append either a number or letter [a].
 This sets the tag of the first, top-left subplot and others follow sequentially.
@@ -246,17 +252,18 @@ side, using <em>side</em> values from <strong>w</strong>, <strong>e</strong>, <s
 or <strong>y</strong> for both <strong>s</strong> and <strong>n</strong>.  No <em>side</em> means all sides. The option is repeatable to set aside space
 on more than one side.  Such space will be left untouched by the main map plotting but can
 be accessed by modules that plot scales, bars, text, etc.  Settings specified under <strong>begin</strong> directive apply
-to all subplots, while settings under <strong>set</strong> only apply to the selected (active) subplot.  <strong>Note</strong>: Common options <strong>-X</strong>
-and <strong>-Y</strong> are not available during subplots; use <strong>-C</strong> instead.</p>
+to all subplots, while settings under <strong>set</strong> only apply to the selected (active) subplot.  <strong>Note</strong>: Common options <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong>
+and <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong> are not available during subplots; use <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> instead.  Also note that <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> does not affect
+the positioning of panel tags via <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="d">
 <dt><strong>-D</strong></dt><dd><p>Use the prevailing defaults settings (via gmt.conf or <strong>--PAR</strong>=<em>value</em>) and the selections made
-via <strong>-B</strong>, <strong>-C</strong>, <strong>-M</strong> and <strong>-S</strong> to determine the panel sizes (if using <strong>-Ff</strong>) and panel spacings only, but
+via <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>, <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>, <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> and <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> to determine the panel sizes (if using <strong>-Ff</strong>) and panel spacings only, but
 do <em>not</em> draw and annotate any frames.  This option is useful if you wish to lay down a partial subplot
 with annotations and frames, but then want to plot data inside it separately later without redrawing
-the frames.  With different <strong>-B</strong>, <strong>-C</strong>, <strong>-M</strong> and <strong>-S</strong> choices the two subplots may not align, but with
-<strong>-D</strong> they will.  <strong>Note</strong>: It is assumed that <strong>-F</strong> stays the same [Draw and annotate frames as indicated].</p>
+the frames.  With different <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>, <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>, <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> and <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> choices the two subplots may not align, but with
+<a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> they will.  <strong>Note</strong>: It is assumed that <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> stays the same [Draw and annotate frames as indicated].</p>
 </dd>
 </dl>
 <dl class="simple" id="j">
@@ -287,19 +294,19 @@ Considerations for <strong>-Sc</strong>: Use when all subplots in a <strong>c</s
 Append <strong>+l</strong> if annotated <em>x</em>-axes should have a label [none]; optionally append the label if it is the same
 for the entire subplot. Optionally, use <strong>+s</strong> to set a separate (secondary) label.
 Append <strong>+t</strong> to make space for subplot titles for each row; use <strong>+tc</strong> for top row titles only [no subplot titles].
-Labels and titles that depends on which row or column are specified as usual via a subplot’s own <strong>-B</strong> setting.
+Labels and titles that depends on which row or column are specified as usual via a subplot’s own <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong> setting.
 Considerations for <strong>-Sr</strong>: Use when all subplots in a <strong>r</strong>ow share a common <em>y</em>-range. The first (i.e., <strong>l</strong>eft) and the last
 (i.e., <strong>r</strong>ight) columns will have <em>y</em>-annotations; append <strong>l</strong> or <strong>r</strong> to select only one of those two columns [both].
 Append <strong>+l</strong> if annotated <em>y</em>-axes will have a label [none]; optionally, append the label if it is the same
 for the entire subplot. Optionally, use <strong>+s</strong> to set a separate (secondary) label.
-Append <strong>+p</strong> to make all annotations axis-parallel [horizontal]; if not used you may have to set <strong>-C</strong> to secure
+Append <strong>+p</strong> to make all annotations axis-parallel [horizontal]; if not used you may have to set <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> to secure
 extra space for long horizontal annotations.
-Append <strong>+w</strong> to the <strong>-F</strong> argument to draw horizontal and vertical lines
+Append <strong>+w</strong> to the <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> argument to draw horizontal and vertical lines
 between interior panels using selected pen [no lines].</p>
 </dd>
 </dl>
 <dl class="simple" id="t">
-<dt><strong>-T</strong><em>heading</em></dt><dd><p>While individual subplots can have titles (see <strong>-S</strong> or <strong>-B</strong>), the entire figure may also have a
+<dt><strong>-T</strong><em>heading</em></dt><dd><p>While individual subplots can have titles (see <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> or <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>), the entire figure may also have a
 overarching <em>heading</em> [no heading]. Font is determined by setting <a class="reference internal" href="gmt.conf.html#term-FONT_HEADING"><span class="xref std std-term">FONT_HEADING</span></a>.</p>
 </dd>
 </dl>
@@ -316,7 +323,7 @@ overarching <em>heading</em> [no heading]. Font is determined by setting <a clas
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -328,29 +335,30 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="synopsis-set-mode">
-<h2>Synopsis (set mode)<a class="headerlink" href="#synopsis-set-mode" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis (set mode)<a class="headerlink" href="#synopsis-set-mode" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt subplot set</strong> [ <em>row,col</em>|<em>index</em> ] [ <strong>-A</strong><em>fixedtag</em>] [ <strong>-C</strong><em>side</em><em>clearance</em> ] [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
 <p>Before you start plotting you must first select the active subplot.
-<strong>Note</strong>: If any <strong>-J</strong> option is passed <em>without</em> the scale or width when you first are plotting
+<strong>Note</strong>: If any <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> option is passed <em>without</em> the scale or width when you first are plotting
 inside the subplot, then the scale of the map is automatically determined by the subplot size and your region.
 For Cartesian plots: If you want the scale to apply <em>equally</em> to both dimensions
 then you must specify <strong>-Jx</strong> [The default projection of <strong>-JX</strong> will fill the subplot by using unequal scales].</p>
 </section>
 <section id="optional-arguments-set-mode">
-<h2>Optional Arguments (set mode)<a class="headerlink" href="#optional-arguments-set-mode" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments (set mode)<a class="headerlink" href="#optional-arguments-set-mode" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>row,col</em></dt><dd><p>Sets the current subplot until further notice.  <strong>Note</strong>: First <em>row</em> or <em>col</em> is 0, not 1. If not given we go to the next subplot by order
-specified via <strong>-A</strong>.  As an alternative, you may bypass the <strong>set</strong> mode and
+specified via <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>.  As an alternative, you may bypass the <strong>set</strong> mode and
 instead supply the common option <strong>-c</strong>[<em>row,col</em>] to the first plot command you issue in that subplot.
 GMT maintains information about the current figure and subplot. Also, you may give the one-dimensional
-<em>index</em> instead which starts at 0 and follows the row or column order set via <strong>-A</strong>.</p>
+<em>index</em> instead which starts at 0 and follows the row or column order set via <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="subplot-set-a">
 <dt><strong>-A</strong><em>fixedtag</em></dt><dd><p>Overrides the automatic labeling with the given string.  No modifiers are allowed.
-Placement, justification, etc. are all inherited from how <strong>-A</strong> was specified by the
+Placement, justification, etc. are all inherited from how <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> was specified by the
 initial <strong>subplot begin</strong> command.  <strong>Note</strong>: Overriding means you initiate the tag
-machinery with <strong>-A</strong> when <strong>subplot begin</strong> was called, otherwise the option is ignored.</p>
+machinery with <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> when <strong>subplot begin</strong> was called, otherwise the option is ignored.
+To <em>not</em> set any tag for this panel, use <strong>-A-</strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="subplot-set-c2">
@@ -359,7 +367,7 @@ side, using <em>side</em> values from <strong>w</strong>, <strong>e</strong>, <s
 or <strong>y</strong> for both <strong>s</strong> and <strong>n</strong>.  The option is repeatable to set aside space
 on more than one side.  Such space will be left untouched by the main map plotting but can
 be accessed by modules that plot scales, bars, text, etc.  This setting overrides the common
-clearances set by <strong>-C</strong> during <strong>subplot begin</strong>.</p>
+clearances set by <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> during <strong>subplot begin</strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="subplot-set-v">
@@ -370,13 +378,13 @@ clearances set by <strong>-C</strong> during <strong>subplot begin</strong>.</p>
 selected subplot.  There are a few other rules that need to be followed:
 (1) The subplot machinery expects the first plotting command in a new subplot window
 to take care of plotting the base frame.  The particulars of this frame may have been
-specified by the <strong>-S</strong> option in <strong>subplot begin</strong>.  In either case, should you need to set or override
-frame and axis parameters then you must specify these <strong>-B</strong> options with this first plot
-command.  (2) The subplot machinery automatically uses the <strong>-X</strong> and <strong>-Y</strong> options under
+specified by the <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> option in <strong>subplot begin</strong>.  In either case, should you need to set or override
+frame and axis parameters then you must specify these <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong> options with this first plot
+command.  (2) The subplot machinery automatically uses the <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong> and <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong> options under
 the hood so these options are not available while a subplot is active.</p>
 </section>
 <section id="synopsis-end-mode">
-<h2>Synopsis (end mode)<a class="headerlink" href="#synopsis-end-mode" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis (end mode)<a class="headerlink" href="#synopsis-end-mode" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt subplot end</strong> [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
 <p>This command finalizes the current subplot, including any placement of tags, and updates the
 gmt.history to reflect the dimensions and linear projection required to draw the entire figure
@@ -385,14 +393,14 @@ reference to the complete figure dimensions. We also reset
 the current plot location to where it was prior to the subplot.</p>
 </section>
 <section id="optional-arguments-end-mode">
-<h2>Optional Arguments (end mode)<a class="headerlink" href="#optional-arguments-end-mode" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments (end mode)<a class="headerlink" href="#optional-arguments-end-mode" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="subplot-end-v">
 <dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To make a minimalistic 2x2 basemap layout called panels.pdf, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin panels pdf
   gmt subplot begin 2x2 -Fs8c -M5p -A -Scb -Srl -R0/80/0/10
@@ -410,7 +418,7 @@ gmt end show
 </div>
 </section>
 <section id="restrictions">
-<h2>Restrictions<a class="headerlink" href="#restrictions" title="Permalink to this headline">¶</a></h2>
+<h2>Restrictions<a class="headerlink" href="#restrictions" title="Permalink to this heading">¶</a></h2>
 <ol class="arabic simple">
 <li><p>Currently, nesting of subplots is not implemented.</p></li>
 <li><p>If auto-legend option <strong>-l</strong> is used then you must complete plotting in one panel
@@ -420,7 +428,7 @@ not yet been implemented.</p></li>
 </ol>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="begin.html"><span class="doc">begin</span></a>,
 <a class="reference internal" href="clear.html"><span class="doc">clear</span></a>,
 <a class="reference internal" href="docs.html"><span class="doc">docs</span></a>,
@@ -442,8 +450,8 @@ not yet been implemented.</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

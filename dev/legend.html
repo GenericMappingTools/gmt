@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>legend &mdash; GMT 6.3.0 documentation</title>
+  <title>legend &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,17 +148,17 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="legend">
-<h1>legend<a class="headerlink" href="#legend" title="Permalink to this headline">¶</a></h1>
+<h1>legend<a class="headerlink" href="#legend" title="Permalink to this heading">¶</a></h1>
 <p>Plot a legend</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt legend</strong> [ <em>specfile</em> ]
 <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>refpoint</em>
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>dx</em>/<em>dy</em> ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>box</em> ]
 [ <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em> ]
-[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<em>items</em>] ]
 [ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>scale</em> ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em> ]
@@ -166,9 +172,9 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>Makes legends that can be overlaid on maps. It reads
-specific legend-related information from an input file [or stdin].
+specific legend-related information from an input file [or standard input].
 Unless otherwise noted, annotations will be made using the primary
 annotation font and size in effect (i.e., <a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a>)</p>
 <figure class="align-center" id="id1">
@@ -179,7 +185,7 @@ annotation font and size in effect (i.e., <a class="reference internal" href="gm
 </figure>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl id="d">
 <dt><strong>-D</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[/<em>height</em>][<strong>+j</strong><em>justify</em>][<strong>+l</strong><em>spacing</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Defines the reference point on the map for the legend using one of four coordinate systems:</p>
 <ol class="arabic simple">
@@ -192,10 +198,12 @@ both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a
 <li><p>Append <strong>x</strong><em>x</em>/<em>y</em> for <a class="reference internal" href="cookbook/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or
 <strong>p</strong>point).</p></li>
 </ol>
-<p>Append <strong>+w</strong><em>width</em>[/<em>height</em>] to set
-the width (and height) of the legend box in plot coordinates (inches, cm, etc.).
-If <em>height</em> is zero or not given then we estimate <em>height</em> based the expected
-vertical extent of the items to be placed.
+<p>Append <strong>+w</strong><em>width</em>[/<em>height</em>] to set the width (and height) of the legend box
+in plot coordinates (inches, cm, etc.). <strong>Note</strong>: If <strong>+w</strong> is not given then we compute
+the width within the <em>Postscript</em> code.  Currently, this is only possible if just
+legend codes <strong>D</strong>, <strong>H</strong>, <strong>L</strong>, <strong>S</strong>, or <strong>V</strong> are used and that the number of symbol
+columns (<strong>N</strong>) is 1. If <em>height</em> is zero or not given then we estimate <em>height</em> based
+the expected vertical extent of the items to be placed.
 By default, the anchor point on the legend is assumed to be the bottom left corner (BL), but this
 can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em> (see <a class="reference internal" href="text.html"><span class="doc">text</span></a>).
 <strong>Note</strong>: If <strong>-Dj</strong> is used then <em>justify</em> defaults to the same as <em>refpoint</em>,
@@ -206,7 +214,17 @@ font size [1.1].</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>specfile</em></dt><dd><p>This ASCII file contains instructions for the layout of items in the
+legend. Each legend item is described by a unique record. All
+records begin with a unique character that is common to all records
+of the same kind. The order of the legend items is implied by the
+order of the records.  See <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> for mixing legend items set by a
+<em>specfile</em> and those set implicitly via <strong>-l</strong> by previous modules
+under modern mode.</p>
+</dd>
+</dl>
 <dl class="simple" id="b">
 <dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
@@ -235,6 +253,7 @@ individual <a class="reference internal" href="cookbook/features.html#plt-units"
 <a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">shift</span></a> relative to the foreground frame [default is <strong>4p</strong>/<strong>-4p</strong>] and <em>shade</em> sets the
 <a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> style to use for shading [default is <strong>gray50</strong>].</p></li>
 </ul>
+<p><strong>Note</strong>: If legend <em>width</em> is not set via <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> then modifier <strong>+r</strong> in <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> is disabled.</p>
 </div></blockquote>
 <dl class="simple" id="j">
 <dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
@@ -242,10 +261,13 @@ individual <a class="reference internal" href="cookbook/features.html#plt-units"
 </dd>
 </dl>
 <dl class="simple" id="m">
-<dt><strong>-M</strong></dt><dd><p>Modern mode only: Read both (1) the hidden auto-generated legend information file created by
-plotting-modules’ <strong>-l</strong> option and (2) additional information from input file(s) given on the
-command line (or via <em>stdin</em>) [hidden file only].  For classic mode an input file must be
-given or else we will read from <em>stdin</em>.</p>
+<dt><strong>-M</strong>[<em>items</em>]</dt><dd><p>Modern mode only and pertains the the situation where there are <strong>h</strong>idden, auto-generated legend
+information created by prior plotting-modules’ <strong>-l</strong> option and <strong>e</strong>xplicitly given information
+from input file(s) given on the command line (or via standard input).  Use <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> to set which of
+these should be used and in what order via directives <strong>h</strong> and <strong>e</strong> [Default is <strong>he</strong>, meaning
+we will first place any hidden auto-generated legend items (if any) and then we append the explicitly
+given information (if present).  <strong>Note</strong>: For classic mode an input file must be given or else we
+will attempt read from standard input.</p>
 </dd>
 </dl>
 <dl class="simple" id="r">
@@ -281,7 +303,7 @@ given or else we will read from <em>stdin</em>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
+<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -289,7 +311,7 @@ given or else we will read from <em>stdin</em>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -301,15 +323,10 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="legend-codes">
-<h2>Legend Codes<a class="headerlink" href="#legend-codes" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt><em>specfile</em></dt><dd><p>This ASCII file contains instructions for the layout of items in the
-legend. Each legend item is described by a unique record. All
-records begin with a unique character that is common to all records
-of the same kind. The order of the legend items is implied by the
-order of the records. Fourteen different record types are recognized, and
+<h2>Legend Codes<a class="headerlink" href="#legend-codes" title="Permalink to this heading">¶</a></h2>
+<p>Fourteen different record types are recognized, and
 the syntax for each of these records are presented below:</p>
-</dd>
+<dl class="simple">
 <dt><strong>#</strong> <em>comment</em></dt><dd><p>Records starting with # and blank lines are skipped.</p>
 </dd>
 <dt><strong>A</strong> <em>cptname</em></dt><dd><p>Symbol or cell color fills may be given indirectly via a <em>z</em>-value
@@ -322,7 +339,7 @@ given <em>height</em>. You may add any additional <a class="reference internal" 
 Any of the modifiers
 [<strong>+e</strong>[<strong>b</strong>|<strong>f</strong>][<em>length</em>]][<strong>+h</strong>][<strong>+m</strong>[<strong>a</strong>|<strong>c</strong>|<strong>l</strong>|<strong>u</strong>]][<strong>+n</strong>[<em>txt</em>]] may be
 appended to the <em>height</em> argument, while other module options
-<strong>-B</strong> <strong>-I</strong> <strong>-L</strong> <strong>-M</strong> <strong>-N</strong> <strong>-S</strong> <strong>-Z</strong> and <strong>-p</strong> may be appended as
+<a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong> <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> and <strong>-p</strong> may be appended as
 <em>optional arguments</em> at the end of the record.
 See <a class="reference internal" href="colorbar.html"><span class="doc">colorbar</span></a> for details on all modifiers and options.</p>
 </dd>
@@ -379,12 +396,12 @@ alignment with <strong>+a</strong><em>align</em> (choose among <strong>l</strong
 <strong>r</strong>(ight), <strong>t</strong>(op) , and <strong>b</strong>(ottom)).
 Apply <strong>+u</strong> to append the unit to all distance annotations along
 the scale. If you want to place a map panel behind the scale,
-add a suitable <strong>-F</strong> panel option (see <a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a> for details
+add a suitable <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> panel option (see <a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a> for details
 on panels as well as map scale modifiers).
 All <strong>+</strong><em>modifiers</em> must be appended to <em>length</em> to make a single
-string argument.  If the <strong>-R</strong> <strong>-J</strong> supplied to the module is
+string argument.  If the <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> supplied to the module is
 different than the projection needed for the scale (or not given at
-all, e.g., with <strong>-Dx</strong>), supply the two optional <strong>-R</strong> <strong>-J</strong> settings
+all, e.g., with <strong>-Dx</strong>), supply the two optional <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> settings
 as well.</p>
 </dd>
 <dt><strong>N</strong> [<em>ncolumns</em> or <em>relwidth1 relwidth2 … relwidthn</em>]</dt><dd><p>Change the number of columns in the legend [1]. This only affects
@@ -392,11 +409,11 @@ the printing of symbols (<strong>S</strong>) and labels (<strong>L</strong>). Th
 columns stay in effect until <strong>N</strong> is used again.  To get columns
 of unequal width, instead provide the relative width of each column
 separated by whitespace.  The sum of these widths are equated to the
-legend width set via <strong>-D</strong>.  If no argument is given the we set
+legend width set via <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>.  If no argument is given the we set
 <em>n_columns</em> to 1.</p>
 </dd>
 <dt><strong>P</strong> <em>paragraph-mode-header-for-text</em></dt><dd><p>Start a new text paragraph by specifying all the parameters needed
-(see <a class="reference internal" href="text.html"><span class="doc">text</span></a> <strong>-M</strong> record description). Note that the module knows
+(see <a class="reference internal" href="text.html"><span class="doc">text</span></a> <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> record description). Note that the module knows
 what all those values should be, so normally you can leave the
 entire record (after P) blank or leave it out all together. If you
 need to set at least one of the parameters directly, you must
@@ -408,9 +425,9 @@ value to <strong>-</strong>.</p>
 of the column, with the optional explanatory <em>text</em> starting <em>dx2</em>
 from the margin, printed with <a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a>. If <em>dx1</em> is given
 as <strong>-</strong> then it is automatically computed from half the largest symbol size.
-If <em>dx2</em> is given as <strong>-</strong> then it is automatically computed as 1.5
-times the largest symbol size.  Use <strong>-</strong> if
-no <em>fill</em> or outline (<em>pen</em>) is required. Alternatively, the <em>fill</em>
+If <em>dx2</em> is given as <strong>-</strong> then it is automatically computed as the largest
+symbol size plus one character width at the current annotation font size.
+Use <strong>-</strong> if no <em>fill</em> or outline (<em>pen</em>) is required. Alternatively, the <em>fill</em>
 may be specified indirectly via z=<em>value</em> and the color is assigned
 via the CPT look-up (requires a prior <strong>A</strong> code).  When plotting just a
 symbol, without text, <em>dx2</em> and <em>text</em> can be omitted.  The <em>dx1</em> value
@@ -426,9 +443,9 @@ ellipse, wedge, mathangle) may take more than a single argument size.
 Note that for a line segment you should use the horizontal dash symbol (<strong>-</strong>).
 If just a single size if given then we will provide reasonable
 arguments to plot the symbol  (See <a class="reference internal" href="#defaults">Defaults</a>).
-Alternatively, combine the required
-arguments into a single, comma-separated string and use that as the
-symbol size (again, see <a class="reference internal" href="plot.html"><span class="doc">plot</span></a> for details on the arguments needed).</p>
+Alternatively, combine the required arguments into a single, comma-separated
+string and use that as the symbol size (again, see <a class="reference internal" href="plot.html"><span class="doc">plot</span></a> for details on
+the arguments needed).</p>
 </dd>
 <dt><strong>T</strong> <em>paragraph-text</em></dt><dd><p>One or more of these <strong>T</strong> records with <em>paragraph-text</em> printed
 with <a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a>. To specify special positioning and
@@ -447,11 +464,13 @@ If no horizontal line is desired simply give - as <em>pen</em> to <strong>D</str
 </dl>
 </section>
 <section id="defaults">
-<h2>Defaults<a class="headerlink" href="#defaults" title="Permalink to this headline">¶</a></h2>
+<h2>Defaults<a class="headerlink" href="#defaults" title="Permalink to this heading">¶</a></h2>
 <p>When attributes are not provided, or extended symbol information (for symbols taking more than just an overall size) are
 not given as comma-separated quantities, we will provide the following defaults:</p>
+<p>Geographic symbols: If <em>size</em> is given as <strong>-</strong> then we default to the character height at the current annotation font size.</p>
+<p>Line/vector: If <em>size</em> is given as <strong>-</strong> then we default to a length of 2.5 times the character width at the current annotation font size.</p>
 <p>Front: The <em>size</em> argument is <em>length</em>[/<em>gap</em>[<em>ticklength</em>]]. Front symbol is left-side (here, that means upper side) box,
-with <em>ticklength</em> set 30% of the given symbol <em>length (if not specified separately), and *gap</em> defaulting to -1 (one
+with <em>ticklength</em> set 30% of the given symbol <em>length</em> (if not specified separately), and <em>gap</em> defaulting to -1 (one
 entered front symbol) if not specified.  Modifiers to the symbol argument can be provided.</p>
 <p>Vector: Head size is 30% of given symbol size.</p>
 <p>Ellipse: Minor axis is 65% of major axis (the symbol size), with an azimuth of 0 degrees.</p>
@@ -462,17 +481,17 @@ entered front symbol) if not specified.  Modifiers to the symbol argument can be
 <p>Wedge: Angles are -30 and 30 degrees.</p>
 </section>
 <section id="note-on-legend-height">
-<h2>Note On Legend Height<a class="headerlink" href="#note-on-legend-height" title="Permalink to this headline">¶</a></h2>
-<p>As <strong>-D</strong> suggests, leaving the <em>height</em> off forces a calculation of the
+<h2>Note On Legend Height<a class="headerlink" href="#note-on-legend-height" title="Permalink to this heading">¶</a></h2>
+<p>As <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> suggests, leaving the <em>height</em> off forces a calculation of the
 expected height. This is an exact calculation except in the case of
 legends that place paragraph text. Here we simply do a first-order
 estimate of how many typeset lines might appear. Without access to font
 metrics this estimate will occasionally be off by 1 line. If so, note
-the reported height (with <strong>-V</strong>) and specify a slightly larger or
-smaller height in <strong>-D</strong>.</p>
+the reported height (with <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>) and specify a slightly larger or
+smaller height in <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>.</p>
 </section>
 <section id="windows-remarks">
-<h2>Windows Remarks<a class="headerlink" href="#windows-remarks" title="Permalink to this headline">¶</a></h2>
+<h2>Windows Remarks<a class="headerlink" href="#windows-remarks" title="Permalink to this heading">¶</a></h2>
 <p>Note that under Windows, the percent sign (%) is a variable indicator
 (like $ under Unix). To indicate a plain percentage sign in a batch
 script you need to repeat it (%%); hence the font switching mechanism
@@ -482,7 +501,7 @@ by DOS. Data files that are opened and read by the module do not need
 such duplication.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -534,22 +553,22 @@ gmt end show
 </div>
 </section>
 <section id="auto-legends">
-<h2>Auto-legends<a class="headerlink" href="#auto-legends" title="Permalink to this headline">¶</a></h2>
+<h2>Auto-legends<a class="headerlink" href="#auto-legends" title="Permalink to this heading">¶</a></h2>
 <p>In modern mode, some modules can access the <strong>-l</strong> option and build the legend
 <em>specfile</em> from individual entries for each command.  The <strong>-l</strong> option takes an optional
 label and allows optional modifiers <strong>+d</strong>, <strong>+g</strong>, <strong>+n</strong>, <strong>+h</strong>, <strong>+j</strong>, <strong>+l</strong>, and <strong>+v</strong>
 that follow the corresponding uppercase legend codes discussed above.  In addition,
 there is <strong>+f</strong> to set header (H) or label (L) font,  <strong>+s</strong> to set the symbol size (or line length)
-to use for the current entry, and <strong>+x</strong> to scale all symbols uniformly (see <strong>-S</strong> above).
+to use for the current entry, and <strong>+x</strong> to scale all symbols uniformly (see <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> above).
 Some defaults are hardwired: We draw a white rectangular panel with
 a 1 point black outline offset from the justification point (<strong>+j</strong>) by 0.2 cm.  To use
 different settings you must call <strong>legend</strong> explicitly before <a class="reference internal" href="end.html"><span class="doc">end</span></a> does so
-implicitly instead.  <strong>Note</strong>: With an explicit call to <strong>legend</strong> you can also use <strong>-T</strong> to
+implicitly instead.  <strong>Note</strong>: With an explicit call to <strong>legend</strong> you can also use <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> to
 save the auto-generate <em>specfile</em>, make modification to it, and then pass that to <strong>legend</strong>
 directly.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
 <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>, <a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a>
 <a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a>, <a class="reference internal" href="text.html"><span class="doc">text</span></a>,
@@ -568,8 +587,8 @@ directly.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

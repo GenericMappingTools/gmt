@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>(33) Stacking automatically generated cross-profiles &mdash; GMT 6.3.0 documentation</title>
+  <title>(33) Stacking automatically generated cross-profiles &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,11 +22,16 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -48,7 +53,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -130,7 +137,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+          <li><a href="../gallery.html">Illustration Gallery</a> &raquo;</li>
       <li>(33) Stacking automatically generated cross-profiles</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex33.rst" class="fa fa-github"> Edit on GitHub</a>
@@ -142,14 +149,14 @@
            <div itemprop="articleBody">
              
   <section id="stacking-automatically-generated-cross-profiles">
-<span id="example-33"></span><h1>(33) Stacking automatically generated cross-profiles<a class="headerlink" href="#stacking-automatically-generated-cross-profiles" title="Permalink to this headline">¶</a></h1>
+<span id="example-33"></span><h1>(33) Stacking automatically generated cross-profiles<a class="headerlink" href="#stacking-automatically-generated-cross-profiles" title="Permalink to this heading">¶</a></h1>
 <p>The script produces the plot in Figure. Here
 we demonstrate how <a class="reference internal" href="../grdtrack.html"><span class="doc">grdtrack</span></a> can be
 used to automatically create a suite of crossing profiles of uniform
 spacing and length and then sample one or more grids along these
 profiles; we also use the median stacking option to create a stacked
 profile, showed above the map, with the gray area representing the
-variations about the stacked median profile.</p>
+<span class="math notranslate nohighlight">\(2\sigma\)</span> confidence bounds on the stacked median profile.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
 <span class="c1">#               GMT EXAMPLE 33</span>
 <span class="c1">#</span>
@@ -174,14 +181,12 @@ gmt begin ex33
 	<span class="c1"># and stack these using the median, write stacked profile</span>
 	gmt grdtrack ridge.txt -Gspac_33.nc -C400k/2k/10k+v -Sm+sstack.txt &gt; table.txt
 	gmt plot -W0.5p table.txt
-	<span class="c1"># Show upper/lower values encountered as an envelope</span>
-	gmt convert stack.txt -o0,5 &gt; env.txt
-	gmt convert stack.txt -o0,6 -I -T &gt;&gt; env.txt
-	gmt plot -R-200/200/-3500/-2000 -JX15c/7.5c -Glightgray env.txt -Yh+3c
-	gmt plot -W3p stack.txt -Bxafg1000+l<span class="s2">&quot;Distance from ridge (km)&quot;</span> -Byaf+l<span class="s2">&quot;Depth (m)&quot;</span> -BWSne
+	<span class="c1"># Show upper/lower 2-sigma confidence bounds encountered as an envelope</span>
+	gmt plot -R-200/200/-3500/-2000 -JX15c/7.5c -W3p stack.txt -i0,1,5,6 -L+b -Glightgray -Yh+3c
+	gmt basemap  -Bxafg1000+l<span class="s2">&quot;Distance from ridge (km)&quot;</span> -Byaf+l<span class="s2">&quot;Depth (m)&quot;</span> -BWSne
 	<span class="nb">echo</span> <span class="s2">&quot;0 -2000 MEDIAN STACKED PROFILE&quot;</span> <span class="p">|</span> gmt text -Gwhite -F+jTC+f14p -Dj8p
 	<span class="c1"># cleanup</span>
-	rm -f ridge.txt table.txt env.txt stack.txt spac_33.nc
+	rm -f ridge.txt table.txt stack.txt spac_33.nc
 gmt end show
 </pre></div>
 </div>
@@ -204,8 +209,8 @@ gmt end show
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

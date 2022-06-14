@@ -178,7 +178,7 @@ technical comments on the binary data files are given.
 **GSHHG**: These files contain completely closed polygons of continents
 and islands (level 1), lakes (level 2), islands-in-lakes (level 3) and
 ponds-in-islands-in-lakes (level 4); a particular level can be extracted
-using the **-N** option. Continents are identified as the first 6
+using the |-N| option. Continents are identified as the first 6
 polygons and can be extracted via the **-Ic** option. The IDs for the
 continents are Eurasia (0), Africa (1), North America
 (2), South America (3), Antarctica (4), and Australia
@@ -186,7 +186,7 @@ continents are Eurasia (0), Africa (1), North America
 There are two sub-groups for level 2: Regular lakes and the so-called
 "river-lakes", the latter being sections of a river that are so wide to
 warrant a polygon representation. These river-lakes are flagged in the
-header (also see **-Q**). All five resolutions are free of
+header (also see |-Q|). All five resolutions are free of
 self-intersections. Areas of all features have been computed using a
 Lambert azimuthal equal-area projection centered on the polygon
 centroids, using WGS-84 as the ellipsoid. GMT use the GSHHG as a
@@ -214,7 +214,7 @@ major rivers (1), Additional major rivers
 three levels: National boundaries (1), Internal
 domestic boundaries (2), and international
 maritime boundaries (3). Individual levels or
-classes may be extracted via **-N**.
+classes may be extracted via |-N|.
 
 References
 ----------
@@ -231,7 +231,7 @@ Hydrograph. Rev., LXVII(1)*, 27–35.
 
 Wessel, P., and W. H. F. Smith, 1996, A global, self-consistent,
 hierarchical, high-resolution shoreline database, *J. Geophys. Res.,
-101(B4)*, 8741–8743.
+101(B4)*, 8741–8743, https://doi.org/10.1029/96JB00104.
 
 See Also
 --------

@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Session Four &mdash; GMT 6.3.0 documentation</title>
+  <title>Session Four &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,15 +22,19 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Modules" href="../modules.html" />
+    <link rel="next" title="Tutorial in Julia" href="../tutorial_jl.html" />
     <link rel="prev" title="Session Three" href="session-3.html" />
 
 
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,9 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="session-1.html">Session One</a></li>
 <li class="toctree-l2"><a class="reference internal" href="session-2.html">Session Two</a></li>
@@ -82,6 +86,8 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -148,7 +154,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../tutorial.html">Tutorial</a> &raquo;</li>
+          <li><a href="../tutorial.html">Tutorial in Bash</a> &raquo;</li>
       <li>Session Four</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/tutorial/session-4.rst" class="fa fa-github"> Edit on GitHub</a>
@@ -160,7 +166,7 @@
            <div itemprop="articleBody">
              
   <section id="session-four">
-<h1>Session Four<a class="headerlink" href="#session-four" title="Permalink to this headline">¶</a></h1>
+<h1>Session Four<a class="headerlink" href="#session-four" title="Permalink to this heading">¶</a></h1>
 <p>In our final session we will concentrate on color images and
 perspective views of gridded data sets.  Before we start that
 discussion we need to cover three important aspects of plotting
@@ -171,7 +177,7 @@ that must be understood.  These are</p>
 <li><p>Multi-dimensional grids.</p></li>
 </ol>
 <section id="cpts">
-<h2>CPTs<a class="headerlink" href="#cpts" title="Permalink to this headline">¶</a></h2>
+<h2>CPTs<a class="headerlink" href="#cpts" title="Permalink to this heading">¶</a></h2>
 <p>The CPT is discussed in detail in the GMT Technical Reference
 and Cookbook.  Please review the format before experimenting
 further.</p>
@@ -190,10 +196,6 @@ Its main argument is the name of the master color table (a list is
 shown if you run the module with no arguments) and the equidistant
 <em>z</em>-values to go with it.  The main options are given below.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 13%" />
-<col style="width: 87%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Purpose</p></th>
@@ -231,15 +233,11 @@ In addition, the <strong>-B</strong> option can be used to set the title
 and unit label (and optionally to set the annotation-, tick-,
 and grid-line intervals for the color bars.).  Note that the makecpt commands
 above are done in classic mode.  If you run <a class="reference internal" href="../makecpt.html"><span class="doc">makecpt</span></a> in modern mode
-then you usually do not specify an output file via stdout since
+then you usually do not specify an output file via standard output since
 modern mode maintains what is known as the current CPT.  However,
 if you must explicitly name an output CPT then you will need to
-add the -H option for modern mode to allow output to stdout.</p>
+add the <strong>-H</strong> option for modern mode to allow output to standard output.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 40%" />
-<col style="width: 60%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Purpose</p></th>
@@ -285,7 +283,7 @@ gmt end show
 </ol>
 </section>
 <section id="illumination-and-intensities">
-<h2>Illumination and intensities<a class="headerlink" href="#illumination-and-intensities" title="Permalink to this headline">¶</a></h2>
+<h2>Illumination and intensities<a class="headerlink" href="#illumination-and-intensities" title="Permalink to this heading">¶</a></h2>
 <p>GMT allows for artificial illumination and shading.  What this
 means is that we imagine an artificial sun placed at infinity in
 some azimuth and elevation position illuminating our surface.
@@ -328,7 +326,7 @@ GMT shading operations involve translating from RGB to HSV, do the
 illumination effect, and transform back the modified RGB values.</p>
 </section>
 <section id="color-images">
-<h2>Color images<a class="headerlink" href="#color-images" title="Permalink to this headline">¶</a></h2>
+<h2>Color images<a class="headerlink" href="#color-images" title="Permalink to this heading">¶</a></h2>
 <p>Once a CPT has been made it is relatively straightforward to generate
 a color image of a gridded data.  Here, we will extract a subset of the
 global 30” DEM called SRTM30+:</p>
@@ -343,10 +341,6 @@ about 4300m so we need to make a CPT with that range.</p>
 common command options (by default the <strong>-R</strong> is taken from the data set)
 and a CPT; the main other options are:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 22%" />
-<col style="width: 78%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Purpose</p></th>
@@ -389,10 +383,6 @@ topography in the N90°E direction using <a class="reference internal" href="../
 required input and output filenames, the available options are</p>
 <blockquote>
 <div><table class="docutils align-default">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p>Option
 <strong>-A</strong><em>azimuth</em></p></td>
@@ -438,14 +428,16 @@ we prefer to use the <strong>-Ne</strong> option; the value of
 </pre></div>
 </div>
 </div></blockquote>
-<p>Given the CPT and the two gridded data sets we can
+<p>However, for most maps relying on the remote data sets we do not actually
+need to extract subsets and run <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a> manually.  Instead, we let <a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a>
+create the gradients directly from the subset of the global grid, passing the
+arguments to <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a> via the <strong>-I</strong> option of <a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a>.
+Given the previous CPT and our chosen <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a> arguments we can
 create the shaded relief image:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_16
 	gmt <span class="nb">set</span> GMT_THEME cookbook
 	gmt makecpt -Crainbow -T1000/5000
-	gmt grdcut @earth_relief_30s -R-108/-103/35/40 -Gtut_relief.nc
-	gmt grdgradient tut_relief.nc -Ne0.8 -A100 -fg -Gus_i.nc
-	gmt grdimage @earth_relief_30s -R-108/-103/35/40 -Ius_i.nc -JM6i -B -BWSnE
+	gmt grdimage @earth_relief_30s -R-108/-103/35/40 -I+a100+ne0.8 -JM6i -B -BWSnE
 	gmt colorbar -DJTC -I0.4 -Bxa -By+lm
 gmt end show
 </pre></div>
@@ -454,17 +446,17 @@ gmt end show
 <figure class="align-center" id="id4">
 <span id="gmt-tut-16"></span><a class="reference internal image-reference" href="../_images/GMT_tut_16.png"><img alt="../_images/GMT_tut_16.png" src="../_images/GMT_tut_16.png" style="width: 400px;" /></a>
 <figcaption>
-<p><span class="caption-text">Result of GMT Tutorial example 16</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Result of GMT Tutorial example 16.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>Exercises:</p>
 <ol class="arabic simple">
 <li><p>Force a gray-shade image.</p></li>
-<li><p>Rerun <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a> with <strong>-N</strong>1.</p></li>
+<li><p>Rerun the example with <strong>-I+a</strong>30<strong>+n</strong>1.</p></li>
 </ol>
 </section>
 <section id="multi-dimensional-maps">
-<h2>Multi-dimensional maps<a class="headerlink" href="#multi-dimensional-maps" title="Permalink to this headline">¶</a></h2>
+<h2>Multi-dimensional maps<a class="headerlink" href="#multi-dimensional-maps" title="Permalink to this heading">¶</a></h2>
 <p>Climate data, like ocean temperatures or atmospheric pressure, are often provided as
 multi-dimensional (3-D, 4-D or 5-D) grids in netCDF format. This section will demonstrate
 that GMT is able to plot “horizontal”
@@ -513,7 +505,7 @@ figure out what level number that is).</p></li>
 </ol>
 </section>
 <section id="perspective-views">
-<h2>Perspective views<a class="headerlink" href="#perspective-views" title="Permalink to this headline">¶</a></h2>
+<h2>Perspective views<a class="headerlink" href="#perspective-views" title="Permalink to this heading">¶</a></h2>
 <p>Our final undertaking in this tutorial is to examine three-dimensional
 perspective views.  The
 GMT module that produces perspective views of gridded data files is
@@ -531,10 +523,6 @@ GMT module that produces perspective views of gridded data files is
 </ol>
 <p>In addition, some options may be required:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 19%" />
-<col style="width: 81%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Purpose</p></th>
@@ -548,7 +536,7 @@ GMT module that produces perspective views of gridded data files is
 <td><p>Assign colors using <em>drape_file</em> instead of <em>relief_file</em></p></td>
 </tr>
 <tr class="row-even"><td><p><strong>-I</strong><em>intens_file</em></p></td>
-<td><p>File with illumination intensities</p></td>
+<td><p>File with illumination intensities or arguments to <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>-Qm</strong></p></td>
 <td><p>Selects mesh plot</p></td>
@@ -565,7 +553,7 @@ GMT module that produces perspective views of gridded data files is
 </tbody>
 </table>
 <section id="mesh-plot">
-<h3>Mesh-plot<a class="headerlink" href="#mesh-plot" title="Permalink to this headline">¶</a></h3>
+<h3>Mesh-plot<a class="headerlink" href="#mesh-plot" title="Permalink to this heading">¶</a></h3>
 <p>Mesh plots work best on smaller data sets.  We again use the small
 subset of the ETOPO5 data over Bermuda and will use the ocean CPT.
 A simple mesh plot can therefore be obtained with</p>
@@ -588,15 +576,13 @@ gmt end show
 </ol>
 </section>
 <section id="color-coded-view">
-<h3>Color-coded view<a class="headerlink" href="#color-coded-view" title="Permalink to this headline">¶</a></h3>
+<h3>Color-coded view<a class="headerlink" href="#color-coded-view" title="Permalink to this heading">¶</a></h3>
 <p>We will make a perspective, color-coded view of the US Rockies
-from the southeast.  This is done using</p>
+from the southeast.  Similar to the <a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> examples, this is done using</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_tut_19
 	gmt <span class="nb">set</span> GMT_THEME cookbook
 	gmt makecpt -Cdem2 -T1000/5000
-	gmt grdcut @earth_relief_30s -R-108/-103/35/40 -Gtut_relief.nc
-	gmt grdgradient tut_relief.nc -Ne0.8 -A100 -fg -Gus_i.nc
-	gmt grdview tut_relief.nc -JM4i -p135/35 -Qi50 -Ius_i.nc -B -JZ0.5i
+	gmt grdview @earth_relief_30s -R-108/-103/35/40 -JM4i -p135/35 -Qi50 -I+a100+ne0.8 -B -JZ0.5i
 gmt end show
 </pre></div>
 </div>
@@ -604,7 +590,7 @@ gmt end show
 <figure class="align-center" id="id7">
 <span id="gmt-tut-19"></span><a class="reference internal image-reference" href="../_images/GMT_tut_19.png"><img alt="../_images/GMT_tut_19.png" src="../_images/GMT_tut_19.png" style="width: 400px;" /></a>
 <figcaption>
-<p><span class="caption-text">Result of GMT Tutorial example 19</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Result of GMT Tutorial example 19.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>This plot is pretty crude since we selected 50 dpi but it is fast
@@ -614,7 +600,7 @@ appropriate <em>dpi</em> for the final output device and let it rip.</p>
 <p>Exercises:</p>
 <ol class="arabic simple">
 <li><p>Choose another vantage point and scaling.</p></li>
-<li><p>Redo <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a> with another illumination direction and plot again.</p></li>
+<li><p>Examine the <a class="reference internal" href="../grdgradient.html"><span class="doc">grdgradient</span></a> options and select another illumination direction in <strong>-I</strong> and plot again.</p></li>
 <li><p>Select a higher <em>dpi</em>, e.g., 200.</p></li>
 </ol>
 </section>
@@ -626,14 +612,14 @@ appropriate <em>dpi</em> for the final output device and let it rip.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="session-3.html" class="btn btn-neutral float-left" title="Session Three" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../modules.html" class="btn btn-neutral float-right" title="Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../tutorial_jl.html" class="btn btn-neutral float-right" title="Tutorial in Julia" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

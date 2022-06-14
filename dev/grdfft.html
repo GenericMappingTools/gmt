@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdfft &mdash; GMT 6.3.0 documentation</title>
+  <title>grdfft &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdfft">
-<h1>grdfft<a class="headerlink" href="#grdfft" title="Permalink to this headline">¶</a></h1>
+<h1>grdfft<a class="headerlink" href="#grdfft" title="Permalink to this heading">¶</a></h1>
 <p>Mathematical operations on grids in the spectral domain</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdfft</strong> <em>ingrid</em> [ <em>ingrid2</em> ]
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outfile</em>|<em>table</em>
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>azimuth</em> ]
@@ -163,7 +169,7 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdfft</strong> will take the 2-D forward Fast Fourier Transform and perform
 one or more mathematical operations in the frequency domain before
 transforming back to the space domain. An option is provided to scale
@@ -174,9 +180,8 @@ meters. If you have grids with dimensions in km, you could change this
 to meters using <a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a> or scale the output with <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
 <blockquote>
 <div><p>2-D binary grid file to be operated on. For
 cross-spectral operations, also give the second grid file <em>ingrid2</em>. Optionally, append =<em>ID</em> for reading a specific file
@@ -196,12 +201,12 @@ supported:</p>
 <p>Note: Any offset is added after any scaling.</p>
 </div></blockquote>
 <dl class="simple">
-<dt><strong>-G</strong><em>outfile</em></dt><dd><p>Specify the name of the output grid file (see <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>) or the 1-D spectrum table (see <strong>-E</strong>).</p>
+<dt><strong>-G</strong><em>outfile</em></dt><dd><p>Specify the name of the output grid file (see <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>) or the 1-D spectrum table (see <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>).</p>
 </dd>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong><em>azimuth</em></dt><dd><p>Take the directional derivative in the <em>azimuth</em> direction measured
 in degrees CW from north.</p>
@@ -223,11 +228,11 @@ heights in meters and output should be gravity anomalies in mGal.
 </dl>
 <dl class="simple" id="e">
 <dt><strong>-E</strong>[<strong>r</strong>|<strong>x</strong>|<strong>y</strong>][<strong>+w</strong>[<strong>k</strong>]][<strong>+n</strong>]</dt><dd><p>Estimate power spectrum in the radial direction [<strong>r</strong>]. Place
-<strong>x</strong> or <strong>y</strong> immediately after <strong>-E</strong> to compute the spectrum in
+<strong>x</strong> or <strong>y</strong> immediately after <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> to compute the spectrum in
 the x or y direction instead. No grid file is created. If one grid
 is given then f (i.e., frequency or wave number), power[f],
 and 1 standard deviation in power[f] are written to the file set by
-<strong>-G</strong> [stdout]. If two grids are given we write f and 8 quantities:
+<a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> [standard output]. If two grids are given we write f and 8 quantities:
 Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f],
 admittance[f], gain[f], coherency[f].  Each quantity is followed by
 its own 1-std dev error estimate, hence the output is 17 columns wide.
@@ -239,7 +244,7 @@ mean spectral values per frequency are reported instead.</p>
 </dd>
 </dl>
 <dl id="f">
-<dt><strong>-F</strong>[<strong>r</strong>|<strong>x</strong>|<strong>y</strong>]<em>params</em></dt><dd><p>Filter the data. Place <strong>x</strong> or <strong>y</strong> immediately after <strong>-F</strong> to
+<dt><strong>-F</strong>[<strong>r</strong>|<strong>x</strong>|<strong>y</strong>]<em>params</em></dt><dd><p>Filter the data. Place <strong>x</strong> or <strong>y</strong> immediately after <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> to
 filter <em>x</em> or <em>y</em> direction only; default is isotropic [<strong>r</strong>].
 Choose between a cosine-tapered band-pass, a Gaussian band-pass
 filter, or a Butterworth band-pass filter.</p>
@@ -280,8 +285,8 @@ using a 2nd-order Butterworth filter, with half-weight at 30, while
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong><em>outfile</em>|<em>table</em></dt><dd><p>Filename for output netCDF grid file OR 1-D data table (see <strong>-E</strong>).
-This is optional for -E (spectrum written to stdout) but mandatory for
+<dt><strong>-G</strong><em>outfile</em>|<em>table</em></dt><dd><p>Filename for output netCDF grid file OR 1-D data table (see <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>).
+This is optional for -E (spectrum written to standard output) but mandatory for
 all other options that require a grid output.</p>
 </dd>
 </dl>
@@ -341,7 +346,7 @@ default we write the real and imaginary components to
 </dd>
 </dl>
 <dl class="simple" id="q">
-<dt><strong>-Q</strong></dt><dd><p>Selects no wavenumber operations. Useful in conjunction with <strong>-N</strong> modifiers
+<dt><strong>-Q</strong></dt><dd><p>Selects no wavenumber operations. Useful in conjunction with <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> modifiers
 when you wish to write out the 2-D spectrum (or other intermediate grid products)
 only.</p>
 </dd>
@@ -355,12 +360,14 @@ append <strong>d</strong> to convert deflection of vertical to micro-radians.</p
 <dl class="simple" id="v">
 <dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
+</dl>
+<dl class="simple">
 <dt><strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a></dt><dd><p>Geographic grids (dimensions of longitude, latitude) will be converted to
 meters via a “Flat Earth” approximation using the current ellipsoid parameters.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -372,12 +379,12 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="grid-distance-units">
-<h2>Grid Distance Units<a class="headerlink" href="#grid-distance-units" title="Permalink to this headline">¶</a></h2>
+<h2>Grid Distance Units<a class="headerlink" href="#grid-distance-units" title="Permalink to this heading">¶</a></h2>
 <p>If the grid does not have meter as the horizontal unit, append <strong>+u</strong><em>unit</em> to the input file name to convert from the
 specified unit to meter.  If your grid is geographic, convert distances to meters by supplying <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> instead.</p>
 </section>
 <section id="considerations">
-<h2>Considerations<a class="headerlink" href="#considerations" title="Permalink to this headline">¶</a></h2>
+<h2>Considerations<a class="headerlink" href="#considerations" title="Permalink to this heading">¶</a></h2>
 <p>netCDF COARDS grids will automatically be recognized as geographic. For
 other grids geographical grids were you want to convert degrees into
 meters, select <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a>. If the data are close to either pole, you should
@@ -385,8 +392,8 @@ consider projecting the grid file onto a rectangular coordinate system
 using <a class="reference internal" href="grdproject.html"><span class="doc">grdproject</span></a></p>
 </section>
 <section id="normalization-of-spectrum">
-<h2>Normalization of Spectrum<a class="headerlink" href="#normalization-of-spectrum" title="Permalink to this headline">¶</a></h2>
-<p>By default, the power spectrum returned by <strong>-E</strong> simply sums the contributions
+<h2>Normalization of Spectrum<a class="headerlink" href="#normalization-of-spectrum" title="Permalink to this heading">¶</a></h2>
+<p>By default, the power spectrum returned by <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> simply sums the contributions
 from frequencies that are part of the output frequency.  For <em>x</em>- or <em>y</em>-spectra
 this means summing the power across the other frequency dimension, while for the
 radial spectrum it means summing up power within each annulus of width <em>delta_q</em>,
@@ -397,7 +404,7 @@ per output frequency and in this case the white noise process will have a
 white radial spectrum as well.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -450,7 +457,7 @@ components of the raw spectrum of the data in topo.nc, try:</p>
 <p>You can now make plots of the data in topo_taper.nc, topo_real.nc, and topo_imag.nc.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a>,
 <a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a>,
 <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>,
@@ -470,8 +477,8 @@ components of the raw spectrum of the data in topo.nc, try:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

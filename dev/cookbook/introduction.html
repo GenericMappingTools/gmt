@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2. Introduction &mdash; GMT 6.3.0 documentation</title>
+  <title>2. Introduction &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -49,7 +53,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
@@ -172,9 +178,9 @@
            <div itemprop="articleBody">
              
   <section id="introduction">
-<h1><span class="section-number">2. </span>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">2. </span>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h1>
 <section id="historical-overview">
-<h2><span class="section-number">2.1. </span>Historical overview<a class="headerlink" href="#historical-overview" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.1. </span>Historical overview<a class="headerlink" href="#historical-overview" title="Permalink to this heading">¶</a></h2>
 <p>Most scientists are familiar with the sequence: <em>raw data</em> →
 <em>processing</em> → <em>final illustration</em>.
 In order to finalize papers for submission to scientific journals,
@@ -183,7 +189,7 @@ presentations, many scientists spend large amounts of time and money to
 create high-quality figures. This process can be tedious and is often
 done manually, since available commercial or in-house software usually
 can do only part of the job. To expedite this process we introduce the
-Generic Mapping Tools (GMT for short), which is a free <a class="footnote-reference brackets" href="#id6" id="id1">2</a> software
+Generic Mapping Tools (GMT for short), which is a free <a class="footnote-reference brackets" href="#id6" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> software
 package that can be used to manipulate columns of tabular data,
 time-series, and gridded data sets, and display these data in a variety
 of forms ranging from simple <em>x</em>–<em>y</em> plots to maps and color-coded,
@@ -195,12 +201,12 @@ Line drawings, bitmapped images, and text can be easily combined in one
 illustration. PostScript plot files are device-independent: The same
 file can be printed at 300 dots per inch (dpi) on a cheap
 printer or converted to a high-resolution PNG image for online usage.
-GMT software is written as a set of command-line tools <a class="footnote-reference brackets" href="#id7" id="id2">3</a> and is
+GMT software is written as a set of command-line tools <a class="footnote-reference brackets" href="#id7" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> and is
 totally self-contained and fully documented. The system is offered free
 of charge and is distributed over the Internet
 [<em>Wessel and Smith, 1991; 1995; 1998</em>; <em>Wessel et al., 2013</em>; <em>Wessel et al., 2019</em>].
 The PostScript plots are easily converted to other formats, such as PDF
-or any raster image <a class="footnote-reference brackets" href="#id8" id="id3">4</a>.</p>
+or any raster image <a class="footnote-reference brackets" href="#id8" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>.</p>
 <p>The original version 1.0 of GMT was released in the summer of 1988
 when the authors were graduate students at Lamont-Doherty Earth
 Observatory of Columbia University. During our tenure as graduate
@@ -268,7 +274,7 @@ three coordinates. In order to simplify and standardize input and
 output, by default GMT uses two file formats only. Arbitrary sequences of (<em>x,y</em>)
 or (<em>x,y,z</em>) data are read from multi-column ASCII tables, i.e., each
 file consists of several records, in which each coordinate is confined
-to a separate column <a class="footnote-reference brackets" href="#id9" id="id4">5</a>. This format is straightforward and allows the
+to a separate column <a class="footnote-reference brackets" href="#id9" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>. This format is straightforward and allows the
 user to perform almost any simple (or complicated) reformatting or
 processing task using GMT processing tools (and in a pinch standard UNIX utilities such as <strong>cut</strong>,
 <strong>paste</strong>, <strong>grep</strong>, <strong>sed</strong> and <strong>awk</strong>). Two-dimensional data
@@ -278,13 +284,13 @@ library (a free, public-domain software library available separately
 from UCAR, the University Corporation of Atmospheric Research [<em>Treinish
 and Gough</em>, 1987]). This XDR (External Data Representation) based format
 is architecture independent, which allows the user to transfer the
-binary data files from one computer system to another <a class="footnote-reference brackets" href="#id10" id="id5">6</a>.
+binary data files from one computer system to another <a class="footnote-reference brackets" href="#id10" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>.
 GMT contains programs that will read ASCII (<em>x,y,z</em>) files and produce
 grid files. One such program, <a class="reference internal" href="../surface.html"><span class="doc">surface</span></a>,
 includes new modifications to the gridding algorithm developed by <em>Smith
 and Wessel</em> [1990] using continuous splines in tension. Optionally, GMT
 can also read various binary and netCDF tables, as well as a variety of
-grid formats, especially if built with GDAL support.</p>
+grid formats via GDAL.</p>
 <p>Most of the programs will produce some form of output, which falls into
 four categories. Several of the programs may produce more than one of
 these types of output:</p>
@@ -318,7 +324,7 @@ users as well. We present this system to the community in order to
 promote sharing of research software among investigators in the US and abroad.</p>
 </section>
 <section id="references">
-<h2><span class="section-number">2.2. </span>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.2. </span>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Adobe Systems Inc., <em>PostScript Language Reference Manual</em>, 2nd
 edition, 764, Addison-Wesley, Reading, Massachusetts, 1990.</p></li>
@@ -328,11 +334,11 @@ edition, 764, Addison-Wesley, Reading, Massachusetts, 1990.</p></li>
 Associates, Sebastopol, California, 1991.</p></li>
 <li><p>Treinish, L. A., and M. L. Gough, A software package for the
 data-independent management of multidimensional data, <em>EOS Trans.
-AGU</em>, 68(28), 633–635, 1987. <a class="reference external" href="http://dx.doi.org/10.1029/EO068i028p00633">doi:10.1029/EO068i028p00633</a>.</p></li>
+AGU</em>, 68(28), 633–635, 1987. <a class="reference external" href="https://doi.org/10.1029/EO068i028p00633">doi:10.1029/EO068i028p00633</a>.</p></li>
 </ul>
 </section>
 <section id="modern-and-classic-mode">
-<h2><span class="section-number">2.3. </span>Modern and Classic Mode<a class="headerlink" href="#modern-and-classic-mode" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.3. </span>Modern and Classic Mode<a class="headerlink" href="#modern-and-classic-mode" title="Permalink to this heading">¶</a></h2>
 <p>For almost three decades, GMT scripts have looked remarkably similar.  The options flags
 and the general workflow of adding overlays to existing PostScript files have
 remained unchanged, and thousands of GMT scripts written in c-shell, bash shell, DOS batch,
@@ -397,25 +403,28 @@ before gmt begin starts the script.  This is most easily done by using the <stro
 option to print a shell template to the standard output.</p>
 </section>
 <section id="footnotes">
-<h2><span class="section-number">2.4. </span>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">¶</a></h2>
-<dl class="footnote brackets">
-<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id1">2</a></span></dt>
-<dd><p>See GNU Lesser General Public License (<a class="reference external" href="http://www.gnu.org/copyleft/gpl.html">http://www.gnu.org/copyleft/gpl.html</a>)
+<h2><span class="section-number">2.4. </span>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this heading">¶</a></h2>
+<aside class="footnote brackets" id="id6" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">2</a><span class="fn-bracket">]</span></span>
+<p>See GNU Lesser General Public License (<a class="reference external" href="http://www.gnu.org/copyleft/gpl.html">http://www.gnu.org/copyleft/gpl.html</a>)
 for terms on redistribution and modifications.</p>
-</dd>
-<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id2">3</a></span></dt>
-<dd><p>The tools can be installed on a variety of platforms - UNIX and non-UNIX alike (see Chapter <a class="reference internal" href="non-unix-platforms.html"><span class="doc">GMT on non-UNIX Platforms</span></a>).</p>
-</dd>
-<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id3">4</a></span></dt>
-<dd><p>One public-domain RIP is ghostscript, available from <a class="reference external" href="https://www.ghostscript.com/">https://www.ghostscript.com/</a>.</p>
-</dd>
-<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id4">5</a></span></dt>
-<dd><p>Programs now also allow for fast, binary multicolumn file i/o.</p>
-</dd>
-<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id5">6</a></span></dt>
-<dd><p>While the netCDF format is the default, many other formats are also possible.</p>
-</dd>
-</dl>
+</aside>
+<aside class="footnote brackets" id="id7" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">3</a><span class="fn-bracket">]</span></span>
+<p>The tools can be installed on a variety of platforms - UNIX and non-UNIX alike (see Chapter <a class="reference internal" href="non-unix-platforms.html"><span class="doc">GMT on non-UNIX Platforms</span></a>).</p>
+</aside>
+<aside class="footnote brackets" id="id8" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">4</a><span class="fn-bracket">]</span></span>
+<p>One public-domain RIP is ghostscript, available from <a class="reference external" href="https://www.ghostscript.com/">https://www.ghostscript.com/</a>.</p>
+</aside>
+<aside class="footnote brackets" id="id9" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">5</a><span class="fn-bracket">]</span></span>
+<p>Programs now also allow for fast, binary multicolumn file i/o.</p>
+</aside>
+<aside class="footnote brackets" id="id10" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">6</a><span class="fn-bracket">]</span></span>
+<p>While the netCDF format is the default, many other formats are also possible.</p>
+</aside>
 </section>
 </section>
 
@@ -430,8 +439,8 @@ for terms on redistribution and modifications.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

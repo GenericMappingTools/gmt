@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdrotater &mdash; GMT 6.3.0 documentation</title>
+  <title>grdrotater &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdrotater">
-<h1>grdrotater<a class="headerlink" href="#grdrotater" title="Permalink to this headline">¶</a></h1>
+<h1>grdrotater<a class="headerlink" href="#grdrotater" title="Permalink to this heading">¶</a></h1>
 <p>Finite rotation reconstruction of geographic grid</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdrotater</strong> <em>ingrid</em>
 <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>rot_file</em>|<em>lon</em>/<em>lat</em>/<em>angle</em>[<strong>+i</strong>]
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
@@ -158,7 +164,7 @@
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>ages</em> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-b</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-d</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-g</strong><a class="reference internal" href="../../gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
 [ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
@@ -169,7 +175,7 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdrotater</strong> reads a geographical grid and reconstructs it given
 total reconstruction rotations. Optionally, the user may supply a
 clipping polygon in multiple-segment format; then, only the part of the
@@ -178,9 +184,8 @@ outlines of the reconstructed region is also returned provided the
 rotated region is not the entire globe.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
 <blockquote>
 <div><p>Name of a grid file in geographical (lon, lat) coordinates. Optionally, append =<em>ID</em> for reading a specific file
 format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
@@ -227,9 +232,7 @@ Regardless of method, you may append <strong>+i</strong> to the argument to indi
 you wish to invert the rotation(s).</p>
 </dd>
 </dl>
-<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>]
-[:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
 <div><p>Name of output grid. This is the grid with the data reconstructed
 according to the specified rotation. If more than one reconstruction
@@ -250,7 +253,7 @@ is 1].</p></li>
 </ul>
 </div></blockquote>
 <p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
-(unless overridden). To write specific formats via GDAL, use = <em>gd</em>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
 the <a class="reference internal" href="../../cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
@@ -258,11 +261,11 @@ for more details.</p>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong><em>region</em></dt><dd><p>Specify directly the region of the rotated grid.  By default, the
 output grid has a region that exactly matches the extent of the rotated
-domain, but <strong>-A</strong> can be used to crop or extend this region to that
+domain, but <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> can be used to crop or extend this region to that
 provided via <em>region</em>.</p>
 </dd>
 </dl>
@@ -271,8 +274,8 @@ provided via <em>region</em>.</p>
 of the grid reconstructed to the specified time. If more than one reconstruction
 time is implied then <em>rotoutline</em> must contain a C-format specifier
 to format a floating point number (reconstruction time) to text.
-If only one time is implied and <strong>-D</strong> is not set then we write the
-polygon to stdout (but see <strong>-N</strong>).</p>
+If only one time is implied and <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> is not set then we write the
+polygon to standard output (but see <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>).</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
@@ -282,7 +285,7 @@ area of the grid that should be projected [Default projects entire grid].</p>
 </dl>
 <dl class="simple" id="n">
 <dt><strong>-N</strong></dt><dd><p>Do Not output the rotated polygon outline [Default will write it to
-stdout, or to a file via <strong>-D</strong>].</p>
+standard output, or to a file via <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>].</p>
 </dd>
 </dl>
 <span class="target" id="r"></span><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</p>
@@ -290,12 +293,9 @@ stdout, or to a file via <strong>-D</strong>].</p>
 <div><p>Specify the region of interest.  </p>
 <p>The region may be specified in one of several ways:</p>
 <ol class="arabic">
-<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>+u</strong><em>unit</em>]. This is the standard way to specify geographic regions
+<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>. This is the standard way to specify geographic regions
 when using map projections where meridians and parallels are rectilinear. The coordinates may be specified in
-decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format. Optionally, append
-<strong>+u</strong><em>unit</em> to specify a region in projected units (e.g., UTM meters) where <em>west</em>/<em>east</em>/<em>south</em>/<em>north</em> are
-Cartesian projected coordinates compatible with the chosen projection (<strong>-J</strong>) and <em>unit</em> is an allowable
-<a class="reference internal" href="../../cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a>; we inversely project to determine the actual rectangular geographic region.</p></li>
+decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format.</p></li>
 <li><p><strong>-R</strong><em>west</em>/<em>south</em>/<em>east</em>/<em>north</em><strong>+r</strong>. This form is useful for map projections that are oblique,
 making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner
 and upper right corner geographic coordinates, followed by the modifier <strong>+r</strong>. This form guarantees a
@@ -304,24 +304,34 @@ rectangular map even though lines of equal longitude and latitude are not straig
 and -180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).</p></li>
 <li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
 consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
-countries given by the codes. Simply append one or more comma-separated countries using the two-character
-<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a>. To select a state within a
-country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent, prepend <strong>=</strong> to any
-of the continent codes <strong>AF</strong> (Africa), <strong>AN</strong> (Antarctica), <strong>AS</strong> (Asia), <strong>EU</strong> (Europe), <strong>OC</strong> (Oceania),
-<strong>NA</strong> (North America), or <strong>SA</strong> (South America). The following modifiers can be appended:</p>
+countries given by the codes. Simply append one or more comma-separated countries using either the two-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
+country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
+or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
+Finally, append any <a class="reference internal" href="../../coast.html#id1"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
+the collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
 <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
-national bounding box of France rounded to nearest integer degree.</p></li>
-<li><p><strong>+R</strong> to extend the region outward by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension].</p></li>
+national bounding box of France rounded to nearest integer degree, where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+R</strong> to adjust the region by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension], where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
 <li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box extends by at least 0.25 times the increment
-[default is no adjustment].</p></li>
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box is adjusted by at least 0.25 times the
+increment [default is no adjustment], where <em>inc</em> can be positive to expand the region or negative to shrink
+the region.</p></li>
 </ul>
 </div></blockquote>
 </li>
+<li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+u</strong><em>unit</em>] specifies a region in projected units (e.g., UTM meters)
+where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible with the chosen projection
+(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="../../cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
+actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
+<strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults to <em>halfwidth</em> if not given.
+This short-hand requires the <strong>+u</strong> modifier.</p></li>
 <li><p><strong>-R</strong><em>justify</em><em>lon0</em>/<em>lat0</em>/<em>nx</em>/<em>ny</em>, where <em>justify</em> is a 2-character combination of
 <strong>L</strong>|<strong>C</strong>|<strong>R</strong> (for left, center, or right) and <strong>T</strong>|<strong>M</strong>|<strong>B</strong> (for top, middle, or bottom)
 (e.g., <strong>BL</strong> for lower left). The two character code <em>justify</em> indicates which point on a rectangular region
@@ -339,7 +349,7 @@ the data range using <strong>-Ra</strong>.</p></li>
 </div></blockquote>
 <dl class="simple" id="s">
 <dt><strong>-S</strong></dt><dd><p>Skip the rotation of the grid, just rotate the polygon outline
-(requires <strong>-F</strong> if no grid is provided).</p>
+(requires <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> if no grid is provided).</p>
 </dd>
 </dl>
 <dl class="simple" id="t">
@@ -348,8 +358,8 @@ the desired time.  For an equidistant range of reconstruction times
 give <strong>-T</strong><em>start</em>/<em>stop</em>/<em>inc</em>. Append <strong>+n</strong> if <em>inc</em> should
 be interpreted to mean <em>npoints</em> instead.
 For an non-equidistant set of reconstruction times please pass them
-via the first column in a file, e.g., <strong>-T</strong><em>agefile</em>.  If no <strong>-T</strong>
-option is given and <strong>-E</strong> specified a rotation file then we equate
+via the first column in a file, e.g., <strong>-T</strong><em>agefile</em>.  If no <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>
+option is given and <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> specified a rotation file then we equate
 the rotation file times with the reconstruction times.</p>
 </dd>
 </dl>
@@ -390,7 +400,7 @@ the rotation file times with the reconstruction times.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -402,7 +412,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="consequences-of-grid-resampling">
-<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this headline">¶</a></h2>
+<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this heading">¶</a></h2>
 <p>Resample or sampling of grids will use various algorithms (see <strong>-n</strong>) that may lead
 to possible distortions or unexpected results in the resampled values.
 One expected effect of resampling with splines is the tendency for the new
@@ -412,7 +422,7 @@ values so they do not exceed the input min/max values by adding <strong>+c</stro
 your <strong>-n</strong> option.</p>
 </section>
 <section id="geodetic-versus-geocentric-coordinates">
-<h2>Geodetic versus Geocentric Coordinates<a class="headerlink" href="#geodetic-versus-geocentric-coordinates" title="Permalink to this headline">¶</a></h2>
+<h2>Geodetic versus Geocentric Coordinates<a class="headerlink" href="#geodetic-versus-geocentric-coordinates" title="Permalink to this heading">¶</a></h2>
 <p>All spherical rotations are applied to geocentric coordinates.
 This means that incoming data points and grids are considered
 to represent geodetic coordinates and must first
@@ -423,7 +433,7 @@ ellipsoid setting <a class="reference internal" href="../../gmt.conf.html#projec
 is changed to Sphere.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To rotate the data defined by grid topo.nc and the polygon outline
 clip_path.txt, using a total reconstruction rotation with pole at (135.5,
 -33.0) and a rotation angle of 37.3 degrees and bicubic interpolation, try</p>
@@ -465,17 +475,17 @@ region of overlap between the rotated grids, we use <a class="reference internal
 </div>
 </div></blockquote>
 <p>The grid overlap.nc now has 1s in the regions of overlap and 0
-elsewhere. You can use it as a mask or use <a class="reference internal" href="../../grdcontour.html"><span class="doc">grdcontour</span></a> <strong>-D</strong> to extract
+elsewhere. You can use it as a mask or use <a class="reference internal" href="../../grdcontour.html"><span class="doc">grdcontour</span></a> <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> to extract
 a polygon (i.e., a contour).</p>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
 <p>GMT distributes the EarthByte rotation model Global_EarthByte_230-0Ma_GK07_AREPS.rot.
 To use an alternate rotation file, create an environmental parameters named
 <strong>GPLATES_ROTATIONS</strong> that points to an alternate rotation file.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="backtracker.html"><span class="doc">backtracker</span></a>,
 <a class="reference internal" href="../../grdcontour.html"><span class="doc">grdcontour</span></a>,
 <a class="reference internal" href="gmtpmodeler.html"><span class="doc">gmtpmodeler</span></a>,
@@ -499,8 +509,8 @@ To use an alternate rotation file, create an environmental parameters named
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

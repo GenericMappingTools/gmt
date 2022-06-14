@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdtrend &mdash; GMT 6.3.0 documentation</title>
+  <title>grdtrend &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -49,7 +53,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -143,10 +149,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdtrend">
-<h1>grdtrend<a class="headerlink" href="#grdtrend" title="Permalink to this headline">¶</a></h1>
+<h1>grdtrend<a class="headerlink" href="#grdtrend" title="Permalink to this heading">¶</a></h1>
 <p>Fit trend surface to grids and compute residuals</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdtrend</strong> <em>ingrid</em> <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>n_model</em>[<strong>+r</strong>][<strong>+x</strong>|<strong>y</strong>]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>diff.nc</em> ]
 [ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
@@ -157,7 +163,7 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdtrend</strong> reads a 2-D grid file and fits a low-order polynomial trend
 to these data by [optionally weighted] least-squares. The trend surface
 is defined by:</p>
@@ -165,7 +171,7 @@ is defined by:</p>
 \[m_1 + m_2x + m_3y + m_4xy + m_5x^2 + m_6y^2 + m_7x^3 + m_8x^2y + m_9xy^2 + m_{10}y^3.\]</div>
 <p>The user must specify <strong>-N</strong><em>n_model</em>, the number of model parameters
 to use; thus, <strong>-N</strong><em>3</em> fits a bilinear trend, <strong>-N</strong><em>6</em> a quadratic
-surface, and so on. Optionally, append <strong>+r</strong> to the <strong>-N</strong> option to
+surface, and so on. Optionally, append <strong>+r</strong> to the <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> option to
 perform a robust fit. In this case, the program will iteratively
 reweight the data based on a robust scale estimate, in order to converge
 to a solution insensitive to outliers. This may be handy when separating
@@ -178,9 +184,8 @@ fitting; if output files are written, these will also have NaN in the
 same locations.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
 <blockquote>
 <div><p>2-D gridded data file. Optionally, append =<em>ID</em> for reading a specific file
 format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
@@ -209,13 +214,13 @@ for the two-dimensional surface fits.</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="d">
 <dt><strong>-D</strong><em>diff.nc</em></dt><dd><p>Write the difference (input data - trend) to the file <em>diff.nc</em>.</p>
 </dd>
 </dl>
 <dl class="simple" id="r">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. Using the <strong>-R</strong> option will select a subsection of the input grid. If this subsection
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. Using the <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> option will select a subsection of the input grid. If this subsection
 exceeds the boundaries of the grid, only the common region will be extracted. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
@@ -236,7 +241,7 @@ in the robust fit will be written to <em>weight.nc</em>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -248,19 +253,19 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="remarks">
-<h2>Remarks<a class="headerlink" href="#remarks" title="Permalink to this headline">¶</a></h2>
+<h2>Remarks<a class="headerlink" href="#remarks" title="Permalink to this heading">¶</a></h2>
 <p>The domain of x and y will be shifted and scaled to [-1, 1] and the
 basis functions are built from Legendre polynomials. These have a
 numerical advantage in the form of the matrix which must be inverted and
 allow more accurate solutions. NOTE: The model parameters listed with
 <strong>-V</strong> are Legendre polynomial coefficients; they are not numerically
 equivalent to the <span class="math notranslate nohighlight">\(m_j\)</span> in the equation described above. The description
-above is to allow the user to match <strong>-N</strong> with the order of the
+above is to allow the user to match <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> with the order of the
 polynomial surface. See <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> if you need to evaluate the trend
 using the reported coefficients.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -281,7 +286,7 @@ and reporting the progress:</p>
 </div></blockquote>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="grdfft.html"><span class="doc">grdfft</span></a>,
 <a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a>,
@@ -300,8 +305,8 @@ and reporting the progress:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

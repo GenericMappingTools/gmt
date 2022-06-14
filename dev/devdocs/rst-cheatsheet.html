@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>reStructuredText Cheatsheet &mdash; GMT 6.3.0 documentation</title>
+  <title>reStructuredText Cheatsheet &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -49,7 +53,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -159,7 +165,7 @@
            <div itemprop="articleBody">
              
   <section id="restructuredtext-cheatsheet">
-<h1>reStructuredText Cheatsheet<a class="headerlink" href="#restructuredtext-cheatsheet" title="Permalink to this headline">¶</a></h1>
+<h1>reStructuredText Cheatsheet<a class="headerlink" href="#restructuredtext-cheatsheet" title="Permalink to this heading">¶</a></h1>
 <p>The GMT documentations are written in <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructureText (ReST)</a>
 and built by <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a>.
 Here is a quick and dirty cheat sheet for some common ReST stuff used in GMT documentations.
@@ -173,7 +179,7 @@ if you want to preview texts written in ReST.</p>
 <a class="reference external" href="http://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html">the Sphinx documentation</a>.</p>
 </div>
 <div style="float: left; width:49%"><section id="formatting-text">
-<h2>Formatting text<a class="headerlink" href="#formatting-text" title="Permalink to this headline">¶</a></h2>
+<h2>Formatting text<a class="headerlink" href="#formatting-text" title="Permalink to this heading">¶</a></h2>
 <p>Paragraphs are simply chunks of text separated by one or
 more blank lines.</p>
 <p>It’s simple to use inline markup to have <em>italic text</em>,
@@ -184,7 +190,7 @@ backslash + whitespace to separate inline markups.</p>
 <p><strong>-A</strong><em>value</em>[<strong>+w</strong><em>pen</em>][<strong>+a</strong>|<strong>b</strong>|<strong>c</strong>]</p>
 </section>
 <section id="lists">
-<h2>Lists<a class="headerlink" href="#lists" title="Permalink to this headline">¶</a></h2>
+<h2>Lists<a class="headerlink" href="#lists" title="Permalink to this heading">¶</a></h2>
 <p><strong>Bullet list:</strong></p>
 <ul class="simple">
 <li><p>Point A</p></li>
@@ -208,16 +214,11 @@ backslash + whitespace to separate inline markups.</p>
 </dl>
 </section>
 <section id="table">
-<h2>Table<a class="headerlink" href="#table" title="Permalink to this headline">¶</a></h2>
+<h2>Table<a class="headerlink" href="#table" title="Permalink to this heading">¶</a></h2>
 <p>ReST supports multiple ways to make a table.</p>
 <section id="simple-table">
-<h3>Simple Table<a class="headerlink" href="#simple-table" title="Permalink to this headline">¶</a></h3>
+<h3>Simple Table<a class="headerlink" href="#simple-table" title="Permalink to this heading">¶</a></h3>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 29%" />
-<col style="width: 29%" />
-<col style="width: 41%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>A</p></th>
 <th class="head"><p>B</p></th>
@@ -245,14 +246,8 @@ backslash + whitespace to separate inline markups.</p>
 </table>
 </section>
 <section id="grid-table">
-<h3>Grid Table<a class="headerlink" href="#grid-table" title="Permalink to this headline">¶</a></h3>
+<h3>Grid Table<a class="headerlink" href="#grid-table" title="Permalink to this heading">¶</a></h3>
 <table class="docutils align-default" id="tbl-grid">
-<colgroup>
-<col style="width: 41%" />
-<col style="width: 22%" />
-<col style="width: 19%" />
-<col style="width: 19%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Header row, column 1</p></th>
 <th class="head"><p>Header 2</p></th>
@@ -276,14 +271,14 @@ backslash + whitespace to separate inline markups.</p>
 </section>
 </section>
 <section id="links">
-<h2>Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<h2>Links<a class="headerlink" href="#links" title="Permalink to this heading">¶</a></h2>
 <section id="external-links">
-<h3>External links<a class="headerlink" href="#external-links" title="Permalink to this headline">¶</a></h3>
+<h3>External links<a class="headerlink" href="#external-links" title="Permalink to this heading">¶</a></h3>
 <p><a class="reference external" href="https://www.generic-mapping-tools.org">https://www.generic-mapping-tools.org</a></p>
 <p><a class="reference external" href="https://forum.generic-mapping-tools.org/">GMT Forum</a></p>
 </section>
 <section id="internal-links">
-<h3>Internal links<a class="headerlink" href="#internal-links" title="Permalink to this headline">¶</a></h3>
+<h3>Internal links<a class="headerlink" href="#internal-links" title="Permalink to this heading">¶</a></h3>
 <p>Link to the a module with <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> or <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a>.</p>
 <p>Link to a section title with <a class="reference internal" href="#lists">Lists</a>.</p>
 <p>Link to a target with <a class="reference internal" href="#tbl-grid"><span class="std std-ref">Link to a table</span></a>.</p>
@@ -291,7 +286,7 @@ backslash + whitespace to separate inline markups.</p>
 </section>
 </section>
 <section id="codes">
-<h2>Codes<a class="headerlink" href="#codes" title="Permalink to this headline">¶</a></h2>
+<h2>Codes<a class="headerlink" href="#codes" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin map
 gmt basemap -R0/10/0/10 -JX10c/10c -Baf
 gmt end
@@ -299,7 +294,7 @@ gmt end
 </div>
 </section>
 <section id="images">
-<h2>Images<a class="headerlink" href="#images" title="Permalink to this headline">¶</a></h2>
+<h2>Images<a class="headerlink" href="#images" title="Permalink to this heading">¶</a></h2>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">figure</span></code> directive to include images:</p>
 <figure class="align-default" id="id1">
 <a class="reference internal image-reference" href="../_images/GMT_coverlogo.png"><img alt="../_images/GMT_coverlogo.png" src="../_images/GMT_coverlogo.png" style="width: 90%;" /></a>
@@ -309,7 +304,7 @@ gmt end
 </figure>
 </section>
 <section id="math">
-<h2>Math<a class="headerlink" href="#math" title="Permalink to this headline">¶</a></h2>
+<h2>Math<a class="headerlink" href="#math" title="Permalink to this heading">¶</a></h2>
 <p>reST also supports LaTeX-style math.</p>
 <p>This is an inline math <span class="math notranslate nohighlight">\(x^2+y^2=z^2\)</span>.</p>
 <p>For long equations, use the <code class="docutils literal notranslate"><span class="pre">math</span></code> directive:</p>
@@ -482,8 +477,8 @@ For long equations, use the ``math`` directive:
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

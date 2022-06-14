@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gravfft &mdash; GMT 6.3.0 documentation</title>
+  <title>gravfft &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,15 +22,19 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="grdflexure" href="grdflexure.html" />
+    <link rel="next" title="gravprisms" href="gravprisms.html" />
     <link rel="prev" title="gmtgravmag3d" href="gmtgravmag3d.html" />
 
 
@@ -48,7 +52,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="gravfft">
-<h1>gravfft<a class="headerlink" href="#gravfft" title="Permalink to this headline">¶</a></h1>
+<h1>gravfft<a class="headerlink" href="#gravfft" title="Permalink to this heading">¶</a></h1>
 <p>Spectral calculations of gravity, isostasy, admittance, and coherence for grids</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt gravfft</strong> <em>ingrid</em> [ <em>ingrid2</em> ]
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>n/wavelength/mean_depth</em>/<strong>t</strong>|<strong>b</strong>|<strong>w</strong> ]
@@ -165,7 +171,7 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>gravfft</strong> can be used into three main modes. Mode 1: Simply
 compute the geopotential due to the surface given in the topo.grd file.
 Requires a density contrast (<strong>-D</strong>) and possibly a different observation
@@ -178,23 +184,17 @@ isostatic model.  The available
 models are the “loading from top”, or elastic plate model, and the
 “loading from below” which accounts for the plate’s response to a
 sub-surface load (appropriate for hot spot modeling - if you believe
-them). In both cases, the model parameters are set with <strong>-T</strong> and
+them). In both cases, the model parameters are set with <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> and
 <strong>-Z</strong> options. Mode 3: compute the admittance or coherence between
 two grids. The output is the average in the radial direction.
-Optionally, the model admittance may also be calculated. The horizontal
-dimensions of the grdfiles are assumed to be in meters. Geographical
-grids may be used by specifying the <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> option that scales degrees
-to meters. If you have grids with dimensions in km, you could change
-this to meters using <a class="reference internal" href="../../grdedit.html"><span class="doc">grdedit</span></a> or scale the output with
-<a class="reference internal" href="../../grdmath.html"><span class="doc">grdmath</span></a>.
+Optionally, the model admittance may also be calculated.
 Given the number of choices this program offers, is difficult to state
 what are options and what are required arguments. It depends on what you
 are doing; see the examples for further guidance.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
 <blockquote>
 <div><p>2-D binary grid file to be operated on. For
 cross-spectral operations, also give the second grid file <em>ingrid2</em>. Optionally, append =<em>ID</em> for reading a specific file
@@ -213,9 +213,7 @@ supported:</p>
 </div></blockquote>
 <p>Note: Any offset is added after any scaling.</p>
 </div></blockquote>
-<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>]
-[:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
 <div><p>Specify the name of the output grid file or the 1-D spectrum table
 (see <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>) Optionally, append =<em>ID</em> for writing a specific file format
@@ -234,7 +232,7 @@ is 1].</p></li>
 </ul>
 </div></blockquote>
 <p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
-(unless overridden). To write specific formats via GDAL, use = <em>gd</em>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
 the <a class="reference internal" href="../../cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
@@ -242,12 +240,12 @@ for more details.</p>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="c">
 <dt><strong>-C</strong><em>n/wavelength/mean_depth</em>/<strong>t</strong>|<strong>b</strong>|<strong>w</strong></dt><dd><p>Compute only the theoretical admittance curves of the selected model
 and exit. <em>n</em> and <em>wavelength</em> are used to compute (n * wavelength)
 the total profile length in meters. <em>mean_depth</em> is the mean water
-depth. Append dataflags (one or two) of <strong>t</strong>|<strong>b</strong>|<strong>w</strong> in any order.
+depth. Append data flags (one or two) of <strong>t</strong>|<strong>b</strong>|<strong>w</strong> in any order.
 Here, <em>t</em> = use “from top” model, <em>b</em> = use “from below” model. Optionally
 specify <em>w</em> to write wavelength instead of frequency.</p>
 </dd>
@@ -256,9 +254,10 @@ specify <em>w</em> to write wavelength instead of frequency.</p>
 <dt><strong>-D</strong><em>density</em>|<em>rhogrid</em></dt><dd><p>Sets density contrast across surface. Used, for example, to compute
 the gravity attraction of the water layer that can later be combined
 with the free-air anomaly to get the Bouguer anomaly. In this case
-do not use <strong>-T</strong>. It also implicitly sets <strong>-N+h</strong>.  Alternatively,
+do not use <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>. It also implicitly sets <strong>-N+h</strong>.  Alternatively,
 specify a co-registered grid with density contrasts if a variable
-density contrast is required.</p>
+density contrast is required.  <strong>Note</strong>: Any NaNs found in the density
+grid will be replaced with the minimum density found.</p>
 </dd>
 </dl>
 <dl class="simple" id="e">
@@ -282,7 +281,7 @@ This requires zero topography to mean no mass anomaly.</p>
 </dl>
 <dl class="simple" id="i">
 <dt><strong>-I</strong><strong>w</strong>|<strong>b</strong>|<strong>c</strong>|<strong>t</strong>|<strong>k</strong></dt><dd><p>Use <em>ingrid2</em> and <em>ingrid1</em> (a grid with topography/bathymetry) to estimate admittance|coherence and
-write it to stdout (<strong>-G</strong> ignored if set). This grid should contain
+write it to standard output (<strong>-G</strong> ignored if set). This grid should contain
 gravity or geoid for the same region of <em>ingrid1</em>. Default
 computes admittance. Output contains 3 or 4 columns. Frequency
 (wavelength), admittance (coherence) one sigma error bar and,
@@ -343,15 +342,15 @@ default we write the real and imaginary components to
 </dl>
 <dl class="simple" id="q">
 <dt><strong>-Q</strong></dt><dd><p>Writes out a grid with the flexural topography (with z positive up)
-whose average depth was set by <strong>-Z</strong><em>zm</em> and model parameters by <strong>-T</strong>
-(and output by <strong>-G</strong>). That is the “gravimetric Moho”. <strong>-Q</strong>
+whose average depth was set by <strong>-Z</strong><em>zm</em> and model parameters by <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>
+(and output by <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>). That is the “gravimetric Moho”. <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>
 implicitly sets <strong>-N+h</strong></p>
 </dd>
 </dl>
 <dl class="simple" id="s">
 <dt><strong>-S</strong></dt><dd><p>Computes predicted gravity or geoid grid due to a subplate load
 produced by the current bathymetry and the theoretical model. The
-necessary parameters are set within <strong>-T</strong> and <strong>-Z</strong> options. The
+necessary parameters are set within <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> and <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> options. The
 number of powers in Parker expansion is restricted to 1.
 See an example further down.</p>
 </dd>
@@ -360,31 +359,33 @@ See an example further down.</p>
 <dt><strong>-T</strong><em>te/rl/rm/rw</em>[<em>/ri</em>][<strong>+m</strong>]</dt><dd><p>Compute the isostatic compensation from the topography load (input grid file) on
 an elastic plate of thickness <em>te</em>. Also append densities for load, mantle,
 water and infill in SI units. If <em>ri</em> is not provided it defaults to <em>rl</em>.
-Give average mantle depth via <strong>-Z</strong>. If the elastic thickness
+Give average mantle depth via <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>. If the elastic thickness
 is &gt; 1e10 it will be interpreted as the flexural rigidity (by default it is
 computed from <em>te</em> and Young modulus). Optionally, append <em>+m</em> to write a grid
-with the Moho’s geopotential effect (see <strong>-F</strong>) from model selected by <strong>-T</strong>.
+with the Moho’s geopotential effect (see <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>) from model selected by <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>.
 If <em>te</em> = 0 then the Airy response is returned. <strong>-T+m</strong> implicitly sets <strong>-N+h</strong></p>
 </dd>
 </dl>
 <dl class="simple" id="w">
-<dt><strong>-W</strong><em>wd</em>[<strong>k</strong>]</dt><dd><p>Set water depth (or observation height) relative to topography [0].  Append <strong>k</strong> to indicate km.</p>
+<dt><strong>-W</strong><em>wd</em>[<strong>k</strong>]</dt><dd><p>Set water depth (or observation height) relative to topography in meters [0].  Append <strong>k</strong> to indicate km.</p>
 </dd>
 </dl>
 <dl class="simple" id="z">
-<dt><strong>-Z</strong><em>zm</em>[<em>zl</em>]</dt><dd><p>Moho [and swell] average compensation depths (in meters positive down – the depth). For the “load from
-top” model you only have to provide <em>zm</em>, but for the “loading from below” don’t forget <em>zl</em>.</p>
+<dt><strong>-Z</strong><em>zm</em>[/<em>zl</em>]</dt><dd><p>Moho [and swell] average compensation depths (in meters positive down – the depth). For the “load from
+top” model you only have to provide <em>zm</em>, but for the “loading from below” don’t forget to supply <em>zl</em>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
 <dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
+</dl>
+<dl class="simple">
 <dt><strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a></dt><dd><p>Geographic grids (dimensions of longitude, latitude) will be converted to
 meters via a “Flat Earth” approximation using the current ellipsoid parameters.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -396,13 +397,13 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="grid-distance-units">
-<h2>Grid Distance Units<a class="headerlink" href="#grid-distance-units" title="Permalink to this headline">¶</a></h2>
+<h2>Grid Distance Units<a class="headerlink" href="#grid-distance-units" title="Permalink to this heading">¶</a></h2>
 <p>If the grid does not have meter as the horizontal unit, append <strong>+u</strong><em>unit</em>
 to the input file name to convert from the specified unit to meter.  If your
 grid is geographic, convert distances to meters by supplying <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> instead.</p>
 </section>
 <section id="considerations">
-<h2>Considerations<a class="headerlink" href="#considerations" title="Permalink to this headline">¶</a></h2>
+<h2>Considerations<a class="headerlink" href="#considerations" title="Permalink to this heading">¶</a></h2>
 <p>netCDF COARDS grids will automatically be recognized as geographic. For
 other grids geographical grids were you want to convert degrees into
 meters, select <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a>. If the data are close to either pole, you should
@@ -410,7 +411,7 @@ consider projecting the grid file onto a rectangular coordinate system
 using <a class="reference internal" href="../../grdproject.html"><span class="doc">grdproject</span></a>.</p>
 </section>
 <section id="plate-flexure">
-<h2>Plate Flexure<a class="headerlink" href="#plate-flexure" title="Permalink to this headline">¶</a></h2>
+<h2>Plate Flexure<a class="headerlink" href="#plate-flexure" title="Permalink to this heading">¶</a></h2>
 <p>The FFT solution to elastic plate flexure requires the infill density to equal
 the load density.  This is typically only true directly beneath the load; beyond the load
 the infill tends to be lower-density sediments or even water (or air).  Wessel [2001]
@@ -423,7 +424,7 @@ load densities.  The approximation is very good but breaks down for large
 loads on weak plates, a fairy uncommon situation.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To compute the effect of the water layer above the bat.grd bathymetry
 using 2700 and 1035 for the densities of crust and water and writing the
 result on water_g.grd (computing up to the fourth power of bathymetry
@@ -529,18 +530,18 @@ long profile using the same parameters as above</p>
 </div></blockquote>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
 <p>Luis, J.F. and M.C. Neves. 2006, The isostatic compensation of the
 Azores Plateau: a 3D admittance and coherence analysis. J. Geothermal
 Volc. Res. Volume 156, Issues 1-2, Pages 10–22,
-<a class="reference external" href="http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010">http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010</a></p>
+<a class="reference external" href="https://doi.org/10.1016/j.jvolgeores.2006.03.010">https://doi.org/10.1016/j.jvolgeores.2006.03.010</a></p>
 <p>Parker, R. L., 1972, The rapid calculation of potential anomalies, Geophys. J., 31, 447–455.</p>
 <p>Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431–19,441,
-<a class="reference external" href="http://dx.doi.org/10.1029/2000JB000083">http://dx.doi.org/10.1029/2000JB000083</a></p>
+<a class="reference external" href="https://doi.org/10.1029/2000JB000083">https://doi.org/10.1029/2000JB000083</a></p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="../../grdfft.html"><span class="doc">grdfft</span></a>,
 <a class="reference internal" href="../../grdmath.html"><span class="doc">grdmath</span></a>, <a class="reference internal" href="../../grdproject.html"><span class="doc">grdproject</span></a></p>
 </section>
@@ -551,14 +552,14 @@ J. Geophys. Res., 106(B9), 19,431–19,441,
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="gmtgravmag3d.html" class="btn btn-neutral float-left" title="gmtgravmag3d" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="grdflexure.html" class="btn btn-neutral float-right" title="grdflexure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gravprisms.html" class="btn btn-neutral float-right" title="gravprisms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

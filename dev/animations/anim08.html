@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>(8) One year (2018) of Pacific seismicity events &mdash; GMT 6.3.0 documentation</title>
+  <title>(8) One year (2018) of Pacific seismicity events &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -130,7 +136,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../animations.html">Animations</a> &raquo;</li>
+          <li><a href="../animations.html">Animation Gallery</a> &raquo;</li>
       <li>(8) One year (2018) of Pacific seismicity events</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/animations/anim08.rst" class="fa fa-github"> Edit on GitHub</a>
@@ -142,8 +148,8 @@
            <div itemprop="articleBody">
              
   <section id="one-year-2018-of-pacific-seismicity-events">
-<span id="anim08"></span><h1>(8) One year (2018) of Pacific seismicity events<a class="headerlink" href="#one-year-2018-of-pacific-seismicity-events" title="Permalink to this headline">¶</a></h1>
-<p>Animation of all simplicity in the Pacific basin during 2018 that exceeded
+<span id="anim08"></span><h1>(8) One year (2018) of Pacific seismicity events<a class="headerlink" href="#one-year-2018-of-pacific-seismicity-events" title="Permalink to this heading">¶</a></h1>
+<p>Animation of all seismicity in the Pacific basin during 2018 that exceeded
 a threshold of magnitude 5.  We then plot the earthquakes as they occurred on
 a map that moves in longitude from west to east, with a deliberate pause near
 Longitude 200 so we can watch the near-daily magnitude 5.2 quakes that hit the
@@ -158,11 +164,11 @@ color and smaller sizes but remain for the duration of the movie.</p>
 <p>The resulting movie was presented at the Fall 2019 AGU meeting in an eLighting talk:
 P. Wessel, 2019, GMT science animations for the masses, Abstract IN21B-11.
 The finished movie is available in our YouTube channel as well:
-<a class="reference external" href="https://youtu.be/H0RyjHRhJ3g">https://youtu.be/H0RyjHRhJ3g</a>
-The movie took ~1 hour to render on a 24-core MacPro 2013.</p>
+<a class="reference external" href="https://youtu.be/H0RyjHRhJ3g">https://youtu.be/H0RyjHRhJ3g</a>.</p>
+<p>The movie took ~1 hour to render on a 24-core MacPro 2013.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
 <span class="c1">#</span>
-<span class="c1"># Animation of all simplicity in the Pacific basin during 2018 that exceeded</span>
+<span class="c1"># Animation of all seismicity in the Pacific basin during 2018 that exceeded</span>
 <span class="c1"># a threshold of magnitude 5.  We then plot the earthquakes as they occurred on</span>
 <span class="c1"># a map that moves in longitude from west to east, with a deliberate pause near</span>
 <span class="c1"># Longitude 200 so we can watch the near-daily magnitude 5.2 quakes that hit the</span>
@@ -239,8 +245,8 @@ gmt movie main.sh -Sbpre.sh -C18cx18cx60 -Ttimes.txt -Nanim08 -H8 -Lc0 -M150,png
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grd2kml &mdash; GMT 6.3.0 documentation</title>
+  <title>grd2kml &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grd2kml">
-<h1>grd2kml<a class="headerlink" href="#grd2kml" title="Permalink to this headline">¶</a></h1>
+<h1>grd2kml<a class="headerlink" href="#grd2kml" title="Permalink to this heading">¶</a></h1>
 <p>Create KML image quadtree from single grid</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grd2kml</strong> <em>ingrid</em>
 <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>prefix</em>
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>a</strong>|<strong>g</strong>|<strong>s</strong>[<em>altitude</em>] ]
@@ -165,7 +171,7 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grd2kml</strong> reads a 2-D grid file and makes a <em>quadtree</em> of
 PNG or JPG images and KML wrappers for Google Earth using the selected
 tile size.  We downsample the grid depending on the
@@ -173,16 +179,15 @@ viewing level in the quadtree using a Gaussian filter, but other
 filters can be selected as well.
 Optionally, illumination may be added by providing a grid file with
 intensities in the (-1,+1) range or by giving instructions to derive intensities
-from the input data grid automatically (see <strong>-I</strong>). Values outside the (-1,+1) intensity range will be
+from the input data grid automatically (see <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>). Values outside the (-1,+1) intensity range will be
 clipped. Map colors are specified via a color palette lookup table. Contour overlays are optional.
 If plain tiles are selected (i.e., no contours specified) then the PNG tiles are written directly from
 <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a>. Otherwise, we must first make a PostScript plot that is then converted to raster image via
 <a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a>.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
 <blockquote>
 <div><p>2-D gridded data set. Optionally, append =<em>ID</em> for reading a specific file
 format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
@@ -207,7 +212,7 @@ directory where all referenced KML files and raster images will be written [GMT_
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong><strong>a</strong>|<strong>g</strong>|<strong>s</strong>[<em>altitude</em>]</dt><dd><p>Select one of three altitude modes recognized by Google Earth that
 determines the altitude (in m) of the tile layer: <strong>a</strong> absolute
@@ -253,8 +258,8 @@ automatically depending on the level.</p>
 </div></blockquote>
 <dl class="simple" id="h">
 <dt><strong>-H</strong><em>scale</em></dt><dd><p>Improve the quality of rasterization by passing the sub-pixel smoothing scale
-to psconvert (same as <strong>-H</strong> option in <a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a>) [no sub-pixel smoothing].
-Ignored when <strong>-W</strong> is not used.</p>
+to psconvert (same as <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> option in <a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a>) [no sub-pixel smoothing].
+Ignored when <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> is not used.</p>
 </dd>
 </dl>
 <dl class="simple" id="i">
@@ -272,7 +277,7 @@ specific intensity scenario then run <a class="reference internal" href="grdgrad
 <dt><strong>-L</strong><em>tilesize</em></dt><dd><p>Sets the fixed size of the image building blocks.  Must be an integer that
 is radix 2.  Typical values are 256 or 512 [256].  <strong>Note</strong>: For global
 grids (here meaning 360-degree longitude range), we will select a
-<em>tilesize</em> of 360 if <strong>-L</strong> is not specified.</p>
+<em>tilesize</em> of 360 if <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> is not specified.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
@@ -292,9 +297,9 @@ interpolate the last resolution raster images.</p>
 <dl class="simple" id="w">
 <dt><strong>-W</strong><em>cfile</em>|<em>pen</em>[<strong>+s</strong><em>scale</em>/<em>limit</em>]</dt><dd><p>Supply a file with records each holding a contour value and a contour pen.
 We then overlay the selected contour lines on top of the image [no contours].
-Consequently, <strong>-W</strong> triggers the tile creation via PostScript and thus is slower.
+Consequently, <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> triggers the tile creation via PostScript and thus is slower.
 If <em>cfile</em> is not a valid file we assume you instead gave a <em>pen</em> and want
-to draw all the contours implied by the <em>cpt</em> specified in <strong>-C</strong>.  The contours
+to draw all the contours implied by the <em>cpt</em> specified in <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>.  The contours
 are overlain via calls to <a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a>.  <strong>Note</strong>: The contour pen width(s)
 refer to the highest tile level and are reduced by a factor of <em>scale</em> [sqrt(2)] for each
 lower level.  Contours with scaled pen widths &lt; <em>limit</em> [0.1] points are skipped (except
@@ -311,7 +316,7 @@ for pen widths that exactly equal 0 or “faint”).  Use <strong>+s</strong> to
 </dl>
 </section>
 <section id="quadtree-building">
-<h2>Quadtree building<a class="headerlink" href="#quadtree-building" title="Permalink to this headline">¶</a></h2>
+<h2>Quadtree building<a class="headerlink" href="#quadtree-building" title="Permalink to this heading">¶</a></h2>
 <p>We extend the input grid vi <a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a> to obtain a square dimension that can be repeatedly divided by 2
 until we arrive at tiles with the original grid increments.  For global grids this mean we
 extend the grid to a 360 x 360 Cartesian region and an initial grid increment of one
@@ -328,17 +333,17 @@ We detect if NaNs are present in any tile and if so produce a transparent PNG ti
 make an opaque JPG tile.</p>
 </section>
 <section id="contour-overlays">
-<h2>Contour overlays<a class="headerlink" href="#contour-overlays" title="Permalink to this headline">¶</a></h2>
+<h2>Contour overlays<a class="headerlink" href="#contour-overlays" title="Permalink to this heading">¶</a></h2>
 <p>Because each tile is a fixed size image (e.g., 512x512 pixels) but the amount of data represented
 changes by factors of 4 for each new level, we cannot use a constant thickness contour pen for all
 levels.  Thus, the pen you supply must be considered the final pen applied to the highest resolution
 map overlays.  Furthermore, because the <em>dpi</em> here is very small compared to regular GMT plots, it is
-important to improve the appearance of the contours by using sub-pixel smoothing (<strong>-H</strong>). Both
+important to improve the appearance of the contours by using sub-pixel smoothing (<a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>). Both
 generating PostScript tiles and using sub-pixel smoothing adds considerable processing time over
 plain tiles.</p>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
 <p>The intensity grid can be created from the data grid using
 <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> and, optionally, modified by <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> or
 <a class="reference internal" href="grdhisteq.html"><span class="doc">grdhisteq</span></a>.  Custom intensity grids built with several different
@@ -346,7 +351,7 @@ illumination angles can be combined with <a class="reference internal" href="grd
 illumination angle the automatic illumination can be used instead.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -365,7 +370,7 @@ supplying a suitable title, and using color masking for unmapped area, try:</p>
 </div>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
 <a class="reference internal" href="gmt2kml.html"><span class="doc">gmt2kml</span></a>,
@@ -389,8 +394,8 @@ supplying a suitable title, and using color masking for unmapped area, try:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

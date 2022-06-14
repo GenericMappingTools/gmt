@@ -1,0 +1,495 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Session One &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Session Two" href="session-2_jl.html" />
+    <link rel="prev" title="Introduction" href="intro_jl.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="intro_jl.html">Introduction</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Session One</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tutorial-setup">Tutorial setup</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#input-data">Input data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#job-control">Job Control</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#output-data">Output data</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#laboratory-exercises">Laboratory Exercises</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#linear-projection">Linear projection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#logarithmic-projection">Logarithmic projection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mercator-projection">Mercator projection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#albers-projection">Albers projection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#orthographic-projection">Orthographic projection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#eckert-iv-and-vi-projection">Eckert IV and VI projection</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="session-2_jl.html">Session Two</a></li>
+<li class="toctree-l2"><a class="reference internal" href="session-3_jl.html">Session Three</a></li>
+<li class="toctree-l2"><a class="reference internal" href="session-4_jl.html">Session Four</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../tutorial_jl.html">Tutorial in Julia</a> &raquo;</li>
+      <li>Session One</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/tutorial/session-1_jl.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="session-one">
+<h1>Session One<a class="headerlink" href="#session-one" title="Permalink to this heading">¶</a></h1>
+<section id="tutorial-setup">
+<h2>Tutorial setup<a class="headerlink" href="#tutorial-setup" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>GMT man pages, documentation, and gallery example scripts are available from the GMT.jl documentation web page
+available from <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/">https://www.generic-mapping-tools.org/GMT.jl/dev/</a>.</p></li>
+<li><p>We recommend you create a sub-directory called <em>tutorial</em>,
+cd into that directory, and run the commands there to keep things tidy.</p></li>
+<li><p>As we discuss GMT principles it may be a good idea to consult <a class="reference internal" href="../cookbook.html"><span class="doc">the GMT Cookbook</span></a>
+for more detailed explanations (but the CookBook is not translated into the GMT.jl syntax).</p></li>
+<li><p>The tutorial data sets are distributed via the GMT cache server.
+You will therefore find that all the data files have a “&#64;” prepended to
+their names. This will ensure the file is copied from the server
+before being used, hence you do not need to download any of the
+data manually. The only downside is that you will need an Internet
+connection to run the examples by cut and paste.</p></li>
+<li><p>Please cd into the directory <em>tutorial</em>. We are now ready to start.</p></li>
+</ol>
+<section id="input-data">
+<h3>Input data<a class="headerlink" href="#input-data" title="Permalink to this heading">¶</a></h3>
+<p>A GMT module may or may not take input data/files. Four different
+types of input are recognized (more details can be found in <a class="reference internal" href="../cookbook/file-formats.html"><span class="doc">GMT File Formats</span></a>):</p>
+<ol class="arabic">
+<li><p>Data tables.
+These are rectangular tables with a fixed number of columns and
+unlimited number of rows. We distinguish between two groups:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>ASCII (Preferred unless files are huge)</p></li>
+<li><p>Binary (to speed up input/output)</p></li>
+<li><p>In memory GMTdataset or plain Julia matrices.</p></li>
+</ul>
+</div></blockquote>
+<p>Such tables may have segment headers and can therefore hold any number of
+subsets such as individual line segments or polygons.</p>
+</li>
+<li><p>Gridded dated sets.
+These are data matrices (evenly spaced in two coordinates) that come in two flavors:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Grid-line registration</p></li>
+<li><p>Pixel registration</p></li>
+</ul>
+</div></blockquote>
+<p>You may choose among several file formats (even define your own format),
+but the GMT default is the architecture-independent netCDF format.</p>
+<p>The other alternative is to use Julia in-memory data in the form of GMTgrids.</p>
+</li>
+<li><p>Color palette table (For imaging, color plots, and contour maps). We will discuss these later.</p></li>
+</ol>
+</section>
+<section id="job-control">
+<h3>Job Control<a class="headerlink" href="#job-control" title="Permalink to this heading">¶</a></h3>
+<p>GMT modules may get operational parameters from several places:</p>
+<ol class="arabic simple">
+<li><p>Supplied command line options/switches or module defaults.</p></li>
+<li><p>Short-hand notation to select previously used option arguments.</p></li>
+<li><p>Implicitly using GMT defaults for a variety of parameters (stored in <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a>).</p></li>
+<li><p>May use hidden support data like coastlines or PostScript patterns.</p></li>
+</ol>
+</section>
+<section id="output-data">
+<h3>Output data<a class="headerlink" href="#output-data" title="Permalink to this heading">¶</a></h3>
+<p>There are 5 general categories of output produced by GMT:</p>
+<ol class="arabic simple">
+<li><p>PostScript plot commands.</p></li>
+<li><p>Data Table(s).</p></li>
+<li><p>Gridded data set(s).</p></li>
+<li><p>Statistics &amp; Summaries.</p></li>
+<li><p>Warnings and Errors, written to the REPL</p></li>
+</ol>
+</section>
+</section>
+<section id="laboratory-exercises">
+<h2>Laboratory Exercises<a class="headerlink" href="#laboratory-exercises" title="Permalink to this heading">¶</a></h2>
+<p>We will begin our adventure by making some simple plot axes and coastline basemaps. We will do this in order
+to introduce the all-important common options <strong>frame</strong>, <strong>proj</strong>, and <strong>region</strong> and to familiarize ourselves
+with a few selected GMT projections. The GMT modules we will utilize are <a class="reference internal" href="../basemap.html"><span class="doc">basemap</span></a> and
+<a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/coast/">basemap</a>.
+Please consult their manual pages for reference.</p>
+<section id="linear-projection">
+<h3>Linear projection<a class="headerlink" href="#linear-projection" title="Permalink to this heading">¶</a></h3>
+<p>We start by making the basemap frame for a linear <em>x-y</em> plot. We want it to go from 10 to 70 in <em>x</em> and from
+-3 to 8 in <em>y</em>, with automatic annotation intervals. Finally, we let the canvas be painted light red and have
+dimensions of 10 by 7.5 centimeters. Here’s how we do it:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>basemap<span class="o">(</span><span class="nv">region</span><span class="o">=(</span><span class="m">10</span>,70,-3,8<span class="o">)</span>, <span class="nv">proj</span><span class="o">=</span>:linear, <span class="nv">figsize</span><span class="o">=(</span><span class="m">10</span>,7.5<span class="o">)</span>,
+        <span class="nv">frame</span><span class="o">=(</span><span class="nv">fill</span><span class="o">=</span>:lightred, <span class="nv">title</span><span class="o">=</span><span class="s2">&quot;My first plot&quot;</span><span class="o">)</span>, <span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>This script will open the result in a PNG viewer and it should look like <a class="reference internal" href="#gmt-tut-1-jl"><span class="std std-ref">our example 1 below</span></a>.
+Examine the <a class="reference internal" href="../basemap.html"><span class="doc">basemap</span></a> documentation so you understand what each option means.</p>
+<figure class="align-center" id="id2">
+<span id="gmt-tut-1-jl"></span><a class="reference internal image-reference" href="../_images/GMT_tut_1.png"><img alt="../_images/GMT_tut_1.png" src="../_images/GMT_tut_1.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Result of GMT Tutorial example 1.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li><p>Try change the <strong>proj=:linear</strong> values.</p></li>
+<li><p>Try change the <strong>frame</strong> values.</p></li>
+<li><p>Change title and canvas color.</p></li>
+</ol>
+</section>
+<section id="logarithmic-projection">
+<h3>Logarithmic projection<a class="headerlink" href="#logarithmic-projection" title="Permalink to this heading">¶</a></h3>
+<p>We next will show how to do a basemap for a log–log plot. We have no data set yet but we will imagine that the
+raw <em>x</em> data range from 3 to 9613 and that <em>y</em> ranges from 10^20 to 10^24. One possibility is</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>basemap<span class="o">(</span><span class="nv">region</span><span class="o">=(</span><span class="m">1</span>,10000,1e20,1e25<span class="o">)</span>, <span class="nv">proj</span><span class="o">=</span>:loglog, <span class="nv">figsize</span><span class="o">=(</span><span class="m">12</span>,8<span class="o">)</span>, <span class="nv">xaxis</span><span class="o">=(</span><span class="nv">annot</span><span class="o">=</span><span class="m">2</span>, <span class="nv">label</span><span class="o">=</span><span class="s2">&quot;Wavelength (m)&quot;</span><span class="o">)</span>,
+        <span class="nv">yaxis</span><span class="o">=(</span><span class="nv">annot</span><span class="o">=</span><span class="m">1</span>, <span class="nv">ticks</span><span class="o">=</span><span class="m">3</span>, <span class="nv">scale</span><span class="o">=</span>:pow, <span class="nv">label</span><span class="o">=</span><span class="s2">&quot;Power (W)&quot;</span><span class="o">)</span>, <span class="nv">frame</span><span class="o">=(</span><span class="nv">axes</span><span class="o">=</span>:WS,<span class="o">)</span>, <span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Make sure your plot looks like <a class="reference internal" href="#gmt-tut-2-jl"><span class="std std-ref">our example 2 below</span></a></p>
+<figure class="align-center" id="id3">
+<span id="gmt-tut-2-jl"></span><a class="reference internal image-reference" href="../_images/GMT_tut_2.png"><img alt="../_images/GMT_tut_2.png" src="../_images/GMT_tut_2.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Result of GMT Tutorial example 2.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li><p>Do not use <strong>proj</strong>=:loglog the axes lengths.</p></li>
+<li><p>Leave the <strong>scale</strong>=:pow out of the <strong>frame</strong> string.</p></li>
+<li><p>Add <strong>grid</strong>=3 to <strong>xaxis</strong> and <strong>yaxis</strong> settings.</p></li>
+</ol>
+</section>
+<section id="mercator-projection">
+<h3>Mercator projection<a class="headerlink" href="#mercator-projection" title="Permalink to this heading">¶</a></h3>
+<p>Despite the problems of extreme horizontal exaggeration at high latitudes, the conformal Mercator projection
+(<strong>proj=:merc</strong>) remains the stalwart of location maps used by scientists. It is one of several cylindrical
+projections offered by GMT; here we will only have time to focus on one such projection. The complete syntax is simply</p>
+<p><strong>proj=:merc</strong></p>
+<p>To make coastline maps we use <a class="reference external" href="https://www.generic-mapping-tools.org/GMT.jl/dev/coast/">basemap</a> which automatically
+will access the GMT coastline, river and border data base derived from the GSHHG database [See <em>Wessel and Smith</em>, 1996].
+In addition to the common switches we may need to use some of several coast-specific options:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>area</strong></p></td>
+<td><p>Exclude small features or those of high hierarchical levels (see <a class="reference external" href="https://github.com/GenericMappingTools/gshhg-gmt#readme">GSHHG</a>.)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>resolution</strong></p></td>
+<td><p>Select data resolution (<strong>f</strong>ull, <strong>h</strong>igh, <strong>i</strong>ntermediate, <strong>l</strong>ow, or <strong>c</strong>rude)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>land</strong></p></td>
+<td><p>Set color of dry areas (default does not paint)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>rivers</strong></p></td>
+<td><p>Draw rivers (chose features from one or more hierarchical categories)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>map_scale</strong></p></td>
+<td><p>Plot map scale (length scale can be km, miles, or nautical miles)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>borders</strong></p></td>
+<td><p>Draw political borders (including US state borders)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>ocean</strong></p></td>
+<td><p>Set color for wet areas (default does not paint)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>shore</strong></p></td>
+<td><p>Draw coastlines and set pen thickness</p></td>
+</tr>
+</tbody>
+</table>
+<p>One of <strong>shore</strong>, <strong>land</strong>, <strong>ocean</strong> must be selected. Our first coastline example is from Latin America:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>coast<span class="o">(</span><span class="nv">region</span><span class="o">=(</span>-90,-70,0,20<span class="o">)</span>, <span class="nv">proj</span><span class="o">=</span>:merc, <span class="nv">land</span><span class="o">=</span>:chocolate, <span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-3-jl"><span class="std std-ref">our example 3 below</span></a></p>
+<figure class="align-center" id="id4">
+<span id="gmt-tut-3-jl"></span><a class="reference internal image-reference" href="../_images/GMT_tut_3.png"><img alt="../_images/GMT_tut_3.png" src="../_images/GMT_tut_3.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Result of GMT Tutorial example 3.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li><p>Add the <strong>verbose</strong> option.</p></li>
+<li><p>Try <strong>region=</strong>(270,290,0,20) instead. What happens to the annotations?</p></li>
+<li><p>Edit your gmt.conf file, change <a class="reference internal" href="../gmt.conf.html#term-FORMAT_GEO_MAP"><span class="xref std std-term">FORMAT_GEO_MAP</span></a>
+to another setting (see the <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a> documentation), and plot again.</p></li>
+<li><p>Pick another region and change land color.</p></li>
+<li><p>Pick a region that includes the north or south poles.</p></li>
+<li><p>Try <strong>shore</strong>=”0.25<strong>p</strong>” instead of (or in addition to) <strong>land</strong>.</p></li>
+</ol>
+</section>
+<section id="albers-projection">
+<h3>Albers projection<a class="headerlink" href="#albers-projection" title="Permalink to this heading">¶</a></h3>
+<p>The Albers projection (<strong>poj=:albers</strong>) is an equal-area conical projection;
+its conformal cousin is the Lambert conic projection (<strong>proj=:lambert</strong>).
+Their usages are almost identical so we will only use the Albers here.
+The general syntax is</p>
+<blockquote>
+<div><p>proj=(name=:albers, center=(lon_0,lat_0), parallels=(lat_1,lat_2))</p>
+</div></blockquote>
+<p>where (<em>lon_0, lat_0</em>) is the map (projection) center and <em>lat_1, lat_2</em>
+are the two standard parallels where the cone intersects the Earth’s surface.
+We try the following command:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>coast<span class="o">(</span><span class="nv">region</span><span class="o">=(</span>-130,-70,24,52<span class="o">)</span>, <span class="nv">proj</span><span class="o">=(</span><span class="nv">name</span><span class="o">=</span>:albers, <span class="nv">center</span><span class="o">=(</span>-100,35<span class="o">)</span>, <span class="nv">parallels</span><span class="o">=(</span><span class="m">33</span>,45<span class="o">))</span>,
+      <span class="nv">title</span><span class="o">=</span><span class="s2">&quot;Conic Projection&quot;</span>, <span class="nv">borders</span><span class="o">=((</span><span class="nv">type</span><span class="o">=</span><span class="m">1</span>, <span class="nv">pen</span><span class="o">=</span>:thicker<span class="o">)</span>, <span class="o">(</span><span class="nv">type</span><span class="o">=</span><span class="m">2</span>, <span class="nv">pen</span><span class="o">=</span>:thinnest<span class="o">))</span>,
+      <span class="nv">area</span><span class="o">=</span><span class="m">500</span>, <span class="nv">land</span><span class="o">=</span>:gray, <span class="nv">coast</span><span class="o">=</span>:thinnest, <span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-4-jl"><span class="std std-ref">our example 4 below</span></a></p>
+<figure class="align-center" id="id5">
+<span id="gmt-tut-4-jl"></span><a class="reference internal image-reference" href="../_images/GMT_tut_4.png"><img alt="../_images/GMT_tut_4.png" src="../_images/GMT_tut_4.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Result of GMT Tutorial example 4.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li><p>Change the parameter <a class="reference internal" href="../gmt.conf.html#term-MAP_GRID_CROSS_SIZE_PRIMARY"><span class="xref std std-term">MAP_GRID_CROSS_SIZE_PRIMARY</span></a> to make grid crosses instead of gridlines.</p></li>
+<li><p>Change <strong>region</strong> to a rectangular box specification instead of minimum and maximum values.</p></li>
+</ol>
+</section>
+<section id="orthographic-projection">
+<h3>Orthographic projection<a class="headerlink" href="#orthographic-projection" title="Permalink to this heading">¶</a></h3>
+<p>The azimuthal orthographic projection (<strong>proj=:ortho</strong>) is one of several projections with similar syntax and
+behavior; the one we have chosen mimics viewing the Earth from space at an infinite distance; it is neither
+conformal nor equal-area. The syntax for this projection is</p>
+<blockquote>
+<div><p>proj=(name=:ortho, center=(lon_0,lat_0))</p>
+</div></blockquote>
+<p>where (<em>lon_0, lat_0</em>) is the center of the map (projection). As an example we will try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>coast<span class="o">(</span><span class="nv">region</span><span class="o">=</span>:global360, <span class="nv">proj</span><span class="o">=(</span><span class="nv">name</span><span class="o">=</span>:ortho, <span class="nv">center</span><span class="o">=(</span><span class="m">280</span>,30<span class="o">))</span>, <span class="nv">frame</span><span class="o">=(</span><span class="nv">annot</span><span class="o">=</span>:a, <span class="nv">grid</span><span class="o">=</span>:a<span class="o">)</span>,
+      <span class="nv">area</span><span class="o">=</span><span class="m">5000</span>, <span class="nv">land</span><span class="o">=</span>:white, <span class="nv">ocean</span><span class="o">=</span>:DarkTurquoise, <span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-5-jl"><span class="std std-ref">our example 5 below</span></a></p>
+<figure class="align-center" id="id6">
+<span id="gmt-tut-5-jl"></span><a class="reference internal image-reference" href="../_images/GMT_tut_5.png"><img alt="../_images/GMT_tut_5.png" src="../_images/GMT_tut_5.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Result of GMT Tutorial example 5</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li><p>Use the rectangular option in <strong>region</strong> to make a rectangular map showing the US only.</p></li>
+</ol>
+</section>
+<section id="eckert-iv-and-vi-projection">
+<h3>Eckert IV and VI projection<a class="headerlink" href="#eckert-iv-and-vi-projection" title="Permalink to this heading">¶</a></h3>
+<p>We conclude the survey of map projections with the Eckert IV and VI projections, two of several projections
+used for global thematic maps; They are both equal-area projections whose syntax is</p>
+<blockquote>
+<div><p>proj=(name=:EckertIV, center=lon_0)
+proj=(name=:EckertVI, center=lon_0)</p>
+</div></blockquote>
+<p>The <em>lon_0</em> is the central meridian (which takes precedence over the mid-value implied by the <strong>region</strong> setting).
+A simple Eckert VI world map is thus generated by</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>coast<span class="o">(</span><span class="nv">region</span><span class="o">=</span>:global360, <span class="nv">proj</span><span class="o">=(</span><span class="nv">name</span><span class="o">=</span>:EckertVI, <span class="nv">center</span><span class="o">=</span><span class="m">180</span><span class="o">)</span>, <span class="nv">frame</span><span class="o">=(</span><span class="nv">annot</span><span class="o">=</span>:a, <span class="nv">grid</span><span class="o">=</span>:a<span class="o">)</span>, <span class="nv">resolution</span><span class="o">=</span>:crude,
+      <span class="nv">area</span><span class="o">=</span><span class="m">5000</span>, <span class="nv">land</span><span class="o">=</span>:chocolate, <span class="nv">shore</span><span class="o">=</span>:thinnest, <span class="nv">ocean</span><span class="o">=</span>:DarkTurquoise, <span class="nv">show</span><span class="o">=</span><span class="nb">true</span><span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Your plot should look like <a class="reference internal" href="#gmt-tut-6-jl"><span class="std std-ref">our example 6 below</span></a></p>
+<figure class="align-center" id="id7">
+<span id="gmt-tut-6-jl"></span><a class="reference internal image-reference" href="../_images/GMT_tut_6.png"><img alt="../_images/GMT_tut_6.png" src="../_images/GMT_tut_6.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Result of GMT Tutorial example 6</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Exercises:</p>
+<ol class="arabic simple">
+<li><p>Center the map on Greenwich.</p></li>
+<li><p>Add a map scale with <strong>map_scale</strong>.</p></li>
+</ol>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="intro_jl.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="session-2_jl.html" class="btn btn-neutral float-right" title="Session Two" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -4,13 +4,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; GMT 6.3.0 documentation</title>
+  <title>Index &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -21,10 +21,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="#" />
@@ -45,7 +49,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -58,9 +62,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -429,6 +435,8 @@
 </li>
       <li><a href="supplements/potential/gravfft.html#index-0"><strong>gravfft</strong></a>
 </li>
+      <li><a href="supplements/potential/gravprisms.html#index-0"><strong>gravprisms</strong></a>
+</li>
       <li><a href="grd2cpt.html#index-0"><strong>grd2cpt</strong></a>
 </li>
       <li><a href="grd2kml.html#index-0"><strong>grd2kml</strong></a>
@@ -607,6 +615,8 @@
 </li>
       <li><a href="gmt.conf.html#term-MAP_DEGREE_SYMBOL"><strong>MAP_DEGREE_SYMBOL</strong></a>
 </li>
+      <li><a href="gmt.conf.html#term-MAP_EMBELLISHMENT_MODE"><strong>MAP_EMBELLISHMENT_MODE</strong></a>
+</li>
       <li><a href="gmt.conf.html#term-MAP_FRAME_AXES"><strong>MAP_FRAME_AXES</strong></a>
 </li>
       <li><a href="gmt.conf.html#term-MAP_FRAME_PEN"><strong>MAP_FRAME_PEN</strong></a>
@@ -637,10 +647,10 @@
 </li>
       <li><a href="gmt.conf.html#term-MAP_LINE_STEP"><strong>MAP_LINE_STEP</strong></a>
 </li>
-      <li><a href="gmt.conf.html#term-MAP_LOGO"><strong>MAP_LOGO</strong></a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gmt.conf.html#term-MAP_LOGO"><strong>MAP_LOGO</strong></a>
+</li>
       <li><a href="gmt.conf.html#term-MAP_LOGO_POS"><strong>MAP_LOGO_POS</strong></a>
 </li>
       <li><a href="gmt.conf.html#term-MAP_ORIGIN_X"><strong>MAP_ORIGIN_X</strong></a>
@@ -963,8 +973,8 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

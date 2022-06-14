@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gmtget &mdash; GMT 6.3.0 documentation</title>
+  <title>gmtget &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="gmtget">
-<h1>gmtget<a class="headerlink" href="#gmtget" title="Permalink to this headline">¶</a></h1>
+<h1>gmtget<a class="headerlink" href="#gmtget" title="Permalink to this heading">¶</a></h1>
 <p>Get individual GMT default settings or download data sets</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt get</strong>
 [ <em>PARAMETER1</em> <em>PARAMETER2</em> <em>PARAMETER3</em> … ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>selection</em> ]
@@ -158,16 +164,16 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>Normally, <strong>gmt get</strong> will list the value of one or more specified GMT default parameters.
-Alternatively (with <strong>-D</strong>), it will instead download selected sets remote data from the
+Alternatively (with <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>), it will instead download selected sets remote data from the
 current GMT data server.</p>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt>PARAMETER</dt><dd><p>Provide one or several parameters of interest. The current value of
-those parameters will be written to <em>stdout</em>. For a complete listing
+those parameters will be written to standard output. For a complete listing
 of available parameters and their meaning, see the <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> man page.</p>
 </dd>
 </dl>
@@ -188,7 +194,7 @@ finally in the system defaults].</p>
 </dd>
 </dl>
 <dl class="simple" id="i">
-<dt><strong>-I</strong><em>inc</em>[<strong>m</strong>|<strong>s</strong>]</dt><dd><p>In conjunction with <strong>-D</strong>, limit the download of grids to those with grid
+<dt><strong>-I</strong><em>inc</em>[<strong>m</strong>|<strong>s</strong>]</dt><dd><p>In conjunction with <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>, limit the download of grids to those with grid
 spacing equal to or larger than <em>inc</em> [no limit].</p>
 </dd>
 </dl>
@@ -199,14 +205,14 @@ spaces].</p>
 </dd>
 </dl>
 <dl class="simple" id="n">
-<dt><strong>-N</strong></dt><dd><p>Used in conjunction with <strong>-D</strong> and disables the otherwise automatic conversion
+<dt><strong>-N</strong></dt><dd><p>Used in conjunction with <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> and disables the otherwise automatic conversion
 of downloaded compressed JP2000 tiles to locally (compressed) netCDF grids.
 This speeds up the total data request and defers the conversion to when the
 tile is requested by a module.</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
-<dt><strong>-Q</strong></dt><dd><p>Can be used in conjunction with <strong>-D</strong> (and <strong>-I</strong>) to provide a listing of
+<dt><strong>-Q</strong></dt><dd><p>Can be used in conjunction with <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> (and <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>) to provide a listing of
 available datasets (no downloading takes place). The output is one record per
 dataset giving the information as <em>planet group dataset size nitems remark</em>.  For datasets
 that are tiled, the <em>size</em> is set to N/A (tile sizes vary but are usually just
@@ -218,7 +224,7 @@ a few Mb each) and <em>nitems</em> indicates the number of tiles.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -230,7 +236,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To download all the Earth gridded products, leaving tiles as JP2000 files, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt get -Ddata<span class="o">=</span>earth -N
 </pre></div>
@@ -254,13 +260,13 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </div>
 </section>
 <section id="downloading-data">
-<h2>Downloading Data<a class="headerlink" href="#downloading-data" title="Permalink to this headline">¶</a></h2>
-<p>Be aware that the GMT data server hosts many tens of Gb of data sets.  The <strong>-D</strong> option
+<h2>Downloading Data<a class="headerlink" href="#downloading-data" title="Permalink to this heading">¶</a></h2>
+<p>Be aware that the GMT data server hosts many tens of Gb of data sets.  The <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> option
 may require considerable free space on your local computer.  Data and cache directories
 may be removed by using the <a class="reference internal" href="clear.html"><span class="doc">clear</span></a> module.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="clear.html"><span class="doc">clear</span></a>,
 <a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
@@ -280,8 +286,8 @@ may be removed by using the <a class="reference internal" href="clear.html"><spa
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

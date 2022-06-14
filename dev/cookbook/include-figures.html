@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>9. Including GMT Graphics into your Documents &mdash; GMT 6.3.0 documentation</title>
+  <title>9. Including GMT Graphics into your Documents &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
@@ -179,7 +185,7 @@
            <div itemprop="articleBody">
              
   <section id="including-gmt-graphics-into-your-documents">
-<span id="include-gmt-graphics"></span><h1><span class="section-number">9. </span>Including GMT Graphics into your Documents<a class="headerlink" href="#including-gmt-graphics-into-your-documents" title="Permalink to this headline">¶</a></h1>
+<span id="include-gmt-graphics"></span><h1><span class="section-number">9. </span>Including GMT Graphics into your Documents<a class="headerlink" href="#including-gmt-graphics-into-your-documents" title="Permalink to this heading">¶</a></h1>
 <p>Now that you made some nice graphics with GMT, it is time to add them
 to a document, an article, a report, your dissertation, a poster, a web
 page, or a presentation. Of course, you could try the old-fashioned
@@ -207,7 +213,7 @@ purpuse when running <a class="reference internal" href="../begin.html"><span cl
 <p>The remainder of this Chapter will show how to include GMT classicly produced
 PostScript graphics into documents and how to achieve the best quality results.</p>
 <section id="making-gmt-encapsulated-postscript-files">
-<h2><span class="section-number">9.1. </span>Making GMT Encapsulated PostScript Files<a class="headerlink" href="#making-gmt-encapsulated-postscript-files" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">9.1. </span>Making GMT Encapsulated PostScript Files<a class="headerlink" href="#making-gmt-encapsulated-postscript-files" title="Permalink to this heading">¶</a></h2>
 <p>GMT classic mode produces freeform PostScript files. Note that a freeform
 PostScript file may contain special operators (such as
 <code class="docutils literal notranslate"><span class="pre">Setpagedevice</span></code>) that is specific to printers (e.g., selection of
@@ -233,16 +239,17 @@ accomplished.</p>
 <li><p>Programs such as Adobe Illustrator, Aldus Freehand, and
 Corel Draw will allow you to edit the BoundingBox graphically.</p></li>
 <li><p>A command-line alternative is to use freely-available program
-<strong>epstool</strong> from the makers of Aladdin ghostscript. Running</p>
+<em>epstool</em> from the makers of <a class="reference external" href="https://www.ghostscript.com/">Aladdin ghostscript</a>.
+Running</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>epstool -c -b myplot.ps
 </pre></div>
 </div>
 </div></blockquote>
-<p>should give a tight BoundingBox; <strong>epstool</strong> assumes the plot is
+<p>should give a tight BoundingBox; <em>epstool</em> assumes the plot is
 page size and not a huge poster.</p>
 </li>
-<li><p>Another option is to use <strong>ps2epsi</strong> which also comes with the
+<li><p>Another option is to use <em>ps2epsi</em> which also comes with the
 ghostscript package. Running</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ps2epsi myplot.ps myplot.eps
@@ -278,7 +285,7 @@ Except for Pages, you will not be able to view the EPS figure
 on-screen, but it will print correctly.</p>
 </section>
 <section id="converting-gmt-postscript-to-pdf-or-raster-images">
-<h2><span class="section-number">9.2. </span>Converting GMT PostScript to PDF or raster images<a class="headerlink" href="#converting-gmt-postscript-to-pdf-or-raster-images" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">9.2. </span>Converting GMT PostScript to PDF or raster images<a class="headerlink" href="#converting-gmt-postscript-to-pdf-or-raster-images" title="Permalink to this heading">¶</a></h2>
 <p>Since Adobe’s PDF (Portable Document Format) seems to have become the
 <em>de facto</em> standard for vector graphics, you are often well off
 converting GMT produced PostScript files to PDF. Being both vector
@@ -286,8 +293,8 @@ formats (i.e., they basically describe all objects, text and graphics as
 lines and curves), such conversion sounds awfully straightforward and
 not worth a full section in this document. But experience has shown
 differently, since most converters cut corners by using the same tool
-(Aladdin’s ghostscript) with basic default options that are not
-devised to produce the best quality PDF files.</p>
+(<a class="reference external" href="https://www.ghostscript.com/">Aladdin ghostscript</a>) with basic
+default options that are not devised to produce the best quality PDF files.</p>
 <p>For some applications it is practical or even essential that you convert
 your PostScript file into a raster format, such as GIF (Graphics
 Interchange Format), TIFF (Tagged Image File Format), PNG (Portable
@@ -299,14 +306,17 @@ A less obvious reason to convert your image to a raster format is to
 by-pass PowerPoint’s rendering engine in case you want to embed
 the image into a presentation.</p>
 <p>The are a number of programs that will convert PostScript files to PDF
-or raster formats, like Aladdin’s <strong>pstopdf</strong>, pbmplus’ <strong>pstoimg</strong>,
-or GraphicsMagick’s and ImageMagick’s <strong>convert</strong>, most of which run ghostscript
-behind the scenes. The same is true for viewers like <strong>ghostview</strong> and
-Apple’s <strong>Preview</strong>. So a lot of the times when people report that
-their PostScript plot does not look right but prints fine, it is the
-way ghostscript is used with its most basic settings that is to blame.</p>
+or raster formats, like Aladdin’s <em>pstopdf</em>,
+<a class="reference external" href="https://acme.com/software/pbmplus/">pbmplus</a>’ <em>pstoimg</em>,
+or <a class="reference external" href="http://www.graphicsmagick.org/">GraphicsMagick’s</a>
+and <a class="reference external" href="https://www.imagemagick.org/">ImageMagick’s</a> <em>convert</em>,
+most of which run ghostscript behind the scenes.
+The same is true for viewers like <em>ghostview</em> and Apple’s <em>Preview</em>.
+So a lot of the times when people report that their PostScript plot
+does not look right but prints fine, it is the way ghostscript is used
+with its most basic settings that is to blame.</p>
 <section id="when-converting-or-viewing-postscript-goes-awry">
-<h3><span class="section-number">9.2.1. </span>When converting or viewing PostScript goes awry<a class="headerlink" href="#when-converting-or-viewing-postscript-goes-awry" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">9.2.1. </span>When converting or viewing PostScript goes awry<a class="headerlink" href="#when-converting-or-viewing-postscript-goes-awry" title="Permalink to this heading">¶</a></h3>
 <p>Here are some notorious pitfalls with ghostscript (and other
 rendering programs for that matter).</p>
 <dl>
@@ -334,7 +344,7 @@ leave JPEG to photographs.</p>
 converting them to PDF objects. This can be avoided, however, by
 inhibiting the compression altogether, or using the non-lossy
 <em>flate</em> compression, similar to the one used in the old
-<strong>compress</strong> program. This compression is fully reversible, so
+<em>compress</em> program. This compression is fully reversible, so
 that your image does not suffer any loss.</p>
 </dd>
 <dt>Auto-rotation.</dt><dd><p>The ghostscript engine has the annoying habit to automatically
@@ -375,7 +385,7 @@ that engine) will not do so by default.</p>
 </dl>
 </section>
 <section id="using-psconvert">
-<h3><span class="section-number">9.2.2. </span>Using <a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a><a class="headerlink" href="#using-psconvert" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">9.2.2. </span>Using <a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a><a class="headerlink" href="#using-psconvert" title="Permalink to this heading">¶</a></h3>
 <p>The remedy to all the problems mentioned in the previous section is
 readily available to you in the form of the GMT utility
 <a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a>. It is designed to provide
@@ -408,9 +418,9 @@ scaling of the result.</p>
 </section>
 </section>
 <section id="examples">
-<h2><span class="section-number">9.3. </span>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">9.3. </span>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <section id="gmt-graphics-in-latex">
-<h3><span class="section-number">9.3.1. </span>GMT graphics in LaTeX<a class="headerlink" href="#gmt-graphics-in-latex" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">9.3.1. </span>GMT graphics in LaTeX<a class="headerlink" href="#gmt-graphics-in-latex" title="Permalink to this heading">¶</a></h3>
 <p>To add the graphics into a LaTeX document we use the
 <code class="docutils literal notranslate"><span class="pre">\includegraphics</span></code> command supplied by the package. In the preamble of
 your LaTeX document you will need to include the line</p>
@@ -447,17 +457,17 @@ you will need to rotate the plot as well. For example,</p>
 (after rotation) will be 80% of the width of the text column.</p>
 </section>
 <section id="gmt-graphics-in-powerpoint">
-<h3><span class="section-number">9.3.2. </span>GMT graphics in <strong>PowerPoint</strong><a class="headerlink" href="#gmt-graphics-in-powerpoint" title="Permalink to this headline">¶</a></h3>
-<figure class="align-center" id="id1">
+<h3><span class="section-number">9.3.2. </span>GMT graphics in <strong>PowerPoint</strong><a class="headerlink" href="#gmt-graphics-in-powerpoint" title="Permalink to this heading">¶</a></h3>
+<figure class="align-center" id="id2">
 <span id="rendering"></span><a class="reference internal image-reference" href="../_images/rendering.png"><img alt="../_images/rendering.png" src="../_images/rendering.png" style="width: 360.0px; height: 270.0px;" /></a>
 <figcaption>
-<p><span class="caption-text">Examples of rendered images in a PowerPoint presentation</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Examples of rendered images in a PowerPoint presentation</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
-<figure class="align-center" id="id2">
+<figure class="align-center" id="id3">
 <span id="powerpoint-dialogue"></span><a class="reference internal image-reference" href="../_images/formatpicture.png"><img alt="../_images/formatpicture.png" src="../_images/formatpicture.png" style="width: 272.5px; height: 258.0px;" /></a>
 <figcaption>
-<p><span class="caption-text">PowerPoint’s Format Picture dialogue to set scale and rotation.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">PowerPoint’s Format Picture dialogue to set scale and rotation.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>In Figure <a class="reference internal" href="#rendering"><span class="std std-ref">Rendered images</span></a> we have attempted to include
@@ -480,7 +490,7 @@ appropriate for the background we are using.</p></li>
 included PNG
 versions of a portion of the same example. This shows the workings of
 anti-aliasing and different resolutions. All samples were obtained with
-<strong>convert</strong>. The one on the top uses all default settings, resulting
+<em>convert</em>. The one on the top uses all default settings, resulting
 in an anti-aliased image at 72 dpi resolution (very much like the PDF
 included directly into PowerPoint).</p>
 <p>Just switching anti-aliasing off (middle) is clearly not an option
@@ -500,7 +510,7 @@ one-button mouse).</p>
 </section>
 </section>
 <section id="concluding-remarks">
-<h2><span class="section-number">9.4. </span>Concluding remarks<a class="headerlink" href="#concluding-remarks" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">9.4. </span>Concluding remarks<a class="headerlink" href="#concluding-remarks" title="Permalink to this heading">¶</a></h2>
 <p>These examples do not constitute endorsements of the products mentioned
 above; they only represent our limited experience with adding
 PostScript to various types of documents. For other solutions and
@@ -519,8 +529,8 @@ further help, please post messages to the GMT user forum.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

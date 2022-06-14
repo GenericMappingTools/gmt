@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdtrack &mdash; GMT 6.3.0 documentation</title>
+  <title>grdtrack &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdtrack">
-<h1>grdtrack<a class="headerlink" href="#grdtrack" title="Permalink to this headline">¶</a></h1>
+<h1>grdtrack<a class="headerlink" href="#grdtrack" title="Permalink to this heading">¶</a></h1>
 <p>Sample grids at specified (x,y) locations</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdtrack</strong> [ <em>table</em> ] <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd1</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd2</em> …
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>f</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong>][<strong>+l</strong>] ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>length</em>/<em>ds</em>[<em>/spacing</em>][<strong>+a</strong>|<strong>v</strong>][<strong>d</strong>|<strong>f</strong><em>value</em>][<strong>l</strong>|<strong>r</strong>] ]
@@ -160,7 +166,7 @@
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> ]
 [ <strong>-a</strong><a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-d</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
@@ -177,13 +183,13 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdtrack</strong> reads one or more grid files (or a Sandwell/Smith IMG
-files) and a table (from file or standard input; but see <strong>-E</strong> for
+files) and a table (from file or standard input; but see <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> for
 exception) with (x,y) [or (lon,lat)] positions in the first two columns
 (more columns may be present). It interpolates the grid(s) at the
 positions in the table and writes out the table with the interpolated
-values added as (one or more) new columns. Alternatively (<strong>-C</strong>), the
+values added as (one or more) new columns. Alternatively (<a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>), the
 input is considered to be line-segments and we create orthogonal
 cross-profiles at each data point or with an equidistant separation and
 sample the grid(s) along these profiles. A bicubic [Default], bilinear,
@@ -193,7 +199,7 @@ Default uses “natural” conditions (second partial derivative normal to
 edge is zero) unless the grid is automatically recognized as periodic.)</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>This is an ASCII (or binary, see <strong>-bi</strong>) file where the first 2 columns
 hold the (x,y) positions where the user wants to sample the 2-D data set.
@@ -211,17 +217,21 @@ points, (2) Img file with constraints coded, return data only at
 constrained points and NaN elsewhere, and (3) Img file
 with constraints coded, return 1 at constraints and 0 elsewhere, and
 optionally the max latitude in the IMG file [80.738]. You may repeat
-<strong>-G</strong> as many times as you have grids you wish to sample.
-Alternatively, use <strong>-G+l</strong><em>list</em> to pass a list of file names.
+<a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> as many times as you have grids you wish to sample.
+Alternatively, use <strong>-G+l</strong><em>list</em> to pass a file whose first word
+in the trailing text record will be extracted as the file names.
 The grids are sampled and results are output in the order given.
-(See <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
+(See <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>). <strong>Note</strong>: If <em>gridfile</em>
+is a remote global grid and no registration is specified then <strong>grdtrack</strong>
+will default to gridline registration (instead of the default pixel registration)
+to ensure all input points are inside the grid.</p>
 </dd>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
-<dt><strong>-A</strong>[<strong>f</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong>][<strong>+l</strong>]</dt><dd><p>For track resampling (if <strong>-C</strong> or <strong>-E</strong> are set) we can select how this is to
+<dt><strong>-A</strong>[<strong>f</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong>][<strong>+l</strong>]</dt><dd><p>For track resampling (if <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> or <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> are set) we can select how this is to
 be performed. Append <strong>f</strong> to keep original points, but add
 intermediate points if needed [Default], <strong>m</strong> as <strong>f</strong>, but first
 follow meridian (along y) then parallel (along x), <strong>p</strong> as <strong>f</strong>,
@@ -230,7 +240,7 @@ to resample at equidistant locations; input points are not
 necessarily included in the output, and <strong>R</strong> as <strong>r</strong>, but adjust
 given spacing to fit the track length exactly. Finally, append
 <strong>+l</strong> if geographic distances should be measured along rhumb lines
-(loxodromes) instead of great circles. Ignored unless <strong>-C</strong> is used.</p>
+(loxodromes) instead of great circles. Ignored unless <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> is used.</p>
 </dd>
 </dl>
 <dl class="simple" id="c">
@@ -241,7 +251,7 @@ Specify two length scales that control how the sampling is done:
 <em>length</em> sets the full length of each cross-profile, while <em>ds</em> is
 the sampling spacing along each cross-profile. Optionally, append
 <strong>/</strong><em>spacing</em> for an equidistant spacing between cross-profiles
-[Default erects cross-profiles at the input coordinates]; see <strong>-A</strong>
+[Default erects cross-profiles at the input coordinates]; see <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>
 for how resampling the input track is controlled. By
 default, all cross-profiles have the same direction (left to right
 as we look in the direction of the input line segment). Append <strong>+a</strong>
@@ -262,7 +272,7 @@ for all profiles.</p>
 </dd>
 </dl>
 <dl class="simple" id="d">
-<dt><strong>-D</strong><em>dfile</em></dt><dd><p>In concert with <strong>-C</strong> we can save the (possibly resampled) original
+<dt><strong>-D</strong><em>dfile</em></dt><dd><p>In concert with <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> we can save the (possibly resampled) original
 lines to the file <em>dfile</em> [Default only saves the cross-profiles].
 The columns will be <em>lon</em>, <em>lat</em>, <em>dist</em>, <em>azimuth</em>, <em>z1</em>, <em>z2</em>, …
 (sampled value for each grid)</p>
@@ -278,7 +288,7 @@ justification format to specify a point on the map as
 which will connect segments with shared joints into a single segment.
 In addition to line coordinates, you can use Z-, Z+ to mean the global
 minimum and maximum locations in the grid (only available if a
-single grid is given via <strong>-G</strong>). You may append
+single grid is given via <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>). You may append
 <strong>+i</strong><em>inc</em> to set the sampling interval; if not given then
 we default to half the minimum grid interval.  For a <em>line</em> along parallels
 or meridians you can add <strong>+g</strong> to report degrees of longitude or latitude
@@ -296,13 +306,13 @@ Also note that only one distance unit can be chosen.  Giving different units
 will result in an error.  If no units are specified we default to
 great circle distances in km (if geographic).  If working with geographic
 data you can use <strong>-j</strong> to control distance calculation mode [Great Circle].
-<strong>Note</strong>: If <strong>-C</strong> is set and <em>spacing</em> is given the that sampling scheme
-overrules any modifier set in <strong>-E</strong>.</p>
+<strong>Note</strong>: If <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> is set and <em>spacing</em> is given the that sampling scheme
+overrules any modifier set in <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
 <dt><strong>-F</strong>[<strong>+b</strong>][<strong>+n</strong>][<strong>+r</strong>][<strong>+z</strong><em>z0</em>]</dt><dd><p>Find critical points along each cross-profile as a function of along-track distance.
-Requires <strong>-C</strong> and a single input grid (<em>z</em>). We examine each cross-profile generated
+Requires <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> and a single input grid (<em>z</em>). We examine each cross-profile generated
 and report (<em>dist</em>, <em>lonc</em>, <em>latc</em>, <em>distc</em>, <em>azimuthc</em>, <em>zc</em>) at the center peak of
 maximum <em>z</em> value, (<em>lonl</em>, <em>latl</em>, <em>distl</em>) and (<em>lonr</em>, <em>latr</em>, <em>distr</em>)
 at the first and last non-NaN point whose <em>z</em>-value exceeds <em>z0</em>, respectively,
@@ -330,7 +340,7 @@ distance nodes along the cross-profiles.  We write 13 output columns per track:
 </dd>
 </dl>
 <dl class="simple" id="s">
-<dt><strong>-S</strong><em>method</em>/<em>modifiers</em></dt><dd><p>In conjunction with <strong>-C</strong>, compute a single stacked profile from
+<dt><strong>-S</strong><em>method</em>/<em>modifiers</em></dt><dd><p>In conjunction with <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>, compute a single stacked profile from
 all profiles across each segment. Append how stacking should be
 computed: <strong>a</strong> = mean (average), <strong>m</strong> = median, <strong>p</strong> = mode
 (maximum likelihood), <strong>l</strong> = lower, <strong>L</strong> = lower but only consider
@@ -429,7 +439,7 @@ in <strong>-s</strong> then start numbering the z-columns from 0 instead of 2.</
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input or output rows or data limit(s) [all].</p>
+<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input or output rows or data limit(s) [all].</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -439,12 +449,14 @@ in <strong>-s</strong> then start numbering the z-columns from 0 instead of 2.</
 <dl class="simple">
 <dt><strong>-wy</strong>|<strong>a</strong>|<strong>w</strong>|<strong>d</strong>|<strong>h</strong>|<strong>m</strong>|<strong>s</strong>|<strong>c</strong><em>period</em>[/<em>phase</em>][<strong>+c</strong><em>col</em>] <a class="reference internal" href="gmt.html#w-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Convert an input coordinate to a cyclical coordinate.</p>
 </dd>
+</dl>
+<dl class="simple">
 <dt><strong>-:</strong></dt><dd><p>Toggles between (longitude,latitude) and (latitude,longitude)
 input/output. [Default is (longitude,latitude)].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -456,9 +468,9 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="units">
-<h2>Units<a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this heading">¶</a></h2>
 <p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
-minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default unless stated otherwise], <strong>f</strong>
 for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
 and <strong>u</strong> for US survey foot. By default we compute such distances using
 a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
@@ -468,7 +480,7 @@ exact geodesic calculations (slower but more accurate; see
 <a class="reference internal" href="gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a> for method used).</p>
 </section>
 <section id="ascii-format-precision">
-<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this heading">¶</a></h2>
 <p>The ASCII output formats of numerical data are controlled by parameters
 in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
 according to <a class="reference internal" href="gmt.conf.html#term-FORMAT_GEO_OUT"><span class="xref std std-term">FORMAT_GEO_OUT</span></a>, absolute time is
@@ -481,7 +493,7 @@ precision, consider switching to binary output (<strong>-bo</strong> if availabl
 specify more decimals using the <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> setting.</p>
 </section>
 <section id="consequences-of-grid-resampling">
-<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this headline">¶</a></h2>
+<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this heading">¶</a></h2>
 <p>Resample or sampling of grids will use various algorithms (see <strong>-n</strong>) that may lead
 to possible distortions or unexpected results in the resampled values.
 One expected effect of resampling with splines is the tendency for the new
@@ -491,7 +503,7 @@ values so they do not exceed the input min/max values by adding <strong>+c</stro
 your <strong>-n</strong> option.</p>
 </section>
 <section id="hints">
-<h2>Hints<a class="headerlink" href="#hints" title="Permalink to this headline">¶</a></h2>
+<h2>Hints<a class="headerlink" href="#hints" title="Permalink to this heading">¶</a></h2>
 <p>If an interpolation point is not on a node of the input grid, then a NaN
 at any node in the neighborhood surrounding the point will yield an
 interpolated NaN. Bicubic interpolation [default] yields continuous
@@ -502,7 +514,7 @@ important. Use bilinear to minimize the propagation of NaNs, or lower
 <em>threshold</em>.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -548,7 +560,7 @@ try:</p>
 </div>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="gmtconvert.html"><span class="doc">gmtconvert</span></a>,
 <a class="reference internal" href="text.html"><span class="doc">text</span></a>,
@@ -568,8 +580,8 @@ try:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

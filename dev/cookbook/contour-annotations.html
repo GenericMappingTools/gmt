@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>19. Annotation of Contours and “Quoted Lines” &mdash; GMT 6.3.0 documentation</title>
+  <title>19. Annotation of Contours and “Quoted Lines” &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -49,7 +53,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
@@ -186,7 +192,7 @@
            <div itemprop="articleBody">
              
   <section id="annotation-of-contours-and-quoted-lines">
-<h1><span class="section-number">19. </span>Annotation of Contours and “Quoted Lines”<a class="headerlink" href="#annotation-of-contours-and-quoted-lines" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">19. </span>Annotation of Contours and “Quoted Lines”<a class="headerlink" href="#annotation-of-contours-and-quoted-lines" title="Permalink to this heading">¶</a></h1>
 <p>The GMT programs <a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a> (for
 data given as 2-dimensional grids) and
 <a class="reference internal" href="../contour.html"><span class="doc">contour</span></a> (for <em>x,y,z</em> tables) allow
@@ -200,21 +206,20 @@ the labels. Because of the richness of these choices we present this
 Chapter which summarizes the various options and gives several examples
 of their use.</p>
 <section id="label-placement">
-<h2><span class="section-number">19.1. </span>Label Placement<a class="headerlink" href="#label-placement" title="Permalink to this headline">¶</a></h2>
-<p>While the previous GMT versions 1–3 allowed for a single algorithm
-that determined where labels would be placed, GMT 4 allows for five
-different algorithms. Furthermore, a new “symbol” option (<strong>-Sq</strong> for
-“quoted line”) has been added to <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> and
-<a class="reference internal" href="../plot3d.html"><span class="doc">plot3d</span></a> and hence the new label placement
-mechanisms apply to those programs as well. The contouring programs
-expect the algorithm to be specified as arguments to <strong>-G</strong> while the
-line plotting programs expect the same arguments to follow <strong>-Sq</strong>. The
-information appended to these options is the same in both cases and is
-of the form [<strong>code</strong>]<em>info</em>. The five algorithms correspond to the
+<h2><span class="section-number">19.1. </span>Label Placement<a class="headerlink" href="#label-placement" title="Permalink to this heading">¶</a></h2>
+<p>GMT provides five different algorithms for determining where labels
+should be placed. Furthermore, two “symbol” options (<strong>-Sq</strong> for
+“quoted line” and <strong>-S~</strong> for “decorated line”) in <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> and
+<a class="reference internal" href="../plot3d.html"><span class="doc">plot3d</span></a> share these algorithms for text and symbol placements.
+The contouring programs expect the algorithm to be specified as
+arguments to <strong>-G</strong>, while the line plotting programs expect the same
+arguments to follow <strong>-Sq</strong> or <strong>-S~</strong>. The information appended to
+these options is the same in all three cases and is provided in the
+form of [<strong>code</strong>]<em>info</em>. The five algorithms correspond to the
 five codes below (some codes will appear in both upper and lower case;
 they share the same algorithm but differ in some other ways). In what
 follows, the phrase “line segment” is taken to mean either a contour or
-a line to be labeled. The codes are:</p>
+a line to be labeled or decorated. The codes are:</p>
 <dl class="simple">
 <dt><strong>d</strong>:</dt><dd><p>Full syntax is
 <strong>d</strong><em>dist</em>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>][/<em>frac</em>].
@@ -232,7 +237,7 @@ place the first label at the distance <em>d = dist</em>
 <strong>D</strong><em>dist</em>[<strong>d</strong>|<strong>m</strong>|<strong>s</strong>|<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>][/<em>frac</em>].
 This option is similar to <strong>d</strong> except the original data must be
 referred to geographic coordinates (and a map projection must have
-been chosen) and actual Earth <a class="footnote-reference brackets" href="#id3" id="id1">36</a> surface distances along the
+been chosen) and actual Earth <a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>36<span class="fn-bracket">]</span></a> surface distances along the
 lines are considered. Append the unit you want to measure distances
 in; choose among arc <strong>d</strong>egree, <strong>m</strong>inute, and <strong>s</strong>econd,
 or m<strong>e</strong>ter [Default], <strong>f</strong>eet, <strong>k</strong>ilometer, statute
@@ -293,11 +298,11 @@ the end of the line.</p>
 <dt><strong>s</strong>:</dt><dd><p>Similar to <strong>n</strong> but splits input lines into a series of two-point
 line segments first.  The rest of the algorithm them operates on
 these sets of lines.  This code (and <strong>S</strong>) are specific to
-quoted lines.</p>
+quoted and decorated lines.</p>
 </dd>
 <dt><strong>S</strong>:</dt><dd><p>Similar to <strong>N</strong> but with the modification described for <strong>s</strong>.</p>
 </dd>
-<dt><strong>x</strong>:</dt><dd><p>Full syntax is <strong>x</strong><em>cross.d</em>. Here, an ASCII file <em>cross.d</em> is a
+<dt><strong>x</strong>:</dt><dd><p>Full syntax is <strong>x</strong><em>cross.txt</em>. Here, an ASCII file <em>cross.txt</em> is a
 multi-segment file whose lines will intersect our segment lines;
 labels will be placed at these intersections.</p>
 </dd>
@@ -309,7 +314,7 @@ for intersections.</p>
 <p>Only one algorithm can be specified at any given time.</p>
 </section>
 <section id="label-attributes">
-<h2><span class="section-number">19.2. </span>Label Attributes<a class="headerlink" href="#label-attributes" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">19.2. </span>Label Attributes<a class="headerlink" href="#label-attributes" title="Permalink to this heading">¶</a></h2>
 <p>Determining where to place labels is half the battle. The other half is
 to specify exactly what are the attributes of the labels. It turns out
 that there are quite a few possible attributes that we may want to
@@ -439,7 +444,7 @@ fixed label location algorithm (code <strong>f</strong>) to be in effect.</p>
 <dt><strong>+LN</strong>:</dt><dd><p>Use a slash-separated combination of the current file number and
 the current multi-segment number as label.</p>
 </dd>
-<dt><strong>+Lx</strong>:</dt><dd><p>As <strong>h</strong> but use the multi-segment headers in the <em>cross.d</em> file
+<dt><strong>+Lx</strong>:</dt><dd><p>As <strong>h</strong> but use the multi-segment headers in the <em>cross.txt</em> file
 instead. This choice obviously requires the crossing segments
 location algorithm (code <strong>x|X</strong>) to be in effect.</p>
 </dd>
@@ -448,13 +453,13 @@ location algorithm (code <strong>x|X</strong>) to be in effect.</p>
 </dl>
 </section>
 <section id="examples-of-contour-label-placement">
-<h2><span class="section-number">19.3. </span>Examples of Contour Label Placement<a class="headerlink" href="#examples-of-contour-label-placement" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">19.3. </span>Examples of Contour Label Placement<a class="headerlink" href="#examples-of-contour-label-placement" title="Permalink to this heading">¶</a></h2>
 <p>We will demonstrate the use of these options with a few simple examples.
 First, we will contour a subset of the global geoid data used in
 Example <a class="reference internal" href="../gallery/ex01.html#example-01"><span class="std std-ref">(1) Contour maps</span></a>; the region selected encompasses the world’s strongest
 “geoid dipole”: the Indian Low and the New Guinea High.</p>
 <section id="equidistant-labels">
-<h3><span class="section-number">19.3.1. </span>Equidistant labels<a class="headerlink" href="#equidistant-labels" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">19.3.1. </span>Equidistant labels<a class="headerlink" href="#equidistant-labels" title="Permalink to this heading">¶</a></h3>
 <p>Our first example uses the default placement algorithm. Because of the
 size of the map we request contour labels every 1.5 inches along the
 lines:</p>
@@ -478,7 +483,7 @@ available in previous GMT versions.</span><a class="headerlink" href="#id5" titl
 </figure>
 </section>
 <section id="fixed-number-of-labels">
-<h3><span class="section-number">19.3.2. </span>Fixed number of labels<a class="headerlink" href="#fixed-number-of-labels" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">19.3.2. </span>Fixed number of labels<a class="headerlink" href="#fixed-number-of-labels" title="Permalink to this heading">¶</a></h3>
 <p>We now exercise the option for specifying exactly how many labels each
 contour line should have:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_O_2
@@ -499,7 +504,7 @@ effect shown in Figure <a class="reference internal" href="#contour-label-2"><sp
 </figure>
 </section>
 <section id="prescribed-label-placements">
-<h3><span class="section-number">19.3.3. </span>Prescribed label placements<a class="headerlink" href="#prescribed-label-placements" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">19.3.3. </span>Prescribed label placements<a class="headerlink" href="#prescribed-label-placements" title="Permalink to this heading">¶</a></h3>
 <p>Here, we specify four points where we would like contour labels to be
 placed. Our points are not exactly on the contour lines so we give a
 nonzero “slop” to be used in the distance calculations: The point on the
@@ -531,7 +536,7 @@ closest to the locations given in the file fix.txt in the <strong>-Gf</strong> o
 </figure>
 </section>
 <section id="label-placement-at-simple-line-intersections">
-<h3><span class="section-number">19.3.4. </span>Label placement at simple line intersections<a class="headerlink" href="#label-placement-at-simple-line-intersections" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">19.3.4. </span>Label placement at simple line intersections<a class="headerlink" href="#label-placement-at-simple-line-intersections" title="Permalink to this heading">¶</a></h3>
 <p>Often, it will suffice to place contours at the imaginary intersections
 between the contour lines and a well-placed straight line segment. The
 <strong>-Gl</strong> or <strong>-GL</strong> algorithms work well in those cases:</p>
@@ -556,7 +561,7 @@ that any number of such lines could be specified; here we are content
 with just one.</p>
 </section>
 <section id="label-placement-at-general-line-intersections">
-<h3><span class="section-number">19.3.5. </span>Label placement at general line intersections<a class="headerlink" href="#label-placement-at-general-line-intersections" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">19.3.5. </span>Label placement at general line intersections<a class="headerlink" href="#label-placement-at-general-line-intersections" title="Permalink to this heading">¶</a></h3>
 <p>If (1) the number of intersecting straight line segments needed to pick
 the desired label positions becomes too large to be given conveniently
 on the command line, or (2) we have another data set or lines whose
@@ -582,14 +587,14 @@ Figure <a class="reference internal" href="#contour-label-5"><span class="std st
 </section>
 </section>
 <section id="examples-of-label-attributes">
-<h2><span class="section-number">19.4. </span>Examples of Label Attributes<a class="headerlink" href="#examples-of-label-attributes" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">19.4. </span>Examples of Label Attributes<a class="headerlink" href="#examples-of-label-attributes" title="Permalink to this heading">¶</a></h2>
 <p>We will now demonstrate some of the ways to play with the label
 attributes. To do so we will use <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> on
 a great-circle line connecting the geoid extrema, along which we have
 sampled the ETOPO5 relief data set. The file thus contains <em>lon, lat,
 dist, geoid, relief</em>, with distances in km.</p>
 <section id="label-placement-by-along-track-distances-1">
-<h3><span class="section-number">19.4.1. </span>Label placement by along-track distances, 1<a class="headerlink" href="#label-placement-by-along-track-distances-1" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">19.4.1. </span>Label placement by along-track distances, 1<a class="headerlink" href="#label-placement-by-along-track-distances-1" title="Permalink to this heading">¶</a></h3>
 <p>This example will change the orientation of labels from along-track to
 across-track, and surrounds the labels with an opaque, outlined text box
 so that the label is more readable. We choose the place the labels every
@@ -616,7 +621,7 @@ placements of those symbols are based on the mean coordinates of the
 contour and not the locations of the (local or global) extrema.</p>
 </section>
 <section id="label-placement-by-along-track-distances-2">
-<h3><span class="section-number">19.4.2. </span>Label placement by along-track distances, 2<a class="headerlink" href="#label-placement-by-along-track-distances-2" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">19.4.2. </span>Label placement by along-track distances, 2<a class="headerlink" href="#label-placement-by-along-track-distances-2" title="Permalink to this heading">¶</a></h3>
 <p>A small variation on this theme is to place the labels parallel to the
 line, use spherical degrees for placement, append the degree symbol as a
 unit for the labels, choose a rounded rectangular text box, and
@@ -638,7 +643,7 @@ gmt end show
 </figure>
 </section>
 <section id="using-a-different-data-set-for-labels">
-<h3><span class="section-number">19.4.3. </span>Using a different data set for labels<a class="headerlink" href="#using-a-different-data-set-for-labels" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">19.4.3. </span>Using a different data set for labels<a class="headerlink" href="#using-a-different-data-set-for-labels" title="Permalink to this heading">¶</a></h3>
 <p>In the next example we will use the bathymetry values along the transect
 as our label, with placement determined by the distance along track. We
 choose to place labels every 1500 km. To do this we need to pull out
@@ -664,12 +669,12 @@ gmt end show
 </section>
 </section>
 <section id="putting-it-all-together">
-<h2><span class="section-number">19.5. </span>Putting it all together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">19.5. </span>Putting it all together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this heading">¶</a></h2>
 <p>Finally, we will make a more complex composite illustration that uses
 several of the label placement and label attribute settings discussed in
 the previous sections. We make a map showing the tsunami travel times
 (in hours) from a hypothetical catastrophic landslide in the Canary
-Islands <a class="footnote-reference brackets" href="#id4" id="id2">37</a>. We lay down a color map based on the travel times and the
+Islands <a class="footnote-reference brackets" href="#id4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>37<span class="fn-bracket">]</span></a>. We lay down a color map based on the travel times and the
 shape of the seafloor, and travel time contours with curved labels as
 well as a few quoted lines. The final script is</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_O_9
@@ -712,16 +717,16 @@ that New York will experience a large tsunami about 8 hours after the event.</sp
 </figure>
 </section>
 <section id="footnotes">
-<h2><span class="section-number">19.6. </span>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">¶</a></h2>
-<dl class="footnote brackets">
-<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id1">36</a></span></dt>
-<dd><p>or whatever planet we are dealing with.</p>
-</dd>
-<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id2">37</a></span></dt>
-<dd><p>Travel times were calculated using Geoware’s travel time calculator,
+<h2><span class="section-number">19.6. </span>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this heading">¶</a></h2>
+<aside class="footnote brackets" id="id3" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">36</a><span class="fn-bracket">]</span></span>
+<p>or whatever planet we are dealing with.</p>
+</aside>
+<aside class="footnote brackets" id="id4" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">37</a><span class="fn-bracket">]</span></span>
+<p>Travel times were calculated using Geoware’s travel time calculator,
 <strong>ttt</strong>; see <a class="reference external" href="http://www.geoware-online.com/">http://www.geoware-online.com/</a>.</p>
-</dd>
-</dl>
+</aside>
 </section>
 </section>
 
@@ -736,8 +741,8 @@ that New York will experience a large tsunami about 8 hours after the event.</sp
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

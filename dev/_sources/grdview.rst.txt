@@ -18,7 +18,7 @@ Synopsis
 [ |-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
 [ |-I|\ [*intensgrid*\|\ *intensity*\|\ *modifiers*] ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
-[ |-N|\ *level*\ [**+g**\ *fill*] ]
+[ |-N|\ [*level*]\ [**+g**\ *fill*] ]
 [ |-Q|\ *args*\ [**+m**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smooth* ]
@@ -75,14 +75,14 @@ Optional Arguments
 |-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b*
     Drape the image in *drapegrid* on top of the relief provided by
     *reliefgrid*. [Default determines colors from *reliefgrid*]. Note that **-Jz** and
-    **-N** always refers to the *reliefgrid*. The *drapegrid* only
+    |-N| always refers to the *reliefgrid*. The *drapegrid* only
     provides the information pertaining to colors, which (if *drapegrid* is a grid) will be looked-up
-    via the CPT (see **-C**). Instead, you may give three grid files
-    via separate **-G** options in the specified order. These files must contain the red, green, and
+    via the CPT (see |-C|). Instead, you may give three grid files
+    via separate |-G| options in the specified order. These files must contain the red, green, and
     blue colors directly (in 0-255 range) and no CPT is needed. The
     *drapegrid* may be of a different resolution than the *reliefgrid*.
     Finally, *drapegrid* may be an image to be draped over the surface, in which
-    case the **-C** option is not required.
+    case the |-C| option is not required.
 
 .. _-I:
 
@@ -104,11 +104,14 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *level*\ [**+g**\ *fill*]
+**-N**\ [*level*]\ [**+g**\ *fill*]
     Draws a plane at this z-level. If the optional *color* is provided
     via the **+g** modifier, and the projection is not oblique,
     the frontal facade between the plane and the data perimeter is
     colored. See **-Wf** for setting the pen used for the outline.
+    If no *level* is set then we default to the minimum value in the
+    *reliefgrid*. However, if |-R| was used to set *zmin/zmax* then we
+    use that value if it is less than the grid minimum value.
 
 .. _-Q:
 
@@ -124,7 +127,7 @@ Optional Arguments
     #. Specify **c**. Same as **-Qi** but will make nodes with z = NaN transparent, using the colormasking
        feature in PostScript Level 3 (the PS device must support PS Level 3).
 
-    **Note**: If the CPT is categorical then only **-Qm** is available (but see **-T**).
+    **Note**: If the CPT is categorical then only **-Qm** is available (but see |-T|).
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -150,7 +153,7 @@ Optional Arguments
     node-centered bin into a polygon which is then painted separately.
     Append **+s** to skip nodes with z = NaN. This option is suitable for
     categorical data where interpolating between values is meaningless
-    and a categorical CPT has been provided via **-C**.
+    and a categorical CPT has been provided via |-C|.
     Optionally, append **+o** to draw the tile outlines, and specify a
     custom pen if the default pen is not to your liking. As this option
     produces a flat surface it cannot be combined with **-JZ** or **-Jz**.
@@ -179,7 +182,7 @@ Optional Arguments
         **-Qsm** for meshlines to be drawn.
     **-Wf**
         Sets the pen attributes used for the facade. [Default: width =
-        0.25p, color = black, style = solid]. You must also select **-N**
+        0.25p, color = black, style = solid]. You must also select |-N|
         for the facade outline to be drawn.
 
 .. |Add_-XY| replace:: |Add_-XY_links|
@@ -250,6 +253,8 @@ gridding programs like :doc:`surface` or :doc:`nearneighbor`. Unfortunately,
 this produces huge PostScript files. The alternative is to use the
 **-Qi** option, which computes bilinear or bicubic continuous color
 variations within polygons by using scanline conversion to image the polygons.
+
+.. include:: macos_preview_issue.rst_
 
 .. module_note_ends
 

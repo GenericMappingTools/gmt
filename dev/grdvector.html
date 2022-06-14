@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdvector &mdash; GMT 6.3.0 documentation</title>
+  <title>grdvector &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -49,7 +53,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -143,10 +149,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdvector">
-<h1>grdvector<a class="headerlink" href="#grdvector" title="Permalink to this headline">¶</a></h1>
+<h1>grdvector<a class="headerlink" href="#grdvector" title="Permalink to this heading">¶</a></h1>
 <p>Plot vector field from two component grids</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdvector</strong> <em>compx.nc</em> <em>compy.nc</em> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> ]
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
@@ -155,7 +161,7 @@
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<strong>x</strong>]<em>dx</em>[/<em>dy</em>] ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ] [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>parameters</em> ]
 [ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
-[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<strong>i</strong>|<strong>l</strong>]<em>scale</em> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<strong>i</strong>|<strong>l</strong>]<em>scale</em>[<strong>+c</strong>[[<em>slon</em>/]<em>slat</em>]][<strong>+s</strong><em>refsize</em>] ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> ]
 [ <a class="reference internal" href="#u"><span><strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
@@ -164,12 +170,13 @@
 [ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-l</strong><a class="reference internal" href="gmt.html#l-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-t</strong><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdvector</strong> reads two 2-D grid files which represents the <em>x</em>- and
 <em>y</em>-components of a vector field and produces a vector field plot by
 drawing vectors with orientation and length according to the information
@@ -177,7 +184,7 @@ in the files. Alternatively, polar coordinate <em>r</em>, <em>theta</em> grids m
 instead.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>compx.nc</em></dt><dd><p>Contains the x-components of the vector field. (See <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
 </dd>
@@ -191,7 +198,7 @@ instead.</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong></dt><dd><p>The grid files contain polar (r, theta) components instead of
 Cartesian (x, y) [Default is Cartesian components].</p>
@@ -220,7 +227,7 @@ then under modern mode we select the current CPT.</p>
 </dl>
 <dl class="simple" id="g">
 <dt><strong>-G</strong><em>fill</em></dt><dd><p>Sets color or shade for vector interiors [Default is no fill].
-Alternatively, the fill may be set via <strong>-Q</strong>.</p>
+Alternatively, the fill may be set via <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="i">
@@ -245,21 +252,33 @@ specifying additional attributes.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
-<dt><strong>-S</strong>[<strong>i</strong>|<strong>l</strong>]<em>scale</em></dt><dd><p>Sets scale for vector plot lengths in data units per plot distance measurement unit.
+<dt><strong>-S</strong>[<strong>i</strong>|<strong>l</strong>]<em>scale</em>[<strong>+c</strong>[[<em>slon</em>/]<em>slat</em>]][<strong>+s</strong><em>refsize</em>]</dt><dd><p>Sets scale for vector plot lengths in data units per plot distance measurement unit.
 Append <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> to indicate the desired plot distance measurement
 unit (cm, inch, or point); if no unit is given we use the default value that
 is controlled by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>.  Vector lengths converted via plot unit
 scaling will plot as straight Cartesian vectors and their lengths are not
-affected by map projection and coordinate locations.
+affected by map projections and coordinate locations.
 For geographic data you may alternatively give <em>scale</em> in data units per map distance
 unit (see <a class="reference internal" href="#units">Units</a>). Then, your vector magnitudes (in data units) are scaled to map
 <em>distances</em> in the given distance unit, and finally projected onto the Earth to give
 <em>plot</em> dimensions.  These are geo-vectors that follow great circle paths and their
 lengths may be affected by the map projection and their coordinates.  Finally, use
 <strong>-Si</strong> if it is simpler to give the reciprocal scale in plot length or distance units
-per data unit.  To report the minimum, maximum, and mean data and plot vector lengths
-of all vectors plotted, use <strong>-V</strong>.  Alternatively, use <strong>-Sl</strong><em>length</em> to set a fixed
-plot length for all vectors.</p>
+per data unit.  Alternatively, use <strong>-Sl</strong><em>length</em> to set a fixed plot length for all
+vectors. To report the minimum, maximum, and mean data and plot vector lengths
+of all vectors plotted, use <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>. If an automatic legend entry is desired via <strong>-l</strong>,
+or or two modifiers will be required:</p>
+<ul class="simple">
+<li><p><strong>+c</strong>[[<em>slon</em>/]<em>slat</em>] controls where on a geographic map a geovector’s <em>refsize</em>
+length applies. The modifier is neither needed nor available when plotting Cartesian vectors.
+The length is calculated for latitude <em>slat</em> (optionally supply longitude <em>slon</em> for
+oblique projections [default is central meridian]). If <strong>+c</strong> is given with no arguments
+then we select the reference length origin to be the middle of the map.</p></li>
+<li><p><strong>+s</strong><em>refsize</em> sets the desired reference vector magnitude in data units. E.g., for a
+reference length of 25 mm/yr for plate motions, use modifier <strong>+s</strong>25 with a corresponding
+option <strong>-l</strong>“Velocity (25 mm/yr)”.  If <em>refsize</em> is not specified we default to the <em>scale</em>
+given above.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="simple" id="t">
@@ -291,11 +310,15 @@ default, color = black, style = solid].</p>
 </dd>
 </dl>
 <dl class="simple" id="z">
-<dt><strong>-Z</strong></dt><dd><p>The theta grid provided contains azimuths rather than directions (implies <strong>-A</strong>).</p>
+<dt><strong>-Z</strong></dt><dd><p>The theta grid provided contains azimuths rather than directions (implies <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>).</p>
 </dd>
 </dl>
 <dl class="simple">
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify data types of input and/or output columns.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-l</strong>[<em>label</em>][<strong>+D</strong><em>pen</em>][<strong>+G</strong><em>gap</em>][<strong>+H</strong><em>header</em>][<strong>+L</strong>[<em>code</em>/]<em>txt</em>][<strong>+N</strong><em>cols</em>][<strong>+S</strong><em>size</em>[/<em>height</em>]][<strong>+V</strong>[<em>pen</em>]][<strong>+f</strong><em>font</em>][<strong>+g</strong><em>fill</em>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>off</em>][<strong>+p</strong><em>pen</em>][<strong>+s</strong><em>scale</em>][<strong>+w</strong><em>width</em>] <a class="reference internal" href="gmt.html#l-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Add a legend entry for the symbol or line being plotted.  </p>
 </dd>
 </dl>
 <dl class="simple">
@@ -307,7 +330,7 @@ default, color = black, style = solid].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -319,9 +342,9 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="units">
-<h2>Units<a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this heading">¶</a></h2>
 <p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
-minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default unless stated otherwise], <strong>f</strong>
 for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
 and <strong>u</strong> for US survey foot. By default we compute such distances using
 a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
@@ -331,7 +354,7 @@ exact geodesic calculations (slower but more accurate; see
 <a class="reference internal" href="gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a> for method used).</p>
 </section>
 <section id="vector-attributes">
-<h2>Vector Attributes<a class="headerlink" href="#vector-attributes" title="Permalink to this headline">¶</a></h2>
+<h2>Vector Attributes<a class="headerlink" href="#vector-attributes" title="Permalink to this heading">¶</a></h2>
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="_images/GMT_vector.png"><img alt="_images/GMT_vector.png" src="_images/GMT_vector.png" style="width: 600px;" /></a>
 <figcaption>
@@ -352,13 +375,16 @@ end point (<strong>e</strong>) of a line segment:</p>
 <p><strong>+b</strong> places a vector head at the <strong>b</strong>eginning of the vector path [none].
 Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
 <strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
-and <strong>I</strong> for plain open tail.
+and <strong>I</strong> for plain open tail. <strong>Note</strong>: For geovectors only <strong>a</strong> and <strong>A</strong> are available.
 Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
 half-sides of this head [both sides].</p>
+<p><strong>+c</strong> selects the vector data quantity <em>magnitude</em> for use with CPT color look-up [Default
+requires a separate data column following the 2 or 3 coordinates]. Requires that data
+quantity scaling (with unit <strong>q</strong> via <strong>+v</strong> or <strong>+z</strong>) and a CPT have been selected.</p>
 <p><strong>+e</strong> places a vector head at the <strong>e</strong>nd of the vector path [none].
 Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
 <strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
-and <strong>I</strong> for plain open tail.
+and <strong>I</strong> for plain open tail. <strong>Note</strong>: For geovectors only <strong>a</strong> and <strong>A</strong> are available.
 Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
 half-sides of this head [both sides].</p>
 <p><strong>+g</strong>[<em>fill</em>] sets the vector head fill [Default fill is used, which may be no fill].
@@ -374,14 +400,20 @@ Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> fo
 <strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
 and <strong>I</strong> for plain open tail. Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
 half-sides of this head [both sides].  Cannot be combined with <strong>+b</strong> or <strong>+e</strong>.</p>
-<p><strong>+n</strong><em>norm</em> scales down vector attributes (pen thickness, head size)
+<p><strong>+n</strong>[<em>norm</em>[/<em>min</em>]] scales down vector attributes (pen thickness, head size)
 with decreasing length, where vector plot lengths shorter than <em>norm</em> will have
-their attributes scaled by length/<em>norm</em> [arrow attributes remains
-invariant to length]. For Cartesian vectors specify a length in plot units, while
-for geovectors specify a length in km.</p>
+their attributes scaled by length/<em>norm</em> [other arrow attributes remain
+invariant to length]. Optionally, append /<em>min</em> for the minimum shrink factor (in the
+0-1 range) that we will shrink to [0.25]. For Cartesian vectors, please specify a <em>norm</em>
+in plot units, while for geovectors specify a <em>norm</em> in map units (see <a class="reference internal" href="cookbook/features.html#distance-units"><span class="std std-ref">Distance units</span></a>) [k].
+Alternatively, append unit <strong>q</strong> to indicate we should use user quantity units in making the
+decision; this means the user also must select user quantity input via <strong>+v</strong> or <strong>+z</strong>.</p>
+<p>If no argument is given then <strong>+n</strong> ensures vector heads are not shrunk and always
+plotted regardless of vector length [Vector heads are not plotted if exceeding vector length].</p>
 <p><strong>+o</strong>[<em>plon</em>/<em>plat</em>] specifies the oblique pole for the great or
 small circles.  Only needed for great circles if <strong>+q</strong> is given. If no
-pole is appended then we default to the north pole.</p>
+pole is appended then we default to the north pole. Input arguments are then
+<em>lon lat arclength</em> with the latter in map distance units; see <strong>+q</strong> of angular limits instead.</p>
 <p><strong>+p</strong>[<em>pen</em>] sets the vector pen attributes. If no <em>pen</em> is appended
 then the head outline is not drawn. [Default pen is half the width of stem pen, and
 head outline is drawn]. Above, we used <strong>+p</strong>2p,orange.  The vector stem attributes are
@@ -402,10 +434,23 @@ vector. Choose from <strong>b</strong>eginning [default], <strong>e</strong>nd, 
 <p><strong>+s</strong> means the input <em>angle</em>, <em>length</em> are instead the <span class="math notranslate nohighlight">\(x_e, y_e\)</span>
 coordinates of the vector end point.</p>
 </div></blockquote>
-<p>Finally, Cartesian vectors may take these modifiers:</p>
+<p>Finally, Cartesian vectors and geovectors may take these modifiers (except in <a class="reference internal" href="#"><span class="doc">grdvector</span></a>)
+which can be used to convert vector components to polar form or magnify user quantity magnitudes
+into plot lengths.</p>
 <blockquote>
-<div><p><strong>+z</strong><em>scale</em> expects input <span class="math notranslate nohighlight">\(\Delta x, \Delta y\)</span> vector components and
-uses the <em>scale</em> to convert to polar coordinates with length in given unit.</p>
+<div><p><strong>+v</strong>[<strong>i</strong>|<strong>l</strong>]<em>scale</em> expects a <em>scale</em> to magnify the polar length in the given
+unit.  If <strong>i</strong> is prepended we use the inverse scale while if <strong>l</strong> is prepended then it is
+taken as a fixed length to override input lengths. Append unit <strong>q</strong> if input magnitudes are
+given in user quantity units and we will scale them to current plot unit for Cartesian vectors
+(see <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> for how to change the plot unit) or to km for geovectors.  In addition,
+if <strong>+c</strong> is selected then the vector magnitudes may be used for CPT color-lookup (and no extra data
+column is required by <strong>-C</strong>).</p>
+<p><strong>+z</strong>[<em>scale</em>] expects input <span class="math notranslate nohighlight">\(\Delta x, \Delta y\)</span> vector components and
+uses the <em>scale</em> [1] to convert to polar coordinates with length in given unit.
+Append unit <strong>q</strong> if input components are given in user quantity units and we will scale to current plot unit
+for Cartesian vectors (see <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> for how to change the plot unit) or to
+km for geovectors.  In addition, if <strong>+c</strong> is selected then the vector magnitudes may be used
+for CPT color-lookup (and no extra data column is required by <strong>-C</strong>).</p>
 </div></blockquote>
 <p><strong>Note</strong>: Vectors were completely redesigned for GMT5 which separated the vector head (a polygon)
 from the vector stem (a line).  In GMT4, the entire vector was a polygon and it could only
@@ -418,7 +463,8 @@ where vectors shorter than <em>norm</em> will have their attributes scaled by <e
 To center the vector on the balance point, use <strong>-Svb</strong>; to align point with the vector head,
 use <strong>-Svh</strong>; to align point with the vector tail, use <strong>-Svt</strong> [Default]. To give the
 head point’s coordinates instead of direction and length, use <strong>-Svs</strong>. Upper case
-<strong>B</strong>, <strong>H</strong>, <strong>T</strong>, <strong>S</strong> will draw a double-headed vector [Default is single head].</p>
+<strong>B</strong>, <strong>H</strong>, <strong>T</strong>, <strong>S</strong> will draw a double-headed vector [Default is single head].
+<strong>Note</strong>: If <span class="math notranslate nohighlight">\(h_l/h_w\)</span> are given as 0/0 then only the head-less vector stick will be plotted.</p>
 <figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="_images/GMT_vector4.png"><img alt="_images/GMT_vector4.png" src="_images/GMT_vector4.png" style="width: 600px;" /></a>
 <figcaption>
@@ -432,7 +478,7 @@ blue lines indicate these three parameters).</span><a class="headerlink" href="#
 </figure>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -459,12 +505,12 @@ using a length scale of 200 km per data unit and only plot every 3rd node in eit
 </div></blockquote>
 </section>
 <section id="vector-scaling-and-unit-effects">
-<h2>Vector scaling and unit effects<a class="headerlink" href="#vector-scaling-and-unit-effects" title="Permalink to this headline">¶</a></h2>
-<p>The scale given via <strong>-S</strong> may require some consideration. As explained in <strong>-S</strong>,
+<h2>Vector scaling and unit effects<a class="headerlink" href="#vector-scaling-and-unit-effects" title="Permalink to this heading">¶</a></h2>
+<p>The scale given via <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> may require some consideration. As explained in <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>,
 it is specified in data-units per plot or distance unit. The plot or distance unit
 chosen will affect the type of vector you select. In all cases, we first compute
 the magnitude <em>r</em> of the user’s data vectors at each selected node from the <em>x</em> and <em>y</em>
-components (unless you are passing <em>r</em>, <em>theta</em> grids directly with <strong>-A</strong>).  These
+components (unless you are passing <em>r</em>, <em>theta</em> grids directly with <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>).  These
 magnitudes are given in whatever data units they come with.  Let us pretend our data
 grids record secular changes in the Earth’s magnetic horizontal vector field in units
 of nTesla/year, and that at a particular node the magnitude is 28 nTesla/year (in some
@@ -497,17 +543,17 @@ when providing the inverse of the scale is simpler. In the Cartesian case above,
 could instead give <strong>-Si</strong>0.1c which would directly imply a plot scale of 0.1 cm per
 nTesla/year. Likewise, for geographic distances we could give <strong>-Si</strong>2k for 2 km per
 nTesla/year scale as well. As the <strong>-Si</strong> argument increases, the plotted vector length
-increases as well, while for plain <strong>-S</strong> the plot length decreases with increasing scale.</p>
+increases as well, while for plain <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> the plot length decreases with increasing scale.</p>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
-<p>Be aware that using <strong>-I</strong> may lead to aliasing unless
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
+<p>Be aware that using <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> may lead to aliasing unless
 your grid is smoothly varying over the new length increments.
 It is generally better to filter your grids and resample at a
 larger grid increment and use these grids instead of the originals.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
 <a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a>, <a class="reference internal" href="plot.html"><span class="doc">plot</span></a></p>
 </section>
@@ -524,8 +570,8 @@ larger grid increment and use these grids instead of the originals.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

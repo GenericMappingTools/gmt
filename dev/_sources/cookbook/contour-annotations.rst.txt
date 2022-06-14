@@ -17,20 +17,19 @@ of their use.
 Label Placement
 ---------------
 
-While the previous GMT versions 1–3 allowed for a single algorithm
-that determined where labels would be placed, GMT 4 allows for five
-different algorithms. Furthermore, a new "symbol" option (**-Sq** for
-"quoted line") has been added to :doc:`/plot` and
-:doc:`/plot3d` and hence the new label placement
-mechanisms apply to those programs as well. The contouring programs
-expect the algorithm to be specified as arguments to **-G** while the
-line plotting programs expect the same arguments to follow **-Sq**. The
-information appended to these options is the same in both cases and is
-of the form [**code**]\ *info*. The five algorithms correspond to the
+GMT provides five different algorithms for determining where labels
+should be placed. Furthermore, two "symbol" options (**-Sq** for
+"quoted line" and **-S~** for "decorated line") in :doc:`/plot` and
+:doc:`/plot3d` share these algorithms for text and symbol placements.
+The contouring programs expect the algorithm to be specified as
+arguments to **-G**, while the line plotting programs expect the same
+arguments to follow **-Sq** or **-S~**. The information appended to
+these options is the same in all three cases and is provided in the
+form of [**code**]\ *info*. The five algorithms correspond to the
 five codes below (some codes will appear in both upper and lower case;
 they share the same algorithm but differ in some other ways). In what
 follows, the phrase "line segment" is taken to mean either a contour or
-a line to be labeled. The codes are:
+a line to be labeled or decorated. The codes are:
 
 **d**:
     Full syntax is
@@ -117,13 +116,13 @@ a line to be labeled. The codes are:
     Similar to **n** but splits input lines into a series of two-point
     line segments first.  The rest of the algorithm them operates on
     these sets of lines.  This code (and **S**) are specific to
-    quoted lines.
+    quoted and decorated lines.
 
 **S**:
     Similar to **N** but with the modification described for **s**.
 
 **x**:
-    Full syntax is **x**\ *cross.d*. Here, an ASCII file *cross.d* is a
+    Full syntax is **x**\ *cross.txt*. Here, an ASCII file *cross.txt* is a
     multi-segment file whose lines will intersect our segment lines;
     labels will be placed at these intersections.
 
@@ -288,7 +287,7 @@ modified by **+u** or **+=**). However, for quoted lines other options apply:
         the current multi-segment number as label.
 
     **+Lx**:
-        As **h** but use the multi-segment headers in the *cross.d* file
+        As **h** but use the multi-segment headers in the *cross.txt* file
         instead. This choice obviously requires the crossing segments
         location algorithm (code **x\|\ X**) to be in effect.
 

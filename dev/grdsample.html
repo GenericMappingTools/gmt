@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdsample &mdash; GMT 6.3.0 documentation</title>
+  <title>grdsample &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdsample">
-<h1>grdsample<a class="headerlink" href="#grdsample" title="Permalink to this headline">¶</a></h1>
+<h1>grdsample<a class="headerlink" href="#grdsample" title="Permalink to this heading">¶</a></h1>
 <p>Resample a grid onto a new lattice</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdsample</strong> <em>ingrid</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>increment</em> ]
 [ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
@@ -159,25 +165,24 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdsample</strong> reads a grid file and interpolates it to create a new grid
-file with either: a different registration (<strong>-r</strong> or <strong>-T</strong>); or, a new
-grid-spacing or number of nodes (<strong>-I</strong>), and perhaps also a new
-sub-region (<strong>-R</strong>). A bicubic [Default], bilinear, B-spline or
+file with either: a different registration (<strong>-r</strong> or <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>); or, a new
+grid-spacing or number of nodes (<a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>), and perhaps also a new
+sub-region (<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>). A bicubic [Default], bilinear, B-spline or
 nearest-neighbor interpolation is used; see <strong>-n</strong> for settings. Note
-that using <strong>-R</strong> only is equivalent to <a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a> or <a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a> <strong>-S</strong>.
+that using <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> only is equivalent to <a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a> or <a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a> <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>.
 <strong>grdsample</strong> safely creates a fine mesh from a coarse one; the converse
 may suffer aliasing unless the data are filtered using <a class="reference internal" href="grdfft.html"><span class="doc">grdfft</span></a> or <a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a>.</p>
-<p>When <strong>-R</strong> is omitted, the output grid will cover the same region as
-the input grid. When <strong>-I</strong> is omitted, the grid spacing of the output
-grid will be the same as the input grid. Either <strong>-r</strong> or <strong>-T</strong> can be
+<p>When <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> is omitted, the output grid will cover the same region as
+the input grid. When <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> is omitted, the grid spacing of the output
+grid will be the same as the input grid. Either <strong>-r</strong> or <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> can be
 used to change the grid registration. When omitted, the output grid will
 have the same registration as the input grid.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
 <blockquote>
 <div><p>2-D gridded data file. Optionally, append =<em>ID</em> for reading a specific file
 format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
@@ -195,9 +200,7 @@ supported:</p>
 </div></blockquote>
 <p>Note: Any offset is added after any scaling.</p>
 </div></blockquote>
-<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>]
-[:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
 <div><p>Give the name of the output grid file. Optionally, append =<em>ID</em> for writing a specific file format
 (<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
@@ -215,7 +218,7 @@ is 1].</p></li>
 </ul>
 </div></blockquote>
 <p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
-(unless overridden). To write specific formats via GDAL, use = <em>gd</em>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
 the <a class="reference internal" href="cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
@@ -223,7 +226,7 @@ for more details.</p>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl id="i">
 <dt><strong>-I</strong><em>x_inc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>y_inc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p>Set the grid spacing as <em>x_inc</em> [and optionally <em>y_inc</em>].</p>
 <p><strong>Geographical (degrees) coordinates</strong>: Optionally, append an increment unit.
@@ -287,7 +290,7 @@ This is a <em>destructive</em> grid change; see <a class="reference internal" hr
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -299,7 +302,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="grid-values-precision">
-<h2>Grid Values Precision<a class="headerlink" href="#grid-values-precision" title="Permalink to this headline">¶</a></h2>
+<h2>Grid Values Precision<a class="headerlink" href="#grid-values-precision" title="Permalink to this heading">¶</a></h2>
 <p>Regardless of the precision of the input data, GMT programs that create
 grid files will internally hold the grids in 4-byte floating point
 arrays. This is done to conserve memory and furthermore most if not all
@@ -310,7 +313,7 @@ limit loss of precision when processing data you should always consider
 normalizing the data prior to processing.</p>
 </section>
 <section id="consequences-of-grid-resampling">
-<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this headline">¶</a></h2>
+<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this heading">¶</a></h2>
 <p>Resample or sampling of grids will use various algorithms (see <strong>-n</strong>) that may lead
 to possible distortions or unexpected results in the resampled values.
 One expected effect of resampling with splines is the tendency for the new
@@ -320,7 +323,7 @@ values so they do not exceed the input min/max values by adding <strong>+c</stro
 your <strong>-n</strong> option.</p>
 </section>
 <section id="hints">
-<h2>Hints<a class="headerlink" href="#hints" title="Permalink to this headline">¶</a></h2>
+<h2>Hints<a class="headerlink" href="#hints" title="Permalink to this heading">¶</a></h2>
 <p>If an interpolation point is not on a node of the input grid, then a NaN
 at any node in the neighborhood surrounding the point will yield an
 interpolated NaN. Bicubic interpolation [default] yields continuous
@@ -330,7 +333,7 @@ yields only zero-order continuity. Use bicubic when smoothness is
 important. Use bilinear to minimize the propagation of NaNs.</p>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
 <p>As an alternative to bicubic spline, linear spline or nearest neighbor interpolation one can
 instead send the entire dataset through <a class="reference internal" href="surface.html"><span class="doc">surface</span></a> for re-gridding.  This approach allows
 more control on aspects such as tension but it also leads to a solution that
@@ -348,7 +351,7 @@ such as</p>
 </div>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To resample a sub-region of the 5 x 5 minute remote grid earth_relief_05m onto a 1 minute grid:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdsample @earth_relief_05m -R0/20/0/20 -I1m -Gtopo_1m.nc
 </pre></div>
@@ -360,7 +363,7 @@ registration while keeping the same region and grid interval:</p>
 </div>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a>,
 <a class="reference internal" href="grdfft.html"><span class="doc">grdfft</span></a>,
@@ -369,9 +372,9 @@ registration while keeping the same region and grid interval:</p>
 <a class="reference internal" href="surface.html"><span class="doc">surface</span></a></p>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
 <p>Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity,
-<em>Geophys. Res. Lett., 34 (L03307)</em>, <a class="reference external" href="http://doi.org/10.1029/2006GL028857">http://doi.org/10.1029/2006GL028857</a>.</p>
+<em>Geophys. Res. Lett., 34 (L03307)</em>, <a class="reference external" href="https://doi.org/10.1029/2006GL028857">https://doi.org/10.1029/2006GL028857</a>.</p>
 </section>
 </section>
 
@@ -386,8 +389,8 @@ registration while keeping the same region and grid interval:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

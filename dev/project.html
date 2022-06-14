@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>project &mdash; GMT 6.3.0 documentation</title>
+  <title>project &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -49,7 +53,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -143,10 +149,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="project">
-<h1>project<a class="headerlink" href="#project" title="Permalink to this headline">¶</a></h1>
+<h1>project<a class="headerlink" href="#project" title="Permalink to this heading">¶</a></h1>
 <p>Project data onto lines or great circles, or generate tracks</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt project</strong> [ <em>table</em> ]
 <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cx</em>/<em>cy</em>
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>azimuth</em> ]
@@ -162,7 +168,7 @@
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>wmin</em>/<em>wmax</em> ]
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>major</em>[<em>unit</em>][/<em>minor</em>/<em>azimuth</em>][<strong>+e</strong>] ]
 [ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-d</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
@@ -176,7 +182,7 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>project</strong> reads arbitrary (<span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(y\)</span> [,<em>z</em>]) data from standard input
 [or <em>table</em>] and writes to standard output any combination of (<span class="math notranslate nohighlight">\(x, y\)</span>, <em>z</em>,
 <span class="math notranslate nohighlight">\(p, q, r, s\)</span>), where (<span class="math notranslate nohighlight">\(p, q\)</span>) are the coordinates in
@@ -222,7 +228,7 @@ to the endpoint (<a class="reference internal" href="#e"><span><strong>-E</stron
 axis), NOT the usual cartesian theta, which is counterclockwise from the
 <span class="math notranslate nohighlight">\(x\)</span> axis. (i.e., <span class="math notranslate nohighlight">\(azimuth = 90 - theta\)</span>).</p>
 <p>No assumptions are made regarding the units for <span class="math notranslate nohighlight">\(x, y, r, s, p, q\)</span>, <em>dist</em>,
-<span class="math notranslate nohighlight">\(l_{min}, l_{max}, w_{min}, w_{max}\)</span>. If <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> is
+<span class="math notranslate nohighlight">\(l_{min}, l_{max}, w_{min}, w_{max}\)</span>. However, if <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> is
 selected, map units are assumed and <span class="math notranslate nohighlight">\(x, y, r, s\)</span>, must be in
 degrees and <span class="math notranslate nohighlight">\(p, q\)</span>, <em>dist</em>, <span class="math notranslate nohighlight">\(l_{min}, l_{max}, w_{min}, w_{max}\)</span>
 will be in km.</p>
@@ -237,13 +243,13 @@ back-azimuths or azimuths are better done using <a class="reference internal" hr
 the <em>p-q</em> coordinate system, defined by the center (<strong>C</strong>) and either the end-point
 (<strong>E</strong>) or azimuth (<span class="math notranslate nohighlight">\(\alpha\)</span>), or for geographic data a rotation pole <strong>T</strong> (not shown).
 The blue point has projected coordinates (p,0) and is reported as (r,s) in the original
-coordinate system.  Options <strong>-L</strong> (limit range of <em>p</em>) and <strong>-W</strong> (limit range of <em>q</em>)
+coordinate system.  Options <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> (limit range of <em>p</em>) and <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> (limit range of <em>q</em>)
 can be used to exclude data outside the specified limits (light gray area).</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
@@ -258,7 +264,7 @@ to be 90 degrees from the pole set by <a class="reference internal" href="#t"><s
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong><em>azimuth</em></dt><dd><p>Set the <em>azimuth</em> of the projection. The <em>azimuth</em> is clockwise from North (the <span class="math notranslate nohighlight">\(y\)</span> axis) regardless of
 whether spherical or Cartesian coordinate transformation is applied.</p>
@@ -308,7 +314,7 @@ the distance from <em>cx</em>/<em>cy</em> to <em>bx</em>/<em>by</em>.</p>
 </dl>
 <dl class="simple" id="q">
 <dt><strong>-Q</strong></dt><dd><p>Specify that  <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(y\)</span>, <em>r</em>, <em>s</em> are in degrees while <em>p</em>, <em>q</em>, <em>dist</em>, <em>lmin</em>, <em>lmax</em>, <em>wmin</em>,
-<em>wmax</em> are in km. If <strong>-Q</strong> is not set, then all these are assumed to be in the same units.</p>
+<em>wmax</em> are in km. If <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> is not set, then all these are assumed to be in the same units.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
@@ -380,7 +386,7 @@ uses the given increment and closes the ellipse].</p></li>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input or output rows or data limit(s) [all].</p>
+<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input or output rows or data limit(s) [all].</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -393,9 +399,9 @@ uses the given increment and closes the ellipse].</p></li>
 </dl>
 </section>
 <section id="units">
-<h2>Units<a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this heading">¶</a></h2>
 <p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
-minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default unless stated otherwise], <strong>f</strong>
 for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
 and <strong>u</strong> for US survey foot. By default we compute such distances using
 a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
@@ -404,7 +410,7 @@ a spherical approximation with great circles (<strong>-jg</strong>) using the au
 exact geodesic calculations (slower but more accurate; see
 <a class="reference internal" href="gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a> for method used).</p>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -416,7 +422,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="ascii-format-precision">
-<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this heading">¶</a></h2>
 <p>The ASCII output formats of numerical data are controlled by parameters
 in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
 according to <a class="reference internal" href="gmt.conf.html#term-FORMAT_GEO_OUT"><span class="xref std std-term">FORMAT_GEO_OUT</span></a>, absolute time is
@@ -429,7 +435,7 @@ precision, consider switching to binary output (<strong>-bo</strong> if availabl
 specify more decimals using the <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> setting.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -441,7 +447,7 @@ that circle and only output the distance and the depths, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt project @ship_03.txt -C330/-18 -T53/21 -S -Fpz -Q &gt; ship_proj.txt
 </pre></div>
 </div>
-<p>To generate points every 10km along a great circle from 10N,50W to 30N,10W:</p>
+<p>To generate points every 10 km along a great circle from 10N,50W to 30N,10W:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt project -C-50/10 -E-10/30 -G10 -Q &gt; great_circle_points.xyp
 </pre></div>
@@ -455,7 +461,7 @@ azimuth 30 and covering a full 360, try:</p>
 </pre></div>
 </div>
 </div></blockquote>
-<p>To generate points every 10km along a small circle of colatitude 60 from 10N,50W to 30N,10W:</p>
+<p>To generate points every 10 km along a small circle of colatitude 60 from 10N,50W to 30N,10W:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt project -C-50/10 -E-10/30 -G10/60 -Q &gt; small_circle_points.xyp
 </pre></div>
@@ -526,7 +532,7 @@ respectively, and project your file as in the pacific example above.
 This gives coordinates for an oblique small circle.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="fitcircle.html"><span class="doc">fitcircle</span></a>,
 <a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="gmtvector.html"><span class="doc">gmtvector</span></a>,
@@ -548,8 +554,8 @@ This gives coordinates for an oblique small circle.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

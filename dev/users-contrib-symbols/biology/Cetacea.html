@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GMT symbols for Whale-watchers and marine biologists &mdash; GMT 6.3.0 documentation</title>
+  <title>GMT symbols for Whale-watchers and marine biologists &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -155,9 +161,9 @@
            <div itemprop="articleBody">
              
   <section id="gmt-symbols-for-whale-watchers-and-marine-biologists">
-<h1>GMT symbols for Whale-watchers and marine biologists<a class="headerlink" href="#gmt-symbols-for-whale-watchers-and-marine-biologists" title="Permalink to this headline">¶</a></h1>
+<h1>GMT symbols for Whale-watchers and marine biologists<a class="headerlink" href="#gmt-symbols-for-whale-watchers-and-marine-biologists" title="Permalink to this heading">¶</a></h1>
 <section id="what-s-this">
-<h2>What’s this?<a class="headerlink" href="#what-s-this" title="Permalink to this headline">¶</a></h2>
+<h2>What’s this?<a class="headerlink" href="#what-s-this" title="Permalink to this heading">¶</a></h2>
 <p>This is a collection of custom symbols for the Generic Mapping Tools (GMT) software that may
 be of interest mainly to whale-watchers or whale researchers. With this, you can show your
 data in a map created with GMT as fine and detailed marine mammal’s icons instead the
@@ -176,7 +182,7 @@ I greatly appreciate your suggestions and feedback.</p>
 or later).</p>
 </section>
 <section id="how-to-use-the-symbols">
-<h2>How to use the symbols?<a class="headerlink" href="#how-to-use-the-symbols" title="Permalink to this headline">¶</a></h2>
+<h2>How to use the symbols?<a class="headerlink" href="#how-to-use-the-symbols" title="Permalink to this heading">¶</a></h2>
 <p>Before to start, think in the type of map you want to obtain and prepare your data.
 If you want to create a 2D map (most common situation) you need <a class="reference internal" href="../../plot.html"><span class="doc">plot</span></a>, if you want a 3D
 map you should use <a class="reference internal" href="../../plot3d.html"><span class="doc">plot3d</span></a> instead. Think also in how many different symbols you want to
@@ -309,14 +315,14 @@ instance, data and symbols:</p>
 <p>4: Run the bash script, print/open the output postscript file myfile.ps, or convert to PDF or rasters with gmt psconvert.</p>
 </section>
 <section id="faq-and-troubleshoting">
-<h2>FAQ and Troubleshoting<a class="headerlink" href="#faq-and-troubleshoting" title="Permalink to this headline">¶</a></h2>
+<h2>FAQ and Troubleshoting<a class="headerlink" href="#faq-and-troubleshoting" title="Permalink to this heading">¶</a></h2>
 <section id="the-symbols-are-not-drawn">
-<h3>The symbols are not drawn<a class="headerlink" href="#the-symbols-are-not-drawn" title="Permalink to this headline">¶</a></h3>
+<h3>The symbols are not drawn<a class="headerlink" href="#the-symbols-are-not-drawn" title="Permalink to this heading">¶</a></h3>
 <ol class="arabic simple">
 <li><p>When In run the script I obtain GMT ERROR: plot:</p></li>
 </ol>
 <section id="could-not-find-custom-symbol-symbolname-def">
-<h4>Could not find custom symbol symbolname.def!<a class="headerlink" href="#could-not-find-custom-symbol-symbolname-def" title="Permalink to this headline">¶</a></h4>
+<h4>Could not find custom symbol symbolname.def!<a class="headerlink" href="#could-not-find-custom-symbol-symbolname-def" title="Permalink to this heading">¶</a></h4>
 <blockquote>
 <div><p>Probably you had wrote something like: -Sksymbolname.def/0.5
 Please note that this is incorrect, you should remove .def and use
@@ -324,7 +330,7 @@ Please note that this is incorrect, you should remove .def and use
 </div></blockquote>
 </section>
 <section id="could-not-find-custom-symbol-mydirsymbolname-cannot-open-file-mydirmyfile-xy">
-<h4>Could not find custom symbol mydirsymbolname!, Cannot open file mydirmyfile.xy!<a class="headerlink" href="#could-not-find-custom-symbol-mydirsymbolname-cannot-open-file-mydirmyfile-xy" title="Permalink to this headline">¶</a></h4>
+<h4>Could not find custom symbol mydirsymbolname!, Cannot open file mydirmyfile.xy!<a class="headerlink" href="#could-not-find-custom-symbol-mydirsymbolname-cannot-open-file-mydirmyfile-xy" title="Permalink to this heading">¶</a></h4>
 <blockquote>
 <div><p>Probably you had placed your symbols in a subdirectory and are using the wrong
 directory notation for your operative system. Please note that Linux use “/”
@@ -337,9 +343,9 @@ in a Linux OS or vice versa. Try to intercange / and and run again the script.</
 </section>
 </section>
 <section id="symbol-customization">
-<h3>Symbol customization<a class="headerlink" href="#symbol-customization" title="Permalink to this headline">¶</a></h3>
+<h3>Symbol customization<a class="headerlink" href="#symbol-customization" title="Permalink to this heading">¶</a></h3>
 <section id="the-symbols-are-to-much-big-what-size-should-i-use">
-<h4>The symbols are to much big!, What size should I use?<a class="headerlink" href="#the-symbols-are-to-much-big-what-size-should-i-use" title="Permalink to this headline">¶</a></h4>
+<h4>The symbols are to much big!, What size should I use?<a class="headerlink" href="#the-symbols-are-to-much-big-what-size-should-i-use" title="Permalink to this heading">¶</a></h4>
 <blockquote>
 <div><p>In your script you’ll need to reduce the normal size of the symbols. A range
 of sizes between 0.12 and 0.18, (rarely more than 0.2) should be OK. Some symbols
@@ -350,7 +356,7 @@ I recommend to use different sizes for males, females and calfs.</p>
 </div></blockquote>
 </section>
 <section id="i-don-t-want-color-symbols">
-<h4>I don’t want color symbols!<a class="headerlink" href="#i-don-t-want-color-symbols" title="Permalink to this headline">¶</a></h4>
+<h4>I don’t want color symbols!<a class="headerlink" href="#i-don-t-want-color-symbols" title="Permalink to this heading">¶</a></h4>
 <blockquote>
 <div><p>You can easily obtain the same symbol in graytones editing the def file with your
 favourite text editor. Follow the instructions you will find inside the .def files.
@@ -358,7 +364,7 @@ Some symbols like the killerwhale have only a b/w version for obvious reasons.</
 </div></blockquote>
 </section>
 <section id="how-can-i-change-the-colour-of-the-symbols">
-<h4>How can I change the colour of the symbols?<a class="headerlink" href="#how-can-i-change-the-colour-of-the-symbols" title="Permalink to this headline">¶</a></h4>
+<h4>How can I change the colour of the symbols?<a class="headerlink" href="#how-can-i-change-the-colour-of-the-symbols" title="Permalink to this heading">¶</a></h4>
 <blockquote>
 <div><p>The colour of each area is specified inside the def file, so you can’t
 simply specify a colour directly in your GMT script or you will obtain
@@ -373,9 +379,9 @@ This (-W100) is erroneous, (width line 100 pt) while this (-W025.pt/100) is ok.<
 </section>
 </section>
 <section id="other-questions">
-<h3>Other questions<a class="headerlink" href="#other-questions" title="Permalink to this headline">¶</a></h3>
+<h3>Other questions<a class="headerlink" href="#other-questions" title="Permalink to this heading">¶</a></h3>
 <section id="why-they-are-so-may-similar-symbols-low-high-etc-for-the-same-species">
-<h4>Why they are so may similar symbols low, high, etc… for the same species?<a class="headerlink" href="#why-they-are-so-may-similar-symbols-low-high-etc-for-the-same-species" title="Permalink to this headline">¶</a></h4>
+<h4>Why they are so may similar symbols low, high, etc… for the same species?<a class="headerlink" href="#why-they-are-so-may-similar-symbols-low-high-etc-for-the-same-species" title="Permalink to this heading">¶</a></h4>
 <blockquote>
 <div><p>Sometimes some symbols will overlap severely with their neighbors. Specially with
 the most common species like Delphinus dolphins. I think that this looks ugly, so you
@@ -401,7 +407,7 @@ symbols at the end.</p>
 </div></blockquote>
 </section>
 <section id="where-fall-the-real-coordinates-in-the-figure">
-<h4>Where fall the real coordinates in the figure?<a class="headerlink" href="#where-fall-the-real-coordinates-in-the-figure" title="Permalink to this headline">¶</a></h4>
+<h4>Where fall the real coordinates in the figure?<a class="headerlink" href="#where-fall-the-real-coordinates-in-the-figure" title="Permalink to this heading">¶</a></h4>
 <blockquote>
 <div><p>In the small black circle below the symbol. I think is more precise this way
 so probably most if not all symbols in the future will have a line and a small
@@ -423,8 +429,8 @@ circle in the 0,0 point.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdhisteq &mdash; GMT 6.3.0 documentation</title>
+  <title>grdhisteq &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdhisteq">
-<h1>grdhisteq<a class="headerlink" href="#grdhisteq" title="Permalink to this headline">¶</a></h1>
+<h1>grdhisteq<a class="headerlink" href="#grdhisteq" title="Permalink to this heading">¶</a></h1>
 <p>Perform histogram equalization for a grid</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdhisteq</strong> <em>ingrid</em> [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>n_cells</em> ] [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<em>file</em>] ] [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<em>norm</em>] ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> ]
@@ -156,7 +162,7 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdhisteq</strong> allows the user to find the data values which divide a
 given grid file into patches of equal area. One common use of
 <strong>grdhisteq</strong> is in a kind of histogram equalization of an image. In
@@ -164,7 +170,7 @@ this application, the user might have a grid of flat topography with a
 mountain in the middle. Ordinary gray shading of this file (using
 <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> or <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>) with a linear mapping from topography to graytone will
 result in most of the image being very dark gray, with the mountain
-being almost white. One could use <strong>grdhisteq</strong> to write to stdout or file an
+being almost white. One could use <strong>grdhisteq</strong> to write to standard output or file an
 ASCII list of those data values which divide the range of the data into
 <em>n_cells</em> segments, each of which has an equal area in the image. Using
 <strong>awk</strong> or <a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a> one can take this output and build a CPT;
@@ -189,9 +195,8 @@ input; that is, the most negative output value will be in the (x,y)
 location of the most negative input value, and so on.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
 <blockquote>
 <div><p>2-D grid file to be equalized. Optionally, append =<em>ID</em> for reading a specific file
 format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
@@ -211,7 +216,7 @@ supported:</p>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="c">
 <dt><strong>-C</strong><em>n_cells</em></dt><dd><p>Sets how many cells (or divisions) of data range to make [16].</p>
 </dd>
@@ -220,9 +225,7 @@ supported:</p>
 <dt><strong>-D</strong>[<em>file</em>]</dt><dd><p>Dump level information to <em>file</em>, or standard output if no file is provided.</p>
 </dd>
 </dl>
-<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>]
-[:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
 <div><p>Give the name of the output grid file. Used with <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> only. Optionally, append =<em>ID</em> for writing a specific file format
 (<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
@@ -240,16 +243,16 @@ is 1].</p></li>
 </ul>
 </div></blockquote>
 <p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
-(unless overridden). To write specific formats via GDAL, use = <em>gd</em>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
 the <a class="reference internal" href="cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
 for more details.</p>
 </div></blockquote>
 <dl class="simple" id="n">
-<dt><strong>-N</strong>[<em>norm</em>]</dt><dd><p>Gaussian output. Use with <strong>-G</strong> to make an output grid with
+<dt><strong>-N</strong>[<em>norm</em>]</dt><dd><p>Gaussian output. Use with <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> to make an output grid with
 standard normal scores. Append <em>norm</em> to force the scores to fall in
-the ±*norm* range [Default is standard normal scores].</p>
+the ±<em>norm</em> range [Default is standard normal scores].</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
@@ -257,7 +260,7 @@ the ±*norm* range [Default is standard normal scores].</p>
 </dd>
 </dl>
 <dl class="simple" id="r">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. Using the <strong>-R</strong> option will select a subsection of <em>ingrid</em> grid. If this subsection
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. Using the <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> option will select a subsection of <em>ingrid</em> grid. If this subsection
 exceeds the boundaries of the grid, only the common region will be extracted. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
@@ -270,7 +273,7 @@ exceeds the boundaries of the grid, only the common region will be extracted. <a
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -282,7 +285,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -302,7 +305,7 @@ suitable for use with <a class="reference internal" href="grdimage.html"><span c
 </div></blockquote>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
 <ol class="arabic simple">
 <li><p>For geographical grids we do a weighted histogram equalization since the
 area of each node varies with latitude.</p></li>
@@ -321,11 +324,11 @@ clipped to +1. If this makes too much of the image too light or too
 dark, you should take the output of <strong>grdhisteq</strong> and rescale it using
 <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> and multiplying by something less than 1.0, to shrink the
 range of the values, thus bringing more than 68% of the image into the
-range [-1, 1]. Alternatively, supply a normalization factor with <strong>-N</strong>.</p></li>
+range [-1, 1]. Alternatively, supply a normalization factor with <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>.</p></li>
 </ol>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
 <a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a>,
 <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a>,
@@ -345,8 +348,8 @@ range [-1, 1]. Alternatively, supply a normalization factor with <strong>-N</str
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

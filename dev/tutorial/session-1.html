@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Session One &mdash; GMT 6.3.0 documentation</title>
+  <title>Session One &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,9 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Session One</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#tutorial-setup">Tutorial setup</a></li>
@@ -96,6 +100,8 @@
 <li class="toctree-l2"><a class="reference internal" href="session-4.html">Session Four</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -162,7 +168,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../tutorial.html">Tutorial</a> &raquo;</li>
+          <li><a href="../tutorial.html">Tutorial in Bash</a> &raquo;</li>
       <li>Session One</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/tutorial/session-1.rst" class="fa fa-github"> Edit on GitHub</a>
@@ -174,9 +180,9 @@
            <div itemprop="articleBody">
              
   <section id="session-one">
-<h1>Session One<a class="headerlink" href="#session-one" title="Permalink to this headline">¶</a></h1>
+<h1>Session One<a class="headerlink" href="#session-one" title="Permalink to this heading">¶</a></h1>
 <section id="tutorial-setup">
-<h2>Tutorial setup<a class="headerlink" href="#tutorial-setup" title="Permalink to this headline">¶</a></h2>
+<h2>Tutorial setup<a class="headerlink" href="#tutorial-setup" title="Permalink to this heading">¶</a></h2>
 <ol class="arabic simple">
 <li><p>We assume that GMT has been properly and fully
 installed and that the GMT executables are in your executable path.
@@ -217,7 +223,7 @@ now ready to start.</p></li>
 </ol>
 </section>
 <section id="the-gmt-environment-what-happens-when-you-run-gmt">
-<h2>The GMT environment: What happens when you run GMT ?<a class="headerlink" href="#the-gmt-environment-what-happens-when-you-run-gmt" title="Permalink to this headline">¶</a></h2>
+<h2>The GMT environment: What happens when you run GMT ?<a class="headerlink" href="#the-gmt-environment-what-happens-when-you-run-gmt" title="Permalink to this heading">¶</a></h2>
 <p>To get a good grasp on GMT one must understand what is going on “under
 the hood”.  The <a class="reference internal" href="#gmt-environ"><span class="std std-ref">GMT Run-Time Environment</span></a> illustrates the relationships
 you need to be aware of at run-time.</p>
@@ -231,7 +237,7 @@ will read hidden data (like coastlines) but most will explicitly need to be give
 </figcaption>
 </figure>
 <section id="input-data">
-<h3>Input data<a class="headerlink" href="#input-data" title="Permalink to this headline">¶</a></h3>
+<h3>Input data<a class="headerlink" href="#input-data" title="Permalink to this heading">¶</a></h3>
 <p>A GMT module may or may not take input files.  Three different
 types of input are recognized (more details can be found in <a class="reference internal" href="../cookbook/file-formats.html"><span class="doc">GMT File Formats</span></a>):</p>
 <ol class="arabic">
@@ -264,7 +270,7 @@ We will discuss these later.</p></li>
 </ol>
 </section>
 <section id="job-control">
-<h3>Job Control<a class="headerlink" href="#job-control" title="Permalink to this headline">¶</a></h3>
+<h3>Job Control<a class="headerlink" href="#job-control" title="Permalink to this heading">¶</a></h3>
 <p>GMT modules may get operational parameters from several places:</p>
 <ol class="arabic simple">
 <li><p>Supplied command line options/switches or module defaults.</p></li>
@@ -276,7 +282,7 @@ We will discuss these later.</p></li>
 </ol>
 </section>
 <section id="output-data">
-<h3>Output data<a class="headerlink" href="#output-data" title="Permalink to this headline">¶</a></h3>
+<h3>Output data<a class="headerlink" href="#output-data" title="Permalink to this heading">¶</a></h3>
 <p>There are 6 general categories of output produced by GMT:</p>
 <ol class="arabic simple">
 <li><p>PostScript plot commands.</p></li>
@@ -295,9 +301,9 @@ the relationships shown in Figure <a class="reference internal" href="#gmt-envir
 </section>
 </section>
 <section id="the-unix-environment-entry-level-knowledge">
-<h2>The UNIX Environment: Entry Level Knowledge<a class="headerlink" href="#the-unix-environment-entry-level-knowledge" title="Permalink to this headline">¶</a></h2>
+<h2>The UNIX Environment: Entry Level Knowledge<a class="headerlink" href="#the-unix-environment-entry-level-knowledge" title="Permalink to this heading">¶</a></h2>
 <section id="redirection">
-<h3>Redirection<a class="headerlink" href="#redirection" title="Permalink to this headline">¶</a></h3>
+<h3>Redirection<a class="headerlink" href="#redirection" title="Permalink to this heading">¶</a></h3>
 <p>Most GMT modules read their input from the terminal (called
 <em>stdin</em>) or from files, and write their output to the
 terminal (called <em>stdout</em>).  To use files instead one can
@@ -312,7 +318,7 @@ variable <strong>noclobber</strong> set. If you do, it prevents accidental overw
 That may be a noble cause, but it is extremely annoying. So please, <strong>unset noclobber</strong>.</p>
 </section>
 <section id="piping">
-<h3>Piping (|)<a class="headerlink" href="#piping" title="Permalink to this headline">¶</a></h3>
+<h3>Piping (|)<a class="headerlink" href="#piping" title="Permalink to this heading">¶</a></h3>
 <p>Sometimes we want to use the output from one module as input
 to another module.  This is achieved with <em>pipes</em>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Someprogram <span class="p">|</span> gmt module1 <span class="p">|</span> gmt module1 &gt; OutputFile
@@ -320,7 +326,7 @@ to another module.  This is achieved with <em>pipes</em>:</p>
 </div>
 </section>
 <section id="standard-error-stderr">
-<h3>Standard error (<em>stderr</em>)<a class="headerlink" href="#standard-error-stderr" title="Permalink to this headline">¶</a></h3>
+<h3>Standard error (<em>stderr</em>)<a class="headerlink" href="#standard-error-stderr" title="Permalink to this heading">¶</a></h3>
 <p>Most programs and GMT modules will on occasion write error messages.
 These are typically written to a separate data stream called
 <em>stderr</em> and can be redirected separately from the standard
@@ -336,14 +342,10 @@ separate files we use the following syntax:</p>
 </div>
 </section>
 <section id="file-name-expansion-or-wild-cards">
-<h3>File name expansion or “wild cards”<a class="headerlink" href="#file-name-expansion-or-wild-cards" title="Permalink to this headline">¶</a></h3>
+<h3>File name expansion or “wild cards”<a class="headerlink" href="#file-name-expansion-or-wild-cards" title="Permalink to this heading">¶</a></h3>
 <p>UNIX provides several ways to select groups of files based
 on name patterns:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 17%" />
-<col style="width: 83%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Code</p></th>
 <th class="head"><p>Meaning</p></th>
@@ -380,7 +382,7 @@ gets both part 1 and 2.</p></li>
 </section>
 </section>
 <section id="laboratory-exercises">
-<h2>Laboratory Exercises<a class="headerlink" href="#laboratory-exercises" title="Permalink to this headline">¶</a></h2>
+<h2>Laboratory Exercises<a class="headerlink" href="#laboratory-exercises" title="Permalink to this heading">¶</a></h2>
 <p>We will begin our adventure by making some simple plot axes and
 coastline basemaps.  We will do this in order to introduce the
 all-important common options <strong>-B</strong>, <strong>-J</strong>, and <strong>-R</strong> and to familiarize
@@ -388,7 +390,7 @@ ourselves with a few selected GMT projections.  The GMT modules
 we will utilize are <a class="reference internal" href="../basemap.html"><span class="doc">basemap</span></a> and <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a>.  Please
 consult their manual pages for reference.</p>
 <section id="linear-projection">
-<h3>Linear projection<a class="headerlink" href="#linear-projection" title="Permalink to this headline">¶</a></h3>
+<h3>Linear projection<a class="headerlink" href="#linear-projection" title="Permalink to this heading">¶</a></h3>
 <p>We start by making the basemap frame for a linear <em>x-y</em> plot.
 We want it to go from 10 to 70 in <em>x</em> and
 from -3 to 8 in <em>y</em>, with automatic annotation intervals.  Finally,
@@ -416,7 +418,7 @@ Examine the <a class="reference internal" href="../basemap.html"><span class="do
 </ol>
 </section>
 <section id="logarithmic-projection">
-<h3>Logarithmic projection<a class="headerlink" href="#logarithmic-projection" title="Permalink to this headline">¶</a></h3>
+<h3>Logarithmic projection<a class="headerlink" href="#logarithmic-projection" title="Permalink to this heading">¶</a></h3>
 <p>We next will show how to do a basemap for a log–log plot.  We have
 no data set yet but we will
 imagine that the raw <em>x</em> data range from 3 to 9613 and that <em>y</em>
@@ -442,7 +444,7 @@ gmt end show
 </ol>
 </section>
 <section id="mercator-projection">
-<h3>Mercator projection<a class="headerlink" href="#mercator-projection" title="Permalink to this headline">¶</a></h3>
+<h3>Mercator projection<a class="headerlink" href="#mercator-projection" title="Permalink to this heading">¶</a></h3>
 <p>Despite the problems of extreme horizontal exaggeration at high
 latitudes, the conformal Mercator projection (<strong>-JM</strong>) remains
 the stalwart of location maps used by scientists.  It is one
@@ -455,10 +457,6 @@ access the GMT coastline, river and border data base derived from the GSHHG
 database [See <em>Wessel and Smith</em>, 1996].  In addition
 to the common switches we may need to use some of several coast-specific options:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 4%" />
-<col style="width: 96%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Purpose</p></th>
@@ -518,7 +516,7 @@ to another setting (see the <a class="reference internal" href="../gmt.conf.html
 </ol>
 </section>
 <section id="albers-projection">
-<h3>Albers projection<a class="headerlink" href="#albers-projection" title="Permalink to this headline">¶</a></h3>
+<h3>Albers projection<a class="headerlink" href="#albers-projection" title="Permalink to this heading">¶</a></h3>
 <p>The Albers projection (<strong>-JB</strong>) is an equal-area conical projection;
 its conformal cousin is the Lambert conic projection (<strong>-JL</strong>).
 Their usages are almost identical so we will only use the Albers here.
@@ -550,7 +548,7 @@ minimum and maximum values.</p></li>
 </ol>
 </section>
 <section id="orthographic-projection">
-<h3>Orthographic projection<a class="headerlink" href="#orthographic-projection" title="Permalink to this headline">¶</a></h3>
+<h3>Orthographic projection<a class="headerlink" href="#orthographic-projection" title="Permalink to this heading">¶</a></h3>
 <p>The azimuthal orthographic projection (<strong>-JG</strong>) is one of several
 projections with similar syntax and behavior; the one we have
 chosen mimics viewing the Earth from space at an infinite distance;
@@ -579,7 +577,7 @@ showing the US only.</p></li>
 </ol>
 </section>
 <section id="eckert-iv-and-vi-projection">
-<h3>Eckert IV and VI projection<a class="headerlink" href="#eckert-iv-and-vi-projection" title="Permalink to this headline">¶</a></h3>
+<h3>Eckert IV and VI projection<a class="headerlink" href="#eckert-iv-and-vi-projection" title="Permalink to this heading">¶</a></h3>
 <p>We conclude the survey of map projections with the Eckert IV and VI projections
 (<strong>-JK</strong>), two of several projections used for global thematic maps; They
 are both equal-area projections whose syntax is</p>
@@ -621,8 +619,8 @@ gmt end show
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

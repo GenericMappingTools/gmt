@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdlandmask &mdash; GMT 6.3.0 documentation</title>
+  <title>grdlandmask &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdlandmask">
-<h1>grdlandmask<a class="headerlink" href="#grdlandmask" title="Permalink to this headline">¶</a></h1>
+<h1>grdlandmask<a class="headerlink" href="#grdlandmask" title="Permalink to this heading">¶</a></h1>
 <p>Create a &quot;wet-dry&quot; mask grid from shoreline data base</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt grdlandmask</strong> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
 <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>increment</em>
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
@@ -159,7 +165,7 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdlandmask</strong> reads the selected shoreline database and uses that
 information to decide which nodes in the specified grid are over land or
 over water. The nodes defined by the selected region and lattice spacing
@@ -169,10 +175,8 @@ vs island vs pond. The resulting mask may be used in subsequent
 operations involving <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a> to mask out data from land [or water] areas.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>]
-[:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
 <div><p>Give the name of the output mask grid. Optionally, append =<em>ID</em> for writing a specific file format
 (<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
@@ -190,7 +194,7 @@ is 1].</p></li>
 </ul>
 </div></blockquote>
 <p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
-(unless overridden). To write specific formats via GDAL, use = <em>gd</em>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
 the <a class="reference internal" href="cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
@@ -233,12 +237,9 @@ to override these values.</p></li>
 <div><p>Specify the region of interest.  </p>
 <p>The region may be specified in one of several ways:</p>
 <ol class="arabic">
-<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>+u</strong><em>unit</em>]. This is the standard way to specify geographic regions
+<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>. This is the standard way to specify geographic regions
 when using map projections where meridians and parallels are rectilinear. The coordinates may be specified in
-decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format. Optionally, append
-<strong>+u</strong><em>unit</em> to specify a region in projected units (e.g., UTM meters) where <em>west</em>/<em>east</em>/<em>south</em>/<em>north</em> are
-Cartesian projected coordinates compatible with the chosen projection (<strong>-J</strong>) and <em>unit</em> is an allowable
-<a class="reference internal" href="cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a>; we inversely project to determine the actual rectangular geographic region.</p></li>
+decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format.</p></li>
 <li><p><strong>-R</strong><em>west</em>/<em>south</em>/<em>east</em>/<em>north</em><strong>+r</strong>. This form is useful for map projections that are oblique,
 making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner
 and upper right corner geographic coordinates, followed by the modifier <strong>+r</strong>. This form guarantees a
@@ -247,24 +248,34 @@ rectangular map even though lines of equal longitude and latitude are not straig
 and -180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).</p></li>
 <li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
 consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
-countries given by the codes. Simply append one or more comma-separated countries using the two-character
-<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a>. To select a state within a
-country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent, prepend <strong>=</strong> to any
-of the continent codes <strong>AF</strong> (Africa), <strong>AN</strong> (Antarctica), <strong>AS</strong> (Asia), <strong>EU</strong> (Europe), <strong>OC</strong> (Oceania),
-<strong>NA</strong> (North America), or <strong>SA</strong> (South America). The following modifiers can be appended:</p>
+countries given by the codes. Simply append one or more comma-separated countries using either the two-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
+country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
+or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
+Finally, append any <a class="reference internal" href="coast.html#id1"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
+the collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
 <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
-national bounding box of France rounded to nearest integer degree.</p></li>
-<li><p><strong>+R</strong> to extend the region outward by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension].</p></li>
+national bounding box of France rounded to nearest integer degree, where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+R</strong> to adjust the region by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension], where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
 <li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box extends by at least 0.25 times the increment
-[default is no adjustment].</p></li>
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box is adjusted by at least 0.25 times the
+increment [default is no adjustment], where <em>inc</em> can be positive to expand the region or negative to shrink
+the region.</p></li>
 </ul>
 </div></blockquote>
 </li>
+<li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+u</strong><em>unit</em>] specifies a region in projected units (e.g., UTM meters)
+where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible with the chosen projection
+(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
+actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
+<strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults to <em>halfwidth</em> if not given.
+This short-hand requires the <strong>+u</strong> modifier.</p></li>
 <li><p><strong>-R</strong><em>justify</em><em>lon0</em>/<em>lat0</em>/<em>nx</em>/<em>ny</em>, where <em>justify</em> is a 2-character combination of
 <strong>L</strong>|<strong>C</strong>|<strong>R</strong> (for left, center, or right) and <strong>T</strong>|<strong>M</strong>|<strong>B</strong> (for top, middle, or bottom)
 (e.g., <strong>BL</strong> for lower left). The two character code <em>justify</em> indicates which point on a rectangular region
@@ -282,7 +293,7 @@ the data range using <strong>-Ra</strong>.</p></li>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <span class="target" id="a"></span><dl class="simple">
 <dt><a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+l</strong>|<strong>r</strong>][<strong>+p</strong><em>percent</em>]</dt><dd><p>Features with an area smaller than <em>min_area</em> in km^2 or of
 hierarchical level that is lower than <em>min_level</em> or higher than
@@ -320,7 +331,7 @@ considered to be outside the polygon [Default considers them to be inside].
 Alternatively, append either the four values <em>cborder/lborder/iborder/pborder</em>
 or just the single value <em>bordervalue</em> (for the case when they should all be the same value).
 This turns on the line-tracking mode.  Now, after setting the mask values
-specified via <strong>-N</strong> we trace the lines and change the node values for all
+specified via <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> we trace the lines and change the node values for all
 cells traversed by a line to the corresponding border value.  Here, <em>cborder</em>
 is used for cells traversed by the coastline, <em>lborder</em> for cells traversed
 by a lake outline, <em>iborder</em> for islands-in-lakes outlines, and <em>pborder</em> for
@@ -329,7 +340,7 @@ ponds-in-islands-in-lakes outlines [Default is no line tracing].</p>
 </dl>
 <dl id="n">
 <dt><strong>-N</strong><em>maskvalues</em></dt><dd><p>Sets the values that will be assigned to nodes. Values can be any
-number, including the textstring NaN. Also select <strong>-E</strong> to let nodes
+number, including the textstring NaN. Also select <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> to let nodes
 exactly on feature boundaries be considered outside [Default is
 inside]. Specify this information using 1 of 2 formats:</p>
 <p><strong>-N</strong><em>wet/dry</em>.</p>
@@ -350,7 +361,7 @@ inside]. Specify this information using 1 of 2 formats:</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -362,7 +373,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
 <p>A grid produced by grdlandmask is a <em>categorical</em> dataset.  As such,
 one has to be careful not to interpolate it with standard methods,
 such as splines.  However, if you make a map of this grid using
@@ -373,16 +384,16 @@ We recommend you use <a class="reference internal" href="grdimage.html"><span cl
 neighbor interpolation for such cases.</p>
 </section>
 <section id="global-landmask-grids">
-<h2>Global Landmask Grids<a class="headerlink" href="#global-landmask-grids" title="Permalink to this headline">¶</a></h2>
+<h2>Global Landmask Grids<a class="headerlink" href="#global-landmask-grids" title="Permalink to this heading">¶</a></h2>
 <p>Before you make your own masks, be aware that the GMT data server offers
 global landmask files in multiple grid resolutions.  These can be accessed
 using the remote file names &#64;earth_mask_<em>rr</em><em>u</em>[_<em>reg</em>], where
 <em>rr</em><em>u</em> and the optional <em>reg</em> indicate the resolution and registration
-that you desire.  See <a class="reference external" href="https://www.generic-mapping-tools.org/remote-datasets/earth-masks.html">Global Earth Mask Grids</a>
+that you desire.  See <a class="reference external" href="https://www.generic-mapping-tools.org/remote-datasets/earth-mask.html">Global Earth Mask Grids</a>
 for more information on the availability of resolutions.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To set all nodes on land to NaN, and nodes over water to 1, using the
 high resolution data set, do</p>
 <blockquote>
@@ -399,7 +410,7 @@ nodes based on the low resolution data:</p>
 </div></blockquote>
 </section>
 <section id="gshhg-information">
-<h2>GSHHG Information<a class="headerlink" href="#gshhg-information" title="Permalink to this headline">¶</a></h2>
+<h2>GSHHG Information<a class="headerlink" href="#gshhg-information" title="Permalink to this heading">¶</a></h2>
 <p>The coastline database is GSHHG (formerly GSHHS) which is compiled from
 three sources:  World Vector Shorelines (WVS, not including Antarctica),
 CIA World Data Bank II (WDBII), and Atlas of the Cryosphere (AC, for Antarctica only).
@@ -421,7 +432,7 @@ algorithm. The classification of rivers and borders follow that of the
 WDBII. See <a class="reference external" href="https://github.com/GenericMappingTools/gshhg-gmt#readme">The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG)</a> for further details.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>,
 <a class="reference internal" href="grdclip.html"><span class="doc">grdclip</span></a>, <a class="reference internal" href="mask.html"><span class="doc">mask</span></a>,
 <a class="reference internal" href="clip.html"><span class="doc">clip</span></a>, <a class="reference internal" href="coast.html"><span class="doc">coast</span></a></p>
@@ -439,8 +450,8 @@ WDBII. See <a class="reference external" href="https://github.com/GenericMapping
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

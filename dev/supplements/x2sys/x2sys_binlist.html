@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>x2sys_binlist &mdash; GMT 6.3.0 documentation</title>
+  <title>x2sys_binlist &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="x2sys-binlist">
-<h1>x2sys_binlist<a class="headerlink" href="#x2sys-binlist" title="Permalink to this headline">¶</a></h1>
+<h1>x2sys_binlist<a class="headerlink" href="#x2sys-binlist" title="Permalink to this heading">¶</a></h1>
 <p>Create bin index listing from track data files</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt x2sys_binlist</strong> <em>track(s)</em> <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>TAG</em>
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> ]
@@ -154,7 +160,7 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>x2sys_binlist</strong> reads one or more track data files and produces a
 multisegment ASCII track bin-index file (tbf) with the track name in the
 header and one data record per bin crossed; these records contain <em>lon</em>,
@@ -171,7 +177,7 @@ must run <a class="reference internal" href="x2sys_init.html"><span class="doc">
 indexing.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>tracks</em></dt><dd><p>Can be one or more ASCII, native binary, or COARDS netCDF 1-D data
 files. To supply the data files via a text file with a list of
@@ -193,7 +199,7 @@ searched for via <strong>$GMT_SHAREDIR</strong>/mgg/gmtfile_paths).</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="d">
 <dt><strong>-D</strong></dt><dd><p>Calculate the length of track-line segments per bin [Default skips
 this step]. The length fragments are given as the 5th output column
@@ -205,7 +211,7 @@ setting (see <a class="reference internal" href="x2sys_init.html"><span class="d
 <dt><strong>-E</strong></dt><dd><p>Convert geographic data to a cylindrical equal-area projection prior
 to binning. Basically, we apply the projection
 <strong>-JY</strong><em>lon0</em>/37:04:17.166076/360, where <em>lon0</em> is the
-mid-longitude of the region. Requires <strong>-D</strong>, geographical data, and
+mid-longitude of the region. Requires <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>, geographical data, and
 a global region (e.g., <strong>-Rg</strong> or <strong>-Rd</strong>). This option is useful
 for statistics related to track-line density but should not be used
 when preparing bin-index files for the x2sys track data bases.</p>
@@ -216,7 +222,7 @@ when preparing bin-index files for the x2sys track data bases.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -228,25 +234,28 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To create a bin index file from the MGD77 file 01030061.mgd77 using the
-settings associated with the tag MGD77, do</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt x2sys_binlist <span class="m">01030061</span>.mgd77 -TMGD77 &gt; <span class="m">01030061</span>.tbf
+settings associated with the tag MGD77, do:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt x2sys_binlist <span class="m">01030061</span>.mgd77 -TMGD77 &gt; <span class="m">01030061</span>.tbf
 </pre></div>
 </div>
-</div></blockquote>
 <p>To create a track bin index file of all MGD77+ files residing in the
 current directory using the settings associated with the tag MGD77+ and
-calculate track distances, run</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt x2sys_binlist *.nc -TMGD77+ -D &gt; all.tbf
+calculate track distances, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt x2sys_binlist *.nc -TMGD77+ -D &gt; all.tbf
 </pre></div>
 </div>
-</div></blockquote>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<p>Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys
+package. <em>Computers and Geosciences</em>, <strong>36</strong>, 348-354, <a class="reference external" href="https://www.researchgate.net/publication/220164039_Tools_for_analyzing_intersecting_tracks_The_x2sys_package">https://www.researchgate.net/publication/220164039_Tools_for_analyzing_intersecting_tracks_The_x2sys_package</a>.</p>
+<p>Wessel, P. (1989), XOVER: A cross-over error detector for track data,
+<em>Computers and Geosciences</em>, <strong>15</strong>(3), 333-346, <a class="reference external" href="https://doi.org/10.1016/0098-3004(89)90044-7">https://doi.org/10.1016/0098-3004(89)90044-7</a>.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="x2sys_cross.html"><span class="doc">x2sys_cross</span></a>,
 <a class="reference internal" href="x2sys_datalist.html"><span class="doc">x2sys_datalist</span></a>,
 <a class="reference internal" href="x2sys_get.html"><span class="doc">x2sys_get</span></a>,
@@ -268,8 +277,8 @@ calculate track distances, run</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

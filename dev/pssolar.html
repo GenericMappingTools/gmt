@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pssolar &mdash; GMT 6.3.0 documentation</title>
+  <title>pssolar &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="pssolar">
-<h1>pssolar<a class="headerlink" href="#pssolar" title="Permalink to this headline">¶</a></h1>
+<h1>pssolar<a class="headerlink" href="#pssolar" title="Permalink to this heading">¶</a></h1>
 <p>Plot day-light terminators and other sunlight parameters</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt pssolar</strong>
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> ]
@@ -170,22 +176,22 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>solar</strong> calculates closed polygons for the day-night terminator and the civil, nautical and astronomical twilights
 and either writes them to standard output or uses them for clipping or filling on maps.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <p>None.</p>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="b">
 <dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="c">
-<dt><strong>-C</strong></dt><dd><p>Formats the report selected by <strong>-I</strong> using tab-separated fields on a single line. The
+<dt><strong>-C</strong></dt><dd><p>Formats the report selected by <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> using tab-separated fields on a single line. The
 output is Sun <em>Lon Lat Azimuth Elevation</em> in degrees, <em>Sunrise Sunset Noon</em> in decimal days,
 <em>day length</em> in minutes, <em>SolarElevationCorrected</em> corrected for the effect of refraction index
 and <em>Equation of time</em> in minutes. Note that if no position is provided in <strong>-I</strong><em>lon/lat</em> the
@@ -194,7 +200,7 @@ data after <em>Elevation</em> refers to the point (0,0).</p>
 </dl>
 <dl class="simple" id="g">
 <dt><strong>-G</strong>[<em>fill</em>] <a class="reference internal" href="cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select color or pattern for filling of terminators, or give no argument for clipping [Default is no fill or clipping].
-Deactivate clipping by appending the output of gmt <a class="reference internal" href="clip.html"><span class="doc">clip</span></a> <strong>-C</strong>.</p>
+Deactivate clipping by appending the output of gmt <a class="reference internal" href="clip.html"><span class="doc">clip</span></a> <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="i">
@@ -216,7 +222,7 @@ Negative offsets look like <em>−03:00</em> or <em>−03</em>. Positive offsets
 </dl>
 <dl class="simple" id="n">
 <dt><strong>-N</strong></dt><dd><p>Invert the sense of what is inside and outside the terminator.  Only
-used with clipping (<strong>-G</strong>) and cannot be used together with <strong>-B</strong>.</p>
+used with clipping (<a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>) and cannot be used together with <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="r">
@@ -269,7 +275,7 @@ width = default, color = black, style = solid].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -281,7 +287,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="classic-mode-arguments">
-<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this heading">¶</a></h2>
 <p>These options are used to manipulate the building of layered GMT PostScript plots in classic mode.
 They are not available when using GMT modern mode.</p>
 <dl class="simple" id="k">
@@ -298,7 +304,7 @@ They are not available when using GMT modern mode.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -319,11 +325,11 @@ gmt pssolar -R -J -W1p -Tdc -O &gt;&gt; terminator.ps
 </div>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
 <p>Code from the Excel Spreadsheets in <a class="reference external" href="http://www.esrl.noaa.gov/gmd/grad/solcalc/calcdetails.html">http://www.esrl.noaa.gov/gmd/grad/solcalc/calcdetails.html</a></p>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
 <p>Taken from the NOAA site <em>Data for Litigation</em> note.</p>
 <blockquote>
 <div><p><em>The NOAA Solar Calculator is for research and recreational use only. NOAA cannot certify or authenticate sunrise, sunset or solar position data. The U.S. Government does not collect observations of astronomical data, and due to atmospheric conditions our calculated results may vary significantly from actual observed values.</em></p>
@@ -331,7 +337,7 @@ gmt pssolar -R -J -W1p -Tdc -O &gt;&gt; terminator.ps
 </div></blockquote>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="psclip.html"><span class="doc">psclip</span></a>, <a class="reference internal" href="pscoast.html"><span class="doc">pscoast</span></a>, <a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a></p>
 </section>
 </section>
@@ -347,8 +353,8 @@ gmt pssolar -R -J -W1p -Tdc -O &gt;&gt; terminator.ps
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

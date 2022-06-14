@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>clip &mdash; GMT 6.3.0 documentation</title>
+  <title>clip &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="clip">
-<h1>clip<a class="headerlink" href="#clip" title="Permalink to this headline">¶</a></h1>
+<h1>clip<a class="headerlink" href="#clip" title="Permalink to this heading">¶</a></h1>
 <p>Initialize or terminate polygonal clip paths</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt clip</strong> [ <em>table</em> ] <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em> <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<em>n</em>]
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>|<strong>r</strong>|<strong>t</strong>] ]
@@ -159,7 +165,7 @@
 [ <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
 [ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
 [ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-di</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
@@ -172,7 +178,7 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>Reads (x,y) file(s) [or standard input] and draws polygons
 that are activated as clipping paths. Several files may be read to
 create complex paths consisting of several non-connecting segments. Only
@@ -181,14 +187,14 @@ shown. To determine what is inside or outside the clipping path,
 we use the even-odd rule. When a ray drawn from any point,
 regardless of direction, crosses the clipping path segments an odd
 number of times, the point is inside the clipping path. If the number is
-even, the point is outside. The <strong>-N</strong> option, reverses the sense of
+even, the point is outside. The <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> option, reverses the sense of
 what is the inside and outside of the paths by plotting a clipping path
 along the map boundary. After subsequent plotting, which will be clipped
 against these paths, the clipping may be deactivated by running
-the module a second time with the <strong>-C</strong> option only.</p>
+the module a second time with the <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> option only.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
@@ -197,12 +203,10 @@ then we read from standard input.  </p>
 </dl>
 <dl class="simple" id="c">
 <dt><strong>-C</strong>[<em>n</em>]</dt><dd><p>Mark end of existing clip path(s). No input file will be processed.
-No projection information is needed unless <strong>-B</strong> has been selected
+No projection information is needed unless <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong> has been selected
 as well. With no arguments we terminate all active clipping paths.
 Experts may restrict the termination to just <em>n</em> of the active
-clipping path by passing that as the argument.
-Remember to supply
-<strong>-X</strong> and <strong>-Y</strong> settings if you have moved since the clip started.</p>
+clipping path by passing that as the argument.</p>
 </dd>
 </dl>
 <dl class="simple" id="j">
@@ -223,10 +227,10 @@ provided, the region will be automatically determined based on the data in <em>t
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>|<strong>r</strong>|<strong>t</strong>]</dt><dd><p>By default, geographic line segments are connected as great circle arcs. To connect them as
-straight lines, use the <strong>-A</strong> flag. Alternatively, add <strong>m</strong> to connect
+straight lines, use the <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> flag. Alternatively, add <strong>m</strong> to connect
 the line by first following a meridian, then a parallel. Or append <strong>p</strong>
 to start following a parallel, then a meridian. (This can be practical
 to connect lines along parallels, for example).
@@ -243,14 +247,14 @@ draw stair-case curves that whose first move is along <em>r</em> or <em>theta</e
 <dl class="simple" id="n">
 <dt><strong>-N</strong></dt><dd><p>Invert the sense of what is inside and outside. For example, when
 using a single path, this means that only points outside that path
-will be shown. Cannot be used together with <strong>-B</strong>.</p>
+will be shown. Cannot be used together with <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="t">
 <dt><strong>-T</strong></dt><dd><p>Rather than read any input files, simply turn on clipping for the
-current map region. Basically, <strong>-T</strong> is a convenient way to run
-the module with the arguments <strong>-N</strong> /dev/null (or, under Windows,
-<strong>-N</strong> NUL). Cannot be used together with <strong>-B</strong>.</p>
+current map region. Basically, <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is a convenient way to run
+the module with the arguments <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> /dev/null (or, under Windows,
+<a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> NUL). Cannot be used together with <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="u">
@@ -306,7 +310,7 @@ the module with the arguments <strong>-N</strong> /dev/null (or, under Windows,
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
+<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -318,7 +322,7 @@ the module with the arguments <strong>-N</strong> /dev/null (or, under Windows,
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -330,7 +334,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To see the effect of a simple clip path which result in some symbols
 being partly visible or missing altogether, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin clip
@@ -348,7 +352,7 @@ gmt end show
 outline of the clip path to make it clear what is being clipped.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="grdmask.html"><span class="doc">grdmask</span></a>,
 <a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a>, <a class="reference internal" href="mask.html"><span class="doc">mask</span></a></p>
 </section>
@@ -365,8 +369,8 @@ outline of the clip path to make it clear what is being clipped.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

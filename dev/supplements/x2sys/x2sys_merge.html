@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>x2sys_merge &mdash; GMT 6.3.0 documentation</title>
+  <title>x2sys_merge &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,16 +148,16 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="x2sys-merge">
-<h1>x2sys_merge<a class="headerlink" href="#x2sys-merge" title="Permalink to this headline">¶</a></h1>
+<h1>x2sys_merge<a class="headerlink" href="#x2sys-merge" title="Permalink to this heading">¶</a></h1>
 <p>Merge an updated COEs table (smaller) into the main table (bigger)</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt x2sys_merge</strong> <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>main_COElist.txt</em> <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><em>new_COElist.txt</em>
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>x2sys_merge</strong> will read two crossovers data base and output the
 contents of the main one updated with the COEs in the second one. The
 second file should only contain updated COEs relatively to the first
@@ -159,10 +165,10 @@ one. That is, it MUST NOT contain any new two tracks intersections (This
 point is NOT checked in the code). This program is useful when, for any
 good reason like file editing NAV correction or whatever, one had to
 recompute only the COEs between the edited files and the rest of the
-database.  The complete data base is written to <em>stdout</em>.</p>
+database.  The complete data base is written to standard output.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong><em>main_COElist.txt</em></dt><dd><p>Specify the file <em>main_COElist.txt</em> with the main crossover error data base.</p>
 </dd>
@@ -173,20 +179,25 @@ database.  The complete data base is written to <em>stdout</em>.</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To update the main COE_data.txt with the new COEs estimations saved in
-the smaller COE_fresh.txt, try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt x2sys_merge -ACOE_data.txt -MCOE_fresh.txt &gt; COE_updated.txt
+the smaller COE_fresh.txt, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt x2sys_merge -ACOE_data.txt -MCOE_fresh.txt &gt; COE_updated.txt
 </pre></div>
 </div>
-</div></blockquote>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<p>Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys
+package. <em>Computers and Geosciences</em>, <strong>36</strong>, 348-354, <a class="reference external" href="https://www.researchgate.net/publication/220164039_Tools_for_analyzing_intersecting_tracks_The_x2sys_package">https://www.researchgate.net/publication/220164039_Tools_for_analyzing_intersecting_tracks_The_x2sys_package</a>.</p>
+<p>Wessel, P. (1989), XOVER: A cross-over error detector for track data,
+<em>Computers and Geosciences</em>, <strong>15</strong>(3), 333-346, <a class="reference external" href="https://doi.org/10.1016/0098-3004(89)90044-7">https://doi.org/10.1016/0098-3004(89)90044-7</a>.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="x2sys_binlist.html"><span class="doc">x2sys_binlist</span></a>,
 <a class="reference internal" href="x2sys_cross.html"><span class="doc">x2sys_cross</span></a>,
 <a class="reference internal" href="x2sys_datalist.html"><span class="doc">x2sys_datalist</span></a>,
@@ -209,8 +220,8 @@ the smaller COE_fresh.txt, try</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4. Standardized command line options &mdash; GMT 6.3.0 documentation</title>
+  <title>4. Standardized command line options &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -49,7 +53,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
@@ -222,7 +228,7 @@
            <div itemprop="articleBody">
              
   <section id="standardized-command-line-options">
-<h1><span class="section-number">4. </span>Standardized command line options<a class="headerlink" href="#standardized-command-line-options" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">4. </span>Standardized command line options<a class="headerlink" href="#standardized-command-line-options" title="Permalink to this heading">¶</a></h1>
 <p>Most of the programs take many of the same arguments such as those related
 to setting the data region, the map projection, etc. The switches in
 Table <a class="reference internal" href="#tbl-switches"><span class="std std-ref">switches</span></a> have the same meaning in all the programs (although
@@ -231,10 +237,6 @@ here as well as in the manual pages, as is vital that you understand how
 to use these options. We will present these options in order of
 importance (some are used a lot more than others).</p>
 <table class="docutils align-default" id="tbl-switches">
-<colgroup>
-<col style="width: 32%" />
-<col style="width: 68%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Standard option</p></th>
 <th class="head"><p>Description</p></th>
@@ -328,7 +330,7 @@ importance (some are used a lot more than others).</p>
 </tbody>
 </table>
 <section id="data-domain-or-map-region-the-r-option">
-<span id="option-r"></span><h2><span class="section-number">4.1. </span>Data domain or map region: The <strong>-R</strong> option<a class="headerlink" href="#data-domain-or-map-region-the-r-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-r"></span><h2><span class="section-number">4.1. </span>Data domain or map region: The <strong>-R</strong> option<a class="headerlink" href="#data-domain-or-map-region-the-r-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple" id="r">
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest.  </p>
@@ -343,8 +345,10 @@ geographic regions when using map projections where meridians and parallels are 
 <em>ymin</em>, and <em>ymax</em> refer to the data limits.</p></li>
 <li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em><strong>+u</strong><em>unit</em>. Append <strong>+u</strong><em>unit</em> to the option 1 to specify a region in
 projected units (e.g., UTM meters) where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible
-with the chosen projection and <em>unit</em> is an allowable <a class="reference internal" href="features.html#dist-units"><span class="std std-ref">distance unit</span></a>. The coordinates are relative
-to the standard longitude and latitude indicated in the projection (<strong>-J</strong>).</p></li>
+with the chosen projection and <em>unit</em> is an allowable <a class="reference internal" href="features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]. The coordinates are relative
+to the standard longitude and latitude indicated in the projection (<strong>-J</strong>).  For projected regions centered on
+(0,0) you may use the short-hand <strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults
+to <em>halfwidth</em> if not given. This short-hand requires the <strong>+u</strong> modifier.</p></li>
 <li><p><strong>-R</strong><em>xlleft</em>/<em>ylleft</em>/<em>xuright</em>/<em>yuright</em><strong>+r</strong>. This form is useful for map projections that are oblique,
 making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner and
 upper right corner geographic coordinates, followed by the modifier <strong>+r</strong>. This form guarantees a rectangular map
@@ -354,22 +358,26 @@ even though lines of equal longitude and latitude are not straight lines.</p></l
 <li><p><strong>-R</strong><em>gridfile</em>. This will copy the domain settings found for the grid in specified file. Note that depending on
 the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration (see
 <a class="reference internal" href="#grid-registration-the-r-option"><span class="std std-ref">Grid registration: The -r option</span></a>).</p></li>
-<li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by consulting
-the DCW (Digital Chart of the World) database and derives the bounding regions for one or more countries given by
-the codes. Simply append one or more comma-separated countries using the two-character
-<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">ISO 3166-1 alpha-2 convention</a>.
-To select a state within a country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent,
-prepend <strong>=</strong> to any of the continent codes <strong>AF</strong> (Africa), <strong>AN</strong> (Antarctica), <strong>AS</strong> (Asia), <strong>EU</strong> (Europe),
-<strong>OC</strong> (Oceania), <strong>NA</strong> (North America), or <strong>SA</strong> (South America). The following modifiers can be appended:</p>
+<li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
+consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
+countries given by the codes. Simply append one or more comma-separated countries using either the two-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
+country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
+or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
+Finally, append any <a class="reference internal" href="../coast.html#id1"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of the
+collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
 <ul class="simple">
 <li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
 <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
-national bounding box of France rounded to nearest integer degree.</p></li>
-<li><p><strong>+R</strong> to extend the region outward by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension].</p></li>
+national bounding box of France rounded to nearest integer degree, where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+R</strong> to adjust the region by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension], where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
 <li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box extends by at least 0.25 times the increment
-[default is no adjustment].</p></li>
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box is adjusted by at least 0.25 times the
+increment [default is no adjustment], where <em>inc</em> can be positive to expand the region or negative to shrink
+the region.</p></li>
 </ul>
 </li>
 <li><p><strong>-R</strong><em>justify</em><em>x0</em>/<em>y0</em>/<em>nx</em>/<em>ny</em>, where <em>justify</em> is a 2-character combination of <strong>L</strong>|<strong>C</strong>|<strong>R</strong> (for
@@ -423,7 +431,7 @@ arguments and not time coordinates given via data files.  If no <em>date</em> is
 implies 00:00:00, i.e., the start of the specified day. Note that not all of the specified entities need be present
 in the data. All calendar date-clock strings are internally represented as double precision seconds since proleptic
 Gregorian date Monday January 1 00:00:00 0001. Proleptic means we assume that the modern calendar can be
-extrapolated forward and backward; a year zero is used, and Gregory’s reforms <a class="footnote-reference brackets" href="#id8" id="id1">11</a> are extrapolated backward. Note
+extrapolated forward and backward; a year zero is used, and Gregory’s reforms <a class="footnote-reference brackets" href="#id8" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></a> are extrapolated backward. Note
 that this is not historical. The use of delimiters and their type and positions for <em>date</em> and <em>clock</em> must be
 exactly as indicated; however, these are customizable using <a class="reference internal" href="../gmt.conf.html#format-parameters"><span class="std std-ref">FORMAT parameters</span></a></p>
 </dd>
@@ -447,7 +455,7 @@ expected to be simple floating point values such as
 [±]<em>xxx.xxx</em>[<strong>E</strong>|<strong>e</strong>|<strong>D</strong>|<strong>d</strong>[±]<em>xx</em>],
 i.e., regular or exponential notations, with the enhancement to understand FORTRAN double precision output which
 may use <strong>D</strong> instead of <strong>E</strong> for exponents. These values are simply converted as they are to internal
-representation. <a class="footnote-reference brackets" href="#id9" id="id2">12</a></p>
+representation. <a class="footnote-reference brackets" href="#id9" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>12<span class="fn-bracket">]</span></a></p>
 </dd>
 </dl>
 <p><strong>Examples</strong></p>
@@ -516,7 +524,7 @@ gmt end show
 </div>
 </section>
 <section id="coordinate-transformations-and-map-projections-the-j-option">
-<span id="option-j"></span><h2><span class="section-number">4.2. </span>Coordinate transformations and map projections: The <strong>-J</strong> option<a class="headerlink" href="#coordinate-transformations-and-map-projections-the-j-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-j"></span><h2><span class="section-number">4.2. </span>Coordinate transformations and map projections: The <strong>-J</strong> option<a class="headerlink" href="#coordinate-transformations-and-map-projections-the-j-option" title="Permalink to this heading">¶</a></h2>
 <p>This option selects the coordinate transformation or map projection. The general format is</p>
 <ul class="simple">
 <li><p><strong>-J</strong><span class="math notranslate nohighlight">\(\delta\)</span>[<em>parameters</em>/]<em>scale</em>. Here, <span class="math notranslate nohighlight">\(\delta\)</span> is a <em>lower-case</em> letter of the alphabet that
@@ -640,12 +648,12 @@ gmt end show
 </div>
 </div>
 <section id="projections-specifications">
-<span id="proj-codes"></span><h3><span class="section-number">4.2.1. </span>Projections specifications<a class="headerlink" href="#projections-specifications" title="Permalink to this headline">¶</a></h3>
+<span id="proj-codes"></span><h3><span class="section-number">4.2.1. </span>Projections specifications<a class="headerlink" href="#projections-specifications" title="Permalink to this heading">¶</a></h3>
 <p>GMT offers 31 map projections specified using the <strong>-J</strong> option. There are two conventions you may use: (a) GMT-style
 syntax and (b) <a class="reference external" href="https://proj.org/">PROJ</a>-style syntax. The codes for the GMT-style and the PROJ-style are tabulated
 below along with the associated <em>parameters</em> and links to the cookbook sections that describe the projection syntax and
 usage.</p>
-<table class="colwidths-given docutils align-default">
+<table class="docutils align-default">
 <colgroup>
 <col style="width: 40%" />
 <col style="width: 10%" />
@@ -708,7 +716,7 @@ usage.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="map-projections.html#jg-pers"><span class="std std-ref">General perspective</span></a></p></td>
 <td><p><strong>-Jg</strong>|<strong>G</strong></p></td>
 <td><p><strong>-Jnsper/</strong></p></td>
-<td><p>lon<sub>0</sub>/lat<sub>0</sub>/<em>alt</em>/<em>azim</em>/<em>tilt</em>/<em>twist</em>/<em>W</em>/<em>H</em>/<em>scale</em>|<em>width</em></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub><em>/</em><em>scale</em>|<em>width</em>[<strong>+a</strong><em>azimuth</em>][<strong>+t</strong><em>tilt</em>][<strong>+v</strong><em>vwidth/vheight</em>][<strong>+w</strong><em>twist</em>][<strong>+z</strong><em>altitude</em>[<strong>r</strong>|<strong>R</strong>]|<strong>g</strong>]</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="map-projections.html#jh"><span class="std std-ref">Hammer equal area</span></a></p></td>
 <td><p><strong>-Jh</strong>|<strong>H</strong></p></td>
@@ -826,7 +834,7 @@ usage.</p>
 </section>
 </section>
 <section id="map-frame-and-axes-annotations-the-b-option">
-<span id="option-b"></span><h2><span class="section-number">4.3. </span>Map frame and axes annotations: The <strong>-B</strong> option<a class="headerlink" href="#map-frame-and-axes-annotations-the-b-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-b"></span><h2><span class="section-number">4.3. </span>Map frame and axes annotations: The <strong>-B</strong> option<a class="headerlink" href="#map-frame-and-axes-annotations-the-b-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple" id="b">
 <dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes.  </p>
@@ -841,7 +849,7 @@ things such as which axes should be plotted, canvas fill, plot title (and subtit
 drawn, whereas the <a class="reference internal" href="#axes-settings"><span class="std std-ref">Axes settings</span></a> deal with annotation, tick, and gridline
 intervals, axes labels, and annotation units.</p>
 <section id="frame-settings">
-<h3><span class="section-number">4.3.1. </span>Frame settings<a class="headerlink" href="#frame-settings" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.3.1. </span>Frame settings<a class="headerlink" href="#frame-settings" title="Permalink to this heading">¶</a></h3>
 <p>The Frame settings are specified by</p>
 <blockquote>
 <div><p><strong>-B</strong>[<em>axes</em>][<strong>+b</strong>][<strong>+g</strong><em>fill</em>][<strong>+i</strong>[<em>val</em>]][<strong>+n</strong>][<strong>+o</strong><em>lon/lat</em>][<strong>+s</strong><em>subtitle</em>][<strong>+t</strong><em>title</em>][<strong>+w</strong>[<em>pen</em>]][<strong>+x</strong><em>fill</em>][<strong>+y</strong><em>fill</em>][<strong>+z</strong><em>fill</em>]</p>
@@ -898,7 +906,7 @@ with &#64;[ markers (or alternatively &lt;math&gt; … &lt;/math&gt;) (requires 
 <a class="reference internal" href="gmt-latex.html"><span class="doc">Using LaTeX Expressions in GMT</span></a> chapter for more details.</p>
 </section>
 <section id="axes-settings">
-<h3><span class="section-number">4.3.2. </span>Axes settings<a class="headerlink" href="#axes-settings" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.3.2. </span>Axes settings<a class="headerlink" href="#axes-settings" title="Permalink to this heading">¶</a></h3>
 <p>The Axes settings are specified by</p>
 <blockquote>
 <div><p><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>][<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>intervals</em>[<strong>+a</strong><em>angle</em>|<strong>n</strong>|<strong>p</strong>][<strong>+f</strong>][<strong>+l</strong><em>label</em>][<strong>+p</strong><em>prefix</em>][<strong>+u</strong><em>unit</em>]</p>
@@ -966,10 +974,6 @@ of the 18 supported <a class="reference internal" href="../gmt.html#tbl-units"><
 <strong>c</strong><em>intfile</em>, where <em>intfile</em> contains any number of records with <em>coord</em> <em>type</em> [<em>label</em>]. See the section
 <a class="reference internal" href="#custom-axes"><span class="std std-ref">Custom axes</span></a> for more details.</p>
 <table class="docutils align-default" id="tbl-inttype">
-<colgroup>
-<col style="width: 24%" />
-<col style="width: 76%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Flag</strong></p></th>
 <th class="head"><p><strong>Description</strong></p></th>
@@ -1003,11 +1007,6 @@ The <em>unit</em> flag can take on one of 18 codes which are listed in Table <a 
 units are time-axis specific. However, the <strong>d</strong>, <strong>m</strong>, and <strong>s</strong> units will be interpreted as arc degrees, minutes,
 and arc seconds respectively when a map projection is in effect.</p>
 <table class="docutils align-default" id="tbl-units">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 16%" />
-<col style="width: 73%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Flag</strong></p></th>
 <th class="head"><p><strong>Unit</strong></p></th>
@@ -1116,7 +1115,7 @@ and <a class="reference internal" href="../gmt.conf.html#term-MAP_TICK_PEN_PRIMA
 </dl>
 </section>
 <section id="geographic-basemaps">
-<h3><span class="section-number">4.3.3. </span>Geographic basemaps<a class="headerlink" href="#geographic-basemaps" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.3.3. </span>Geographic basemaps<a class="headerlink" href="#geographic-basemaps" title="Permalink to this heading">¶</a></h3>
 <p>Geographic basemaps may differ from regular plot axis in that some
 projections support a “fancy” form of axis and is selected by the
 <a class="reference internal" href="../gmt.conf.html#term-MAP_FRAME_TYPE"><span class="xref std std-term">MAP_FRAME_TYPE</span></a> setting. The annotations will be formatted
@@ -1202,12 +1201,12 @@ gmt end show
 </div>
 </section>
 <section id="cartesian-linear-axes">
-<h3><span class="section-number">4.3.4. </span>Cartesian linear axes<a class="headerlink" href="#cartesian-linear-axes" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.3.4. </span>Cartesian linear axes<a class="headerlink" href="#cartesian-linear-axes" title="Permalink to this heading">¶</a></h3>
 <p>For non-geographic axes, the <a class="reference internal" href="../gmt.conf.html#term-MAP_FRAME_TYPE"><span class="xref std std-term">MAP_FRAME_TYPE</span></a> setting is implicitly
 set to plain. Other than that, cartesian linear axes are very similar to
 geographic axes. The annotation format may be controlled with the
 <a class="reference internal" href="../gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> parameter. By default, it is set to “%g”, which
-is a C language format statement for floating point numbers <a class="footnote-reference brackets" href="#id10" id="id4">13</a>, and
+is a C language format statement for floating point numbers <a class="footnote-reference brackets" href="#id10" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>13<span class="fn-bracket">]</span></a>, and
 with this setting the various axis routines will automatically determine
 how many decimal points should be used by inspecting the <em>stride</em>
 settings. If <a class="reference internal" href="../gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> is set to another format it will be
@@ -1258,13 +1257,13 @@ For the y-axis only the modifier <strong>+ap</strong> for parallel is allowed.</
 </figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt basemap -R2000/2020/35/45 -JX12c -Bxa2f+a-30 -BS --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_-B_slanted
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt basemap -R2000/2020/35/45 -JX12c -Bxa2f+a-30 -BS --GMT_THEME<span class="o">=</span>cookbook -view GMT_-B_slanted
 </pre></div>
 </div>
 </div>
 </section>
 <section id="cartesian-log10-axes">
-<h3><span class="section-number">4.3.5. </span>Cartesian log<sub>10</sub> axes<a class="headerlink" href="#cartesian-log10-axes" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.3.5. </span>Cartesian log<sub>10</sub> axes<a class="headerlink" href="#cartesian-log10-axes" title="Permalink to this heading">¶</a></h3>
 <p>Due to the logarithmic nature of annotation spacings, the <em>stride</em>
 parameter takes on specific meanings. The following concerns are
 specific to log axes (see Figure <a class="reference internal" href="#log-projection"><span class="std std-ref">Logarithmic projection axis</span></a>):</p>
@@ -1306,7 +1305,7 @@ gmt end show
 </div>
 </section>
 <section id="cartesian-exponential-axes">
-<h3><span class="section-number">4.3.6. </span>Cartesian exponential axes<a class="headerlink" href="#cartesian-exponential-axes" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.3.6. </span>Cartesian exponential axes<a class="headerlink" href="#cartesian-exponential-axes" title="Permalink to this heading">¶</a></h3>
 <p>Normally, <em>stride</em> will be used to create equidistant (in the user’s
 unit) annotations or ticks, but because of the exponential nature of the
 axis, such annotations may converge on each other at one end of the
@@ -1339,7 +1338,7 @@ gmt end show
 </div>
 </section>
 <section id="cartesian-time-axes">
-<span id="id5"></span><h3><span class="section-number">4.3.7. </span>Cartesian time axes<a class="headerlink" href="#cartesian-time-axes" title="Permalink to this headline">¶</a></h3>
+<span id="id5"></span><h3><span class="section-number">4.3.7. </span>Cartesian time axes<a class="headerlink" href="#cartesian-time-axes" title="Permalink to this heading">¶</a></h3>
 <p>What sets time axis apart from the other kinds of plot axes is the
 numerous ways in which we may want to tick and annotate the axis. Not
 only do we have both primary and secondary annotation items but we also
@@ -1480,7 +1479,7 @@ gmt end show
 </figure>
 </section>
 <section id="custom-axes">
-<span id="id6"></span><h3><span class="section-number">4.3.8. </span>Custom axes<a class="headerlink" href="#custom-axes" title="Permalink to this headline">¶</a></h3>
+<span id="id6"></span><h3><span class="section-number">4.3.8. </span>Custom axes<a class="headerlink" href="#custom-axes" title="Permalink to this heading">¶</a></h3>
 <p>Irregularly spaced annotations or annotations based on
 look-up tables can be implemented using the <em>custom</em> annotation
 mechanism. Here, we given the <strong>c</strong> (custom) type to the <strong>-B</strong> option
@@ -1534,7 +1533,7 @@ gmt end show
 </section>
 </section>
 <section id="timestamps-on-plots-the-u-option">
-<span id="option-u"></span><h2><span class="section-number">4.4. </span>Timestamps on plots: The <strong>-U</strong> option<a class="headerlink" href="#timestamps-on-plots-the-u-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-u"></span><h2><span class="section-number">4.4. </span>Timestamps on plots: The <strong>-U</strong> option<a class="headerlink" href="#timestamps-on-plots-the-u-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple" id="u">
 <dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Draw GMT time stamp logo on plot.  </p>
@@ -1563,13 +1562,13 @@ environment variable <strong>TZ</strong> (generally local time).</p>
 </figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt plot -R0/3/0/0.1 -Jx1i -U<span class="s2">&quot;optional command string or text here&quot;</span> -T --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_-U
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt plot -R0/3/0/0.1 -Jx1i -U<span class="s2">&quot;optional command string or text here&quot;</span> -T --GMT_THEME<span class="o">=</span>cookbook -view GMT_-U
 </pre></div>
 </div>
 </div>
 </section>
 <section id="verbose-feedback-the-v-option">
-<span id="option-v"></span><h2><span class="section-number">4.5. </span>Verbose feedback: The <strong>-V</strong> option<a class="headerlink" href="#verbose-feedback-the-v-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-v"></span><h2><span class="section-number">4.5. </span>Verbose feedback: The <strong>-V</strong> option<a class="headerlink" href="#verbose-feedback-the-v-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple" id="v">
 <dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
@@ -1591,7 +1590,7 @@ environment variable <strong>TZ</strong> (generally local time).</p>
 <strong>timing</strong>, <strong>compat</strong>, <strong>information</strong>, or <strong>debug</strong>, in order of increased verbosity [default is <strong>warning</strong>].</p>
 </section>
 <section id="plot-positioning-and-layout-the-x-y-options">
-<span id="option-y"></span><span id="option-x"></span><h2><span class="section-number">4.6. </span>Plot positioning and layout: The <strong>-X</strong> <strong>-Y</strong> options<a class="headerlink" href="#plot-positioning-and-layout-the-x-y-options" title="Permalink to this headline">¶</a></h2>
+<span id="option-y"></span><span id="option-x"></span><h2><span class="section-number">4.6. </span>Plot positioning and layout: The <strong>-X</strong> <strong>-Y</strong> options<a class="headerlink" href="#plot-positioning-and-layout-the-x-y-options" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple" id="x">
 <dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin.  </p>
@@ -1614,10 +1613,12 @@ previous plot unless the origin is shifted using these options. The following mo
 <li><p>Prepend <strong>r</strong> to move the origin relative to its current location.</p></li>
 </ul>
 <p>When <strong>-X</strong> or <strong>-Y</strong> are used without any further arguments, the values from the last use of that option in a previous
-GMT command will be used. Note that <strong>-X</strong> and <strong>-Y</strong> can also access the previous plot bounding box dimensions <em>w</em> and
-<em>h</em> and construct offsets that involves them.  For instance, to move the origin up 2 cm beyond the height of the
-previous plot, use <strong>-Y</strong><em>h</em>+2c. To move the origin half the width to the right, use <strong>-X</strong><em>w</em>/2. <strong>Note</strong>:
-the previous plot bounding box refers to the last object plotted, which may be an image, logo, legend, colorbar, etc.</p>
+GMT command will be used. In modern mode, <strong>-X</strong> and <strong>-Y</strong> can also access the previous plot bounding box dimensions <em>w</em> and
+<em>h</em> and construct offsets that involve them.  Thus, <em>xshift</em> can in general be [[±][<em>f</em>]<em>w</em>[/<em>d</em>]±]<em>xoff</em>, where optional signs, factor <em>f</em>
+and divisor <em>d</em> can be used to compute an offset that may be adjusted further by ±<em>off</em>.  Similarly, <em>yshift</em> can in general be
+[[±][<em>f</em>]<em>h</em>[/<em>d</em>]±]<em>yoff</em>.  For instance, to move the origin up 2 cm beyond the height of the previous plot, use <strong>-Y</strong><em>h</em>+2c.
+To move the origin half the width to the right, use <strong>-X</strong><em>w</em>/2. <strong>Note</strong>: the previous plot bounding box refers to the last
+object plotted, which may be an image, logo, legend, colorbar, etc.</p>
 <p><strong>Examples</strong></p>
 <figure class="align-center" id="id29">
 <span id="xy-options"></span><a class="reference internal image-reference" href="../_images/GMT_-XY.png"><img alt="../_images/GMT_-XY.png" src="../_images/GMT_-XY.png" style="width: 300px;" /></a>
@@ -1654,7 +1655,7 @@ gmt end show
 </div>
 </section>
 <section id="ogr-gmt-gis-i-o-the-a-option">
-<span id="option-a"></span><h2><span class="section-number">4.7. </span>OGR/GMT GIS i/o: The <strong>-a</strong> option<a class="headerlink" href="#ogr-gmt-gis-i-o-the-a-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-a"></span><h2><span class="section-number">4.7. </span>OGR/GMT GIS i/o: The <strong>-a</strong> option<a class="headerlink" href="#ogr-gmt-gis-i-o-the-a-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-a</strong>[[<em>col</em>=]<em>name</em>][,<em>…</em>]</dt><dd><p>Control how aspatial data are handled in GMT during input and output.</p>
@@ -1662,7 +1663,7 @@ gmt end show
 </dl>
 <p><strong>Description</strong></p>
 <p>GMT relies on external tools to translate geospatial files such as shapefiles into a format we can read. The tool
-<strong>ogr2ogr</strong> in the GDAL package can do such translations and preserve the aspatial metadata via a new OGR/GMT format
+<em>ogr2ogr</em> in the GDAL package can do such translations and preserve the aspatial metadata via a new OGR/GMT format
 specification (See the cookbook chapter <a class="reference internal" href="ogrgmt-format.html"><span class="doc">The GMT Vector Data Format for OGR Compatibility</span></a>). For this to be useful we need a mechanism to
 associate certain metadata values with required input and output columns expected by GMT programs. The <strong>-a</strong> option
 allows you to supply one or more comma-separated associations <em>col=name</em>, where <em>name</em> is the name of an aspatial
@@ -1670,7 +1671,7 @@ attribute field in a OGR/GMT file and whose value we wish to as data input for c
 thus replaces any other value already set. <strong>Note</strong>: <em>col = 0</em> is the first data column. <strong>Note</strong>: If no aspatial
 attributes are needed then the <strong>-a</strong> option is not needed – GMT will still process and read such data files.</p>
 <section id="ogr-gmt-input-with-a-option">
-<h3><span class="section-number">4.7.1. </span>OGR/GMT input with <strong>-a</strong> option<a class="headerlink" href="#ogr-gmt-input-with-a-option" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.7.1. </span>OGR/GMT input with <strong>-a</strong> option<a class="headerlink" href="#ogr-gmt-input-with-a-option" title="Permalink to this heading">¶</a></h3>
 <p>If you need to populate GMT data columns with (constant) values specified by aspatial attributes, use <strong>-a</strong> and append
 any number of comma-separated <em>col=name</em> associations. For example, <strong>-a</strong><em>2=depth</em> will read the spatial <em>x,y</em>
 columns from the file and add a third (<em>z</em>) column based on the value of the aspatial field called <em>depth</em>. You can also
@@ -1681,7 +1682,7 @@ can pass such options via its segment headers (See the cookbook chapter <a class
 the leading <em>col=</em> is omitted, the column value is automatically incremented starting at 2.</p>
 </section>
 <section id="ogr-gmt-output-with-a-option">
-<h3><span class="section-number">4.7.2. </span>OGR/GMT output with <strong>-a</strong> option<a class="headerlink" href="#ogr-gmt-output-with-a-option" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.7.2. </span>OGR/GMT output with <strong>-a</strong> option<a class="headerlink" href="#ogr-gmt-output-with-a-option" title="Permalink to this heading">¶</a></h3>
 <p>GMT table-writing tools can also output the OGR/GMT format directly. Specify if certain GMT data columns with constant
 values should be stored as aspatial metadata using <em>col=name</em>[:<em>type</em>], where you can optionally specify what
 data <em>type</em> it should be from the options <em>double</em>, <em>float</em>, <em>integer</em>, <em>char</em>, <em>string</em>, <em>logical</em>, <em>byte</em>, or
@@ -1695,9 +1696,9 @@ the Dateline.</p>
 </section>
 </section>
 <section id="binary-table-i-o-the-b-option">
-<span id="option-binary"></span><h2><span class="section-number">4.8. </span>Binary table i/o: The <strong>-b</strong> option<a class="headerlink" href="#binary-table-i-o-the-b-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-binary"></span><h2><span class="section-number">4.8. </span>Binary table i/o: The <strong>-b</strong> option<a class="headerlink" href="#binary-table-i-o-the-b-option" title="Permalink to this heading">¶</a></h2>
 <section id="binary-input-with-bi-option">
-<h3><span class="section-number">4.8.1. </span>Binary input with <strong>-bi</strong> option<a class="headerlink" href="#binary-input-with-bi-option" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.8.1. </span>Binary input with <strong>-bi</strong> option<a class="headerlink" href="#binary-input-with-bi-option" title="Permalink to this heading">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-bi</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>]</dt><dd><p>Select native binary format for primary table input (secondary inputs are always ASCII).</p>
@@ -1746,7 +1747,7 @@ gmt convert test.bin -bi1f,1l,1d
 </div>
 </section>
 <section id="binary-output-with-bo-option">
-<h3><span class="section-number">4.8.2. </span>Binary output with <strong>-bo</strong> option<a class="headerlink" href="#binary-output-with-bo-option" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.8.2. </span>Binary output with <strong>-bo</strong> option<a class="headerlink" href="#binary-output-with-bo-option" title="Permalink to this heading">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-bo</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>]</dt><dd><p>Select native binary format for table output.</p>
@@ -1770,7 +1771,7 @@ output of the program. <strong>Note</strong>: NetCDF file output is not supporte
 </section>
 </section>
 <section id="selecting-subplot-panels-the-c-option">
-<span id="option-c"></span><h2><span class="section-number">4.9. </span>Selecting subplot panels: The <strong>-c</strong> option<a class="headerlink" href="#selecting-subplot-panels-the-c-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-c"></span><h2><span class="section-number">4.9. </span>Selecting subplot panels: The <strong>-c</strong> option<a class="headerlink" href="#selecting-subplot-panels-the-c-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-c</strong>[<em>row</em>,<em>col</em>|<em>index</em>]</dt><dd><p>Advance to the selected subplot panel.</p>
@@ -1784,7 +1785,7 @@ allowed when in subplot mode.  If no <strong>-c</strong> option is given for the
 <em>row</em>=<em>col</em>=<em>index</em>=0, i.e., the upper left panel.  <strong>Note</strong>: <em>row</em>, <em>col</em>, and <em>index</em> all start at 0.</p>
 </section>
 <section id="missing-data-conversion-the-d-option">
-<span id="option-d"></span><h2><span class="section-number">4.10. </span>Missing data conversion: The <strong>-d</strong> option<a class="headerlink" href="#missing-data-conversion-the-d-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-d"></span><h2><span class="section-number">4.10. </span>Missing data conversion: The <strong>-d</strong> option<a class="headerlink" href="#missing-data-conversion-the-d-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-di</strong>|<strong>o</strong><em>nodata</em>[<strong>+c</strong><em>col</em>]</dt><dd><p>Substitute specific values with NaN.</p>
@@ -1803,7 +1804,7 @@ substituted with the chosen missing data value <em>nodata</em>.</p>
 <p>Use the <strong>+c</strong> modifier to override the starting column used for the examinations [2 for input, 0 for output].</p>
 </section>
 <section id="data-record-pattern-matching-the-e-option">
-<span id="option-e"></span><h2><span class="section-number">4.11. </span>Data record pattern matching: The <strong>-e</strong> option<a class="headerlink" href="#data-record-pattern-matching-the-e-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-e"></span><h2><span class="section-number">4.11. </span>Data record pattern matching: The <strong>-e</strong> option<a class="headerlink" href="#data-record-pattern-matching-the-e-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-e</strong>[<strong>~</strong>]<em>“pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>]</dt><dd><p>Only accept ASCII data records that contain the specified pattern.</p>
@@ -1820,7 +1821,7 @@ expressions</a>, please enclose the expression in slashes. Append
 To give a single pattern starting with <strong>+f</strong>, escape it with a backslash.</p>
 </section>
 <section id="data-type-selection-the-f-option">
-<span id="option-f"></span><h2><span class="section-number">4.12. </span>Data type selection: The <strong>-f</strong> option<a class="headerlink" href="#data-type-selection-the-f-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-f"></span><h2><span class="section-number">4.12. </span>Data type selection: The <strong>-f</strong> option<a class="headerlink" href="#data-type-selection-the-f-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em></dt><dd><p>Specify the data types of input and/or output columns (time or geographical data).</p>
@@ -1848,7 +1849,7 @@ Such coordinates are automatically inverted to longitude, latitude during the da
 <a class="reference internal" href="features.html#input-data-formats"><span class="std std-ref">Input data formats</span></a> and <a class="reference internal" href="features.html#output-data-formats"><span class="std std-ref">Output data formats</span></a>.</p>
 </section>
 <section id="data-gap-detection-the-g-option">
-<span id="option-g"></span><h2><span class="section-number">4.13. </span>Data gap detection: The <strong>-g</strong> option<a class="headerlink" href="#data-gap-detection-the-g-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-g"></span><h2><span class="section-number">4.13. </span>Data gap detection: The <strong>-g</strong> option<a class="headerlink" href="#data-gap-detection-the-g-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-g</strong><strong>x</strong>|<strong>y</strong>|<strong>z</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong><em>gap</em>[<strong>u</strong>][<strong>+a</strong>][<strong>+c</strong><em>col</em>][<strong>+n</strong>|<strong>p</strong>]</dt><dd><p>Examine the spacing between consecutive data points in order to impose breaks in the line.</p>
@@ -1890,7 +1891,7 @@ records (see the cookbook chapter <a class="reference internal" href="file-forma
 <a class="reference internal" href="../gmt.conf.html#term-IO_NAN_RECORDS"><span class="xref std std-term">IO_NAN_RECORDS</span></a> is set to <em>pass</em> [default skips NaN values].</p>
 </section>
 <section id="header-data-records-the-h-option">
-<span id="option-h"></span><h2><span class="section-number">4.14. </span>Header data records: The <strong>-h</strong> option<a class="headerlink" href="#header-data-records-the-h-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-h"></span><h2><span class="section-number">4.14. </span>Header data records: The <strong>-h</strong> option<a class="headerlink" href="#header-data-records-the-h-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>]</dt><dd><p>Specify that input and/or output file(s) have <em>n</em> header records [default is 0].</p>
@@ -1916,7 +1917,7 @@ and not skipped even if any is starting with #. <strong>Note</strong>: If used w
 <em>n</em> to instead mean the number of bytes to skip on input or pad on output.</p>
 </section>
 <section id="input-columns-selection-the-i-option">
-<span id="option-i"></span><h2><span class="section-number">4.15. </span>Input columns selection: The <strong>-i</strong> option<a class="headerlink" href="#input-columns-selection-the-i-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-i"></span><h2><span class="section-number">4.15. </span>Input columns selection: The <strong>-i</strong> option<a class="headerlink" href="#input-columns-selection-the-i-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]]</dt><dd><p>Select specific data columns for primary input, in arbitrary order.</p>
@@ -1935,12 +1936,17 @@ one of the following modifiers to any column or column range to transform the in
 km to degrees or <strong>k</strong> to convert degrees to km using <a class="reference internal" href="../gmt.conf.html#term-PROJ_MEAN_RADIUS"><span class="xref std std-term">PROJ_MEAN_RADIUS</span></a>.</p></li>
 <li><p><strong>+o</strong> to add the given <em>offset</em> to the input values [default is 0].</p></li>
 </ul>
-<p>To read from a given column until the end of the record, leave off <em>stop</em> when specifying the column range. Normally,
+<p><strong>Note</strong>: The order of these optional transformations are (1) take log10, (2) scale or divide, and (3)
+add <em>offset</em>.  To read from a given column until the end of the record,
+leave off <em>stop</em> when specifying the column range. Normally,
 any trailing text will be read but when <strong>-i</strong> is used to specify specific input columns you must explicitly append the
 “column” <strong>t</strong> to retain the trailing text internally. To only ingest a single word from the trailing text, append
 the word number (first word is 0).  If your trailing text columns start with a valid number and you want to ensure
 the content from column <em>col</em> to the end of the record will be considered trailing text, use <strong>-f</strong><em>col</em><strong>s</strong>.
-Finally, <strong>-in</strong> will simply read the numerical input and skip any trailing text.</p>
+Finally, <strong>-in</strong> will simply read the numerical input and skip any trailing text. <strong>Note</strong>: Using <strong>-i</strong> assumes
+there are as many numerical columns as implied in <strong>-i</strong>, so if you have a mix of numerical and text columns we will forge
+ahead and read those text columns (most likely returned as NaNs) and return your selection as numerical values.  The default (no <strong>-i</strong> provided)
+will examine the record and stop conversions when the record switches to trailing text.</p>
 <p><strong>Examples</strong></p>
 <p>For example, to use the 4th, 7th, and 3rd data column as the required <em>x,y,z</em>
 to <a class="reference internal" href="../blockmean.html"><span class="doc">blockmean</span></a> you would specify <strong>-i</strong>3,6,2 (since 0 is the first
@@ -1968,7 +1974,7 @@ after reading the data there is no physical record, only the logical record in m
 </figure>
 </section>
 <section id="spherical-distance-calculations-the-j-option">
-<span id="option-j-distcalc"></span><h2><span class="section-number">4.16. </span>Spherical distance calculations: The <strong>-j</strong> option<a class="headerlink" href="#spherical-distance-calculations-the-j-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-j-distcalc"></span><h2><span class="section-number">4.16. </span>Spherical distance calculations: The <strong>-j</strong> option<a class="headerlink" href="#spherical-distance-calculations-the-j-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-je</strong>|<strong>f</strong>|<strong>g</strong></dt><dd><p>Determine how spherical distances are calculated in modules that support this [Default is <strong>-jg</strong>].</p>
@@ -1987,7 +1993,7 @@ of the mean radius (<a class="reference internal" href="../gmt.conf.html#term-PR
 Geodesic distance calculations is also controlled by method (<a class="reference internal" href="../gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a>).</p>
 </section>
 <section id="setting-automatic-legend-entries-the-l-option">
-<span id="option-l"></span><h2><span class="section-number">4.17. </span>Setting automatic legend entries: The <strong>-l</strong> option<a class="headerlink" href="#setting-automatic-legend-entries-the-l-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-l"></span><h2><span class="section-number">4.17. </span>Setting automatic legend entries: The <strong>-l</strong> option<a class="headerlink" href="#setting-automatic-legend-entries-the-l-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <p><strong>-l</strong>[<em>label</em>][<strong>+D</strong><em>pen</em>][<strong>+G</strong><em>gap</em>][<strong>+H</strong><em>header</em>][<strong>+L</strong>[<em>code</em>/]<em>text</em>][<strong>+N</strong><em>cols</em>][<strong>+S</strong><em>size</em>[/<em>height</em>]][<strong>+V</strong>[<em>pen</em>]][<strong>+f</strong><em>font</em>][<strong>+g</strong><em>fill</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>off</em>][<strong>+p</strong><em>pen</em>][<strong>+s</strong><em>scale</em>][<strong>+w</strong><em>width</em>]</p>
 <blockquote>
@@ -2026,7 +2032,8 @@ width among the specified columns. If <strong>legend</strong> is not called expl
 plot via <a class="reference internal" href="../end.html"><span class="doc">end</span></a>. <strong>Note</strong>: If auto-coloring is used for pens or fills and <strong>-l</strong> is set then <em>label</em> may contain a
 C-format for integers (e.g., %3.3d) or just # and we will use the sequence number with the format to build the label
 entries.  Alternatively, give a list of comma-separated labels, or give no label if your segment headers contain label
-settings.</p>
+settings. <strong>Note</strong>: Due to this mechanism, if your single label actually contains commas, you must replace these with the
+octal code for a comma (\054).</p>
 <p><strong>Examples</strong></p>
 <p>A simple plot with two symbols can obtain a legend by using this option and modifiers and is shown in Figure
 <a class="reference internal" href="#auto-legend"><span class="std std-ref">Auto Legend</span></a>:</p>
@@ -2049,7 +2056,7 @@ auto legend; the first also sets a legend header of given size and draws a horiz
 </figure>
 </section>
 <section id="grid-interpolation-parameters-the-n-option">
-<span id="option-n"></span><h2><span class="section-number">4.18. </span>Grid interpolation parameters: The <strong>-n</strong> option<a class="headerlink" href="#grid-interpolation-parameters-the-n-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-n"></span><h2><span class="section-number">4.18. </span>Grid interpolation parameters: The <strong>-n</strong> option<a class="headerlink" href="#grid-interpolation-parameters-the-n-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>g</em>|<em>p</em>|<em>n</em>][<strong>+c</strong>][<strong>+t</strong><em>threshold</em>]</dt><dd><p>Select grid interpolation mode.</p>
@@ -2078,7 +2085,7 @@ way from a non-NaN value and 0.1 will go about 90% of the way [default is 0.5].<
 </ul>
 </section>
 <section id="output-columns-selection-the-o-option">
-<span id="option-o"></span><h2><span class="section-number">4.19. </span>Output columns selection: The <strong>-o</strong> option<a class="headerlink" href="#output-columns-selection-the-o-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-o"></span><h2><span class="section-number">4.19. </span>Output columns selection: The <strong>-o</strong> option<a class="headerlink" href="#output-columns-selection-the-o-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-o</strong><em>cols</em>[,…][,<strong>t</strong>[<em>word</em>]]</dt><dd><p>Select specific data columns for primary output, in arbitrary order.</p>
@@ -2101,7 +2108,7 @@ order <em>after</em> the <strong>-i</strong> selection has taken place and <em>n
 To write the 4th, 2nd, and 4th again use <strong>-o</strong>3,1,3.</p>
 </section>
 <section id="perspective-view-the-p-option">
-<span id="option-p"></span><h2><span class="section-number">4.20. </span>Perspective view: The <strong>-p</strong> option<a class="headerlink" href="#perspective-view-the-p-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-p"></span><h2><span class="section-number">4.20. </span>Perspective view: The <strong>-p</strong> option<a class="headerlink" href="#perspective-view-the-p-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>]</dt><dd><p>Select perspective view and set the azimuth and elevation of the viewpoint.</p>
@@ -2131,10 +2138,10 @@ you can perform a simple rotation about the z-axis by just giving the rotation a
 to select another axis location than the plot origin.</p>
 </section>
 <section id="data-row-selection-the-q-option">
-<span id="option-q"></span><h2><span class="section-number">4.21. </span>Data row selection: The <strong>-q</strong> option<a class="headerlink" href="#data-row-selection-the-q-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-q"></span><h2><span class="section-number">4.21. </span>Data row selection: The <strong>-q</strong> option<a class="headerlink" href="#data-row-selection-the-q-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
-<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>]</dt><dd><p>Select specific data rows to be read and/or written.</p>
+<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>]</dt><dd><p>Select specific data rows to be read and/or written.</p>
 </dd>
 </dl>
 <p><strong>Description</strong></p>
@@ -2146,7 +2153,7 @@ rows <em>not</em> specified by the given ranges, prepend the selected rows with 
 modifiers to control how the rows are counted [Default is <strong>+a</strong>]:</p>
 <ul class="simple">
 <li><p><strong>+a</strong> to count all rows in the data set.</p></li>
-<li><p><strong>+f</strong> to reset the count at the start of each file.</p></li>
+<li><p><strong>+t</strong> to reset the count at the start of each table.</p></li>
 <li><p><strong>+s</strong> to reset the count at the start of each segment.</p></li>
 </ul>
 <p>Alternatively, use <strong>+c</strong><em>col</em> to indicate that the arguments instead are min/max <em>data limits</em> for the values in
@@ -2160,7 +2167,7 @@ while <strong>-qo</strong>/50<strong>+c</strong>2 will only write records whose 
 <p>Use <strong>-q</strong>1<strong>+s</strong> to only read the 2nd data record from each of the segments found.</p>
 </section>
 <section id="grid-registration-the-r-option">
-<span id="option-nodereg"></span><h2><span class="section-number">4.22. </span>Grid registration: The <strong>-r</strong> option<a class="headerlink" href="#grid-registration-the-r-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-nodereg"></span><h2><span class="section-number">4.22. </span>Grid registration: The <strong>-r</strong> option<a class="headerlink" href="#grid-registration-the-r-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-r</strong>[<strong>g</strong>|<strong>p</strong>]</dt><dd><p>Select gridline or pixel node registration.</p>
@@ -2175,7 +2182,7 @@ registration.  While you may convert between the two registrations this conversi
 dampens the other high frequencies. It is best to avoid any registration conversion if you can help it. Planning ahead
 may be important.</p>
 <section id="gridline-registration">
-<h3><span class="section-number">4.22.1. </span>Gridline registration<a class="headerlink" href="#gridline-registration" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.22.1. </span>Gridline registration<a class="headerlink" href="#gridline-registration" title="Permalink to this heading">¶</a></h3>
 <p>In this registration, the nodes are centered on the grid line
 intersections and the data points represent the average value in a cell
 of dimensions (<span class="math notranslate nohighlight">\(x_{inc} \cdot y_{inc}\)</span>) centered on each node
@@ -2190,7 +2197,7 @@ ny &amp; =  &amp;       (y_{max} - y_{min}) / y_{inc} + 1
 <p>which for the example in left side of Figure <a class="reference internal" href="#grid-registration"><span class="std std-ref">Grid registration</span></a> yields nx = ny = 4.</p>
 </section>
 <section id="pixel-registration">
-<h3><span class="section-number">4.22.2. </span>Pixel registration<a class="headerlink" href="#pixel-registration" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.22.2. </span>Pixel registration<a class="headerlink" href="#pixel-registration" title="Permalink to this heading">¶</a></h3>
 <p>Here, the nodes are centered in the grid cells, i.e., the areas
 between grid lines, and the data points represent the average values
 within each cell (right side of Figure <a class="reference internal" href="#grid-registration"><span class="std std-ref">Grid registration</span></a>). In the case of
@@ -2239,7 +2246,7 @@ pixel-registered grids have one less column and one less row than the
 gridline-registered grids; here we find nx = ny = 3.</p>
 </section>
 <section id="switching-registrations">
-<h3><span class="section-number">4.22.3. </span>Switching registrations<a class="headerlink" href="#switching-registrations" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.22.3. </span>Switching registrations<a class="headerlink" href="#switching-registrations" title="Permalink to this heading">¶</a></h3>
 <p id="switch-registrations">GMT offer ways to convert a pixel-registered grid to a gridline-registered grid.
 One way is to simply adjust the region of the grid by half the grid-spacing and
 toggle the registration in <a class="reference internal" href="../grdedit.html"><span class="doc">grdedit</span></a> <strong>-T</strong>.  This is a <em>non-destructive</em> way to convert the grid,
@@ -2257,12 +2264,12 @@ unlike long wavelength components (thin line), which can be interpolated (blue t
 Intermediate wavelengths will experience attenuated amplitudes as well. b) Transfer function for
 resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
 of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
-function of wavenumber <span class="math notranslate nohighlight">\(k_j\)</span> [Marks and Smith, 2007 <a class="footnote-reference brackets" href="#id11" id="id7">14</a>.</span><a class="headerlink" href="#id33" title="Permalink to this image">¶</a></p>
+function of wavenumber <span class="math notranslate nohighlight">\(k_j\)</span> [Marks and Smith, 2007 <a class="footnote-reference brackets" href="#id11" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>14<span class="fn-bracket">]</span></a>.</span><a class="headerlink" href="#id33" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_grid2pix ps
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_grid2pix
 	gmt <span class="nb">set</span> GMT_THEME cookbook
 	gmt subplot begin 2x1 -F6i/2.5i -M3p -A+jTR+o-0.2i/0
 		gmt subplot <span class="nb">set</span> <span class="m">0</span>
@@ -2293,7 +2300,7 @@ gmt end show
 </section>
 </section>
 <section id="nan-record-treatment-the-s-option">
-<span id="option-s"></span><h2><span class="section-number">4.23. </span>NaN-record treatment: The <strong>-s</strong> option<a class="headerlink" href="#nan-record-treatment-the-s-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-s"></span><h2><span class="section-number">4.23. </span>NaN-record treatment: The <strong>-s</strong> option<a class="headerlink" href="#nan-record-treatment-the-s-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-s</strong>[<em>cols</em>][<strong>+a</strong>][<strong>+r</strong>]</dt><dd><p>Suppress output of data records whose <em>z</em>-value(s) equal NaN.</p>
@@ -2311,7 +2318,7 @@ if values in all specified <em>cols</em> equal NaN]</p></li>
 </ul>
 </section>
 <section id="layer-transparency-the-t-option">
-<span id="option-t"></span><h2><span class="section-number">4.24. </span>Layer transparency: The <strong>-t</strong> option<a class="headerlink" href="#layer-transparency-the-t-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-t"></span><h2><span class="section-number">4.24. </span>Layer transparency: The <strong>-t</strong> option<a class="headerlink" href="#layer-transparency-the-t-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-t</strong><em>transp</em>[/<em>transp2</em>][<strong>+f</strong>|<strong>s</strong>]</dt><dd><p>Set transparency level(s) for an overlay.</p>
@@ -2330,7 +2337,7 @@ format output is selected because the PostScript language does not support trans
 adds a transparency layer in the image (for further processing).</p>
 </section>
 <section id="examining-data-cycles-the-w-option">
-<span id="option-w"></span><h2><span class="section-number">4.25. </span>Examining data cycles: The <strong>-w</strong> option<a class="headerlink" href="#examining-data-cycles-the-w-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-w"></span><h2><span class="section-number">4.25. </span>Examining data cycles: The <strong>-w</strong> option<a class="headerlink" href="#examining-data-cycles-the-w-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-wy</strong>|<strong>a</strong>|<strong>w</strong>|<strong>d</strong>|<strong>h</strong>|<strong>m</strong>|<strong>s</strong>|<strong>c</strong><em>period</em>[/<em>phase</em>][<strong>+c</strong><em>col</em>]</dt><dd><p>Convert input records to a cyclical coordinate.</p>
@@ -2351,13 +2358,6 @@ modulus operator, yielding cyclic coordinates <span class="math notranslate nohi
 a custom cycle for other types of Cartesian coordinates. The table below shows the values for units, phase and period
 that are prescribed and only requires the user to specify the corresponding wrapping code (<strong>y</strong>|<strong>a</strong>|<strong>w</strong>|<strong>d</strong>|<strong>h</strong>|<strong>m</strong>|<strong>s</strong>|<strong>c</strong><em>period</em>[/<em>phase</em>]):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 36%" />
-<col style="width: 16%" />
-<col style="width: 18%" />
-<col style="width: 14%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>Code</strong></p></th>
 <th class="head"><p><strong>Purpose</strong> (<strong>unit</strong>)</p></th>
@@ -2565,7 +2565,7 @@ by the number of days.</span><a class="headerlink" href="#id39" title="Permalink
 </figure>
 </section>
 <section id="selecting-number-of-cpu-cores-the-x-option">
-<span id="option-x-core"></span><h2><span class="section-number">4.26. </span>Selecting number of CPU cores: The <strong>-x</strong> option<a class="headerlink" href="#selecting-number-of-cpu-cores-the-x-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-x-core"></span><h2><span class="section-number">4.26. </span>Selecting number of CPU cores: The <strong>-x</strong> option<a class="headerlink" href="#selecting-number-of-cpu-cores-the-x-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-x</strong>[[-]<em>n</em>]</dt><dd><p>Specify the number of active cores to be used in any OpenMP-enabled multi-threaded algorithms.</p>
@@ -2579,7 +2579,7 @@ The <strong>-x</strong> option is only available to GMT modules compiled with Op
 and <a class="reference internal" href="../batch.html"><span class="doc">batch</span></a> which handle their own parallel execution.</p>
 </section>
 <section id="latitude-longitude-or-longitude-latitude-the-option">
-<span id="option-colon"></span><h2><span class="section-number">4.27. </span>Latitude/Longitude or Longitude/Latitude?: The <strong>-:</strong> option<a class="headerlink" href="#latitude-longitude-or-longitude-latitude-the-option" title="Permalink to this headline">¶</a></h2>
+<span id="option-colon"></span><h2><span class="section-number">4.27. </span>Latitude/Longitude or Longitude/Latitude?: The <strong>-:</strong> option<a class="headerlink" href="#latitude-longitude-or-longitude-latitude-the-option" title="Permalink to this heading">¶</a></h2>
 <p><strong>Syntax</strong></p>
 <dl class="simple">
 <dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>]</dt><dd><p>Swap 1st and 2nd column on input and/or output.</p>
@@ -2593,10 +2593,10 @@ arguments that may take geographic coordinates (e.g., <strong>-R</strong>) <em>a
 geographical grids are expected to have the longitude as first (minor) dimension.</p>
 </section>
 <section id="footnotes">
-<h2><span class="section-number">4.28. </span>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">¶</a></h2>
-<dl class="footnote brackets">
-<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id1">11</a></span></dt>
-<dd><p>The Gregorian Calendar is a revision of the Julian Calendar which was
+<h2><span class="section-number">4.28. </span>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this heading">¶</a></h2>
+<aside class="footnote brackets" id="id8" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">11</a><span class="fn-bracket">]</span></span>
+<p>The Gregorian Calendar is a revision of the Julian Calendar which was
 instituted in a papal bull by Pope Gregory XIII in 1582. The reason
 for the calendar change was to correct for drift in the dates of
 significant religious observations (primarily Easter) and to prevent
@@ -2612,20 +2612,22 @@ in 1752, with eleven days removed from September. The additional day
 came because the old and new calendars disagreed on whether 1700 was
 a leap year, so the Julian calendar had to be adjusted by one more
 day.</p>
-</dd>
-<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id2">12</a></span></dt>
-<dd><p>While UTM coordinates clearly refer to points on the Earth, in this
+</aside>
+<aside class="footnote brackets" id="id9" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">12</a><span class="fn-bracket">]</span></span>
+<p>While UTM coordinates clearly refer to points on the Earth, in this
 context they are considered “other”. Thus, when we refer to
 “geographical” coordinates herein we imply longitude, latitude.</p>
-</dd>
-<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id4">13</a></span></dt>
-<dd><p>Please consult the man page for <em>printf</em> or any book on C.</p>
-</dd>
-<dt class="label" id="id11"><span class="brackets"><a class="fn-backref" href="#id7">14</a></span></dt>
-<dd><p>Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity, Geophys. Res. Lett., 34 (L03307),
-<a class="reference external" href="http://doi.org/10.1029/2006GL028857">http://doi.org/10.1029/2006GL028857</a>.</p>
-</dd>
-</dl>
+</aside>
+<aside class="footnote brackets" id="id10" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">13</a><span class="fn-bracket">]</span></span>
+<p>Please consult the man page for <em>printf</em> or any book on C.</p>
+</aside>
+<aside class="footnote brackets" id="id11" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">14</a><span class="fn-bracket">]</span></span>
+<p>Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity, Geophys. Res. Lett., 34 (L03307),
+<a class="reference external" href="https://doi.org/10.1029/2006GL028857">https://doi.org/10.1029/2006GL028857</a>.</p>
+</aside>
 </section>
 </section>
 
@@ -2640,8 +2642,8 @@ context they are considered “other”. Thus, when we refer to
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

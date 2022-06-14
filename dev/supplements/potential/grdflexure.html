@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>grdflexure &mdash; GMT 6.3.0 documentation</title>
+  <title>grdflexure &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,17 +22,21 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="grdgravmag3d" href="grdgravmag3d.html" />
-    <link rel="prev" title="gravfft" href="gravfft.html" />
+    <link rel="prev" title="gravprisms" href="gravprisms.html" />
 
 
   <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
@@ -49,7 +53,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -143,17 +149,18 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="grdflexure">
-<h1>grdflexure<a class="headerlink" href="#grdflexure" title="Permalink to this headline">¶</a></h1>
+<h1>grdflexure<a class="headerlink" href="#grdflexure" title="Permalink to this heading">¶</a></h1>
 <p>Compute flexural deformation of 3-D surfaces for various rheologies</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt grdflexure</strong> <em>topogrd</em>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt grdflexure</strong> <em>input</em>
 <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>rm</em>/<em>rl</em>[/<em>ri</em>]/<em>rw</em>
 <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<em>Te</em>[<strong>k</strong>][/<em>Te2</em>[<strong>k</strong>]]]
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>Nx</em>/<em>Ny</em>/<em>Nxy</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><strong>p</strong>|<strong>y</strong><em>value</em> ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>nu_a</em>[/<em>h_a</em>[<strong>k</strong>]/<em>nu_m</em>] ]
+[ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong><em>rhogrid</em>
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>list</em> ]
 [ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><em>tm</em> ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>params</em> ]
@@ -163,12 +170,13 @@
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>wd</em>][<strong>k</strong>]
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>zm</em>][<strong>k</strong>]
+[ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>grdflexure</strong> computes the deformation due to a topographic load <span class="math notranslate nohighlight">\(h(\mathbf{x})\)</span>
 for five different types of rheological foundations, all involving <em>constant thickness thin plates</em>:</p>
 <ol class="arabic simple">
@@ -189,21 +197,27 @@ range of model output times.  A wide range of options allow specifying the desir
 rheology and related constants, including in-plate forces.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
-<dt><em>topogrd</em></dt><dd><p>2-D binary grid file with the topography of the load (in meters);
-(See <a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).
-If <strong>-T</strong> is used, <em>topogrd</em> may be a filename template with a
-floating point format (C syntax) and a different load file name
-will be set and loaded for each time step.  The load times thus
-coincide with the times given via <strong>-T</strong> (but not all times need
-to have a corresponding file).  Alternatively, give <em>topogrd</em> as
-=<em>flist</em>, where <em>flist</em> is an ASCII table with one <em>topogrd</em> filename
-and load time per record.  These load times can be different from
-the evaluation times given via <strong>-T</strong>.  For load time format, see
-<strong>-T</strong>. <strong>Note</strong>: If <em>flist</em> has an optional third column it will be
-interpreted as a load density and used for that layer instead of
-the fixed <em>rl</em> setting in <strong>-D</strong>.</p>
+<dt><em>input</em></dt><dd><p>Supplies the topographic load information in one of many forms:</p>
+<ul class="simple">
+<li><p>A single 2-D binary grid file with the topography of the load
+(in meters); (See <a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p></li>
+<li><p>If <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is used, <em>input</em> may be a filename <em>template</em> (See
+<a class="reference internal" href="#name-template">Name Template</a> for details).  The load times will thus
+coincide with the times given via <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> (but not all times need
+to have a corresponding file).</p></li>
+<li><p>A file list given as <em>flist</em><strong>+l</strong>, where <em>flist</em> is an ASCII
+table with one load time and topography grid filename per record (e.g.,
+as produced by <a class="reference internal" href="grdseamount.html"><span class="doc">grdseamount</span></a> <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>).
+These load times can be different from the evaluation times given
+via <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>.  For load time format, see <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>. <strong>Note</strong>: If <em>flist</em> has
+three trailing words the the second will be interpreted as a load
+density grid name and used for that layer instead of the fixed <em>rl</em>
+setting in <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>. The last trailing word is a formatted age string.</p></li>
+<li><p>A file list with extension “.lis” does not need the <strong>+l</strong> modifier
+and will be automatically recognized as a file list.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="simple" id="d">
@@ -216,22 +230,17 @@ then it defaults to <em>rl</em>.  Values may be given in km/m^3 or g/cm^3.</p>
 <dt><strong>-E</strong>[<em>Te</em>[<strong>k</strong>][/<em>Te2</em>[<strong>k</strong>]]</dt><dd><p>Sets the elastic plate thickness (in meter); append <strong>k</strong> for km.
 If the elastic thickness exceeds 1e10 it will be interpreted as
 a flexural rigidity <em>D</em> (by default, <em>D</em> is computed from <em>Te</em>, Young’s
-modulus, and Poisson’s ratio; see <strong>-C</strong> to change these values).
-If just <strong>-E</strong> is given and <strong>-F</strong> is used it means no plate is given
+modulus, and Poisson’s ratio; see <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> to change these values).
+If just <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> is given and <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> is used it means no plate is given
 and we will return a purely viscous response with or without an asthenospheric layer.
 Select a general linear viscoelastic response by supplying both an initial and
-final elastic thickness; this response also requires <strong>-M</strong>.</p>
+final elastic thickness <em>Te2</em>; this response also requires <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>.</p>
 </dd>
 </dl>
-<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>]
-[:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
-<div><p>If <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is set then <em>outgrid</em> must be a filename template that contains
-a floating point format (C syntax).  If the filename template also contains
-either %s (for unit name) or %c (for unit letter) then we use the corresponding time
-(in units specified in <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>) to generate the individual file names, otherwise
-we use time in years with no unit. Optionally, append =<em>ID</em> for writing a specific file format
+<div><p>If <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is set then <em>outgrid</em> must be a filename template
+(See <a class="reference internal" href="#name-template">Name Template</a> for details). Optionally, append =<em>ID</em> for writing a specific file format
 (<a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
 supported:</p>
 <blockquote>
@@ -247,7 +256,7 @@ is 1].</p></li>
 </ul>
 </div></blockquote>
 <p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
-(unless overridden). To write specific formats via GDAL, use = <em>gd</em>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
 the <a class="reference internal" href="../../cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
@@ -255,7 +264,7 @@ for more details.</p>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong><em>Nx</em>/<em>Ny</em>/<em>Nxy</em></dt><dd><p>Specify in-plane compressional or extensional forces in the <em>x</em>- and <em>y</em>-directions,
 as well as any shear force [no in-plane forces].  Compression is indicated by
@@ -271,18 +280,28 @@ or Young’s modulus [7.0e10 N/m^2], respectively.</p>
 </dl>
 <dl class="simple" id="f">
 <dt><strong>-F</strong><em>nu_a</em>[/<em>h_a</em>[<strong>k</strong>]/<em>nu_m</em>]</dt><dd><p>Specify a firmoviscous model in conjunction with an elastic plate
-thickness specified via <strong>-E</strong>.  Just give one viscosity (<em>nu_a</em>)
+thickness specified via <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>.  Just give one viscosity (<em>nu_a</em>)
 for an elastic plate over a viscous half-space, or also append
 the thickness of the asthenosphere (<em>h_a</em>) and the lower mantle
 viscosity (<em>nu_m</em>), with the first viscosity now being that of
 the asthenosphere. Give viscosities in Pa·s. If used, give the
 thickness of the asthenosphere in meter; append <strong>k</strong> for km.
-Cannot be used in conjunctions with <strong>-M</strong>.</p>
+Cannot be used in conjunctions with <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="h">
+<dt><strong>-H</strong><em>rhogrid</em></dt><dd><p>Supply optional variable load density grid.  It can be a single
+grid or a grid name template (see <a class="reference internal" href="#name-template">Name Template</a> for details). Requires
+<em>rho_l</em> be set to - in <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>.  <strong>Note</strong>: If <em>input</em> is given as
+a list file then the optional density grids must be given as part of
+the list and not via <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="l">
 <dt><strong>-L</strong><em>list</em></dt><dd><p>Write the names and evaluation times of all grids that were created
-to the text file <em>list</em>. Requires <strong>-T</strong>.</p>
+to the text file <em>list</em>. Requires <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>.  The leading numerical column
+will be time in years, while the last trailing text word is formatted time.
+The output records thus contain <em>time flexuregrid timetag</em>.</p>
 </dd>
 </dl>
 <dl id="n">
@@ -333,9 +352,9 @@ default we write the real and imaginary components to
 </dl>
 <dl class="simple" id="m">
 <dt><strong>-M</strong><em>tm</em></dt><dd><p>Specify a viscoelastic model in conjunction with a plate
-thickness specified via <strong>-E</strong>.  Append the Maxwell time <em>tm</em> for the
+thickness specified via <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>.  Append the Maxwell time <em>tm</em> for the
 viscoelastic model (in years); add <strong>k</strong> for kyr and <strong>M</strong> for Myr.
-Cannot be used in conjunctions with <strong>-F</strong>.</p>
+Cannot be used in conjunctions with <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
@@ -357,8 +376,8 @@ give start time <em>t0</em>. Default <em>unit</em> is years; append <strong>k</s
 For a logarithmic time scale, append <strong>+l</strong> and specify <em>n</em> steps instead of <em>dt</em>.
 Alternatively, give a <em>file</em> with the desired times in the first column (these times
 may have individual units appended, otherwise we assume year).
-We then write a separate model grid file for each given time step; see <em>-G*</em> for output
-file template format.</p>
+We then write a separate model grid file for each given time step; see <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> for output
+and <a class="reference internal" href="#name-template">Name Template</a> for the file template format.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
@@ -367,7 +386,7 @@ file template format.</p>
 </dl>
 <dl class="simple" id="w">
 <dt><strong>-W</strong><em>wd</em>[<strong>k</strong>]</dt><dd><p>Set reference water depth for the undeformed flexed surface in m.  Must be positive. [0].  Append <strong>k</strong> to indicate
-km.  If <strong>-W</strong> is used and your load exceeds this depth then we scale the subaerial part of the
+km.  If <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> is used and your load exceeds this depth then we scale the subaerial part of the
 load to account for the change in surrounding density (air vs water).</p>
 </dd>
 </dl>
@@ -381,7 +400,11 @@ meters via a “Flat Earth” approximation using the current ellipsoid paramete
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Skip or produce header record(s).  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -392,8 +415,26 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dd>
 </dl>
 </section>
+<section id="name-template">
+<span id="id1"></span><h2>Name Template<a class="headerlink" href="#name-template" title="Permalink to this heading">¶</a></h2>
+<p>The format statements allowed in grid file templates require you to follow these rules:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>To use the formatted time-tag as part of the file name you must use just a single %s
+format as part of the template (e.g., smt_%s.grd).</p></li>
+<li><p>If you want to control the numerical formatting of the names but still have the common
+time unit appended then you must compose a template that has a floating point format
+before a later %c format for the unit.  For example, smt_%05.1f%c.grd will create
+names like smt_001.1M.grd names.  The times will be scaled to match the unit.</p></li>
+<li><p>If you do not want any units then simply give a template with just one floating point
+format, e.g., smt_%05.1f_name.grd.  The times will be used as is (i.e, unscaled).</p></li>
+</ul>
+</div></blockquote>
+<p>For details on the format statements, see <a class="reference external" href="https://en.wikipedia.org/wiki/Printf_format_string">printf</a>
+C language format syntax.</p>
+</section>
 <section id="grid-distance-units">
-<h2>Grid Distance Units<a class="headerlink" href="#grid-distance-units" title="Permalink to this headline">¶</a></h2>
+<h2>Grid Distance Units<a class="headerlink" href="#grid-distance-units" title="Permalink to this heading">¶</a></h2>
 <p>If a Cartesian grid does not have meter as the horizontal unit, append <strong>+u</strong><em>unit</em>
 to the input file name to convert from the specified unit to meter.  E.g., appending
 <strong>+uk</strong> to the load file name will scale the grid x,y coordinates from km to meter.  If your
@@ -401,14 +442,14 @@ grid is geographic, convert distances to meters by supplying <strong>-f</strong>
 netCDF COARDS geographic grids will automatically be recognized as geographic.</p>
 </section>
 <section id="considerations">
-<h2>Considerations<a class="headerlink" href="#considerations" title="Permalink to this headline">¶</a></h2>
+<h2>Considerations<a class="headerlink" href="#considerations" title="Permalink to this heading">¶</a></h2>
 <p>The calculations are done using a rectangular Cartesian FFT operation. If your
 geographic region is close to either pole, you should consider using a Cartesian
 setup instead; you can always project it back to geographic using <a class="reference internal" href="../../grdproject.html"><span class="doc">grdproject</span></a>.</p>
 </section>
 <section id="transfer-functions">
-<h2>Transfer Functions<a class="headerlink" href="#transfer-functions" title="Permalink to this headline">¶</a></h2>
-<p>If <strong>-Q</strong> is given we perform no actual flexure calculations and no input data file is required.
+<h2>Transfer Functions<a class="headerlink" href="#transfer-functions" title="Permalink to this heading">¶</a></h2>
+<p>If <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> is given we perform no actual flexure calculations and no input data file is required.
 Instead, we write the chosen transfer functions <span class="math notranslate nohighlight">\(\Phi(\mathbf{k},t)\)</span> to 7 separate files for
 7 different Te values (1, 2, 5, 10, 20, 50, and 100 km). The first two columns are
 always wavelength in km and wavenumber (in 1/m) for a 1:1:3000 km range. The transfer
@@ -419,7 +460,7 @@ grdflexure_transfer_function_te_<em>te</em>_km.txt, where <em>te</em> is replace
 in km (and 0 if <strong>-E</strong>[0] was used for a viscous response only).</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>We will use a Gaussian seamount load to demonstrate <strong>grdflexure</strong>.  First, we make
 a grid of for that shape by placing a Gaussian truncated seamount at position (300,300)
 with a radius of 50 km and height of 5000 m:</p>
@@ -431,7 +472,7 @@ for a 10 km thick plate with typical densities, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdflexure smt.nc -Gflex.nc -E10k -D2700/3300/1035
 </pre></div>
 </div>
-<p>To see how in-plane stresses affect the result, we use <strong>-A</strong>.  Remember that we need to depth-
+<p>To see how in-plane stresses affect the result, we use <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>.  Remember that we need to depth-
 integrated forces, not pressures, hence we try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdflexure smt.nc -Gflex.nc -E10k -D2700/3300/1035 -A-4e11/2e11/-1e12
 </pre></div>
@@ -464,7 +505,7 @@ specified rheological values, try:</p>
 </div>
 </section>
 <section id="theory-of-response-functions">
-<h2>Theory of Response Functions<a class="headerlink" href="#theory-of-response-functions" title="Permalink to this headline">¶</a></h2>
+<h2>Theory of Response Functions<a class="headerlink" href="#theory-of-response-functions" title="Permalink to this heading">¶</a></h2>
 <p>Deformation <span class="math notranslate nohighlight">\(w(\mathbf{x})\)</span> caused by topography <span class="math notranslate nohighlight">\(h(\mathbf{x})\)</span> applied instantaneously to the
 rheological foundation at time <em>t = 0</em> and evaluated at a later time <em>t</em> is given in the Fourier domain by</p>
 <div class="math notranslate nohighlight">
@@ -476,13 +517,13 @@ on the infill density, and <span class="math notranslate nohighlight">\(\Phi(\ma
 module read one or more loads <em>h</em>, transforms them to <em>H</em>, evaluates and applies the response function, and
 inversely transform the results back to yield on or more <em>w</em> solutions.</p>
 <section id="variable-infill-approximation">
-<h3>Variable infill approximation<a class="headerlink" href="#variable-infill-approximation" title="Permalink to this headline">¶</a></h3>
+<h3>Variable infill approximation<a class="headerlink" href="#variable-infill-approximation" title="Permalink to this heading">¶</a></h3>
 <p>If <span class="math notranslate nohighlight">\(\rho_i = \rho_l\)</span> then <span class="math notranslate nohighlight">\(\gamma = 1\)</span>, otherwise the infill density varies spatially and the Fourier
 solution is not valid. We avoid these complications by letting <span class="math notranslate nohighlight">\(\rho_l = \rho_i\)</span> and increasing the deformation amplitude by</p>
 <div class="math notranslate nohighlight">
 \[\gamma = \sqrt{\frac{\rho_m - \rho_i}{\rho_m - \rho_l}}.\]</div>
 <p>The approximation is good except for very large loads on thin plates (<em>Wessel</em>, 2001).</p>
-<figure class="align-center" id="id1">
+<figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="../../_images/grdflexure_approx.png"><img alt="../../_images/grdflexure_approx.png" src="../../_images/grdflexure_approx.png" style="width: 400px;" /></a>
 <figcaption>
 <p><span class="caption-text">a) We want a flexural calculation that allows for different densities in the moat (<span class="math notranslate nohighlight">\(\rho_i\)</span>)
@@ -491,12 +532,12 @@ b) Reusing the load density as a (higher) infill density gives an exact answer, 
 flexural wavelength (<span class="math notranslate nohighlight">\(\lambda_l\)</span>) and the amplitude of deflection (<span class="math notranslate nohighlight">\(w_l\)</span>).
 c) Reusing the infill density as a (lower) load density gives approximately the correct flexural wavelength but
 underestimates the amplitude (dashed curve). We achieve a satisfactory approximation by scaling <span class="math notranslate nohighlight">\(w_i\)</span> by
-the factor <span class="math notranslate nohighlight">\(\gamma\)</span> (modified from <em>Wessel</em> [2016]).</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+the factor <span class="math notranslate nohighlight">\(\gamma\)</span> (modified from <em>Wessel</em> [2016]).</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="elastic-response-function">
-<h3>Elastic response function<a class="headerlink" href="#elastic-response-function" title="Permalink to this headline">¶</a></h3>
+<h3>Elastic response function<a class="headerlink" href="#elastic-response-function" title="Permalink to this heading">¶</a></h3>
 <p>The time-independent <em>elastic response function</em> is</p>
 <div class="math notranslate nohighlight">
 \[\Phi_e(\mathbf{k}) = \left [ 1 + \alpha_r^4 + \epsilon_x \alpha_x^2 + \epsilon_y \alpha_y^2 + \epsilon_{xy} \alpha_{xy}^2 \right ]^{-1}, \quad \alpha_s = k_s / k,\]</div>
@@ -509,7 +550,7 @@ In the most common scenario, <span class="math notranslate nohighlight">\(N_s\)<
 \[\Phi_e(k_r) = \left [ 1 + \alpha_r^4 \right ]^{-1}.\]</div>
 </section>
 <section id="firmoviscous-response-function">
-<h3>Firmoviscous response function<a class="headerlink" href="#firmoviscous-response-function" title="Permalink to this headline">¶</a></h3>
+<h3>Firmoviscous response function<a class="headerlink" href="#firmoviscous-response-function" title="Permalink to this heading">¶</a></h3>
 <p>The <em>firmoviscous response function</em> <span class="math notranslate nohighlight">\(\Phi(\mathbf{k},t)\)</span> scales the magnitude of the deformation at a given wavenumber and time
 and depends on rheological parameters and in-plane stresses:</p>
 <div class="math notranslate nohighlight">
@@ -528,7 +569,7 @@ If no finite layer exists then <span class="math notranslate nohighlight">\(\bet
 \[\theta = \eta_a/\eta_m, \quad S = \sinh (k_r T_a), \quad C = \cosh (k_r T_a).\]</div>
 </section>
 <section id="airy-and-viscous-response-function">
-<h3>Airy and viscous response function<a class="headerlink" href="#airy-and-viscous-response-function" title="Permalink to this headline">¶</a></h3>
+<h3>Airy and viscous response function<a class="headerlink" href="#airy-and-viscous-response-function" title="Permalink to this heading">¶</a></h3>
 <p>In the limit <span class="math notranslate nohighlight">\(t \rightarrow \infty, \tau \rightarrow 0\)</span> and we approach the purely elastic solution</p>
 <div class="math notranslate nohighlight">
 \[W(\mathbf{k}) = A \gamma H(\mathbf{k}) \Phi_e(\mathbf{k}).\]</div>
@@ -538,14 +579,14 @@ If no finite layer exists then <span class="math notranslate nohighlight">\(\bet
 <p>For <span class="math notranslate nohighlight">\(t \rightarrow \infty\)</span> (or for an inviscid half-space) we approach Airy isostasy: <span class="math notranslate nohighlight">\(w(\mathbf{x}) = A h(\mathbf{x})\)</span>.</p>
 </section>
 <section id="maxwell-viscoelastic-response">
-<h3>Maxwell viscoelastic response<a class="headerlink" href="#maxwell-viscoelastic-response" title="Permalink to this headline">¶</a></h3>
+<h3>Maxwell viscoelastic response<a class="headerlink" href="#maxwell-viscoelastic-response" title="Permalink to this heading">¶</a></h3>
 <p>For case (4), the viscoelastic response function (only available for an inviscid substratum) is</p>
 <div class="math notranslate nohighlight">
 \[\Phi_{ve}(\mathbf{k},t) = 1 - \left [ 1 - \Phi_e(\mathbf{k}) \right ] \exp \left \{ - \frac{t}{t_m} \Phi_e(\mathbf{k}) \right \},\]</div>
 <p>where <span class="math notranslate nohighlight">\(t_m\)</span> is the <em>Maxwell relaxation time</em> (<em>Watts</em>, 2001).</p>
 </section>
 <section id="general-linear-viscoelastic-response">
-<h3>General linear viscoelastic response<a class="headerlink" href="#general-linear-viscoelastic-response" title="Permalink to this headline">¶</a></h3>
+<h3>General linear viscoelastic response<a class="headerlink" href="#general-linear-viscoelastic-response" title="Permalink to this heading">¶</a></h3>
 <p>For case (5), the general linear viscoelastic response function (with an inviscid substratum) is (<em>Karner</em>, 1982)</p>
 <div class="math notranslate nohighlight">
 \[\Phi_{gl}(\mathbf{k},t) = \Phi_f(\mathbf{k}) + \left [ \Phi_i(\mathbf{k}) - \Phi_f(\mathbf{k}) \right ] \exp \left \{ - \frac{t}{t_m} \frac{D_i \Phi_i(\mathbf{k})}{D_f \Phi_f(\mathbf{k})} \right \},\]</div>
@@ -554,25 +595,25 @@ and elastic response functions (<span class="math notranslate nohighlight">\(\Ph
 </section>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
 <p>Cathles, L. M., 1975, <em>The viscosity of the earth’s mantle</em>, Princeton University Press.</p>
 <p>Karner, G. D., 1982, Spectral representation of isostatic models, <em>BMR J. Australian Geology &amp; Geophysics, 7</em>, 55-62.</p>
 <p>Nakada, M., 1986, Holocene sea levels in oceanic islands: Implications for the rheological
 structure of the Earth’s mantle, <em>Tectonophysics, 121</em>, 263–276,
-<a class="reference external" href="http://dx.doi.org/10.1016/0040-1951(86)90047-8">http://dx.doi.org/10.1016/0040-1951(86)90047-8</a>.</p>
+<a class="reference external" href="https://doi.org/10.1016/0040-1951(86)90047-8">https://doi.org/10.1016/0040-1951(86)90047-8</a>.</p>
 <p>Watts, A. B., 2001, <em>Isostasy and Flexure of the Lithosphere</em>, 458 pp., Cambridge University Press.</p>
 <p>Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
-<a class="reference external" href="http://dx.doi.org/10.1029/2000JB000083">http://dx.doi.org/10.1029/2000JB000083</a>.</p>
+<a class="reference external" href="https://doi.org/10.1029/2000JB000083">https://doi.org/10.1029/2000JB000083</a>.</p>
 <p>Wessel, P., 2016, Regional–residual separation of bathymetry and revised estimates of Hawaii plume flux,
-<em>Geophys. J. Int., 204(2)</em>, 932-947, <a class="reference external" href="http://dx.doi.org/10.1093/gji/ggv472">http://dx.doi.org/10.1093/gji/ggv472</a>.</p>
+<em>Geophys. J. Int., 204(2)</em>, 932-947, <a class="reference external" href="https://doi.org/10.1093/gji/ggv472">https://doi.org/10.1093/gji/ggv472</a>.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="gmtflexure.html"><span class="doc">gmtflexure</span></a>,
 <a class="reference internal" href="../../grdfft.html"><span class="doc">grdfft</span></a>,
-<a class="reference internal" href="gravfft.html"><span class="doc">gravfft</span></a>
+<a class="reference internal" href="gravfft.html"><span class="doc">gravfft</span></a>,
 <a class="reference internal" href="../../grdmath.html"><span class="doc">grdmath</span></a>, <a class="reference internal" href="../../grdproject.html"><span class="doc">grdproject</span></a>,
 <a class="reference internal" href="grdseamount.html"><span class="doc">grdseamount</span></a></p>
 </section>
@@ -582,15 +623,15 @@ J. Geophys. Res., 106(B9), 19,431-19,441,
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gravfft.html" class="btn btn-neutral float-left" title="gravfft" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gravprisms.html" class="btn btn-neutral float-left" title="gravprisms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="grdgravmag3d.html" class="btn btn-neutral float-right" title="grdgravmag3d" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

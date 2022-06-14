@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>earthtide &mdash; GMT 6.3.0 documentation</title>
+  <title>earthtide &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="earthtide">
-<h1>earthtide<a class="headerlink" href="#earthtide" title="Permalink to this headline">¶</a></h1>
+<h1>earthtide<a class="headerlink" href="#earthtide" title="Permalink to this heading">¶</a></h1>
 <p>Compute grids or time-series of solid Earth tides</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt earthtide</strong>
 <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em>
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
@@ -160,23 +166,21 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>Compute the three components of solid Earth tides as time-series or grids. Optionally compute also Sun and Moon position in lon,lat.
-The output can be either in the form of a grid or as a table printed to stdout. The format of the table data is:
+The output can be either in the form of a grid or as a table printed to standard output. The format of the table data is:
 <em>time north east vertical</em> in units of meters.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <p>Either <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>, <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> or <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> must be provided.</p>
-<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>]
-[:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
 <div><p>Write one or more tide component directly to grids; no table data are written to standard
-output. If more than one component are specified via <strong>-C</strong> then <em>outgrid</em> must contain the format flag %s so that
+output. If more than one component are specified via <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> then <em>outgrid</em> must contain the format flag %s so that
 we can embed the component code in the file names (<em>n</em> for north; <em>e</em> for east and <em>v</em> for vertical).
-If only one component is selected with <strong>-C</strong> than no code is appended to grid name (and no need to
-set the format flag %s). The grid(s) are computed at the time set by <strong>-T</strong>, if that option is used, or
+If only one component is selected with <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> than no code is appended to grid name (and no need to
+set the format flag %s). The grid(s) are computed at the time set by <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>, if that option is used, or
 at the <em>now</em> time calculated in UTC from the computer clock. Optionally, append =<em>ID</em> for writing a specific file format
 (<a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
 supported:</p>
@@ -193,7 +197,7 @@ is 1].</p></li>
 </ul>
 </div></blockquote>
 <p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
-(unless overridden). To write specific formats via GDAL, use = <em>gd</em>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
 the <a class="reference internal" href="../../cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
@@ -213,13 +217,13 @@ the sub-millimeter level.)</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="c">
-<dt><strong>-C</strong><strong>x</strong>|<strong>e</strong>,<strong>y</strong>|<strong>n</strong>,<strong>z</strong>|<strong>v</strong></dt><dd><p>Select which component to write to individual grids. Requires <strong>-G</strong>.
+<dt><strong>-C</strong><strong>x</strong>|<strong>e</strong>,<strong>y</strong>|<strong>n</strong>,<strong>z</strong>|<strong>v</strong></dt><dd><p>Select which component to write to individual grids. Requires <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>.
 Append comma-separated codes for available components: <strong>x</strong> or <strong>e</strong> for the east component;
 <strong>y</strong> or <strong>n</strong> for the north component; and <strong>z</strong> or <strong>v</strong> for the vertical component.
 For example, <strong>-Ce</strong>,<strong>v</strong>, will write 2 grids. One with east and other with the vertical components.
-If <strong>-G</strong> is set but not <strong>-C</strong> then the default is to write the vertical component.</p>
+If <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> is set but not <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> then the default is to write the vertical component.</p>
 </dd>
 </dl>
 <span class="target" id="i"></span><dl>
@@ -262,9 +266,9 @@ to override these values.</p></li>
 <dt><strong>-T</strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em></dt><dd><p>Make evenly spaced time-steps from <em>min</em> to <em>max</em> by <em>inc</em>. Append <strong>+i</strong> to indicate the reciprocal increment was given,
 or append <strong>+n</strong> to indicate <em>inc</em> is the number of <em>t</em>-values to produce over the range instead. Append a valid time
 unit (<strong>d</strong>|<strong>h</strong>|<strong>m</strong>|<strong>s</strong>) to the increment. If only <em>min</em> is given then we use that date and time for the
-calculations.  If no <strong>-T</strong> is provided get current time in UTC from the computer clock. If no <strong>-G</strong> or <strong>-S</strong> are
-provided then <strong>-T</strong> is interpreted to mean compute a time-series at the location specified by <strong>-L</strong>, thus then <strong>-L</strong>
-becomes mandatory. When <strong>-G</strong> and <strong>-T</strong>, only first time T series is considered. Finally, dates may range from 1901
+calculations.  If no <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is provided get current time in UTC from the computer clock. If no <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> or <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> are
+provided then <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is interpreted to mean compute a time-series at the location specified by <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>, thus then <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>
+becomes mandatory. When <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> and <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>, only first time T series is considered. Finally, dates may range from 1901
 through 2099. For details on array creation, see <a class="reference internal" href="#generate-1d-array">Generate 1D Array</a>.</p>
 </dd>
 </dl>
@@ -285,7 +289,7 @@ through 2099. For details on array creation, see <a class="reference internal" h
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -297,7 +301,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="generate-1d-array">
-<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this headline">¶</a></h2>
+<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this heading">¶</a></h2>
 <p>We will demonstrate the use of options for creating 1-D arrays via <a class="reference internal" href="../../gmtmath.html"><span class="doc">gmtmath</span></a>.
 Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>, e.g.,:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.1/4.2/0.1 <span class="nv">T</span> <span class="o">=</span>
@@ -400,9 +404,9 @@ possible (<em>max</em> - <em>min</em>)/<em>inc</em> is not an integer, as requir
 Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust <em>max</em> instead (keeping <em>min</em> fixed).</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To compute a global grid of the vertical component with a grid step of 30m at noon of 18 Jun 2018,
-(note: we are using the defaults for <strong>-R</strong> and <strong>-I</strong>) try</p>
+(note: we are using the defaults for <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>) try</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
 </pre></div>
 </div>
@@ -416,17 +420,17 @@ Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust 
 </div>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
 <ol class="arabic simple">
 <li><p>All times, both input and output, are in UTC.</p></li>
 </ol>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="http://geodesyworld.github.io/SOFTS/solid.htm">http://geodesyworld.github.io/SOFTS/solid.htm</a></p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a>, <a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>,</p>
 </section>
 </section>
@@ -442,8 +446,8 @@ Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>talwani2d &mdash; GMT 6.3.0 documentation</title>
+  <title>talwani2d &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,11 +22,16 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -48,7 +53,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -61,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,20 +149,20 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="talwani2d">
-<h1>talwani2d<a class="headerlink" href="#talwani2d" title="Permalink to this headline">¶</a></h1>
+<h1>talwani2d<a class="headerlink" href="#talwani2d" title="Permalink to this heading">¶</a></h1>
 <p>Compute geopotential anomalies over 2-D bodies by the method of Talwani</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt talwani2d</strong> [ <em>table</em> ]
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> ] [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>density</em> ] ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><strong>f</strong>|<strong>n</strong>[<em>lat</em>]|<strong>v</strong> ]
 [ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<strong>h</strong>][<strong>v</strong>] ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>trackfile</em> ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>min</em>/<em>max</em>/<em>inc</em>[<strong>+i</strong>|<strong>n</strong>]|<em>file</em>|<em>list</em> ]
-[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>level</em>[<em>ymin</em>/<em>ymax</em>] ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>level</em>[/<em>ymin</em>/<em>ymax</em>] ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-bi</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-d</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
 [ <strong>-i</strong><a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
@@ -165,36 +172,36 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>talwani2d</strong> will read the multi-segment <em>table</em> from file (or standard input).
 This file contains cross-sections of one or more 2-D bodies, with one polygon
 per segment.  The segment header must contain the parameter <em>density</em>, which
 states the the density of this body (individual body
-densities may be overridden by a fixed constant density contrast given via an optional <strong>-D</strong>).
+densities may be overridden by a fixed constant density contrast given via an optional <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>).
 We can compute anomalies on an equidistant lattice (by specifying a lattice with
-<strong>-T</strong>) or provide arbitrary output points specified in a file via <strong>-N</strong>.
+<strong>-T</strong>) or provide arbitrary output points specified in a file via <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>.
 Choose between free-air anomalies, vertical gravity gradient anomalies, or geoid anomalies.
 Options are available to control axes units and direction.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII files describing cross-sectional polygons of one or more bodies.  Polygons
 will be automatically closed if not already closed, and repeated vertices will
 be eliminated.  The segment header for each body will be examined for a density
-parameter in kg/m^3; see <strong>-D</strong> for overriding this value.  If no <em>table</em> is given then we
-read standard input.</p>
+parameter in <span class="math notranslate nohighlight">\(\mbox{kg/m}^3\)</span> or <span class="math notranslate nohighlight">\(\mbox{g/cm}^3\)</span>; see <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> for overriding this value.  If no <em>table</em> is
+given then we read standard input.</p>
 </dd>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong></dt><dd><p>The <em>z</em>-axis should be positive upwards [Default is down].</p>
 </dd>
 </dl>
 <dl class="simple" id="d">
-<dt><strong>-D</strong><em>density</em></dt><dd><p>Sets a fixed density contrast that overrides any per-body settings in the model file, in kg/m^3.</p>
+<dt><strong>-D</strong><em>density</em></dt><dd><p>Sets a fixed density contrast that overrides any per-body settings in the model file, in <span class="math notranslate nohighlight">\(\mbox{kg/m}^3\)</span> or <span class="math notranslate nohighlight">\(\mbox{g/cm}^3\)</span>.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
@@ -210,7 +217,7 @@ and append <strong>z</strong> to indicate vertical distances are in km [m].</p>
 </dl>
 <dl class="simple" id="n">
 <dt><strong>-N</strong><em>trackfile</em></dt><dd><p>Specifies locations where we wish to compute the predicted value.  When this option
-is used you cannot use <strong>-T</strong> to set an equidistant lattice. The output data records are written to
+is used you cannot use <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> to set an equidistant lattice. The output data records are written to
 standard output (see <strong>-bo</strong> for binary output).</p>
 </dd>
 </dl>
@@ -224,7 +231,7 @@ For details on array creation, see <a class="reference internal" href="#generate
 </dd>
 </dl>
 <dl class="simple" id="z">
-<dt><strong>-Z</strong><em>level</em>[<em>ymin</em>/<em>ymax</em>]</dt><dd><p>Set a constant observation level [0].  Optionally, and for gravity anomalies only (<strong>-Ff</strong>),
+<dt><strong>-Z</strong><em>level</em>[/<em>ymin</em>/<em>ymax</em>]</dt><dd><p>Set a constant observation level [0].  Optionally, and for gravity anomalies only (<strong>-Ff</strong>),
 append the finite extent limits of a 2.5-D body.</p>
 </dd>
 </dl>
@@ -261,7 +268,7 @@ append the finite extent limits of a 2.5-D body.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -273,9 +280,9 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="units">
-<h2>Units<a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this heading">¶</a></h2>
 <p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
-minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default unless stated otherwise], <strong>f</strong>
 for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
 and <strong>u</strong> for US survey foot. By default we compute such distances using
 a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
@@ -285,7 +292,7 @@ exact geodesic calculations (slower but more accurate; see
 <a class="reference internal" href="../../gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a> for method used).</p>
 </section>
 <section id="generate-1d-array">
-<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this headline">¶</a></h2>
+<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this heading">¶</a></h2>
 <p>We will demonstrate the use of options for creating 1-D arrays via <a class="reference internal" href="../../gmtmath.html"><span class="doc">gmtmath</span></a>.
 Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>, e.g.,:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.1/4.2/0.1 <span class="nv">T</span> <span class="o">=</span>
@@ -388,9 +395,9 @@ possible (<em>max</em> - <em>min</em>)/<em>inc</em> is not an integer, as requir
 Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust <em>max</em> instead (keeping <em>min</em> fixed).</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To compute the free-air anomalies on an equidistant profile over a 2-D body that has been contoured
-and saved to body2d.txt, using 1700 kg/m^3 as a constant density contrast, with all distances in meters,
+and saved to body2d.txt, using 1700 <span class="math notranslate nohighlight">\(\mbox{kg/m}^3\)</span> as a constant density contrast, with all distances in meters,
 try</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt talwani2d -T-200/200/2 body2d.txt -D1700 -Ff &gt; 2dgrav.txt
 </pre></div>
@@ -406,7 +413,7 @@ for the same model, try</p>
 </div>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
 <ol class="arabic simple">
 <li><p>The 2-D geoid anomaly is a logarithmic potential and thus has no natural
 reference level.  We simply remove the most negative (if density contrast
@@ -416,20 +423,20 @@ can use <a class="reference internal" href="../../gmtmath.html"><span class="doc
 </ol>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
 <p>Rasmussen, R., and L. B. Pedersen (1979), End corrections in potential field modeling,
 <em>Geophys. Prospect., 27</em>, 749-760.</p>
 <p>Chapman, M. E., 1979, Techniques for interpretation of geoid anomalies,
 <em>J. Geophys. Res., 84(B8)</em>, 3793-3801.</p>
 <p>Kim, S.-S., and P. Wessel, 2016, New analytic solutions for modeling vertical
 gravity gradient anomalies, <em>Geochem. Geophys. Geosyst., 17</em>,
-<a class="reference external" href="http://dx.doi.org/10.1002/2016GC006263">http://dx.doi.org/10.1002/2016GC006263</a>.</p>
+<a class="reference external" href="https://doi.org/10.1002/2016GC006263">https://doi.org/10.1002/2016GC006263</a>.</p>
 <p>Talwani, M., J. L. Worzel, and M. Landisman, 1959, Rapid gravity computations for
 two-dimensional bodies with application to the Mendocino submarine fracture zone,
 <em>J. Geophys. Res., 64</em>, 49-59.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a>, <a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="../../grdmath.html"><span class="doc">grdmath</span></a>, <a class="reference internal" href="../../gmtmath.html"><span class="doc">gmtmath</span></a>,
 <a class="reference internal" href="gravfft.html"><span class="doc">gravfft</span></a>,
@@ -450,8 +457,8 @@ two-dimensional bodies with application to the Mendocino submarine fracture zone
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>docs &mdash; GMT 6.3.0 documentation</title>
+  <title>docs &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,15 +148,15 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="docs">
-<h1>docs<a class="headerlink" href="#docs" title="Permalink to this headline">¶</a></h1>
+<h1>docs<a class="headerlink" href="#docs" title="Permalink to this heading">¶</a></h1>
 <p>Show HTML documentation of specified module</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt docs</strong> [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> ] [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> ] [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ] <em>module-name</em> [<em>-option</em>]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>docs</strong> tells GMT to display the HTML version of a module’s documentation using the default browser.
 Besides the modules names, some special targets
 <em>gmt</em>, <em>api</em>, <em>colors</em>, <em>cookbook</em>, <em>data</em>, <em>gallery</em>, <em>home</em>, <em>settings</em>, and <em>tutorial</em>
@@ -158,7 +164,7 @@ are also accepted. You can also give <em>forum</em> (takes you to the GMT Discou
 <em>website</em> (or just <em>site</em>; takes you to the GMT main website).</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>module-name</em></dt><dd><p>One of the core or supplemental modules,
 or one of <em>gmt</em>, <em>api</em>, <em>colors</em>, <em>cookbook</em>, <em>data</em>, <em>gallery</em> <em>home</em>, <em>settings</em>, and <em>tutorial</em>,
@@ -167,17 +173,17 @@ plus external targets <em>forum</em> and <em>website</em>.</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="q">
 <dt><strong>-Q</strong></dt><dd><p>This option means we are doing a “dry-run” and simply want the final URL to be
 printed to standard output.  No file open command will take place. This is useful
 if you are working remotely on a server and do not wish to launch a GUI browser.
-If used, <strong>-Q</strong> must be the first option to <strong>docs</strong>.</p>
+If used, <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> must be the first option to <strong>docs</strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
 <dt><strong>-S</strong></dt><dd><p>Normally, <strong>docs</strong> will open documentation files from the local computer if the document can
-be found there; otherwise it will use the GMT server.  The <strong>-S</strong> option forces <strong>docs</strong> to
+be found there; otherwise it will use the GMT server.  The <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> option forces <strong>docs</strong> to
 read the file from the web server first.</p>
 </dd>
 </dl>
@@ -186,7 +192,7 @@ read the file from the web server first.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exits (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exits.</p>
@@ -196,17 +202,17 @@ any module-specific option (but not the GMT common options), then exits.</p>
 </dl>
 </section>
 <section id="optional-module-arguments">
-<h2>Optional Module Arguments<a class="headerlink" href="#optional-module-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Module Arguments<a class="headerlink" href="#optional-module-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
-<dt><em>-option</em></dt><dd><p>Where <em>-option</em> is the one-letter option of the module in question (e.g, <strong>-R</strong>).
+<dt><em>-option</em></dt><dd><p>Where <em>-option</em> is the one-letter option of the module in question (e.g, <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>).
 We then display the <em>module</em> documentation positioned at that specific option.  Note
 that this operation is only valid for an actual URL, hence we implicitly set
-<strong>-S</strong> when an option anchor is specified.</p>
+<a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> when an option anchor is specified.</p>
 </dd>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To see the documentation of <em>grdimage</em>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt docs grdimage
 </pre></div>
@@ -219,7 +225,7 @@ that this operation is only valid for an actual URL, hence we implicitly set
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt docs -Q -S grdimage
 </pre></div>
 </div>
-<p>To see the documentation of the <strong>-B</strong> option in <em>coast</em>:</p>
+<p>To see the documentation of the <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong> option in <em>coast</em>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt docs coast -B
 </pre></div>
 </div>
@@ -233,7 +239,7 @@ that this operation is only valid for an actual URL, hence we implicitly set
 </div>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="begin.html"><span class="doc">begin</span></a>,
 <a class="reference internal" href="clear.html"><span class="doc">clear</span></a>,
 <a class="reference internal" href="end.html"><span class="doc">end</span></a>,
@@ -255,8 +261,8 @@ that this operation is only valid for an actual URL, hence we implicitly set
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

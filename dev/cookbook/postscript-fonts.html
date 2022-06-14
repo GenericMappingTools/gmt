@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>12. PostScript Fonts Used by GMT &mdash; GMT 6.3.0 documentation</title>
+  <title>12. PostScript Fonts Used by GMT &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
@@ -172,7 +178,7 @@
            <div itemprop="articleBody">
              
   <section id="postscript-fonts-used-by-gmt">
-<h1><span class="section-number">12. </span>PostScript Fonts Used by GMT<a class="headerlink" href="#postscript-fonts-used-by-gmt" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">12. </span>PostScript Fonts Used by GMT<a class="headerlink" href="#postscript-fonts-used-by-gmt" title="Permalink to this heading">¶</a></h1>
 <p>GMT uses the standard 35 fonts that come with most
 PostScript laserwriters. If your printer does not support some of
 these fonts, it will automatically substitute the default font (which is
@@ -254,7 +260,7 @@ this table. To change the fonts used in plotting basemap frames, see the
 man page for <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a>. For direct
 plotting of text-strings, see the man page for <a class="reference internal" href="../text.html"><span class="doc">text</span></a>.</p>
 <section id="using-non-default-fonts-with-gmt">
-<span id="non-default-fonts"></span><h2><span class="section-number">12.1. </span>Using non-default fonts with GMT<a class="headerlink" href="#using-non-default-fonts-with-gmt" title="Permalink to this headline">¶</a></h2>
+<span id="non-default-fonts"></span><h2><span class="section-number">12.1. </span>Using non-default fonts with GMT<a class="headerlink" href="#using-non-default-fonts-with-gmt" title="Permalink to this heading">¶</a></h2>
 <p>To add additional fonts that you may have purchased or that are
 available freely in the internet or at your institution, you will need
 to tell GMT some basic information about such fonts. GMT does
@@ -287,7 +293,7 @@ Now, you can set the GMT font parameters to your non-standard fonts:</p>
 for GMT is finished and you can proceed to create GMT maps as usual.
 An example script is discussed in Example <a class="reference internal" href="../gallery/ex31.html#example-31"><span class="std std-ref">(31) Using non-default fonts in PostScript</span></a>.</p>
 <section id="embedding-fonts-in-postscript-and-pdf">
-<h3><span class="section-number">12.1.1. </span>Embedding fonts in PostScript and PDF<a class="headerlink" href="#embedding-fonts-in-postscript-and-pdf" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">12.1.1. </span>Embedding fonts in PostScript and PDF<a class="headerlink" href="#embedding-fonts-in-postscript-and-pdf" title="Permalink to this heading">¶</a></h3>
 <p>If you have Type 1 fonts in PFA (Printer Font ASCII) format you can
 embed them directly by copying them at the very top of your
 PostScript file, before even the %!PS header comment. PFB (Printer
@@ -326,7 +332,7 @@ anymore. Use Heiko Oberdiek’s instead or crop with
 <a class="reference internal" href="../psconvert.html"><span class="doc">psconvert</span></a> <strong>-A</strong> <strong>-Te</strong> before (See Example <a class="reference internal" href="../gallery/ex31.html#example-31"><span class="std std-ref">(31) Using non-default fonts in PostScript</span></a>).</p>
 </section>
 <section id="character-encoding">
-<h3><span class="section-number">12.1.2. </span>Character encoding<a class="headerlink" href="#character-encoding" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">12.1.2. </span>Character encoding<a class="headerlink" href="#character-encoding" title="Permalink to this heading">¶</a></h3>
 <p>Since PostScript itself does not support Unicode fonts,
 Ghostscript will re-encode the fonts on the fly. You have to make
 sure to set the correct <a class="reference internal" href="../gmt.conf.html#term-PS_CHAR_ENCODING"><span class="xref std std-term">PS_CHAR_ENCODING</span></a>
@@ -351,8 +357,8 @@ only a small range of glyphs and you may have to switch the
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>inset &mdash; GMT 6.3.0 documentation</title>
+  <title>inset &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,7 +148,7 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="inset">
-<h1>inset<a class="headerlink" href="#inset" title="Permalink to this headline">¶</a></h1>
+<h1>inset<a class="headerlink" href="#inset" title="Permalink to this heading">¶</a></h1>
 <p>Manage figure inset setup and completion</p>
 <p>The <strong>inset</strong> module is used to carve out a sub-region of the current plot canvas and
 restrict further plotting to that section of the canvas.  The inset setup is started with the <strong>begin</strong>
@@ -150,20 +156,20 @@ directive that defines the placement and size of the inset.  Subsequent plot com
 to that window.  The inset is completed via the <strong>end</strong> directive, which reverts operations to the full
 canvas and restores the plot region and map projection that was in effect prior to the setup of the inset.</p>
 <section id="synopsis-begin-mode">
-<h2>Synopsis (begin mode)<a class="headerlink" href="#synopsis-begin-mode" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis (begin mode)<a class="headerlink" href="#synopsis-begin-mode" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt inset begin</strong>
 <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>inset-box</em>
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<em>side</em>]<em>clearance</em> ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>box</em> ]
-[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><em>margins</em> ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ]
 [ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
-[ <strong>-j</strong><a class="reference internal" href="gmt.html#distcalc-full"><span class="std std-ref">flags</span></a> ]
+[ <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>The <strong>begin</strong> directive of <strong>inset</strong> defines the dimension and placement of the inset canvas.  It
 records the current region and projection so that we may return to the initial
 plot environment when  the inset is completed.  The user may select any plot region
@@ -174,7 +180,7 @@ the inset dimensions be determined by the region and projection that will be use
 the inset, then give these arguments on the <strong>gmt inset begin</strong> command.</p>
 </section>
 <section id="required-arguments-begin-mode">
-<h2>Required Arguments (begin mode)<a class="headerlink" href="#required-arguments-begin-mode" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments (begin mode)<a class="headerlink" href="#required-arguments-begin-mode" title="Permalink to this heading">¶</a></h2>
 <dl id="d">
 <dt><strong>-D</strong><em>xmin/xmax/ymin/ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]] | <strong>-D</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[/<em>height</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Define the map inset rectangle on the map.  Specify the rectangle in one of three ways:</p>
 <ol class="arabic simple">
@@ -196,12 +202,21 @@ By default, the anchor point on the scale is assumed to be the bottom left corne
 can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em> (see <a class="reference internal" href="text.html"><span class="doc">text</span></a>).
 <strong>Note</strong>: If <strong>-Dj</strong> is used then <em>justify</em> defaults to the same as <em>refpoint</em>,
 if <strong>-DJ</strong> is used then <em>justify</em> defaults to the mirror opposite of <em>refpoint</em>.
-Specify inset box attributes via the <strong>-F</strong> option [outline only].</p>
+Specify inset box attributes via the <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> option [outline only].</p>
 </dd>
 </dl>
 </section>
 <section id="optional-arguments-begin-mode">
-<h2>Optional Arguments (begin mode)<a class="headerlink" href="#optional-arguments-begin-mode" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments (begin mode)<a class="headerlink" href="#optional-arguments-begin-mode" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="c">
+<dt><strong>-C</strong>[<em>side</em>]<em>clearance</em></dt><dd><p>Reserve a space of dimension <em>clearance</em> between the actual inset plot area and the given inset box on the specified
+side, using <em>side</em> values from <strong>w</strong>, <strong>e</strong>, <strong>s</strong>, or <strong>n</strong>, or <strong>x</strong> for both <strong>w</strong> and <strong>e</strong>
+or <strong>y</strong> for both <strong>s</strong> and <strong>n</strong>.  No <em>side</em> means all sides. The option is repeatable to set aside space
+on more than one side.  Alternatively, if all sides are to be set you can also give a pair of values separated by slashes
+(for setting separate horizontal and vertical margins), or the full set of four separate margins. Such space
+will be left untouched by the inset map plotting.  Append units as desired [Default is set by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>].</p>
+</dd>
+</dl>
 <p id="f"><strong>-F</strong>[<strong>+c</strong><em>clearances</em>][<strong>+g</strong><em>fill</em>][<strong>+i</strong>[[<em>gap</em>/]<em>pen</em>]][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>[<em>radius</em>]][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]]]</p>
 <blockquote>
 <div><p>Without further options, draws a rectangular border around the map inset using <a class="reference internal" href="gmt.conf.html#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a>. The following
@@ -228,14 +243,6 @@ individual <a class="reference internal" href="cookbook/features.html#plt-units"
 <a class="reference internal" href="cookbook/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
 </dd>
 </dl>
-<dl class="simple" id="m">
-<dt><strong>-M</strong><em>margins</em></dt><dd><p>This is clearance that is added around the inside of the inset.  Plotting will take place
-within the inner region only. The margins can be a single value, a pair of values separated by slashes
-(for setting separate horizontal and vertical margins), or the full set of four margins (for setting
-separate left, right, bottom, and top margins) [no margins]. Append units as desired [Default is set
-by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>].</p>
-</dd>
-</dl>
 <dl class="simple" id="n">
 <dt><strong>-N</strong></dt><dd><p>Do NOT clip features extruding outside map inset boundaries [Default will clip].</p>
 </dd>
@@ -249,7 +256,7 @@ by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><spa
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exits (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exits.</p>
@@ -259,20 +266,20 @@ any module-specific option (but not the GMT common options), then exits.</p>
 </dl>
 </section>
 <section id="synopsis-end-mode">
-<h2>Synopsis (end mode)<a class="headerlink" href="#synopsis-end-mode" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis (end mode)<a class="headerlink" href="#synopsis-end-mode" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt inset end</strong> [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
 <p>The <strong>end</strong> directive finalizes the current inset, which returns the plotting environment to
 the state prior to the start of the inset.  The previous region and map projection will be
 in effect going forward.</p>
 </section>
 <section id="optional-arguments-end-mode">
-<h2>Optional Arguments (end mode)<a class="headerlink" href="#optional-arguments-end-mode" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments (end mode)<a class="headerlink" href="#optional-arguments-end-mode" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="inset-end-v">
 <dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exits (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exits (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exits.</p>
@@ -282,12 +289,12 @@ any module-specific option (but not the GMT common options), then exits.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To make a simple basemap plot called inset.pdf that demonstrates the inset module, try</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin inset pdf
   gmt basemap -R0/40/20/60 -JM6.5i -Bafg -B+glightgreen
-  gmt inset begin -DjTR+w2.5i+o0.2i -F+gpink+p0.5p -M0.25i
+  gmt inset begin -DjTR+w2.5i+o0.2i -F+gpink+p0.5p -C0.25i
     gmt basemap -Rg -JA20/20/ -Bafg
     gmt text -F+f18p+cTR+tINSET -Dj-0.15i -N
   gmt inset end
@@ -298,7 +305,7 @@ gmt end
 </div></blockquote>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="begin.html"><span class="doc">begin</span></a>,
 <a class="reference internal" href="clear.html"><span class="doc">clear</span></a>,
 <a class="reference internal" href="docs.html"><span class="doc">docs</span></a>,
@@ -320,8 +327,8 @@ gmt end
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

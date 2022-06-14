@@ -32,7 +32,7 @@ this application, the user might have a grid of flat topography with a
 mountain in the middle. Ordinary gray shading of this file (using
 :doc:`grdimage` or :doc:`grdview`) with a linear mapping from topography to graytone will
 result in most of the image being very dark gray, with the mountain
-being almost white. One could use **grdhisteq** to write to stdout or file an
+being almost white. One could use **grdhisteq** to write to standard output or file an
 ASCII list of those data values which divide the range of the data into
 *n_cells* segments, each of which has an equal area in the image. Using
 **awk** or :doc:`makecpt` one can take this output and build a CPT;
@@ -88,16 +88,16 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [*norm*]
-    Gaussian output. Use with **-G** to make an output grid with
+    Gaussian output. Use with |-G| to make an output grid with
     standard normal scores. Append *norm* to force the scores to fall in
-    the ±*norm* range [Default is standard normal scores].
+    the ±\ *norm* range [Default is standard normal scores].
 
 .. _-Q:
 
 **-Q**
     Quadratic output. Selects quadratic histogram equalization. [Default is linear].
 
-.. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
+.. |Add_-R| replace:: Using the |-R| option will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -150,7 +150,7 @@ Notes
    dark, you should take the output of **grdhisteq** and rescale it using
    :doc:`grdmath` and multiplying by something less than 1.0, to shrink the
    range of the values, thus bringing more than 68% of the image into the
-   range [-1, 1]. Alternatively, supply a normalization factor with **-N**.
+   range [-1, 1]. Alternatively, supply a normalization factor with |-N|.
 
 See Also
 --------

@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>sample1d &mdash; GMT 6.3.0 documentation</title>
+  <title>sample1d &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -49,7 +53,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -62,9 +66,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -143,19 +149,20 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="sample1d">
-<h1>sample1d<a class="headerlink" href="#sample1d" title="Permalink to this headline">¶</a></h1>
+<h1>sample1d<a class="headerlink" href="#sample1d" title="Permalink to this heading">¶</a></h1>
 <p>Resample 1-D table data using splines</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt sample1d</strong> [ <em>table</em> ]
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>f</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong>][<strong>+d</strong>][<strong>+l</strong>] ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><strong>l</strong>|<strong>a</strong>|<strong>c</strong>|<strong>n</strong>|<strong>s</strong><em>p</em>[<strong>+d1</strong>|<strong>2</strong>] ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>col</em> ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>+a</strong>][<strong>+i</strong>|<strong>n</strong>][<strong>+u</strong>] ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>col</em> ]
 [ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-d</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
@@ -171,7 +178,7 @@
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>sample1d</strong> reads a multi-column ASCII [or binary] data set from file
 [or standard input] and interpolates the time-series or spatial profile at locations
 where the user needs the values. The user must provide the column number
@@ -184,20 +191,20 @@ for curvature. Extrapolation outside the range of the input data
 is not supported.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>This is one or more ASCII [of binary, see
 <strong>-bi</strong>] files with one column containing the
 independent <em>time</em> variable (which must be monotonically in/de-creasing)
-and the remaining columns holding other data values. If no file is
+and any number of optional columns holding other data values. If no file is
 provided, <strong>sample1d</strong> reads from standard input.</p>
 </dd>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
-<dt><strong>-A</strong>[<strong>f</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong>][<strong>+d</strong>][<strong>+l</strong>]</dt><dd><p>For track resampling (if <strong>-T</strong>…<em>unit</em> is set) we can select how
+<dt><strong>-A</strong>[<strong>f</strong>|<strong>p</strong>|<strong>m</strong>|<strong>r</strong>|<strong>R</strong>][<strong>+d</strong>][<strong>+l</strong>]</dt><dd><p>For track resampling (if <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>…<em>unit</em> is set) we can select how
 this is to be performed. Append <strong>f</strong> to keep original points, but
 add intermediate points if needed; note this selection does not
 necessarily yield equidistant points [Default], <strong>m</strong> as <strong>f</strong>, but
@@ -213,6 +220,13 @@ no change in the time column, and
 cannot be used in combination with <strong>+l</strong>.</p>
 </dd>
 </dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong></dt><dd><p>If the input dataset contains records with trailing text then we will attempt
+to add these to output records that exactly match the input times.  Output records
+that have no matching input record times will have no trailing text appended [Default
+ignores trailing text].</p>
+</dd>
+</dl>
 <dl class="simple" id="f">
 <dt><strong>-Fl</strong>|<strong>a</strong>|<strong>c</strong>|<strong>n</strong>|<strong>s</strong><em>p</em>[<strong>+d1</strong>|<strong>2</strong>]</dt><dd><p>Choose from <strong>l</strong> (Linear), <strong>a</strong> (Akima spline), <strong>c</strong> (natural
 cubic spline), <strong>n</strong> (no interpolation: nearest point), or <strong>s</strong>
@@ -223,6 +237,14 @@ You may optionally evaluate the first or second derivative of the spline
 by appending <strong>+d1</strong> or <strong>+d2</strong>, respectively.</p>
 </dd>
 </dl>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/GMT_splines.png"><img alt="_images/GMT_splines.png" src="_images/GMT_splines.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">The <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> option lets you choose among several interpolators, including
+one that is approximate (the smoothing spline).  You can also specify
+that you actually need a derivative of the solution instead of the value.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <dl class="simple" id="n">
 <dt><strong>-N</strong><em>col</em></dt><dd><p>Sets the column number of the independent <em>time</em> variable [Default is 0
 (first)].</p>
@@ -230,7 +252,11 @@ by appending <strong>+d1</strong> or <strong>+d2</strong>, respectively.</p>
 </dl>
 <dl class="simple" id="t">
 <dt><strong>-T</strong>[<em>min/max</em>/]<em>inc</em>[<strong>+a</strong>][<strong>+i</strong>|<strong>n</strong>][<strong>+u</strong>]</dt><dd><p>Make evenly spaced time-steps from <em>min</em> to <em>max</em> by <em>inc</em> [Default uses input times].
-For details on array creation, see <a class="reference internal" href="#generate-1d-array">Generate 1D Array</a>.</p>
+For details on array creation, see <a class="reference internal" href="#generate-1d-array">Generate 1D Array</a>.  <strong>Note</strong>: For resampling of spatial
+(<em>x,y</em> or <em>lon,lat</em>) series you must give an increment with a valid distance unit;
+see <a class="reference internal" href="#units">Units</a> for map units or use <strong>c</strong> if plain Cartesian coordinates.  The first two
+columns must contain the spatial coordinates.  From these we calculate distances in the
+chosen units and interpolate using this parametric series.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
@@ -243,7 +269,7 @@ spline.  Requires <strong>-Fs</strong>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-bi</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for primary table input. [Default is 2 (or at least the number of columns implied by <strong>-T</strong>)].</p>
+<dt><strong>-bi</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for primary table input. [Default is 2 (or at least the number of columns implied by <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>)].</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -283,7 +309,7 @@ spline.  Requires <strong>-Fs</strong>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input or output rows or data limit(s) [all].</p>
+<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input or output rows or data limit(s) [all].</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -295,7 +321,7 @@ spline.  Requires <strong>-Fs</strong>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -307,9 +333,9 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="units">
-<h2>Units<a class="headerlink" href="#units" title="Permalink to this headline">¶</a></h2>
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this heading">¶</a></h2>
 <p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
-minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default], <strong>f</strong>
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default unless stated otherwise], <strong>f</strong>
 for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
 and <strong>u</strong> for US survey foot. By default we compute such distances using
 a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
@@ -319,7 +345,7 @@ exact geodesic calculations (slower but more accurate; see
 <a class="reference internal" href="gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a> for method used).</p>
 </section>
 <section id="ascii-format-precision">
-<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this headline">¶</a></h2>
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this heading">¶</a></h2>
 <p>The ASCII output formats of numerical data are controlled by parameters
 in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
 according to <a class="reference internal" href="gmt.conf.html#term-FORMAT_GEO_OUT"><span class="xref std std-term">FORMAT_GEO_OUT</span></a>, absolute time is
@@ -332,7 +358,7 @@ precision, consider switching to binary output (<strong>-bo</strong> if availabl
 specify more decimals using the <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> setting.</p>
 </section>
 <section id="generate-1d-array">
-<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this headline">¶</a></h2>
+<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this heading">¶</a></h2>
 <p>We will demonstrate the use of options for creating 1-D arrays via <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>.
 Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>, e.g.,:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.1/4.2/0.1 <span class="nv">T</span> <span class="o">=</span>
@@ -435,7 +461,7 @@ possible (<em>max</em> - <em>min</em>)/<em>inc</em> is not an integer, as requir
 Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust <em>max</em> instead (keeping <em>min</em> fixed).</p>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
 <p>The smoothing spline <em>s(t)</em> requires a fit parameter <em>p</em> that allows for the trade-off between an
 exact interpolation (fitting the data exactly; large <em>p</em>) to minimizing curvature (<em>p</em> approaching 0).
 Specifically, we seek to minimize</p>
@@ -450,69 +476,53 @@ Specifically, we seek to minimize</p>
 <p>Trial and error may be needed to select a suitable <em>p</em>.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
 Other commands requiring input files are just dummy examples of the types
 of uses that are common but cannot be run verbatim as written.</p>
 <p>To resample the file profiles.tdgmb, which contains
-(time,distance,gravity,magnetics,bathymetry) records, at 1km equidistant
-intervals using Akima’s spline, use</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d profiles.tdgmb -N1 -Fa -T1 &gt; profiles_equi_d.tdgmb
+(time,distance,gravity,magnetics,bathymetry) records, at 1 km equidistant
+intervals using Akima’s spline, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d profiles.tdgmb -N1 -Fa -T1 &gt; profiles_equi_d.tdgmb
 </pre></div>
 </div>
-</div></blockquote>
 <p>To resample the file depths.dt at positions listed in the file
-grav_pos.dg, using a cubic spline for the interpolation, use</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d depths.txt -Tgrav_pos.dg -Fc &gt; new_depths.txt
+grav_pos.dg, using a cubic spline for the interpolation, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d depths.txt -Tgrav_pos.dg -Fc &gt; new_depths.txt
 </pre></div>
 </div>
-</div></blockquote>
 <p>To resample the file points.txt every 0.01 from 0-6, using a cubic spline for the
-interpolation, but output the first derivative instead (the slope), try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d points.txt -T0/6/0.01 -Fc+d1 &gt; slopes.txt
+interpolation, but output the first derivative instead (the slope), try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d points.txt -T0/6/0.01 -Fc+d1 &gt; slopes.txt
 </pre></div>
 </div>
-</div></blockquote>
 <p>To resample the file track.txt which contains lon, lat, depth every 2
-nautical miles, use</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d track.txt -T2n -AR &gt; new_track.txt
+nautical miles, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d track.txt -T2n -AR &gt; new_track.txt
 </pre></div>
 </div>
-</div></blockquote>
 <p>To do approximately the same, but make sure the original points are
-included, use</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d track.txt -T2n -Af &gt; new_track.txt
+included, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d track.txt -T2n -Af &gt; new_track.txt
 </pre></div>
 </div>
-</div></blockquote>
-<p>To obtain a rhumb line (loxodrome) sampled every 5 km instead, use</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d track.txt -T5k -AR+l &gt; new_track.txt
+<p>To obtain a rhumb line (loxodrome) sampled every 5 km instead, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d track.txt -T5k -AR+l &gt; new_track.txt
 </pre></div>
 </div>
-</div></blockquote>
-<p>To sample temperatures.txt every month from 2000 to 2018, use</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d temperatures.txt -T2000T/2018T/1o &gt; monthly_temp.txt
+<p>To sample temperatures.txt every month from 2000 to 2018, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d temperatures.txt -T2000T/2018T/1o &gt; monthly_temp.txt
 </pre></div>
 </div>
-</div></blockquote>
-<p>To use a smoothing spline on a topographic profile for a given fit parameter, try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d @topo_crossection.txt -T300/500/0.1 -Fs0.001 &gt; smooth.txt
+<p>To use a smoothing spline on a topographic profile for a given fit parameter, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt sample1d @topo_crossection.txt -T300/500/0.1 -Fs0.001 &gt; smooth.txt
 </pre></div>
 </div>
-</div></blockquote>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
 <a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a>,
@@ -531,8 +541,8 @@ included, use</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

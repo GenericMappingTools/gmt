@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2. Proposed Refactoring Implementation &mdash; GMT 6.3.0 documentation</title>
+  <title>2. Proposed Refactoring Implementation &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -47,7 +51,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,9 +64,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -151,13 +157,13 @@
            <div itemprop="articleBody">
              
   <section id="proposed-refactoring-implementation">
-<span id="refactoring"></span><h1><span class="section-number">2. </span>Proposed Refactoring Implementation<a class="headerlink" href="#proposed-refactoring-implementation" title="Permalink to this headline">¶</a></h1>
+<span id="refactoring"></span><h1><span class="section-number">2. </span>Proposed Refactoring Implementation<a class="headerlink" href="#proposed-refactoring-implementation" title="Permalink to this heading">¶</a></h1>
 <p>These are the rambling thoughts of Paul Wessel on the C refactoring.  I start with explaining
 how the present API came into being and why, what the problems are with the current API, and what the
 challenges will be in deciding what the refactoring should accomplish.  This page will be
 updated as we debate and reach consensus on various steps.</p>
 <section id="what-is-the-problem">
-<h2><span class="section-number">2.1. </span>What is the problem?<a class="headerlink" href="#what-is-the-problem" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.1. </span>What is the problem?<a class="headerlink" href="#what-is-the-problem" title="Permalink to this heading">¶</a></h2>
 <p>The GMT API as of GMT 6.x is an unusual beast as far as APIs go.  Let me explain.
 When GMT 5 was released we had repackaged all the GMT programs (e.g., pscoast.c, surface.c)
 into API modules.  Those source files were still there, but instead of having a main function
@@ -255,7 +261,7 @@ with GMT/MATLAB he quickly developed a wrapper around the GMT C API to provide a
 modern keyword/value interface to GMT from Julia.</p>
 </section>
 <section id="what-are-the-refactoring-goals">
-<h2><span class="section-number">2.2. </span>What are the refactoring goals?<a class="headerlink" href="#what-are-the-refactoring-goals" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.2. </span>What are the refactoring goals?<a class="headerlink" href="#what-are-the-refactoring-goals" title="Permalink to this heading">¶</a></h2>
 <p>The goal of the C refactoring is to produce a second-generation API that
 separates the i/o part from the calculation part. Specifically, it would provide
 access to a new set of functions that expect input and parameters among the function
@@ -293,7 +299,7 @@ may eventually convert the few model <strong>B</strong> modules to follow model 
 is possible to let a few modules have both models implemented just in case.</p>
 </section>
 <section id="how-will-we-pass-all-those-module-settings">
-<h2><span class="section-number">2.3. </span>How will we pass all those module settings?<a class="headerlink" href="#how-will-we-pass-all-those-module-settings" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.3. </span>How will we pass all those module settings?<a class="headerlink" href="#how-will-we-pass-all-those-module-settings" title="Permalink to this heading">¶</a></h2>
 <p>Because the GMT API is written in C we are limited to what that language has to offer.
 I think there are four ways to pass module options into a new function that can
 be called from various environments:</p>
@@ -370,7 +376,7 @@ for both the command-line options/modifiers and the dictionary settings, and we 
 produce one from the other. In other words, it builds on existing parsing schemes.</p>
 </section>
 <section id="how-will-we-pass-input-and-output">
-<h2><span class="section-number">2.4. </span>How will we pass input and output?<a class="headerlink" href="#how-will-we-pass-input-and-output" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.4. </span>How will we pass input and output?<a class="headerlink" href="#how-will-we-pass-input-and-output" title="Permalink to this heading">¶</a></h2>
 <p>But what about the data that need to be passed in and out of a module? No longer relying
 on virtual files, we need to pass memory locations.  There are some complications here too:</p>
 <ol class="arabic simple">
@@ -425,8 +431,8 @@ The loading of the IO structure can be done via functions as well:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

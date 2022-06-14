@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>16. GMT on non-UNIX Platforms &mdash; GMT 6.3.0 documentation</title>
+  <title>16. GMT on non-UNIX Platforms &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
@@ -171,14 +177,14 @@
            <div itemprop="articleBody">
              
   <section id="gmt-on-non-unix-platforms">
-<h1><span class="section-number">16. </span>GMT on non-UNIX Platforms<a class="headerlink" href="#gmt-on-non-unix-platforms" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">16. </span>GMT on non-UNIX Platforms<a class="headerlink" href="#gmt-on-non-unix-platforms" title="Permalink to this heading">¶</a></h1>
 <section id="introduction">
-<h2><span class="section-number">16.1. </span>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">16.1. </span>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h2>
 <p>While GMT was ported to non-UNIX systems such as Windows, it is
 also true that one of the strengths of GMT lies its symbiotic
 relationship with UNIX. We therefore recommend that GMT be installed
 in a POSIX-compliant UNIX environment such as traditional
-UNIX-systems, Linux, or Mac OS X. If abandoning your
+UNIX-systems, Linux, or macOS. If abandoning your
 non-UNIX operating system is not an option, consider one of these
 solutions:</p>
 <dl class="simple">
@@ -196,7 +202,7 @@ with DOS batch files.</p></li>
 </dl>
 </section>
 <section id="windows-subsystem-for-linux">
-<h2><span class="section-number">16.2. </span>Windows Subsystem for Linux<a class="headerlink" href="#windows-subsystem-for-linux" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">16.2. </span>Windows Subsystem for Linux<a class="headerlink" href="#windows-subsystem-for-linux" title="Permalink to this heading">¶</a></h2>
 <p>If you’re running Windows 10 you may take advantage of the Windows Subsystem for Linux.
 This provides an easy way of setting up a functional Linux environment and required tools to build and use GMT.</p>
 <p>From the Windows Subsystem for Linux Documentation:</p>
@@ -210,7 +216,7 @@ This provides an easy way of setting up a functional Linux environment and requi
 instructions or <a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md">build from source</a>.</p>
 </section>
 <section id="mingw-msys2-and-gmt">
-<h2><span class="section-number">16.3. </span>MINGW|MSYS2 and GMT<a class="headerlink" href="#mingw-msys2-and-gmt" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">16.3. </span>MINGW|MSYS2 and GMT<a class="headerlink" href="#mingw-msys2-and-gmt" title="Permalink to this heading">¶</a></h2>
 <p>Though one can install GMT natively using CMake, the simplest way of installing
 under MINGW|MSYS2 is to just install the Windows binaries and use them from
 the msys2 bash shell. As simple as that. Furthermore, GMT programs launch
@@ -219,7 +225,7 @@ GMT on Windows. As one option, <a class="reference external" href="https://gitfo
 can be easily installed and includes a bash emulator with MINGW|MSYS2.</p>
 </section>
 <section id="cygwin-and-gmt">
-<h2><span class="section-number">16.4. </span>Cygwin and GMT<a class="headerlink" href="#cygwin-and-gmt" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">16.4. </span>Cygwin and GMT<a class="headerlink" href="#cygwin-and-gmt" title="Permalink to this heading">¶</a></h2>
 <p>Because GMT works best in conjugation with UNIX tools we suggest you
 install GMT using the Cygwin product from Cygnus (now assimilated by
 Redhat, Inc.). This free version works on any Windows version and it
@@ -269,8 +275,8 @@ regtool -v list /HKLM/Software/Cygnus<span class="se">\ </span>Solutions/Cygwin
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

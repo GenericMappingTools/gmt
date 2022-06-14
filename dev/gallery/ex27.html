@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>(27) Plotting Sandwell/Smith Mercator img grids &mdash; GMT 6.3.0 documentation</title>
+  <title>(27) Plotting Sandwell/Smith Mercator img grids &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -130,7 +136,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+          <li><a href="../gallery.html">Illustration Gallery</a> &raquo;</li>
       <li>(27) Plotting Sandwell/Smith Mercator img grids</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex27.rst" class="fa fa-github"> Edit on GitHub</a>
@@ -142,7 +148,7 @@
            <div itemprop="articleBody">
              
   <section id="plotting-sandwell-smith-mercator-img-grids">
-<span id="example-27"></span><h1>(27) Plotting Sandwell/Smith Mercator img grids<a class="headerlink" href="#plotting-sandwell-smith-mercator-img-grids" title="Permalink to this headline">¶</a></h1>
+<span id="example-27"></span><h1>(27) Plotting Sandwell/Smith Mercator img grids<a class="headerlink" href="#plotting-sandwell-smith-mercator-img-grids" title="Permalink to this heading">¶</a></h1>
 <p>Next, we show how to plot a data grid that is distributed in projected
 form. The gravity and predicted bathymetry grids produced by David
 Sandwell and Walter H. F. Smith are not geographical grids but instead
@@ -154,7 +160,7 @@ desired map projection. However, if you want to make a Mercator map then
 you can save time and preserve data quality by avoiding to re-project
 the data set twice since it is already in a Mercator projection. This
 example shows how this is accomplished. We have used the <strong>-M</strong> option in
-<a class="reference internal" href="../supplements/img/img2grd.html"><span class="doc">img2grd</span></a> <a class="footnote-reference brackets" href="#id2" id="id1">1</a> to pull out the grid
+<a class="reference internal" href="../supplements/img/img2grd.html"><span class="doc">img2grd</span></a> <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> to pull out the grid
 in Mercator units (i.e., do <em>not</em> invert the Mercator projection) and
 then simply plot this remote grid using a linear projection with a suitable
 scale (here 0.25 inches per degrees of longitude). To overlay basemaps
@@ -202,13 +208,12 @@ gmt end show
 </figcaption>
 </figure>
 <section id="footnote">
-<h2>Footnote<a class="headerlink" href="#footnote" title="Permalink to this headline">¶</a></h2>
-<dl class="footnote brackets">
-<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>You could also use <a class="reference internal" href="../supplements/img/img2grd.html"><span class="doc">img2grd</span></a>
+<h2>Footnote<a class="headerlink" href="#footnote" title="Permalink to this heading">¶</a></h2>
+<aside class="footnote brackets" id="id2" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>You could also use <a class="reference internal" href="../supplements/img/img2grd.html"><span class="doc">img2grd</span></a>
 directly - your only option under DOS</p>
-</dd>
-</dl>
+</aside>
 </section>
 </section>
 
@@ -223,8 +228,8 @@ directly - your only option under DOS</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

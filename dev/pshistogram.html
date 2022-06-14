@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pshistogram &mdash; GMT 6.3.0 documentation</title>
+  <title>pshistogram &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="pshistogram">
-<h1>pshistogram<a class="headerlink" href="#pshistogram" title="Permalink to this headline">¶</a></h1>
+<h1>pshistogram<a class="headerlink" href="#pshistogram" title="Permalink to this heading">¶</a></h1>
 <p>Calculate and plot histograms</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt pshistogram</strong> [ <em>table</em> ]
 <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><strong>x</strong>|<strong>X</strong><em>parameters</em>
 <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em>
@@ -170,7 +176,7 @@
 [ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[<em>type</em>][<strong>+w</strong>] ]
 [ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-di</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
@@ -183,14 +189,14 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>Reads <em>file</em> [or standard input] and examines the first
 data column (or one set by <strong>-i</strong>) to calculate histogram parameters based on
 the bin-width provided. Using these parameters, scaling, and optional
 range parameters it will plot the histogram. A cumulative histogram may also be specified.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
@@ -204,13 +210,16 @@ then we read from standard input.  </p>
 </dl>
 <dl class="simple" id="t">
 <dt><strong>-T</strong>[<em>min/max</em>/]<em>inc</em>[<strong>+n</strong>] |<strong>-T</strong><em>file</em>|<em>list</em></dt><dd><p>Make evenly spaced array of bin boundaries from <em>min</em> to <em>max</em> by <em>inc</em>.
-If <em>min/max</em> are not given then we default to the range in <strong>-R</strong>.
-For details on array creation, see <a class="reference internal" href="#generate-1d-array">Generate 1D Array</a>.</p>
+If <em>min/max</em> are not given then we default to the range in <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>.
+For details on array creation, see <a class="reference internal" href="#generate-1d-array">Generate 1D Array</a>. <strong>Note</strong>: If
+<em>inc</em> is given with a trailing time unit then it takes precedence over
+the current setting of <a class="reference internal" href="gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a>; otherwise that setting determines
+the units used for the bin widths.</p>
 </dd>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong></dt><dd><p>Plot the histogram horizontally from x = 0 [Default is vertically
 from y = 0].  The plot dimensions remain the same, but the two
@@ -224,7 +233,7 @@ axes are flipped.</p>
 <dl class="simple" id="c">
 <dt><strong>-C</strong><em>cpt</em>[<strong>+b</strong>]</dt><dd><p>Give a CPT. The mid-coordinate for each bar is used to look up
 the bar color.  Alternatively, append <strong>+b</strong> to use the <em>bin</em> value
-as the look-up value, unless <strong>-Z</strong> involves percentages,
+as the look-up value, unless <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> involves percentages,
 in which case the look-up value is the <em>percentage</em> computed. If
 we are in modern mode and no <em>cpt</em> is given then we select the
 current CPT.</p>
@@ -239,7 +248,7 @@ use <strong>+r</strong> to rotate the labels from horizontal to vertical.</p>
 </dd>
 </dl>
 <dl class="simple" id="e">
-<dt><strong>-E</strong><em>width</em>[<strong>+o</strong><em>offset</em>]</dt><dd><p>Use an alternative histogram bar width than the default set via <strong>-T</strong>,
+<dt><strong>-E</strong><em>width</em>[<strong>+o</strong><em>offset</em>]</dt><dd><p>Use an alternative histogram bar width than the default set via <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>,
 and optionally shift all bars by an <em>offset</em>.  Here <em>width</em> is either
 an alternative width in data units, or the user may append a valid plot
 dimension unit (<strong>c</strong>|<strong>i</strong>|<strong>p</strong>) for a fixed dimension instead.
@@ -270,7 +279,7 @@ to select a subset from this record.</p>
 </dl>
 <dl class="simple" id="l">
 <dt><strong>-Ll</strong>|<strong>h</strong>|<strong>b</strong></dt><dd><p>The modifiers specify the handling of extreme values that fall outside the range
-set by <strong>-T</strong>.  By default these values are ignored.  Append <strong>b</strong> to let
+set by <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>.  By default these values are ignored.  Append <strong>b</strong> to let
 these values be included in the first or last bins.  To only include
 extreme values below first bin into the first bin, use <strong>l</strong>, and to
 only include extreme values above the last bin into that last bin, use
@@ -285,7 +294,7 @@ The <em>mode</em> selects which central location and scale to use:</p>
 <li><p>1 = median and L1 scale (1.4826 * median absolute deviation; MAD);</p></li>
 <li><p>2 = LMS (least median of squares) mode and scale.</p></li>
 </ul>
-<p>The <strong>-N</strong> option may be repeated to draw several of these curves.
+<p>The <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> option may be repeated to draw several of these curves.
 <strong>Note</strong>: If <strong>-w</strong> is used then only <em>mode</em> = 0 is available and we will
 determine the parameters of the circular von Mises distribution instead.</p>
 </dd>
@@ -378,7 +387,7 @@ append <strong>+w</strong>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
+<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -394,7 +403,7 @@ append <strong>+w</strong>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -406,7 +415,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="generate-1d-array">
-<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this headline">¶</a></h2>
+<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this heading">¶</a></h2>
 <p>We will demonstrate the use of options for creating 1-D arrays via <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>.
 Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>, e.g.,:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.1/4.2/0.1 <span class="nv">T</span> <span class="o">=</span>
@@ -509,7 +518,7 @@ possible (<em>max</em> - <em>min</em>)/<em>inc</em> is not an integer, as requir
 Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust <em>max</em> instead (keeping <em>min</em> fixed).</p>
 </section>
 <section id="classic-mode-arguments">
-<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this heading">¶</a></h2>
 <p>These options are used to manipulate the building of layered GMT PostScript plots in classic mode.
 They are not available when using GMT modern mode.</p>
 <dl class="simple" id="k">
@@ -526,7 +535,7 @@ They are not available when using GMT modern mode.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
 The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
 can be cut and pasted into your terminal for testing.
@@ -554,7 +563,7 @@ and use black bars, run:</p>
 increments of 100.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
 <a class="reference internal" href="psbasemap.html"><span class="doc">psbasemap</span></a>, <a class="reference internal" href="psrose.html"><span class="doc">psrose</span></a>,
 <a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a></p>
@@ -572,8 +581,8 @@ increments of 100.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

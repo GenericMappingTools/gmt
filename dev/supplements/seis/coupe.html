@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>coupe &mdash; GMT 6.3.0 documentation</title>
+  <title>coupe &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="coupe">
-<h1>coupe<a class="headerlink" href="#coupe" title="Permalink to this headline">¶</a></h1>
+<h1>coupe<a class="headerlink" href="#coupe" title="Permalink to this heading">¶</a></h1>
 <p>Plot cross-sections of focal mechanisms</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt coupe</strong>
 [ <em>table</em> ]
 <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
@@ -168,7 +174,7 @@
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>pen</em> ]
 [ <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
 [ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
-[ <strong>-di</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
 [ <strong>-i</strong><a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
@@ -179,7 +185,7 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>Reads data values from <em>table</em> [or standard input] and
 will plot a cross-section of focal mechanisms.
 The name “coupe” comes from the French
@@ -196,7 +202,7 @@ Moment tensor (initially in r, t, f system that is up, south, east) is
 defined in (-u^s, -u, s) system.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
@@ -211,15 +217,12 @@ then we read from standard input.  </p>
 <span class="target" id="r"></span><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</p>
 <blockquote>
 <div><p>Specify the region of interest. If frame is defined from cross-section parameters
-(see <strong>-A</strong> this option is not taken into account, but must be present.</p>
+(see <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> this option is not taken into account, but must be present.</p>
 <p>The region may be specified in one of several ways:</p>
 <ol class="arabic">
-<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>+u</strong><em>unit</em>]. This is the standard way to specify geographic regions
+<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>. This is the standard way to specify geographic regions
 when using map projections where meridians and parallels are rectilinear. The coordinates may be specified in
-decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format. Optionally, append
-<strong>+u</strong><em>unit</em> to specify a region in projected units (e.g., UTM meters) where <em>west</em>/<em>east</em>/<em>south</em>/<em>north</em> are
-Cartesian projected coordinates compatible with the chosen projection (<strong>-J</strong>) and <em>unit</em> is an allowable
-<a class="reference internal" href="../../cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a>; we inversely project to determine the actual rectangular geographic region.</p></li>
+decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format.</p></li>
 <li><p><strong>-R</strong><em>west</em>/<em>south</em>/<em>east</em>/<em>north</em><strong>+r</strong>. This form is useful for map projections that are oblique,
 making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner
 and upper right corner geographic coordinates, followed by the modifier <strong>+r</strong>. This form guarantees a
@@ -228,24 +231,34 @@ rectangular map even though lines of equal longitude and latitude are not straig
 and -180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).</p></li>
 <li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
 consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
-countries given by the codes. Simply append one or more comma-separated countries using the two-character
-<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a>. To select a state within a
-country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent, prepend <strong>=</strong> to any
-of the continent codes <strong>AF</strong> (Africa), <strong>AN</strong> (Antarctica), <strong>AS</strong> (Asia), <strong>EU</strong> (Europe), <strong>OC</strong> (Oceania),
-<strong>NA</strong> (North America), or <strong>SA</strong> (South America). The following modifiers can be appended:</p>
+countries given by the codes. Simply append one or more comma-separated countries using either the two-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
+country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
+or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
+Finally, append any <a class="reference internal" href="../../coast.html#id1"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
+the collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
 <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
-national bounding box of France rounded to nearest integer degree.</p></li>
-<li><p><strong>+R</strong> to extend the region outward by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension].</p></li>
+national bounding box of France rounded to nearest integer degree, where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+R</strong> to adjust the region by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension], where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
 <li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box extends by at least 0.25 times the increment
-[default is no adjustment].</p></li>
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box is adjusted by at least 0.25 times the
+increment [default is no adjustment], where <em>inc</em> can be positive to expand the region or negative to shrink
+the region.</p></li>
 </ul>
 </div></blockquote>
 </li>
+<li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+u</strong><em>unit</em>] specifies a region in projected units (e.g., UTM meters)
+where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible with the chosen projection
+(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="../../cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
+actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
+<strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults to <em>halfwidth</em> if not given.
+This short-hand requires the <strong>+u</strong> modifier.</p></li>
 <li><p><strong>-R</strong><em>justify</em><em>lon0</em>/<em>lat0</em>/<em>nx</em>/<em>ny</em>, where <em>justify</em> is a 2-character combination of
 <strong>L</strong>|<strong>C</strong>|<strong>R</strong> (for left, center, or right) and <strong>T</strong>|<strong>M</strong>|<strong>B</strong> (for top, middle, or bottom)
 (e.g., <strong>BL</strong> for lower left). The two character code <em>justify</em> indicates which point on a rectangular region
@@ -421,7 +434,7 @@ Text string to appear near the beach ball (optional).</p>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="b">
 <dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="../../gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
@@ -469,7 +482,7 @@ cross. [Default: 6<strong>p</strong>/<strong>cc</strong>]</p>
 </dd>
 <dt><strong>-Fr</strong>[<em>fill</em>]</dt><dd><p>Draw a box behind the label (if any). [Default fill is white]</p>
 </dd>
-<dt><strong>-Ft</strong>[<em>pen</em>]</dt><dd><p>Draw the T axis outline using current pen (see <strong>-W</strong>), or sets pen attributes.</p>
+<dt><strong>-Ft</strong>[<em>pen</em>]</dt><dd><p>Draw the T axis outline using current pen (see <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>), or sets pen attributes.</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
@@ -479,7 +492,7 @@ cross. [Default: 6<strong>p</strong>/<strong>cc</strong>]</p>
 <dl class="simple" id="h">
 <dt><strong>-H</strong>[<em>scale</em>]</dt><dd><p>Scale symbol sizes and pen widths on a per-record basis using the <em>scale</em> read from the
 data set, given as the first column after the (optional) <em>size</em> columns [no scaling].
-The symbol size is either provided by <strong>-S</strong> or via the input <em>size</em> column.  Alternatively,
+The symbol size is either provided by <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> or via the input <em>size</em> column.  Alternatively,
 append a constant <em>scale</em> that should be used instead of reading a scale column.</p>
 </dd>
 </dl>
@@ -487,7 +500,7 @@ append a constant <em>scale</em> that should be used instead of reading a scale 
 <dt><strong>-I</strong><em>intens</em></dt><dd><p>Use the supplied <em>intens</em> value (nominally in the -1 to +1 range) to
 modulate the compressional fill color by simulating illumination [none].
 If no intensity is provided we will instead read <em>intens</em> from an extra
-data column after the required input columns determined by <strong>-S</strong>.</p>
+data column after the required input columns determined by <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="l">
@@ -510,8 +523,8 @@ If <em>nplane</em> is</p>
 <p><em>1</em>: only the first nodal plane is plotted;</p>
 <p><em>2</em>: only the second nodal plane is plotted.</p>
 <p>Append <strong>/</strong><em>pen</em> to set the pen attributes for this feature.
-Default pen is as set by <strong>-W</strong>. [Default: 0].</p>
-<p>For double couple mechanisms, the <strong>-T</strong> option renders the beach ball transparent
+Default pen is as set by <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>. [Default: 0].</p>
+<p>For double couple mechanisms, the <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> option renders the beach ball transparent
 by drawing only the nodal planes and the circumference.
 For non-double couple mechanisms, <strong>-T</strong><em>0</em> option overlays best double couple transparently.</p>
 </dd>
@@ -558,7 +571,7 @@ fault plane edges. [Defaults: default,black,solid].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="../../gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
+<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="../../gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
 </dd>
 </dl>
 <dl class="simple" id="tv-full">
@@ -579,7 +592,7 @@ interpret it to mean <strong>-t+f</strong> for fill transparency only.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -591,7 +604,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="data-column-order">
-<h2>Data Column Order<a class="headerlink" href="#data-column-order" title="Permalink to this headline">¶</a></h2>
+<h2>Data Column Order<a class="headerlink" href="#data-column-order" title="Permalink to this heading">¶</a></h2>
 <p>The <strong>-S</strong> option determines how many size columns are required to generate
 the selected symbol, but if <em>size</em> is not given then we expect to read <em>size</em>
 from file.  In addition, your use of options <strong>-H</strong>, <strong>-I</strong> and <strong>-t</strong> will
@@ -610,7 +623,7 @@ but will not be expected if <strong>-Fo</strong> is given to <strong>meca</stron
 rearrange your data record to match the expected format.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>The following will plot a cross section of three focal mechanisms:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coupe <span class="s">&lt;&lt; END -Sa1c -Aa111/33/119/33+d90+w500+z0/50+r -Q \</span>
 <span class="s">            -JX15c/-8c -Bxaf+l&quot;Distance (km)&quot; -Byaf+l&quot;Depth (km)&quot; -BWSen -png test</span>
@@ -622,7 +635,7 @@ rearrange your data record to match the expected format.</p>
 </div>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Aki, K., &amp; Richards, P. G. (1980). Quantitative seismology: theory and methods. San Francisco: W. H. Freeman.</p></li>
 <li><p>Dahlen, F. A., &amp; Tromp, J. (1998). Theoretical global seismology. Princeton, N.J: Princeton University Press.</p></li>
@@ -631,12 +644,12 @@ rearrange your data record to match the expected format.</p>
 </ul>
 </section>
 <section id="author">
-<h2>Author<a class="headerlink" href="#author" title="Permalink to this headline">¶</a></h2>
+<h2>Author<a class="headerlink" href="#author" title="Permalink to this heading">¶</a></h2>
 <p>Genevieve Patau, <a class="reference external" href="http://www.ipgp.fr/fr/sismo/sismologie">Laboratory of Seismogenesis</a>,
 Institut de Physique du Globe de Paris, Departement de Sismologie, Paris, France</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="meca.html"><span class="doc">meca</span></a>,
 <a class="reference internal" href="polar.html"><span class="doc">polar</span></a>,
 <a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="../../basemap.html"><span class="doc">basemap</span></a>,
@@ -655,8 +668,8 @@ Institut de Physique du Globe de Paris, Departement de Sismologie, Paris, France
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

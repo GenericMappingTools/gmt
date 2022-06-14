@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>segy2grd &mdash; GMT 6.3.0 documentation</title>
+  <title>segy2grd &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/togglebutton.js"></script>
         <script src="../../_static/clipboard.min.js"></script>
         <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,30 +148,30 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="segy2grd">
-<h1>segy2grd<a class="headerlink" href="#segy2grd" title="Permalink to this headline">¶</a></h1>
+<h1>segy2grd<a class="headerlink" href="#segy2grd" title="Permalink to this heading">¶</a></h1>
 <p>Converting SEGY data to a grid</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt segy2grd</strong>
 <em>segyfile</em>
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grdfile</em>
 <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>increment</em>
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>n</strong>|<strong>z</strong>] ]
-[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>] ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+c</strong>[-|<em>cpt</em>]][<strong>+d</strong><em>dname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>][<strong>+v</strong><em>varname</em>] ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<em>nsamp</em>] ]
 [ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<em>ntraces</em>] ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>&lt;mode&gt;&lt;value&gt;</em> ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<em>header</em>] ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-bi</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-di</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-di</strong><a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
 [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>segy2grd</strong> reads an IEEE SEGY file and creates a binary grid file.
 Either a simple mapping (equivalent to <a class="reference internal" href="../../xyz2grd.html"><span class="doc">xyz2grd</span></a> -Z) or a more complicated
 averaging where a particular grid cell includes values from more than
@@ -175,11 +181,9 @@ are set to a value specified by the user [Default is NaN]. Nodes with
 more than one value will be set to the average value.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <p><em>segyfile</em> is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.</p>
-<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>]
-[<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>]
-[:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
 <blockquote>
 <div><p>Give the name of the output grid file. Optionally, append =<em>ID</em> for writing a specific file format
 (<a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
@@ -197,7 +201,7 @@ is 1].</p></li>
 </ul>
 </div></blockquote>
 <p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
-(unless overridden). To write specific formats via GDAL, use = <em>gd</em>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
 and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
 concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
 the <a class="reference internal" href="../../cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
@@ -213,12 +217,9 @@ to indicate minutes or <strong>s</strong> to indicate seconds.</p>
 <div><p>Specify the region of interest.  </p>
 <p>The region may be specified in one of several ways:</p>
 <ol class="arabic">
-<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>+u</strong><em>unit</em>]. This is the standard way to specify geographic regions
+<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>. This is the standard way to specify geographic regions
 when using map projections where meridians and parallels are rectilinear. The coordinates may be specified in
-decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format. Optionally, append
-<strong>+u</strong><em>unit</em> to specify a region in projected units (e.g., UTM meters) where <em>west</em>/<em>east</em>/<em>south</em>/<em>north</em> are
-Cartesian projected coordinates compatible with the chosen projection (<strong>-J</strong>) and <em>unit</em> is an allowable
-<a class="reference internal" href="../../cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a>; we inversely project to determine the actual rectangular geographic region.</p></li>
+decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format.</p></li>
 <li><p><strong>-R</strong><em>west</em>/<em>south</em>/<em>east</em>/<em>north</em><strong>+r</strong>. This form is useful for map projections that are oblique,
 making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner
 and upper right corner geographic coordinates, followed by the modifier <strong>+r</strong>. This form guarantees a
@@ -227,24 +228,34 @@ rectangular map even though lines of equal longitude and latitude are not straig
 and -180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).</p></li>
 <li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
 consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
-countries given by the codes. Simply append one or more comma-separated countries using the two-character
-<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a>. To select a state within a
-country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent, prepend <strong>=</strong> to any
-of the continent codes <strong>AF</strong> (Africa), <strong>AN</strong> (Antarctica), <strong>AS</strong> (Asia), <strong>EU</strong> (Europe), <strong>OC</strong> (Oceania),
-<strong>NA</strong> (North America), or <strong>SA</strong> (South America). The following modifiers can be appended:</p>
+countries given by the codes. Simply append one or more comma-separated countries using either the two-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
+country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
+or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
+Finally, append any <a class="reference internal" href="../../coast.html#id1"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
+the collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
 <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
-national bounding box of France rounded to nearest integer degree.</p></li>
-<li><p><strong>+R</strong> to extend the region outward by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension].</p></li>
+national bounding box of France rounded to nearest integer degree, where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+R</strong> to adjust the region by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension], where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
 <li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box extends by at least 0.25 times the increment
-[default is no adjustment].</p></li>
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box is adjusted by at least 0.25 times the
+increment [default is no adjustment], where <em>inc</em> can be positive to expand the region or negative to shrink
+the region.</p></li>
 </ul>
 </div></blockquote>
 </li>
+<li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+u</strong><em>unit</em>] specifies a region in projected units (e.g., UTM meters)
+where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible with the chosen projection
+(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="../../cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
+actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
+<strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults to <em>halfwidth</em> if not given.
+This short-hand requires the <strong>+u</strong> modifier.</p></li>
 <li><p><strong>-R</strong><em>justify</em><em>lon0</em>/<em>lat0</em>/<em>nx</em>/<em>ny</em>, where <em>justify</em> is a 2-character combination of
 <strong>L</strong>|<strong>C</strong>|<strong>R</strong> (for left, center, or right) and <strong>T</strong>|<strong>M</strong>|<strong>B</strong> (for top, middle, or bottom)
 (e.g., <strong>BL</strong> for lower left). The two character code <em>justify</em> indicates which point on a rectangular region
@@ -262,18 +273,19 @@ the data range using <strong>-Ra</strong>.</p></li>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong>[<strong>n</strong>|<strong>z</strong>]</dt><dd><p>Add up multiple values that belong to the same node (same as
 <strong>-Az</strong>). Append <strong>n</strong> to simply count the number of data points
-that were assigned to each node. [Default (no <strong>-A</strong> option) will
+that were assigned to each node. [Default (no <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> option) will
 calculate mean value]. Not used for simple mapping.</p>
 </dd>
 </dl>
 <dl class="simple" id="d">
-<dt><strong>-D</strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+d</strong><em>vname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>][<strong>+v</strong><em>varname</em>]</dt><dd><p>Give one or more combinations for values <em>xname</em>, <em>yname</em>, <em>zname</em> (3rd dimension in cube),
+<dt><strong>-D</strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+c</strong>[-|<em>cpt</em>]][<strong>+d</strong><em>dname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>][<strong>+v</strong><em>varname</em>]</dt><dd><p>Give one or more combinations for values <em>xname</em>, <em>yname</em>, <em>zname</em> (3rd dimension in cube),
 and <em>dname</em> (data value name) and give the names of those variables
-and in square bracket their units, e.g., “distance [km]”), <em>scale</em> (to multiply data values after
+and in square bracket their units, e.g., “distance [km]”), <em>cpt</em> to set a default CPT for
+this grid [turbo] or give - to remove any default CPT already set, <em>scale</em> (to multiply data values after
 read [normally 1]), <em>offset</em> (to add to data after scaling [normally 0]),
 <em>invalid</em> (a value to represent missing data [NaN]), <em>title</em> (anything you
 like), and <em>remark</em> (anything you like). Items not listed will remain untouched.
@@ -301,7 +313,7 @@ attempt to read only <em>n</em> traces.</p>
 <dl id="q">
 <dt><strong>-Q</strong><em>&lt;mode&gt;&lt;value&gt;</em></dt><dd><dl>
 <dt>Can be used to change two different settings depending on <em>mode</em>:</dt><dd><p><strong>-Qx</strong><em>x-scale</em> applies scalar <em>x-scale</em> to coordinates in trace
-header to match the coordinates specified in <strong>-R</strong>.</p>
+header to match the coordinates specified in <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>.</p>
 <p><strong>-Qy</strong><em>s_int</em> specifies sample interval as <em>s_int</em> if incorrect in the SEGY file.</p>
 </dd>
 </dl>
@@ -309,8 +321,8 @@ header to match the coordinates specified in <strong>-R</strong>.</p>
 </dl>
 <dl class="simple" id="s">
 <dt><strong>-S</strong>[<em>header</em>]</dt><dd><p>Set variable spacing; <em>header</em> is <strong>c</strong> for cdp, <strong>o</strong> for offset, or <strong>b</strong><em>number</em>
-for 4-byte float starting at byte <em>number</em>. If <strong>-S</strong> not set, assumes even
-spacing of samples at the <em>x_inc, y_inc</em> supplied with <strong>-I</strong>.</p>
+for 4-byte float starting at byte <em>number</em>. If <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> not set, assumes even
+spacing of samples at the <em>x_inc, y_inc</em> supplied with <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
@@ -327,7 +339,7 @@ spacing of samples at the <em>x_inc, y_inc</em> supplied with <strong>-I</strong
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -339,7 +351,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To create a grid file from an even spaced SEGY file test.segy, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt segy2grd test.segy -I0.1/0.1 -Gtest.nc -R198/208/18/25 -V
 </pre></div>
@@ -356,7 +368,7 @@ sample interval is 0.1, try:</p>
 individual samples will be averaged in bins</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="../../grd2xyz.html"><span class="doc">grd2xyz</span></a>,
 <a class="reference internal" href="../../grdedit.html"><span class="doc">grdedit</span></a>, <a class="reference internal" href="segy.html"><span class="doc">segy</span></a>,
 <a class="reference internal" href="../../xyz2grd.html"><span class="doc">xyz2grd</span></a></p>
@@ -374,8 +386,8 @@ individual samples will be averaged in bins</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

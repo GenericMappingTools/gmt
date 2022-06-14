@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Session Three &mdash; GMT 6.3.0 documentation</title>
+  <title>Session Three &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,12 +22,16 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -49,7 +53,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -62,9 +66,9 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="session-1.html">Session One</a></li>
 <li class="toctree-l2"><a class="reference internal" href="session-2.html">Session Two</a></li>
@@ -81,6 +85,8 @@
 <li class="toctree-l2"><a class="reference internal" href="session-4.html">Session Four</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -147,7 +153,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../tutorial.html">Tutorial</a> &raquo;</li>
+          <li><a href="../tutorial.html">Tutorial in Bash</a> &raquo;</li>
       <li>Session Three</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/tutorial/session-3.rst" class="fa fa-github"> Edit on GitHub</a>
@@ -159,9 +165,9 @@
            <div itemprop="articleBody">
              
   <section id="session-three">
-<h1>Session Three<a class="headerlink" href="#session-three" title="Permalink to this headline">¶</a></h1>
+<h1>Session Three<a class="headerlink" href="#session-three" title="Permalink to this heading">¶</a></h1>
 <section id="contouring-gridded-data-sets">
-<h2>Contouring gridded data sets<a class="headerlink" href="#contouring-gridded-data-sets" title="Permalink to this headline">¶</a></h2>
+<h2>Contouring gridded data sets<a class="headerlink" href="#contouring-gridded-data-sets" title="Permalink to this heading">¶</a></h2>
 <p>GMT comes with several utilities that can create gridded data
 sets; we will discuss two such modules later this session.  The
 data sets needed for this tutorial are obtained via the Internet
@@ -196,10 +202,6 @@ spin on this situation by touting its flexibility.  Here are the most
 useful options:</p>
 <blockquote>
 <div><table class="docutils align-default">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Purpose</p></th>
@@ -269,7 +271,7 @@ gmt end show
 </ol>
 </section>
 <section id="gridding-of-arbitrarily-spaced-data">
-<h2>Gridding of arbitrarily spaced data<a class="headerlink" href="#gridding-of-arbitrarily-spaced-data" title="Permalink to this headline">¶</a></h2>
+<h2>Gridding of arbitrarily spaced data<a class="headerlink" href="#gridding-of-arbitrarily-spaced-data" title="Permalink to this heading">¶</a></h2>
 <p>Except in the situation above when a grid file is available, we must
 convert our data to the right format readable by GMT before we can
 make contour plots and color-coded images.  We distinguish between
@@ -286,10 +288,6 @@ will briefly discuss the two most common techniques.</p>
 <p>All GMT gridding modules have in common the requirement that the
 user must specify the grid domain and output filename:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 30%" />
-<col style="width: 70%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Purpose</p></th>
@@ -308,7 +306,7 @@ user must specify the grid domain and output filename:</p>
 </tbody>
 </table>
 <section id="nearest-neighbor-gridding">
-<h3>Nearest neighbor gridding<a class="headerlink" href="#nearest-neighbor-gridding" title="Permalink to this headline">¶</a></h3>
+<h3>Nearest neighbor gridding<a class="headerlink" href="#nearest-neighbor-gridding" title="Permalink to this heading">¶</a></h3>
 <figure class="align-center" id="id2">
 <span id="gmt-nearneighbor"></span><a class="reference internal image-reference" href="../_images/GMT_nearneighbor.png"><img alt="../_images/GMT_nearneighbor.png" src="../_images/GMT_nearneighbor.png" style="width: 200px;" /></a>
 <figcaption>
@@ -328,10 +326,6 @@ data point per sector inside the search radius, with each point weighted
 according to its distance from the node.
 The most important switches are listed below.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 17%" />
-<col style="width: 83%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Purpose</p></th>
@@ -382,7 +376,7 @@ you can try one of those as well on the same grid.</p>
 </ol>
 </section>
 <section id="gridding-with-splines-in-tension">
-<h3>Gridding with Splines in Tension<a class="headerlink" href="#gridding-with-splines-in-tension" title="Permalink to this headline">¶</a></h3>
+<h3>Gridding with Splines in Tension<a class="headerlink" href="#gridding-with-splines-in-tension" title="Permalink to this heading">¶</a></h3>
 <p>As an alternative, we may use a global procedure to grid our data.
 This approach, implemented in the module <a class="reference internal" href="../surface.html"><span class="doc">surface</span></a>, represents
 an improvement over standard minimum curvature algorithms by allowing
@@ -401,10 +395,6 @@ and we do not have the time to explain it all here, please see
 <em>Smith and Wessel</em> [1990] for details.  Some of the most important
 switches for this module are indicated below.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 23%" />
-<col style="width: 77%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Purpose</p></th>
@@ -425,7 +415,7 @@ switches for this module are indicated below.</p>
 </section>
 </section>
 <section id="preprocessing">
-<h2>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h2>
+<h2>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this heading">¶</a></h2>
 <p>The <a class="reference internal" href="../surface.html"><span class="doc">surface</span></a> module assumes that the data have been
 preprocessed to eliminate aliasing, hence we must ensure that
 this step is completed prior to gridding.  GMT comes with
@@ -438,10 +428,6 @@ for rough, non-Gaussian data (such as topography).  In addition
 to the required <strong>-R</strong> and <strong>-I</strong> switches, these preprocessors
 all take the same options shown below:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 72%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Option</p></th>
 <th class="head"><p>Purpose</p></th>
@@ -517,8 +503,8 @@ gmt end show
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>psimage &mdash; GMT 6.3.0 documentation</title>
+  <title>psimage &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="psimage">
-<h1>psimage<a class="headerlink" href="#psimage" title="Permalink to this headline">¶</a></h1>
+<h1>psimage<a class="headerlink" href="#psimage" title="Permalink to this heading">¶</a></h1>
 <p>Plot raster or EPS images</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt psimage</strong> <em>imagefile</em>
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>refpoint</em> ]
@@ -167,7 +173,7 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong>image</strong> reads an Encapsulated PostScript file or a raster image
 file and plots it on a map. The image can be scaled arbitrarily, and
 1-bit raster images can be (1) inverted, i.e., black
@@ -184,18 +190,16 @@ offered in most GMT programs is limited to rasters smaller than 146
 by 146).</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple">
 <dt><em>imagefile</em></dt><dd><p>This must be an Encapsulated PostScript (EPS) file or a raster
 image. An EPS file must contain an appropriate BoundingBox. A raster
-file can have a depth of 1, 8, 24, or 32 bits and is read via GDAL.
-<strong>Note</strong>: If GDAL was not configured during GMT installation then only
-EPS files are supported.</p>
+file can have a depth of 1, 8, 24, or 32 bits and is read via GDAL.</p>
 </dd>
 </dl>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="b">
 <dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
@@ -223,8 +227,9 @@ set the width (and height) of the image in plot coordinates
 (inches, cm, etc.). If <em>height</em> is not given, the original aspect
 ratio of the image is maintained. If <em>width</em> is negative we use the
 absolute value and interpolate image to the device resolution using
-the PostScript image operator. Optionally, use <strong>+n</strong><em>nx</em>[/<em>ny</em>] to
-replicate the image <em>nx</em> times horizontally and <em>ny</em> times
+the PostScript image operator. If neither size nor <em>dpi</em> is set then we
+revert to the default dpi [<a class="reference internal" href="gmt.conf.html#term-GMT_GRAPHICS_DPU"><span class="xref std std-term">GMT_GRAPHICS_DPU</span></a>].  Optionally, use
+<strong>+n</strong><em>nx</em>[/<em>ny</em>] to replicate the image <em>nx</em> times horizontally and <em>ny</em> times
 vertically. If <em>ny</em> is omitted, it will be identical to <em>nx</em> [Default is 1/1].</p>
 </dd>
 </dl>
@@ -296,7 +301,7 @@ YIQ-transformation.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select perspective view. (Requires <strong>-R</strong> and <strong>-J</strong> for proper functioning).</p>
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select perspective view. (Requires <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> for proper functioning).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -304,7 +309,7 @@ YIQ-transformation.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -316,12 +321,12 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
-<p>The <strong>-G</strong> and <strong>-I</strong> options are for raster images only. They have
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> and <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> options are for raster images only. They have
 no effect when placing Encapsulated <em>PostScript</em> files.</p>
 </section>
 <section id="classic-mode-arguments">
-<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this heading">¶</a></h2>
 <p>These options are used to manipulate the building of layered GMT PostScript plots in classic mode.
 They are not available when using GMT modern mode.</p>
 <dl class="simple" id="k">
@@ -338,7 +343,7 @@ They are not available when using GMT modern mode.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To plot the remote image needle.jpg, scaling it be 7 cm wide (height is scaled
 accordingly), use:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psimage @needle.jpg -Dx0/0+w7c &gt; image.ps
@@ -367,7 +372,7 @@ to be 2.5 cm wide, use:</p>
 </div>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>, <a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a>
 <a class="reference internal" href="pslegend.html"><span class="doc">pslegend</span></a>, <a class="reference internal" href="psscale.html"><span class="doc">psscale</span></a>
@@ -386,8 +391,8 @@ to be 2.5 cm wide, use:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

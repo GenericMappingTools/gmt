@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pscoast &mdash; GMT 6.3.0 documentation</title>
+  <title>pscoast &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,7 +52,7 @@
             <a href="index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -142,10 +148,10 @@
            <div itemprop="articleBody">
              
   <span class="target" id="index-0"></span><section id="pscoast">
-<h1>pscoast<a class="headerlink" href="#pscoast" title="Permalink to this headline">¶</a></h1>
+<h1>pscoast<a class="headerlink" href="#pscoast" title="Permalink to this heading">¶</a></h1>
 <p>Plot continents, countries, shorelines, rivers, and borders</p>
 <section id="synopsis">
-<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
 <p><strong>gmt pscoast</strong> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+l</strong>|<strong>r</strong>][<strong>+p</strong><em>percent</em>] ]
@@ -176,7 +182,7 @@
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>Plots grayshaded, colored, or textured land-masses [or
 water-masses] on maps and [optionally] draws coastlines, rivers, and
 political boundaries. Alternatively, it can (1) issue clip
@@ -193,7 +199,7 @@ Likewise, if the water-areas are painted and no land fill is set then
 the land-areas will be transparent. A map projection must be supplied.</p>
 </section>
 <section id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
 <dl class="simple" id="j">
 <dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
 <a class="reference internal" href="cookbook/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
@@ -204,12 +210,9 @@ the land-areas will be transparent. A map projection must be supplied.</p>
 <div><p>Specify the region of interest. Not required when <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> is used.</p>
 <p>The region may be specified in one of several ways:</p>
 <ol class="arabic">
-<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>+u</strong><em>unit</em>]. This is the standard way to specify geographic regions
+<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>. This is the standard way to specify geographic regions
 when using map projections where meridians and parallels are rectilinear. The coordinates may be specified in
-decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format. Optionally, append
-<strong>+u</strong><em>unit</em> to specify a region in projected units (e.g., UTM meters) where <em>west</em>/<em>east</em>/<em>south</em>/<em>north</em> are
-Cartesian projected coordinates compatible with the chosen projection (<strong>-J</strong>) and <em>unit</em> is an allowable
-<a class="reference internal" href="cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a>; we inversely project to determine the actual rectangular geographic region.</p></li>
+decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format.</p></li>
 <li><p><strong>-R</strong><em>west</em>/<em>south</em>/<em>east</em>/<em>north</em><strong>+r</strong>. This form is useful for map projections that are oblique,
 making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner
 and upper right corner geographic coordinates, followed by the modifier <strong>+r</strong>. This form guarantees a
@@ -218,24 +221,34 @@ rectangular map even though lines of equal longitude and latitude are not straig
 and -180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).</p></li>
 <li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
 consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
-countries given by the codes. Simply append one or more comma-separated countries using the two-character
-<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a>. To select a state within a
-country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent, prepend <strong>=</strong> to any
-of the continent codes <strong>AF</strong> (Africa), <strong>AN</strong> (Antarctica), <strong>AS</strong> (Asia), <strong>EU</strong> (Europe), <strong>OC</strong> (Oceania),
-<strong>NA</strong> (North America), or <strong>SA</strong> (South America). The following modifiers can be appended:</p>
+countries given by the codes. Simply append one or more comma-separated countries using either the two-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
+country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
+or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
+Finally, append any <a class="reference internal" href="coast.html#id1"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
+the collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
 <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
-national bounding box of France rounded to nearest integer degree.</p></li>
-<li><p><strong>+R</strong> to extend the region outward by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension].</p></li>
+national bounding box of France rounded to nearest integer degree, where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+R</strong> to adjust the region by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension], where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
 <li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
-<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box extends by at least 0.25 times the increment
-[default is no adjustment].</p></li>
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box is adjusted by at least 0.25 times the
+increment [default is no adjustment], where <em>inc</em> can be positive to expand the region or negative to shrink
+the region.</p></li>
 </ul>
 </div></blockquote>
 </li>
+<li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+u</strong><em>unit</em>] specifies a region in projected units (e.g., UTM meters)
+where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible with the chosen projection
+(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
+actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
+<strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults to <em>halfwidth</em> if not given.
+This short-hand requires the <strong>+u</strong> modifier.</p></li>
 <li><p><strong>-R</strong><em>justify</em><em>lon0</em>/<em>lat0</em>/<em>nx</em>/<em>ny</em>, where <em>justify</em> is a 2-character combination of
 <strong>L</strong>|<strong>C</strong>|<strong>R</strong> (for left, center, or right) and <strong>T</strong>|<strong>M</strong>|<strong>B</strong> (for top, middle, or bottom)
 (e.g., <strong>BL</strong> for lower left). The two character code <em>justify</em> indicates which point on a rectangular region
@@ -256,7 +269,7 @@ the data range using <strong>-Ra</strong>.</p></li>
 </div></blockquote>
 </section>
 <section id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
 <span class="target" id="a"></span><dl class="simple">
 <dt><a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+l</strong>|<strong>r</strong>][<strong>+p</strong><em>percent</em>]</dt><dd><p>Features with an area smaller than <em>min_area</em> in km^2 or of
 hierarchical level that is lower than <em>min_level</em> or higher than
@@ -281,9 +294,9 @@ GSHHG INFORMATION below for more details.  </p>
 </dl>
 <dl class="simple" id="c">
 <dt><strong>-C</strong><em>fill</em>[<strong>+l</strong>|<strong>+r</strong>] <a class="reference internal" href="cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set the shade, color, or pattern for lakes and river-lakes [Default
-is the fill chosen for “wet” areas (<strong>-S</strong>)]. Optionally, specify
+is the fill chosen for “wet” areas (<a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>)]. Optionally, specify
 separate fills by appending <strong>+l</strong> for lakes or <strong>+r</strong> for
-river-lakes, repeating the <strong>-C</strong> option as needed.</p>
+river-lakes, repeating the <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> option as needed.</p>
 </dd>
 </dl>
 <dl class="simple" id="d">
@@ -297,27 +310,47 @@ resolution given the chosen map scale. [Default is <strong>l</strong> in classic
 and <strong>a</strong> in modern mode].</p>
 </dd>
 </dl>
-<dl class="simple" id="e">
-<dt><strong>-E</strong><em>code1,code2,…</em>[<strong>+l</strong>|<strong>L</strong>][<strong>+c</strong>|<strong>C</strong>][<strong>+g</strong><em>fill</em>][<strong>+p</strong><em>pen</em>][<strong>+z</strong>]</dt><dd><p>Select painting, clipping or dumping country polygons from the Digital Chart of the World.
-This is another dataset independent of GSHHG and hence the <strong>-A</strong> and <strong>-D</strong> options do not apply.
-Append one or more comma-separated countries using the
-<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">2-character ISO 3166-1 alpha-2 convention</a>.
-To select a state of a country (if available), append .state, e.g, US.TX for Texas.  To specify a
-whole continent, prepend = to any of the continent codes AF (Africa),
-AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
-NA (North America), or SA (South America).  Append <strong>+l</strong> to
-just list the countries and their codes [no data extraction or plotting takes place].
-Use <strong>+L</strong> to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
-Finally, you can append <strong>+l</strong>|<strong>+L</strong> to <strong>-E</strong>=<em>continent</em> or <strong>-E</strong><em>code</em> to only list
-countries in that continent or country; repeat if more than one continent or country is requested.
-To set up clip paths based on your selection, append <strong>+c</strong> or <strong>+C</strong> for inside or outside (area between selection
-and the map boundary) clipping, respectively.  To plot instead,
-append <strong>+p</strong><em>pen</em> to draw polygon outlines [no outline] and
-<strong>+g</strong><em>fill</em> to fill them [no fill].  One of <strong>+c</strong>|<strong>C</strong>|<strong>g</strong>|<strong>p</strong> must be
-specified unless <strong>-M</strong> is in effect, in which case only one <strong>-E</strong> option can be given;
-append <strong>+z</strong> to place the country code in the segment headers via <strong>-Z</strong><em>code</em> settings.
-Otherwise, you may repeat <strong>-E</strong> to give different groups of items their own pen/fill settings.
-If neither <strong>-J</strong> nor <strong>-M</strong> are set then we just print the <strong>-R</strong><em>wesn</em> string.</p>
+<dl id="e">
+<dt><strong>-E</strong><em>code1,code2,…</em>[<strong>+l</strong>|<strong>L</strong>|<strong>n</strong>][<strong>+c</strong>|<strong>C</strong>][<strong>+e</strong>][<strong>+g</strong><em>fill</em>][<strong>+p</strong><em>pen</em>][<strong>+r</strong>][<strong>+R</strong>][<strong>+z</strong>]</dt><dd><p>Select painting, clipping or dumping country polygons from the Digital Chart of the World (DCW).
+This is another dataset independent of GSHHG and hence the <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> and <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> options do not apply. The following codes
+are supported:</p>
+<ul class="simple">
+<li><p>Append one or more comma-separated countries using either the
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">2-character ISO 3166-1 alpha-2 convention</a>
+(e.g., NO for Norway) or the full country name (e.g., Norway). Append .<em>state</em> to a country code to select a
+state of a country (if available), e.g., US.TX for Texas.</p></li>
+<li><p>Append =<em>continent</em> to specify a continent, using either the full names or the abbreviations AF (Africa),
+AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA (South America).</p></li>
+<li><p>To specify a collection or named region, give either the code of the full name.</p></li>
+</ul>
+<p>The following modifiers are supported:</p>
+<ul class="simple">
+<li><p><strong>+l</strong> to just list the countries and their codes (no data extraction or plotting takes place).</p></li>
+<li><p><strong>+L</strong> to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.</p></li>
+<li><p><strong>+l</strong>|<strong>+L</strong> to <strong>-E</strong>=<em>continent</em> or <strong>-E</strong><em>code</em> to only list countries in that continent or country;
+repeat if more than one continent or country is requested.</p></li>
+<li><p><strong>+n</strong> to list the named <a class="reference internal" href="coast.html#id1"><span class="std std-ref">DCW collections</span></a> or regions (<strong>-E</strong><em>code</em><strong>+n</strong> will list
+collections that contains the listed codes). All names are case-insensitive.</p></li>
+<li><p><strong>+c</strong> to set up an inside clip path based on your selection.</p></li>
+<li><p><strong>+C</strong> to set up an outside (area between selection and map boundary) clip path based on your selection.</p></li>
+<li><p><strong>+p</strong><em>pen</em> to draw polygon outlines [Default is no outline].</p></li>
+<li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box is adjusted by at least 0.25 times the
+increment [Default is no adjustment], where <em>inc</em> can be positive to expand the region or negative to shrink
+the region.</p></li>
+<li><p><strong>+g</strong><em>fill</em> to fill polygons [Default is no fill].</p></li>
+<li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [Default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
+national bounding box of France rounded to nearest integer degree, where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+R</strong> to adjust the region by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [Default is no extension], where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+z</strong> to place the country code in the segment headers via <strong>-Z</strong><em>code</em> settings (for use with <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>).</p></li>
+</ul>
+<p>One of <strong>+c</strong>|<strong>C</strong>|<strong>g</strong>|<strong>p</strong> must be specified unless <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> is in effect, in which case only one
+<a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> option can be given. Otherwise, you may repeat <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> to give different groups of items their own pen/fill
+settings. If neither <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> nor <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> are set then we just print the <strong>-R</strong><em>wesn</em> string.</p>
 </dd>
 </dl>
 <p id="f"><strong>-F</strong>[<strong>l</strong>|<strong>t</strong>][<strong>+c</strong><em>clearances</em>][<strong>+g</strong><em>fill</em>][<strong>+i</strong>[[<em>gap</em>/]<em>pen</em>]][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>[<em>radius</em>]][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]]]</p>
@@ -352,7 +385,7 @@ or pattern; or give no argument for clipping [Default is no fill].</p>
 <dt><strong>-I</strong><em>river</em>[/<em>pen</em>]</dt><dd><p>Draw rivers. Specify the type of rivers and [optionally] append pen
 attributes [Default pen: width = default, color = black, style =
 solid].</p>
-<p>Choose from the list of river types below; repeat option <strong>-I</strong> as
+<p>Choose from the list of river types below; repeat option <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> as
 often as necessary.</p>
 <ul class="simple">
 <li><p>0 = Double-lined rivers (river-lakes)</p></li>
@@ -426,10 +459,10 @@ font. The height of the map scale is controlled by <a class="reference internal"
 <dl class="simple" id="m">
 <dt><strong>-M</strong></dt><dd><p>Dump a single multisegment ASCII (or binary, see
 <strong>-bo</strong>) file to standard output. No plotting
-occurs. Specify one of <strong>-E</strong>, <strong>-I</strong>, <strong>-N</strong> or <strong>-W</strong>.
-<strong>Note</strong>: If <strong>-M</strong> is used with <strong>-E</strong> then <strong>-R</strong> or the <strong>+r</strong> modifier
-to <strong>-E</strong> are not required as we automatically determine the region
-given the selected geographic entities.  If using <strong>-W</strong> and you want
+occurs. Specify one of <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>, <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>, <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> or <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>.
+<strong>Note</strong>: If <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> is used with <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> then <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> or the <strong>+r</strong> modifier
+to <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> are not required as we automatically determine the region
+given the selected geographic entities.  If using <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> and you want
 just certain levels (1-4) then use the full syntax <strong>-W</strong><em>level</em>/<em>pen</em>
 and repeat for each level (pen is not used but required to parse the level correctly).</p>
 </dd>
@@ -438,7 +471,7 @@ and repeat for each level (pen is not used but required to parse the level corre
 <dt><strong>-N</strong><em>border</em>[/<em>pen</em>]</dt><dd><p>Draw political boundaries. Specify the type of boundary and
 [optionally] append pen attributes [Default pen: width = default,
 color = black, style = solid].</p>
-<p>Choose from the list of boundaries below. Repeat option <strong>-N</strong> as
+<p>Choose from the list of boundaries below. Repeat option <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> as
 often as necessary.</p>
 <ul class="simple">
 <li><p>1 = National boundaries</p></li>
@@ -449,8 +482,7 @@ often as necessary.</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
-<dt><strong>-Q</strong></dt><dd><p>Mark end of existing clip path. No projection information is needed.
-Also supply <strong>-X</strong> and <strong>-Y</strong> settings if you have moved since the clip started.</p>
+<dt><strong>-Q</strong></dt><dd><p>Mark end of existing clip path. No projection information is needed.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
@@ -458,7 +490,7 @@ Also supply <strong>-X</strong> and <strong>-Y</strong> settings if you have mov
 or pattern; or give no argument for clipping [Default is no fill].</p>
 </dd>
 </dl>
-<p id="t"><strong>-Td</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[<strong>+f</strong>[<em>level</em>]][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>w,e,s,n</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</p>
+<p id="t"><strong>-Td</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em>[<strong>+f</strong>|<strong>F</strong>[<em>level</em>]][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>w,e,s,n</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+w</strong><em>width</em>]</p>
 <blockquote>
 <div><p>Draw a map directional rose on the map at the location defined by the reference (<em>refpoint</em>) and anchor point
 (set by <strong>+o</strong><em>dx</em>[/<em>dy</em>] and/or <strong>+j</strong><em>justify</em>). Give the reference point on the map for the rose using one
@@ -473,14 +505,14 @@ both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a
 <li><p>Append <strong>x</strong><em>x</em>/<em>y</em> for <a class="reference internal" href="cookbook/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or
 <strong>p</strong>point).</p></li>
 </ol>
-<p>The following modifiers can be appended to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>d</strong> (<strong>+w</strong> is required), with additional explanation and
+<p>The following optional modifiers can be appended to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>d</strong>, with additional explanation and
 examples provided in the <a class="reference internal" href="cookbook/features.html#placing-dir-map-roses"><span class="std std-ref">Placing directional map roses</span></a> cookbook section. Optionally, use <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> to place a panel
 behind the directional rose.</p>
 <ul class="simple">
-<li><p><strong>+w</strong><em>width</em> to set the width of the rose in plot coordinates (append <strong>i</strong>nch, <strong>c</strong>m, or <strong>p</strong>oints).</p></li>
 <li><p><strong>+f</strong>[<em>level</em>] to get a “fancy” rose, and optionally specify the <em>level</em> of fanciness. Level <strong>1</strong> draws
 the two principal E-W, N-S orientations, <strong>2</strong> adds the two intermediate NW-SE and NE-SW orientations, while <strong>3</strong>
-adds the eight minor orientations WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW [default is <strong>1</strong>].</p></li>
+adds the eight minor orientations WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW [default is <strong>1</strong>].  Use <strong>+F</strong> to
+force the labels to be readable from the south if the projection has extensive rotation of the directions.</p></li>
 <li><p><strong>+j</strong><em>justify</em> to set the justification <a class="reference internal" href="cookbook/features.html#anchor-point-j"><span class="std std-ref">anchor point</span></a>, where <em>justify</em> is a 2-character
 <a class="reference internal" href="cookbook/features.html#reference-points"><span class="std std-ref">justification code</span></a> that is a combination of a horizontal (<strong>L</strong>, <strong>C</strong>, or <strong>R</strong>) and a
 vertical (<strong>T</strong>, <strong>M</strong>, or <strong>B</strong>) code. <strong>Note</strong>: If <strong>j</strong> is used to set the reference point
@@ -490,9 +522,12 @@ of <em>refpoint</em>; if <strong>g</strong>, <strong>n</strong>, or <strong>x</s
 to override the default. Skip a specific label by leaving it blank.</p></li>
 <li><p><strong>+o</strong><em>dx</em>[/<em>dy</em>] to offset the <a class="reference internal" href="cookbook/features.html#anchor-point-o"><span class="std std-ref">anchor point</span></a> by <em>dx</em> and optionally <em>dy</em> (if different
 than <em>dx</em>).</p></li>
+<li><p><strong>+w</strong><em>width</em> to set the width of the rose in plot coordinates (append <strong>i</strong>nch, <strong>c</strong>m, or <strong>p</strong>oints),
+or append unit % for a size in percentage of map width [10%].</p></li>
 </ul>
+<p>For further information, see the Map Embellishment section on <a class="reference internal" href="cookbook/features.html#placing-dir-map-roses"><span class="std std-ref">Directional Roses</span></a>.</p>
 </div></blockquote>
-<p><strong>-Tm</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[<strong>+d</strong><em>dec</em>[/<em>dlabel</em>]]][<strong>+i</strong><em>pen</em>][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>w,e,s,n</em>]][<strong>+p</strong><em>pen</em>][<strong>+t</strong><em>ints</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</p>
+<p><strong>-Tm</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em>[<strong>+d</strong><em>dec</em>[/<em>dlabel</em>]]][<strong>+i</strong><em>pen</em>][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>w,e,s,n</em>]][<strong>+p</strong><em>pen</em>][<strong>+t</strong><em>ints</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+w</strong><em>width</em>]</p>
 <blockquote>
 <div><p>Draw a map magnetic rose on the map at the location defined by the reference (<em>refpoint</em>) and anchor point
 (set by <strong>+o</strong><em>dx</em>[/<em>dy</em>] and/or <strong>+j</strong><em>justify</em>). Give the reference point on the map for the rose using one
@@ -507,11 +542,10 @@ both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a
 <li><p>Append <strong>x</strong><em>x</em>/<em>y</em> for <a class="reference internal" href="cookbook/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or
 <strong>p</strong>point).</p></li>
 </ol>
-<p>The following modifiers can be appended to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>m</strong> (<strong>+w</strong> is required), with additional explanation and
+<p>The following optional modifiers can be appended to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>m</strong>, with additional explanation and
 examples provided in the <a class="reference internal" href="cookbook/features.html#placing-mag-map-roses"><span class="std std-ref">Placing magnetic map roses</span></a> cookbook section. Optionally, use <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> to place a panel
 behind the magnetic rose.</p>
 <ul class="simple">
-<li><p><strong>+w</strong><em>width</em> to set the width of the rose in plot coordinates (append <strong>i</strong>nch, <strong>c</strong>m, or <strong>p</strong>oints).</p></li>
 <li><p><strong>+d</strong><em>dec</em>[/<em>dlabel</em>] to assign the magnetic declination and set <em>dlabel</em>, which is a label for the
 magnetic compass needle (omit <em>dlabel</em> to format a label from <em>dec</em>, or give <em>-</em> to bypass labeling). With <strong>+d</strong>,
 both directions to geographic and magnetic north are plotted [default is geographic only].</p></li>
@@ -527,10 +561,15 @@ plotted instead of the north label.</p></li>
 <li><p><strong>+p</strong><em>pen</em> to draw the outline of the outer circle in the specified <a class="reference internal" href="cookbook/features.html#wpen-attrib"><span class="std std-ref">pen</span></a>.</p></li>
 <li><p><strong>+t</strong><em>ints</em> to specify the annotation and two tick interval levels for the geographic and magnetic directions
 by providing three slash-separated intervals. Specify separate intervals by appending three slash-separated
-geographic intervals followed by three slash-separated magnetic intervals [default is <strong>30</strong>/<strong>5</strong>/<strong>1</strong>]</p></li>
+geographic intervals followed by three slash-separated magnetic intervals [default is <strong>30</strong>/<strong>5</strong>/<strong>1</strong>].
+<strong>Note</strong>: If <a class="reference internal" href="gmt.conf.html#term-MAP_EMBELLISHMENT_MODE"><span class="xref std std-term">MAP_EMBELLISHMENT_MODE</span></a> is <strong>auto</strong> and the compass size is smaller than 2.5 cm then the
+interval defaults are reset to <strong>90</strong>/<strong>30</strong>/<strong>3</strong>/<strong>9450</strong>/<strong>15</strong>/<strong>3</strong>.</p></li>
 <li><p><strong>+o</strong><em>dx</em>[/<em>dy</em>] to offset the <a class="reference internal" href="cookbook/features.html#anchor-point-o"><span class="std std-ref">anchor point</span></a> by <em>dx</em> and optionally <em>dy</em> (if different
 than <em>dx</em>).</p></li>
+<li><p><strong>+w</strong><em>width</em> to set the width of the rose in plot coordinates (append <strong>i</strong>nch, <strong>c</strong>m, or <strong>p</strong>oints).
+or append unit % for a size in percentage of map width [15%].</p></li>
 </ul>
+<p>For further information, see the Map Embellishment section on <a class="reference internal" href="cookbook/features.html#placing-mag-map-roses"><span class="std std-ref">Magnetic Roses</span></a>.</p>
 </div></blockquote>
 <dl class="simple" id="u">
 <dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
@@ -546,8 +585,8 @@ than <em>dx</em>).</p></li>
 apply to all four levels. To set the pen for each level differently,
 prepend <em>level</em>/, where <em>level</em> is 1-4 and represent coastline,
 lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.
-Repeat <strong>-W</strong> as needed. When specific level pens are set, those not
-listed will not be drawn [Default draws all levels; but see <strong>-A</strong>].</p>
+Repeat <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> as needed. When specific level pens are set, those not
+listed will not be drawn [Default draws all levels; but see <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>].</p>
 </dd>
 </dl>
 <dl class="simple" id="x">
@@ -575,7 +614,7 @@ listed will not be drawn [Default draws all levels; but see <strong>-A</strong>]
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (NOTE: on Windows just use <strong>-</strong>).</p>
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
 </dd>
 <dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
 any module-specific option (but not the GMT common options), then exit.</p>
@@ -587,7 +626,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </dl>
 </section>
 <section id="classic-mode-arguments">
-<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this headline">¶</a></h2>
+<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this heading">¶</a></h2>
 <p>These options are used to manipulate the building of layered GMT PostScript plots in classic mode.
 They are not available when using GMT modern mode.</p>
 <dl class="simple" id="k">
@@ -604,7 +643,7 @@ They are not available when using GMT modern mode.</p>
 </dl>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>To plot a green Africa with white outline on blue background, with
 permanent major rivers in thick blue pen, additional major rivers in
 thin blue pen, and national borders as dashed lines on a Mercator map at
@@ -650,7 +689,7 @@ alternative directory. Comment lines (#) and blank lines are allowed.
 The desired file is then sought for in the alternate directories.</p>
 </section>
 <section id="gshhg-information">
-<h2>GSHHG Information<a class="headerlink" href="#gshhg-information" title="Permalink to this headline">¶</a></h2>
+<h2>GSHHG Information<a class="headerlink" href="#gshhg-information" title="Permalink to this heading">¶</a></h2>
 <p>The coastline database is GSHHG (formerly GSHHS) which is compiled from
 three sources:  World Vector Shorelines (WVS, not including Antarctica),
 CIA World Data Bank II (WDBII), and Atlas of the Cryosphere (AC, for Antarctica only).
@@ -672,8 +711,8 @@ algorithm. The classification of rivers and borders follow that of the
 WDBII. See <a class="reference external" href="https://github.com/GenericMappingTools/gshhg-gmt#readme">The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG)</a> for further details.</p>
 </section>
 <section id="bugs">
-<h2>Bugs<a class="headerlink" href="#bugs" title="Permalink to this headline">¶</a></h2>
-<p>The options to fill (<strong>-C</strong> <strong>-G</strong> <strong>-S</strong>) may not always work if the
+<h2>Bugs<a class="headerlink" href="#bugs" title="Permalink to this heading">¶</a></h2>
+<p>The options to fill (<a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>) may not always work if the
 Azimuthal equidistant projection is chosen (<strong>-Je</strong>|<strong>E</strong>). If the
 antipole of the projection is in the oceans it will most likely work. If
 not, try to avoid using projection center coordinates that are even
@@ -708,7 +747,7 @@ Scientific Committee on Antarctic Research, Scott Polar Research
 Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
 <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
 <a class="reference internal" href="grdlandmask.html"><span class="doc">grdlandmask</span></a>,
@@ -727,8 +766,8 @@ Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 

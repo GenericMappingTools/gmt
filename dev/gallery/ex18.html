@@ -2,16 +2,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>(18) Volumes and Spatial Selections &mdash; GMT 6.3.0 documentation</title>
+  <title>(18) Volumes and Spatial Selections &mdash; GMT 6.4.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
       <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
       <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -22,10 +22,14 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
         <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -48,7 +52,7 @@
             <a href="../index.html" class="icon icon-home"> GMT
           </a>
               <div class="version">
-                6.3
+                6.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,9 +65,11 @@
     
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
@@ -130,7 +136,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../gallery.html">Example Gallery</a> &raquo;</li>
+          <li><a href="../gallery.html">Illustration Gallery</a> &raquo;</li>
       <li>(18) Volumes and Spatial Selections</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex18.rst" class="fa fa-github"> Edit on GitHub</a>
@@ -142,11 +148,11 @@
            <div itemprop="articleBody">
              
   <section id="volumes-and-spatial-selections">
-<span id="example-18"></span><h1>(18) Volumes and Spatial Selections<a class="headerlink" href="#volumes-and-spatial-selections" title="Permalink to this headline">¶</a></h1>
+<span id="example-18"></span><h1>(18) Volumes and Spatial Selections<a class="headerlink" href="#volumes-and-spatial-selections" title="Permalink to this heading">¶</a></h1>
 <p>To demonstrate potential usage of the programs
 <a class="reference internal" href="../gmtspatial.html"><span class="doc">gmtspatial</span></a>, <a class="reference internal" href="../grdvolume.html"><span class="doc">grdvolume</span></a> and
 <a class="reference internal" href="../gmtselect.html"><span class="doc">gmtselect</span></a> we extract a subset of the
-Sandwell &amp; Smith altimetric gravity field <a class="footnote-reference brackets" href="#id2" id="id1">1</a> for the northern Pacific
+Sandwell &amp; Smith altimetric gravity field <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> for the northern Pacific
 and decide to isolate all seamounts that (1) exceed 50 mGal in amplitude
 and (2) are within 200 km of the Pratt seamount. We do this by dumping
 the 50 mGal contours to disk, then use gmtspatial that
@@ -223,12 +229,11 @@ rm -f sm_*.txt tmp.nc mask.nc pratt.txt center*
 </figcaption>
 </figure>
 <section id="footnote">
-<h2>Footnote<a class="headerlink" href="#footnote" title="Permalink to this headline">¶</a></h2>
-<dl class="footnote brackets">
-<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>See <a class="reference external" href="http://topex.ucsd.edu/marine_grav/mar_grav.html">http://topex.ucsd.edu/marine_grav/mar_grav.html</a>.</p>
-</dd>
-</dl>
+<h2>Footnote<a class="headerlink" href="#footnote" title="Permalink to this heading">¶</a></h2>
+<aside class="footnote brackets" id="id2" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>See <a class="reference external" href="http://topex.ucsd.edu/marine_grav/mar_grav.html">http://topex.ucsd.edu/marine_grav/mar_grav.html</a>.</p>
+</aside>
 </section>
 </section>
 
@@ -243,8 +248,8 @@ rm -f sm_*.txt tmp.nc mask.nc pratt.txt center*
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">Last updated on Nov 18, 2021.
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 14, 2022.
       </span></p>
   </div>
 
