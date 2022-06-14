@@ -439,7 +439,7 @@ EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 			first = rot - 1;	/* Index to first rotation inside this time interval */
 			for (stop = false; !stop && rot < n_read; rot++)	/* Determine index of last rotation inside this age window */
 				if (D[rot].wxyasn[K_AGE] > t_hi) stop = true;
-			last = rot - 1;	/* Index to first rotation outside this time interval */
+			last = (stop) ? rot - 1 : n_read;	/* Index to first rotation outside this time interval */
 			n_use = last - first;	/* Number of rotations in the interval */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Found %d rots for the time interval %g <= t < %g\n", n_use, t_lo, t_hi);
 		}
@@ -449,7 +449,10 @@ EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 			n_use = n_read;	/* Number of rotations in the interval */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Found %d rots for time = %g\n", n_use, t_lo);
 		}
-		if (n_use < n_minimum) continue;	/* Need at least 1 or 2 poles to do anything useful */
+		if (n_use < n_minimum) {	/* Need at least 1 or 2 poles to do anything useful */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Not enough rotations to compute anything - skipping this group\n");
+			continue;
+		}
 
 		/* Now estimate the average rotation */
 
