@@ -731,7 +731,7 @@ GMT_LOCAL void surface_initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INF
 }
 
 GMT_LOCAL int surface_read_data (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options) {
-	/* Procdss input data into data structure */
+	/* Process input data into data structure */
 	int col, row, error;
 	uint64_t k = 0, kmax = 0, kmin = 0, n_dup = 0;
 	double *in, half_dx, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
@@ -1309,6 +1309,7 @@ GMT_LOCAL void surface_throw_away_unusables (struct GMT_CTRL *GMT, struct SURFAC
 		if (C->data[k].index == last_index) {	/* Same node but further away than our guy */
 			C->data[k].index = SURFACE_OUTSIDE;
 			n_outside++;
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Skipping unusable point (%.16lg %.16lg %.16lg).\n", C->data[k].x, C->data[k].y, C->data[k].z);
 		}
 		else {	/* New index, just update last_index */
 			last_index = C->data[k].index;
