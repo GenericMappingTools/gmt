@@ -1294,7 +1294,7 @@ GMT_LOCAL void surface_throw_away_unusables (struct GMT_CTRL *GMT, struct SURFAC
 	   We sort, mark redundant data as SURFACE_OUTSIDE, and sort again, chopping off the excess.
 	*/
 
-	uint64_t last_index = UINTMAX_MAX, n_outside = 0, k;
+	uint64_t last_index = UINTMAX_MAX, n_outside = 0, k, last_k;
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Eliminate data points that are not nearest a node.\n");
 
@@ -1309,10 +1309,12 @@ GMT_LOCAL void surface_throw_away_unusables (struct GMT_CTRL *GMT, struct SURFAC
 		if (C->data[k].index == last_index) {	/* Same node but further away than our guy */
 			C->data[k].index = SURFACE_OUTSIDE;
 			n_outside++;
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Skipping unusable point (%.16lg %.16lg %.16lg).\n", C->data[k].x, C->data[k].y, C->data[k].z);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Skipping unusable point (%.16lg %.16lg %.16lg) as (%.16lg %.16lg %.16lg) is closer to node.\n",
+					C->data[k].x, C->data[k].y, C->data[k].z, C->data[last_k].x, C->data[last_k].y, C->data[last_k].z);
 		}
 		else {	/* New index, just update last_index */
 			last_index = C->data[k].index;
+			last_k = k;
 		}
 	}
 
