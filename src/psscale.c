@@ -1048,7 +1048,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				/* u_off is width of the label placed on the right side , while v_off, if > 0, is the extra height of the label beyond the width of the bar */
 				size_t ylen = strlen (unit);
 				if (strchr (unit, '\\')) ylen = (ylen > 3) ? ylen - 3 : 0;
-				u_off = MAX (0.0, GMT->current.setting.map_label_offset[GMT_PRIMARY]) + (0.5+ylen) * GMT_LET_WIDTH * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;
+				u_off = MAX (0.0, GMT->current.setting.map_label_offset[GMT_Y]) + (0.5+ylen) * GMT_LET_WIDTH * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;
 				v_off = 0.5 * (GMT_LET_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH - width);
 			}
 			/* Adjust clearances for the panel */
