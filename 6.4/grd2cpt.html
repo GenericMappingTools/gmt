@@ -1,0 +1,549 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>grd2cpt &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grd2kml" href="grd2kml.html" />
+    <link rel="prev" title="gmtwhich" href="gmtwhich.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">Modules</a> &raquo;</li>
+      <li>grd2cpt</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/grd2cpt.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="grd2cpt">
+<h1>grd2cpt<a class="headerlink" href="#grd2cpt" title="Permalink to this heading">¶</a></h1>
+<p>Make linear or histogram-equalized color palette table from grid</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt grd2cpt</strong> <em>ingrid</em>
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>transparency</em>[<strong>+a</strong>] ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em> ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<em>nlevels</em>][<strong>+c</strong>][<strong>+f</strong><em>file</em>] ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong>][<strong>+c</strong>[<em>label</em>]] ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>zlo</em>/<em>zhi</em> ]
+[ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<strong>c</strong>][<strong>z</strong>] ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>minlimit/maxlimit</em> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><strong>h</strong>|<strong>l</strong>|<strong>m</strong>|<strong>u</strong> ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>start/stop/inc</em>|<strong>n</strong>]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>w</strong>] ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> ]
+[ <strong>-bo</strong><a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>grd2cpt</strong> reads one or more grid files and writes a static color palette
+(CPT) file. In classic mode we write the CPT to standard output, while under
+modern mode we simply save the CPT as the current session CPT (but see <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>).
+The CPT is based on an existing dynamic
+master CPT of your choice, and the mapping from data value to
+colors is through the data’s cumulative distribution function (CDF), so
+that the colors are histogram equalized. Thus if the grid(s) and the
+resulting CPT are used in <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> with a linear projection,
+the colors will be uniformly distributed in area on the plot. Let z be
+the data values in the grid. Define CDF(Z) = (# of z &lt; Z) / (# of z in
+grid). (NaNs are ignored). These z-values are then normalized to the
+master CPT and colors are sampled at the desired intervals.</p>
+<p>The color palette includes three additional colors beyond the range of
+z-values. These are the background color (B) assigned to values lower
+than the lowest <em>z</em>-value, the foreground color (F) assigned to values
+higher than the highest <em>z</em>-value, and the NaN color (N) painted
+wherever values are undefined.  For color tables beyond the
+current GMT offerings, visit <a class="reference external" href="http://soliton.vm.bytemark.co.uk/pub/cpt-city/">cpt-city</a>.</p>
+<p>If the master CPT includes B, F, and N entries, these will be
+copied into the new master file. If not, the parameters
+<a class="reference internal" href="gmt.conf.html#term-COLOR_BACKGROUND"><span class="xref std std-term">COLOR_BACKGROUND</span></a>, <a class="reference internal" href="gmt.conf.html#term-COLOR_FOREGROUND"><span class="xref std std-term">COLOR_FOREGROUND</span></a>,
+and <a class="reference internal" href="gmt.conf.html#term-COLOR_NAN"><span class="xref std std-term">COLOR_NAN</span></a> from
+the <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file or the command line will be used. This default
+behavior can be overruled using the options <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>, <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> or <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>.</p>
+<p>The color model (RGB, HSV or CMYK) of the palette created by <a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a>
+will be the same as specified in the header of the master CPT. When
+there is no <a class="reference internal" href="gmt.conf.html#term-COLOR_MODEL"><span class="xref std std-term">COLOR_MODEL</span></a> entry in the master CPT, the
+<a class="reference internal" href="gmt.conf.html#term-COLOR_MODEL"><span class="xref std std-term">COLOR_MODEL</span></a> specified in the <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file or on the command
+line will be used.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<blockquote>
+<div><p>Names of one or more grid files used to derive the
+color palette table. All grids need to have the same size and dimensions. Optionally, append =<em>ID</em> for reading a specific file
+format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
+[Default is the first 2-D grid found by GMT]
+(<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
+supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+b</strong> - Select a <em>band</em> (for images only) [Default is 0].</p></li>
+<li><p><strong>+d</strong> - Divide data values by the given <em>divisor</em> [Default is 1].</p></li>
+<li><p><strong>+n</strong> - Replace data values matching <em>invalid</em> with NaN.</p></li>
+<li><p><strong>+o</strong> - Offset data values by the given <em>offset</em> [Default is 0].</p></li>
+<li><p><strong>+s</strong> - Scale data values by the given <em>scale</em> [Default is 1].</p></li>
+</ul>
+</div></blockquote>
+<p>Note: Any offset is added after any scaling.</p>
+</div></blockquote>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="a">
+<dt><strong>-A</strong><em>transparency</em>[<strong>+a</strong>]</dt><dd><p>Sets a constant level of transparency (0-100) for all color slices.
+Append <strong>+a</strong> to also affect the fore-, back-, and nan-colors
+[Default is no transparency, i.e., 0 (opaque)].</p>
+</dd>
+</dl>
+<dl class="simple" id="c">
+<dt><strong>-C</strong>[[<em>section</em>/] <em>master_cpt</em>[<strong>+h</strong>[<em>hinge</em>]][<strong>+u</strong>|<strong>U</strong><em>unit</em>]|<em>local_cpt</em>|<em>color1,color2</em>[,<em>color3</em>,…]]</dt><dd><p>Name of an input CPT file. Generally, the input is one of the GMT <em>master_cpt</em> files
+(see <a class="reference internal" href="cookbook/cpts.html#of-colors-and-color-legends"><span class="std std-ref">Of Colors and Color Legends</span></a>) and can be either addressed by <em>master_cpt</em> or <em>section</em>/<em>master_cpt</em>
+(without the <strong>.cpt</strong> extension). If given a master CPT with soft-hinges then
+you can enable the hinge at data value <em>hinge</em> [0] via <strong>+h</strong>, whereas for hard-hinge CPTs you
+can adjust the location of the hinge [0].  For any other <em>master_cpt</em>, you may convert their <em>z</em>-values
+from meter to another distance unit (append <strong>+U</strong><em>unit</em>) or from another unit to meter (append <strong>+u</strong><em>unit</em>),
+with <em>unit</em> taken from <strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>.
+One can also supply the file name of already custom made <em>local_cpt</em> file.
+Alternatively, give <em>color1,color2</em>[<em>,color3</em>,…]
+to build a linear continuous CPT from those colors automatically,
+where <em>z</em> starts at 0 and is incremented by one for each color.
+In this case <em>color</em><strong>n</strong> can be a r/g/b triplet, a color name,
+or an HTML hexadecimal color (e.g. #aabbcc).</p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong>[<strong>i</strong>|<strong>o</strong>]</dt><dd><p>Select the back- and foreground colors to match the colors for
+lowest and highest <em>z</em>-values in the output CPT [Default (<a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> or <strong>-Do</strong>)
+uses the colors specified in the master file, or those defined by the
+parameters <a class="reference internal" href="gmt.conf.html#term-COLOR_BACKGROUND"><span class="xref std std-term">COLOR_BACKGROUND</span></a>, <a class="reference internal" href="gmt.conf.html#term-COLOR_FOREGROUND"><span class="xref std std-term">COLOR_FOREGROUND</span></a>, and
+<a class="reference internal" href="gmt.conf.html#term-COLOR_NAN"><span class="xref std std-term">COLOR_NAN</span></a>]. Append <strong>i</strong> to match the colors for the lowest and
+highest values in the input (instead of the output) CPT.</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong>[<em>nlevels</em>][<strong>+c</strong>][<strong>+f</strong><em>file</em>]</dt><dd><p>Create a linear color table by using the grid z-range as the new
+limits in the CPT, so the number of levels in the CPT remain unchanged.
+Alternatively, append <em>nlevels</em> and we will instead
+resample the color table into <em>nlevels</em> equidistant slices. As an
+option, append <strong>+c</strong> to estimate the cumulative density function
+of the data and assign color levels accordingly. If <strong>+c</strong> is used
+then you may optionally append <strong>+f</strong> to save the CDF to <em>file</em>;
+see <strong>-bo</strong> and <strong>-o</strong> for output formatting.</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong>][<strong>+c</strong>[<em>label</em>]]</dt><dd><p>Force output CPT to written with r/g/b codes, gray-scale values
+or color name (<strong>R</strong>, default) or r/g/b codes only (<strong>r</strong>), or h-s-v
+codes (<strong>h</strong>), or c/m/y/k codes (<strong>c</strong>).  Optionally or alternatively,
+append <strong>+c</strong> to write discrete palettes in categorical format.
+If <em>label</em> is appended then we create labels for each category to be used
+when the CPT is plotted. The <em>label</em> may be a comma-separated list of
+category names (you can skip a category by not giving a name), or give
+<em>start*[-], where we automatically build monotonically increasing labels
+from *start</em> (a single letter or an integer). Append - to build ranges
+<em>start</em>-<em>start+1</em> instead.  <strong>Note</strong>: If <strong>+cM</strong> is given and the number
+of categories is 12, then we automatically create a list of month names.
+Likewise, if <strong>+cD</strong> is given and the number of categories is 7 then we
+make a list of weekday names.  The format of these labels will depend on the
+<a class="reference internal" href="gmt.conf.html#term-FORMAT_TIME_PRIMARY_MAP"><span class="xref std std-term">FORMAT_TIME_PRIMARY_MAP</span></a>, <a class="reference internal" href="gmt.conf.html#term-GMT_LANGUAGE"><span class="xref std std-term">GMT_LANGUAGE</span></a> and possibly
+<a class="reference internal" href="gmt.conf.html#term-TIME_WEEK_START"><span class="xref std std-term">TIME_WEEK_START</span></a> settings.</p>
+</dd>
+</dl>
+<dl class="simple" id="g">
+<dt><strong>-G</strong><em>zlo</em>/<em>zhi</em></dt><dd><p>Truncate the incoming CPT so that the lowest and highest z-levels
+are to <em>zlo</em> and <em>zhi</em>.  If one of these equal NaN then
+we leave that end of the CPT alone.  The truncation takes place
+before any resampling. See also <a class="reference internal" href="cookbook/features.html#manipulating-cpts"><span class="std std-ref">Manipulating CPTs</span></a></p>
+</dd>
+</dl>
+<dl class="simple" id="h">
+<dt><strong>-H</strong></dt><dd><p>Modern mode only: Write the CPT to standard output as well [Default saves
+the CPT as the session current CPT]. Required for scripts used to make
+animations via <a class="reference internal" href="movie.html"><span class="doc">movie</span></a> and <a class="reference internal" href="batch.html"><span class="doc">batch</span></a> where we must pass named CPT files.</p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-I</strong>[<strong>c</strong>][<strong>z</strong>]</dt><dd><p>Append <strong>c</strong> [Default] to reverse the sense of color progression in the master CPT. Also
+exchanges the foreground and background colors, including those
+specified by the parameters <a class="reference internal" href="gmt.conf.html#term-COLOR_BACKGROUND"><span class="xref std std-term">COLOR_BACKGROUND</span></a> and
+<a class="reference internal" href="gmt.conf.html#term-COLOR_FOREGROUND"><span class="xref std std-term">COLOR_FOREGROUND</span></a>.
+Append <strong>z</strong> to reverse the sign of z-values in the color table.  Note that
+this change of <em>z</em>-direction happens before <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> and <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> values are used
+so the latter must be compatible with the changed <em>z</em>-range. See also <a class="reference internal" href="cookbook/features.html#manipulating-cpts"><span class="std std-ref">Manipulating CPTs</span></a></p>
+</dd>
+</dl>
+<dl class="simple" id="l">
+<dt><strong>-L</strong><em>minlimit/maxlimit</em></dt><dd><p>Limit range of CPT to <em>minlimit/maxlimit</em>, and don’t count data
+outside this range when estimating CDF(Z). To set only one limit,
+specify the other limit as “-” [Default uses min and max of data.]</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong></dt><dd><p>Overrule background, foreground, and NaN colors specified in the
+master CPT with the values of the parameters
+<a class="reference internal" href="gmt.conf.html#term-COLOR_BACKGROUND"><span class="xref std std-term">COLOR_BACKGROUND</span></a>, <a class="reference internal" href="gmt.conf.html#term-COLOR_FOREGROUND"><span class="xref std std-term">COLOR_FOREGROUND</span></a>,
+and <a class="reference internal" href="gmt.conf.html#term-COLOR_NAN"><span class="xref std std-term">COLOR_NAN</span></a>
+specified in the <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file or on the command line. When
+combined with <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>, only <a class="reference internal" href="gmt.conf.html#term-COLOR_NAN"><span class="xref std std-term">COLOR_NAN</span></a> is considered.</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong></dt><dd><p>Do not write out the background, foreground, and NaN-color fields
+[Default will write them].</p>
+</dd>
+</dl>
+<dl class="simple" id="q">
+<dt><strong>-Q</strong>[<strong>i</strong>|<strong>o</strong>]</dt><dd><p>Selects a logarithmic interpolation scheme [Default is linear].
+<strong>-Qi</strong> expects input z-values to be log10(z), assigns colors, and
+writes out z [Default]. <strong>-Qo</strong> takes log10(z) first, assigns
+colors, and writes out z.</p>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="s">
+<dt><strong>-S</strong><strong>h</strong>|<strong>l</strong>|<strong>m</strong>|<strong>u</strong></dt><dd><p>Force the color table to be symmetric about zero (from -<em>R</em> to +<em>R</em>).
+Append flag to set the range <em>R</em>: <strong>l</strong> for <em>R</em> =|zmin|, <strong>u</strong> for <em>R</em> =
+|zmax|, <strong>m</strong> for <em>R</em> = min(|zmin|, |zmax|), or <strong>h</strong> for <em>R</em> =
+max(|zmin|, |zmax|).</p>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-T</strong><em>start/stop/inc</em> or <strong>-T</strong><em>n</em></dt><dd><p>Set steps in CPT. Calculate entries in CPT from <em>start</em>
+to <em>stop</em> in steps of (<em>inc</em>). Default chooses arbitrary values by
+a crazy scheme based on equidistant values for a Gaussian CDF.
+Use <strong>-T</strong><em>n</em> to select <em>n</em> points from such a
+cumulative normal distribution [11].</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong></dt><dd><p>Verbose operation. This will write CDF(Z) estimates to stderr. [Default is silent.]</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong>[<strong>w</strong>]</dt><dd><p>Do not interpolate the input color table but pick the output colors
+starting at the beginning of the map. This is particularly useful in
+combination with a categorical color table. Alternatively, use <strong>-Ww</strong>
+to produce a wrapped (cyclic) color table that endlessly repeats its range.</p>
+</dd>
+</dl>
+<dl class="simple" id="z">
+<dt><strong>-Z</strong></dt><dd><p>Force a continuous CPT [Default is discontinuous].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-bo</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for table output. [Default is 2]. This option
+only applies if <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> selects CDF output.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Skip or produce header record(s).  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-o</strong><em>cols</em>[,…][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns (0 is first column; <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
+</dd>
+</dl>
+</section>
+<section id="notes-on-transparency">
+<h2>Notes on Transparency<a class="headerlink" href="#notes-on-transparency" title="Permalink to this heading">¶</a></h2>
+<p>The PostScript language originally had no accommodation for transparency.  However, Adobe
+added an extension that allows developers to encode some forms of transparency
+using the PostScript language model but it is only realized when converting the
+PostScript to PDF (and via PDF to any raster image format).
+GMT uses this model but there are some limitations: Transparency can only be controlled
+on a per-object or per-layer basis.  This means that a color specifications (such as
+those in CPTs of given via command-line options) only apply to vector graphic items
+(i.e., text, lines, polygon fills) or to an entire layer (which could include items
+such as PostScript images).  This limitation rules out any
+mechanism of controlling transparency in such images on a pixel level.</p>
+</section>
+<section id="color-hinges">
+<h2>Color Hinges<a class="headerlink" href="#color-hinges" title="Permalink to this heading">¶</a></h2>
+<p>Some of the GMT master dynamic CPTs are actually two separate CPTs
+meeting at a <em>hinge</em>.  Usually, colors may change dramatically across
+the hinge, which is used to separate two different domains (e.g., land
+and ocean across the shoreline, for instance).  CPTs with a hinge will
+have their two parts stretched to the required range separately, i.e.,
+the bottom part up to the hinge will be stretched independently of the
+part from the hinge to the top, according to the prescribed new range.
+Hinges are either <em>hard</em> or <em>soft</em>.  Soft hinges must be <em>activated</em> by
+appending <strong>+h</strong>[<em>hinge</em>] to the CPT name.
+If the selected range does not include an activated soft or hard hinge then
+we only resample colors from the half of the CPT that pertains to the range.
+See <a class="reference internal" href="cookbook/cpts.html#of-colors-and-color-legends"><span class="std std-ref">Of Colors and Color Legends</span></a> for more information.</p>
+</section>
+<section id="discrete-versus-continuous-cpt">
+<h2>Discrete versus Continuous CPT<a class="headerlink" href="#discrete-versus-continuous-cpt" title="Permalink to this heading">¶</a></h2>
+<p>All CPTs can be stretched, but only continuous CPTs can be sampled
+at new nodes (i.e., by given an increment in <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>).  We impose this
+limitation to avoid aliasing the original CPT.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p>To get a reasonable and symmetrical color table for the data in the region 0/60/0/60
+from the remote 5m relief file, using the geo color table, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grd2cpt @earth_relief_05m -R0/60/0/60 -Cgeo -Su
+</pre></div>
+</div>
+<p>Sometimes you don’t want to make a CPT (yet) but would find it
+helpful to know that 90% of your data lie between z1 and z2, something
+you cannot learn from <a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a>. So you can do this to see some points
+on the CDF(Z) curve (use <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong> option to see more):</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grd2cpt mydata.nc -V &gt; /dev/null
+</pre></div>
+</div>
+</div></blockquote>
+<p>To make a CPT with entries from 0 to 200 in steps of 20, and ignore
+data below zero in computing CDF(Z), and use the built-in master cpt
+file relief, run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grd2cpt mydata.nc -Crelief -L0/10000 -T0/200/20 &gt; mydata.cpt
+</pre></div>
+</div>
+</div></blockquote>
+<p>To determine the empirical cumulative density function of a grid and
+create a CPT that would give equal area to each color in the image,
+and save the CDF to file as well. try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grd2cpt @earth_relief_10m -E11+c+fcdf.txt &gt; cdf.cpt
+</pre></div>
+</div>
+<p>Here, cdf.txt would be the cumulative hypsometric curve for the Earth.</p>
+</section>
+<section id="note-on-cpts-in-modern-mode">
+<h2>Note on CPTs in Modern Mode<a class="headerlink" href="#note-on-cpts-in-modern-mode" title="Permalink to this heading">¶</a></h2>
+<p>In modern mode, CPTs are rarely needed to be named explicitly.  Instead, when
+a module that may create a CPT, such as <a class="reference internal" href="#"><span class="doc">grd2cpt</span></a> and <a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a> (or even
+<a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> when no color table is available), the behavior under modern mode
+is to write that CPT to a hidden file in the session directory.  When a module
+requires a CPT (e.g., <strong>grdimage</strong> not given <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> or <strong>plot</strong> given <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> with no name)
+then we read this hidden CPT (if it exists).  This file is called the <em>current</em> CPT.
+In fact, there are several levels of current CPTs that may all be different, and
+some may not be present.  If you create a CPT within an <strong>inset</strong> operation then
+that CPT is only accessible during the inset plotting; it thus only has the inset
+as its <em>scope</em>.  If you create a CPT while positioned into a specific subplot, then
+that CPT is likewise only accessible to that subplot.  If, on the other hand, you
+make a CPT after <strong>subplot begin</strong> but before any plotting then that CPT is
+available to all the subplots (but can be locally overridden by a subplot-specific
+CPT mention above).  Finally, each call to <strong>figure</strong> means you may have a figure-specific
+CPT, should you create them.  If none exists then the session CPT is used.  The
+rule gmt follows is to always get the CPT with the most restricted scope that is visible from
+where you are in the plotting hierarchy.  If not found we go up the hierarchy to CPTs
+with broader scope, and if none is ultimately found (and the module, unlike <strong>grdimage</strong>, cannot
+create a CPT by itself), then you have likely made a scripting error.
+There are cases in modern mode when you must explicitly create a named CPT using the
+<strong>-H</strong> option.  One such case is when making movies with <a class="reference internal" href="movie.html"><span class="doc">movie</span></a> since you
+will want to create the CPT once and have <strong>movie</strong> access it again and again.  Since
+each movie frame is a <em>separate session</em> there is no cross-session sharing of current
+CPTs.</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="grdhisteq.html"><span class="doc">grdhisteq</span></a>, <a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a>, <a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a></p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<p>Crameri, F., (2018). Scientific colour-maps. Zenodo. <a class="reference external" href="http://doi.org/10.5281/zenodo.1243862">http://doi.org/10.5281/zenodo.1243862</a></p>
+<p>Crameri, F. (2018), Geodynamic diagnostics, scientific visualisation and StagLab 3.0,
+<em>Geosci. Model Dev.</em>, 11, 2541-2562, doi:10.5194/gmd-11-2541-2018.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gmtwhich.html" class="btn btn-neutral float-left" title="gmtwhich" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="grd2kml.html" class="btn btn-neutral float-right" title="grd2kml" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

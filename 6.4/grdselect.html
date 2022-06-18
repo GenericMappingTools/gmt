@@ -1,0 +1,410 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>grdselect &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grdtrack" href="grdtrack.html" />
+    <link rel="prev" title="grdsample" href="grdsample.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">Modules</a> &raquo;</li>
+      <li>grdselect</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/grdselect.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="grdselect">
+<h1>grdselect<a class="headerlink" href="#grdselect" title="Permalink to this heading">¶</a></h1>
+<p>Make selections or determine common regions from 2-D grids, images or 3-D cubes</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt grdselect</strong> <em>source1 source2 …</em>
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>i</strong>|<strong>u</strong>[<strong>+il</strong>|<strong>h</strong>|<em>inc</em>] ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>pointfile</em> ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>inc</em> ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<strong>b</strong>] ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>polygonfile</em>[<strong>+i</strong>|<strong>o</strong>] ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<strong>C</strong>][<strong>D</strong>][<strong>F</strong>][<strong>L</strong>][<strong>N</strong>][<strong>R</strong>][<strong>W</strong>][<strong>Z</strong>][<strong>r</strong>] ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>linefile</em> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><em>margins</em> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><strong>l</strong>|<strong>h</strong>[<em>n</em>] ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<em>wmin</em>/<em>wmax</em>] ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[<em>zmin</em>/<em>zmax</em>]] ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-r</strong><a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">reg</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>grdselect</strong> reads several images or grids (or cubes) and skips those that fail any tests that may
+have been specified.  It then either reports the names of the sources that passed the tests
+or determines the intersection or union of the regions of those sources and the range of
+data values inside that region. The region may be rounded and padded outwards, then reported
+either by its coordinates, a bounding polygon, or a -Rw/e/s/n string.  <strong>Note</strong>: This module
+is new in GMT 6.3.0 and is considered <em>experimental</em>.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<blockquote>
+<div><p>The name of one or several 2-D grid, image or 3-D cube files.  <strong>Note</strong>: You cannot mix 2-D and 3-D files. Optionally, append =<em>ID</em> for reading a specific file
+format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
+[Default is the first 2-D grid found by GMT]
+(<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
+supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+b</strong> - Select a <em>band</em> (for images only) [Default is 0].</p></li>
+<li><p><strong>+d</strong> - Divide data values by the given <em>divisor</em> [Default is 1].</p></li>
+<li><p><strong>+n</strong> - Replace data values matching <em>invalid</em> with NaN.</p></li>
+<li><p><strong>+o</strong> - Offset data values by the given <em>offset</em> [Default is 0].</p></li>
+<li><p><strong>+s</strong> - Scale data values by the given <em>scale</em> [Default is 1].</p></li>
+</ul>
+</div></blockquote>
+<p>Note: Any offset is added after any scaling.</p>
+</div></blockquote>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="a">
+<dt><strong>-A</strong><strong>i</strong>|<strong>u</strong>[<strong>+il</strong>|<strong>h</strong>|<em>inc</em>]</dt><dd><p>Append either directive <strong>i</strong> for intersection or <strong>u</strong> for union.  We
+then report either the common region for all the data sources that passed the
+tests (if any) or the maximum extent of all the sources that passed the tests.
+Optionally, append modifier <strong>+i</strong> and specify a rounding increment to be applied
+to the final region: Specify <strong>l</strong> for the lowest increment of all passed data
+sources, <strong>h</strong> for the highest increment, or <em>inc</em> to set a specific increment.
+If <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> is not used then we just list the names of the sources that passed
+(or not; see <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>) any tests selected from <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="c">
+<dt><strong>-C</strong><em>pointfile</em></dt><dd><p>Specify a multisegment point file. A data source must contain at least one point
+from <em>pointfile</em> to pass [Default is to not consider point inclusions].  <strong>Note</strong>: If data source
+is a 3-D cube then we also check if <em>pointfile</em> has <em>z</em>-coordinates and if the 3-D
+point is inside the cube [Default is to only check in map view].</p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong><em>inc</em></dt><dd><p>Only pass data sources whose increments match the given increments [Default does not
+consider the increments when passing or skipping data sources].</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong>[<strong>b</strong>]</dt><dd><p>Formats an output data record using tab-separated fields on a single line. The
+columns are <em>w e s n {b t} v0 v1</em>. The data in braces only apply if <strong>grdselect</strong> is
+used with 3-D data cubes [Default outputs a single -Rw/e/s/n{/b/t} string].
+Alternatively, append directive <strong>b</strong> to output the region’s closed polygon.
+<strong>Note</strong>: The <em>v0 v1</em> range reflects the full range of all data nodes that lie
+inside the final region after any rounding or padding have taken place.  Also,
+if the grids have different increments then a rounding increment is required
+to be set via <strong>-A+i</strong> unless <strong>-Eb</strong> is used.</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong><em>polygonfile</em>[<strong>+i</strong>|<strong>o</strong>]</dt><dd><p>Specify a multisegment closed polygon file. A data source must partially or
+fully overlap with at least one polygon in <em>polygonfile</em> to pass [Default is to not consider
+polygonal areas]. To only find data sources that are fully inside or outside the polygon
+append <strong>+i</strong> or <strong>+o</strong>, respectively. <strong>Note</strong>: If data source is a cube then we ignore
+the <em>z</em>-dimension (i.e., we only check for overlap in map view).</p>
+</dd>
+</dl>
+<dl class="simple" id="g">
+<dt><strong>-G</strong></dt><dd><p>Force (possible) download of all tiles of any tiled global remote grids given in order
+to report the requested information [Default is to refuse to give the information for tiled grids].</p>
+</dd>
+</dl>
+<dl id="i">
+<dt><strong>-I</strong>[<strong>C</strong>][<strong>D</strong>][<strong>F</strong>][<strong>L</strong>][<strong>N</strong>][<strong>R</strong>][<strong>W</strong>][<strong>Z</strong>][<strong>r</strong>]</dt><dd><blockquote>
+<div><p>Reverses the sense of the test for each of the options that match the specified code(s):</p>
+<ul class="simple">
+<li><p><strong>C</strong> - select data sources <em>not</em> containing any of the points specified in <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>.</p></li>
+<li><p><strong>D</strong> - select data sources <em>not</em> having the specified increment in <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>.</p></li>
+<li><p><strong>F</strong> - select data sources <em>not</em> overlapping with any of the polygons specified in <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>.</p></li>
+<li><p><strong>L</strong> - select data sources <em>not</em> traversed by any of the lines specified in <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>.</p></li>
+<li><p><strong>N</strong> - select data sources <em>failing</em> the NaN criterion in <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>.</p></li>
+<li><p><strong>R</strong> - select data sources <em>not</em> having any overlap with the region set in <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>.</p></li>
+<li><p><strong>W</strong> - select data sources whose data range do <em>not</em> overlap the range specified by <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>.</p></li>
+<li><p><strong>Z</strong> - select cubes whose z-dimension range do <em>not</em> overlap the range specified by <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>.</p></li>
+<li><p><strong>r</strong> - select data sources <em>not</em> having the specified registration specified by <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>.</p></li>
+</ul>
+</div></blockquote>
+<p>If no argument is given then we reverse all the tests, i.e, the same as <strong>-ICDFLNRWZr</strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="l">
+<dt><strong>-L</strong><em>linefile</em></dt><dd><p>Specify a multisegment line file. A data source must be traversed by at least one line
+in <em>linefile</em> to pass [Default is no line traversing considered]. <strong>Note</strong>: If data source is a
+cube then we ignore the <em>z</em>-dimension (i.e., we only check for crossings in map view).</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong><em>margins</em></dt><dd><p>Extend the region determined via <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> by the given <em>margins</em>.  These can be specified as
+a single value (use the same margin on all sides), a pair of values separated by slashes
+(set separate <em>x</em> and <em>y</em> margins), or the full set of four slash-separated margins
+(set separate west, east, south, and north margins) [no region padding]. For geographic
+(lon/lat) grids you may use units <strong>d</strong>, <strong>m</strong>, or <strong>s</strong> as needed.</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong><strong>l</strong>|<strong>h</strong>[<em>n</em>]</dt><dd><p>Only pass data sources that have a total number of NaNs that is either <strong>l</strong>ower or <strong>h</strong>igher than <em>n</em> [Default is 0].
+<strong>Note</strong>: Cannot be used with images.</p>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. Using the <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> option will in essence supply another region that will be included in the computation via <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>, as well as limit the reading to that subset. For 3-D cubes you must also
+append limits in the <em>z</em> dimension. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong>[<em>wmin</em>]/[<em>wmax</em>]</dt><dd><p>Only pass data sources whose data range overlaps with the specified range.  If <em>wmin</em> is not
+given it defaults to -infinity, while if <em>wmax</em> is not given it defaults to +infinity.
+<strong>Note</strong>: Cannot be used with images.</p>
+</dd>
+</dl>
+<dl class="simple" id="z">
+<dt><strong>-Z</strong>[<em>zmin</em>]/[<em>zmax</em>]</dt><dd><p>Only pass 3-D cubes whose <em>z</em>-dimension range overlaps with the specified range.  If <em>zmin</em> is not
+given it defaults to -infinity, while if <em>zmax</em> is not given it defaults to +infinity.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify data types of input and/or output columns.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Skip or produce header record(s).  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-o</strong><em>cols</em>[,…][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns (0 is first column; <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
+</dd>
+</dl>
+<dl class="simple" id="reg">
+<dt><strong>-r</strong>[<strong>g</strong>|<strong>p</strong>]</dt><dd><p>Only pass data sources that have the same registration as that specified [Ignore registration when
+determining which data sources to pass or skip].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p>To find the extended region (union) of all the grids given, plus a padding of 2 degrees, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdcut @earth_relief_01d -R1/3/1/3 -Gsubset1.nc
+gmt grdcut @earth_relief_01d -R2/5/2/5 -Gsubset2.nc
+gmt grdselect *.nc -Au -M2
+</pre></div>
+</div>
+<p>To find the common region (intersection) that all the grids share, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdselect *.nc -Ai
+</pre></div>
+</div>
+<p>To find the common region (intersection) that all the grids share but extend it by 2 degrees and then write the bounding polygon, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdselect *.nc -Ai -M2 -Eb &gt; wesn_polygon.txt
+</pre></div>
+</div>
+<p>To list all the data sources that have more than 10 NaN nodes and are pixel registered, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdselect *.nc -Nh10 -rp
+</pre></div>
+</div>
+<p>To list all the grids that are entirely included by the polygon in wesn_polygon.txt, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdselect *.nc -Fwesn_polygon.txt+i
+</pre></div>
+</div>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmtselect.html"><span class="doc">gmtselect</span></a>,
+<a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a>,
+<a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a>,
+<a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="grdsample.html" class="btn btn-neutral float-left" title="grdsample" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="grdtrack.html" class="btn btn-neutral float-right" title="grdtrack" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

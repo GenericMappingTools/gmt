@@ -1,0 +1,499 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gpsgridder &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="velo" href="velo.html" />
+    <link rel="prev" title="earthtide" href="earthtide.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../modules.html">Modules</a> &raquo;</li>
+      <li>gpsgridder</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/geodesy/gpsgridder.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="gpsgridder">
+<h1>gpsgridder<a class="headerlink" href="#gpsgridder" title="Permalink to this heading">¶</a></h1>
+<p>Interpolate GPS strains using Green’s functions for elastic deformation</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt gpsgridder</strong> [ <em>table</em> ]
+<a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[[<strong>n</strong>|<strong>r</strong>|<strong>v</strong>]<em>value</em>[%]][<strong>+c</strong>][<strong>+f</strong><em>file</em>][<strong>+i</strong>][<strong>+n</strong>] ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<em>misfitfile</em>] ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>d</strong>|<strong>f</strong>]<em>fudge</em> ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>increment</em> ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>nodefile</em> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>nu</em> ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>maskgrid</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>+s</strong>|<strong>w</strong>] ]
+[ <strong>-b</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
+[ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-qi</strong><a class="reference internal" href="../../gmt.html#qi-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-x</strong>[[-]<a class="reference internal" href="../../gmt.html#core-full"><span class="std std-ref">n</span></a>] ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>gpsgridder</strong> grids 2-D vector data such as GPS velocities by using a coupled
+model based on 2-D elasticity.  The degree of coupling can be tuned by adjusting
+the effective Poisson’s ratio, <span class="math notranslate nohighlight">\(\nu\)</span>. The solution field can be tuned to extremes such
+as incompressible (1), typical elastic (0.5) or even an unphysical value of -1
+that basically removes the elastic coupling of vector interpolation.  Smoothing
+is offered via the optional elimination of small eigenvalues.  The solutions
+for the two component grids are evaluated as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}u(\mathbf{x}) = \sum_{j=1}^{n} \alpha_j q(\mathbf{x}, \mathbf{x}_j) +  \beta_j w(\mathbf{x}, \mathbf{x}_j)\\
+v(\mathbf{x}) = \sum_{j=1}^{n} \alpha_j w(\mathbf{x}, \mathbf{x}_j) +  \beta_j p(\mathbf{x}, \mathbf{x}_j)\end{split}\]</div>
+<p>where the three 2-D elastic coupled Green’s functions are given by</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}q(\mathbf{a}, \mathbf{b}) = (3 - \nu)\log r + (1 + \nu) \frac{y^2}{r^2}\\
+p(\mathbf{a}, \mathbf{b}) = (3 - \nu)\log r + (1 + \nu) \frac{x^2}{r^2}\\
+w(\mathbf{a}, \mathbf{b}) = -(1 + \nu) \frac{xy}{r^2}\end{split}\]</div>
+<p>Here, <em>r</em> is the radial distance between points <strong>a</strong> and <strong>b</strong> and <em>x</em> and <em>y</em> are the components of that
+distance.  The body forces <span class="math notranslate nohighlight">\(\alpha_j\)</span> and <span class="math notranslate nohighlight">\(\beta_j\)</span> are obtained by evaluating the solution at the data
+locations and inverting the square linear system that results; see <em>Sandwell and Wessel</em> [2016] and
+<em>Haines et al.</em> [2015] for details.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>table with GPS strain rates at discrete locations.  We expect the input
+format to be <em>x y u v</em> [ <em>du dv</em> ] (see <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> to specify data uncertainties
+or weights).  If <em>lon lat</em> is given you must supply <strong>-fg</strong> and we will
+use a flat Earth approximation in the calculation of distances.</p>
+</dd>
+</dl>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<blockquote>
+<div><p>Name of resulting output grids(s). (1) If options <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>, <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>, and possibly <strong>-r</strong> are set
+we produce two equidistant output grids. In this case, we take <em>outgrid</em> and append “_u” and “_v” before the extension,
+respectively. (2) If option <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is selected then <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>, <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> cannot be given as the <em>maskgrid</em> determines the region
+and increments. The two output grid names are generated as under (1). (3) If <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> is selected then the output is a
+single ASCII (or binary; see <strong>-bo</strong>) table written to <em>outfile</em>; if <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> is not given then this table is written to
+standard output. Optionally, append =<em>ID</em> for writing a specific file format
+(<a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
+supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+d</strong> - Divide data values by given <em>divisor</em> [Default is 1].</p></li>
+<li><p><strong>+n</strong> - Replace data values matching <em>invalid</em> with a NaN.</p></li>
+<li><p><strong>+o</strong> - Offset data values by the given <em>offset</em>, or append <strong>a</strong> for
+automatic range offset to preserve precision for integer grids
+[Default is 0].</p></li>
+<li><p><strong>+s</strong> - Scale data values by the given <em>scale</em>, or append <strong>a</strong> for
+automatic scaling to preserve precision for integer grids [Default
+is 1].</p></li>
+</ul>
+</div></blockquote>
+<p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
+and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
+concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
+the <a class="reference internal" href="../../cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
+for more details.</p>
+</div></blockquote>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="c">
+<dt><strong>-C</strong>[[<strong>n</strong>|<strong>r</strong>|<strong>v</strong>]<em>value</em>[%]][<strong>+c</strong>][<strong>+f</strong><em>file</em>][<strong>+i</strong>][<strong>+n</strong>]</dt><dd><p>Find an approximate surface fit: Solve the linear system for the
+spline coefficients by SVD and eliminate the contribution from smaller
+eigenvalues [Default uses Gauss-Jordan elimination to solve the linear system
+and fit the data exactly (unless <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> is used)]. Append a directive and <em>value</em>
+to determine which eigenvalues to keep: <strong>n</strong> will retain only the <em>value</em> largest
+eigenvalues [all], <strong>r</strong> [Default] will retain those eigenvalues whose ratio
+to the largest eigenvalue is less than <em>value</em> [0], while <strong>v</strong> will retain
+the eigenvalues needed to ensure the model prediction variance fraction is at
+least <em>value</em>. For <strong>n</strong> and <strong>v</strong> you may append % if <em>value</em> is given as a
+<em>percentage</em> of the total instead.  Several optional modifiers are available:
+Append <strong>+f</strong><em>file</em> to save the eigenvalues to the specified file for further
+analysis. If <strong>+n</strong> is given then <strong>+f</strong><em>file</em> is required and execution will
+stop after saving the eigenvalues, i.e., no surface output is produced.
+The two other modifiers (<strong>+c</strong> and <strong>+i</strong>) can be used to
+write intermediate grids, two (<em>u</em> and <em>v</em>) per eigenvalue, and we will
+automatically insert “_cum_###” or “_inc_###” before the file extension,
+using a fixed integer format for the eigenvalue number starting at 0.  The
+<strong>+i</strong> modifier will write the <strong>i</strong>ncremental contributions to the grids
+for each eigenvalue, while <strong>+c</strong> will instead produce the <strong>c</strong>umulative
+sum of these contributions. Use both modifiers to write both types of
+intermediate grids.</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong>[<em>misfitfile</em>]</dt><dd><p>Evaluate the spline exactly at the input data locations and report
+statistics of the misfit (mean, standard deviation, and rms) for <em>u</em> and
+<em>v</em> separately and combined.  Optionally, append a filename and we will
+write the data table, augmented by two extra columns after each of the
+<em>u</em> and <em>v</em> columns holding the spline estimates and misfits. If <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>
+is given we also add two more columns with <span class="math notranslate nohighlight">\(\chi_u^2\)</span> and <span class="math notranslate nohighlight">\(\chi_v^2\)</span>
+values. Alternatively, if <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> is used and history is computed (via one
+or more of modifiers <strong>+c</strong> and <strong>+i</strong>), then we will instead write a table
+with eigenvalue number, eigenvalue, percent of model variance explained,
+and overall rms, rms_u, and rms_v misfits.  If <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> is used we also append
+<span class="math notranslate nohighlight">\(\chi^2\)</span>, <span class="math notranslate nohighlight">\(\chi_u^2\)</span>, and <span class="math notranslate nohighlight">\(\chi_v^2\)</span>.</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong>[<strong>d</strong>|<strong>f</strong>]<em>fudge</em></dt><dd><p>The Green’s functions are proportional to <span class="math notranslate nohighlight">\(r^{-2}\)</span> and <span class="math notranslate nohighlight">\(\log(r)\)</span>
+and thus blow up for <em>r == 0</em>.  To prevent that we offer two fudging schemes:
+<strong>-Fd</strong><em>del_radius</em> lets you add a constant offset to all radii
+and must be specified in the user units.  Alternatively, use
+<strong>-Ff</strong><em>factor</em> which will compute <em>del_radius</em> from the product
+of the shortest inter-point distance and <em>factor</em> [0.01].</p>
+</dd>
+</dl>
+<dl id="i">
+<dt><strong>-I</strong><em>x_inc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>y_inc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p>Set the grid spacing as <em>x_inc</em> [and optionally <em>y_inc</em>].</p>
+<p><strong>Geographical (degrees) coordinates</strong>: Optionally, append an increment unit.
+Choose among:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>m</strong> to indicate arc minutes</p></li>
+<li><p><strong>s</strong> to indicate arc seconds</p></li>
+<li><p><strong>e</strong> (meter), <strong>f</strong> (foot), <strong>k</strong> (km), <strong>M</strong> (mile), <strong>n</strong> (nautical
+mile) or <strong>u</strong> (US survey foot), in which case the increment will be
+converted to the equivalent degrees longitude at the middle latitude
+of the region  (the conversion depends on <a class="reference internal" href="../../gmt.conf.html#term-PROJ_ELLIPSOID"><span class="xref std std-term">PROJ_ELLIPSOID</span></a>). If
+<em>y_inc</em> is given but set to 0 it will be reset equal to <em>x_inc</em>;
+otherwise it will be converted to degrees latitude.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>All coordinates</strong>: The following modifiers are supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+e</strong> to slightly adjust the max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) to fit
+exactly the given increment if needed [Default is to slightly adjust
+the increment to fit the given domain].</p></li>
+<li><p><strong>+n</strong> to define the <em>number of nodes</em> rather than the increment, in
+which case the increment is recalculated from the number of nodes,
+the <em>registration</em> (see <a class="reference internal" href="../../cookbook/file-formats.html#gmt-file-formats"><span class="std std-ref">GMT File Formats</span></a>), and the domain.
+<strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used then the grid spacing and
+the registration have already been initialized; use <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> and <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>
+to override these values.</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="simple" id="l">
+<dt><strong>-L</strong></dt><dd><p>Leave trend alone.  Do <em>not</em> remove a planer (2-D) trend from the
+data before fitting the spline.  [Default removes least squares plane,
+fits normalized residuals, and restores plane].</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong><em>nodefile</em></dt><dd><p>ASCII file with coordinates of desired output locations <strong>x</strong> in the
+first column(s). The resulting <em>w</em> values are appended to each
+record and written to the file given in <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> [or standard output if not
+specified]; see <strong>-bo</strong> for binary output
+instead. This option eliminates the need to specify options <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>,
+<a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>, and <strong>-r</strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="s">
+<dt><strong>-S</strong><em>nu</em></dt><dd><p>Specify Poisson’s ratio to use for this 2-D elastic sheet [0.5].
+<strong>Note</strong>: 1.0 is incompressible in a 2-D formulation while -1
+removes all coupling between the two directions.</p>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-T</strong><em>maskgrid</em></dt><dd><p>Only evaluate the solutions at the nodes
+in the <em>maskgrid</em> that are not set to NaN. This option eliminates
+the need to specify options <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>, <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> (and <strong>-r</strong>).</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong>[<strong>+s</strong>|<strong>w</strong>]</dt><dd><p>One-sigma data uncertainties for <em>u</em> and <em>v</em> are provided in the last two columns.
+We then compute least squares weights that are inversely proportional to the square
+of the uncertainties [Default, or <strong>+s</strong>].  Instead, append <strong>+w</strong> if weights are
+given instead of uncertainties, in which case we just use the weights as provided
+(no squaring).  This results in a weighted least squares fit.  Note that <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>
+only has an effect if <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> is used [Default uses no weights or uncertainties].</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>][<strong>+c</strong><em>col</em>]<em>nodata</em> <a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>“pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Only accept data records that match the given pattern.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-fg</strong></dt><dd><p>Geographic grids (dimensions of longitude, latitude) will be converted to
+meters via a “Flat Earth” approximation using the current ellipsoid parameters.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Skip or produce header record(s). Not used with binary data.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="../../gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-r</strong>[<strong>g</strong>|<strong>p</strong>] <a class="reference internal" href="../../gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set node registration [gridline].  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="../../gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Swap 1st and 2nd column on input and/or output.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="units">
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this heading">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default unless stated otherwise], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
+(see <a class="reference internal" href="../../gmt.conf.html#term-PROJ_MEAN_RADIUS"><span class="xref std std-term">PROJ_MEAN_RADIUS</span></a>). You can use <strong>-jf</strong> to perform
+“Flat Earth” calculations (quicker but less accurate) or <strong>-je</strong> to perform
+exact geodesic calculations (slower but more accurate; see
+<a class="reference internal" href="../../gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a> for method used).</p>
+</section>
+<section id="notes-on-svd-solution">
+<h2>Notes on SVD solution<a class="headerlink" href="#notes-on-svd-solution" title="Permalink to this heading">¶</a></h2>
+<p>It may be difficult to know how many eigenvalues are needed for a suitable
+approximate fit.  The <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> modifiers allow you to explore this further
+by creating solutions for all cutoff selections and estimate model variance
+and data misfit as a function of how many eigenvalues are used.  The large
+set of such solutions can be animated so it is easier to explore the changes
+between solutions and to make a good selection for the <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> directive values.
+See the animations for one or more examples of this exploration.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p>To compute the <em>u</em> and <em>v</em> strain rate grids from the GPS data set <em>gps.txt</em>,
+containing <em>x y u v du dv</em>, on a 2x2 arc minute grid for California, and just
+using about 25% of the largest eigenvalues, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt gpsgridder gps.txt -R-125/-114/31/41 -I2m -fg -W -r -Cn25% -Ggps_strain_%s.nc -V
+</pre></div>
+</div>
+</section>
+<section id="deprecations">
+<h2>Deprecations<a class="headerlink" href="#deprecations" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>6.3.0: Use <strong>+n</strong> instead of negative value for <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> to set dry-run. <a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5725/">#5725</a></p></li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<p>Haines, A. J. et al., 2015, <em>Enhanced Surface Imaging of Crustal Deformation</em>, SpringerBriefs in Earth Sciences,
+doi:10.1007/978-3-319-21578-5_2.</p>
+<p>Sandwell, D. T. and P. Wessel, 2016, Interpolation of 2-D Vector Data Using Constraints from Elasticity,
+<em>Geophys. Res. Lett., 43</em>, 10,703-10,709,
+<a class="reference external" href="https://doi.org/10.1002/2016GL070340">https://doi.org/10.1002/2016GL070340</a></p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="../../greenspline.html"><span class="doc">greenspline</span></a>
+<a class="reference internal" href="../../nearneighbor.html"><span class="doc">nearneighbor</span></a>,
+<a class="reference internal" href="../../surface.html"><span class="doc">surface</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="earthtide.html" class="btn btn-neutral float-left" title="earthtide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="velo.html" class="btn btn-neutral float-right" title="velo" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

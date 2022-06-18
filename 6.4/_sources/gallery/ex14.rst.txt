@@ -1,0 +1,35 @@
+.. _example_14:
+
+(14) Gridding of data and trend surfaces
+----------------------------------------
+
+This example shows how one goes from randomly spaced data points to an
+evenly sampled surface. We arrange for four panels using the :doc:`subplot </subplot>`
+command.  First we plot the distribution and values of our
+raw data set (same as in Example :ref:`example_12`). We choose an equidistant grid and run
+:doc:`blockmean </blockmean>` which preprocesses the
+data to avoid aliasing. The dashed lines indicate the logical blocks
+used by :doc:`blockmean </blockmean>`; all points inside
+a given bin will be averaged. The logical blocks are drawn from a
+temporary file we make on the fly within the shell script. The processed
+data is then gridded with the :doc:`surface </surface>`
+program and contoured every 25 units. A most important point here is
+that :doc:`blockmean </blockmean>`, :doc:`blockmedian </blockmedian>`, or
+:doc:`blockmode </blockmode>` should always be run prior
+to running :doc:`surface </surface>`, and both of these
+steps must use the same grid interval. We use
+:doc:`grdtrend </grdtrend>` to fit a bicubic trend
+surface to the gridded data, contour it as well, and sample both grid
+files along a diagonal transect using
+:doc:`grdtrack </grdtrack>`. The bottom panel compares
+the gridded (solid line) and bicubic trend (dashed line) along the
+transect using :doc:`plot </plot>`
+
+.. literalinclude:: /_verbatim/ex14.txt
+   :language: bash
+
+.. figure:: /_images/ex14.*
+   :width: 500 px
+   :align: center
+
+   Gridding of data and trend surfaces.

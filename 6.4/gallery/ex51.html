@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(51) OpenStreetMap coastlines in GMT &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(52) Image and grid manipulation" href="ex52.html" />
+    <link rel="prev" title="(50) Probability distributions" href="ex50.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../gallery.html">Illustration Gallery</a> &raquo;</li>
+      <li>(51) OpenStreetMap coastlines in GMT</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex51.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="openstreetmap-coastlines-in-gmt">
+<span id="example-51"></span><h1>(51) OpenStreetMap coastlines in GMT<a class="headerlink" href="#openstreetmap-coastlines-in-gmt" title="Permalink to this heading">¶</a></h1>
+<p>This example shows how to use coastlines derived from the <a class="reference external" href="https://www.openstreetmap.org/">OpenStreetMap (OSM)
+project</a> in GMT. When working with the high
+resolution SRTM <a class="reference internal" href="../datasets.html"><span class="doc">Datasets</span></a> provided by GMT, the GSHHG coastlines might
+not be precise enough on small scales. Here comes the OSM project to the rescue
+as it provides high resolution coastlines in the WGS84 datum. Not as convenient
+and fast as GSHHG but easy enough to give it a try – as long as you have space
+on your hard drive and some processor cycles to spare.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This example makes use of data provided by third parties outside the GMT
+universe. As the internet is constantly changing, the source of this data
+might move or vanish altogether.</p>
+</div>
+<p>First we need to download the appropriate shape file. The <a class="reference external" href="https://wiki.openstreetmap.org/wiki/Shapefiles#Obtaining_shapefiles_from_OSM_data">OSM Wiki</a>
+has some sources, <a class="reference external" href="https://osmdata.openstreetmap.de/data/land-polygons.html">this</a>
+is the one we are going to use. The nice people of the <a class="reference external" href="https://www.fossgis.de">German FOSSGIS society</a> already did some of the heavylifting and converted
+the OSM coastlines to a shape file for us. Make sure to get the <em>Land Polygon</em>
+in the <em>Large polygons not split</em> version with WGS84 datum from their <a class="reference external" href="https://osmdata.openstreetmap.de/data/land-polygons.html">download
+page</a>. It’s a
+~630 MB download.</p>
+<p>You may use this file right away as GMT converts it under the hood to something more
+useful on the fly. Neither very fast nor very efficient if you want to use the
+file multiple times and have to deal with large file sizes as we do here. So we
+use <a class="reference external" href="https://gdal.org/">GDAL’s</a> <em>ogr2ogr</em> and convert the shape file to a native GMT format.</p>
+<p>As the resulting raw ASCII file is very large (&gt;1 GB), GMT’s <a class="reference internal" href="../gmtconvert.html"><span class="doc">gmtconvert</span></a>
+is used to reduce the file size to a third by converting it to a
+single-precision binary file. The resulting file is smaller than the initial
+download while still maintaining precision in the range of centimeters.</p>
+<p>To speed up the plotting process even more, we extract the region of interest
+with <a class="reference internal" href="../gmtselect.html"><span class="doc">gmtselect</span></a>. Finally we are all set to use the coastlines with
+<a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> to get nice, precise coastlines in our illustrations.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1"># GMT EXAMPLE 51</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:     Illustrate usage of OpenStreetMap coastlines in GMT</span>
+<span class="c1"># GMT modules: convert, select, coast, plot</span>
+<span class="c1"># GDAL progs:  ogr2ogr</span>
+
+
+<span class="c1"># First we convert the shapefile to something more GMT friendly. Here we make it</span>
+<span class="c1"># into a large ASCII file. Human-readable but not very efficient. GDAL&#39;s ogr2ogr</span>
+<span class="c1"># is used with the &quot;-f OGR_GMT&quot; option indicating that the output should have</span>
+<span class="c1"># the native GMT format. Input is the downloaded land_polygons.shp, and the</span>
+<span class="c1"># output is named land_polygons_osm_planet.gmt. The resulting file is very</span>
+<span class="c1"># large (&gt;1 GB) but already usable. But wait, there is more ...</span>
+
+ogr2ogr -f OGR_GMT land_polygons_osm_planet.gmt land_polygons.shp
+
+<span class="c1"># Resorting to GMT&#39;s convert program we take our very large ASCII file and</span>
+<span class="c1"># reduce it to about a third of its original size by converting it to a binary</span>
+<span class="c1"># file. Lets have a closer look at -bo2f: </span>
+<span class="c1"># -bo selects native binary output</span>
+<span class="c1"># 2 makes it two data columns</span>
+<span class="c1"># f indicates 4-byte single-precision for the data</span>
+
+gmt convert land_polygons_osm_planet.gmt -bo2f &gt; land_polygons_osm_planet.bf2
+
+<span class="c1"># Now the heavylifting is done and we have a reusable global coastline file</span>
+<span class="c1"># with higher precision than the GSHHG coastlines.</span>
+<span class="c1"># Again, we could use the file as is, but there are more performance gains to</span>
+<span class="c1"># collect. We extract just the area we need for our plot. Here the island of</span>
+<span class="c1"># Sao Vicente, Cape Verde. select to the rescue! -bo2f is nothing new and -bi2f</span>
+<span class="c1"># looks very similar: the -bi is indicating native binary input. -R...+r gives</span>
+<span class="c1"># the area which we are interested in.</span>
+
+gmt <span class="k">select</span> land_polygons_osm_planet.bf2 -bi2f -bo2f -R-25.14/16.75/-24.8/16.95+r &gt; land_polygons_osm_caboverde.bf2
+
+<span class="c1"># Finally it is time to do the thing we are here for: Plot some OSM coastlines</span>
+<span class="c1"># and compare them to the GSHHG coastlines.</span>
+
+gmt begin ex51
+  
+  <span class="c1"># To make the lines a bit nicer we set the line endcaps and the way lines are</span>
+  <span class="c1"># joined to round</span>
+  
+  gmt <span class="nb">set</span> PS_LINE_CAP round
+  gmt <span class="nb">set</span> PS_LINE_JOIN round
+  
+  <span class="c1"># To get an idea where the GSHHG coastlines are we lay them down first with a</span>
+  <span class="c1"># thin red pen. -JL defines a Lambert conic conformal projection and -R...+r</span>
+  <span class="c1"># is the area of the plot. -W defines the pen and -B the style of the plot</span>
+  <span class="c1"># borders, gridlines and annotations. </span>
+  
+  gmt coast -JL-24.9/16.55/16.3/16.7/15c -R-25.14/16.75/-24.8/16.95+r -Wred -Ba10mg10m
+  
+  <span class="c1"># Time to use the OSM coastlines we prepared earlier. Straightforward we</span>
+  <span class="c1"># supply the extracted area, tell plot about the binary format (-bi), define</span>
+  <span class="c1"># pen (-W) and fill (-G)</span>
+  
+  gmt plot land_polygons_osm_caboverde.bf2 -bi2f -Wthinnest,black -Ggrey
+  
+  <span class="c1"># Here we plot the GSHHG coastlines a second time but now with a dashed pen</span>
+  <span class="c1"># to highlight the areas where they would otherwise be hidden behind the grey</span>
+  <span class="c1"># OSM landmass. </span>
+  
+  gmt coast -Wred,dashed
+  
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex51.png"><img alt="../_images/ex51.png" src="../_images/ex51.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Comparison of GSHHG and OSM coastlines.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ex50.html" class="btn btn-neutral float-left" title="(50) Probability distributions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ex52.html" class="btn btn-neutral float-right" title="(52) Image and grid manipulation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

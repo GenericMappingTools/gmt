@@ -1,0 +1,536 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5. GMT Coordinate Transformations &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6. GMT Map Projections" href="map-projections.html" />
+    <link rel="prev" title="4. Standardized command line options" href="options.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preface.html">1. Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">3. General Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="options.html">4. Standardized command line options</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">5. GMT Coordinate Transformations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cartesian-coordinate-transformations">5.1. Cartesian coordinate transformations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#linear-coordinate-transformation">5.1.1. Linear coordinate transformation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#logarithmic-coordinate-transformation">5.1.2. Logarithmic coordinate transformation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#power-exponential-coordinate-transformation">5.1.3. Power (exponential) coordinate transformation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#polar-coordinate-transformations">5.2. Polar coordinate transformations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="map-projections.html">6. GMT Map Projections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supplemental-packages.html">7. GMT Supplemental Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-formats.html">8. GMT File Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="include-figures.html">9. Including GMT Graphics into your Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predefined-patterns.html">10. Predefined Bit and Hachure Patterns in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="octal-codes.html">11. Chart of Octal Codes for Characters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postscript-fonts.html">12. PostScript Fonts Used by GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gmt-latex.html">13. Using LaTeX Expressions in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">14. Color Systems and Artificial Illumination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-filtering.html">15. Filtering of Data in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non-unix-platforms.html">16. GMT on non-UNIX Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpts.html">17. Of Colors and Color Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-symbols.html">18. Custom Plot Symbols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contour-annotations.html">19. Annotation of Contours and “Quoted Lines”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ogrgmt-format.html">20. The GMT Vector Data Format for OGR Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-liner.html">21. GMT Modern Mode One-line Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../cookbook.html">Cookbook</a> &raquo;</li>
+      <li><span class="section-number">5. </span>GMT Coordinate Transformations</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/cookbook/coordinate-transformations.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gmt-coordinate-transformations">
+<h1><span class="section-number">5. </span>GMT Coordinate Transformations<a class="headerlink" href="#gmt-coordinate-transformations" title="Permalink to this heading">¶</a></h1>
+<p>GMT programs read real-world coordinates and convert them to positions on a plot. This is achieved by selecting one of
+several coordinate transformations or projections. We distinguish between three sets of such conversions:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#cartesian-coordinate-transformations"><span class="std std-ref">Cartesian coordinate transformations</span></a></p></li>
+<li><p><a class="reference internal" href="#polar-coordinate-transformations"><span class="std std-ref">Polar coordinate transformations</span></a></p></li>
+<li><p><a class="reference internal" href="map-projections.html"><span class="doc">Map coordinate transformations</span></a></p></li>
+</ul>
+<p>The next Chapter will be dedicated to GMT map projections in its entirety. Meanwhile, the present Chapter will summarize
+the properties of the <a class="reference internal" href="#cartesian-coordinate-transformations"><span class="std std-ref">Cartesian</span></a> and
+<a class="reference internal" href="#polar-coordinate-transformations"><span class="std std-ref">Polar</span></a> coordinate transformations available
+in GMT, list which parameters define them, and demonstrate how they are used to create simple plot axes. We will mostly
+be using <a class="reference internal" href="../basemap.html"><span class="doc">basemap</span></a> (and occasionally <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a>) to demonstrate the various transformations. Our illustrations
+may differ from those you reproduce with the same commands because of different settings in our <code class="docutils literal notranslate"><span class="pre">gmt.conf</span></code> file.
+Finally, note that while we will specify dimensions in inches (by appending <strong>i</strong>), you may want to use cm (<strong>c</strong>), or
+points (<strong>p</strong>) as <a class="reference internal" href="features.html#dimension-units"><span class="std std-ref">unit</span></a> instead.</p>
+<section id="cartesian-coordinate-transformations">
+<h2><span class="section-number">5.1. </span>Cartesian coordinate transformations<a class="headerlink" href="#cartesian-coordinate-transformations" title="Permalink to this heading">¶</a></h2>
+<p>GMT Cartesian coordinate transformations come in three flavors:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#linear-coordinate-transformation"><span class="std std-ref">Linear coordinate transformation</span></a></p></li>
+<li><p><a class="reference internal" href="#logarithmic-coordinate-transformation"><span class="std std-ref">Logarithmic coordinate transformation</span></a></p></li>
+<li><p><a class="reference internal" href="#power-exponential-coordinate-transformation"><span class="std std-ref">Power (exponential) coordinate transformation</span></a></p></li>
+</ul>
+<p>These transformations convert input coordinates <span class="math notranslate nohighlight">\((x,y)\)</span> to locations <span class="math notranslate nohighlight">\((x', y')\)</span> on a plot. There is no
+coupling between <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> (i.e., <span class="math notranslate nohighlight">\(x' = f(x)\)</span> and <span class="math notranslate nohighlight">\(y' = f(y)\)</span>); it is a <strong>one-dimensional</strong>
+projection. Hence, we may use separate transformations for the <span class="math notranslate nohighlight">\(x\)</span>- and <span class="math notranslate nohighlight">\(y\)</span>-axes (and <span class="math notranslate nohighlight">\(z\)</span>-axes for 3-D
+plots). Below, we will use the expression <span class="math notranslate nohighlight">\(u' = f(u)\)</span>, where <span class="math notranslate nohighlight">\(u\)</span> is either <span class="math notranslate nohighlight">\(x\)</span> or <span class="math notranslate nohighlight">\(y\)</span> (or
+<span class="math notranslate nohighlight">\(z\)</span> for 3-D plots). The coefficients in <span class="math notranslate nohighlight">\(f(u)\)</span> depend on the desired plot size (or scale), the chosen
+<span class="math notranslate nohighlight">\((x,y)\)</span> domain, and the nature of <span class="math notranslate nohighlight">\(f\)</span> itself.</p>
+<p>Two subsets of linear will be discussed separately; these are a polar (cylindrical) projection and a linear projection
+applied to geographic coordinates (with a 360° periodicity in the <em>x</em>-coordinate). We will show examples of all of these
+projections using dummy data sets created with <a class="reference internal" href="../gmtmath.html"><span class="doc">gmtmath</span></a>, a “Reverse Polish Notation” (RPN) calculator that
+operates on or creates table data:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -T0/100/1  T <span class="nv">SQRT</span> <span class="o">=</span> sqrt.txt
+gmt math -T0/100/10 T <span class="nv">SQRT</span> <span class="o">=</span> sqrt10.txt
+</pre></div>
+</div>
+</div></blockquote>
+<section id="linear-coordinate-transformation">
+<span id="jx-linear"></span><h3><span class="section-number">5.1.1. </span>Linear coordinate transformation<a class="headerlink" href="#linear-coordinate-transformation" title="Permalink to this heading">¶</a></h3>
+<p>There are in fact three different uses of the Cartesian linear transformation, each associated with specific command
+line options. The different manifestations result from specific properties of three kinds of data:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#regular-floating-point-coordinates"><span class="std std-ref">Regular floating point coordinates</span></a></p></li>
+<li><p><a class="reference internal" href="#geographic-coordinates"><span class="std std-ref">Geographic coordinates</span></a></p></li>
+<li><p><a class="reference internal" href="#calendar-time-coordinates"><span class="std std-ref">Calendar time coordinates</span></a></p></li>
+</ol>
+<section id="regular-floating-point-coordinates">
+<h4><span class="section-number">5.1.1.1. </span>Regular floating point coordinates<a class="headerlink" href="#regular-floating-point-coordinates" title="Permalink to this heading">¶</a></h4>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jx</strong>|<strong>X</strong><em>x-scale</em>|<em>width</em>[<em>/y-scale</em>|<em>height</em>]</p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The <em>x-scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/data-unit (with <strong>-Jx</strong>) or the <em>width</em> (<em>x</em>-axis length) in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JX</strong>).</p></li>
+<li><p>Optionally, the <em>y-scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/data-unit (with <strong>-Jx</strong>) or the <em>height</em> (<em>y</em>-axis length)
+in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JX</strong>). If the <em>y</em>-scale or <em>y</em>-axis length is different from that of the
+<em>x</em>-axis (which is most often the case), separate the two scales (or lengths) by a slash, e.g., <strong>-Jx</strong>0.1i/0.5i
+or <strong>-JX</strong>8i/5i.</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>Selection of the Cartesian linear transformation with regular floating point coordinates will result in a simple linear
+scaling <span class="math notranslate nohighlight">\(u' = au + b\)</span> of the input coordinates.</p>
+<p>Normally, the user’s <span class="math notranslate nohighlight">\(x\)</span>-values will increase to the right and the <span class="math notranslate nohighlight">\(y\)</span>-values will increase upwards. It
+should be noted that in many situations it is desirable to have the direction of positive coordinates be reversed. For
+example, when plotting depth on the <em>y</em>-axis it makes more sense to have the positive direction downwards. All that is
+required to reverse the sense of positive direction is to supply a negative <em>scale</em> (or <em>width</em>). Finally, sometimes it
+is convenient to specify the <em>width</em> (or <em>height</em>) of a map and let the other dimension be computed based on the implied
+scale and the range of the other axis. To do this, simply specify the length to be recomputed as <strong>0</strong>.</p>
+<p><strong>Example</strong></p>
+<p>Our <span class="math notranslate nohighlight">\(y = \sqrt{x}\)</span> data set can be plotted as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_linear
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt math -T0/100/1 T <span class="nv">SQRT</span> <span class="o">=</span> sqrt.txt
+	gmt math -T0/100/10 T <span class="nv">SQRT</span> <span class="o">=</span> sqrt10.txt
+	gmt plot -R0/100/0/10 -JX8c/4c -Bag -BWSne+gsnow -Wthick,blue,- sqrt.txt
+	gmt plot -St0.3c -N -Gred -Wfaint sqrt10.txt
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/GMT_linear.png"><img alt="../_images/GMT_linear.png" src="../_images/GMT_linear.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Linear transformation of Cartesian coordinates.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="geographic-coordinates">
+<h4><span class="section-number">5.1.1.2. </span>Geographic coordinates<a class="headerlink" href="#geographic-coordinates" title="Permalink to this heading">¶</a></h4>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jx</strong>|<strong>X</strong><em>x-scale</em>|<em>width</em>[<em>/y-scale</em>|<em>height</em>][<strong>d</strong>|<strong>g</strong>] or <strong>-Rg</strong>|<strong>d</strong></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The <em>x-scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/data-unit (with <strong>-Jx</strong>) or the <em>width</em> (<em>x</em>-axis length) in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JX</strong>).</p></li>
+<li><p>Optionally, the <em>y-scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/data-unit (with <strong>-Jx</strong>) or the <em>height</em> (<em>y</em>-axis length)
+in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JX</strong>). If the <em>y</em>-scale or <em>y</em>-axis length is different from that of the
+<em>x</em>-axis (which is most often the case), separate the two scales (or lengths) by a slash, e.g., <strong>-Jx</strong>0.1i/0.5i
+or <strong>-JX</strong>8i/5i.</p></li>
+<li><p><strong>d</strong> or <strong>g</strong> to indicate that data are geographical coordinates</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>While the Cartesian linear projection is primarily designed for regular floating point <span class="math notranslate nohighlight">\(x\)</span>,<span class="math notranslate nohighlight">\(y\)</span> data, it is
+sometimes necessary to plot geographical data in a linear projection. This poses a problem since longitudes have a 360°
+periodicity. GMT therefore needs to be informed that it has been given geographical coordinates even though a linear
+transformation has been chosen. We do so by adding a <strong>g</strong> (for geographical) or <strong>d</strong> (for degrees) directly after
+<strong>-R</strong> or by appending a <strong>g</strong> or <strong>d</strong> to the end of the <strong>-Jx</strong> (or <strong>-JX</strong>) option.</p>
+<p><strong>Example</strong></p>
+<p>A crude world map centered on 125°E can be plotted as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_linear_d
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt <span class="nb">set</span> MAP_GRID_CROSS_SIZE_PRIMARY <span class="m">0</span>.1i MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF
+	gmt coast -Rg-55/305/-90/90 -Jx0.04c -Bagf -BWSen -Dc -A1000 -Glightbrown -Wthinnest -Slightblue
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/GMT_linear_d.png"><img alt="../_images/GMT_linear_d.png" src="../_images/GMT_linear_d.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Linear transformation of map coordinates.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="calendar-time-coordinates">
+<span id="jx-time"></span><h4><span class="section-number">5.1.1.3. </span>Calendar time coordinates<a class="headerlink" href="#calendar-time-coordinates" title="Permalink to this heading">¶</a></h4>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jx</strong>|<strong>X</strong><em>x-scale</em>|<em>width</em>[<em>/y-scale</em>|<em>height</em>]<strong>T</strong>|<strong>t</strong> or
+<strong>-R</strong> with [<em>date</em>]<strong>T</strong>[<em>clock</em>] time entry or relative time followed by <strong>t</strong></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The <em>x-scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/data-unit (with <strong>-Jx</strong>) or the <em>width</em> (<em>x</em>-axis length) in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JX</strong>).</p></li>
+<li><p>Optionally, the <em>y-scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/data-unit (with <strong>-Jx</strong>) or the <em>height</em> (<em>y</em>-axis length)
+in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JX</strong>). If the <em>y</em>-scale or <em>y</em>-axis length is different from that of the
+<em>x</em>-axis (which is most often the case), separate the two scales (or lengths) by a slash, e.g., <strong>-Jx</strong>0.1i/0.5i
+or <strong>-JX</strong>8i/5i.</p></li>
+<li><p><strong>t</strong> to indicate that input coordinates are time relative to <a class="reference internal" href="../gmt.conf.html#term-TIME_EPOCH"><span class="xref std std-term">TIME_EPOCH</span></a> or <strong>T</strong> to indicate that input
+coordinates are absolute time.</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>Several particular issues arise when we seek to make linear plots using calendar date/time as the input coordinates. As
+far as setting up the coordinate transformation we must indicate whether our input data have absolute time coordinates
+or relative time coordinates. For the former we append <strong>T</strong> after the axis scale (or width), while for the latter we
+append <strong>t</strong> at the end of the <strong>-Jx</strong> (or <strong>-JX</strong>) option. However, other command line arguments (like the <strong>-R</strong>
+option) may already specify whether the time coordinate is absolute or relative. An absolute time entry must be given
+as [<em>date</em>]<strong>T</strong>[<em>clock</em>] (with <em>date</em> given as <em>yyyy</em>[-<em>mm</em>[-<em>dd</em>]], <em>yyyy</em>[-<em>jjj</em>], or
+<em>yyyy</em>[-<strong>W</strong><em>ww</em>[-<em>d</em>]], and <em>clock</em> using the <em>hh</em>[:<em>mm</em>[:<em>ss</em>[<em>.xxx</em>]]] 24-hour clock format) whereas the
+relative time is simply given as the units of time since the epoch followed by <strong>t</strong> (see <a class="reference internal" href="../gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a> and
+<a class="reference internal" href="../gmt.conf.html#term-TIME_EPOCH"><span class="xref std std-term">TIME_EPOCH</span></a> for information on specifying the time unit and the epoch).</p>
+<p>When the coordinate ranges provided by the <strong>-R</strong> option and the projection type given by <strong>-JX</strong> (including the
+optional <strong>d</strong>, <strong>g</strong>, <strong>t</strong> or <strong>T</strong>) conflict, GMT will warn the users about it. In general, the options provided
+with <strong>-JX</strong> will prevail.</p>
+<p><strong>Example</strong></p>
+<p>A simple plot of a school week calendar can be made as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_linear_cal
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt <span class="nb">set</span> FORMAT_DATE_MAP o TIME_WEEK_START Sunday <span class="nv">FORMAT_CLOCK_MAP</span><span class="o">=</span>-hham FORMAT_TIME_PRIMARY_MAP full
+	gmt basemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX10c/-5c -Bxa1Kf1kg1d -Bya1Hg1h -BWsNe+glightyellow
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/GMT_linear_cal.png"><img alt="../_images/GMT_linear_cal.png" src="../_images/GMT_linear_cal.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Linear transformation of calendar coordinates.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="logarithmic-coordinate-transformation">
+<span id="jx-log"></span><h3><span class="section-number">5.1.2. </span>Logarithmic coordinate transformation<a class="headerlink" href="#logarithmic-coordinate-transformation" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jx</strong>|<strong>X</strong><em>x-scale</em>|<em>width</em>[<strong>l</strong>][<em>/y-scale</em>|<em>height</em>[<strong>l</strong>]]</p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The <em>x-scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/data-unit (with <strong>-Jx</strong>) or the <em>width</em> (<em>x</em>-axis length) in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JX</strong>).</p></li>
+<li><p>Optionally, the <em>y-scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/data-unit (with <strong>-Jx</strong>) or the <em>height</em> (<em>y</em>-axis length)
+in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JX</strong>). If the <em>y</em>-scale or <em>y</em>-axis length is different from that of the
+<em>x</em>-axis (which is most often the case), separate the two scales (or lengths) by a slash, e.g., <strong>-Jx</strong>0.1i/0.5i
+or <strong>-JX</strong>8i/5i.</p></li>
+<li><p><strong>l</strong> to take log10 of values before scaling.</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>The <span class="math notranslate nohighlight">\(\log_{10}\)</span> transformation is simply <span class="math notranslate nohighlight">\(u' = a \log_{10}(u) + b\)</span> and is selected by appending an <strong>l</strong>
+immediately following the <em>scale</em> (or axis length) value.</p>
+<p>Note that if <span class="math notranslate nohighlight">\(x\)</span>- and <span class="math notranslate nohighlight">\(y\)</span>-scaling are different and a <span class="math notranslate nohighlight">\(\log_{10}-\log_{10}\)</span> plot is desired, the
+<strong>l</strong> must be appended twice: Once after the <em>x</em>-scale (before the /) and once after the <em>y</em>-scale.</p>
+<p><strong>Example</strong></p>
+<p>A plot in which the <em>x</em>-axis is logarithmic (the <em>y</em>-axis remains linear, i.e., a semi-log plot) can be made as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_log
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt math -T0/100/1 T <span class="nv">SQRT</span> <span class="o">=</span> sqrt.txt
+	gmt math -T0/100/10 T <span class="nv">SQRT</span> <span class="o">=</span> sqrt10.txt
+	gmt plot -R1/100/0/10 -Jx4cl/0.4c -Bx2g3 -Bya2f1g2 -BWSne+gbisque -Wthick,blue,- -h sqrt.txt
+	gmt plot -Ss0.3c -N -Gred -W -h sqrt10.txt
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/GMT_log.png"><img alt="../_images/GMT_log.png" src="../_images/GMT_log.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Logarithmic transformation of x–coordinates.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="power-exponential-coordinate-transformation">
+<span id="jx-power"></span><h3><span class="section-number">5.1.3. </span>Power (exponential) coordinate transformation<a class="headerlink" href="#power-exponential-coordinate-transformation" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jx</strong>|<strong>X</strong><em>x-scale</em>|<em>width</em>[<strong>p</strong><em>power</em>][<em>/y-scale</em>|<em>height</em>[<strong>p</strong><em>power</em>]]</p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The <em>x-scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/data-unit (with <strong>-Jx</strong>) or the <em>width</em> (<em>x</em>-axis length) in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JX</strong>).</p></li>
+<li><p>Optionally, the <em>y-scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/data-unit (with <strong>-Jx</strong>) or the <em>height</em> (<em>y</em>-axis length)
+in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JX</strong>). If the <em>y</em>-scale or <em>y</em>-axis length is different from that of the
+<em>x</em>-axis (which is most often the case), separate the two scales (or lengths) by a slash, e.g., <strong>-Jx</strong>0.1i/0.5i
+or <strong>-JX</strong>8i/5i.</p></li>
+<li><p><strong>p</strong><em>power</em> to raise values to <em>power</em> before scaling.</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>This projection uses <span class="math notranslate nohighlight">\(u' = a u^b + c\)</span> and allows us to explore exponential relationships like <span class="math notranslate nohighlight">\(x^p\)</span> versus
+<span class="math notranslate nohighlight">\(y^q\)</span>.</p>
+<p><strong>Example</strong></p>
+<p>This example uses the exponents <span class="math notranslate nohighlight">\(p = 0.5\)</span> and <span class="math notranslate nohighlight">\(q = 1\)</span> which means we will plot <span class="math notranslate nohighlight">\(x\)</span> versus
+<span class="math notranslate nohighlight">\(\sqrt{x}\)</span>. We indicate this scaling by appending a <strong>p</strong> followed by the desired exponent, in our case 0.5.
+Since <span class="math notranslate nohighlight">\(q = 1\)</span> we do not need to specify <strong>p</strong>1 since it is identical to the linear transformation.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_pow
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt math -T0/100/1 T <span class="nv">SQRT</span> <span class="o">=</span> sqrt.txt
+	gmt math -T0/100/10 T <span class="nv">SQRT</span> <span class="o">=</span> sqrt10.txt
+	gmt plot -R0/100/0/10 -Jx0.75cp0.5/0.4c -Bxa1p -Bya2f1 -BWSne+givory -Wthick sqrt.txt
+	gmt plot -Sc0.2c -Ggreen -W sqrt10.txt
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id5">
+<a class="reference internal image-reference" href="../_images/GMT_pow.png"><img alt="../_images/GMT_pow.png" src="../_images/GMT_pow.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Exponential or power transformation of x–coordinates.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="polar-coordinate-transformations">
+<span id="jp"></span><h2><span class="section-number">5.2. </span>Polar coordinate transformations<a class="headerlink" href="#polar-coordinate-transformations" title="Permalink to this heading">¶</a></h2>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jp</strong>|<strong>P</strong><em>scale</em>|<em>width</em>[<strong>+a</strong>][<strong>+f</strong>[<strong>e</strong>|<strong>p</strong>|<em>radius</em>]][<strong>+r</strong><em>offset</em>][<strong>+t</strong><em>origin</em>][<strong>+z</strong>[<strong>p</strong>|<em>radius</em>]]]</p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The <em>scale</em> (with <strong>-Jp</strong>; in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/r-unit) or <em>width</em>
+(with <strong>-JP</strong>; in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>).</p></li>
+<li><p>Optionally, <strong>+a</strong> to indicate that <em>theta</em> is azimuth CW from North instead of direction CCW from East [Default is
+CCW from East].</p></li>
+<li><p>Optionally, <strong>+f</strong> to flip the radial direction to point inwards, and append <strong>e</strong> to indicate that <em>r</em> represents
+<em>elevations</em> in degrees (requires <em>south</em> &gt;= 0 and <em>north</em> &lt;= 90), <strong>p</strong> to select current planetary radius
+(determined by <a class="reference internal" href="../gmt.conf.html#term-PROJ_ELLIPSOID"><span class="xref std std-term">PROJ_ELLIPSOID</span></a>) as maximum radius [<em>north</em>], or <em>radius</em> to specify a custom radius.</p></li>
+<li><p>Optionally, <strong>+r</strong><em>offset</em> to include a radial offset in measurement units [default is <strong>0</strong>].</p></li>
+<li><p>Optionally, <strong>+t</strong><em>origin</em> in degrees so that this angular value is aligned with the positive <em>x</em>-axis (or the
+azimuth to be aligned with the positive <em>y</em>-axis if <strong>+a</strong>) [default is <strong>0</strong>].</p></li>
+<li><p>Optionally, <strong>+z</strong> to annotate depth rather than radius [default is radius]. Alternatively, if your <em>r</em> data are
+actually depths then you can append <strong>p</strong> or <em>radius</em> to get radial annotations (<em>r = radius - z</em>) instead.</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>This transformation converts polar coordinates (angle <span class="math notranslate nohighlight">\(\theta\)</span> and radius <em>r</em>) to positions on a plot. Now
+<span class="math notranslate nohighlight">\(x' = f(\theta,r)\)</span> and <span class="math notranslate nohighlight">\(y' = g(\theta,r)\)</span>, hence it is similar to a regular map projection because <span class="math notranslate nohighlight">\(x\)</span>
+and <span class="math notranslate nohighlight">\(y\)</span> are coupled and <span class="math notranslate nohighlight">\(x\)</span> (i.e., <span class="math notranslate nohighlight">\(\theta\)</span>) has a 360° periodicity. With input and output points both
+in the plane it is a <strong>two-dimensional</strong> projection. The transformation comes in several flavors:</p>
+<ol class="arabic simple">
+<li><p>Normally, <span class="math notranslate nohighlight">\(\theta\)</span> is understood to be directions
+counter-clockwise from the horizontal axis, but we may choose to
+specify an angular offset [default is zero]. We will call
+this offset <span class="math notranslate nohighlight">\(\theta_0\)</span>. Then,
+<span class="math notranslate nohighlight">\(x' = f(\theta, r) = ar \cos (\theta-\theta_0) + b\)</span> and
+<span class="math notranslate nohighlight">\(y' = g(\theta, r) = ar \sin (\theta-\theta_0) + c\)</span>.</p></li>
+<li><p>Alternatively, <span class="math notranslate nohighlight">\(\theta\)</span> can be interpreted to be azimuths
+clockwise from the vertical axis, yet we may again choose to specify
+the angular offset [default is zero]. Then,
+<span class="math notranslate nohighlight">\(x' = f(\theta, r) = ar \cos (90 - (\theta-\theta_0)) + b\)</span> and
+<span class="math notranslate nohighlight">\(y' = g(\theta, r) = ar \sin (90 - (\theta-\theta_0)) + c\)</span>.</p></li>
+<li><p>The radius <em>r</em> can either be radius or inverted to mean depth from the surface,
+planetary radii, or even elevations in degrees.</p></li>
+</ol>
+<p><strong>Example</strong></p>
+<p>As an example of this projection we will create a gridded data set in polar coordinates
+<span class="math notranslate nohighlight">\(z(\theta, r) = r^2 \cdot \cos{4\theta}\)</span> using <a class="reference internal" href="../grdmath.html"><span class="doc">grdmath</span></a>, a RPN calculator that operates on or creates
+grid files.</p>
+<p>We will use <a class="reference internal" href="../grdcontour.html"><span class="doc">grdcontour</span></a> to make a contour map of this data. Because the data file only contains values
+with <span class="math notranslate nohighlight">\(2 \leq r \leq 4\)</span>, a donut shaped plot appears in the example figure shown below.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_polar
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt grdmath -R0/360/2/4 -I6/0.1 X <span class="m">4</span> MUL PI MUL <span class="m">180</span> DIV COS Y <span class="m">2</span> POW <span class="nv">MUL</span> <span class="o">=</span> tt.nc
+	gmt grdcontour tt.nc -JP8c -B30 -BNs+ghoneydew -C2 -S4 --FORMAT_GEO_MAP<span class="o">=</span>+ddd
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id6">
+<a class="reference internal image-reference" href="../_images/GMT_polar.png"><img alt="../_images/GMT_polar.png" src="../_images/GMT_polar.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Polar (Cylindrical) transformation of (<span class="math notranslate nohighlight">\(\theta, r\)</span>) coordinates.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="options.html" class="btn btn-neutral float-left" title="4. Standardized command line options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="map-projections.html" class="btn btn-neutral float-right" title="6. GMT Map Projections" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

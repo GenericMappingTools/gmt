@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(14) Animating earthquake focal mechanisms &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(15) Animating 2-D coupled gridding via SVD" href="anim15.html" />
+    <link rel="prev" title="(13) Animating time-series (seismograms)" href="anim13.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../animations.html">Animation Gallery</a> &raquo;</li>
+      <li>(14) Animating earthquake focal mechanisms</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/animations/anim14.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="animating-earthquake-focal-mechanisms">
+<span id="anim14"></span><h1>(14) Animating earthquake focal mechanisms<a class="headerlink" href="#animating-earthquake-focal-mechanisms" title="Permalink to this heading">¶</a></h1>
+<p>Here we make a movie of the focal mechanisms of large earthquakes from September 1981
+to January 2018 in the flat subduction area in western Argentina and central Chile.
+The events are shown on a location map with a cross-sectional profile below.
+We use new capability in <a class="reference internal" href="../events.html"><span class="doc">events</span></a> to animate seismological symbols that are ultimately
+generated by <a class="reference internal" href="../supplements/seis/meca.html"><span class="doc">meca</span></a> and <a class="reference internal" href="../supplements/seis/coupe.html"><span class="doc">coupe</span></a>.  The data are
+obtained from the Global CMT web page at <a class="reference external" href="https://www.globalcmt.org/">https://www.globalcmt.org/</a>. Animation designed
+by Federico D. Esteban, University of Buenos Aires, Argentina.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#</span>
+<span class="c1"># Movie of focal mechanisms from 09-1981 to 01-2018 in the flat subduction area</span>
+<span class="c1"># in western Argentina and central Chile. Shows a map with a profile.</span>
+<span class="c1"># Global CMT web page: https://www.globalcmt.org/</span>
+<span class="c1">#</span>
+<span class="c1"># DEM:  @earth_relief_03s</span>
+<span class="c1"># Data: @GCMT_1976-2017_meca.gmt </span>
+<span class="c1">#</span>
+<span class="c1"># The original data file jan76_dec17.ndk can be downloaded and rearranged to a gmt format with the followings commands:</span>
+<span class="c1"># URL=&quot;https://www.ldeo.columbia.edu/~gcmt/projects/CMT/catalog/jan76_dec17.ndk&quot;</span>
+<span class="c1"># gmt which $URL -G </span>
+<span class="c1"># gawk &#39;/^PDE/ {Date=$2; Time=$3; Lat=$4; Long=$5; Depth=$6; getline; Name=$1; getline; getline; Exp=$1; getline; mant=$11; strike1=$12; dip1=$13; rake1=$14; strike2=$15; dip2=$16; rake2=$17; print Long, Lat, Depth, strike1, dip1, rake1, strike2, dip2, rake2, mant, Exp, Date &quot;T&quot; Time, Name}&#39; jan76_dec17.ndk | sed &#39;s/\//-/g&#39; &gt; meca.gmt</span>
+<span class="c1"># gmt select meca.gmt -R-75.1/-63/-34.44/-30.35 &gt; GCMT_1976-2017_meca.gmt</span>
+<span class="c1"># The GCMT_1976-2017_meca.gmt file is in the GMT Dataserver cache and can be accessed via @GCMT_1976-2017_meca.gmt</span>
+<span class="c1"># The finished movie is available in our YouTube channel as well:</span>
+<span class="c1"># https://youtu.be/Wk58r72g_nk</span>
+<span class="c1"># The 79-sec, 1896 frame movie took ~50 minutes to render on a 2017 iMac Pro.</span>
+<span class="c1">#</span>
+<span class="c1"># Author: ESTEBAN, Federico D.</span>
+<span class="c1"># Profile coordinates (in degrees) and perpendicular distance to filter the data and to show in the cross section.</span>
+<span class="nv">Long1</span><span class="o">=</span>-75.02
+<span class="nv">Long2</span><span class="o">=</span>-63.65
+<span class="nv">Lat1</span><span class="o">=</span>-33.5
+<span class="nv">Lat2</span><span class="o">=</span>-31
+<span class="nv">Dist</span><span class="o">=</span>100k
+<span class="nv">REGION</span><span class="o">=</span>-75.1/-63/-34.44/-30.35	<span class="c1"># Map Region</span>
+<span class="c1"># Angles (min/max/inc) for the profile inset</span>
+<span class="nv">Angles</span><span class="o">=</span><span class="m">15</span>/60/15 
+<span class="nv">DEM</span><span class="o">=</span>@earth_relief_03s
+<span class="c1"># Other Variables</span>
+<span class="nv">W</span><span class="o">=</span><span class="m">22</span>.73   			<span class="c1"># Width Profile</span>
+<span class="nv">H</span><span class="o">=</span><span class="m">2</span>.7c                   	<span class="c1"># Profile Height</span>
+<span class="nv">PROJ</span><span class="o">=</span>M23.78c			<span class="c1"># Map projection and width</span>
+<span class="nv">X</span><span class="o">=</span><span class="m">0</span>.115c			<span class="c1"># Offset in X</span>
+<span class="nv">Y</span><span class="o">=</span><span class="m">0</span>.91c				<span class="c1"># Offset in Y</span>
+<span class="c1"># Create Profile</span>
+cat <span class="s">&lt;&lt; EOF &gt; tmp_profile</span>
+<span class="s">$Long1 $Lat1</span>
+<span class="s">$Long2 $Lat2</span>
+<span class="s">EOF</span>
+<span class="c1"># Filter Focal Mechanism. Create file with data Inside/Outside.</span>
+gmt <span class="k">select</span> @GCMT_1976-2017_meca.gmt -Ltmp_profile+d<span class="nv">$Dist</span>+p -fg &gt; coupe_I.gmt
+gmt <span class="k">select</span> @GCMT_1976-2017_meca.gmt -Ltmp_profile+d<span class="nv">$Dist</span>+p -fg &gt; coupe_O.gmt -Il
+<span class="c1"># Calculate variables (profile length, maximum depth of events (+10 to avoid clipping in the profile), vertical exaggeration, table of angles).</span>
+<span class="nv">KM</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$Long1</span> <span class="nv">$Lat1</span> <span class="p">|</span> gmt mapproject -G<span class="nv">$Long2</span>/<span class="nv">$Lat2</span>+uk -o2<span class="k">)</span>
+<span class="nv">DepthMax</span><span class="o">=</span><span class="k">$(</span>gmt info coupe_I.gmt -C2 -o5 <span class="p">|</span> gmt math -Q STDIN <span class="m">10</span> <span class="nv">ADD</span> <span class="o">=</span><span class="k">)</span>
+<span class="nv">VE</span><span class="o">=</span><span class="k">$(</span>gmt math -Q <span class="nv">$KM</span> <span class="nv">$H</span> MUL <span class="nv">$W</span> DIV <span class="nv">$DepthMax</span> <span class="nv">DIV</span> <span class="o">=</span> --FORMAT_FLOAT_OUT<span class="o">=</span>%.2g<span class="k">)</span>
+gmt math -T<span class="nv">$Angles</span> T SIND -o0,1,0 <span class="o">=</span> <span class="p">|</span> gmt math STDIN -T -C0 <span class="nv">COSD</span> <span class="o">=</span> <span class="p">|</span> gawk <span class="s1">&#39;$0=$0&quot;@.&quot;&#39;</span> &gt; angles.txt
+<span class="nv">Ha</span><span class="o">=</span><span class="k">$(</span>gmt math -Q <span class="nv">$H</span> <span class="m">0</span>.7c <span class="nv">SUB</span> <span class="o">=</span><span class="k">)</span> <span class="c1"># Height of inset with angles</span>
+<span class="nv">Wa</span><span class="o">=</span><span class="k">$(</span>gmt math -Q <span class="nv">$Ha</span> <span class="nv">$VE</span> <span class="nv">DIV</span> <span class="o">=</span><span class="k">)</span> <span class="c1"># Width of inset with angles (calculated from vertical exaggeration to have same deformation as the profile)</span>
+<span class="c1">#       -----------------------------------------------------------------------------------------------------------</span>
+cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
+<span class="s">	gmt set FONT_LABEL 10p FONT_ANNOT_PRIMARY 7p MAP_FRAME_PEN thin,black MAP_GRID_PEN faint,gray</span>
+<span class="s">gmt begin</span>
+<span class="s">	# 1a. Create list of dates for the animation</span>
+<span class="s">	gmt math -o0 -T1981-09-01T/2018-01-02T/7d T = times.txt</span>
+<span class="s">	# 1b. Create cpt to paint the focal mechanism</span>
+<span class="s">	gmt makecpt -T0/$DepthMax -Chot -I -H &gt; q.cpt</span>
+<span class="s">	# 1c. Draw profile</span>
+<span class="s">	gmt basemap -R0/$KM/0/$DepthMax -JX$W/-$H -Bg25 -BwESn -Bxaf+l&quot;Distance (km)&quot; -Byaf+l&quot;Depth (km)&quot; -X$X -Y$Y</span>
+<span class="s">	gmt inset begin -DjLB+w$Wa/$Ha+o0.1c/0.2c -F+p+gwhite+s+r -C0.15c</span>
+<span class="s">		gmt plot angles.txt -Wthinnest,red -Bnw -Bg -R0/1/0/1 -JX?/-? --MAP_FRAME_TYPE=graph -Fr0/0 -i0-1+s0.9</span>
+<span class="s">		gmt text angles.txt -F+f6 -N</span>
+<span class="s">	gmt inset end</span>
+<span class="s">	echo Vert. Ex. = $VE | gmt text -F+cBR+f9p -Gwhite -W1p</span>
+<span class="s">	echo SW | gmt text -F+cTL+f12p -Gwhite -W1p</span>
+<span class="s">	echo NE | gmt text -F+cTR+f12p -Gwhite -W1p</span>
+<span class="s">	# 1d. Draw map</span>
+<span class="s">	gmt grdimage $DEM -Coleron -I+nt1.2 -R$REGION -J$PROJ -Yh+0.3c</span>
+<span class="s">	gmt coast -Df -N1/0.5p -Bf</span>
+<span class="s">	gmt plot tmp_profile -W2p,red</span>
+<span class="s">	gmt plot tmp_profile -Sc0.25c -Gred</span>
+<span class="s">	gmt colorbar -Cq.cpt -DjBR+o1.75c/0.6c+w-6c/0.5c -Baf+l&quot;Focal Depth (km)&quot; -F+p+gwhite+s+r</span>
+<span class="s">	gmt inset begin -DjTL+w3.5c+o-0.08c</span>
+<span class="s">		gmt coast -Rg -JG-68.025/-32.01/? -Da -Gwhite -A5000 -Bg -W1/faint -Sdodgerblue2 -C- -N1</span>
+<span class="s">		gmt basemap -R$REGION -J$PROJ -A | gmt plot -Wthin,darkred </span>
+<span class="s">	gmt inset end</span>
+<span class="s">gmt end</span>
+<span class="s">EOF</span>
+<span class="c1"># 2. Set up main script</span>
+cat <span class="s">&lt;&lt; EOF &gt; main.sh</span>
+<span class="s">gmt begin</span>
+<span class="s">	gmt set TIME_UNIT d</span>
+<span class="s">	gmt events coupe_I.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R0/$KM/0/$DepthMax -JX$W/-$H -Y$Y -X$X -Z&quot;coupe -Aa$Long1/$Lat1/$Long2/$Lat2+w$Dist -Q -Sc0.3c+f0&quot; -Cq.cpt </span>
+<span class="s">	gmt events coupe_O.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z&quot;meca -Sc0.3c+f0&quot; -Yh+0.3c</span>
+<span class="s">	gmt events coupe_I.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z&quot;meca -Sc0.3c+f0&quot; -Cq.cpt</span>
+<span class="s">gmt end</span>
+<span class="s">EOF</span>
+<span class="c1"># 3. Run the movie</span>
+gmt movie main.sh -Sbpre.sh -Chd -Ttimes.txt -Nanim14 -H2 -Fmp4 -D24 -Ml,png -Ve -Pd+ac0+jRM+w5.9c+o2.7/0.8c+P3,white+p1,red+a1+f11p,2,white <span class="se">\</span>
+--FORMAT_CLOCK_MAP<span class="o">=</span>- --FORMAT_DATE_MAP<span class="o">=</span>dd-mm-yyyy --TIME_EPOCH<span class="o">=</span><span class="m">0000</span>-01-01 -Zs
+rm coupe_*.gmt tmp_profile angles.txt
+</pre></div>
+</div>
+<div class="youtube_wrapper" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; width: 100%">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/Wk58r72g_nk?autoplay=1" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
+</iframe></div></section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="anim13.html" class="btn btn-neutral float-left" title="(13) Animating time-series (seismograms)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="anim15.html" class="btn btn-neutral float-right" title="(15) Animating 2-D coupled gridding via SVD" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

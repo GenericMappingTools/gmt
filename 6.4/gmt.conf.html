@@ -1,0 +1,1497 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gmt.conf &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gmtcolors" href="gmtcolors.html" />
+    <link rel="prev" title="Common Options" href="std-opts.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>gmt.conf</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gmt.conf.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gmt-conf">
+<span id="index-0"></span><h1>gmt.conf<a class="headerlink" href="#gmt-conf" title="Permalink to this heading">¶</a></h1>
+<p>Configuration for GMT</p>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p>The following is a list of the parameters that are user-definable in
+GMT. The parameter names are always given in <strong>UPPER CASE</strong>. The
+parameter values are case-insensitive unless otherwise noted. Theme-independent
+system defaults are given in brackets [default is <strong>value</strong>], with units
+specified for dimensional quantities, while theme-dependent defaults are
+outlined in the <strong>GMT_THEME</strong> <a class="reference internal" href="theme-settings.html"><span class="doc">settings table</span></a>. Most parameters
+can be changed by using <a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a>, editing a <strong>gmt.conf</strong> file that can be
+acquired using <a class="reference internal" href="gmtdefaults.html"><span class="doc">gmtdefaults</span></a>, or setting parameters on-the-fly via the
+<strong>--PARAMETER</strong>=<em>VALUE</em> option to any GMT program. However, a few are static
+and are only read via the <strong>gmt.conf</strong> file; these are labeled (<em>static</em>).
+Several parameters take only <strong>true</strong> or <strong>false</strong>. It is recommended that users
+specify the units for distances and lengths by appending <strong>c</strong> (cm),
+<strong>i</strong> (inch), or <strong>p</strong> (points) when changing parameters using any of these
+methods. By default, when no unit is specified the value will be assumed to be
+cm for parameters not related to fonts or pen thicknesses and will be assumed to
+be points for parameters related to fonts or pen thicknesses. The interpretation
+of unitless dimensional quantities can be changed using the parameter
+<a class="reference internal" href="#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> or specifying US units when building GMT.</p>
+</section>
+<section id="common-specifications">
+<h2>Common Specifications<a class="headerlink" href="#common-specifications" title="Permalink to this heading">¶</a></h2>
+<p>The full explanation for how to specify pens, pattern fills, colors, and
+fonts can be found in the <a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a> man page.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>THEMATIC SUB-SECTIONS</p></th>
+<th class="head"><p><em>prefix</em></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="#color-parameters">COLOR Parameters</a></p></td>
+<td><p><strong>COLOR_</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dir-parameters">DIR Parameters</a></p></td>
+<td><p><strong>DIR_</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#font-parameters">FONT Parameters</a></p></td>
+<td><p><strong>FONT_</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#format-parameters">FORMAT Parameters</a></p></td>
+<td><p><strong>FORMAT_</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gmt-miscellaneous-parameters">GMT Miscellaneous Parameters</a></p></td>
+<td><p><strong>GMT_</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#i-o-parameters">I/O Parameters</a></p></td>
+<td><p><strong>IO_</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#map-parameters">MAP Parameters</a></p></td>
+<td><p><strong>MAP_</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#projection-parameters">Projection Parameters</a></p></td>
+<td><p><strong>PROJ_</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#postscript-parameters">PostScript Parameters</a></p></td>
+<td><p><strong>PS_</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#calendar-time-parameters">Calendar/Time Parameters</a></p></td>
+<td><p><strong>TIME_</strong></p></td>
+</tr>
+</tbody>
+</table>
+<section id="color-parameters">
+<span id="id1"></span><h3>COLOR Parameters<a class="headerlink" href="#color-parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="simple glossary">
+<dt id="term-COLOR_BACKGROUND"><strong>COLOR_BACKGROUND</strong><a class="headerlink" href="#term-COLOR_BACKGROUND" title="Permalink to this term">¶</a></dt><dd><p>Color used for the background of images (i.e., when z &lt; lowest color
+table entry) [default is <strong>black</strong>].  <strong>Note</strong>: If the current CPT
+has a specification for background color then that takes precedence.</p>
+</dd>
+<dt id="term-COLOR_FOREGROUND"><strong>COLOR_FOREGROUND</strong><a class="headerlink" href="#term-COLOR_FOREGROUND" title="Permalink to this term">¶</a></dt><dd><p>Color used for the foreground of images (i.e., when z &gt; highest
+color table entry) [default is <strong>white</strong>].  <strong>Note</strong>: If the current CPT
+has a specification for foreground color then that takes precedence.</p>
+</dd>
+<dt id="term-COLOR_CPT"><strong>COLOR_CPT</strong><a class="headerlink" href="#term-COLOR_CPT" title="Permalink to this term">¶</a></dt><dd><p>Default CPT table when none is selected [default is <strong>turbo</strong>].  <strong>Note</strong>:
+Grids with a default CPT in the header will ignore this setting.</p>
+</dd>
+<dt id="term-COLOR_HSV_MAX_S"><strong>COLOR_HSV_MAX_S</strong><a class="headerlink" href="#term-COLOR_HSV_MAX_S" title="Permalink to this term">¶</a></dt><dd><p>Maximum saturation (0-1) assigned for most positive intensity value
+[default is <strong>0.1</strong>]. <strong>Note</strong>: The default is most suitable for paper
+printing.  Use 0 for all digital imagery.</p>
+</dd>
+<dt id="term-COLOR_HSV_MIN_S"><strong>COLOR_HSV_MIN_S</strong><a class="headerlink" href="#term-COLOR_HSV_MIN_S" title="Permalink to this term">¶</a></dt><dd><p>Minimum saturation (0-1) assigned for most negative intensity value
+[default is <strong>1.0</strong>].</p>
+</dd>
+<dt id="term-COLOR_HSV_MAX_V"><strong>COLOR_HSV_MAX_V</strong><a class="headerlink" href="#term-COLOR_HSV_MAX_V" title="Permalink to this term">¶</a></dt><dd><p>Maximum value (0-1) assigned for most positive intensity value
+[default is <strong>1.0</strong>].</p>
+</dd>
+<dt id="term-COLOR_HSV_MIN_V"><strong>COLOR_HSV_MIN_V</strong><a class="headerlink" href="#term-COLOR_HSV_MIN_V" title="Permalink to this term">¶</a></dt><dd><p>Minimum value (0-1) assigned for most negative intensity value
+[default is <strong>0.3</strong>]. <strong>Note</strong>: The default is most suitable for paper
+printing.  Use 0 for all digital imagery.</p>
+</dd>
+<dt id="term-COLOR_MODEL"><strong>COLOR_MODEL</strong><a class="headerlink" href="#term-COLOR_MODEL" title="Permalink to this term">¶</a></dt><dd><p>Selects in which color space a CPT should be interpolated.
+By default, color interpolation takes place directly on the RGB
+values which can produce some unexpected hues, whereas interpolation
+directly on the HSV values better preserves those hues. The choices
+are: <strong>none</strong> (use whatever the <strong>COLOR_MODEL</strong> setting in the
+CPT demands), <strong>rgb</strong> (force interpolation in RGB),
+<strong>hsv</strong> (force interpolation in HSV), or <strong>cmyk</strong> (assumes colors are
+in CMYK but interpolates in RGB) [default is <strong>none</strong>].</p>
+</dd>
+<dt id="term-COLOR_NAN"><strong>COLOR_NAN</strong><a class="headerlink" href="#term-COLOR_NAN" title="Permalink to this term">¶</a></dt><dd><p>Color used for the non-defined areas of images (i.e., where z = NaN)
+[default is <strong>128</strong>].  <strong>Note</strong>: If the current CPT has a color
+specification for NaN values then that takes precedence.</p>
+</dd>
+<dt id="term-COLOR_SET"><strong>COLOR_SET</strong><a class="headerlink" href="#term-COLOR_SET" title="Permalink to this term">¶</a></dt><dd><p>Default comma-separated list of colors (or a <em>categorical</em> CPT name) for
+automatic, sequential color assignments
+[default is <strong>#0072BD,#D95319,#EDB120,#7E2F8E,#77AC30,#4DBEEE,#A2142F</strong>].</p>
+</dd>
+</dl>
+</section>
+<section id="dir-parameters">
+<span id="id2"></span><h3>DIR Parameters<a class="headerlink" href="#dir-parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="simple glossary">
+<dt id="term-DIR_CACHE"><strong>DIR_CACHE</strong><a class="headerlink" href="#term-DIR_CACHE" title="Permalink to this term">¶</a></dt><dd><p>Cache directory where we save remote cache filenames starting in <strong>&#64;</strong>
+(e.g., &#64;hotspots.txt) [default is <strong>~/.gmt/cache</strong>].</p>
+</dd>
+<dt id="term-DIR_DATA"><strong>DIR_DATA</strong><a class="headerlink" href="#term-DIR_DATA" title="Permalink to this term">¶</a></dt><dd><p>Session data directory. Overrides the value of the environment variable
+<strong>$GMT_DATADIR</strong> (see <a class="reference internal" href="cookbook/features.html#directory-parameters"><span class="std std-ref">Directory parameters</span></a> in the CookBook).</p>
+</dd>
+<dt id="term-DIR_DCW"><strong>DIR_DCW</strong><a class="headerlink" href="#term-DIR_DCW" title="Permalink to this term">¶</a></dt><dd><p>Path to optional Digital Chart of the World polygon files.</p>
+</dd>
+<dt id="term-DIR_GSHHG"><strong>DIR_GSHHG</strong><a class="headerlink" href="#term-DIR_GSHHG" title="Permalink to this term">¶</a></dt><dd><p>Path to GSHHG files. Defaults to <strong>$GMT_SHAREDIR</strong>/coast if empty.</p>
+</dd>
+</dl>
+</section>
+<section id="font-parameters">
+<span id="id3"></span><h3>FONT Parameters<a class="headerlink" href="#font-parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="simple glossary">
+<dt id="term-FONT"><strong>FONT</strong><a class="headerlink" href="#term-FONT" title="Permalink to this term">¶</a></dt><dd><p>Sets the default for all fonts, except <a class="reference internal" href="#term-FONT_LOGO"><span class="xref std std-term">FONT_LOGO</span></a>. This setting
+is not included in the <strong>gmt.conf</strong> file.</p>
+</dd>
+<dt id="term-FONT_ANNOT"><strong>FONT_ANNOT</strong><a class="headerlink" href="#term-FONT_ANNOT" title="Permalink to this term">¶</a></dt><dd><p>Sets both <a class="reference internal" href="#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a> and <a class="reference internal" href="#term-FONT_ANNOT_SECONDARY"><span class="xref std std-term">FONT_ANNOT_SECONDARY</span></a> to
+the value specified. This setting is not included in the <strong>gmt.conf</strong> file.</p>
+</dd>
+<dt id="term-FONT_ANNOT_PRIMARY"><strong>FONT_ANNOT_PRIMARY</strong><a class="headerlink" href="#term-FONT_ANNOT_PRIMARY" title="Permalink to this term">¶</a></dt><dd><p>Font used for primary annotations, etc [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. When <strong>+</strong> is prepended, scale fonts, offsets and
+tick-lengths relative to <a class="reference internal" href="#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a>. Choose <strong>auto</strong> for
+<a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-FONT_ANNOT_SECONDARY"><strong>FONT_ANNOT_SECONDARY</strong><a class="headerlink" href="#term-FONT_ANNOT_SECONDARY" title="Permalink to this term">¶</a></dt><dd><p>Font to use for time axis secondary annotations [default is
+<a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>] Choose <strong>auto</strong> for
+<a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-FONT_HEADING"><strong>FONT_HEADING</strong><a class="headerlink" href="#term-FONT_HEADING" title="Permalink to this term">¶</a></dt><dd><p>Font to use when plotting headings above subplots [default is
+<a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Choose <strong>auto</strong> for
+<a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-FONT_LABEL"><strong>FONT_LABEL</strong><a class="headerlink" href="#term-FONT_LABEL" title="Permalink to this term">¶</a></dt><dd><p>Font to use when plotting labels below axes [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Choose <strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot
+size</span></a>.</p>
+</dd>
+<dt id="term-FONT_LOGO"><strong>FONT_LOGO</strong><a class="headerlink" href="#term-FONT_LOGO" title="Permalink to this term">¶</a></dt><dd><p>Font to use for text plotted as part of the GMT time logo [<a class="reference internal" href="theme-settings.html"><span class="doc">theme
+dependent</span></a>]. Choose <strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling
+with plot size</span></a>.</p>
+</dd>
+<dt id="term-FONT_SUBTITLE"><strong>FONT_SUBTITLE</strong><a class="headerlink" href="#term-FONT_SUBTITLE" title="Permalink to this term">¶</a></dt><dd><p>Font to use when plotting titles over graphs that involve a subtitle
+[default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Choose <strong>auto</strong> for
+<a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-FONT_TAG"><strong>FONT_TAG</strong><a class="headerlink" href="#term-FONT_TAG" title="Permalink to this term">¶</a></dt><dd><p>Font to use for subplot panel tags such as a), ii)
+[default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Choose <strong>auto</strong>
+for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-FONT_TITLE"><strong>FONT_TITLE</strong><a class="headerlink" href="#term-FONT_TITLE" title="Permalink to this term">¶</a></dt><dd><p>Font to use when plotting titles over graphs [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Choose <strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot
+size</span></a>.</p>
+</dd>
+</dl>
+</section>
+<section id="format-parameters">
+<span id="id4"></span><h3>FORMAT Parameters<a class="headerlink" href="#format-parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="glossary">
+<dt id="term-FORMAT_CLOCK_IN"><strong>FORMAT_CLOCK_IN</strong><a class="headerlink" href="#term-FORMAT_CLOCK_IN" title="Permalink to this term">¶</a></dt><dd><p>Formatting template that indicates how a clock string is formatted.
+This template is then used to guide the reading of clock strings in data fields.
+For 12-hour clocks, append <strong>am</strong>, <strong>AM</strong>, <strong>a.m.</strong>, or <strong>A.M.</strong> (GMT will replace a|A with p|P for pm).
+As examples, try hh:mm, hh:mm:ssAM, hh:mm:ss.xxxx etc. [default is <strong>hh:mm:ss</strong>].</p>
+</dd>
+<dt id="term-FORMAT_CLOCK_MAP"><strong>FORMAT_CLOCK_MAP</strong><a class="headerlink" href="#term-FORMAT_CLOCK_MAP" title="Permalink to this term">¶</a></dt><dd><p>Formatting template that indicates how an output clock string is to
+be plotted. This template is then used to guide the formatting of
+clock strings in plot annotations. See <a class="reference internal" href="#term-FORMAT_CLOCK_OUT"><span class="xref std std-term">FORMAT_CLOCK_OUT</span></a> for
+details. [default is <strong>hh:mm:ss</strong>].</p>
+</dd>
+<dt id="term-FORMAT_CLOCK_OUT"><strong>FORMAT_CLOCK_OUT</strong><a class="headerlink" href="#term-FORMAT_CLOCK_OUT" title="Permalink to this term">¶</a></dt><dd><p>See <a class="reference internal" href="#term-FORMAT_CLOCK_IN"><span class="xref std std-term">FORMAT_CLOCK_IN</span></a>.
+In addition, for output we can also start the template with a leading hyphen (<strong>-</strong>).
+Then each integer item (y,m,d) will be printed without leading zeros (default uses fixed width formats).
+If the format is simply <strong>-</strong> then no clock is output and the ISO T divider between date and clock is omitted.
+To use a floating point format for the smallest unit (e.g., seconds), append <strong>.xxx</strong>, where the number of x indicates the desired precision.
+If no floating point is indicated then the smallest specified unit will be rounded off to nearest integer.
+<strong>Note</strong>: When high-precision time-series are written to ASCII output the default format may not be adequate.
+Many modules automatically handle this by extending the format, but you should be alert of unusual situations where data may appear truncated to nearest second.</p>
+</dd>
+<dt id="term-FORMAT_DATE_IN"><strong>FORMAT_DATE_IN</strong><a class="headerlink" href="#term-FORMAT_DATE_IN" title="Permalink to this term">¶</a></dt><dd><p>Formatting template that indicates how an input date string is
+formatted. This template is then used to guide the reading of date
+strings in data fields. You may specify either Gregorian calendar
+format or ISO week calendar format. Gregorian calendar: Use any
+combination of <strong>yyyy</strong> (or <strong>yy</strong> for 2-digit years; if so see
+<a class="reference internal" href="#term-TIME_Y2K_OFFSET_YEAR"><span class="xref std std-term">TIME_Y2K_OFFSET_YEAR</span></a>), <strong>mm</strong> (or <strong>o</strong> for abbreviated month
+name in the current time language), and <strong>dd</strong>, with or without delimiters.
+For day-of-year data, use <strong>jjj</strong> instead of <strong>mm</strong> and/or <strong>dd</strong>. Examples
+can be ddmmyyyy, yy-mm-dd, dd-o-yyyy, yyyy/dd/mm, yyyy-jjj, etc. ISO
+Calendar: Expected template is <strong>yyyy[-]W[-]ww[-]d</strong>, where ww is ISO
+week and d is ISO week day. Either template must be consistent,
+e.g., you cannot specify months if you do not specify years.
+Examples are yyyyWwwd, yyyy-Www, etc. [default is <strong>yyyy-mm-dd</strong>].</p>
+</dd>
+<dt id="term-FORMAT_DATE_MAP"><strong>FORMAT_DATE_MAP</strong><a class="headerlink" href="#term-FORMAT_DATE_MAP" title="Permalink to this term">¶</a></dt><dd><p>Formatting template that indicates how an output date string is to
+be plotted. This template is then used to guide the plotting of date
+strings in data fields. See <a class="reference internal" href="#term-FORMAT_DATE_OUT"><span class="xref std std-term">FORMAT_DATE_OUT</span></a> for details. In
+addition, you may use a single <strong>o</strong> instead of <strong>mm</strong> (to plot month name)
+and <strong>u</strong> instead of W[-]ww to plot “Week ##”. Both of these text
+strings will be affected by the <a class="reference internal" href="#term-GMT_LANGUAGE"><span class="xref std std-term">GMT_LANGUAGE</span></a>,
+<a class="reference internal" href="#term-FORMAT_TIME_PRIMARY_MAP"><span class="xref std std-term">FORMAT_TIME_PRIMARY_MAP</span></a> and <a class="reference internal" href="#term-FORMAT_TIME_SECONDARY_MAP"><span class="xref std std-term">FORMAT_TIME_SECONDARY_MAP</span></a>
+setting. [default is <strong>yyyy-mm-dd</strong>].</p>
+</dd>
+<dt id="term-FORMAT_DATE_OUT"><strong>FORMAT_DATE_OUT</strong><a class="headerlink" href="#term-FORMAT_DATE_OUT" title="Permalink to this term">¶</a></dt><dd><p>Formatting template that indicates how an output date string is to
+be formatted. This template is then used to guide the writing of
+date strings in data fields. You may specify either Gregorian
+calendar format or ISO week calendar format. Gregorian calendar: Use
+any combination of <strong>yyyy</strong> (or <strong>yy</strong> for 2-digit years; if so see
+<a class="reference internal" href="#term-TIME_Y2K_OFFSET_YEAR"><span class="xref std std-term">TIME_Y2K_OFFSET_YEAR</span></a>), <strong>mm</strong> (or <strong>o</strong> for abbreviated month name
+in the current time language), and <strong>dd</strong>, with or without delimiters. For
+day-of-year data, use <strong>jjj</strong> instead of mm and/or dd. As examples, try
+yy/mm/dd, yyyy=jjj, dd-o-yyyy, dd-mm-yy, yy-mm, etc. ISO Calendar:
+Expected template is <strong>yyyy[-]W[-]ww[-]d</strong>, where ww is ISO week and d
+is ISO week day. Either template must be consistent, e.g., you
+cannot specify months if you do not specify years. As examples, try
+yyyyWww, yy-W-ww-d, etc. If your template starts with a leading
+hyphen (<strong>-</strong>) then each integer item (y,m,d) will be printed without
+leading zeros (default uses fixed width formats) [default is <strong>yyyy-mm-dd</strong>].
+If the format is simply <strong>-</strong> then no date is output and the ISO T divider
+between date and clock is omitted.</p>
+</dd>
+<dt id="term-FORMAT_GEO_MAP"><strong>FORMAT_GEO_MAP</strong><a class="headerlink" href="#term-FORMAT_GEO_MAP" title="Permalink to this term">¶</a></dt><dd><p>Formatting template that indicates how an output geographical
+coordinate is to be plotted. This template is then used to guide the
+plotting of geographical coordinates in data fields. See
+<a class="reference internal" href="#term-FORMAT_GEO_OUT"><span class="xref std std-term">FORMAT_GEO_OUT</span></a> for details. In addition, you can append <strong>A</strong>
+which plots the absolute value of the coordinate. Not all items may be
+plotted as this depends on the annotation interval. [default is
+<a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>].</p>
+</dd>
+<dt id="term-FORMAT_GEO_OUT"><strong>FORMAT_GEO_OUT</strong><a class="headerlink" href="#term-FORMAT_GEO_OUT" title="Permalink to this term">¶</a></dt><dd><p>Formatting template that indicates how an output geographical
+coordinate is to be formatted. This template is then used to guide
+the writing of geographical coordinates in data fields. The template
+is in general of the form <strong>[±]D</strong> or <strong>[±]ddd[:mm[:ss]][.xxx]</strong> [default is <strong>D</strong>].
+By default, longitudes will be reported in the range [-180,180]. The
+various terms have the following purpose:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Term</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>D</strong></p></td>
+<td><p>Use <a class="reference internal" href="#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> for floating point degrees [default]</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>+D</strong></p></td>
+<td><p>Output longitude in the range [0,360]</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-D</strong></p></td>
+<td><p>Output longitude in the range [-360,0]</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>ddd</strong></p></td>
+<td><p>Fixed format integer degrees</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>:</strong></p></td>
+<td><p>Delimiter used</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>mm</strong></p></td>
+<td><p>Fixed format integer arc minutes</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>ss</strong></p></td>
+<td><p>Fixed format integer arc seconds</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>.xxx</strong></p></td>
+<td><p>Floating fraction of previous integer field, fixed width</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>F</strong></p></td>
+<td><p>Encode sign using WESN suffix</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>G</strong></p></td>
+<td><p>Same as <strong>F</strong> but with a leading space before suffix</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt id="term-FORMAT_FLOAT_MAP"><strong>FORMAT_FLOAT_MAP</strong><a class="headerlink" href="#term-FORMAT_FLOAT_MAP" title="Permalink to this term">¶</a></dt><dd><p>Format (C language printf syntax, see <a class="reference internal" href="#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a>) to be used when plotting double
+precision floating point numbers along plot frames and contours [default is <strong>%.12g</strong>].
+For geographic coordinates, see <a class="reference internal" href="#term-FORMAT_GEO_MAP"><span class="xref std std-term">FORMAT_GEO_MAP</span></a>.</p>
+</dd>
+<dt id="term-FORMAT_FLOAT_OUT"><strong>FORMAT_FLOAT_OUT</strong><a class="headerlink" href="#term-FORMAT_FLOAT_OUT" title="Permalink to this term">¶</a></dt><dd><p>Format (C language <a class="reference external" href="https://en.wikipedia.org/wiki/Printf_format_string">printf</a> syntax)
+to be used when printing double precision floating point numbers to output files [default is <strong>%.12g</strong>].
+For geographic coordinates, see <a class="reference internal" href="#term-FORMAT_GEO_OUT"><span class="xref std std-term">FORMAT_GEO_OUT</span></a>.
+To give some columns a separate format,
+supply one or more comma-separated <em>cols</em>:<em>format</em> specifications,
+where <em>cols</em> can be specific columns (e.g., 5 for 6th since 0 is the first)
+or a range of columns (e.g., 3-7).
+The last specification without column information will override the format for all other columns.
+Alternatively, you can list N space-separated formats and these apply to the first N columns.</p>
+<p>The printf syntax is <code class="docutils literal notranslate"><span class="pre">%[minimum</span> <span class="pre">width].[precision]type</span></code>,
+where <strong>type</strong> may be <strong>f</strong>, <strong>e</strong>, <strong>E</strong>, <strong>g</strong> or <strong>G</strong>.
+The default is <code class="docutils literal notranslate"><span class="pre">%.12g</span></code>, i.e. no minimum width and 12 digit precision.</p>
+<p>See table below for examples. Input is π (3.14159265359).</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Format</p></th>
+<th class="head"><p>Output</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>%.12g</p></td>
+<td><p>3.14159265359</p></td>
+</tr>
+<tr class="row-odd"><td><p>%.2f</p></td>
+<td><p>3.14</p></td>
+</tr>
+<tr class="row-even"><td><p>%8.4f</p></td>
+<td><p>3.1416</p></td>
+</tr>
+<tr class="row-odd"><td><p>%08.2f</p></td>
+<td><p>003.1416</p></td>
+</tr>
+<tr class="row-even"><td><p>%.5f</p></td>
+<td><p>3.14159</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt id="term-FORMAT_TIME_MAP"><strong>FORMAT_TIME_MAP</strong><a class="headerlink" href="#term-FORMAT_TIME_MAP" title="Permalink to this term">¶</a></dt><dd><p>Sets both <a class="reference internal" href="#term-FORMAT_TIME_PRIMARY_MAP"><span class="xref std std-term">FORMAT_TIME_PRIMARY_MAP</span></a> and <a class="reference internal" href="#term-FORMAT_TIME_SECONDARY_MAP"><span class="xref std std-term">FORMAT_TIME_SECONDARY_MAP</span></a>
+to the value specified. This setting is not included in the <strong>gmt.conf</strong> file.</p>
+</dd>
+<dt id="term-FORMAT_TIME_PRIMARY_MAP"><strong>FORMAT_TIME_PRIMARY_MAP</strong><a class="headerlink" href="#term-FORMAT_TIME_PRIMARY_MAP" title="Permalink to this term">¶</a></dt><dd><p>Controls how primary month-, week-, and weekday-names are formatted.
+Choose among <strong>full</strong>, <strong>abbreviated</strong>, and <strong>character</strong>. If the
+leading <strong>f</strong>, <strong>a</strong>, or <strong>c</strong> are replaced with <strong>F</strong>, <strong>A</strong>, and
+<strong>C</strong> the entire annotation will be in upper case [default is <strong>full</strong>].</p>
+</dd>
+<dt id="term-FORMAT_TIME_SECONDARY_MAP"><strong>FORMAT_TIME_SECONDARY_MAP</strong><a class="headerlink" href="#term-FORMAT_TIME_SECONDARY_MAP" title="Permalink to this term">¶</a></dt><dd><p>Controls how secondary month-, week-, and weekday-names are
+formatted. Choose among <strong>full</strong>, <strong>abbreviated</strong>, and
+<strong>character</strong>. If the leading <strong>f</strong>, <strong>a</strong>, or <strong>c</strong> are replaced
+with <strong>F</strong>, <strong>A</strong>, and <strong>C</strong> the entire annotation will be in upper case
+[default is <strong>full</strong>].</p>
+</dd>
+<dt id="term-FORMAT_TIME_STAMP"><strong>FORMAT_TIME_STAMP</strong><a class="headerlink" href="#term-FORMAT_TIME_STAMP" title="Permalink to this term">¶</a></dt><dd><p>Defines the format of the time information in the UNIX time stamp.
+This format is parsed by the C function <strong>strftime</strong>, so that
+virtually any text can be used (even not containing any time
+information) [default is <strong>%Y %b %d %H:%M:%S</strong>].</p>
+</dd>
+</dl>
+</section>
+<section id="gmt-miscellaneous-parameters">
+<span id="id5"></span><h3>GMT Miscellaneous Parameters<a class="headerlink" href="#gmt-miscellaneous-parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="glossary">
+<dt id="term-GMT_COMPATIBILITY"><strong>GMT_COMPATIBILITY</strong><a class="headerlink" href="#term-GMT_COMPATIBILITY" title="Permalink to this term">¶</a></dt><dd><p>Determines if the current GMT version should be able to parse command-line
+options for a prior major release.  Specify the major release version number,
+e.g., 4-6. If 4 is set we will parse obsolete GMT 4 options and issue warnings;
+if 5 is set then parsing GMT 4 only syntax will result in errors [default is 4];
+likewise for 6: obsolete syntax from early GMT 5 will be considered errors.</p>
+</dd>
+<dt id="term-GMT_DATA_SERVER"><strong>GMT_DATA_SERVER</strong><a class="headerlink" href="#term-GMT_DATA_SERVER" title="Permalink to this term">¶</a></dt><dd><p>Name (or URL) of a GMT data server [default is <strong>oceania</strong>]. Please set
+to the data server closest to your location for faster data download. See
+<a class="reference external" href="https://www.generic-mapping-tools.org/mirrors/">Data Server Mirrors</a>
+for a list of the currently available mirrors.</p>
+</dd>
+<dt id="term-GMT_DATA_SERVER_LIMIT"><strong>GMT_DATA_SERVER_LIMIT</strong><a class="headerlink" href="#term-GMT_DATA_SERVER_LIMIT" title="Permalink to this term">¶</a></dt><dd><p>Upper limit on the size of remote file to download [default is <strong>unlimited</strong>].
+Give the maximum file size in bytes, or append <strong>k</strong>, <strong>m</strong>, or <strong>g</strong> for
+kilo-, mega-, or giga-bytes.</p>
+</dd>
+<dt id="term-GMT_DATA_UPDATE_INTERVAL"><strong>GMT_DATA_UPDATE_INTERVAL</strong><a class="headerlink" href="#term-GMT_DATA_UPDATE_INTERVAL" title="Permalink to this term">¶</a></dt><dd><p>Specifies how often we update the local catalog of data available on
+the remote server and pruning expired data sets [default is <strong>1d</strong>].
+Allowable time units are <strong>d</strong> (days), <strong>w</strong> (week), <strong>o</strong> (month,
+here 30 days). To turn off periodic updates entirely, specify interval
+as <strong>off</strong>, <strong>never</strong>, <strong>infinity</strong>, or just <strong>0</strong>.</p>
+</dd>
+<dt id="term-GMT_EXPORT_TYPE"><strong>GMT_EXPORT_TYPE</strong><a class="headerlink" href="#term-GMT_EXPORT_TYPE" title="Permalink to this term">¶</a></dt><dd><p>This setting is only used by external interfaces and controls the data
+type used for table entries.  Choose from <strong>double</strong>, <strong>single</strong>,
+<strong>[u]long</strong>, <strong>[u]int</strong>, <strong>[u]short</strong>, and <strong>[u]char</strong> [default is <strong>double</strong>].</p>
+</dd>
+<dt id="term-GMT_EXTRAPOLATE_VAL"><strong>GMT_EXTRAPOLATE_VAL</strong><a class="headerlink" href="#term-GMT_EXTRAPOLATE_VAL" title="Permalink to this term">¶</a></dt><dd><p>Determines what to do if extrapolating beyond the data domain. Choose
+among <strong>NaN</strong>, <strong>extrap</strong> or <strong>extrapval</strong>,<em>value</em>. In the first case
+return NaN for any element of x that is outside range. Second case lets
+the selected algorithm compute the extrapolation values. Third case sets
+the extrapolation values to the constant value passed in <em>value</em> (this
+value must off course be numeric) [default is <strong>NaN</strong>].</p>
+</dd>
+<dt id="term-GMT_CUSTOM_LIBS"><strong>GMT_CUSTOM_LIBS</strong><a class="headerlink" href="#term-GMT_CUSTOM_LIBS" title="Permalink to this term">¶</a></dt><dd><p>Comma-separated list of GMT-compliant shared libraries that extend
+the capability of GMT with additional custom modules [default is <strong>none</strong>].
+Alternatively, provide a directory name, that MUST end with a slash (or
+back slash), to use all shared libraries in that directory. On Windows,
+if the dir name is made up only of a single slash (‘/’) search inside a
+subdirectory called <strong>gmt_plugins</strong> of the directory that contains the
+<strong>gmt</strong> executable. See the API documentation for how to build your own
+shared modules.</p>
+</dd>
+<dt id="term-GMT_FFT"><strong>GMT_FFT</strong><a class="headerlink" href="#term-GMT_FFT" title="Permalink to this term">¶</a></dt><dd><p>Determines which Fast Fourier Transform (FFT) library should be used among
+those that have been configured during installation. Choose from
+<strong>auto</strong> (pick the most suitable for the task among available
+algorithms), <strong>fftw</strong>[,<em>planner_flag</em>] (The Fastest Fourier
+Transform in the West), <strong>accelerate</strong> (Use the Accelerate Framework
+under macOS; Note, that the number of samples to be processed must be
+a base 2 exponent), <strong>kiss</strong>, (Kiss FFT), <strong>brenner</strong> Brenner Legacy
+FFT [default is <strong>auto</strong>].
+FFTW can “learn” how to optimally compute Fourier transforms on the
+current hardware and OS by computing several FFTs and measuring
+their execution time. This so gained “Wisdom” will be stored in and
+reloaded from the file fftw_wisdom_&lt;hostname&gt; in <strong>$GMT_USERDIR</strong> or, if
+<strong>$GMT_USERDIR</strong> is not writable, in the current directory. To use this
+feature append <em>planner_flag</em>, which can be one of <em>measure</em>,
+<em>patient</em>, <em>exhaustive</em> and <em>estimate</em> which pick a (probably
+sub-optimal) plan quickly [default is <em>estimate</em>]. See FFTW reference for
+details. <strong>Note</strong>: If you need a single transform of a
+given size only, the one-time cost of the smart planner becomes
+significant. In that case, stick to the default planner, <em>estimate</em>,
+based on heuristics.</p>
+</dd>
+<dt id="term-GMT_GRAPHICS_DPU"><strong>GMT_GRAPHICS_DPU</strong><a class="headerlink" href="#term-GMT_GRAPHICS_DPU" title="Permalink to this term">¶</a></dt><dd><p>Default target dots-per-unit for images when a remote gridded data
+set is requested without specifying a resolution (e.g., &#64;earth_relief).
+Append “i” to indicate the DPU is dots-per-inches and “c” for dots-per-cm.
+[default is 300i].</p>
+</dd>
+<dt id="term-GMT_GRAPHICS_FORMAT"><strong>GMT_GRAPHICS_FORMAT</strong><a class="headerlink" href="#term-GMT_GRAPHICS_FORMAT" title="Permalink to this term">¶</a></dt><dd><p>Default graphics format in modern mode [default is <strong>pdf</strong>].</p>
+</dd>
+<dt id="term-GMT_HISTORY"><strong>GMT_HISTORY</strong><a class="headerlink" href="#term-GMT_HISTORY" title="Permalink to this term">¶</a></dt><dd><p>Passes the history of past common command options via the
+gmt.history file. The different values for this setting are:
+<strong>true</strong>, <strong>readonly</strong>, <strong>false</strong>, to either read and write to the
+gmt.history file, only read, or not use the file at all [default is <strong>true</strong>].</p>
+</dd>
+<dt id="term-GMT_INTERPOLANT"><strong>GMT_INTERPOLANT</strong><a class="headerlink" href="#term-GMT_INTERPOLANT" title="Permalink to this term">¶</a></dt><dd><p>Determines if linear (<strong>linear</strong>), <a class="reference external" href="https://en.wikipedia.org/wiki/Akima_spline">Akima’s</a>
+spline (<strong>akima</strong>), natural cubic spline (<strong>cubic</strong>) or no interpolation (<strong>none</strong>)
+should be used for 1-D interpolations in various programs [default is <strong>akima</strong>].</p>
+</dd>
+<dt id="term-GMT_LANGUAGE"><strong>GMT_LANGUAGE</strong><a class="headerlink" href="#term-GMT_LANGUAGE" title="Permalink to this term">¶</a></dt><dd><p>Language to use when plotting calendar and map items such as months and
+days, map annotations and cardinal points. Select from:</p>
+<table class="hlist"><tr><td><ul class="simple">
+<li><p><em>CN1</em>: Simplified Chinese</p></li>
+<li><p><em>CN2</em>: Traditional Chinese</p></li>
+<li><p><em>DE</em>: German</p></li>
+<li><p><em>DK</em>: Danish</p></li>
+<li><p><em>EH</em>: Basque</p></li>
+<li><p><em>ES</em>: Spanish</p></li>
+<li><p><em>FI</em>: Finnish</p></li>
+<li><p><em>FR</em>: French</p></li>
+<li><p><em>GR</em>: Greek</p></li>
+<li><p><em>HI</em>: Hawaiian</p></li>
+</ul>
+</td><td><ul class="simple">
+<li><p><em>HU</em>: Hungarian</p></li>
+<li><p><em>IE</em>: Irish</p></li>
+<li><p><em>IL</em>: Hebrew</p></li>
+<li><p><em>IS</em>: Icelandic</p></li>
+<li><p><em>IT</em>: Italian</p></li>
+<li><p><em>JP</em>: Japanese</p></li>
+<li><p><em>KR</em>: Korean</p></li>
+<li><p><em>NL</em>: Dutch</p></li>
+<li><p><em>NO</em>: Norwegian</p></li>
+</ul>
+</td><td><ul class="simple">
+<li><p><em>PL</em>: Polish</p></li>
+<li><p><em>PT</em>: Portuguese</p></li>
+<li><p><em>RU</em>: Russian</p></li>
+<li><p><em>SE</em>: Swedish</p></li>
+<li><p><em>SG</em>: Scottish Gaelic</p></li>
+<li><p><em>TO</em>: Tongan</p></li>
+<li><p><em>TR</em>: Turkish</p></li>
+<li><p><em>UK</em>: British English</p></li>
+<li><p><em>US</em>: US English</p></li>
+</ul>
+</td></tr></table>
+<p>If your language is not supported, please examine the
+<strong>$GMT_SHAREDIR</strong>/localization/gmt_us.locale file and make a similar file. Please
+submit it to the GMT Developers for official inclusion. Custom
+language files can be placed in directories <strong>$GMT_SHAREDIR</strong>/localization
+or ~/.gmt. <strong>Note</strong>: Some of these languages may require you to also
+change the <a class="reference internal" href="#term-PS_CHAR_ENCODING"><span class="xref std std-term">PS_CHAR_ENCODING</span></a> setting.</p>
+</dd>
+<dt id="term-GMT_MAX_CORES"><strong>GMT_MAX_CORES</strong><a class="headerlink" href="#term-GMT_MAX_CORES" title="Permalink to this term">¶</a></dt><dd><p>Sets the upper limit on the number of cores any multi-threaded module might
+use (whether <strong>-x</strong> is selected or not) [default is <strong>0</strong> (i.e., unlimited)].</p>
+</dd>
+<dt id="term-GMT_THEME"><strong>GMT_THEME</strong><a class="headerlink" href="#term-GMT_THEME" title="Permalink to this term">¶</a></dt><dd><p>Override GMT default settings with those of the selected theme.  Choose from
+<em>classic</em> [Default for classic mode], <em>modern</em> [Default for modern mode],
+and <em>minimal</em>. You can also create and use your own themes by compiling
+files of desired settings and place them in your GMT user themes directory
+(usually ~/.gmt/themes) and name them <em>theme</em>.conf. See the
+<a class="reference internal" href="theme-settings.html"><span class="doc">theme settings table</span></a> for parameters associated with
+each theme.</p>
+</dd>
+<dt id="term-GMT_TRIANGULATE"><strong>GMT_TRIANGULATE</strong><a class="headerlink" href="#term-GMT_TRIANGULATE" title="Permalink to this term">¶</a></dt><dd><p>Determines if we use the <strong>Watson</strong> or <strong>Shewchuk</strong>
+algorithm (if configured during installation) for triangulation.
+Note that Shewchuk is required for operations involving Voronoi
+constructions [default is <strong>Shewchuk</strong>].</p>
+</dd>
+<dt id="term-GMT_VERBOSE"><strong>GMT_VERBOSE</strong><a class="headerlink" href="#term-GMT_VERBOSE" title="Permalink to this term">¶</a></dt><dd><p>(<strong>-V</strong>) Determines the level of verbosity used by GMT
+programs. Choose among 7 levels; each level adds to the verbosity of
+the lower levels: <strong>q</strong>uiet, <strong>e</strong>rrors, <strong>w</strong>arnings,
+<strong>t</strong>imings (for slow algorithms only), <strong>i</strong>nformation,
+<strong>c</strong>ompatibility warnings, and <strong>d</strong>ebugging messages [default is <strong>w</strong>].</p>
+</dd>
+</dl>
+</section>
+<section id="i-o-parameters">
+<span id="id6"></span><h3>I/O Parameters<a class="headerlink" href="#i-o-parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="simple glossary">
+<dt id="term-IO_COL_SEPARATOR"><strong>IO_COL_SEPARATOR</strong><a class="headerlink" href="#term-IO_COL_SEPARATOR" title="Permalink to this term">¶</a></dt><dd><p>This setting determines what character will separate ASCII output
+data columns written by GMT. Choose from <strong>tab</strong>, <strong>space</strong>, <strong>comma</strong>, and
+<strong>none</strong> [default is <strong>tab</strong>].</p>
+</dd>
+<dt id="term-IO_FIRST_HEADER"><strong>IO_FIRST_HEADER</strong><a class="headerlink" href="#term-IO_FIRST_HEADER" title="Permalink to this term">¶</a></dt><dd><p>This setting determines if the first segment header is written when
+there is only a single segment (for multiple segment it must be written).
+By default, such single-segment headers are only written if the header
+has contents. Choose from <strong>always</strong>, <strong>never</strong>, or <strong>maybe</strong> [default is <strong>maybe</strong>].</p>
+</dd>
+<dt id="term-IO_GRIDFILE_FORMAT"><strong>IO_GRIDFILE_FORMAT</strong><a class="headerlink" href="#term-IO_GRIDFILE_FORMAT" title="Permalink to this term">¶</a></dt><dd><p>Default file format for grids, with optional scale, offset and
+invalid value, written as <em>ff</em>[<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>].
+The 2-letter format indicator can be one of [<strong>abcegnrs</strong>][<strong>bsifd</strong>]. See
+<a class="reference internal" href="grdconvert.html"><span class="doc">grdconvert</span></a> and Section <a class="reference internal" href="cookbook/features.html#grid-file-format"><span class="std std-ref">Grid file format specifications</span></a> of the GMT Technical
+Reference and Cookbook for more information. You may the scale as <strong>a</strong>
+for auto-adjusting the scale and/or offset of packed integer grids
+(=<em>ID</em><strong>+s</strong><em>a</em> is a shorthand for =<em>ID</em><strong>+s</strong><em>a</em><strong>+o</strong><em>a</em>).
+When <em>invalid</em> is omitted the appropriate value for the given format is used
+(NaN or largest negative) [default is <strong>nf</strong>].</p>
+</dd>
+<dt id="term-IO_GRIDFILE_SHORTHAND"><strong>IO_GRIDFILE_SHORTHAND</strong><a class="headerlink" href="#term-IO_GRIDFILE_SHORTHAND" title="Permalink to this term">¶</a></dt><dd><p>If <strong>true</strong>, all grid file names are examined to see if they use the
+file extension shorthand discussed in Section <a class="reference internal" href="cookbook/features.html#grid-file-format"><span class="std std-ref">Grid file format specifications</span></a> of
+the GMT Technical Reference and Cookbook. If <strong>false</strong>, no filename
+expansion is done [default is <strong>false</strong>].</p>
+</dd>
+<dt id="term-IO_HEADER"><strong>IO_HEADER</strong><a class="headerlink" href="#term-IO_HEADER" title="Permalink to this term">¶</a></dt><dd><p>(<strong>-h</strong>) Specifies whether input/output ASCII files have header record(s)
+or not [default is <strong>false</strong>].</p>
+</dd>
+<dt id="term-IO_HEADER_MARKER"><strong>IO_HEADER_MARKER</strong><a class="headerlink" href="#term-IO_HEADER_MARKER" title="Permalink to this term">¶</a></dt><dd><p>Give a string from which any character will indicate a header record in
+an incoming ASCII data table if found in the first position [default is <strong>#%!;”’</strong>].
+If another marker should be used for output than the first character in
+the list, then append a single character for the output header record
+marker. The two sets must be separated by a comma. <strong>Note</strong>: A maximum
+of 7 input markers can be specified.</p>
+</dd>
+<dt id="term-IO_LONLAT_TOGGLE"><strong>IO_LONLAT_TOGGLE</strong><a class="headerlink" href="#term-IO_LONLAT_TOGGLE" title="Permalink to this term">¶</a></dt><dd><p>(<strong>-:</strong>) Set if the first two columns of input and output files
+contain (latitude,longitude) or (y,x) rather than the expected
+(longitude,latitude) or (x,y). false means we have (x,y) both on
+input and output. <strong>true</strong> means both input and output should be (y,x).
+<strong>IN</strong> means only input has (y,x), while <strong>OUT</strong> means only output should
+be (y,x) [default is <strong>false</strong>].</p>
+</dd>
+<dt id="term-IO_N_HEADER_RECS"><strong>IO_N_HEADER_RECS</strong><a class="headerlink" href="#term-IO_N_HEADER_RECS" title="Permalink to this term">¶</a></dt><dd><p>Specifies how many header records to expect if <strong>-h</strong> is used [default is <strong>0</strong>].
+<strong>Note</strong>: This will skip the specified number of records regardless of
+what they are.  Since any records starting with <strong>#</strong> is automatically
+considered a header you will only specify a non-zero number in order
+to skip headers that do not conform to that convention.</p>
+</dd>
+<dt id="term-IO_NAN_RECORDS"><strong>IO_NAN_RECORDS</strong><a class="headerlink" href="#term-IO_NAN_RECORDS" title="Permalink to this term">¶</a></dt><dd><p>Determines what happens when input records containing NaNs for <em>x</em>
+or <em>y</em> (and in some cases <em>z</em>) are read. This may happen, for instance,
+when there is text or other junk present instead of data coordinates, and
+the conversion to a data value fails and yields a NaN.  Choose between
+<strong>skip</strong>, which will report how many bad records were skipped, and <strong>pass</strong>,
+which will quietly pass these records on to the calling programs [default
+is <strong>pass</strong>]. For most programs this will result in output records with
+NaNs as well, but some will interpret these NaN records to indicate
+gaps in a series; programs may then use that information to detect
+segmentation (if applicable).</p>
+</dd>
+<dt id="term-IO_NC4_CHUNK_SIZE"><strong>IO_NC4_CHUNK_SIZE</strong><a class="headerlink" href="#term-IO_NC4_CHUNK_SIZE" title="Permalink to this term">¶</a></dt><dd><p>Sets the default chunk size for the vertical (<strong>lat</strong>, <strong>y</strong>) and
+horizontal (<strong>lon</strong>, <strong>x</strong>) dimensions of
+the <strong>z</strong> variable. Very large chunk sizes and sizes smaller than
+128 should be avoided because they can lead to unexpectedly bad
+performance. Note that a chunk of a single precision floating point
+variable of size 2896 x 2896 completely fills the chunk cache of
+32 Mb. Specify the chunk size for each dimension separated by a
+comma, or <strong>a</strong>uto for optimally chosen chunk sizes in the range
+[128,256). Setting <a class="reference internal" href="#term-IO_NC4_CHUNK_SIZE"><span class="xref std std-term">IO_NC4_CHUNK_SIZE</span></a> will produce netCDF version 4
+files, which can only be read with the netCDF 4 library, unless all
+dimensions are less than 128 or <strong>c</strong>lassic is specified for
+classic netCDF [default is <strong>auto</strong>]</p>
+</dd>
+<dt id="term-IO_NC4_DEFLATION_LEVEL"><strong>IO_NC4_DEFLATION_LEVEL</strong><a class="headerlink" href="#term-IO_NC4_DEFLATION_LEVEL" title="Permalink to this term">¶</a></dt><dd><p>Sets the compression level for netCDF4 files upon output. Values
+allowed are integers from <strong>0</strong> (no compression) to <strong>9</strong> (maximum
+compression). Enabling a low compression level can dramatically
+improve performance and reduce the size of certain data. While
+higher compression levels further reduce the data size, they do so
+at the cost of extra processing time. This parameter does not
+apply to classic netCDF files [default is <strong>3</strong>].</p>
+</dd>
+<dt id="term-IO_SEGMENT_BINARY"><strong>IO_SEGMENT_BINARY</strong><a class="headerlink" href="#term-IO_SEGMENT_BINARY" title="Permalink to this term">¶</a></dt><dd><p>Determines how binary data records with all values set to NaN are
+interpreted.  Such records are considered to be encoded segment
+headers in binary files provided the number of columns equals or
+exceeds the current setting of IO_SEGMENT_BINARY [default is <strong>2</strong>].
+Specify <strong>0</strong> or <strong>off</strong> to deactivate the segment header determination.</p>
+</dd>
+<dt id="term-IO_SEGMENT_MARKER"><strong>IO_SEGMENT_MARKER</strong><a class="headerlink" href="#term-IO_SEGMENT_MARKER" title="Permalink to this term">¶</a></dt><dd><p>This holds the character we expect to indicate a segment header in
+an incoming ASCII data or text table [default is <strong>&gt;</strong>]. If this marker
+should be different for output then append another character for the output
+segment marker. The two characters must be separated by a <strong>comma</strong>. Two
+marker characters have special meaning: <strong>B</strong> means “blank line” and
+will treat blank lines as initiating a new segment, whereas <strong>N</strong> means
+“NaN record” and will treat records with all NaNs as initiating a
+new segment. If you choose <strong>B</strong> or <strong>N</strong> for the output marker then the
+normal GMT segment header is replaced by a blank or NaN record,
+respectively, and no segment header information is written. To use <strong>B</strong>
+or <strong>N</strong> as regular segment markers you must escape them with a leading
+backslash.</p>
+</dd>
+</dl>
+</section>
+<section id="map-parameters">
+<span id="id7"></span><h3>MAP Parameters<a class="headerlink" href="#map-parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="glossary">
+<dt id="term-MAP_ANNOT_MIN_ANGLE"><strong>MAP_ANNOT_MIN_ANGLE</strong><a class="headerlink" href="#term-MAP_ANNOT_MIN_ANGLE" title="Permalink to this term">¶</a></dt><dd><p>If the angle between the map boundary and the annotation baseline is
+less than this minimum value (in degrees), the annotation is not
+plotted (this may occur for certain oblique projections). Give a
+value in the range [0,90] [default is <strong>20</strong>].</p>
+</dd>
+<dt id="term-MAP_ANNOT_MIN_SPACING"><strong>MAP_ANNOT_MIN_SPACING</strong><a class="headerlink" href="#term-MAP_ANNOT_MIN_SPACING" title="Permalink to this term">¶</a></dt><dd><p>If an annotation would be plotted less than this minimum distance
+from its closest neighbor, the annotation is not plotted (this may
+occur for certain oblique or polar projections) [default is
+<a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Choose <strong>auto</strong> for
+<a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-MAP_ANNOT_OBLIQUE"><strong>MAP_ANNOT_OBLIQUE</strong><a class="headerlink" href="#term-MAP_ANNOT_OBLIQUE" title="Permalink to this term">¶</a></dt><dd><p>This setting applies to “oblique” projections, which in this context
+means maps whose boundary is a rectangle not specified by meridians
+and parallels.  We expect a comma-separated list of up to seven keywords:
+<strong>separate</strong> means longitudes will be annotated on the lower and upper
+boundaries only, and latitudes will be annotated on the left and right
+boundaries only; <strong>anywhere</strong> means annotations will occur wherever an
+imaginary gridline crosses the map boundaries; <strong>lon_horizontal</strong> means
+longitude annotations will be plotted horizontally; <strong>lat_horizontal</strong>
+means latitude annotations will be plotted horizontally; <strong>tick_extend</strong>
+means tick-marks are extended so the distance from the tip of the oblique
+tick to the map frame equals the specified tick length; <strong>tick_normal</strong>
+means tick-marks will be drawn normal to the border regardless of
+gridline angle; <strong>lat_parallel</strong> means latitude annotations will be
+plotted parallel to the border [default is <strong>anywhere</strong>].</p>
+</dd>
+<dt id="term-MAP_ANNOT_OFFSET"><strong>MAP_ANNOT_OFFSET</strong><a class="headerlink" href="#term-MAP_ANNOT_OFFSET" title="Permalink to this term">¶</a></dt><dd><p>Sets both <a class="reference internal" href="#term-MAP_ANNOT_OFFSET_PRIMARY"><span class="xref std std-term">MAP_ANNOT_OFFSET_PRIMARY</span></a> and
+<a class="reference internal" href="#term-MAP_ANNOT_OFFSET_SECONDARY"><span class="xref std std-term">MAP_ANNOT_OFFSET_SECONDARY</span></a> to the value specified.
+This setting is not included in the <strong>gmt.conf</strong> file.</p>
+</dd>
+<dt id="term-MAP_ANNOT_OFFSET_PRIMARY"><strong>MAP_ANNOT_OFFSET_PRIMARY</strong><a class="headerlink" href="#term-MAP_ANNOT_OFFSET_PRIMARY" title="Permalink to this term">¶</a></dt><dd><p>Distance from end of tick-mark to start of annotation [default is
+<a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Choose <strong>auto</strong> for
+<a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-MAP_ANNOT_OFFSET_SECONDARY"><strong>MAP_ANNOT_OFFSET_SECONDARY</strong><a class="headerlink" href="#term-MAP_ANNOT_OFFSET_SECONDARY" title="Permalink to this term">¶</a></dt><dd><p>Distance from base of primary annotation to the top of the secondary
+annotation (Only applies to time axes with both primary and secondary
+annotations) [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Choose
+<strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-MAP_ANNOT_ORTHO"><strong>MAP_ANNOT_ORTHO</strong><a class="headerlink" href="#term-MAP_ANNOT_ORTHO" title="Permalink to this term">¶</a></dt><dd><p>Determines which axes will get their annotations (for Cartesian
+projections) plotted orthogonally to the axes. Combine any <strong>w</strong>, <strong>e</strong>,
+<strong>s</strong>, <strong>n</strong>, <strong>z</strong> (uppercase allowed as well) [default is <strong>we</strong>] (if
+nothing specified). Note that this setting can be overridden via the
+<strong>+a</strong> modifier in <strong>-B</strong>.</p>
+</dd>
+<dt id="term-MAP_DEFAULT_PEN"><strong>MAP_DEFAULT_PEN</strong><a class="headerlink" href="#term-MAP_DEFAULT_PEN" title="Permalink to this term">¶</a></dt><dd><p>Sets the default of all pens related to <strong>-W</strong> options. Prepend
+<strong>+</strong> to overrule the color of the parameters
+<a class="reference internal" href="#term-MAP_GRID_PEN_PRIMARY"><span class="xref std std-term">MAP_GRID_PEN_PRIMARY</span></a>, <a class="reference internal" href="#term-MAP_GRID_PEN_SECONDARY"><span class="xref std std-term">MAP_GRID_PEN_SECONDARY</span></a>,
+<a class="reference internal" href="#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a>, <a class="reference internal" href="#term-MAP_TICK_PEN_PRIMARY"><span class="xref std std-term">MAP_TICK_PEN_PRIMARY</span></a>, and
+<a class="reference internal" href="#term-MAP_TICK_PEN_SECONDARY"><span class="xref std std-term">MAP_TICK_PEN_SECONDARY</span></a> by the color of <a class="reference internal" href="#term-MAP_DEFAULT_PEN"><span class="xref std std-term">MAP_DEFAULT_PEN</span></a>
+[default is <strong>0.25p,black</strong>].</p>
+</dd>
+<dt id="term-MAP_DEGREE_SYMBOL"><strong>MAP_DEGREE_SYMBOL</strong><a class="headerlink" href="#term-MAP_DEGREE_SYMBOL" title="Permalink to this term">¶</a></dt><dd><p>Determines what symbol is used to plot the degree symbol on geographic
+map annotations. Choose between <strong>ring</strong>, <strong>degree</strong>, <strong>colon</strong>, or
+<strong>none</strong> [default is <strong>degree</strong>].</p>
+</dd>
+<dt id="term-MAP_EMBELLISHMENT_MODE"><strong>MAP_EMBELLISHMENT_MODE</strong><a class="headerlink" href="#term-MAP_EMBELLISHMENT_MODE" title="Permalink to this term">¶</a></dt><dd><p>Determines if map embellishments like directional or magnetic compasses,
+map scales or vertical data scales should have attributes that scale with
+the size of the feature (<strong>auto</strong>) or use the settings as is (<strong>manual</strong>).</p>
+</dd>
+<dt id="term-MAP_FRAME_AXES"><strong>MAP_FRAME_AXES</strong><a class="headerlink" href="#term-MAP_FRAME_AXES" title="Permalink to this term">¶</a></dt><dd><p>Sets which axes to draw and annotate. Combine any uppercase <strong>W</strong>,
+<strong>E</strong>, <strong>S</strong>, <strong>N</strong>, <strong>Z</strong> to draw and annotate west, east, south,
+north and/or vertical (perspective view only) axis. Use lower case
+to draw the axis only, but not annotate.   To <em>just</em> draw an axis
+without annotation and ticks you can use the <strong>l</strong>(eft), <strong>r</strong>(ight),
+<strong>b</strong>(ottom), <strong>t</strong>(op) and (for 3-D) <strong>u</strong>(p) codes. Add an
+optional <strong>+b</strong> to draw a cube of axes in perspective view. Choose
+<strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic selection</span></a> [default is
+<a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>].</p>
+</dd>
+<dt id="term-MAP_FRAME_PEN"><strong>MAP_FRAME_PEN</strong><a class="headerlink" href="#term-MAP_FRAME_PEN" title="Permalink to this term">¶</a></dt><dd><p>Pen attributes used to draw plain map frame [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Choose <strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-MAP_FRAME_PERCENT"><strong>MAP_FRAME_PERCENT</strong><a class="headerlink" href="#term-MAP_FRAME_PERCENT" title="Permalink to this term">¶</a></dt><dd><p>Percentage of the fancy frame width to use for the internal checkerboard
+frame lines [default is <strong>100</strong>].</p>
+</dd>
+<dt id="term-MAP_FRAME_TYPE"><strong>MAP_FRAME_TYPE</strong><a class="headerlink" href="#term-MAP_FRAME_TYPE" title="Permalink to this term">¶</a></dt><dd><p>Choose between <strong>inside</strong>, <strong>plain</strong> and <strong>fancy</strong> (thick boundary,
+alternating black/white frame; append <strong>-rounded</strong> for rounded corners)
+[default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. For some map
+projections (e.g., Oblique Mercator), plain is the only option even if
+fancy is set as default. In general, fancy only applies to situations
+where the projected x and y directions parallel the longitude and
+latitude directions (e.g., rectangular projections, polar projections).
+For situations where all boundary ticks and annotations must be inside
+the maps (e.g., for preparing GeoTIFF output), chose <strong>inside</strong>.  Finally,
+for Cartesian plots you can also choose <strong>graph</strong>, which adds a vector
+to the end of each axis. This works best when you reduce the number of
+axes plotted to one per dimension.  By default, the vector tip extends
+the length of each axis by 7.5%. Alternatively, append ,<em>length</em>,
+where the optional <em>unit</em> may be <strong>%</strong> (then <em>length</em> is the alternate
+extension in percent) or one of <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> (then <em>length</em>
+is the absolute extension of the axis to the start of the vector base
+instead).  The vector stem is set to match <a class="reference internal" href="#term-MAP_FRAME_WIDTH"><span class="xref std std-term">MAP_FRAME_WIDTH</span></a>, while
+the vector head length and width are 10 and 5 times this width,
+respectively.  You may control its shape via <a class="reference internal" href="#term-MAP_VECTOR_SHAPE"><span class="xref std std-term">MAP_VECTOR_SHAPE</span></a>.</p>
+<div class="toggle docutils container">
+<p>Here is an example showing the appearance of different <strong>MAP_FRAME_TYPE</strong> settings.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_map_frame_type
+  gmt <span class="nb">set</span> GMT_THEME cookbook
+  gmt <span class="nb">set</span> FONT_TITLE 18p
+  gmt subplot begin 1x5 -Fs3.5c/3.5c -M0.4c -R0/10/0/10
+    gmt basemap -JM? -Baf -BWSen+t<span class="s2">&quot;fancy&quot;</span> -c --MAP_FRAME_TYPE<span class="o">=</span>fancy
+    gmt basemap -JM? -Baf -BWSen+t<span class="s2">&quot;fancy+&quot;</span> -c --MAP_FRAME_TYPE<span class="o">=</span>fancy+
+    gmt basemap -JM? -Baf -BWSen+t<span class="s2">&quot;plain&quot;</span> -c --MAP_FRAME_TYPE<span class="o">=</span>plain
+    gmt basemap -JX? -Baf -BWSen+t<span class="s2">&quot;inside&quot;</span> -c --MAP_FRAME_TYPE<span class="o">=</span>inside
+    gmt basemap -JX? -Baf -BWS+t<span class="s2">&quot;graph&quot;</span> -c --MAP_FRAME_TYPE<span class="o">=</span>graph
+  gmt subplot end
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id11">
+<a class="reference internal image-reference" href="_images/GMT_map_frame_type.png"><img alt="_images/GMT_map_frame_type.png" src="_images/GMT_map_frame_type.png" style="width: 100%;" /></a>
+<figcaption>
+<p><span class="caption-text">Appearance of different <strong>MAP_FRAME_TYPE</strong> settings</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div>
+</dd>
+<dt id="term-MAP_FRAME_WIDTH"><strong>MAP_FRAME_WIDTH</strong><a class="headerlink" href="#term-MAP_FRAME_WIDTH" title="Permalink to this term">¶</a></dt><dd><p>Width (&gt; 0) of map borders for fancy map frame [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. <strong>Note</strong>: For fancy frames, <a class="reference internal" href="#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a>
+is automatically set to 0.1 times the <a class="reference internal" href="#term-MAP_FRAME_WIDTH"><span class="xref std std-term">MAP_FRAME_WIDTH</span></a> setting.
+Choose <strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-MAP_GRID_CROSS_SIZE"><strong>MAP_GRID_CROSS_SIZE</strong><a class="headerlink" href="#term-MAP_GRID_CROSS_SIZE" title="Permalink to this term">¶</a></dt><dd><p>Sets both <a class="reference internal" href="#term-MAP_GRID_CROSS_SIZE_PRIMARY"><span class="xref std std-term">MAP_GRID_CROSS_SIZE_PRIMARY</span></a> and <a class="reference internal" href="#term-MAP_GRID_CROSS_SIZE_SECONDARY"><span class="xref std std-term">MAP_GRID_CROSS_SIZE_SECONDARY</span></a>
+to the value specified. This setting is not included in the <strong>gmt.conf</strong> file.</p>
+</dd>
+<dt id="term-MAP_GRID_CROSS_SIZE_PRIMARY"><strong>MAP_GRID_CROSS_SIZE_PRIMARY</strong><a class="headerlink" href="#term-MAP_GRID_CROSS_SIZE_PRIMARY" title="Permalink to this term">¶</a></dt><dd><p>Size of grid cross at lon-lat intersections. <strong>0</strong> means draw
+continuous gridlines instead.  A nonzero size will draw a symmetric grid
+cross. Signed sizes have special meaning and imply grid line ticks that
+embellish an already drawn set of gridlines: A negative size will only
+draw ticks away from Equator and Greenwich, while a positive size will
+draw symmetric ticks [default is <strong>0p</strong>].</p>
+</dd>
+<dt id="term-MAP_GRID_CROSS_SIZE_SECONDARY"><strong>MAP_GRID_CROSS_SIZE_SECONDARY</strong><a class="headerlink" href="#term-MAP_GRID_CROSS_SIZE_SECONDARY" title="Permalink to this term">¶</a></dt><dd><p>Size of grid cross at secondary lon-lat intersections. <strong>0</strong> means draw
+continuous gridlines instead.  A nonzero size will draw a symmetric grid
+cross.  Signed sizes have special meaning and imply grid line ticks that
+embellish an already drawn set of gridlines: A negative size will only
+draw ticks away from Equator and Greenwich, while a positive size will
+draw symmetric ticks [default is <strong>0p</strong>].</p>
+</dd>
+<dt id="term-MAP_GRID_PEN"><strong>MAP_GRID_PEN</strong><a class="headerlink" href="#term-MAP_GRID_PEN" title="Permalink to this term">¶</a></dt><dd><p>Sets both <a class="reference internal" href="#term-MAP_GRID_PEN_PRIMARY"><span class="xref std std-term">MAP_GRID_PEN_PRIMARY</span></a> and <a class="reference internal" href="#term-MAP_GRID_PEN_SECONDARY"><span class="xref std std-term">MAP_GRID_PEN_SECONDARY</span></a> to
+the value specified. This setting is not include in the <strong>gmt.conf</strong> file.</p>
+</dd>
+<dt id="term-MAP_GRID_PEN_PRIMARY"><strong>MAP_GRID_PEN_PRIMARY</strong><a class="headerlink" href="#term-MAP_GRID_PEN_PRIMARY" title="Permalink to this term">¶</a></dt><dd><p>Pen attributes used to draw primary grid lines in dpi units or
+points (append <strong>p</strong>) [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>].
+Choose <strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-MAP_GRID_PEN_SECONDARY"><strong>MAP_GRID_PEN_SECONDARY</strong><a class="headerlink" href="#term-MAP_GRID_PEN_SECONDARY" title="Permalink to this term">¶</a></dt><dd><p>Pen attributes used to draw secondary grid lines in dpi units or
+points (append <strong>p</strong>) [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>].
+Choose <strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-MAP_HEADING_OFFSET"><strong>MAP_HEADING_OFFSET</strong><a class="headerlink" href="#term-MAP_HEADING_OFFSET" title="Permalink to this term">¶</a></dt><dd><p>Distance from top of subplot panel titles to the base of the heading
+[default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Choose <strong>auto</strong> for
+<a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-MAP_LABEL_MODE"><strong>MAP_LABEL_MODE</strong><a class="headerlink" href="#term-MAP_LABEL_MODE" title="Permalink to this term">¶</a></dt><dd><p>Determines from where the label offset is measured: Choose <strong>annot</strong>
+to mean the distance from the end of the annotation or <strong>axis</strong>
+to mean the distance from the axis.  To set separate modes for the
+<em>x</em> and <em>y</em> axes, separate modes by a slash [default is <strong>annot/annot</strong>]. Choose
+<strong>axis</strong> if you need to align multiple axes labels across many rows or columns.</p>
+</dd>
+<dt id="term-MAP_LABEL_OFFSET"><strong>MAP_LABEL_OFFSET</strong><a class="headerlink" href="#term-MAP_LABEL_OFFSET" title="Permalink to this term">¶</a></dt><dd><p>Distance from base of axis annotations to the top of the axis label
+[default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Choose <strong>auto</strong>
+for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>. To
+set different offsets for the <em>x</em> and <em>y</em> axes, separate distances
+by a slash (e.g., <strong>8p/12p</strong> for 8p offset for the x-axis and 12p
+offset for the y-axis)</p>
+</dd>
+<dt id="term-MAP_LINE_STEP"><strong>MAP_LINE_STEP</strong><a class="headerlink" href="#term-MAP_LINE_STEP" title="Permalink to this term">¶</a></dt><dd><p>Determines the maximum length (&gt; 0) of individual straight
+line-segments when drawing arcuate lines [default is <strong>0.75p</strong>]</p>
+</dd>
+<dt id="term-MAP_LOGO"><strong>MAP_LOGO</strong><a class="headerlink" href="#term-MAP_LOGO" title="Permalink to this term">¶</a></dt><dd><p>(<strong>-U</strong>) Specifies if a GMT logo with system timestamp should be
+plotted at the lower left corner of the plot [default is <strong>false</strong>].</p>
+</dd>
+<dt id="term-MAP_LOGO_POS"><strong>MAP_LOGO_POS</strong><a class="headerlink" href="#term-MAP_LOGO_POS" title="Permalink to this term">¶</a></dt><dd><p>(<strong>-U</strong>) Sets the justification and the position of the
+logo/timestamp box relative to the current plot’s lower left corner
+(i.e., map origin) [default is <strong>BL/-54p/-54p</strong>].</p>
+</dd>
+<dt id="term-MAP_ORIGIN_X"><strong>MAP_ORIGIN_X</strong><a class="headerlink" href="#term-MAP_ORIGIN_X" title="Permalink to this term">¶</a></dt><dd><p>(<strong>-X</strong>) Sets the x-coordinate of the origin on the paper for a
+new plot [default is <strong>72p</strong>]. For an overlay, the default offset is <strong>0</strong>.</p>
+</dd>
+<dt id="term-MAP_ORIGIN_Y"><strong>MAP_ORIGIN_Y</strong><a class="headerlink" href="#term-MAP_ORIGIN_Y" title="Permalink to this term">¶</a></dt><dd><p>(<strong>-Y</strong>) Sets the y-coordinate of the origin on the paper for a
+new plot [default is <strong>72p</strong>]. For an overlay, the default offset is <strong>0</strong>.</p>
+</dd>
+<dt id="term-MAP_POLAR_CAP"><strong>MAP_POLAR_CAP</strong><a class="headerlink" href="#term-MAP_POLAR_CAP" title="Permalink to this term">¶</a></dt><dd><p>Controls the appearance of gridlines near the poles for all
+azimuthal projections and a few others in which the geographic poles
+are plotted as points (Lambert Conic, Oblique and Transverse Mercator, UTM, Hammer, Mollweide,
+Sinusoidal and van der Grinten). Specify either <strong>none</strong> (in which case
+there is no special handling) or <em>pc_lat</em>/<em>pc_dlon</em>. In that case, normal
+gridlines are only drawn between the latitudes -<em>pc_lat</em>/+<em>pc_lat</em>, and
+above those latitudes the gridlines are spaced at the (presumably coarser)
+<em>pc_dlon</em> interval; the two domains are separated by a small circle drawn
+at the <em>pc_lat</em> latitude. Alternatively, give <strong>auto</strong> to determine a
+<em>pc_lat</em> suitable for your region [default is
+<a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Note for r-theta (polar)
+projection where r = 0 is at the center of the plot the meaning of the
+cap is reversed, i.e., <em>85/90</em> will draw a r = 5 radius circle at the
+center of the map with less frequent radial lines there.</p>
+</dd>
+<dt id="term-MAP_SCALE_HEIGHT"><strong>MAP_SCALE_HEIGHT</strong><a class="headerlink" href="#term-MAP_SCALE_HEIGHT" title="Permalink to this term">¶</a></dt><dd><p>Sets the height (&gt; 0) on the map of the map scale bars drawn by
+various programs [default is <strong>5p</strong>].</p>
+</dd>
+<dt id="term-MAP_TICK_LENGTH"><strong>MAP_TICK_LENGTH</strong><a class="headerlink" href="#term-MAP_TICK_LENGTH" title="Permalink to this term">¶</a></dt><dd><p>Sets both <a class="reference internal" href="#term-MAP_TICK_LENGTH_PRIMARY"><span class="xref std std-term">MAP_TICK_LENGTH_PRIMARY</span></a> and <a class="reference internal" href="#term-MAP_TICK_LENGTH_SECONDARY"><span class="xref std std-term">MAP_TICK_LENGTH_SECONDARY</span></a>
+to the value specified. This setting is not included in the <strong>gmt.conf</strong> file.</p>
+</dd>
+<dt id="term-MAP_TICK_LENGTH_PRIMARY"><strong>MAP_TICK_LENGTH_PRIMARY</strong><a class="headerlink" href="#term-MAP_TICK_LENGTH_PRIMARY" title="Permalink to this term">¶</a></dt><dd><p>The length of a primary major/minor tick-marks [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. If only the first value is set, the second
+is assumed to be 50% of the first. Choose <strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic
+scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-MAP_TICK_LENGTH_SECONDARY"><strong>MAP_TICK_LENGTH_SECONDARY</strong><a class="headerlink" href="#term-MAP_TICK_LENGTH_SECONDARY" title="Permalink to this term">¶</a></dt><dd><p>The length of a secondary major/minor tick-marks [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. If only the first value is set, the second is assumed
+to be 25% of the first. Choose <strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with
+plot size</span></a>.</p>
+</dd>
+<dt id="term-MAP_TICK_PEN"><strong>MAP_TICK_PEN</strong><a class="headerlink" href="#term-MAP_TICK_PEN" title="Permalink to this term">¶</a></dt><dd><p>Sets both <a class="reference internal" href="#term-MAP_TICK_PEN_PRIMARY"><span class="xref std std-term">MAP_TICK_PEN_PRIMARY</span></a> and <a class="reference internal" href="#term-MAP_TICK_PEN_SECONDARY"><span class="xref std std-term">MAP_TICK_PEN_SECONDARY</span></a>
+to the value specified. This setting is not included in the <strong>gmt.conf</strong> file.</p>
+</dd>
+<dt id="term-MAP_TICK_PEN_PRIMARY"><strong>MAP_TICK_PEN_PRIMARY</strong><a class="headerlink" href="#term-MAP_TICK_PEN_PRIMARY" title="Permalink to this term">¶</a></dt><dd><p>Pen attributes to be used for primary tick-marks in dpi units or
+points (append <strong>p</strong>) [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>].
+Choose <strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-MAP_TICK_PEN_SECONDARY"><strong>MAP_TICK_PEN_SECONDARY</strong><a class="headerlink" href="#term-MAP_TICK_PEN_SECONDARY" title="Permalink to this term">¶</a></dt><dd><p>Pen attributes to be used for secondary tick-marks in dpi units or
+points (append <strong>p</strong>) [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>].
+Choose <strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-MAP_TITLE_OFFSET"><strong>MAP_TITLE_OFFSET</strong><a class="headerlink" href="#term-MAP_TITLE_OFFSET" title="Permalink to this term">¶</a></dt><dd><p>Distance from top of axis annotations (or axis label, if present) to
+base of plot title [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>].
+Choose <strong>auto</strong> for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+</dd>
+<dt id="term-MAP_VECTOR_SHAPE"><strong>MAP_VECTOR_SHAPE</strong><a class="headerlink" href="#term-MAP_VECTOR_SHAPE" title="Permalink to this term">¶</a></dt><dd><p>Determines the shape of the head of a vector. Normally (i.e., for
+vector_shape = <strong>0</strong>), the head will be triangular, but can be changed
+to an arrow (<strong>1</strong>) or an open V (<strong>2</strong>). Intermediate settings give
+something in between. Negative values (up to <strong>-2</strong>) are allowed as well
+[default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>].</p>
+</dd>
+</dl>
+</section>
+<section id="projection-parameters">
+<span id="id8"></span><h3>Projection Parameters<a class="headerlink" href="#projection-parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="glossary">
+<dt id="term-PROJ_AUX_LATITUDE"><strong>PROJ_AUX_LATITUDE</strong><a class="headerlink" href="#term-PROJ_AUX_LATITUDE" title="Permalink to this term">¶</a></dt><dd><p>Only applies when geodesics are approximated by great circle distances on
+an equivalent sphere. Select from <strong>authalic</strong>, <strong>geocentric</strong>,
+<strong>conformal</strong>, <strong>meridional</strong>, <strong>parametric</strong>, or <strong>none</strong> (i.e., geodetic)
+[default is <strong>authalic</strong>]. When not none we convert any latitude used in
+the great circle calculation to the chosen auxiliary latitude before
+doing the distance calculation. See also <a class="reference internal" href="#term-PROJ_MEAN_RADIUS"><span class="xref std std-term">PROJ_MEAN_RADIUS</span></a>.</p>
+</dd>
+<dt id="term-PROJ_ELLIPSOID"><strong>PROJ_ELLIPSOID</strong><a class="headerlink" href="#term-PROJ_ELLIPSOID" title="Permalink to this term">¶</a></dt><dd><p>The name of the ellipsoid used for the map projections [WGS-84]. Choose among:</p>
+<ul class="simple">
+<li><p><em>Airy</em>: Applies to Great Britain (1830)</p></li>
+<li><p><em>Airy-Ireland</em>: Applies to Ireland in 1965 (1830)</p></li>
+<li><p><em>Andrae</em>: Applies to Denmark and Iceland (1876)</p></li>
+<li><p><em>APL4.9</em>: Appl. Physics (1965)</p></li>
+<li><p><em>ATS77</em>: Average Terrestrial System, Canada Maritime provinces (1977)</p></li>
+<li><p><em>Australian</em>: Applies to Australia (1965)</p></li>
+<li><p><em>Bessel</em>: Applies to Central Europe, Chile, Indonesia (1841)</p></li>
+<li><p><em>Bessel-Namibia</em>: Same as Bessel-Schwazeck (1841)</p></li>
+<li><p><em>Bessel-NGO1948</em>: Modified Bessel for NGO 1948 (1841)</p></li>
+<li><p><em>Bessel-Schwazeck</em>: Applies to Namibia (1841)</p></li>
+<li><p><em>Clarke-1858</em>: Clarke’s early ellipsoid (1858)</p></li>
+<li><p><em>Clarke-1866</em>: Applies to North America, the Philippines (1866)</p></li>
+<li><p><em>Clarke-1866-Michigan</em>: Modified Clarke-1866 for Michigan (1866)</p></li>
+<li><p><em>Clarke-1880</em>: Applies to most of Africa, France (1880)</p></li>
+<li><p><em>Clarke-1880-Arc1950</em>: Modified Clarke-1880 for Arc 1950 (1880)</p></li>
+<li><p><em>Clarke-1880-IGN</em>: Modified Clarke-1880 for IGN (1880)</p></li>
+<li><p><em>Clarke-1880-Jamaica</em>: Modified Clarke-1880 for Jamaica (1880)</p></li>
+<li><p><em>Clarke-1880-Merchich</em>: Modified Clarke-1880 for Merchich (1880)</p></li>
+<li><p><em>Clarke-1880-Palestine</em>: Modified Clarke-1880 for Palestine (1880)</p></li>
+<li><p><em>CPM</em>: Comm. des Poids et Mesures, France (1799)</p></li>
+<li><p><em>Delambre</em>: Applies to Belgium (1810)</p></li>
+<li><p><em>Engelis</em>: Goddard Earth Models (1985)</p></li>
+<li><p><em>Everest-1830</em>: India, Burma, Pakistan, Afghanistan, Thailand (1830)</p></li>
+<li><p><em>Everest-1830-Kalianpur</em>: Modified Everest for Kalianpur (1956) (1830)</p></li>
+<li><p><em>Everest-1830-Kertau</em>: Modified Everest for Kertau, Malaysia &amp; Singapore (1830)</p></li>
+<li><p><em>Everest-1830-Pakistan</em>: Modified Everest for Pakistan (1830)</p></li>
+<li><p><em>Everest-1830-Timbalai</em>: Modified Everest for Timbalai, Sabah Sarawak (1830)</p></li>
+<li><p><em>Fischer-1960</em>: Used by NASA for Mercury program (1960)</p></li>
+<li><p><em>Fischer-1960-SouthAsia</em>: Same as Modified-Fischer-1960 (1960)</p></li>
+<li><p><em>Fischer-1968</em>: Used by NASA for Mercury program (1968)</p></li>
+<li><p><em>FlatEarth</em>: As Sphere, but implies fast “Flat Earth” distance calculations (1984)</p></li>
+<li><p><em>GRS-67</em>: International Geodetic Reference System (1967)</p></li>
+<li><p><em>GRS-80</em>: International Geodetic Reference System (1980)</p></li>
+<li><p><em>Hayford-1909</em>: Same as the International 1924 (1909)</p></li>
+<li><p><em>Helmert-1906</em>: Applies to Egypt (1906)</p></li>
+<li><p><em>Hough</em>: Applies to the Marshall Islands (1960)</p></li>
+<li><p><em>Hughes-1980</em>: Hughes Aircraft Company for DMSP SSM/I grid products (1980)</p></li>
+<li><p><em>IAG-75</em>: International Association of Geodesy (1975)</p></li>
+<li><p><em>Indonesian</em>: Applies to Indonesia (1974)</p></li>
+<li><p><em>International-1924</em>: Worldwide use (1924)</p></li>
+<li><p><em>International-1967</em>: Worldwide use (1967)</p></li>
+<li><p><em>Kaula</em>: From satellite tracking (1961)</p></li>
+<li><p><em>Krassovsky</em>: Used in the (now former) Soviet Union (1940)</p></li>
+<li><p><em>Lerch</em>: For geoid modeling (1979)</p></li>
+<li><p><em>Maupertius</em>: Really old ellipsoid used in France (1738)</p></li>
+<li><p><em>Mercury-1960</em>: Same as Fischer-1960 (1960)</p></li>
+<li><p><em>MERIT-83</em>: United States Naval Observatory (1983)</p></li>
+<li><p><em>Modified-Airy</em>: Same as Airy-Ireland (1830)</p></li>
+<li><p><em>Modified-Fischer-1960</em>: Applies to Singapore (1960)</p></li>
+<li><p><em>Modified-Mercury-1968</em>: Same as Fischer-1968 (1968)</p></li>
+<li><p><em>NWL-10D</em>: Naval Weapons Lab (Same as WGS-72) (1972)</p></li>
+<li><p><em>NWL-9D</em>: Naval Weapons Lab (Same as WGS-66) (1966)</p></li>
+<li><p><em>OSU86F</em>: Ohio State University (1986)</p></li>
+<li><p><em>OSU91A</em>: Ohio State University (1991)</p></li>
+<li><p><em>Plessis</em>: Old ellipsoid used in France (1817)</p></li>
+<li><p><em>SGS-85</em>: Soviet Geodetic System (1985)</p></li>
+<li><p><em>South-American</em>: Applies to South America (1969)</p></li>
+<li><p><em>Sphere</em>: The mean radius in WGS-84 (for spherical/plate tectonics applications) (1984)</p></li>
+<li><p><em>Struve</em>: Friedrich Georg Wilhelm Struve (1860)</p></li>
+<li><p><em>TOPEX</em>: Used commonly for altimetry (1990)</p></li>
+<li><p><em>Walbeck</em>: First least squares solution by Finnish astronomer (1819)</p></li>
+<li><p><em>War-Office</em>: Developed by G. T. McCaw (1926)</p></li>
+<li><p><em>WGS-60</em>: World Geodetic System (1960)</p></li>
+<li><p><em>WGS-66</em>: World Geodetic System (1966)</p></li>
+<li><p><em>WGS-72</em>: World Geodetic System (1972)</p></li>
+<li><p><em>WGS-84</em>: World Geodetic System [Default] (1984)</p></li>
+<li><p><em>Web-Mercator</em>: Spherical Mercator with WGS-84 radius (1984)</p></li>
+<li><p><em>Moon</em>: Moon (IAU2000) (2000)</p></li>
+<li><p><em>Mercury</em>: Mercury (IAU2000) (2000)</p></li>
+<li><p><em>Venus</em>: Venus (IAU2000) (2000)</p></li>
+<li><p><em>Mars</em>: Mars (IAU2000) (2000)</p></li>
+<li><p><em>Jupiter</em>: Jupiter (IAU2000) (2000)</p></li>
+<li><p><em>Saturn</em>: Saturn (IAU2000) (2000)</p></li>
+<li><p><em>Uranus</em>: Uranus (IAU2000) (2000)</p></li>
+<li><p><em>Neptune</em>: Neptune (IAU2000) (2000)</p></li>
+<li><p><em>Pluto</em>: Pluto (IAU2000) (2000)</p></li>
+</ul>
+<p>Note that for some global projections, GMT may use a spherical
+approximation of the ellipsoid chosen, setting the flattening to
+zero, and using a mean radius. A warning will be given when this
+happens. If a different ellipsoid name than those mentioned here is
+given, GMT will attempt to parse the name to extract the
+semi-major axis (<strong>a</strong> in m) and the flattening. Formats allowed are:</p>
+<p><strong>a</strong> implies a zero flattening</p>
+<p><strong>a</strong>,<em>inv_f</em> where <em>inv_f</em> is the inverse flattening</p>
+<p><strong>a</strong>,<strong>b=</strong><em>b</em> where <em>b</em> is the semi-minor axis (in m)</p>
+<p><strong>a</strong>,<strong>f=</strong><em>f</em> where <em>f</em> is the flattening</p>
+<p>This way a custom ellipsoid (e.g., those used for other planets) may
+be used. Further note that coordinate transformations in
+<strong>mapproject</strong> can also specify specific datums; see the
+<a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a> man page for further details and how to view
+ellipsoid and datum parameters.</p>
+</dd>
+<dt id="term-PROJ_GEODESIC"><strong>PROJ_GEODESIC</strong><a class="headerlink" href="#term-PROJ_GEODESIC" title="Permalink to this term">¶</a></dt><dd><p>Selects the algorithm to use for geodesic calculations. Choose between
+<strong>Vincenty</strong>, <strong>Rudoe</strong>, or <strong>Andoyer</strong>. The <strong>Andoyer</strong>
+algorithm is only approximate (to within a few tens of meters) but is
+up to 5 times faster.  The <strong>Rudoe</strong> is given for legacy purposes.
+[default is <strong>Vincenty</strong> <em>(accurate to about 0.5 mm)</em>].</p>
+</dd>
+<dt id="term-PROJ_LENGTH_UNIT"><strong>PROJ_LENGTH_UNIT</strong><a class="headerlink" href="#term-PROJ_LENGTH_UNIT" title="Permalink to this term">¶</a></dt><dd><p>Sets the default unit length. Choose between <strong>c</strong>m, <strong>i</strong>nch, or
+<strong>p</strong>oint [default is <strong>c</strong> <em>(or i)</em>]. <strong>Note</strong>: In GMT, one point is
+defined as 1/72 inch (the PostScript definition), while it is often
+defined as 1/72.27 inch in the typesetting industry. There is no universal
+definition.)</p>
+</dd>
+<dt id="term-PROJ_MEAN_RADIUS"><strong>PROJ_MEAN_RADIUS</strong><a class="headerlink" href="#term-PROJ_MEAN_RADIUS" title="Permalink to this term">¶</a></dt><dd><p>Applies when geodesics are approximated by great circle distances on
+an equivalent sphere or when surface areas are computed. Select from
+<strong>mean</strong> (R_1), <strong>authalic</strong> (R_2), <strong>volumetric</strong> (R_3), <strong>meridional</strong>,
+or <strong>quadratic</strong> [default is <strong>authalic</strong>].</p>
+</dd>
+<dt id="term-PROJ_SCALE_FACTOR"><strong>PROJ_SCALE_FACTOR</strong><a class="headerlink" href="#term-PROJ_SCALE_FACTOR" title="Permalink to this term">¶</a></dt><dd><p>Changes the default map scale factor used for the Polar
+Stereographic [default is <strong>0.9996</strong>], UTM [default is <strong>0.9996</strong>],
+and Transverse Mercator [default is <strong>1</strong>]
+projections in order to minimize areal distortion. Provide a new
+scale-factor or leave as default.</p>
+</dd>
+</dl>
+</section>
+<section id="postscript-parameters">
+<span id="id9"></span><h3>PostScript Parameters<a class="headerlink" href="#postscript-parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="glossary">
+<dt id="term-PS_CHAR_ENCODING"><strong>PS_CHAR_ENCODING</strong><a class="headerlink" href="#term-PS_CHAR_ENCODING" title="Permalink to this term">¶</a></dt><dd><p>(<em>static</em>) Names the eight bit character set being used for text in
+files and in command line parameters. This allows GMT to ensure that the
+PostScript output generates the correct characters on the plot. Choose from
+<strong>Standard</strong>, <strong>Standard+</strong>, <strong>ISOLatin1</strong>, <strong>ISOLatin1+</strong>, and
+<strong>ISO-8859-x</strong> (where <em>x</em> is in the ranges 1-11 or 13-16). See Appendix F
+for details [default is <strong>ISOLatin1+</strong> <em>(or Standard+)</em>]. <strong>Note</strong>:
+Normally the character set is written as part of the PostScript header.
+If you need to switch to another character set for a later overlay then
+you must use <strong>--PS_CHAR_ENCODING</strong>=<em>encoding</em> on the command line
+and not via gmt <a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a>.  Finally, note 6, 8, and 11 do not work
+with standard fonts.</p>
+</dd>
+<dt id="term-PS_COLOR_MODEL"><strong>PS_COLOR_MODEL</strong><a class="headerlink" href="#term-PS_COLOR_MODEL" title="Permalink to this term">¶</a></dt><dd><p>Determines whether PostScript output should use <strong>RGB</strong>, <strong>HSV</strong>, <strong>CMYK</strong>,
+or <strong>GRAY</strong> when specifying color [default is <strong>rgb</strong>]. Note if <strong>HSV</strong>
+is selected it does not apply to images which in that case uses <strong>RGB</strong>.
+When selecting <strong>GRAY</strong>, all colors will be converted to gray scale using
+YIQ (television) conversion.</p>
+</dd>
+<dt id="term-PS_COMMENTS"><strong>PS_COMMENTS</strong><a class="headerlink" href="#term-PS_COMMENTS" title="Permalink to this term">¶</a></dt><dd><p>(<em>static</em>) If <strong>true</strong> we will issue comments in the PostScript file
+that explain the logic of operations. These are useful if you need
+to edit the file and make changes; otherwise you can set it to <strong>false</strong>
+which yields a somewhat slimmer PostScript file [default is <strong>false</strong>].</p>
+</dd>
+<dt id="term-PS_CONVERT"><strong>PS_CONVERT</strong><a class="headerlink" href="#term-PS_CONVERT" title="Permalink to this term">¶</a></dt><dd><p>Comma-separated list of optional module arguments that we should supply
+when <a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a> is called implicitly under modern mode [<strong>A</strong>].
+Ignored when psconvert is called on the command line explicitly.
+The option arguments must be listed without their leading option hyphen.</p>
+</dd>
+<dt id="term-PS_IMAGE_COMPRESS"><strong>PS_IMAGE_COMPRESS</strong><a class="headerlink" href="#term-PS_IMAGE_COMPRESS" title="Permalink to this term">¶</a></dt><dd><p>Determines if PostScript images are compressed using the Run-Length
+Encoding scheme (<strong>rle</strong>), Lempel-Ziv-Welch compression (<strong>lzw</strong>), DEFLATE
+compression (<strong>deflate</strong>[,<em>level</em>]), or not at all (<strong>none</strong>) [default
+is <strong>deflate,5</strong>]. When specifying <strong>deflate</strong>, the compression level
+(1–9) may optionally be appended.</p>
+</dd>
+<dt id="term-PS_LINE_CAP"><strong>PS_LINE_CAP</strong><a class="headerlink" href="#term-PS_LINE_CAP" title="Permalink to this term">¶</a></dt><dd><p>Determines how the ends of a line segment will be drawn. Choose
+among a <strong>butt</strong> cap where there is no projection beyond the
+end of the path, a <strong>round</strong> cap where a semicircular arc with
+diameter equal to the line-width is drawn around the end points, and
+<strong>square</strong> cap where a half square of size equal to the line-width
+extends beyond the end of the path [default is <strong>butt</strong>].</p>
+</dd>
+<dt id="term-PS_LINE_JOIN"><strong>PS_LINE_JOIN</strong><a class="headerlink" href="#term-PS_LINE_JOIN" title="Permalink to this term">¶</a></dt><dd><p>Determines what happens at kinks in line segments. Choose among a
+<strong>miter</strong> join where the outer edges of the strokes for the two
+segments are extended until they meet at an angle (as in a picture
+frame; if the angle is too acute, a bevel join is used instead, with
+threshold set by <a class="reference internal" href="#term-PS_MITER_LIMIT"><span class="xref std std-term">PS_MITER_LIMIT</span></a>), <strong>round</strong> join where a
+circular arc is used to fill in the cracks at the kinks, and <strong>bevel</strong>
+join which is a miter join that is cut off so kinks are triangular in
+shape [default is <strong>miter</strong>].</p>
+</dd>
+<dt id="term-PS_MEDIA"><strong>PS_MEDIA</strong><a class="headerlink" href="#term-PS_MEDIA" title="Permalink to this term">¶</a></dt><dd><p><em>Classic mode:</em> Sets the physical size of the current plotting paper
+[default is <strong>a4</strong> <em>(or letter)</em>]. <em>Modern mode:</em> If user selects
+PostScript output then the above applies as well. For other graphics
+formats (PDF and rasters), the media size is determined automatically
+by cropping to fit the plot exactly (but see <a class="reference internal" href="#term-PS_CONVERT"><span class="xref std std-term">PS_CONVERT</span></a>). However,
+if a specific media size is desired then the <a class="reference internal" href="#term-PS_MEDIA"><span class="xref std std-term">PS_MEDIA</span></a> may be
+specified as well. The following formats (and their widths and heights
+in points) are recognized:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Media</p></th>
+<th class="head"><p>width</p></th>
+<th class="head"><p>height</p></th>
+<th class="head"><p>Media</p></th>
+<th class="head"><p>width</p></th>
+<th class="head"><p>height</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>A0</p></td>
+<td><p>2380</p></td>
+<td><p>3368</p></td>
+<td><p>archA</p></td>
+<td><p>648</p></td>
+<td><p>864</p></td>
+</tr>
+<tr class="row-odd"><td><p>A1</p></td>
+<td><p>1684</p></td>
+<td><p>2380</p></td>
+<td><p>archB</p></td>
+<td><p>864</p></td>
+<td><p>1296</p></td>
+</tr>
+<tr class="row-even"><td><p>A2</p></td>
+<td><p>1190</p></td>
+<td><p>1684</p></td>
+<td><p>archC</p></td>
+<td><p>1296</p></td>
+<td><p>1728</p></td>
+</tr>
+<tr class="row-odd"><td><p>A3</p></td>
+<td><p>842</p></td>
+<td><p>1190</p></td>
+<td><p>archD</p></td>
+<td><p>1728</p></td>
+<td><p>2592</p></td>
+</tr>
+<tr class="row-even"><td><p>A4</p></td>
+<td><p>595</p></td>
+<td><p>842</p></td>
+<td><p>archE</p></td>
+<td><p>2592</p></td>
+<td><p>3456</p></td>
+</tr>
+<tr class="row-odd"><td><p>A5</p></td>
+<td><p>421</p></td>
+<td><p>595</p></td>
+<td><p>flsa</p></td>
+<td><p>612</p></td>
+<td><p>936</p></td>
+</tr>
+<tr class="row-even"><td><p>A6</p></td>
+<td><p>297</p></td>
+<td><p>421</p></td>
+<td><p>halfletter</p></td>
+<td><p>396</p></td>
+<td><p>612</p></td>
+</tr>
+<tr class="row-odd"><td><p>A7</p></td>
+<td><p>210</p></td>
+<td><p>297</p></td>
+<td><p>statement</p></td>
+<td><p>396</p></td>
+<td><p>612</p></td>
+</tr>
+<tr class="row-even"><td><p>A8</p></td>
+<td><p>148</p></td>
+<td><p>210</p></td>
+<td><p>note</p></td>
+<td><p>540</p></td>
+<td><p>720</p></td>
+</tr>
+<tr class="row-odd"><td><p>A9</p></td>
+<td><p>105</p></td>
+<td><p>148</p></td>
+<td><p>letter</p></td>
+<td><p>612</p></td>
+<td><p>792</p></td>
+</tr>
+<tr class="row-even"><td><p>A10</p></td>
+<td><p>74</p></td>
+<td><p>105</p></td>
+<td><p>legal</p></td>
+<td><p>612</p></td>
+<td><p>1008</p></td>
+</tr>
+<tr class="row-odd"><td><p>B0</p></td>
+<td><p>2836</p></td>
+<td><p>4008</p></td>
+<td><p>11x17</p></td>
+<td><p>792</p></td>
+<td><p>1224</p></td>
+</tr>
+<tr class="row-even"><td><p>B1</p></td>
+<td><p>2004</p></td>
+<td><p>2836</p></td>
+<td><p>tabloid</p></td>
+<td><p>792</p></td>
+<td><p>1224</p></td>
+</tr>
+<tr class="row-odd"><td><p>B2</p></td>
+<td><p>1418</p></td>
+<td><p>2004</p></td>
+<td><p>ledger</p></td>
+<td><p>1224</p></td>
+<td><p>792</p></td>
+</tr>
+<tr class="row-even"><td><p>B3</p></td>
+<td><p>1002</p></td>
+<td><p>1418</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>B4</p></td>
+<td><p>709</p></td>
+<td><p>1002</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>B5</p></td>
+<td><p>501</p></td>
+<td><p>709</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>For a completely custom format (e.g., for large format plotters) you may
+also specify <strong>WxH</strong>, where <strong>W</strong> and <strong>H</strong> are in points unless you append
+a unit to each dimension (<strong>c</strong>, <strong>i</strong>, <strong>m</strong> or <strong>p</strong> [default is <strong>p</strong>]).
+Additional user-specific formats may be saved as separate line in a
+gmt_custom_media.conf file stored in ~/.gmt.  Each record would have a
+format name followed by width and height of your media in points.  For
+infinitely long paper rolls (e.g., plotters you can set height = 0).</p>
+</dd>
+<dt id="term-PS_MITER_LIMIT"><strong>PS_MITER_LIMIT</strong><a class="headerlink" href="#term-PS_MITER_LIMIT" title="Permalink to this term">¶</a></dt><dd><p>Sets the threshold angle in degrees (integer in range [0,180]) used
+for mitered joins only. When the angle between joining line segments
+is smaller than the threshold the corner will be bevelled instead of
+mitered. [default is <strong>35</strong>]. Setting the threshold
+angle to <strong>0</strong> implies the PostScript default of about 11 degrees.
+Setting the threshold angle to <strong>180</strong> causes all joins to be beveled.</p>
+</dd>
+<dt id="term-PS_PAGE_COLOR"><strong>PS_PAGE_COLOR</strong><a class="headerlink" href="#term-PS_PAGE_COLOR" title="Permalink to this term">¶</a></dt><dd><p>Sets the color of the imaging background, i.e., the paper [default is <strong>white</strong>].</p>
+</dd>
+<dt id="term-PS_PAGE_ORIENTATION"><strong>PS_PAGE_ORIENTATION</strong><a class="headerlink" href="#term-PS_PAGE_ORIENTATION" title="Permalink to this term">¶</a></dt><dd><p>(<strong>-P</strong>) Sets the orientation of the page. Choose portrait or
+landscape [default is <strong>landscape</strong>].  Only available in GMT classic mode.</p>
+</dd>
+<dt id="term-PS_SCALE_X"><strong>PS_SCALE_X</strong><a class="headerlink" href="#term-PS_SCALE_X" title="Permalink to this term">¶</a></dt><dd><p>Global x-scale (&gt; 0) to apply to plot-coordinates before plotting.
+Normally used to shrink the entire output down to fit a specific
+height/width [default is <strong>1.0</strong>].</p>
+</dd>
+<dt id="term-PS_SCALE_Y"><strong>PS_SCALE_Y</strong><a class="headerlink" href="#term-PS_SCALE_Y" title="Permalink to this term">¶</a></dt><dd><p>Global y-scale (&gt; 0) to apply to plot-coordinates before plotting.
+Normally used to shrink the entire output down to fit a specific
+height/width [default is <strong>1.0</strong>].</p>
+</dd>
+<dt id="term-PS_TRANSPARENCY"><strong>PS_TRANSPARENCY</strong><a class="headerlink" href="#term-PS_TRANSPARENCY" title="Permalink to this term">¶</a></dt><dd><p>Sets the transparency mode to use when preparing PS for rendering to
+PDF. Choose from <strong>Color</strong>, <strong>ColorBurn</strong>, <strong>ColorDodge</strong>, <strong>Darken</strong>,
+<strong>Difference</strong>, <strong>Exclusion</strong>, <strong>HardLight</strong>, <strong>Hue</strong>, <strong>Lighten</strong>,
+<strong>Luminosity</strong>, <strong>Multiply</strong>, <strong>Normal</strong>, <strong>Overlay</strong>, <strong>Saturation</strong>,
+<strong>SoftLight</strong>, and <strong>Screen</strong> [default is <strong>Normal</strong>].  For more information,
+see <a class="reference external" href="https://en.wikipedia.org/wiki/Blend_modes">blend modes</a>.</p>
+</dd>
+</dl>
+</section>
+<section id="calendar-time-parameters">
+<span id="id10"></span><h3>Calendar/Time Parameters<a class="headerlink" href="#calendar-time-parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="glossary">
+<dt id="term-TIME_EPOCH"><strong>TIME_EPOCH</strong><a class="headerlink" href="#term-TIME_EPOCH" title="Permalink to this term">¶</a></dt><dd><p>Specifies the value of the calendar and clock at the origin (zero
+point) of relative time units (see <a class="reference internal" href="#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a>). It is a string
+of the form <strong>yyyy-mm-ddT[hh:mm:ss]</strong> (Gregorian) or
+<strong>yyyy-Www-ddT[hh:mm:ss]</strong> (ISO) [default is <strong>1970-01-01T00:00:00</strong>
+<em>(the origin of the UNIX time epoch</em>)].</p>
+</dd>
+<dt id="term-TIME_INTERVAL_FRACTION"><strong>TIME_INTERVAL_FRACTION</strong><a class="headerlink" href="#term-TIME_INTERVAL_FRACTION" title="Permalink to this term">¶</a></dt><dd><p>Determines if partial intervals at the start and end of an axis
+should be annotated. If the range of the partial interval exceeds
+the specified fraction of the normal interval stride we will place
+the annotation centered on the partial interval [default is <strong>0.5</strong>].</p>
+</dd>
+<dt id="term-TIME_IS_INTERVAL"><strong>TIME_IS_INTERVAL</strong><a class="headerlink" href="#term-TIME_IS_INTERVAL" title="Permalink to this term">¶</a></dt><dd><p>Used when input calendar data should be truncated and adjusted to
+the middle of the relevant interval. In the following discussion,
+the unit <em>unit</em> can be one of these time units: (<strong>y</strong> year, <strong>o</strong>
+month, <strong>u</strong> ISO week, <strong>d</strong> day, <strong>h</strong> hour, <strong>m</strong> minute, and
+<strong>s</strong> second). <strong>TIME_IS_INTERVAL</strong> can have any of the following
+three values: (1) <strong>OFF</strong> : no adjustment, time is decoded as
+given. (2) <strong>+n</strong><em>unit</em> : activate interval adjustment for input by
+truncate to previous whole number of <em>n</em> units and then center time
+on the following interval. (3) <strong>-n</strong><em>unit</em>. Same, but center time on
+the previous interval [default is <strong>off</strong>]. For example, with
+<strong>TIME_IS_INTERVAL</strong> =+1o, an input data string like 1999-12 will be
+interpreted to mean 1999-12-15T12:00:00.0 (exactly middle of December),
+while if <strong>TIME_IS_INTERVAL</strong> = <strong>off</strong> then that date is interpreted
+to mean 1999-12-01T00:00:00.0 (start of December).</p>
+</dd>
+<dt id="term-TIME_REPORT"><strong>TIME_REPORT</strong><a class="headerlink" href="#term-TIME_REPORT" title="Permalink to this term">¶</a></dt><dd><p>Controls if a time-stamp should be issued at start of all progress
+reports.  Choose among <strong>clock</strong> (absolute time stamp),
+<strong>elapsed</strong> (time since start of session), or <strong>none</strong>
+[default is <strong>none</strong>].  The format of the timer is controlled by
+<a class="reference internal" href="#term-FORMAT_TIME_STAMP"><span class="xref std std-term">FORMAT_TIME_STAMP</span></a>.</p>
+</dd>
+<dt id="term-TIME_SYSTEM"><strong>TIME_SYSTEM</strong><a class="headerlink" href="#term-TIME_SYSTEM" title="Permalink to this term">¶</a></dt><dd><p>Shorthand for a combination of <a class="reference internal" href="#term-TIME_EPOCH"><span class="xref std std-term">TIME_EPOCH</span></a> and <a class="reference internal" href="#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a>,
+specifying which time epoch the relative time refers to and what the
+units are. Choose from one of the preset systems below (epoch and
+units are indicated):</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>TIME_SYSTEM</p></th>
+<th class="head"><p>TIME_EPOCH</p></th>
+<th class="head"><p>TIME_UNIT</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>JD</p></td>
+<td><p>-4713-11-25T12:00:00</p></td>
+<td><p>d</p></td>
+<td><p>Julian Date</p></td>
+</tr>
+<tr class="row-odd"><td><p>MJD</p></td>
+<td><p>1858-11-17T00:00:00</p></td>
+<td><p>d</p></td>
+<td><p>Modified Julian Date</p></td>
+</tr>
+<tr class="row-even"><td><p>J2000</p></td>
+<td><p>2000-01-01T12:00:00</p></td>
+<td><p>d</p></td>
+<td><p>Astronomical time</p></td>
+</tr>
+<tr class="row-odd"><td><p>S1985</p></td>
+<td><p>1985-01-01T00:00:00</p></td>
+<td><p>s</p></td>
+<td><p>Altimetric time</p></td>
+</tr>
+<tr class="row-even"><td><p>UNIX</p></td>
+<td><p>1970-01-01T00:00:00</p></td>
+<td><p>s</p></td>
+<td><p>UNIX time</p></td>
+</tr>
+<tr class="row-odd"><td><p>RD0001</p></td>
+<td><p>0001-01-01T00:00:00</p></td>
+<td><p>s</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>RATA</p></td>
+<td><p>0000-12-31T00:00:00</p></td>
+<td><p>d</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>This parameter is not stored in the <strong>gmt.conf</strong> file but is
+translated to the respective values of <a class="reference internal" href="#term-TIME_EPOCH"><span class="xref std std-term">TIME_EPOCH</span></a> and
+<a class="reference internal" href="#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a>.</p>
+</dd>
+<dt id="term-TIME_UNIT"><strong>TIME_UNIT</strong><a class="headerlink" href="#term-TIME_UNIT" title="Permalink to this term">¶</a></dt><dd><p>Specifies the units of relative time data since epoch (see
+<a class="reference internal" href="#term-TIME_EPOCH"><span class="xref std std-term">TIME_EPOCH</span></a>). Choose <strong>y</strong> (year - assumes all years are 365.2425
+days), <strong>o</strong> (month - assumes all months are of equal length y/12), <strong>w</strong>
+(week), <strong>d</strong> (day), <strong>h</strong> (hour), <strong>m</strong> (minute), or <strong>s</strong> (second) [default is <strong>s</strong>].</p>
+</dd>
+<dt id="term-TIME_WEEK_START"><strong>TIME_WEEK_START</strong><a class="headerlink" href="#term-TIME_WEEK_START" title="Permalink to this term">¶</a></dt><dd><p>When weeks are indicated on time axes, this parameter determines the
+first day of the week for Gregorian calendars. (The ISO weekly
+calendar always begins weeks with Monday.) [default is <strong>Monday</strong> <em>(or Sunday)</em>].</p>
+</dd>
+<dt id="term-TIME_Y2K_OFFSET_YEAR"><strong>TIME_Y2K_OFFSET_YEAR</strong><a class="headerlink" href="#term-TIME_Y2K_OFFSET_YEAR" title="Permalink to this term">¶</a></dt><dd><p>When 2-digit years are used to represent 4-digit years (see various
+<strong>FORMAT_DATE</strong>s), <a class="reference internal" href="#term-TIME_Y2K_OFFSET_YEAR"><span class="xref std std-term">TIME_Y2K_OFFSET_YEAR</span></a> gives the first
+year in a 100-year sequence. For example, if
+<a class="reference internal" href="#term-TIME_Y2K_OFFSET_YEAR"><span class="xref std std-term">TIME_Y2K_OFFSET_YEAR</span></a> is 1729, then numbers 29 through 99
+correspond to 1729 through 1799, while numbers 00 through 28
+correspond to 1800 through 1828. [default is <strong>1950</strong>].</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtdefaults.html"><span class="doc">gmtdefaults</span></a>,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>, <a class="reference internal" href="gmtget.html"><span class="doc">gmtget</span></a>,
+<a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="std-opts.html" class="btn btn-neutral float-left" title="Common Options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gmtcolors.html" class="btn btn-neutral float-right" title="gmtcolors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

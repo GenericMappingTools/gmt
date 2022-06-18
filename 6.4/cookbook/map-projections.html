@@ -1,0 +1,1881 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6. GMT Map Projections &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7. GMT Supplemental Packages" href="supplemental-packages.html" />
+    <link rel="prev" title="5. GMT Coordinate Transformations" href="coordinate-transformations.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preface.html">1. Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html">3. General Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="options.html">4. Standardized command line options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coordinate-transformations.html">5. GMT Coordinate Transformations</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">6. GMT Map Projections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#conic-projections">6.1. Conic projections</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#albers-conic-equal-area-projection-jb-jb">6.1.1. Albers conic equal-area projection (<strong>-Jb</strong> <strong>-JB</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#equidistant-conic-projection-jd-jd">6.1.2. Equidistant conic projection (<strong>-Jd</strong> <strong>-JD</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lambert-conic-conformal-projection-jl-jl">6.1.3. Lambert conic conformal projection (<strong>-Jl</strong> <strong>-JL</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#american-polyconic-projection-jpoly-jpoly">6.1.4. (American) polyconic projection (<strong>-Jpoly</strong> <strong>-JPoly</strong>)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#azimuthal-projections">6.2. Azimuthal projections</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lambert-azimuthal-equal-area-ja-ja">6.2.1. Lambert Azimuthal Equal-Area (<strong>-Ja</strong> <strong>-JA</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stereographic-equal-angle-js-js">6.2.2. Stereographic Equal-Angle (<strong>-Js</strong> <strong>-JS</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#perspective-projection-jg-jg">6.2.3. Perspective projection (<strong>-Jg</strong> <strong>-JG</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#orthographic-projection-jg-jg">6.2.4. Orthographic projection (<strong>-Jg</strong> <strong>-JG</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#azimuthal-equidistant-projection-je-je">6.2.5. Azimuthal Equidistant projection (<strong>-Je</strong> <strong>-JE</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gnomonic-projection-jf-jf">6.2.6. Gnomonic projection (<strong>-Jf</strong> <strong>-JF</strong>)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cylindrical-projections">6.3. Cylindrical projections</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mercator-projection-jm-jm">6.3.1. Mercator projection (<strong>-Jm</strong> <strong>-JM</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transverse-mercator-projection-jt-jt">6.3.2. Transverse Mercator projection (<strong>-Jt</strong> <strong>-JT</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#universal-transverse-mercator-utm-projection-ju-ju">6.3.3. Universal Transverse Mercator (UTM) projection (<strong>-Ju</strong> <strong>-JU</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oblique-mercator-projection-jo-jo">6.3.4. Oblique Mercator projection (<strong>-Jo</strong> <strong>-JO</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cassini-cylindrical-projection-jc-jc">6.3.5. Cassini cylindrical projection (<strong>-Jc</strong> <strong>-JC</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cylindrical-equidistant-projection-jq-jq">6.3.6. Cylindrical equidistant projection (<strong>-Jq</strong> <strong>-JQ</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cylindrical-equal-area-projections-jy-jy">6.3.7. Cylindrical equal-area projections (<strong>-Jy</strong> <strong>-JY</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#miller-cylindrical-projection-jj-jj">6.3.8. Miller Cylindrical projection (<strong>-Jj</strong> <strong>-JJ</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cylindrical-stereographic-projections-jcyl-stere-jcyl-stere">6.3.9. Cylindrical stereographic projections (<strong>-Jcyl_stere</strong> <strong>-JCyl_stere</strong>)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#miscellaneous-projections">6.4. Miscellaneous projections</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#hammer-projection-jh-jh">6.4.1. Hammer projection (<strong>-Jh</strong> <strong>-JH</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mollweide-projection-jw-jw">6.4.2. Mollweide projection (<strong>-Jw</strong> <strong>-JW</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#winkel-tripel-projection-jr-jr">6.4.3. Winkel Tripel projection (<strong>-Jr</strong> <strong>-JR</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#robinson-projection-jn-jn">6.4.4. Robinson projection (<strong>-Jn</strong> <strong>-JN</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#eckert-iv-and-vi-projection-jk-jk">6.4.5. Eckert IV and VI projection (<strong>-Jk</strong> <strong>-JK</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sinusoidal-projection-ji-ji">6.4.6. Sinusoidal projection (<strong>-Ji</strong> <strong>-JI</strong>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#van-der-grinten-projection-jv-jv">6.4.7. Van der Grinten projection (<strong>-Jv</strong> <strong>-JV</strong>)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#footnotes">6.5. Footnotes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="supplemental-packages.html">7. GMT Supplemental Packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file-formats.html">8. GMT File Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="include-figures.html">9. Including GMT Graphics into your Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="predefined-patterns.html">10. Predefined Bit and Hachure Patterns in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="octal-codes.html">11. Chart of Octal Codes for Characters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="postscript-fonts.html">12. PostScript Fonts Used by GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gmt-latex.html">13. Using LaTeX Expressions in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">14. Color Systems and Artificial Illumination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-filtering.html">15. Filtering of Data in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non-unix-platforms.html">16. GMT on non-UNIX Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpts.html">17. Of Colors and Color Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-symbols.html">18. Custom Plot Symbols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contour-annotations.html">19. Annotation of Contours and “Quoted Lines”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ogrgmt-format.html">20. The GMT Vector Data Format for OGR Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-liner.html">21. GMT Modern Mode One-line Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../cookbook.html">Cookbook</a> &raquo;</li>
+      <li><span class="section-number">6. </span>GMT Map Projections</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/cookbook/map-projections.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gmt-map-projections">
+<h1><span class="section-number">6. </span>GMT Map Projections<a class="headerlink" href="#gmt-map-projections" title="Permalink to this heading">¶</a></h1>
+<p>GMT implements more than 30 different projections. They all project the input coordinates longitude and latitude to
+positions on a map. In general, <span class="math notranslate nohighlight">\(x' = f(x,y,z)\)</span> and <span class="math notranslate nohighlight">\(y' = g(x,y,z)\)</span>, where <span class="math notranslate nohighlight">\(z\)</span> is implicitly given as
+the radial vector length to the <span class="math notranslate nohighlight">\((x,y)\)</span> point on the chosen ellipsoid. The functions <span class="math notranslate nohighlight">\(f\)</span> and <span class="math notranslate nohighlight">\(g\)</span> can be
+quite nasty and we will refrain from presenting details in this document. The interested reader is referred to <em>Snyder</em>
+[1987]<a class="footnote-reference brackets" href="#id4" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>20<span class="fn-bracket">]</span></a>. We will mostly be using the <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> command to demonstrate each of the projections. GMT map
+projections are grouped into four categories depending on the nature of the projection. The groups are</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#conic-projections"><span class="std std-ref">Conic projections</span></a></p></li>
+<li><p><a class="reference internal" href="#azimuthal-projections"><span class="std std-ref">Azimuthal projections</span></a></p></li>
+<li><p><a class="reference internal" href="#cylindrical-projections"><span class="std std-ref">Cylindrical projections</span></a></p></li>
+<li><p><a class="reference internal" href="#miscellaneous-projections"><span class="std std-ref">Miscellaneous projections</span></a></p></li>
+</ol>
+<p>Because <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> are coupled we can only specify one plot-dimensional scale, typically a map <em>scale</em>
+(for lower-case map projection code) or a map <em>width</em> (for upper-case map projection code). The <em>measurement unit</em>
+is cm, inch, or point, depending on the <a class="reference internal" href="../gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> setting in <strong>gmt.conf</strong>, but this can be overridden on
+the command line by appending <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> to the <em>scale</em> or <em>width</em> values. In some cases it would be more
+practical to specify map <em>height</em> instead of <em>width</em>, while in other situations it would be nice to set either the
+<em>shortest</em> or <em>longest</em> map dimension. Users may select these alternatives by appending a character code to their map
+dimension [detault is <strong>+dw</strong>]:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Append <strong>+dh</strong> to the given <a class="reference internal" href="features.html#dimension-units"><span class="std std-ref">dimension</span></a> to specify map <em>height</em>.</p></li>
+<li><p>Append <strong>+du</strong> to the given <a class="reference internal" href="features.html#dimension-units"><span class="std std-ref">dimension</span></a> to select the minimum map
+dimension.</p></li>
+<li><p>Append <strong>+dl</strong> to the given <a class="reference internal" href="features.html#dimension-units"><span class="std std-ref">dimension</span></a> to select the maximum map
+dimension.</p></li>
+</ul>
+</div></blockquote>
+<p>The ellipsoid used in map projections is user-definable. 73 commonly used ellipsoids and spheroids are currently
+supported, and users may also specify their own custom ellipsoid parameters [default is WGS-84]. Several GMT parameters
+can affect the projection: <a class="reference internal" href="../gmt.conf.html#term-PROJ_ELLIPSOID"><span class="xref std std-term">PROJ_ELLIPSOID</span></a>, <a class="reference internal" href="../gmt.conf.html#term-GMT_INTERPOLANT"><span class="xref std std-term">GMT_INTERPOLANT</span></a>, <a class="reference internal" href="../gmt.conf.html#term-PROJ_SCALE_FACTOR"><span class="xref std std-term">PROJ_SCALE_FACTOR</span></a>, and
+<a class="reference internal" href="../gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>; see the <a class="reference internal" href="../gmt.conf.html"><span class="doc">gmt.conf</span></a> man page for details.</p>
+<p>In GMT version 4.3.0 we noticed we ran out of the alphabet for 1-letter (and sometimes 2-letter) projection codes. To
+allow more flexibility, and to make it easier to remember the codes, we implemented the option to use the abbreviations
+used by the <a class="reference external" href="https://proj.org/">PROJ</a> mapping package. Since some of the GMT projections are not in <strong>PROJ</strong>, we
+invented some of our own as well. For a full list of both the old 1- and 2-letter codes, as well as the
+<strong>PROJ</strong>-equivalents see the quick reference table below. For example, <strong>-JM</strong>15c and <strong>-JMerc</strong>/15c have the same
+meaning.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Projection</p></th>
+<th class="head"><p>GMT CODES</p></th>
+<th class="head"><p>PROJ CODES</p></th>
+<th class="head"><p>Parameters</p></th>
+</tr>
+<tr class="row-even"><th class="head"></th>
+<th class="head"><p><strong>-J</strong> (<em>scale</em>|<em>WIDTH</em>);</p></th>
+<th class="head"><p><strong>-J</strong> (<em>scale</em>)</p></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ja"><span class="std std-ref">Lambert azimuthal equal area</span></a></p></td>
+<td><p><strong>-Ja</strong>|<strong>A</strong></p></td>
+<td><p><strong>-Jlaea/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jb"><span class="std std-ref">Albers conic equal area</span></a></p></td>
+<td><p><strong>-Jb</strong>|<strong>B</strong></p></td>
+<td><p><strong>-Jaea/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub>/lat<sub>1</sub>/lat<sub>2</sub>/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jc"><span class="std std-ref">Cassini cylindrical</span></a></p></td>
+<td><p><strong>-Jc</strong>|<strong>C</strong></p></td>
+<td><p><strong>-Jcass/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub>/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jcyl-stere"><span class="std std-ref">Cylindrical stereographic</span></a></p></td>
+<td><p><strong>-Jcyl_stere</strong>|<strong>Cyc_stere</strong></p></td>
+<td><p><strong>-Jcyl_stere/</strong></p></td>
+<td><p>[lon<sub>0</sub>[/lat<sub>0</sub>]/]<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jd"><span class="std std-ref">Equidistant conic</span></a></p></td>
+<td><p><strong>-Jd</strong>|<strong>D</strong></p></td>
+<td><p><strong>-Jeqdc/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub>/lat<sub>1</sub>/lat<sub>2</sub>/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#je"><span class="std std-ref">Azimuthal equidistant</span></a></p></td>
+<td><p><strong>-Je</strong>|<strong>E</strong></p></td>
+<td><p><strong>-Jaeqd/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jf"><span class="std std-ref">Azimuthal gnomonic</span></a></p></td>
+<td><p><strong>-Jf</strong>|<strong>F</strong></p></td>
+<td><p><strong>-Jgnom/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jg"><span class="std std-ref">Azimuthal orthographic</span></a></p></td>
+<td><p><strong>-Jg</strong>|<strong>G</strong></p></td>
+<td><p><strong>-Jortho/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jg-pers"><span class="std std-ref">General perspective</span></a></p></td>
+<td><p><strong>-Jg</strong>|<strong>G</strong></p></td>
+<td><p><strong>-Jnsper/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub><em>/</em><em>scale</em>|<em>width</em>[<strong>+a</strong><em>azimuth</em>][<strong>+t</strong><em>tilt</em>][<strong>+v</strong><em>vwidth/vheight</em>][<strong>+w</strong><em>twist</em>][<strong>+z</strong><em>altitude</em>[<strong>r</strong>|<strong>R</strong>]|<strong>g</strong>]</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jh"><span class="std std-ref">Hammer equal area</span></a></p></td>
+<td><p><strong>-Jh</strong>|<strong>H</strong></p></td>
+<td><p><strong>-Jhammer/</strong></p></td>
+<td><p>lon<sub>0</sub>/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ji"><span class="std std-ref">Sinusoidal equal area</span></a></p></td>
+<td><p><strong>-Ji</strong>|<strong>I</strong></p></td>
+<td><p><strong>-Jsinu/</strong></p></td>
+<td><p>lon<sub>0</sub>/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jj"><span class="std std-ref">Miller cylindrical</span></a></p></td>
+<td><p><strong>-Jj</strong>|<strong>J</strong></p></td>
+<td><p><strong>-Jmill/</strong></p></td>
+<td><p>lon<sub>0</sub>/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jk"><span class="std std-ref">Eckert IV equal area</span></a></p></td>
+<td><p><strong>-Jkf</strong>|<strong>Kf</strong></p></td>
+<td><p><strong>-Jeck4/</strong></p></td>
+<td><p>lon<sub>0</sub>/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jk"><span class="std std-ref">Eckert VI equal area</span></a></p></td>
+<td><p><strong>-Jks</strong>|<strong>Ks</strong></p></td>
+<td><p><strong>-Jeck6/</strong></p></td>
+<td><p>lon<sub>0</sub>/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jl"><span class="std std-ref">Lambert conic conformal</span></a></p></td>
+<td><p><strong>-Jl</strong>|<strong>L</strong></p></td>
+<td><p><strong>-Jlcc/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub>/lat<sub>1</sub>/lat<sub>2</sub>/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jm"><span class="std std-ref">Mercator cylindrical</span></a></p></td>
+<td><p><strong>-Jm</strong>|<strong>M</strong></p></td>
+<td><p><strong>-Jmerc/</strong></p></td>
+<td><p>[lon<sub>0</sub>[/lat<sub>0</sub>/]]<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jn"><span class="std std-ref">Robinson</span></a></p></td>
+<td><p><strong>-Jn</strong>|<strong>N</strong></p></td>
+<td><p><strong>-Jrobin/</strong></p></td>
+<td><p>[lon<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jo"><span class="std std-ref">Oblique Mercator, 1: origin and azim</span></a></p></td>
+<td><p><strong>-Jo</strong>|<strong>O</strong>[<strong>a</strong>|<strong>A</strong>]</p></td>
+<td><p><strong>-Jomerc/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub>/<em>azim</em>/<em>scale</em>|<em>width</em> [<strong>+v</strong>]</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jo"><span class="std std-ref">Oblique Mercator, 2: two points</span></a></p></td>
+<td><p><strong>-Jo</strong>|<strong>O</strong>[<strong>b</strong>|<strong>B</strong>]</p></td>
+<td><p><strong>-Jomerc/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub>/lon<sub>1</sub>/lat<sub>1</sub>/<em>scale</em>|<em>width</em>[<strong>+v</strong>]</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jo"><span class="std std-ref">Oblique Mercator, 3: origin and pole</span></a></p></td>
+<td><p><strong>-Jo</strong>|<strong>O</strong>[<strong>c</strong>|<strong>C</strong>]</p></td>
+<td><p><strong>-Jomercp/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub>/lon<sub>p</sub>/lat<sub>p</sub>/<em>scale</em>|<em>width</em>[<strong>+v</strong>]</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="coordinate-transformations.html#jp"><span class="std std-ref">Polar [azimuthal]</span></a>  (<span class="math notranslate nohighlight">\(\theta, r\)</span>) (or cylindrical)</p></td>
+<td><p><strong>-Jp</strong>|<strong>P</strong></p></td>
+<td><p><strong>-Jpolar/</strong></p></td>
+<td><p><em>scale</em>|<em>width</em>[<strong>+a</strong>][<strong>+f</strong>[<strong>e</strong>|<strong>p</strong>|<em>radius</em>]][<strong>+k</strong><em>kind</em>][<strong>+r</strong><em>offset</em>][<strong>+t</strong><em>origin</em>][<strong>+z</strong>[<strong>p</strong>|<em>radius</em>]]</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jpoly"><span class="std std-ref">(American) polyconic</span></a></p></td>
+<td><p><strong>-Jpoly</strong>|<strong>Poly</strong></p></td>
+<td><p><strong>-Jpoly/</strong></p></td>
+<td><p>[lon<sub>0</sub>[/lat<sub>0</sub>/]]<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jq"><span class="std std-ref">Equidistant cylindrical</span></a></p></td>
+<td><p><strong>-Jq</strong>|<strong>Q</strong></p></td>
+<td><p><strong>-Jeqc/</strong></p></td>
+<td><p>[lon<sub>0</sub>[/lat<sub>0</sub>/]]<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jr"><span class="std std-ref">Winkel Tripel</span></a></p></td>
+<td><p><strong>-Jr</strong>|<strong>R</strong></p></td>
+<td><p><strong>-Jwintri/</strong></p></td>
+<td><p>[lon<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#js"><span class="std std-ref">General stereographic</span></a></p></td>
+<td><p><strong>-Js</strong>|<strong>S</strong></p></td>
+<td><p><strong>-Jstere/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub>[/<em>horizon</em>]/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jt"><span class="std std-ref">Transverse Mercator</span></a></p></td>
+<td><p><strong>-Jt</strong>|<strong>T</strong></p></td>
+<td><p><strong>-Jtmerc/</strong></p></td>
+<td><p>[lon<sub>0</sub>[/lat<sub>0</sub>/]]<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ju"><span class="std std-ref">Universal Transverse Mercator (UTM)</span></a></p></td>
+<td><p><strong>-Ju</strong>|<strong>U</strong></p></td>
+<td><p><strong>-Jutm/</strong></p></td>
+<td><p><em>zone</em>/<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#jv"><span class="std std-ref">Van der Grinten</span></a></p></td>
+<td><p><strong>-Jv</strong>|<strong>V</strong></p></td>
+<td><p><strong>-Jvandg/</strong></p></td>
+<td><p>[lon<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jw"><span class="std std-ref">Mollweide</span></a></p></td>
+<td><p><strong>-Jw</strong>|<strong>W</strong></p></td>
+<td><p><strong>-Jmoll/</strong></p></td>
+<td><p>[lon<sub>0</sub>/]<em>scale</em>|<em>width</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="coordinate-transformations.html#jx-linear"><span class="std std-ref">Linear</span></a>, <a class="reference internal" href="coordinate-transformations.html#jx-log"><span class="std std-ref">logarithmic</span></a>,
+<a class="reference internal" href="coordinate-transformations.html#jx-power"><span class="std std-ref">power</span></a>, and <a class="reference internal" href="coordinate-transformations.html#jx-time"><span class="std std-ref">time</span></a></p></td>
+<td><p><strong>-Jx</strong>|<strong>X</strong></p></td>
+<td><p><strong>-Jxy</strong></p></td>
+<td><p><em>xscale</em>|<em>width</em>[<strong>l</strong>|<strong>p</strong><em>power</em>|<strong>T</strong>|<strong>t</strong>][/<em>yscale</em>|<em>height</em>[<strong>l</strong>|<strong>p</strong><em>power</em>|<strong>T</strong>|<strong>t</strong>]][<strong>d</strong>]</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#jy"><span class="std std-ref">Cylindrical equal area</span></a></p></td>
+<td><p><strong>-Jy</strong>|<strong>Y</strong></p></td>
+<td><p><strong>-Jcea/</strong></p></td>
+<td><p>lon<sub>0</sub>/lat<sub>0</sub>/<em>scale</em>|<em>width</em></p></td>
+</tr>
+</tbody>
+</table>
+<section id="conic-projections">
+<h2><span class="section-number">6.1. </span>Conic projections<a class="headerlink" href="#conic-projections" title="Permalink to this heading">¶</a></h2>
+<section id="albers-conic-equal-area-projection-jb-jb">
+<span id="jb"></span><h3><span class="section-number">6.1.1. </span>Albers conic equal-area projection (<strong>-Jb</strong> <strong>-JB</strong>)<a class="headerlink" href="#albers-conic-equal-area-projection-jb-jb" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jb</strong>|<strong>B</strong><em>lon0/lat0/lat1/lat2/</em><em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of the projection center.</p></li>
+<li><p>The two standard parallels (<em>lat1</em> and <em>lat2</em>).</p></li>
+<li><p>The <em>scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jb</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JB</strong>).</p></li>
+</ul>
+<p>Note that you must include the “1:” if you choose to specify the <em>scale</em> that way. For example, you can say 0.5c which
+means 0.5 cm/degree or 1:200000 which means 1 unit on the map equals 200,000 units along the standard parallels. The
+projection center defines the origin of the rectangular map coordinates.</p>
+<p><strong>Description</strong></p>
+<p>This projection, developed by Heinrich C. Albers in 1805, is predominantly used to map regions of large east-west
+extent, in particular the United States. It is a conic, equal-area projection, in which parallels are unequally
+spaced arcs of concentric circles, more closely spaced at the north and south edges of the map. Meridians, on the other
+hand, are equally spaced radii about a common center, and cut the parallels at right angles. Distortion in scale and
+shape vanishes along the two standard parallels. Between them, the scale along parallels is too small; beyond them it is
+too large. The opposite is true for the scale along meridians.</p>
+<p><strong>Example</strong></p>
+<p>As an example we will make a map of the region near Taiwan. We choose the center of the projection to be at 125°E/20°N
+and 25°N and 45°N as our two standard parallels. We desire a map that is 12 cm wide. The complete command needed to
+generate the map below is therefore given by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_albers
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt <span class="nb">set</span> MAP_GRID_CROSS_SIZE_PRIMARY <span class="m">0</span>
+	gmt coast -R110/140/20/35 -JB125/20/25/45/12c -Bag -Dl -Ggreen -Wthinnest -A250
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id7">
+<a class="reference internal image-reference" href="../_images/GMT_albers.png"><img alt="../_images/GMT_albers.png" src="../_images/GMT_albers.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Albers equal-area conic map projection.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="equidistant-conic-projection-jd-jd">
+<span id="jd"></span><h3><span class="section-number">6.1.2. </span>Equidistant conic projection (<strong>-Jd</strong> <strong>-JD</strong>)<a class="headerlink" href="#equidistant-conic-projection-jd-jd" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jd</strong>|<strong>D</strong><em>lon0/lat0/lat1/lat2/</em><em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of the projection center.</p></li>
+<li><p>The two standard parallels (<em>lat1</em> and <em>lat2</em>).</p></li>
+<li><p>The <em>scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jd</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JD</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>The equidistant conic projection was described by the Greek philosopher Claudius Ptolemy about A.D. 150. It is neither
+conformal or equal-area, but serves as a compromise between them. The scale is true along all meridians and the standard
+parallels.</p>
+<p><strong>Example</strong></p>
+<p>The equidistant conic projection is often used for atlases with maps of small countries. As an example, we generate a
+map of Cuba:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_equidistant_conic
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt <span class="nb">set</span> FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY <span class="m">0</span>.15c
+	gmt coast -R-88/-70/18/24 -JD-79/21/19/23/12c -Bag -Di -N1/thick,red -Glightgreen -Wthinnest
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id8">
+<a class="reference internal image-reference" href="../_images/GMT_equidistant_conic.png"><img alt="../_images/GMT_equidistant_conic.png" src="../_images/GMT_equidistant_conic.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Equidistant conic map projection.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="lambert-conic-conformal-projection-jl-jl">
+<span id="jl"></span><h3><span class="section-number">6.1.3. </span>Lambert conic conformal projection (<strong>-Jl</strong> <strong>-JL</strong>)<a class="headerlink" href="#lambert-conic-conformal-projection-jl-jl" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jl</strong>|<strong>L</strong><em>lon0/lat0/lat1/lat2/</em><em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of the projection center.</p></li>
+<li><p>The two standard parallels (<em>lat1</em> and <em>lat2</em>).</p></li>
+<li><p>The <em>scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jl</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JL</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>This conic projection was designed by the Alsatian mathematician Johann Heinrich Lambert (1772) and has been used
+extensively for mapping of regions with predominantly east-west orientation, just like the Albers projection. Unlike the
+Albers projection, Lambert’s conformal projection is not equal-area. The parallels are arcs of circles with a common
+origin, and meridians are the equally spaced radii of these circles. As with Albers projection, it is only the two
+standard parallels that are distortion-free.</p>
+<p><strong>Example</strong></p>
+<p>The Lambert conformal projection has been used for basemaps for all the 48 contiguous States with the two fixed standard
+parallels 33°N and 45°N. We will generate a map of the continental USA using these parameters. Note that with all the
+projections you have the option of selecting a rectangular border rather than one defined by meridians and parallels.
+Here, we choose the regular WESN region, a “fancy” basemap frame, and use degrees west for longitudes. The generating
+commands used were:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_lambert_conic
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt <span class="nb">set</span> MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY <span class="m">0</span>.15c
+	gmt coast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red -N2/thinner -A500 -Gtan -Wthinnest,white -Sblue
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id9">
+<a class="reference internal image-reference" href="../_images/GMT_lambert_conic.png"><img alt="../_images/GMT_lambert_conic.png" src="../_images/GMT_lambert_conic.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Lambert conformal conic map projection.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The choice for projection center does not affect the projection but it indicates which meridian (here 100°W) will be
+vertical on the map. The standard parallels were originally selected by Adams to provide a maximum scale error between
+latitudes 30.5°N and 47.5°N of 0.5–1%. Some areas, like Florida, experience scale errors of up to 2.5%.</p>
+</section>
+<section id="american-polyconic-projection-jpoly-jpoly">
+<span id="jpoly"></span><h3><span class="section-number">6.1.4. </span>(American) polyconic projection (<strong>-Jpoly</strong> <strong>-JPoly</strong>)<a class="headerlink" href="#american-polyconic-projection-jpoly-jpoly" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jpoly</strong>|<strong>Poly</strong>/[<em>lon0/</em>[<em>lat0/</em>]]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of the projection center.</p></li>
+<li><p>The two standard parallels (<em>lat1</em> and <em>lat2</em>).</p></li>
+<li><p>The <em>scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jl</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JL</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>The polyconic projection, in Europe usually referred to as the American polyconic projection, was introduced shortly
+before 1820 by the Swiss-American cartographer Ferdinand Rodulph Hassler (1770–1843). As head of the Survey of the
+Coast, he was looking for a projection that would give the least distortion for mapping the coast of the United
+States. The projection acquired its name from the construction of each parallel, which is achieved by projecting the
+parallel onto the cone while it is rolled around the globe, along the central meridian, tangent to that parallel. As a
+consequence, the projection involves many cones rather than a single one used in regular conic projections.</p>
+<p>The polyconic projection is neither equal-area, nor conformal. It is true to scale without distortion along the central
+meridian. Each parallel is true to scale as well, but the meridians are not as they get further away from the central
+meridian. As a consequence, no parallel is standard because conformity is lost with the lengthening of the meridians.</p>
+<p><strong>Example</strong></p>
+<p>Below we reproduce the illustration by <em>Snyder</em> [1987], with a gridline every 10 and annotations only every 30° in
+longitude:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R-180/-20/0/90 -JPoly/10c -Bx30g10 -By10g10 -Dc -A1000 -Glightgray -Wthinnest --GMT_THEME<span class="o">=</span>cookbook -view GMT_polyconic
+</pre></div>
+</div>
+<figure class="align-center" id="id10">
+<a class="reference internal image-reference" href="../_images/GMT_polyconic.png"><img alt="../_images/GMT_polyconic.png" src="../_images/GMT_polyconic.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">(American) polyconic projection.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="azimuthal-projections">
+<h2><span class="section-number">6.2. </span>Azimuthal projections<a class="headerlink" href="#azimuthal-projections" title="Permalink to this heading">¶</a></h2>
+<section id="lambert-azimuthal-equal-area-ja-ja">
+<span id="ja"></span><h3><span class="section-number">6.2.1. </span>Lambert Azimuthal Equal-Area (<strong>-Ja</strong> <strong>-JA</strong>)<a class="headerlink" href="#lambert-azimuthal-equal-area-ja-ja" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Ja</strong>|<strong>A</strong><em>lon0/lat0</em>[<em>/horizon</em>]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of the projection center.</p></li>
+<li><p>Optionally, the <em>horizon</em>, i.e., the number of degrees from the center to the edge (&lt;=180) [default is 90].</p></li>
+<li><p>The <em>scale</em> as 1:xxxxx or as <em>radius/latitude</em> where <em>radius</em> is the projected distance on the map from projection center
+to an oblique latitude where 0 would be the oblique Equator (with <strong>-Ja</strong>) or map <em>width</em>
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JA</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>This projection was developed by Johann Heinrich Lambert in 1772 and is typically used for mapping large regions like
+continents and hemispheres. It is an azimuthal, equal-area projection, but is not perspective. Distortion is zero at the
+center of the projection, and increases radially away from this point.</p>
+<p><strong>Examples</strong></p>
+<p>Two different types of maps can be made with this projection depending on how the region is specified. We will give
+examples of both types in the next two subsections.</p>
+<section id="rectangular-map">
+<h4><span class="section-number">6.2.1.1. </span>Rectangular map<a class="headerlink" href="#rectangular-map" title="Permalink to this heading">¶</a></h4>
+<p>In this mode we define our region by specifying the longitude/latitude
+of the lower left and upper right corners instead of the usual <em>west,
+east, south, north</em> boundaries. The reason for specifying our area this
+way is that for this and many other projections, lines of equal
+longitude and latitude are not straight lines and are thus poor choices
+for map boundaries. Instead we require that the map boundaries be
+rectangular by defining the corners of a rectangular map boundary. Using
+0°E/40°S (lower left) and 60°E/10°S (upper right) as our corners we try</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_lambert_az_rect
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt <span class="nb">set</span> FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY <span class="m">0</span>
+	gmt coast -R0/-40/60/-10+r -JA30/-30/12c -Bag -Dl -A500 -Gp10+r300 -Wthinnest
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id11">
+<a class="reference internal image-reference" href="../_images/GMT_lambert_az_rect.png"><img alt="../_images/GMT_lambert_az_rect.png" src="../_images/GMT_lambert_az_rect.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Rectangular map using the Lambert azimuthal equal-area projection.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Note that an <strong>+r</strong> is appended to the <strong>-R</strong> option to inform GMT that
+the region has been selected using the rectangle technique, otherwise it
+would try to decode the values as <em>west, east, south, north</em> and report
+an error since <em>‘east’</em> &lt; <em>‘west’</em>.</p>
+</section>
+<section id="hemisphere-map">
+<h4><span class="section-number">6.2.1.2. </span>Hemisphere map<a class="headerlink" href="#hemisphere-map" title="Permalink to this heading">¶</a></h4>
+<p>Here, you must specify the world as your region (<strong>-Rg</strong> or <strong>-Rd</strong>). E.g., to obtain a hemisphere view that shows the
+Americas, try</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JA280/30/12c -Bg -Dc -A1000 -Gnavy --GMT_THEME<span class="o">=</span>cookbook -view GMT_lambert_az_hemi
+</pre></div>
+</div>
+<figure class="align-center" id="id12">
+<a class="reference internal image-reference" href="../_images/GMT_lambert_az_hemi.png"><img alt="../_images/GMT_lambert_az_hemi.png" src="../_images/GMT_lambert_az_hemi.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Hemisphere map using the Lambert azimuthal equal-area projection.</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>To geologists, the Lambert azimuthal equal-area projection (with origin
+at 0/0) is known as the <em>equal-area</em> (Schmidt) stereonet and used for
+plotting fold axes, fault planes, and the like. An <em>equal-angle</em> (Wulff)
+stereonet can be obtained by using the stereographic projection
+(discussed later). The stereonets produced by these two projections appear below.</p>
+<figure class="align-center" id="id13">
+<span id="gmt-stereonets"></span><a class="reference internal image-reference" href="../_images/GMT_stereonets.png"><img alt="../_images/GMT_stereonets.png" src="../_images/GMT_stereonets.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Equal-Area (Schmidt) and Equal-Angle (Wulff) stereo nets.</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="toggle docutils container">
+<p>Here is the source script for the figure above:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_stereonets
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt basemap -R0/360/-90/90 -JA0/0/1.75i -Bg15
+	<span class="nb">echo</span> <span class="s2">&quot;180 -90 SCHMIDT&quot;</span> <span class="p">|</span> gmt text -N -D0/-0.2c -F+f12p,Helvetica-Bold+jTC
+	gmt basemap -JS0/0/1.75i -Bg15 -X2.75i
+	<span class="nb">echo</span> <span class="s2">&quot;180 -90 WULFF&quot;</span> <span class="p">|</span> gmt text -N -D0/-0.2c -F+f12p,Helvetica-Bold+jTC
+gmt end show
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="stereographic-equal-angle-js-js">
+<span id="js"></span><h3><span class="section-number">6.2.2. </span>Stereographic Equal-Angle (<strong>-Js</strong> <strong>-JS</strong>)<a class="headerlink" href="#stereographic-equal-angle-js-js" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Js</strong>|<strong>S</strong><em>lon0/lat0</em>[<em>/horizon</em>]<em>/</em><em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of the projection center.</p></li>
+<li><p>Optionally, the <em>horizon</em>, i.e., the number of degrees from the center to the edge (&lt; 180) [default is 90].</p></li>
+<li><p>Scale (via <strong>-Js</strong>) may be provided in one of three flavors: Append 1:xxxxx (true scale at pole), <em>slat</em>/1:xxxxx
+(true scale at standard parallel <em>slat</em> for the polar aspect only), or <em>radius/latitude</em> (where <em>radius</em> is
+distance on map in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> from projection center to a particular oblique latitude).</p></li>
+<li><p>Alternatively, simply append map <em>width</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JS</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>This is a conformal, azimuthal projection that dates back to the Greeks. Its main use is for mapping the polar regions.
+In the polar aspect all meridians are straight lines and parallels are arcs of circles. While this is the most common
+use it is possible to select any point as the center of projection.</p>
+<p>A map scale factor of 0.9996 will be applied by default (although you may change this with <a class="reference internal" href="../gmt.conf.html#term-PROJ_SCALE_FACTOR"><span class="xref std std-term">PROJ_SCALE_FACTOR</span></a>).
+However, the setting is ignored when a standard parallel has been specified since the scale is then implicitly given.
+We will look at two different types of maps.</p>
+<p><strong>Examples</strong></p>
+<p>Multiple types of maps can be made with this projection depending on how the region is specified. We will give
+examples in the next three subsections.</p>
+<section id="polar-stereographic-map">
+<h4><span class="section-number">6.2.2.1. </span>Polar Stereographic Map<a class="headerlink" href="#polar-stereographic-map" title="Permalink to this heading">¶</a></h4>
+<p>In our first example we will let the projection center be at the north
+pole. This means we have a polar stereographic projection and the map
+boundaries will coincide with lines of constant longitude and latitude.
+An example is given by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R-30/30/60/72 -Js0/90/12c/60 -B10g -Dl -A250 -Groyalblue -Sseashell --GMT_THEME<span class="o">=</span>cookbook -view GMT_stereographic_polar
+</pre></div>
+</div>
+<figure class="align-center" id="id14">
+<a class="reference internal image-reference" href="../_images/GMT_stereographic_polar.png"><img alt="../_images/GMT_stereographic_polar.png" src="../_images/GMT_stereographic_polar.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Polar stereographic conformal projection.</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="rectangular-stereographic-map">
+<h4><span class="section-number">6.2.2.2. </span>Rectangular stereographic map<a class="headerlink" href="#rectangular-stereographic-map" title="Permalink to this heading">¶</a></h4>
+<p>As with Lambert’s azimuthal equal-area projection we have the option to
+use rectangular boundaries rather than the wedge-shape typically
+associated with polar projections. This choice is defined by selecting
+two points as corners in the rectangle and appending <strong>+r</strong> to the
+<strong>-R</strong> option. This command produces a map as presented in
+Figure <a class="reference internal" href="#gmt-stereographic-rect"><span class="std std-ref">Polar stereographic</span></a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_stereographic_rect
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt <span class="nb">set</span> MAP_ANNOT_OBLIQUE lon_horizontal,lat_horizontal,tick_extend,tick_normal
+	gmt coast -R-25/59/70/72+r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -Slightgray
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id15">
+<span id="gmt-stereographic-rect"></span><a class="reference internal image-reference" href="../_images/GMT_stereographic_rect.png"><img alt="../_images/GMT_stereographic_rect.png" src="../_images/GMT_stereographic_rect.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Polar stereographic conformal projection with rectangular borders.</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="general-stereographic-map">
+<h4><span class="section-number">6.2.2.3. </span>General stereographic map<a class="headerlink" href="#general-stereographic-map" title="Permalink to this heading">¶</a></h4>
+<p>In terms of usage this projection is identical to the Lambert azimuthal
+equal-area projection. Thus, one can make both rectangular and
+hemispheric maps. Our example shows Australia using a projection pole at
+130°E/30°S. The command used was</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_stereographic_general
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt <span class="nb">set</span> MAP_ANNOT_OBLIQUE separate
+	gmt coast -R100/-42/160/-8+r -JS130/-30/12c -Bag -Dl -A500 -Ggreen -Slightblue -Wthinnest
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id16">
+<a class="reference internal image-reference" href="../_images/GMT_stereographic_general.png"><img alt="../_images/GMT_stereographic_general.png" src="../_images/GMT_stereographic_general.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">General stereographic conformal projection with rectangular borders.</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>By choosing 0/0 as the pole, we obtain the conformal stereonet presented
+next to its equal-area cousin in the Section <a class="reference internal" href="#lambert-azimuthal-equal-area-ja-ja">Lambert Azimuthal Equal-Area (-Ja -JA)</a> on the Lambert azimuthal equal-area projection (Figure <a class="reference internal" href="#gmt-stereonets"><span class="std std-ref">Stereonets</span></a>).</p>
+</section>
+</section>
+<section id="perspective-projection-jg-jg">
+<span id="jg-pers"></span><h3><span class="section-number">6.2.3. </span>Perspective projection (<strong>-Jg</strong> <strong>-JG</strong>)<a class="headerlink" href="#perspective-projection-jg-jg" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jg</strong>|<strong>G</strong><em>lon0/lat0</em><em>/</em><em>scale</em>|<em>width</em>[<strong>+a</strong><em>azimuth</em>][<strong>+t</strong><em>tilt</em>][<strong>+v</strong><em>vwidth/vheight</em>][<strong>+w</strong><em>twist</em>][<strong>+z</strong><em>altitude</em>[<strong>r</strong>|<strong>R</strong>]|<strong>g</strong>]</p>
+</div></blockquote>
+<p><strong>Required Parameters</strong></p>
+<ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of the projection center.</p></li>
+<li><p>The <em>scale</em> as 1:xxxxx or as <em>radius/latitude</em> where <em>radius</em> is distance on map in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> from
+projection center to a particular oblique latitude (with <strong>-Jg</strong>), or map width in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>
+(with <strong>-JG</strong>).</p></li>
+</ul>
+<p><strong>Optional Parameters</strong></p>
+<ul class="simple">
+<li><p>The <em>azimuth</em> in degrees. This is the direction in which you are looking, measured clockwise from north [0].</p></li>
+<li><p>The <em>tilt</em> in degrees. This is the viewing angle relative to zenith. For example, a tilt of 0° is looking straight
+down, and 60° is looking from 30° above the horizon [0].</p></li>
+<li><p>The <em>vwidth</em> and <em>vheight</em> of the viewpoint in degrees. This number depends on whether you are looking with the naked
+eye (in which case the view is about 60° wide), or with binoculars, for example [unrestricted].</p></li>
+<li><p>The <em>twist</em> in degrees. This is the boresight rotation (clockwise) of the image [0].</p></li>
+<li><p>The <em>altitude</em> of the viewer above sea level in kilometers [infinity]. Alternatively, append <strong>R</strong> if giving
+the distance of the viewer from the center of the Earth in Earth radii, or <strong>r</strong> if giving the distance from the
+center of the Earth in kilometers.  Finally, give <em>altitude</em> as <strong>g</strong> to compute and use the altitude for a
+geosynchronous orbit.</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>The perspective projection imitates in 2 dimensions the 3-dimensional view of the earth from space. The implementation
+in GMT is very flexible, and thus requires many input variables.</p>
+<p><strong>Example</strong></p>
+<p>The imagined view of northwest Europe from a Space Shuttle at 230 km looking due east is thus accomplished by the
+following <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> command (<em>lon0</em>=4; <em>lat0</em>=52; <em>altitude</em>=230 km; <em>azimuth</em>= 90°; <em>tilt</em>= 60°;
+<em>twist</em>= 180°; <em>vwidth</em>= <em>vheight</em>= 60°; and <em>width</em> = 12 cm):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JG4/52/12c+z230+a90+t60+w180+v60 -Bx2g2 -By1g1 -Ia -Di -Glightbrown -Wthinnest -Slightblue --GMT_THEME<span class="o">=</span>cookbook --MAP_ANNOT_MIN_SPACING<span class="o">=</span><span class="m">0</span>.6c -view GMT_perspective
+</pre></div>
+</div>
+<figure class="align-center" id="id17">
+<span id="gmt-perspective"></span><a class="reference internal image-reference" href="../_images/GMT_perspective.png"><img alt="../_images/GMT_perspective.png" src="../_images/GMT_perspective.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">View from the Space Shuttle in Perspective projection.</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="orthographic-projection-jg-jg">
+<span id="jg"></span><h3><span class="section-number">6.2.4. </span>Orthographic projection (<strong>-Jg</strong> <strong>-JG</strong>)<a class="headerlink" href="#orthographic-projection-jg-jg" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jg</strong>|<strong>G</strong><em>lon0/lat0</em>[<em>/horizon</em>]<em>/</em><em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of the projection center.</p></li>
+<li><p>Optionally, the <em>horizon</em>, i.e., the number of degrees from the center to the edge (&lt;=90) [default is 90].</p></li>
+<li><p>The <em>scale</em> as 1:xxxxx or as <em>radius/latitude</em> where <em>radius</em> is distance on map in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> from
+projection center to a particular oblique latitude (with <strong>-Jg</strong>), or map width in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>
+(with <strong>-JG</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>The orthographic azimuthal projection is a perspective projection from infinite distance. It is therefore often used to
+give the appearance of a globe viewed from outer space. As with Lambert’s equal-area and the stereographic projection,
+only one hemisphere can be viewed at any time. The projection is neither equal-area nor conformal, and much distortion
+is introduced near the edge of the hemisphere. The directions from the center of projection are true. The projection was
+known to the Egyptians and Greeks more than 2,000 years ago. Because it is mainly used for pictorial views at a small
+scale, only the spherical form is necessary.</p>
+<p><strong>Example</strong></p>
+<p>Our example of a perspective view centered on 75°W/40°N can therefore be generated by the following <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a>
+command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JG-75/41/12c -Bg -Dc -A5000 -Gpink -Sthistle --GMT_THEME<span class="o">=</span>cookbook -view GMT_orthographic
+</pre></div>
+</div>
+<figure class="align-center" id="id18">
+<a class="reference internal image-reference" href="../_images/GMT_orthographic.png"><img alt="../_images/GMT_orthographic.png" src="../_images/GMT_orthographic.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Hemisphere map using the Orthographic projection.</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="azimuthal-equidistant-projection-je-je">
+<span id="je"></span><h3><span class="section-number">6.2.5. </span>Azimuthal Equidistant projection (<strong>-Je</strong> <strong>-JE</strong>)<a class="headerlink" href="#azimuthal-equidistant-projection-je-je" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Je</strong>|<strong>E</strong><em>lon0/lat0</em>[<em>/horizon</em>]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of the projection center.</p></li>
+<li><p>Optionally, the <em>horizon</em>, i.e., the number of degrees from the center to the edge (&lt;=180) [default is 180].</p></li>
+<li><p>The <em>scale</em> as 1:xxxxx or as <em>radius/latitude</em> where <em>radius</em> is distance on map in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> from
+projection center to a particular oblique latitude (with <strong>-Je</strong>), or map width in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>
+(with <strong>-JE</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>The most noticeable feature of this azimuthal projection is the fact that distances measured from the center are true.
+Therefore, a circle about the projection center defines the locus of points that are equally far away from the plot
+origin. Furthermore, directions from the center are also true. The projection, in the polar aspect, is at least several
+centuries old. It is a useful projection for a global view of locations at various or identical distance from a given
+point (the map center).</p>
+<p><strong>Example</strong></p>
+<p>Our example of a global view centered on 100°W/40°N can therefore be generated by the following <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> command.
+Note that the antipodal point is 180° away from the center, but in this projection this point plots as the entire map
+perimeter:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JE-100/40/12c -Bg -Dc -A10000 -Glightgray -Wthinnest --GMT_THEME<span class="o">=</span>cookbook -view GMT_az_equidistant
+</pre></div>
+</div>
+<figure class="align-center" id="id19">
+<a class="reference internal image-reference" href="../_images/GMT_az_equidistant.png"><img alt="../_images/GMT_az_equidistant.png" src="../_images/GMT_az_equidistant.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using the equidistant azimuthal projection.</span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="gnomonic-projection-jf-jf">
+<span id="jf"></span><h3><span class="section-number">6.2.6. </span>Gnomonic projection (<strong>-Jf</strong> <strong>-JF</strong>)<a class="headerlink" href="#gnomonic-projection-jf-jf" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jf</strong>|<strong>F</strong><em>lon0/lat0</em>[<em>/horizon</em>]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of the projection center.</p></li>
+<li><p>Optionally, the <em>horizon</em>, i.e., the number of degrees from the center to the edge (&lt;90) [default is 60].</p></li>
+<li><p>The <em>scale</em> as 1:xxxxx or as <em>radius/latitude</em> where radius is distance on map in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> from
+projection center to a particular oblique latitude (with <strong>-Jf</strong>), or map width in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>
+(with <strong>-JF</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>The Gnomonic azimuthal projection is a perspective projection from the center onto a plane tangent to the surface. Its
+origin goes back to the old Greeks who used it for star maps almost 2500 years ago. The projection is neither equal-area
+nor conformal, and much distortion is introduced near the edge of the hemisphere; in fact, less than a hemisphere may be
+shown around a given center. The directions from the center of projection are true. Great circles project onto straight
+lines. Because it is mainly used for pictorial views at a small scale, only the spherical form is necessary.</p>
+<p><strong>Example</strong></p>
+<p>Using a <em>horizon</em> of 60, our example of this projection centered on 120°W/35°N can therefore be generated by the
+following <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JF-120/35/60/12c -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest --GMT_THEME<span class="o">=</span>cookbook -view GMT_gnomonic
+</pre></div>
+</div>
+<figure class="align-center" id="id20">
+<a class="reference internal image-reference" href="../_images/GMT_gnomonic.png"><img alt="../_images/GMT_gnomonic.png" src="../_images/GMT_gnomonic.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Gnomonic azimuthal projection.</span><a class="headerlink" href="#id20" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="cylindrical-projections">
+<h2><span class="section-number">6.3. </span>Cylindrical projections<a class="headerlink" href="#cylindrical-projections" title="Permalink to this heading">¶</a></h2>
+<p>Cylindrical projections are easily recognized for their shape: maps are rectangular and meridians and parallels are
+straight lines crossing at right angles. But that is where similarities between the cylindrical projections supported
+by GMT (<a class="reference internal" href="#jm"><span class="std std-ref">Mercator</span></a>, <a class="reference internal" href="#jt"><span class="std std-ref">transverse Mercator</span></a>, <a class="reference internal" href="#ju"><span class="std std-ref">universal transverse Mercator</span></a>,
+<a class="reference internal" href="#jo"><span class="std std-ref">oblique Mercator</span></a>, <a class="reference internal" href="#jc"><span class="std std-ref">Cassini</span></a>, <a class="reference internal" href="#jq"><span class="std std-ref">cylindrical equidistant</span></a>,
+<a class="reference internal" href="#jy"><span class="std std-ref">cylindrical equal-area</span></a>, <a class="reference internal" href="#jj"><span class="std std-ref">Miller</span></a>, and <a class="reference internal" href="#jcyl-stere"><span class="std std-ref">cylindrical stereographic</span></a>) stops.
+Each have a different way of spacing the meridians and parallels to obtain certain desirable cartographic properties.</p>
+<section id="mercator-projection-jm-jm">
+<span id="jm"></span><h3><span class="section-number">6.3.1. </span>Mercator projection (<strong>-Jm</strong> <strong>-JM</strong>)<a class="headerlink" href="#mercator-projection-jm-jm" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jm</strong>|<strong>M</strong>[<em>lon0/</em>[<em>lat0/</em>]]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>Optionally, the central meridian (<em>lon0</em>) [default is the middle of the map].</p></li>
+<li><p>Optionally, the standard parallel for true scale (<em>lat0</em>) [default is the equator]. When supplied, the central
+meridian (<em>lon0</em>) must be supplied as well.</p></li>
+<li><p>The <em>scale</em> along the equator in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jm</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JM</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>Probably the most famous of the various map projections, the Mercator projection takes its name from the Flemish
+cartographer Gheert Cremer, better known as Gerardus Mercator, who presented it in 1569. The projection is a cylindrical
+and conformal, with no distortion along the equator. A major navigational feature of the projection is that a line of
+constant azimuth is straight. Such a line is called a rhumb line or <em>loxodrome</em>. Thus, to sail from one point to another
+one only had to connect the points with a straight line, determine the azimuth of the line, and keep this constant
+course for the entire voyage<a class="footnote-reference brackets" href="#id5" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>21<span class="fn-bracket">]</span></a>. The Mercator projection has been used extensively for world maps in which the
+distortion towards the polar regions grows rather large, thus incorrectly giving the impression that, for example,
+Greenland is larger than South America. In reality, the latter is about eight times the size of Greenland. Also, the
+Former Soviet Union looks much bigger than Africa or South America. One may wonder whether this illusion has had any
+influence on U.S. foreign policy.</p>
+<p>In the regular Mercator projection, the cylinder touches the globe along the equator. Other orientations like vertical
+and oblique give rise to the <a class="reference internal" href="#jt"><span class="std std-ref">transverse Mercator</span></a> and <a class="reference internal" href="#jo"><span class="std std-ref">oblique Mercator</span></a> projections,
+respectively. We will discuss these generalizations following the regular Mercator projection.</p>
+<p><strong>Example</strong></p>
+<p>A world map at a scale of 0.03 cm per degree, which will give a map 10.8-cm wide, can be obtained as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_mercator
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt <span class="nb">set</span> MAP_FRAME_TYPE fancy-rounded
+	gmt coast -R0/360/-70/70 -Jm0.03c -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id21">
+<a class="reference internal image-reference" href="../_images/GMT_mercator.png"><img alt="../_images/GMT_mercator.png" src="../_images/GMT_mercator.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Simple Mercator map.</span><a class="headerlink" href="#id21" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>While this example is centered on the Dateline, one can easily choose another configuration with the <strong>-R</strong> option. For
+example, specify the region with <strong>-R</strong>-180/180/-70/70 to obtain a map centered on Greenwich.</p>
+</section>
+<section id="transverse-mercator-projection-jt-jt">
+<span id="jt"></span><h3><span class="section-number">6.3.2. </span>Transverse Mercator projection (<strong>-Jt</strong> <strong>-JT</strong>)<a class="headerlink" href="#transverse-mercator-projection-jt-jt" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jt</strong>|<strong>T</strong><em>lon0/</em>[<em>lat0/</em>]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The central meridian (<em>lon0</em>).</p></li>
+<li><p>Optionally, the latitude of origin (<em>lat0</em>) [default is the equator].</p></li>
+<li><p>The <em>scale</em> along the equator in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or 1:xxxxx (with <strong>-Jt</strong>) or map
+<em>width</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JT</strong>).</p></li>
+</ul>
+<p>You can change the map scale factor via the <a class="reference internal" href="../gmt.conf.html#term-PROJ_SCALE_FACTOR"><span class="xref std std-term">PROJ_SCALE_FACTOR</span></a> parameter [default is <strong>1</strong>].</p>
+<p><strong>Description</strong></p>
+<p>The transverse Mercator was invented by Johann Heinrich Lambert in 1772. In this projection the cylinder touches a
+meridian along which there is no distortion. The distortion increases away from the central meridian and goes to
+infinity at 90° from center. The central meridian, each meridian 90° away from the center, and equator are straight
+lines; other parallels and meridians are complex curves.</p>
+<p><strong>Example</strong></p>
+<p>A transverse Mercator map of south-east Europe and the Middle East with 35°E as the central meridian can be obtained as
+follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R20/30/50/45+r -Jt35/0.5c -Bag -Dl -A250 -Glightbrown -Wthinnest -Sseashell --GMT_THEME<span class="o">=</span>cookbook -view GMT_transverse_merc
+</pre></div>
+</div>
+<figure class="align-center" id="id22">
+<a class="reference internal image-reference" href="../_images/GMT_transverse_merc.png"><img alt="../_images/GMT_transverse_merc.png" src="../_images/GMT_transverse_merc.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Rectangular Transverse Mercator map.</span><a class="headerlink" href="#id22" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>A global transverse Mercator map - the equivalent of the 360° Mercator map - can also be obtained as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R0/360/-80/80 -JT330/-45/10c -Ba30g -BWSne -Dc -A2000 -Slightblue -G0 --MAP_ANNOT_OBLIQUE<span class="o">=</span>lon_horizontal --GMT_THEME<span class="o">=</span>cookbook -view GMT_TM
+</pre></div>
+</div>
+<figure class="align-center" id="id23">
+<span id="gmt-tm"></span><a class="reference internal image-reference" href="../_images/GMT_TM.png"><img alt="../_images/GMT_TM.png" src="../_images/GMT_TM.png" style="width: 450px;" /></a>
+<figcaption>
+<p><span class="caption-text">A global transverse Mercator map.</span><a class="headerlink" href="#id23" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Note that when a world map is given (indicated by <strong>-R</strong><em>0/360/s/n</em>), the arguments are interpreted to mean oblique
+degrees, i.e., the 360° range is understood to mean the extent of the plot along the central meridian, while the “south”
+and “north” values represent how far from the central longitude we want the plot to extend. These values correspond to
+latitudes in the regular Mercator projection and must therefore be less than 90.</p>
+</section>
+<section id="universal-transverse-mercator-utm-projection-ju-ju">
+<span id="ju"></span><h3><span class="section-number">6.3.3. </span>Universal Transverse Mercator (UTM) projection (<strong>-Ju</strong> <strong>-JU</strong>)<a class="headerlink" href="#universal-transverse-mercator-utm-projection-ju-ju" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Ju</strong>|<strong>U</strong><em>zone/</em><em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>UTM <em>zone</em> (A, B, 1–60, Y, Z). Use negative values for numerical zones in the southern hemisphere or append the
+latitude modifiers (C–H, J–N, P–X) to specify an exact UTM grid zone.</p></li>
+<li><p>The <em>scale</em> along the equator in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Ju</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JU</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>A particular subset of the <a class="reference internal" href="#jt"><span class="std std-ref">transverse Mercator</span></a> is the Universal Transverse Mercator (UTM) which was adopted
+by the US Army for large-scale military maps. Here, the globe is divided into 60 zones between 84°S and 84°N, most of
+which are 6° wide. Each of these UTM zones have a unique central meridian. Furthermore, each zone is divided into
+latitude bands but these are not needed to specify the projection for most cases. See Figure
+<a class="reference internal" href="#gmt-utm-zones"><span class="std std-ref">Universal Transverse Mercator</span></a> for all zone designations.</p>
+<figure class="align-center" id="id24">
+<span id="gmt-utm-zones"></span><a class="reference internal image-reference" href="../_images/GMT_utm_zones.png"><img alt="../_images/GMT_utm_zones.png" src="../_images/GMT_utm_zones.png" style="width: 700px;" /></a>
+<figcaption>
+<p><span class="caption-text">Universal Transverse Mercator zone layout.</span><a class="headerlink" href="#id24" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="toggle docutils container">
+<p>Here is the source script for the figure above:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_utm_zones
+gmt <span class="nb">set</span> GMT_THEME cookbook
+gmt coast -Rd -JQ9i -Groyalblue -Sazure -Dl -A2000 -Bx60f6 -By0 -BwsNe --MAP_ANNOT_OFFSET_PRIMARY<span class="o">=</span><span class="m">0</span>.15i
+cat <span class="s">&lt;&lt; EOF &gt; tt.z.d</span>
+<span class="s">&gt;  Do S pole zone</span>
+<span class="s">-180	-80</span>
+<span class="s">   0	-80</span>
+<span class="s">+180	-80</span>
+<span class="s">&gt;</span>
+<span class="s">0	-90</span>
+<span class="s">0	-80</span>
+<span class="s">&gt;  Do N pole zone</span>
+<span class="s">-180	84</span>
+<span class="s">   0	84</span>
+<span class="s">+180	84</span>
+<span class="s">&gt;</span>
+<span class="s">0	90</span>
+<span class="s">0	84</span>
+<span class="s">EOF</span>
+gmt math -T-174/174/6 T <span class="m">0</span> <span class="nv">MUL</span> <span class="o">=</span> tt.x.d
+<span class="nb">echo</span> <span class="s1">&#39;-90&#39;</span> &gt; tt.L.d
+<span class="nb">let</span> <span class="nv">s</span><span class="o">=</span>-80
+rm -f tt.y.d
+<span class="k">while</span> <span class="o">[</span> <span class="nv">$s</span> -lt <span class="m">72</span> <span class="o">]</span><span class="p">;</span> <span class="k">do</span>
+	<span class="nb">echo</span> <span class="nv">$s</span> &gt;&gt; tt.L.d
+	<span class="nv">n</span><span class="o">=</span><span class="k">$((</span><span class="nv">$s</span><span class="o">+</span><span class="m">8</span><span class="k">))</span>
+	cat <span class="s">&lt;&lt;- EOF &gt;&gt; tt.z.d</span>
+<span class="s">	&gt; Lat = $s</span>
+<span class="s">	-180	$s</span>
+<span class="s">	   0	$s</span>
+<span class="s">	+180	$s</span>
+<span class="s">	EOF</span>
+	<span class="k">if</span> <span class="o">[</span> <span class="nv">$s</span> -eq <span class="m">56</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+		<span class="nv">$AWK</span> <span class="s1">&#39;{if ($1 == 6) {print 3} else {print $0}}&#39;</span> tt.x.d &gt; tt.sp.d
+	<span class="k">else</span>
+		cat tt.x.d &gt; tt.sp.d
+	<span class="k">fi</span>
+	<span class="nv">$AWK</span> <span class="s1">&#39;{printf &quot;&gt; \n%s\t%s\n%s\t%s\n&quot;, $1, &quot;&#39;</span><span class="nv">$s</span><span class="s1">&#39;&quot;, $1, &quot;&#39;</span><span class="nv">$n</span><span class="s1">&#39;&quot;}&#39;</span> tt.sp.d &gt;&gt; tt.z.d
+	gmt math -Q <span class="nv">$s</span> <span class="nv">$n</span> ADD <span class="m">2</span> <span class="nv">DIV</span> <span class="o">=</span> &gt;&gt; tt.y.d
+	<span class="nv">s</span><span class="o">=</span><span class="nv">$n</span>
+<span class="k">done</span>
+<span class="nb">echo</span> <span class="nv">$n</span> &gt;&gt; tt.L.d
+<span class="nb">echo</span> <span class="s1">&#39;84&#39;</span> &gt;&gt; tt.L.d
+<span class="nb">echo</span> <span class="s1">&#39;90&#39;</span> &gt;&gt; tt.L.d
+<span class="nb">echo</span> <span class="m">78</span> &gt;&gt; tt.y.d
+cat <span class="s">&lt;&lt; EOF &gt; tt.n.d</span>
+<span class="s">C</span>
+<span class="s">D</span>
+<span class="s">E</span>
+<span class="s">F</span>
+<span class="s">G</span>
+<span class="s">H</span>
+<span class="s">J</span>
+<span class="s">K</span>
+<span class="s">L</span>
+<span class="s">M</span>
+<span class="s">N</span>
+<span class="s">P</span>
+<span class="s">Q</span>
+<span class="s">R</span>
+<span class="s">S</span>
+<span class="s">T</span>
+<span class="s">U</span>
+<span class="s">V</span>
+<span class="s">W</span>
+<span class="s">X</span>
+<span class="s">EOF</span>
+<span class="nv">n</span><span class="o">=</span><span class="m">84</span>
+cat <span class="s">&lt;&lt; EOF &gt;&gt; tt.z.d</span>
+<span class="s">&gt; Lat = $s</span>
+<span class="s">-180	$s</span>
+<span class="s">   0	$s</span>
+<span class="s">+180	$s</span>
+<span class="s">EOF</span>
+<span class="nv">$AWK</span> <span class="s1">&#39;{if ($1 &lt;=0 || $1 &gt;=42) print $0}&#39;</span> tt.x.d &gt; tt.sp.d
+cat <span class="s">&lt;&lt; EOF &gt;&gt; tt.sp.d</span>
+<span class="s">9</span>
+<span class="s">21</span>
+<span class="s">33</span>
+<span class="s">EOF</span>
+<span class="nv">$AWK</span> <span class="s1">&#39;{printf &quot;&gt; \n%s\t%s\n%s\t%s\n&quot;, $1, &quot;&#39;</span><span class="nv">$s</span><span class="s1">&#39;&quot;, $1, &quot;&#39;</span><span class="nv">$n</span><span class="s1">&#39;&quot;}&#39;</span> tt.sp.d &gt;&gt; tt.z.d
+gmt plot -W0.5p -Ap tt.z.d
+paste tt.y.d tt.n.d <span class="p">|</span> <span class="nv">$AWK</span> <span class="s1">&#39;{printf &quot;180 %s %s\n&quot;, $1, $2}&#39;</span> <span class="p">|</span> gmt text -N -D0.1i/0 -F+f10p,Helvetica-Bold
+gmt text -N -F+f10p,Helvetica-Bold <span class="s">&lt;&lt; EOF</span>
+<span class="s">-90	-85	A</span>
+<span class="s">+90	-85	B</span>
+<span class="s">-90	87	Y</span>
+<span class="s">+90	87	Z</span>
+<span class="s">EOF</span>
+gmt math -T-180/174/6 T <span class="m">3</span> <span class="nv">ADD</span> <span class="o">=</span> <span class="p">|</span> <span class="nv">$AWK</span> <span class="s1">&#39;{printf &quot;%s -90 %d\n&quot;, $2, NR}&#39;</span> <span class="p">|</span> gmt text -N -D0/-0.07i -F+f8p,Times-Italic+jCT
+gmt math -T-180/174/6 T <span class="m">3</span> <span class="nv">ADD</span> <span class="o">=</span> <span class="p">|</span> <span class="nv">$AWK</span> <span class="s1">&#39;{printf &quot;%s 90 %d\n&quot;, $2, NR}&#39;</span> <span class="p">|</span> gmt text -N -D0/0.07i -F+f8p,Times-Italic+jCB
+gmt text -D0/0.025i -F+f8p,Times-Italic+jCB <span class="s">&lt;&lt; EOF</span>
+<span class="s">4.5	72	31X</span>
+<span class="s">15	72	33X</span>
+<span class="s">27	72	35X</span>
+<span class="s">37.5	72	37X</span>
+<span class="s">EOF</span>
+<span class="nv">$AWK</span> <span class="s1">&#39;{if ($1 &lt; 0) printf &quot;-180 %s %s@.S\n&quot;, $1, -$1}&#39;</span> tt.L.d <span class="p">|</span> gmt text -N -D-0.05i/0 -F+f10p+jRM
+<span class="nv">$AWK</span> <span class="s1">&#39;{if ($1 &gt; 0) printf &quot;-180 %s %s@.N\n&quot;, $1,  $1}&#39;</span> tt.L.d <span class="p">|</span> gmt text -N -D-0.05i/0 -F+f10p+jRM
+<span class="nb">echo</span> <span class="s2">&quot;-180 0 0@.&quot;</span> <span class="p">|</span> gmt text -N -D-0.05i/0 -F+f10p+jRM
+gmt end show
+</pre></div>
+</div>
+</div>
+<p>In order to minimize the distortion in any given zone, a scale factor of 0.9996 has been factored into the formulae
+(although a standard, you can change this with <a class="reference internal" href="../gmt.conf.html#term-PROJ_SCALE_FACTOR"><span class="xref std std-term">PROJ_SCALE_FACTOR</span></a>). This makes the UTM projection a <em>secant</em>
+projection and not a <em>tangent</em> projection like the <a class="reference internal" href="#jt"><span class="std std-ref">transverse Mercator</span></a> above. The scale only varies by 1
+part in 1,000 from true scale at equator. The ellipsoidal projection expressions are accurate for map areas that extend
+less than 10 away from the central meridian. For larger regions we use the conformal latitude in the general spherical
+formulae instead.</p>
+</section>
+<section id="oblique-mercator-projection-jo-jo">
+<span id="jo"></span><h3><span class="section-number">6.3.4. </span>Oblique Mercator projection (<strong>-Jo</strong> <strong>-JO</strong>)<a class="headerlink" href="#oblique-mercator-projection-jo-jo" title="Permalink to this heading">¶</a></h3>
+<p><strong>Option 1 Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jo</strong>|<strong>O</strong>[<strong>a</strong>|<strong>A</strong>]<em>lon0/lat0/azimuth/</em><em>scale</em>|<em>width</em>[<strong>+v</strong>]</p>
+</div></blockquote>
+<p><strong>Option 1 Parameters</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of projection center.</p></li>
+<li><p>The azimuth (<em>azimuth</em>) of the oblique equator.</p></li>
+<li><p>The <em>scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or 1:xxxxx along oblique equator (with <strong>-Jo</strong>),
+or map <em>width</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JO</strong>).</p></li>
+<li><p>Optionally, append <strong>+v</strong> to let the oblique Equator align with the <em>y</em>-axis [default is to align with the
+<em>x</em>-axis].</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Option 2 Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jo</strong>|<strong>O</strong>[<strong>b</strong>|<strong>B</strong>]<em>lon0/lat0/lon1/lat1/</em><em>scale</em>|<em>width</em>[<strong>+v</strong>]</p>
+</div></blockquote>
+<p><strong>Option 2 Parameters</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of projection center.</p></li>
+<li><p>The longitude (<em>lon1</em>) and latitude (<em>lat1</em>) of a second point on oblique equator.</p></li>
+<li><p>The <em>scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or 1:xxxxx along oblique equator (with <strong>-Jo</strong>),
+or map <em>width</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JO</strong>).</p></li>
+<li><p>Optionally, append <strong>+v</strong> to let the oblique Equator align with the <em>y</em>-axis [default is to align with the
+<em>x</em>-axis].</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Option 3 Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jo</strong>|<strong>O</strong>[<strong>c</strong>|<strong>C</strong>]<em>lon0/lat0/lonp/latp/</em><em>scale</em>|<em>width</em>[<strong>+v</strong>]</p>
+</div></blockquote>
+<p><strong>Option 3 Parameters</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of projection center.</p></li>
+<li><p>The longitude (<em>lonp</em>) and latitude (<em>latp</em>) of the projection pole.</p></li>
+<li><p>The <em>scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or 1:xxxxx along oblique equator (with <strong>-Jo</strong>),
+or map <em>width</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JO</strong>).</p></li>
+<li><p>Optionally, append <strong>+v</strong> to let the oblique Equator align with the <em>y</em>-axis [default is to align with the
+<em>x</em>-axis].</p></li>
+</ul>
+</div></blockquote>
+<p>For all three definitions, the upper case <strong>A</strong>|<strong>B</strong>|<strong>C</strong> means we will allow projection poles in the southern
+hemisphere [default is to map any such poles to their antipodes in the northern hemisphere].</p>
+<p><strong>Description</strong></p>
+<p>Oblique configurations of the cylinder give rise to the oblique Mercator projection. It is particularly useful when
+mapping regions of large lateral extent in an oblique direction. Both parallels and meridians are complex curves. The
+projection was developed in the early 1900s by several workers.</p>
+<p><strong>Example</strong></p>
+<p>An oblique view of some Caribbean islands using Option 3 can be obtained as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_obl_merc
+    gmt <span class="nb">set</span> GMT_THEME cookbook
+    gmt coast -R270/20/305/25+r -JOc280/25.5/22/69/12c -Bag -Di -A250 -Gburlywood -Wthinnest -TdjTR+f2+l -Sazure
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id25">
+<a class="reference internal image-reference" href="../_images/GMT_obl_merc.png"><img alt="../_images/GMT_obl_merc.png" src="../_images/GMT_obl_merc.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Oblique Mercator map using <strong>-JOc</strong>. We make it clear which direction is North by adding a star rose with the <strong>-Td</strong>
+option.</span><a class="headerlink" href="#id25" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Note that we define our region using the rectangular system described earlier. If we do not append <strong>+r</strong> to the <strong>-R</strong>
+string then the information provided with the <strong>-R</strong> option is assumed to be oblique degrees about the projection center
+rather than the usual geographic coordinates. This interpretation is chosen since in general the parallels and meridians
+are not very suitable as map boundaries.</p>
+<p>When working with oblique projections such as here, it is often much more convenient to specify the map domain in the
+projected coordinates relative to the map center. The figure below shows two views of New Zealand using the oblique
+Mercator projection that in both cases specifies the region using <strong>-R</strong>-1000/1000/-500/500<strong>+uk</strong>.  The unit <strong>k</strong>
+means the following bounds are in projected km and we let GMT determine the geographic coordinates of the two diagonal
+corners internally.</p>
+<figure class="align-center" id="id26">
+<a class="reference internal image-reference" href="../_images/GMT_obl_nz.png"><img alt="../_images/GMT_obl_nz.png" src="../_images/GMT_obl_nz.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">(left) Oblique view of New Zealand centered on its geographical center (Nelson) indicated by the white circle for an
+oblique Equator with azimuth 35.  This resulted in the argument <strong>-JOa</strong>173:17:02E/41:16:15S/35/3i. The map is
+2000 km by 1000 km and the Cartesian coordinate system in the projected units are indicated by the bold axes.  The
+blue circle is the point (40S,180E) and it has projected coordinates (<em>x</em> = 426.2, <em>y</em> = -399.7).
+(right) Same dimensions but now specifying an azimuth of 215, yielding a projection pole in the southern hemisphere
+(hence we used <strong>-JOA</strong> to override the restriction, i.e., <strong>-JOA</strong>173:17:02E/41:16:15S/215/3i.)
+The projected coordinate system is still aligned as before but the Earth has been rotated 180 degrees.  The blue
+point now has projected coordinates (<em>x</em> = -426.2, <em>y</em> = 399.7).</span><a class="headerlink" href="#id26" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="toggle docutils container">
+<p>Here is the source script for the figure above:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_obl_nz
+gmt <span class="nb">set</span> GMT_THEME cookbook
+<span class="nv">lon</span><span class="o">=</span><span class="m">173</span>:17:02E
+<span class="nv">lat</span><span class="o">=</span><span class="m">41</span>:16:15S
+<span class="nv">az</span><span class="o">=</span><span class="m">35</span>
+<span class="nv">w</span><span class="o">=</span><span class="m">2000</span>
+<span class="nv">h</span><span class="o">=</span><span class="m">1000</span>
+<span class="nv">plon</span><span class="o">=</span><span class="m">180</span>
+<span class="nv">plat</span><span class="o">=</span>40S
+<span class="nv">w2</span><span class="o">=</span><span class="k">$(</span>gmt math -Q <span class="nv">$w</span> <span class="m">2</span> <span class="nv">DIV</span> <span class="o">=</span><span class="k">)</span>
+<span class="nv">h2</span><span class="o">=</span><span class="k">$(</span>gmt math -Q <span class="nv">$h</span> <span class="m">2</span> <span class="nv">DIV</span> <span class="o">=</span><span class="k">)</span>
+<span class="nv">R</span><span class="o">=</span>-R-<span class="si">${</span><span class="nv">w2</span><span class="si">}</span>/<span class="nv">$w2</span>/-<span class="si">${</span><span class="nv">h2</span><span class="si">}</span>/<span class="si">${</span><span class="nv">h2</span><span class="si">}</span>+uk
+gmt coast <span class="nv">$R</span> -JOA<span class="nv">$lon</span>/<span class="nv">$lat</span>/<span class="nv">$az</span>/3i -Ba5f5g5 -Gred -Dh -TdjBR+w0.5i+l --MAP_ANNOT_OBLIQUE<span class="o">=</span>separate,lon_horizontal,lat_parallel --FORMAT_GEO_MAP<span class="o">=</span>dddF
+<span class="nb">echo</span> <span class="nv">$plon</span> <span class="nv">$plat</span> <span class="p">|</span> gmt plot -Sc0.2c -Gblue -W0.25p
+gmt plot -R0/3/0/1.5 -Jx1i -W0.25p,- <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt;</span>
+<span class="s">0	0.75</span>
+<span class="s">3	0.75</span>
+<span class="s">&gt;</span>
+<span class="s">1.5	0</span>
+<span class="s">1.5	1.5</span>
+<span class="s">EOF</span>
+gmt plot -Sv0.2i+e+h0.5 -Gblack -W2p -N <span class="s">&lt;&lt; EOF</span>
+<span class="s">1.5	0.75	0	1.5i</span>
+<span class="s">1.5	0.75	90	0.75i</span>
+<span class="s">EOF</span>
+<span class="nb">echo</span> <span class="m">1</span>.5 <span class="m">0</span>.75 <span class="p">|</span> gmt plot -Sc0.1c -Wfaint -Gwhite
+gmt text -F+f12p,Times-Italic+j -Dj0.1i -Gwhite <span class="s">&lt;&lt; EOF</span>
+<span class="s">3	0.75	TR	x</span>
+<span class="s">1.5	1.5	TR	y</span>
+<span class="s">EOF</span>
+<span class="nv">az</span><span class="o">=</span><span class="m">215</span>
+gmt coast <span class="nv">$R</span> -JOA<span class="nv">$lon</span>/<span class="nv">$lat</span>/<span class="nv">$az</span>/3i -Ba5f5g5 -Gred -Dh -X3.4i -TdjTL+w0.5i+l --MAP_ANNOT_OBLIQUE<span class="o">=</span>separate,lon_horizontal,lat_parallel --FORMAT_GEO_MAP<span class="o">=</span>dddF
+<span class="nb">echo</span> <span class="nv">$plon</span> <span class="nv">$plat</span> <span class="p">|</span> gmt plot -Sc0.2c -Gblue -W0.25p
+gmt plot -R0/3/0/1.5 -Jx1i -W0.25p,- <span class="s">&lt;&lt; EOF</span>
+<span class="s">&gt;</span>
+<span class="s">0	0.75</span>
+<span class="s">3	0.75</span>
+<span class="s">&gt;</span>
+<span class="s">1.5	0</span>
+<span class="s">1.5	1.5</span>
+<span class="s">EOF</span>
+gmt plot -Sv0.2i+e+h0.5 -Gblack -W2p -N <span class="s">&lt;&lt; EOF</span>
+<span class="s">1.5	0.75	0	1.5i</span>
+<span class="s">1.5	0.75	90	0.75i</span>
+<span class="s">EOF</span>
+<span class="nb">echo</span> <span class="m">1</span>.5 <span class="m">0</span>.75 <span class="p">|</span> gmt plot -Sc0.1c -Wfaint -Gwhite
+gmt text -F+f12p,Times-Italic+j -Dj0.1i -Gwhite <span class="s">&lt;&lt; EOF</span>
+<span class="s">3	0.75	TR	x</span>
+<span class="s">1.5	1.5	TR	y</span>
+<span class="s">EOF</span>
+gmt end show
+</pre></div>
+</div>
+</div>
+<p>The oblique Mercator projection will by default arrange the output so that the oblique Equator becomes the new
+horizontal, positive <em>x</em>-axis.  For features with an orientation more north-south than east-west, it may be preferable
+to align the oblique Equator with the vertical, positive <em>y</em>-axis instead.  This configuration is selected by appending
+<strong>+v</strong> to the <strong>-J</strong> projection option.  The example below shows this behaviour.</p>
+<figure class="align-center" id="id27">
+<a class="reference internal image-reference" href="../_images/GMT_obl_baja.png"><img alt="../_images/GMT_obl_baja.png" src="../_images/GMT_obl_baja.png" style="width: 300px;" /></a>
+<figcaption>
+<p><span class="caption-text">Oblique view of Baja California using the vertical oblique Equator modifier.  This plot
+resulted from the argument <strong>-JOa</strong>120W/25N/-30/6c<strong>+v</strong>.</span><a class="headerlink" href="#id27" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="toggle docutils container">
+<p>Here is the source script for the figure above:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_obl_baja
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt <span class="nb">set</span> MAP_ANNOT_OBLIQUE lon_horizontal,lat_horizontal,tick_extend
+	gmt coast -R122W/35N/107W/22N+r -JOa120W/25N/-30/6c+v -Gsienna -Ba5g5 -B+f -N1/1p -EUS+gburlywood -Smintcream -TdjBL+l
+gmt end show
+</pre></div>
+</div>
+</div>
+</section>
+<section id="cassini-cylindrical-projection-jc-jc">
+<span id="jc"></span><h3><span class="section-number">6.3.5. </span>Cassini cylindrical projection (<strong>-Jc</strong> <strong>-JC</strong>)<a class="headerlink" href="#cassini-cylindrical-projection-jc-jc" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jc</strong>|<strong>C</strong><em>lon0/lat0/scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of the central point.</p></li>
+<li><p>The <em>scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jc</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JC</strong>).</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Description</strong></p>
+<p>This cylindrical projection was developed in 1745 by César-François Cassini de Thury for the survey of France. It is
+occasionally called Cassini-Soldner since the latter provided the more accurate mathematical analysis that led to the
+development of the ellipsoidal formulae. The projection is neither conformal nor equal-area, and behaves as a compromise
+between the two end-members. The distortion is zero along the central meridian. It is best suited for mapping regions of
+north-south extent. The central meridian, each meridian 90° away, and equator are straight lines; all other meridians
+and parallels are complex curves.</p>
+<p><strong>Example</strong></p>
+<p>A detailed map of the island of Sardinia centered on the 8°45’E meridian using the Cassini projection can be obtained by
+as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R7:30/38:30/10:30/41:30+r -JC8.75/40/6c -Bafg -LjBR+c40+w100+f+o0.4c/0.5c -Dh -Gspringgreen -Sazure -Wthinnest -Ia/thinner --GMT_THEME<span class="o">=</span>cookbook --FONT_LABEL<span class="o">=</span>10p -view GMT_cassini
+</pre></div>
+</div>
+<figure class="align-center" id="id28">
+<a class="reference internal image-reference" href="../_images/GMT_cassini.png"><img alt="../_images/GMT_cassini.png" src="../_images/GMT_cassini.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Cassini map over Sardinia.</span><a class="headerlink" href="#id28" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>As with the previous projections, the user can choose between a rectangular boundary (used here) or a geographical
+(WESN) boundary.</p>
+</section>
+<section id="cylindrical-equidistant-projection-jq-jq">
+<span id="jq"></span><h3><span class="section-number">6.3.6. </span>Cylindrical equidistant projection (<strong>-Jq</strong> <strong>-JQ</strong>)<a class="headerlink" href="#cylindrical-equidistant-projection-jq-jq" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jq</strong>|<strong>Q</strong>[<em>lon0/</em>[<em>lat0/</em>]]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>Optionally, the central meridian (<em>lon0</em>) [default is the middle of the map map].</p></li>
+<li><p>Optionally, the standard parallel (<em>lat0</em>)  [default is the equator]. When supplied, the central meridian (<em>lon0</em>)
+must be supplied as well.</p></li>
+<li><p>The <em>scale</em>  in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jq</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JQ</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>This simple cylindrical projection is really a linear scaling of longitudes and latitudes. The most common form is the
+Plate Carrée projection, where the scaling of longitudes and latitudes is the same. All meridians and parallels are
+straight lines.</p>
+<p>Different relative scalings of longitudes and latitudes can be obtained by selecting a standard parallel different from
+the equator. Some selections for standard parallels have practical properties as shown in Table <a class="reference internal" href="#tbl-jq"><span class="std std-ref">JQ</span></a>.</p>
+<table class="docutils align-default" id="tbl-jq">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Grafarend and Niermann, minimum linear distortion</p></td>
+<td><p>61.7°</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ronald Miller Equirectangular</p></td>
+<td><p>50.5°</p></td>
+</tr>
+<tr class="row-even"><td><p>Ronald Miller, minimum continental distortion</p></td>
+<td><p>43.5°</p></td>
+</tr>
+<tr class="row-odd"><td><p>Grafarend and Niermann</p></td>
+<td><p>42°</p></td>
+</tr>
+<tr class="row-even"><td><p>Ronald Miller, minimum overall distortion</p></td>
+<td><p>37.5°</p></td>
+</tr>
+<tr class="row-odd"><td><p>Plate Carrée, Simple Cylindrical, Plain/Plane</p></td>
+<td><p>0°</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<p>A world map centered on the dateline using this projection can be obtained as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JQ12c -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan --GMT_THEME<span class="o">=</span>cookbook -view GMT_equi_cyl
+</pre></div>
+</div>
+<figure class="align-center" id="id29">
+<a class="reference internal image-reference" href="../_images/GMT_equi_cyl.png"><img alt="../_images/GMT_equi_cyl.png" src="../_images/GMT_equi_cyl.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using the Plate Carrée projection.</span><a class="headerlink" href="#id29" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="cylindrical-equal-area-projections-jy-jy">
+<span id="jy"></span><h3><span class="section-number">6.3.7. </span>Cylindrical equal-area projections (<strong>-Jy</strong> <strong>-JY</strong>)<a class="headerlink" href="#cylindrical-equal-area-projections-jy-jy" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jy</strong>|<strong>Y</strong>[<em>lon0/</em>[<em>lat0/</em>]]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>Optionally, the central meridian (<em>lon0</em>) [default is the middle of the map].</p></li>
+<li><p>Optionally, the standard parallel (<em>lat0</em>) [default is the equator]. When supplied, the central meridian (<em>lon0</em>)
+must be supplied as well.</p></li>
+<li><p>The <em>scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jy</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JY</strong>)</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>This cylindrical projection is actually several projections, depending on what latitude is selected as the standard
+parallel. However, they are all equal area and hence non-conformal. All meridians and parallels are straight lines.</p>
+<p>While you may choose any value for the standard parallel and obtain your own personal projection, there are seven
+choices of standard parallels that result in known (or named) projections. These are listed in Table <a class="reference internal" href="#tbl-jy"><span class="std std-ref">JY</span></a>.</p>
+<table class="docutils align-default" id="tbl-jy">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Balthasart</p></td>
+<td><p>50°</p></td>
+</tr>
+<tr class="row-odd"><td><p>Gall</p></td>
+<td><p>45°</p></td>
+</tr>
+<tr class="row-even"><td><p>Hobo-Dyer</p></td>
+<td><p>37°30’ (= 37.5°)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Trystan Edwards</p></td>
+<td><p>37°24’ (= 37.4°)</p></td>
+</tr>
+<tr class="row-even"><td><p>Caster</p></td>
+<td><p>37°04’ (= 37.0666°)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Behrman</p></td>
+<td><p>30°</p></td>
+</tr>
+<tr class="row-even"><td><p>Lambert</p></td>
+<td><p>0°</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<p>A world map centered on the 35°E meridian using the Behrman projection (Figure
+<a class="reference internal" href="#gmt-general-cyl"><span class="std std-ref">Behrman cylindrical projection</span></a>) can be obtained as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R-145/215/-90/90 -JY35/30/12c -B45g45 -Dc -A10000 -Sdodgerblue -Wthinnest --GMT_THEME<span class="o">=</span>cookbook --MAP_FRAME_TYPE<span class="o">=</span>fancy-rounded -view GMT_general_cyl
+</pre></div>
+</div>
+<figure class="align-center" id="id30">
+<span id="gmt-general-cyl"></span><a class="reference internal image-reference" href="../_images/GMT_general_cyl.png"><img alt="../_images/GMT_general_cyl.png" src="../_images/GMT_general_cyl.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using the Behrman cylindrical equal-area projection.</span><a class="headerlink" href="#id30" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>As one can see there is considerable distortion at high latitudes since the poles map into lines.</p>
+</section>
+<section id="miller-cylindrical-projection-jj-jj">
+<span id="jj"></span><h3><span class="section-number">6.3.8. </span>Miller Cylindrical projection (<strong>-Jj</strong> <strong>-JJ</strong>)<a class="headerlink" href="#miller-cylindrical-projection-jj-jj" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jj</strong>|<strong>J</strong>[<em>lon0/</em>]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>Optionally, the central meridian (<em>lon0</em>) [default is the middle of the map].</p></li>
+<li><p>The <em>scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jj</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JJ</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>This cylindrical projection, presented by Osborn Maitland Miller of the American Geographic Society in 1942, is neither
+equal nor conformal. All meridians and parallels are straight lines. The projection was designed to be a compromise
+between Mercator and other cylindrical projections. Specifically, Miller spaced the parallels by using Mercator’s
+formula with 0.8 times the actual latitude, thus avoiding the singular poles; the result was then divided by 0.8. There
+is only a spherical form for this projection.</p>
+<p><strong>Example</strong></p>
+<p>A world map centered on the 90°E meridian at a map scale of 1:400,000,000 (Figure <a class="reference internal" href="#gmt-miller"><span class="std std-ref">Miller projection</span></a>)
+can be obtained as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 -Gkhaki -Wthinnest -Sazure --GMT_THEME<span class="o">=</span>cookbook -view GMT_miller
+</pre></div>
+</div>
+<figure class="align-center" id="id31">
+<span id="gmt-miller"></span><a class="reference internal image-reference" href="../_images/GMT_miller.png"><img alt="../_images/GMT_miller.png" src="../_images/GMT_miller.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using the Miller cylindrical projection.</span><a class="headerlink" href="#id31" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="cylindrical-stereographic-projections-jcyl-stere-jcyl-stere">
+<span id="jcyl-stere"></span><h3><span class="section-number">6.3.9. </span>Cylindrical stereographic projections (<strong>-Jcyl_stere</strong> <strong>-JCyl_stere</strong>)<a class="headerlink" href="#cylindrical-stereographic-projections-jcyl-stere-jcyl-stere" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jcyl_stere</strong>|<strong>Cyl_stere</strong>/[<em>lon0/</em>[<em>lat0/</em>]]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>Optionally, the central meridian (<em>lon0</em>) [default is the middle of the map].</p></li>
+<li><p>Optionally, the standard parallel (<em>lat0</em>) [default is the Equator]. When used, central meridian (<em>lon0</em>) needs to be
+given as well.</p></li>
+<li><p>The <em>scale</em> in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jcyl_stere</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JCyl_stere</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>The cylindrical stereographic projections are certainly not as notable as other cylindrical projections, but are still
+used because of their relative simplicity and their ability to overcome some of the downsides of other cylindrical
+projections, like extreme distortions of the higher latitudes. The stereographic projections are perspective
+projections, projecting the sphere onto a cylinder in the direction of the antipodal point on the equator. The cylinder
+crosses the sphere at two standard parallels, equidistant from the equator.</p>
+<p>Some of the selections of the standard parallel are named for the cartographer or publication that popularized the
+projection (Table <a class="reference internal" href="#tbl-jcylstere"><span class="std std-ref">JCylstere</span></a>).</p>
+<table class="docutils align-default" id="tbl-jcylstere">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Miller’s modified Gall</p></td>
+<td><p>66.159467°</p></td>
+</tr>
+<tr class="row-odd"><td><p>Kamenetskiy’s First</p></td>
+<td><p>55°</p></td>
+</tr>
+<tr class="row-even"><td><p>Gall’s stereographic</p></td>
+<td><p>45°</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bolshoi Sovietskii Atlas Mira or Kamenetskiy’s Second</p></td>
+<td><p>30°</p></td>
+</tr>
+<tr class="row-even"><td><p>Braun’s cylindrical</p></td>
+<td><p>0°</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<p>A map of the world, centered on the Greenwich meridian, using the Gall’s stereographic projection (standard parallel is
+45°, Figure <a class="reference internal" href="#gmt-gall-stereo"><span class="std std-ref">Gall’s stereographic projection</span></a>), can be obtained as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_gall_stereo
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt <span class="nb">set</span> FORMAT_GEO_MAP dddA
+	gmt coast -R-180/180/-60/80 -JCyl_stere/0/45/12c -Bxa60f30g30 -Bya30g30 -Dc -A5000 -Wblack -Gseashell4 -Santiquewhite1
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id32">
+<span id="gmt-gall-stereo"></span><a class="reference internal image-reference" href="../_images/GMT_gall_stereo.png"><img alt="../_images/GMT_gall_stereo.png" src="../_images/GMT_gall_stereo.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using Gall’s stereographic projection.</span><a class="headerlink" href="#id32" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="miscellaneous-projections">
+<h2><span class="section-number">6.4. </span>Miscellaneous projections<a class="headerlink" href="#miscellaneous-projections" title="Permalink to this heading">¶</a></h2>
+<p>GMT supports eight common projections for global presentation of data or models. These are the <a class="reference internal" href="#jh"><span class="std std-ref">Hammer</span></a>,
+<a class="reference internal" href="#jw"><span class="std std-ref">Mollweide</span></a>, <a class="reference internal" href="#jr"><span class="std std-ref">Winkel Tripel</span></a>, <a class="reference internal" href="#jn"><span class="std std-ref">Robinson</span></a>, <a class="reference internal" href="#jk"><span class="std std-ref">Eckert IV and VI</span></a>,
+<a class="reference internal" href="#ji"><span class="std std-ref">Sinusoidal</span></a>, and <a class="reference internal" href="#jv"><span class="std std-ref">Van der Grinten</span></a> projections. Due to the small scale used for global maps these
+projections all use the spherical approximation rather than more elaborate elliptical formulae.</p>
+<p>In all cases, the specification of the central meridian can be skipped. The default is the middle of the longitude
+range of the plot, specified by the (<strong>-R</strong>) option.</p>
+<section id="hammer-projection-jh-jh">
+<span id="jh"></span><h3><span class="section-number">6.4.1. </span>Hammer projection (<strong>-Jh</strong> <strong>-JH</strong>)<a class="headerlink" href="#hammer-projection-jh-jh" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jh</strong>|<strong>H</strong>[<em>lon0/</em>]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The central meridian (<em>lon0</em>) [default is the middle of the map].</p></li>
+<li><p>The <em>scale</em> along equator in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jh</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JH</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>The equal-area Hammer projection, first presented by the German mathematician Ernst von Hammer in 1892, is also known as
+Hammer-Aitoff (the Aitoff projection looks similar, but is not equal-area). The border is an ellipse, equator and
+central meridian are straight lines, while other parallels and meridians are complex curves.</p>
+<p><strong>Example</strong></p>
+<p>A view of the Pacific ocean using the Dateline as central meridian can be generated thus:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JH12c -Bg -Dc -A10000 -Gblack -Scornsilk --GMT_THEME<span class="o">=</span>cookbook -view GMT_hammer
+</pre></div>
+</div>
+<figure class="align-center" id="id33">
+<a class="reference internal image-reference" href="../_images/GMT_hammer.png"><img alt="../_images/GMT_hammer.png" src="../_images/GMT_hammer.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using the Hammer projection.</span><a class="headerlink" href="#id33" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="mollweide-projection-jw-jw">
+<span id="jw"></span><h3><span class="section-number">6.4.2. </span>Mollweide projection (<strong>-Jw</strong> <strong>-JW</strong>)<a class="headerlink" href="#mollweide-projection-jw-jw" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jw</strong>|<strong>W</strong>[<em>lon0/</em>]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The central meridian (<em>lon0</em>) [default is the middle of the map].</p></li>
+<li><p>The <em>scale</em> along equator in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jw</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JW</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>This pseudo-cylindrical, equal-area projection was developed by the German mathematician and astronomer Karl Brandan
+Mollweide in 1805. Parallels are unequally spaced straight lines with the meridians being equally spaced elliptical
+arcs. The scale is only true along latitudes 40°44’ north and south. The projection is used mainly for global maps
+showing data distributions. It is occasionally referenced under the name <em>homalographic</em> projection.</p>
+<p><strong>Example</strong></p>
+<p>An example centered on Greenwich can be generated thus:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rd -JW12c -Bg -Dc -A10000 -Gtomato1 -Sskyblue --GMT_THEME<span class="o">=</span>cookbook -view GMT_mollweide
+</pre></div>
+</div>
+<figure class="align-center" id="id34">
+<a class="reference internal image-reference" href="../_images/GMT_mollweide.png"><img alt="../_images/GMT_mollweide.png" src="../_images/GMT_mollweide.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using the Mollweide projection.</span><a class="headerlink" href="#id34" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="winkel-tripel-projection-jr-jr">
+<span id="jr"></span><h3><span class="section-number">6.4.3. </span>Winkel Tripel projection (<strong>-Jr</strong> <strong>-JR</strong>)<a class="headerlink" href="#winkel-tripel-projection-jr-jr" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jr</strong>|<strong>R</strong>[<em>lon0/</em>]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The central meridian (<em>lon0</em>) [default is the middle of the map].</p></li>
+<li><p>The <em>scale</em> along equator in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jr</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JR</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>In 1921, the German mathematician Oswald Winkel created a projection that was to strike a compromise between the
+properties of three elements (area, angle and distance). The German word “tripel” refers to this junction of where each
+of these elements are least distorted when plotting global maps. The projection was popularized when Bartholomew and Son
+started to use it in its world-renowned “The Times Atlas of the World” in the mid-20th century. In 1998, the National
+Geographic Society made the Winkel Tripel as its map projection of choice for global maps.</p>
+<p>Naturally, this projection is neither conformal, nor equal-area. Central meridian and equator are straight lines; other
+parallels and meridians are curved. The projection is obtained by averaging the coordinates of the Equidistant
+Cylindrical and Aitoff (not Hammer-Aitoff) projections. The poles map into straight lines 0.4 times the length of
+equator.</p>
+<p><strong>Example</strong></p>
+<p>Centered on Greenwich, the example in Figure <a class="reference internal" href="#gmt-winkel"><span class="std std-ref">Winkel Tripel projection</span></a> was created by this command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rd -JR12c -Bg -Dc -A10000 -Gburlywood4 -Swheat1 --GMT_THEME<span class="o">=</span>cookbook -view GMT_winkel
+</pre></div>
+</div>
+<figure class="align-center" id="id35">
+<span id="gmt-winkel"></span><a class="reference internal image-reference" href="../_images/GMT_winkel.png"><img alt="../_images/GMT_winkel.png" src="../_images/GMT_winkel.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using the Winkel Tripel projection.</span><a class="headerlink" href="#id35" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="robinson-projection-jn-jn">
+<span id="jn"></span><h3><span class="section-number">6.4.4. </span>Robinson projection (<strong>-Jn</strong> <strong>-JN</strong>)<a class="headerlink" href="#robinson-projection-jn-jn" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jn</strong>|<strong>N</strong>[<em>lon0/</em>]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The central meridian (<em>lon0</em>) [default is the middle of the map].</p></li>
+<li><p>The <em>scale</em> along equator in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jn</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JN</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>The Robinson projection, presented by the American geographer and cartographer Arthur H. Robinson in 1963, is a modified
+cylindrical projection that is neither conformal nor equal-area. Central meridian and all parallels are straight lines;
+other meridians are curved. It uses lookup tables rather than analytic expressions to make the world map “look”
+right<a class="footnote-reference brackets" href="#id6" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>22<span class="fn-bracket">]</span></a>. The scale is true along latitudes 38. The projection was originally developed for use by Rand McNally and
+is currently used by the National Geographic Society.</p>
+<p><strong>Example</strong></p>
+<p>Again centered on Greenwich, the example below was created by this command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rd -JN12c -Bg -Dc -A10000 -Ggoldenrod -Ssnow2 --GMT_THEME<span class="o">=</span>cookbook -view GMT_robinson
+</pre></div>
+</div>
+<figure class="align-center" id="id36">
+<a class="reference internal image-reference" href="../_images/GMT_robinson.png"><img alt="../_images/GMT_robinson.png" src="../_images/GMT_robinson.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using the Robinson projection.</span><a class="headerlink" href="#id36" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="eckert-iv-and-vi-projection-jk-jk">
+<span id="jk"></span><h3><span class="section-number">6.4.5. </span>Eckert IV and VI projection (<strong>-Jk</strong> <strong>-JK</strong>)<a class="headerlink" href="#eckert-iv-and-vi-projection-jk-jk" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jk</strong>|<strong>K</strong><strong>f</strong>[<em>lon0/</em>]<em>scale</em>|<em>width</em> (Eckert IV)
+<strong>-Jk</strong>|<strong>K</strong>[<strong>s</strong>][<em>lon0/</em>]<em>scale</em>|<em>width</em> (Eckert VI)</p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The central meridian (<em>lon0</em>) [default is the middle of the map].</p></li>
+<li><p>The <em>scale</em> along equator in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jk</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JK</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>The Eckert IV and VI projections, presented by the German cartographer Max Eckert-Greiffendorff in 1906, are
+pseudo-cylindrical equal-area projections. Central meridian and all parallels are straight lines; other meridians are
+equally spaced elliptical arcs (IV) or sinusoids (VI). The scale is true along latitudes 40°30’ (IV) and 49°16’ (VI).
+Their main use is in thematic world maps. To select Eckert IV you must use <strong>-JKf</strong> (<strong>f</strong> for “four”) while Eckert VI
+is selected with <strong>-JKs</strong> (<strong>s</strong> for “six”). If no modifier is given it defaults to Eckert VI.</p>
+<p><strong>Examples</strong></p>
+<p>Centered on the Dateline, the Eckert IV example below was created by this command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JKf12c -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 --GMT_THEME<span class="o">=</span>cookbook -view GMT_eckert4
+</pre></div>
+</div>
+<figure class="align-center" id="id37">
+<a class="reference internal image-reference" href="../_images/GMT_eckert4.png"><img alt="../_images/GMT_eckert4.png" src="../_images/GMT_eckert4.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using the Eckert IV projection.</span><a class="headerlink" href="#id37" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The same script, with <strong>s</strong> instead of <strong>f</strong>, yields the Eckert VI map:</p>
+<figure class="align-center" id="id38">
+<a class="reference internal image-reference" href="../_images/GMT_eckert6.png"><img alt="../_images/GMT_eckert6.png" src="../_images/GMT_eckert6.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using the Eckert VI projection.</span><a class="headerlink" href="#id38" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<div class="toggle docutils container">
+<p>Here is the source script for the figure above:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_eckert6
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt coast -Rg -JKs4.5i -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3
+gmt end show
+</pre></div>
+</div>
+</div>
+</section>
+<section id="sinusoidal-projection-ji-ji">
+<span id="ji"></span><h3><span class="section-number">6.4.6. </span>Sinusoidal projection (<strong>-Ji</strong> <strong>-JI</strong>)<a class="headerlink" href="#sinusoidal-projection-ji-ji" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Ji</strong>|<strong>I</strong>[<em>lon0/</em>]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The central meridian (<em>lon0</em>) [default is the middle of the map].</p></li>
+<li><p>The <em>scale</em> along equator in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Ji</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JI</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>The sinusoidal projection is one of the oldest known projections, is equal-area, and has been used since the mid-16th
+century. It has also been called the “Equal-area Mercator” projection. The central meridian is a straight line; all
+other meridians are sinusoidal curves. Parallels are all equally spaced straight lines, with scale being true along all
+parallels (and central meridian).</p>
+<p><strong>Examples</strong></p>
+<p>A simple world map using the sinusoidal projection is therefore obtained by</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rd -JI12c -Bg -Dc -A10000 -Gcoral4 -Sazure3 --GMT_THEME<span class="o">=</span>cookbook -view GMT_sinusoidal
+</pre></div>
+</div>
+<figure class="align-center" id="id39">
+<a class="reference internal image-reference" href="../_images/GMT_sinusoidal.png"><img alt="../_images/GMT_sinusoidal.png" src="../_images/GMT_sinusoidal.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using the Sinusoidal projection.</span><a class="headerlink" href="#id39" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>To reduce distortion of shape the interrupted sinusoidal projection was introduced in 1927. Here, three symmetrical
+segments are used to cover the entire world. Traditionally, the interruptions are at 160°W, 20°W, and 60°E. To make the
+interrupted map we must call <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> for each segment and superpose the results. To produce an interrupted world
+map (with the traditional boundaries just mentioned) that is 14.4 cm wide we use the scale 14.4/360 = 0.04 and offset
+the subsequent plots horizontally by their widths (140<span class="math notranslate nohighlight">\(\cdot\)</span>0.04 and 80<span class="math notranslate nohighlight">\(\cdot\)</span>0.04):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_sinus_int
+	gmt <span class="nb">set</span> GMT_THEME cookbook
+	gmt coast -R200/340/-90/90 -Ji0.04c -Bg -A10000 -Dc -Gdarkred -Sazure
+	gmt coast -R-20/60/-90/90 -Bg -Dc -A10000 -Gdarkgreen -Sazure -X5.6c
+	gmt coast -R60/200/-90/90 -Bg -Dc -A10000 -Gdarkblue -Sazure -X3.2c
+gmt end show
+</pre></div>
+</div>
+<figure class="align-center" id="id40">
+<a class="reference internal image-reference" href="../_images/GMT_sinus_int.png"><img alt="../_images/GMT_sinus_int.png" src="../_images/GMT_sinus_int.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using the Interrupted Sinusoidal projection.</span><a class="headerlink" href="#id40" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The usefulness of the interrupted sinusoidal projection is basically limited to display of global, discontinuous data
+distributions like hydrocarbon and mineral resources, etc.</p>
+</section>
+<section id="van-der-grinten-projection-jv-jv">
+<span id="jv"></span><h3><span class="section-number">6.4.7. </span>Van der Grinten projection (<strong>-Jv</strong> <strong>-JV</strong>)<a class="headerlink" href="#van-der-grinten-projection-jv-jv" title="Permalink to this heading">¶</a></h3>
+<p><strong>Syntax</strong></p>
+<blockquote>
+<div><p><strong>-Jv</strong>|<strong>V</strong>[<em>lon0/</em>]<em>scale</em>|<em>width</em></p>
+</div></blockquote>
+<p><strong>Parameters</strong></p>
+<ul class="simple">
+<li><p>The central meridian (<em>lon0</em>) [default is the middle of the map].</p></li>
+<li><p>The <em>scale</em> along equator in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>/degree or as 1:xxxxx (with <strong>-Jv</strong>) or map <em>width</em> in
+<a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> (with <strong>-JV</strong>).</p></li>
+</ul>
+<p><strong>Description</strong></p>
+<p>The Van der Grinten projection, presented by Alphons J. van der Grinten in 1904, is neither equal-area nor conformal.
+Central meridian and Equator are straight lines; other meridians are arcs of circles. The scale is true along the
+Equator only. Its main use is to show the entire world enclosed in a circle.</p>
+<p><strong>Example</strong></p>
+<p>Centered on the Dateline, the example below was created by this command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JV10c -Bg -Dc -Glightgray -Scornsilk -A10000 -Wthinnest --GMT_THEME<span class="o">=</span>cookbook -view GMT_grinten
+</pre></div>
+</div>
+<figure class="align-center" id="id41">
+<a class="reference internal image-reference" href="../_images/GMT_grinten.png"><img alt="../_images/GMT_grinten.png" src="../_images/GMT_grinten.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">World map using the Van der Grinten projection.</span><a class="headerlink" href="#id41" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="footnotes">
+<h2><span class="section-number">6.5. </span>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this heading">¶</a></h2>
+<aside class="footnote brackets" id="id4" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">20</a><span class="fn-bracket">]</span></span>
+<p>Snyder, J. P., 1987, Map Projections A Working Manual, U.S.
+Geological Survey Prof. Paper 1395.</p>
+</aside>
+<aside class="footnote brackets" id="id5" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">21</a><span class="fn-bracket">]</span></span>
+<p>This is, however, not the shortest distance. It is given by the great
+circle connecting the two points.</p>
+</aside>
+<aside class="footnote brackets" id="id6" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">22</a><span class="fn-bracket">]</span></span>
+<p>Robinson provided a table of <em>y</em>-coordinates for latitudes
+every 5. To project values for intermediate latitudes one must
+interpolate the table. Different interpolants may result in slightly
+different maps. GMT uses the
+interpolant selected by the parameter <a class="reference internal" href="../gmt.conf.html#term-GMT_INTERPOLANT"><span class="xref std std-term">GMT_INTERPOLANT</span></a> in the
+file.</p>
+</aside>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="coordinate-transformations.html" class="btn btn-neutral float-left" title="5. GMT Coordinate Transformations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="supplemental-packages.html" class="btn btn-neutral float-right" title="7. GMT Supplemental Packages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>inset &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="kml2gmt" href="kml2gmt.html" />
+    <link rel="prev" title="image" href="image.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">Modules</a> &raquo;</li>
+      <li>inset</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/inset.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="inset">
+<h1>inset<a class="headerlink" href="#inset" title="Permalink to this heading">¶</a></h1>
+<p>Manage figure inset setup and completion</p>
+<p>The <strong>inset</strong> module is used to carve out a sub-region of the current plot canvas and
+restrict further plotting to that section of the canvas.  The inset setup is started with the <strong>begin</strong>
+directive that defines the placement and size of the inset.  Subsequent plot commands will be directed
+to that window.  The inset is completed via the <strong>end</strong> directive, which reverts operations to the full
+canvas and restores the plot region and map projection that was in effect prior to the setup of the inset.</p>
+<section id="synopsis-begin-mode">
+<h2>Synopsis (begin mode)<a class="headerlink" href="#synopsis-begin-mode" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt inset begin</strong>
+<a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>inset-box</em>
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<em>side</em>]<em>clearance</em> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>box</em> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p>The <strong>begin</strong> directive of <strong>inset</strong> defines the dimension and placement of the inset canvas.  It
+records the current region and projection so that we may return to the initial
+plot environment when  the inset is completed.  The user may select any plot region
+and projection once plotting in the inset, but if the first command uses a projection
+that leaves off the scale or width then we supply a scale or width to fill the inset as best
+as possible, given the inset size and margins (if selected). <strong>Note</strong>: If you wish to let
+the inset dimensions be determined by the region and projection that will be used to draw in
+the inset, then give these arguments on the <strong>gmt inset begin</strong> command.</p>
+</section>
+<section id="required-arguments-begin-mode">
+<h2>Required Arguments (begin mode)<a class="headerlink" href="#required-arguments-begin-mode" title="Permalink to this heading">¶</a></h2>
+<dl id="d">
+<dt><strong>-D</strong><em>xmin/xmax/ymin/ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]] | <strong>-D</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[/<em>height</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Define the map inset rectangle on the map.  Specify the rectangle in one of three ways:</p>
+<ol class="arabic simple">
+<li><p>Append <strong>g</strong><em>lon</em>/<em>lat</em> for <a class="reference internal" href="cookbook/features.html#reference-points-g"><span class="std std-ref">map coordinates</span></a>. Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>j</strong><em>code</em> or <strong>J</strong><em>code</em> for setting the <em>refpoint</em> via a 2-char
+<a class="reference internal" href="cookbook/features.html#reference-points-j"><span class="std std-ref">justification code</span></a> that refers to the (invisible) projected map bounding box. Requires
+both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>n</strong><em>xn</em>/<em>yn</em> for <a class="reference internal" href="cookbook/features.html#reference-points-n"><span class="std std-ref">normalized bounding box coordinates</span></a> (0-1). Requires both
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>x</strong><em>x</em>/<em>y</em> for <a class="reference internal" href="cookbook/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or
+<strong>p</strong>point).</p></li>
+</ol>
+<p>Alternatively, Give <em>west/east/south/north</em> of geographic rectangle bounded by parallels
+and meridians; append <strong>+r</strong> if the coordinates instead are the lower left and
+upper right corners of the desired rectangle. (Or, give <em>xmin/xmax/ymin/ymax</em>
+of bounding rectangle in projected coordinates and optionally append <strong>+u</strong><em>unit</em> [Default coordinate unit is meter (e)].
+Append <strong>+w</strong><em>width</em>[/<em>height</em>] of bounding rectangle or box in plot coordinates (inches, cm, etc.).
+By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
+can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em> (see <a class="reference internal" href="text.html"><span class="doc">text</span></a>).
+<strong>Note</strong>: If <strong>-Dj</strong> is used then <em>justify</em> defaults to the same as <em>refpoint</em>,
+if <strong>-DJ</strong> is used then <em>justify</em> defaults to the mirror opposite of <em>refpoint</em>.
+Specify inset box attributes via the <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> option [outline only].</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments-begin-mode">
+<h2>Optional Arguments (begin mode)<a class="headerlink" href="#optional-arguments-begin-mode" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="c">
+<dt><strong>-C</strong>[<em>side</em>]<em>clearance</em></dt><dd><p>Reserve a space of dimension <em>clearance</em> between the actual inset plot area and the given inset box on the specified
+side, using <em>side</em> values from <strong>w</strong>, <strong>e</strong>, <strong>s</strong>, or <strong>n</strong>, or <strong>x</strong> for both <strong>w</strong> and <strong>e</strong>
+or <strong>y</strong> for both <strong>s</strong> and <strong>n</strong>.  No <em>side</em> means all sides. The option is repeatable to set aside space
+on more than one side.  Alternatively, if all sides are to be set you can also give a pair of values separated by slashes
+(for setting separate horizontal and vertical margins), or the full set of four separate margins. Such space
+will be left untouched by the inset map plotting.  Append units as desired [Default is set by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>].</p>
+</dd>
+</dl>
+<p id="f"><strong>-F</strong>[<strong>+c</strong><em>clearances</em>][<strong>+g</strong><em>fill</em>][<strong>+i</strong>[[<em>gap</em>/]<em>pen</em>]][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>[<em>radius</em>]][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]]]</p>
+<blockquote>
+<div><p>Without further options, draws a rectangular border around the map inset using <a class="reference internal" href="gmt.conf.html#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a>. The following
+modifiers can be appended to <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>, with additional explanation and examples provided in the <a class="reference internal" href="cookbook/features.html#background-panel"><span class="std std-ref">The background panel</span></a>
+cookbook section:</p>
+<ul class="simple">
+<li><p><strong>+c</strong><em>clearance</em> where <em>clearance</em> is either <em>gap</em>, <em>xgap</em>/<em>ygap</em>, or <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> and <em>gap</em> gives a uniform <a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">clearance</span></a>, <em>xgap</em>/<em>ygap</em> gives separate
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">clearances</span></a> in the x- and y- directions, and <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> gives
+individual <a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">clearances</span></a> between the map embellishment and the border for each side.</p></li>
+<li><p><strong>+g</strong><em>fill</em> to fill the box with a color specified by <a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> [default is no fill].</p></li>
+<li><p><strong>+i</strong>[[<em>gap</em>/]<em>pen</em>] to draw a secondary, inner border as well. Optionally, specify the
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">gap</span></a> between the inner and outer border and the <a class="reference internal" href="cookbook/features.html#wpen-attrib"><span class="std std-ref">pen</span></a> for the inner border
+[default is a uniform <em>gap</em> between borders of <strong>2p</strong> and the <a class="reference internal" href="gmt.conf.html#term-MAP_DEFAULT_PEN"><span class="xref std std-term">MAP_DEFAULT_PEN</span></a>].</p></li>
+<li><p><strong>+p</strong><em>pen</em> to specify different <a class="reference internal" href="cookbook/features.html#wpen-attrib"><span class="std std-ref">pen</span></a> attributes.</p></li>
+<li><p><strong>+r</strong>[<em>radius</em>] to draw rounded rectangular borders instead with a corner radius set by <em>radius</em> (append
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">units</span></a>) [defaults is <strong>6p</strong>].</p></li>
+<li><p><strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]] to draw an offset background shaded region. Here, <em>dx</em>/<em>dy</em> indicates the
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">shift</span></a> relative to the foreground frame [default is <strong>4p</strong>/<strong>-4p</strong>] and <em>shade</em> sets the
+<a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> style to use for shading [default is <strong>gray50</strong>].</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple" id="j">
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<a class="reference internal" href="cookbook/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong></dt><dd><p>Do NOT clip features extruding outside map inset boundaries [Default will clip].</p>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. This is useful when you want the inset <strong>-R -J</strong> to also determine the inset size. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exits (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exits.</p>
+</dd>
+</dl>
+</section>
+<section id="synopsis-end-mode">
+<h2>Synopsis (end mode)<a class="headerlink" href="#synopsis-end-mode" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt inset end</strong> [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
+<p>The <strong>end</strong> directive finalizes the current inset, which returns the plotting environment to
+the state prior to the start of the inset.  The previous region and map projection will be
+in effect going forward.</p>
+</section>
+<section id="optional-arguments-end-mode">
+<h2>Optional Arguments (end mode)<a class="headerlink" href="#optional-arguments-end-mode" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="inset-end-v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exits (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exits.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exits.</p>
+</dd>
+</dl>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p>To make a simple basemap plot called inset.pdf that demonstrates the inset module, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin inset pdf
+  gmt basemap -R0/40/20/60 -JM6.5i -Bafg -B+glightgreen
+  gmt inset begin -DjTR+w2.5i+o0.2i -F+gpink+p0.5p -C0.25i
+    gmt basemap -Rg -JA20/20/ -Bafg
+    gmt text -F+f18p+cTR+tINSET -Dj-0.15i -N
+  gmt inset end
+  gmt text -F+f18p+cBL+tMAP -Dj0.2i
+gmt end
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="begin.html"><span class="doc">begin</span></a>,
+<a class="reference internal" href="clear.html"><span class="doc">clear</span></a>,
+<a class="reference internal" href="docs.html"><span class="doc">docs</span></a>,
+<a class="reference internal" href="end.html"><span class="doc">end</span></a>,
+<a class="reference internal" href="figure.html"><span class="doc">figure</span></a>,
+<a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="subplot.html"><span class="doc">subplot</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="image.html" class="btn btn-neutral float-left" title="image" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="kml2gmt.html" class="btn btn-neutral float-right" title="kml2gmt" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,568 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gmtconvert &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gmtdefaults" href="gmtdefaults.html" />
+    <link rel="prev" title="gmtconnect" href="gmtconnect.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">Modules</a> &raquo;</li>
+      <li>gmtconvert</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gmtconvert.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="gmtconvert">
+<h1>gmtconvert<a class="headerlink" href="#gmtconvert" title="Permalink to this heading">¶</a></h1>
+<p>Convert, paste, or extract columns from data tables</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt convert</strong> [ <em>table</em> ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<strong>+l</strong><em>min</em>][<strong>+u</strong><em>max</em>][<strong>+i</strong>]]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<em>template</em>[<strong>+o</strong><em>orig</em>]] ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<strong>f</strong>|<strong>l</strong>|<strong>m</strong>|<strong>M</strong><em>stride</em>] ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>c</strong>|<strong>n</strong>|<strong>p</strong>|<strong>v</strong>][<strong>a</strong>|<strong>t</strong>|<strong>s</strong>|<strong>r</strong>|<em>refpoint</em>] ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<strong>tsr</strong>] ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>col</em>[<strong>+a</strong>|<strong>d</strong>] ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<strong>~</strong>]<em>selection</em>]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<strong>~</strong>]<em>“search string”</em>|<strong>+f</strong>|<em>file</em>[<strong>+e</strong>] | <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>][<strong>+e</strong>] ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<strong>h</strong>][<strong>d</strong>[[<strong>~</strong>]<em>selection</em>]] ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>+n</strong>] ]
+[ <strong>-a</strong><a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-q</strong><a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-s</strong><a class="reference internal" href="gmt.html#s-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-w</strong><a class="reference internal" href="gmt.html#w-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>convert</strong> reads its standard input [or input files] and writes out
+the desired information to standard output. It can do a combination of
+nine tasks: (1) convert between binary and ASCII data tables, (2) paste
+corresponding records from multiple files horizontally into a single
+file, (3) extract a subset of the available columns, (4) only extract
+segments whose header record matches a text pattern search, (5) only
+list segment headers and no data records, (6) extract first and/or last
+data record for each segment, (7) reverse the order of items on output,
+(8) output only ranges of segment numbers, and (9) output only segments
+whose record count matches criteria.  Input (and hence output) may have multiple
+sub-headers, and ASCII tables may have regular headers as well.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="a">
+<dt><strong>-A</strong></dt><dd><p>The records from the input files should be pasted horizontally, not
+appended vertically [Default]. All files must have the same number
+of segments and number of rows per segment. Note for binary input,
+all the files you want to paste must have the same number of columns
+(as set with <strong>-bi</strong>); ASCII tables can have different number of columns.</p>
+</dd>
+</dl>
+<dl class="simple" id="c">
+<dt><strong>-C</strong>[<strong>+l</strong><em>min</em>][<strong>+u</strong><em>max</em>][<strong>+i</strong>]</dt><dd><p>Only output segments whose number of records matches your given criteria:
+Append <strong>+l</strong><em>min</em> to ensure all segment must have at least <em>min</em> records
+to be written to output [0], and append <strong>+u</strong><em>max</em>  to ensure all segments
+must have at most <em>max</em> records to be written [inf].  You may append <strong>+i</strong>
+to invert the selection, i.e., only segments with record counts outside the
+given range will be output.</p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong>[<em>template</em>[<strong>+o</strong><em>orig</em>]]</dt><dd><p>For multiple segment data, dump each segment to a separate output
+file [Default writes a multiple segment file to standard output]. Append a
+format template for the individual file names; this template
+<strong>must</strong> contain a C format specifier that can format an integer
+argument (the running segment number across all tables); this is
+usually %d but could be %08d which gives leading zeros, etc.
+[Default is gmtconvert_segment_%d.{txt|bin}, depending on
+<strong>-bo</strong>]. Append <strong>+o</strong><em>orig</em> to start the numbering from <em>orig</em>
+instead of zero.  Alternatively, give a template with
+two C format specifiers and we will supply the table number and the
+segment number within the table to build the file name.
+Append <strong>+o</strong><em>torig</em>/<em>sorig</em> to start the numbering of tables
+from <em>torig</em> and numbering of segments within a table from <em>sorig</em>
+instead of zero.  The <strong>+o</strong> modifier will be stripped off before
+the <em>template</em> is used.</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong>[<strong>f</strong>|<strong>l</strong>|<strong>m</strong>|<strong>M</strong><em>stride</em>]</dt><dd><p>Only extract the first and last record for each segment of interest
+[Default extracts all records]. Optionally, append <strong>f</strong> or <strong>l</strong> to
+only extract the first or last record of each segment, respectively.
+Alternatively, append <strong>m</strong><em>stride</em> to extract every <em>stride</em> records;
+use <strong>M</strong> to also include the last record.</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong>[<strong>c</strong>|<strong>n</strong>|<strong>p</strong>|<strong>v</strong>][<strong>a</strong>|<strong>t</strong>|<strong>s</strong>|<strong>r</strong>|<em>refpoint</em>]</dt><dd><p>Alter the way points are connected (by specifying a <em>scheme</em>) and data are grouped (by specifying a <em>method</em>).
+Append one of four line connection schemes:
+<strong>c</strong>: Form continuous line segments for each group [Default].
+<strong>p</strong>: Form line segments from a reference point reset for each group.
+<strong>n</strong>: Form networks of line segments between all points in each group.
+<strong>v</strong>: Form vector line segments suitable for <a class="reference internal" href="plot.html"><span class="doc">plot</span></a> <strong>-Sv+s</strong>.
+Optionally, append the one of four segmentation methods to define the group:
+<strong>a</strong>: Ignore all segment headers, i.e., let all points belong to a single group,
+and set group reference point to the very first point of the first file.
+<strong>t</strong>: Consider all data in each table to be a single separate group and
+reset the group reference point to the first point of each group.
+<strong>s</strong>: Segment headers are honored so each segment is a group; the group
+reference point is reset to the first point of each incoming segment [Default].
+<strong>r</strong>: Same as <strong>s</strong>, but the group reference point is reset after
+each record to the previous point (this method is only available with the <strong>-Fp</strong> scheme).
+Instead of the codes <strong>a</strong>|<strong>f</strong>|<strong>s</strong>|<strong>r</strong> you may append
+the coordinates of a <em>refpoint</em> which will serve as a fixed external
+reference point for all groups.</p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-I</strong>[<strong>tsr</strong>]</dt><dd><p>Invert the order of items, i.e., output the items in reverse order,
+starting with the last and ending up with the first item [Default
+keeps original order]. Append up to three items that should be
+reversed: <strong>t</strong> will reverse the order of tables, <strong>s</strong> will reverse
+the order of segments within each table, and <strong>r</strong> will reverse the
+order of records within each segment [Default].</p>
+</dd>
+</dl>
+<dl class="simple" id="l">
+<dt><strong>-L</strong></dt><dd><p>Only output a listing of all segment header records and no data
+records (requires ASCII data).</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong><em>col</em>[<strong>+a</strong>|<strong>d</strong>]</dt><dd><p>Numerically sort each segment based on values in column <em>col</em>.
+The data records will be sorted such that the chosen column will
+fall into ascending order [<strong>+a</strong>, which is Default].  Append <strong>+d</strong>
+to sort into descending order instead.  The <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> option can be
+combined with any other ordering scheme except <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> (segmentation)
+and is applied at the end.</p>
+</dd>
+</dl>
+<dl class="simple" id="q">
+<dt><strong>-Q</strong>[<strong>~</strong>]<em>selection</em></dt><dd><p>Only write segments whose number is included in <em>selection</em> and skip
+all others. Cannot be used with <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>. The <em>selection</em> syntax is
+<em>range</em>[,<em>range</em>,…] where each <em>range</em> of items is either a single
+segment <em>number</em> or a range with stepped increments given via <em>start</em>[:<em>step</em>:]:<em>stop</em>
+(<em>step</em> is optional and defaults to 1). A leading <strong>~</strong> will
+invert the selection and write all segments but the ones listed.  Instead
+of a list of ranges, use <strong>+f</strong><em>file</em> to supply a file list with one <em>range</em> per line.</p>
+</dd>
+</dl>
+<dl class="simple" id="s">
+<dt><strong>-S</strong>[<strong>~</strong>]<em>“search string”</em>|<strong>+f</strong>|<em>file</em>[<strong>+e</strong>] | <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>][<strong>+e</strong>]</dt><dd><p>Only output those segments whose header record contains the
+specified text string. To reverse the search, i.e., to output
+segments whose headers do <em>not</em> contain the specified pattern, use
+<strong>-S~</strong>. Should your pattern happen to start with ~ you need to
+escape this character with a backslash [Default output all
+segments]. Cannot be used with <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>. For matching segments based
+on aspatial values (via OGR/GMT format), give the search string as
+<em>varname</em>=<em>value</em> and we will compare <em>value</em> against the value
+of <em>varname</em> for each segment. <strong>Note</strong>: If the features are polygons
+then a match of a particular polygon perimeter also means that any
+associated polygon holes will also be matched. For matching segment
+headers against extended regular expressions enclose the expression
+in slashes. Append <strong>i</strong> for case-insensitive matching.
+For a list of such patterns, give <strong>+f</strong><em>file</em> with one pattern per line.
+To give a single pattern starting with “+f”, escape it with a backslash.
+Finally, append <strong>+e</strong> as last modifier to request an exact match [Default will
+match any sub-string in the target].</p>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-T</strong>[<strong>h</strong>][<strong>d</strong>[[<strong>~</strong>]<em>selection</em>]]</dt><dd><p>Suppress the writing of certain records on output.  Append <strong>h</strong> to
+suppress segment headers [Default], and/or <strong>d</strong> to suppress duplicate
+data records.  Use <strong>-Thd</strong> to suppress both types of records.  By default,
+all columns must be identical across the two records to skip the record.
+Alternatively, append a column <em>selection</em> to only use those columns
+in the comparisons instead.  The <em>selection</em> syntax is
+<em>range</em>[,<em>range</em>,…] where each <em>range</em> of items is either a single
+column <em>number</em> or a range with stepped increments given via <em>start</em>[:<em>step</em>:]:<em>stop</em>
+(<em>step</em> is optional and defaults to 1). A leading <strong>~</strong> will
+invert the selection and select all columns but the ones listed. To add the
+trailing text to the comparison as well, add the column <em>t</em> to the list.
+If no numerical columns are specified, just <em>t</em>, then we only consider trailing text.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong>[<strong>+n</strong>]</dt><dd><p>Attempt to convert each word in the trailing text to a number and append
+such values to the numerical output columns.  Text that cannot be converted
+(because they are not numbers) will appear as NaNs.  Use modifier <strong>+n</strong> to
+exclude the columns with NaNs.  <strong>Note</strong>: These columns are identified based on
+the first input record only.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-a</strong>[[<em>col</em>=]<em>name</em>[,<em>…</em>]] <a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set aspatial column associations <em>col</em>=<em>name</em>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-bi</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for primary table input.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-bo</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for table output. [Default is same as input].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>][<strong>+c</strong><em>col</em>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>“pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Only accept data records that match the given pattern.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify data types of input and/or output columns.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-g</strong><strong>x</strong>|<strong>y</strong>|<strong>z</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong><em>gap</em>[<strong>u</strong>][<strong>+a</strong>][<strong>+c</strong><em>col</em>][<strong>+n</strong>|<strong>p</strong>]  <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Determine data gaps and line breaks.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Skip or produce header record(s).  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-o</strong><em>cols</em>[,…][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns (0 is first column; <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input or output rows or data limit(s) [all].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-s</strong>[<em>cols</em>][<strong>+a</strong>][<strong>+r</strong>] <a class="reference internal" href="gmt.html#s-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set handling of NaN records for output.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-wy</strong>|<strong>a</strong>|<strong>w</strong>|<strong>d</strong>|<strong>h</strong>|<strong>m</strong>|<strong>s</strong>|<strong>c</strong><em>period</em>[/<em>phase</em>][<strong>+c</strong><em>col</em>] <a class="reference internal" href="gmt.html#w-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Convert an input coordinate to a cyclical coordinate.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Swap 1st and 2nd column on input and/or output.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="ascii-format-precision">
+<h2>ASCII Format Precision<a class="headerlink" href="#ascii-format-precision" title="Permalink to this heading">¶</a></h2>
+<p>The ASCII output formats of numerical data are controlled by parameters
+in your <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file. Longitude and latitude are formatted
+according to <a class="reference internal" href="gmt.conf.html#term-FORMAT_GEO_OUT"><span class="xref std std-term">FORMAT_GEO_OUT</span></a>, absolute time is
+under the control of <a class="reference internal" href="gmt.conf.html#term-FORMAT_DATE_OUT"><span class="xref std std-term">FORMAT_DATE_OUT</span></a> and
+<a class="reference internal" href="gmt.conf.html#term-FORMAT_CLOCK_OUT"><span class="xref std std-term">FORMAT_CLOCK_OUT</span></a>, whereas general floating point values are formatted
+according to <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a>. Be aware that the format in effect
+can lead to loss of precision in ASCII output, which can lead to various
+problems downstream. If you find the output is not written with enough
+precision, consider switching to binary output (<strong>-bo</strong> if available) or
+specify more decimals using the <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a> setting.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p>To convert the binary file test.b (single precision) with 4 columns to ASCII:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert test.b -bi4f &gt; test.dat
+</pre></div>
+</div>
+<p>To convert the multiple segment ASCII table test.txt to a double precision binary file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert test.txt -bo &gt; test.b
+</pre></div>
+</div>
+<p>You have an ASCII table with 6 columns and you want to plot column 5 versus column 0. Try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert table.txt -o5,0 <span class="p">|</span> gmt plot ...
+</pre></div>
+</div>
+<p>If the file instead is the binary file results.b which has 9
+single-precision values per record, we extract the last column and
+columns 4-6 and write ASCII with the command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert results.b -o8,4-6 -bi9s <span class="p">|</span> gmt plot ...
+</pre></div>
+</div>
+<p>You want to plot the 2nd column of a 2-column file left.txt versus the
+first column of a file right.txt:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert left.txt right.txt -A -o1,2 <span class="p">|</span> gmt plot ...
+</pre></div>
+</div>
+<p>To extract all segments in the file big_file.txt whose headers contain
+the string “RIDGE AXIS”, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert big_file.txt -S<span class="s2">&quot;RIDGE AXIS&quot;</span> &gt; subset.txt
+</pre></div>
+</div>
+<p>To only get the segments in the file big_file.txt whose headers exactly
+matches the string “Spitsbergen”, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert big_file.txt -SSpitsbergen+e &gt; subset.txt
+</pre></div>
+</div>
+<p>To invert the selection of segments whose headers begin with “profile ”
+followed by an integer number and any letter between “g” and “l”, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert -S~<span class="s2">&quot;/^profile [0-9]+[g-l]</span>$<span class="s2">/&quot;</span>
+</pre></div>
+</div>
+<p>To reverse the order of segments in a file without reversing the order
+of records within each segment, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert lots_of_segments.txt -Is &gt; last_segment_first.txt
+</pre></div>
+</div>
+<p>To extract segments 20 to 40 in steps of 2, plus segment 0 in a file, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert lots_of_segments.txt -Q0,20:2:40 &gt; my_segments.txt
+</pre></div>
+</div>
+<p>To extract the attribute ELEVATION from an ogr gmt file like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># @VGMT1.0 @GPOINT</span>
+...
+<span class="c1"># @NELEVATION|DISPX|DISPY</span>
+<span class="c1"># @Tdouble|double|double</span>
+<span class="c1"># FEATURE_DATA</span>
+<span class="c1"># @D4.945000|-106500.00000000|-32700.00000000</span>
+-9.36890245902635 <span class="m">39</span>.367156766570389
+</pre></div>
+</div>
+<p>do:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert file.gmt -a2<span class="o">=</span>ELEVATION &gt; xyz.dat
+</pre></div>
+</div>
+<p>or just:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert file.gmt -aELEVATION &gt; xyz.dat
+</pre></div>
+</div>
+<p>To connect all points in the file sensors.txt with the specified origin
+at 23.5/19, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert sensors.txt -F23.5/19 &gt; lines.txt
+</pre></div>
+</div>
+<p>To write all segments in the two files A.txt and B.txt to
+individual files named profile_005000.txt, profile_005001.txt, etc.,
+where we reset the origin of the sequential numbering from 0 to 5000, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert A.txt B.txt -Dprofile_%6.6d.txt+o5000
+</pre></div>
+</div>
+<p>To only read rows 100-200 and 500-600 from file junk.txt, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert junk.txt -q100-200,500-600 &gt; subset.txt
+</pre></div>
+</div>
+<p>To get all rows except those bad ones between rows 1000-2000, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt convert junk.txt -q~1000-2000 &gt; good.txt
+</pre></div>
+</div>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmtinfo.html"><span class="doc">gmtinfo</span></a>,
+<a class="reference internal" href="gmtselect.html"><span class="doc">gmtselect</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gmtconnect.html" class="btn btn-neutral float-left" title="gmtconnect" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gmtdefaults.html" class="btn btn-neutral float-right" title="gmtdefaults" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

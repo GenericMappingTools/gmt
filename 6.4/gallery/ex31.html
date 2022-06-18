@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(31) Using non-default fonts in PostScript &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(32) Draping an image over topography" href="ex32.html" />
+    <link rel="prev" title="(30) Trigonometric functions plotted in graph mode" href="ex30.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../gallery.html">Illustration Gallery</a> &raquo;</li>
+      <li>(31) Using non-default fonts in PostScript</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex31.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="using-non-default-fonts-in-postscript">
+<span id="example-31"></span><h1>(31) Using non-default fonts in PostScript<a class="headerlink" href="#using-non-default-fonts-in-postscript" title="Permalink to this heading">¶</a></h1>
+<p>This example illustrates several possibilities to create GMT plots
+with non-default fonts. As these fonts are not part of the standard
+PostScript font collection they have to be embedded in the PS- or
+PDF-file with Ghostscript. See also
+Cookbook Section <a class="reference internal" href="../cookbook/postscript-fonts.html#non-default-fonts"><span class="std std-ref">Using non-default fonts with GMT</span></a> for further information. The script
+includes the following steps:</p>
+<ul class="simple">
+<li><p>create a <code class="docutils literal notranslate"><span class="pre">PSL_custom_fonts.txt</span></code> file;</p></li>
+<li><p>set the GMT parameters <a class="reference internal" href="../gmt.conf.html#term-MAP_DEGREE_SYMBOL"><span class="xref std std-term">MAP_DEGREE_SYMBOL</span></a>, <a class="reference internal" href="../gmt.conf.html#term-PS_CHAR_ENCODING"><span class="xref std std-term">PS_CHAR_ENCODING</span></a>, and <a class="reference internal" href="../gmt.conf.html#term-FONT"><span class="xref std std-term">FONT</span></a>;</p></li>
+</ul>
+<p>The script produces the plot in Figure. All
+standard fonts have been substituted by the free OpenType fonts Linux
+Libertine (title) and Linux Biolinum (annotations).  Remote files with the locations
+and names of the cities are used, with awk providing help in data preparation.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#		GMT EXAMPLE 31</span>
+<span class="c1">#</span>
+<span class="c1"># Purpose:	Illustrate usage of non-default fonts in PostScript</span>
+<span class="c1"># GMT modules:	set, coast, plot, text, legend</span>
+<span class="c1"># Unix progs:	awk, cat, rm</span>
+<span class="c1">#</span>
+
+<span class="c1"># set AWK to awk if undefined</span>
+<span class="nv">AWK</span><span class="o">=</span><span class="si">${</span><span class="nv">AWK</span><span class="k">:-</span><span class="nv">awk</span><span class="si">}</span>
+
+gmt begin ex31
+	<span class="c1"># Set FONTPATH used in image conversion</span>
+	<span class="c1"># $(dirname 0) is the path to the current bash script</span>
+	gmt <span class="nb">set</span> <span class="nv">PS_CONVERT</span><span class="o">=</span><span class="s2">&quot;C-sFONTPATH=</span><span class="k">$(</span>dirname <span class="nv">$0</span><span class="k">)</span><span class="s2">/fonts&quot;</span>
+
+	<span class="c1"># create file PSL_custom_fonts.txt in current working directory</span>
+	<span class="c1"># and add PostScript font names of Linux Biolinum and Libertine</span>
+	<span class="nv">$AWK</span> <span class="s1">&#39;{print $1, 0.700, 0}&#39;</span> <span class="s">&lt;&lt;- EOF &gt; PSL_custom_fonts.txt</span>
+<span class="s">	LinBiolinumO</span>
+<span class="s">	LinBiolinumOI</span>
+<span class="s">	LinBiolinumOB</span>
+<span class="s">	LinLibertineOB</span>
+<span class="s">	EOF</span>
+
+	<span class="nv">capitals</span><span class="o">=</span><span class="k">$(</span>gmt which -G @europe-capitals-ru.csv<span class="k">)</span>
+	<span class="c1"># common settings</span>
+	gmt <span class="nb">set</span> FORMAT_GEO_MAP ddd:mm:ssF MAP_DEGREE_SYMBOL colon MAP_TITLE_OFFSET 20p <span class="se">\</span>
+		MAP_GRID_CROSS_SIZE_PRIMARY <span class="m">0</span>.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-5 <span class="se">\</span>
+		FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE lon_horizontal,lat_parallel,tick_extend
+
+	<span class="c1"># map of countries</span>
+	gmt coast -R-7/31/64/66+r -JL15/50/40/60/16c -Bx10g10 -By5g5 -B+t<span class="s2">&quot;Europe\072 Countries and Capital Cities&quot;</span> -A250 <span class="se">\</span>
+		-Slightblue -Glightgreen -W0.25p -N1/1p,white
+	<span class="c1"># mark capitals</span>
+	gmt plot @europe-capitals-ru.csv -i0,1 -Sc0.15c -G196/80/80
+	<span class="c1"># small EU cities</span>
+	<span class="nv">$AWK</span> <span class="s1">&#39;BEGIN {FS=&quot;,&quot;} $4 !=&quot;&quot; &amp;&amp; $4 &lt;= 1000000 {print $1, $2}&#39;</span> <span class="nv">$capitals</span> <span class="p">|</span> gmt plot -Sc0.15c -W0.25p
+	<span class="c1"># big EU cities</span>
+	<span class="nv">$AWK</span> <span class="s1">&#39;BEGIN {FS=&quot;,&quot;} $4 &gt; 1000000 {print $1, $2}&#39;</span> <span class="nv">$capitals</span> <span class="p">|</span> gmt plot -Sc0.15c -W1.25p
+	<span class="c1"># label big EU cities</span>
+	<span class="nv">$AWK</span> <span class="s1">&#39;BEGIN {FS=&quot;,&quot;} $4 &gt; 1000000 {print $1, $2, $3}&#39;</span> <span class="nv">$capitals</span> <span class="p">|</span> gmt text -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5%+tO -Qu
+
+	<span class="c1"># construct legend</span>
+	cat <span class="s">&lt;&lt;- EOF &gt; legend.txt</span>
+<span class="s">	G -0.1c</span>
+<span class="s">	H 10p,LinBiolinumOB Population of the European Union capital cities</span>
+<span class="s">	G 0.15c</span>
+<span class="s">	N 2</span>
+<span class="s">	S 0.15c c 0.15c 196/80/80 0.25p 0.5c &lt; 1 Million inhabitants</span>
+<span class="s">	S 0.15c c 0.15c 196/80/80 1.25p 0.5c &gt; 1 Million inhabitants</span>
+<span class="s">	N 1</span>
+<span class="s">	G 0.15c</span>
+<span class="s">	L 8p,LinBiolinumOB L Population in Millions</span>
+<span class="s">	N 6</span>
+<span class="s">	EOF</span>
+
+	<span class="c1"># append city names and population to legend</span>
+	<span class="nv">$AWK</span> <span class="s1">&#39;BEGIN {FS=&quot;,&quot;; f=&quot;L 8p,LinBiolinumO L&quot;}</span>
+<span class="s1">	  $4 &gt; 1000000 {printf &quot;%s %s:\n%s %.2f\n&quot;, f, $3, f, $4/1e6}&#39;</span> <span class="nv">$capitals</span> &gt;&gt; legend.txt
+
+	<span class="c1"># reduce annotation font size for legend</span>
+	gmt <span class="nb">set</span> FONT_ANNOT_PRIMARY 8p
+
+	<span class="c1"># plot legend</span>
+	gmt legend -DjTR+o0.1c+w8.0c+l1.2 -C0.3c/0.4c -F+p+gwhite legend.txt
+
+	rm -f legend.txt ex31CropNoLogo.eps europe-capitals-ru.csv
+gmt end show
+rm -f PSL_custom_fonts.txt
+</pre></div>
+</div>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/ex31.png"><img alt="../_images/ex31.png" src="../_images/ex31.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Using non-default fonts in PostScript.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ex30.html" class="btn btn-neutral float-left" title="(30) Trigonometric functions plotted in graph mode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ex32.html" class="btn btn-neutral float-right" title="(32) Draping an image over topography" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

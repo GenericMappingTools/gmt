@@ -1,0 +1,471 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>earthtide &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="gpsgridder" href="gpsgridder.html" />
+    <link rel="prev" title="xyz2grd" href="../../xyz2grd.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../modules.html">Modules</a> &raquo;</li>
+      <li>earthtide</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/geodesy/earthtide.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="earthtide">
+<h1>earthtide<a class="headerlink" href="#earthtide" title="Permalink to this heading">¶</a></h1>
+<p>Compute grids or time-series of solid Earth tides</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt earthtide</strong>
+<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em>
+<a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>x|e,y|n,z|v</em> ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>increment</em> ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>lon/lat</em> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-r</strong><a class="reference internal" href="../../gmt.html#nodereg-full"><span class="std std-ref">reg</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p>Compute the three components of solid Earth tides as time-series or grids. Optionally compute also Sun and Moon position in lon,lat.
+The output can be either in the form of a grid or as a table printed to standard output. The format of the table data is:
+<em>time north east vertical</em> in units of meters.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p>Either <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>, <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> or <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> must be provided.</p>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<blockquote>
+<div><p>Write one or more tide component directly to grids; no table data are written to standard
+output. If more than one component are specified via <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> then <em>outgrid</em> must contain the format flag %s so that
+we can embed the component code in the file names (<em>n</em> for north; <em>e</em> for east and <em>v</em> for vertical).
+If only one component is selected with <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> than no code is appended to grid name (and no need to
+set the format flag %s). The grid(s) are computed at the time set by <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>, if that option is used, or
+at the <em>now</em> time calculated in UTC from the computer clock. Optionally, append =<em>ID</em> for writing a specific file format
+(<a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
+supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+d</strong> - Divide data values by given <em>divisor</em> [Default is 1].</p></li>
+<li><p><strong>+n</strong> - Replace data values matching <em>invalid</em> with a NaN.</p></li>
+<li><p><strong>+o</strong> - Offset data values by the given <em>offset</em>, or append <strong>a</strong> for
+automatic range offset to preserve precision for integer grids
+[Default is 0].</p></li>
+<li><p><strong>+s</strong> - Scale data values by the given <em>scale</em>, or append <strong>a</strong> for
+automatic scaling to preserve precision for integer grids [Default
+is 1].</p></li>
+</ul>
+</div></blockquote>
+<p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
+and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
+concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
+the <a class="reference internal" href="../../cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
+for more details.</p>
+</div></blockquote>
+<dl class="simple" id="s">
+<dt><strong>-S</strong></dt><dd><p>Output position of Sun and Moon in geographical coordinates plus distance
+in meters. Output is a Mx7 matrix where M is the number of times (set by -T)
+and columns are time, sun_lon, sun_lat, sun_dist moon_lon, moon_lat, moon_dist</p>
+</dd>
+</dl>
+<dl class="simple" id="l">
+<dt><strong>-L</strong><em>lon/lat</em></dt><dd><p>Geographical coordinate of the location where to compute a time-series. Coordinates are geodetic (ellipsoidal)
+latitude and longitude. GRS80 ellipsoid is used. (Which can be considered equivalent to the WGS84 ellipsoid at
+the sub-millimeter level.)</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="c">
+<dt><strong>-C</strong><strong>x</strong>|<strong>e</strong>,<strong>y</strong>|<strong>n</strong>,<strong>z</strong>|<strong>v</strong></dt><dd><p>Select which component to write to individual grids. Requires <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>.
+Append comma-separated codes for available components: <strong>x</strong> or <strong>e</strong> for the east component;
+<strong>y</strong> or <strong>n</strong> for the north component; and <strong>z</strong> or <strong>v</strong> for the vertical component.
+For example, <strong>-Ce</strong>,<strong>v</strong>, will write 2 grids. One with east and other with the vertical components.
+If <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> is set but not <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> then the default is to write the vertical component.</p>
+</dd>
+</dl>
+<span class="target" id="i"></span><dl>
+<dt><strong>-I</strong><em>x_inc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>y_inc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p>Set the grid spacing as <em>x_inc</em> [and optionally <em>y_inc</em>].</p>
+<p><strong>Geographical (degrees) coordinates</strong>: Optionally, append an increment unit.
+Choose among:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>m</strong> to indicate arc minutes</p></li>
+<li><p><strong>s</strong> to indicate arc seconds</p></li>
+<li><p><strong>e</strong> (meter), <strong>f</strong> (foot), <strong>k</strong> (km), <strong>M</strong> (mile), <strong>n</strong> (nautical
+mile) or <strong>u</strong> (US survey foot), in which case the increment will be
+converted to the equivalent degrees longitude at the middle latitude
+of the region  (the conversion depends on <a class="reference internal" href="../../gmt.conf.html#term-PROJ_ELLIPSOID"><span class="xref std std-term">PROJ_ELLIPSOID</span></a>). If
+<em>y_inc</em> is given but set to 0 it will be reset equal to <em>x_inc</em>;
+otherwise it will be converted to degrees latitude.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>All coordinates</strong>: The following modifiers are supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+e</strong> to slightly adjust the max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) to fit
+exactly the given increment if needed [Default is to slightly adjust
+the increment to fit the given domain].</p></li>
+<li><p><strong>+n</strong> to define the <em>number of nodes</em> rather than the increment, in
+which case the increment is recalculated from the number of nodes,
+the <em>registration</em> (see <a class="reference internal" href="../../cookbook/file-formats.html#gmt-file-formats"><span class="std std-ref">GMT File Formats</span></a>), and the domain.
+<strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used then the grid spacing and
+the registration have already been initialized; use <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> and <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>
+to override these values.</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-T</strong>[<em>min/max</em>/]<em>inc</em>[<strong>+i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em></dt><dd><p>Make evenly spaced time-steps from <em>min</em> to <em>max</em> by <em>inc</em>. Append <strong>+i</strong> to indicate the reciprocal increment was given,
+or append <strong>+n</strong> to indicate <em>inc</em> is the number of <em>t</em>-values to produce over the range instead. Append a valid time
+unit (<strong>d</strong>|<strong>h</strong>|<strong>m</strong>|<strong>s</strong>) to the increment. If only <em>min</em> is given then we use that date and time for the
+calculations.  If no <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is provided get current time in UTC from the computer clock. If no <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> or <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> are
+provided then <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is interpreted to mean compute a time-series at the location specified by <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>, thus then <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>
+becomes mandatory. When <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> and <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>, only first time T series is considered. Finally, dates may range from 1901
+through 2099. For details on array creation, see <a class="reference internal" href="#generate-1d-array">Generate 1D Array</a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-bo</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for table output.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-o</strong><em>cols</em>[,…][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns (0 is first column; <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-r</strong>[<strong>g</strong>|<strong>p</strong>] <a class="reference internal" href="../../gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set node registration [gridline].  </p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="generate-1d-array">
+<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this heading">¶</a></h2>
+<p>We will demonstrate the use of options for creating 1-D arrays via <a class="reference internal" href="../../gmtmath.html"><span class="doc">gmtmath</span></a>.
+Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>, e.g.,:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.1/4.2/0.1 <span class="nv">T</span> <span class="o">=</span>
+<span class="m">3</span>.1
+<span class="m">3</span>.2
+<span class="m">3</span>.3
+<span class="m">3</span>.4
+<span class="m">3</span>.5
+<span class="m">3</span>.6
+<span class="m">3</span>.7
+</pre></div>
+</div>
+<p>Append <strong>+b</strong> if we should take log2 of <em>min</em> and <em>max</em>, get their nearest integers,
+build an equidistant log2-array using <em>inc</em> integer increments in log2, then undo
+the log2 conversion. E.g., <strong>-T</strong>3/20/1<strong>+b</strong> will produce this sequence:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3/20/1+b <span class="nv">T</span> <span class="o">=</span>
+<span class="m">4</span>
+<span class="m">8</span>
+<span class="m">16</span>
+</pre></div>
+</div>
+<p>Append <strong>+l</strong> if we should take log10 of <em>min</em> and <em>max</em> and build an
+array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude) or 3
+(1-9 times magnitude).  E.g., <strong>-T</strong>7/135/2<strong>+l</strong> will produce this sequence:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T7/135/2+l <span class="nv">T</span> <span class="o">=</span>
+<span class="m">10</span>
+<span class="m">20</span>
+<span class="m">50</span>
+<span class="m">100</span>
+</pre></div>
+</div>
+<p>For output values less frequently than every magnitude, use a negative integer <em>inc</em>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T1e-4/1e4/-2+l <span class="nv">T</span> <span class="o">=</span>
+<span class="m">0</span>.0001
+<span class="m">0</span>.01
+<span class="m">1</span>
+<span class="m">100</span>
+<span class="m">10000</span>
+</pre></div>
+</div>
+<p>Append <strong>+i</strong> if <em>inc</em> is a fractional number and it is cleaner to give its reciprocal
+value instead.  To set up times for a 24-frames per second animation lasting 1 minute, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T0/60/24+i <span class="nv">T</span> <span class="o">=</span>
+<span class="m">0</span>
+<span class="m">0</span>.0416666666667
+<span class="m">0</span>.0833333333333
+<span class="m">0</span>.125
+<span class="m">0</span>.166666666667
+...
+</pre></div>
+</div>
+<p>Append <strong>+n</strong> if <em>inc</em> is meant to indicate the <em>number</em> of equidistant coordinates
+instead.  To have exactly 5 equidistant values from 3.44 and 7.82, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.44/7.82/5+n <span class="nv">T</span> <span class="o">=</span>
+<span class="m">3</span>.44
+<span class="m">4</span>.535
+<span class="m">5</span>.63
+<span class="m">6</span>.725
+<span class="m">7</span>.82
+</pre></div>
+</div>
+<p>Alternatively, let <em>inc</em> be a <em>file</em> with output coordinates in the first column,
+or provide a comma-separated <em>list</em> of specific coordinates, such as the first 6
+Fibonacci numbers:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T0,1,1,2,3,5 <span class="nv">T</span> <span class="o">=</span>
+<span class="m">0</span>
+<span class="m">1</span>
+<span class="m">1</span>
+<span class="m">2</span>
+<span class="m">3</span>
+<span class="m">5</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: Should you need to ensure that the coordinates are unique and sorted (in case the
+<em>file</em> or <em>list</em> are not sorted or have duplicates) then supply the <strong>+u</strong> modifier.</p>
+<p>If you only want a <em>single</em> value
+then you must append a comma to distinguish the list from the setting of an increment.</p>
+<p>If the module allows you to set up an absolute time series, append a valid time unit from the list
+<strong>y</strong>ear, m<strong>o</strong>nth, <strong>d</strong>ay, <strong>h</strong>our, <strong>m</strong>inute, and <strong>s</strong>econd
+to the given increment; add <strong>+t</strong> to ensure time column (or use <strong>-f</strong>). <strong>Note</strong>: The internal time
+unit is still controlled independently by <a class="reference internal" href="../../gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a>.  The first 7 days of March 2020:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T2020-03-01T/2020-03-07T/1d <span class="nv">T</span> <span class="o">=</span>
+<span class="m">2020</span>-03-01T00:00:00
+<span class="m">2020</span>-03-02T00:00:00
+<span class="m">2020</span>-03-03T00:00:00
+<span class="m">2020</span>-03-04T00:00:00
+<span class="m">2020</span>-03-05T00:00:00
+<span class="m">2020</span>-03-06T00:00:00
+<span class="m">2020</span>-03-07T00:00:00
+</pre></div>
+</div>
+<p>A few modules allow for <strong>+a</strong> which will paste the coordinate array to the output table.</p>
+<p>Likewise, if the module allows you to set up a spatial distance series (with distances computed
+from the first two data columns), specify a new increment as <em>inc</em> with a geospatial distance unit from the list
+<strong>d</strong>egree (arc), <strong>m</strong>inute (arc), <strong>s</strong>econd (arc), m<strong>e</strong>ter, <strong>f</strong>oot, <strong>k</strong>ilometer,
+<strong>M</strong>iles (statute), <strong>n</strong>autical miles, or s<strong>u</strong>rvey foot; see <strong>-j</strong> for calculation mode.
+To interpolate Cartesian distances instead, you must use the special unit <strong>c</strong>.</p>
+<p>Finally, if you are only providing an increment and will obtain <em>min</em> and <em>max</em> from the data, then it is
+possible (<em>max</em> - <em>min</em>)/<em>inc</em> is not an integer, as required.  If so, then <em>inc</em> will be adjusted to fit the range.
+Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust <em>max</em> instead (keeping <em>min</em> fixed).</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p>To compute a global grid of the vertical component with a grid step of 30m at noon of 18 Jun 2018,
+(note: we are using the defaults for <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>) try</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
+</pre></div>
+</div>
+<p>To obtain a one day long time-series, starting at same date, at the -7 <em>W</em>, 37 <em>N</em> and 1 minute interval, try</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt earthtide -T2018-06-18T/2018-06-19T/1m -L-7/37 &gt; solid_tide.dat
+</pre></div>
+</div>
+<p>The get the Sun and Moon position in geographical coordinates at the <em>now</em> time</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt earthtide -S
+</pre></div>
+</div>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>All times, both input and output, are in UTC.</p></li>
+</ol>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference external" href="http://geodesyworld.github.io/SOFTS/solid.htm">http://geodesyworld.github.io/SOFTS/solid.htm</a></p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a>, <a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>,</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../xyz2grd.html" class="btn btn-neutral float-left" title="xyz2grd" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gpsgridder.html" class="btn btn-neutral float-right" title="gpsgridder" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GMT geological symbols &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Strike, dip direction and dip of cleavage" href="geo-cleavage.html" />
+    <link rel="prev" title="An Unidentified Whale (low)" href="../biology/unidentifiedwhale_low.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../users-contrib-symbols.html#biology-symbols">Biology symbols</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../users-contrib-symbols.html#structural-geology-symbols">Structural geology symbols</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">GMT geological symbols</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#what-s-this">What’s this?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-to-use-the-symbols">How to use the symbols?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../users-contrib-symbols.html#miscellaneous-symbols">Miscellaneous symbols</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../users-contrib-symbols.html">Users Symbol Contributions</a> &raquo;</li>
+      <li>GMT geological symbols</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/users-contrib-symbols/geology/Geology.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gmt-geological-symbols">
+<h1>GMT geological symbols<a class="headerlink" href="#gmt-geological-symbols" title="Permalink to this heading">¶</a></h1>
+<section id="what-s-this">
+<h2>What’s this?<a class="headerlink" href="#what-s-this" title="Permalink to this heading">¶</a></h2>
+<p>This is a collection of geological symbols for the Generic Mapping Tools (GMT) software.
+The symbols comprises the most widely symbols used in geological mapping for bedding,
+cleavage, foliation, joints and lineations.
+The collection currently comprises 25 symbols, being most of them dynamic, using parameters
+given as variables in columns of the input data. The details of the parameters used for
+each symbol are given below.
+Author of the symbols: José A. Álvarez-Gómez (<a class="reference external" href="mailto:jaag&#37;&#52;&#48;ucm&#46;es">jaag<span>&#64;</span>ucm<span>&#46;</span>es</a>). I greatly appreciate your
+suggestions and feedback.
+These symbols are freely available under a GNU Library General Public License (version 3, or later).</p>
+</section>
+<section id="how-to-use-the-symbols">
+<h2>How to use the symbols?<a class="headerlink" href="#how-to-use-the-symbols" title="Permalink to this heading">¶</a></h2>
+<p>The symbols represent basically the orientation of a plane or a line in the space. For the
+plane the parameters used are the strike in Right Hand Rule (RHR) convention and the dip.
+The strike can be defined as the trend of a horizontal line on an inclined plane. It is
+marked by the line of intersection with a horizontal plane. The RHR establishes that the
+measured angle is clockwise from the north (azimuth) of the line of intersection between
+the plane and the horizontal, with the plane dipping orthogonally to the right when looking
+in the direction of the strike azimuth. The dip is the inclination of the steepest line on
+a plane and is perpendicular to the strike direction. For the lines the trend and plunge
+are used. The trend is measured clockwise from the north and the plunge is the angle of
+the line with the horizontal.</p>
+<p>In order to use the symbols in GMT you need to use the program <a class="reference internal" href="../../plot.html"><span class="doc">plot</span></a>, using the custom
+symbol type <strong>-Sk</strong>[<em>symbolname</em>]/<em>size</em>; where symbolname is one of the short
+names of the geological symbols shown in the table below. In addition to the location of the
+symbol (x,y) given on the first two columns of the input file, you will need additional
+parameters for some of the symbols. You can also use as variables the size and color of
+the symbol as in any symbol plotted with <a class="reference internal" href="../../plot.html"><span class="doc">plot</span></a>. The table lists the parameters needed for
+each symbol; see the gallery for visual representation.</p>
+<blockquote id="tbl-geology">
+<div><table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>Symbol Description</p></td>
+<td><p>Symbol Name</p></td>
+<td><p>Parameters needed</p></td>
+</tr>
+<tr class="row-even"><td><p>Strike, dip direction and dip of beds</p></td>
+<td><p>geo-plane</p></td>
+<td><p>Strike, Dip</p></td>
+</tr>
+<tr class="row-odd"><td><p>Horizontal beds</p></td>
+<td><p>geo-plane_hor</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Strike of vertical beds</p></td>
+<td><p>geo-plane_vert</p></td>
+<td><p>Strike</p></td>
+</tr>
+<tr class="row-odd"><td><p>Strike, dip direction and dip of overturned beds</p></td>
+<td><p>geo-plane_inv</p></td>
+<td><p>Strike, Dip</p></td>
+</tr>
+<tr class="row-even"><td><p>Strike, dip direction and dip of bed with rake of lineation</p></td>
+<td><p>geo-plane_rake</p></td>
+<td><p>Strike, Dip, Rake</p></td>
+</tr>
+<tr class="row-odd"><td><p>Strike and dip direction of gently dipping beds</p></td>
+<td><p>geo-plane_gentle</p></td>
+<td><p>Strike</p></td>
+</tr>
+<tr class="row-even"><td><p>Strike and dip direction of moderately dipping beds</p></td>
+<td><p>geo-plane_medium</p></td>
+<td><p>Strike</p></td>
+</tr>
+<tr class="row-odd"><td><p>Strike and dip direction of steeply dipping beds</p></td>
+<td><p>geo-plane_steep</p></td>
+<td><p>Strike</p></td>
+</tr>
+<tr class="row-even"><td><p>Strike, dip direction and dip of crenulated or undulated beds</p></td>
+<td><p>geo-plane_und</p></td>
+<td><p>Strike, Dip</p></td>
+</tr>
+<tr class="row-odd"><td><p>Strike, dip direction and dip of foliation</p></td>
+<td><p>geo-foliation</p></td>
+<td><p>Strike, Dip</p></td>
+</tr>
+<tr class="row-even"><td><p>Horizontal foliation</p></td>
+<td><p>geo-foliation_hor</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Strike of vertical foliation</p></td>
+<td><p>geo-foliation_vert</p></td>
+<td><p>Strike</p></td>
+</tr>
+<tr class="row-even"><td><p>Strike, dip direction and dip of cleavage</p></td>
+<td><p>geo-cleavage</p></td>
+<td><p>Strike, Dip</p></td>
+</tr>
+<tr class="row-odd"><td><p>Horizontal cleavage</p></td>
+<td><p>geo-cleavage_hor</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Strike of vertical cleavage</p></td>
+<td><p>geo-cleavage_vert</p></td>
+<td><p>Strike</p></td>
+</tr>
+<tr class="row-odd"><td><p>Strike, dip direction and dip of foliation 2</p></td>
+<td><p>geo-foliation-2</p></td>
+<td><p>Strike, Dip</p></td>
+</tr>
+<tr class="row-even"><td><p>Strike, dip direction and dip of foliation 3</p></td>
+<td><p>geo-foliation-3</p></td>
+<td><p>Strike, Dip</p></td>
+</tr>
+<tr class="row-odd"><td><p>Strike, dip direction and dip of joints</p></td>
+<td><p>geo-joint</p></td>
+<td><p>Strike, Dip</p></td>
+</tr>
+<tr class="row-even"><td><p>Horizontal joints</p></td>
+<td><p>geo-joint_hor</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Strike of vertical joints</p></td>
+<td><p>geo-joint_vert</p></td>
+<td><p>Strike</p></td>
+</tr>
+<tr class="row-even"><td><p>Trend and plunge of lineation</p></td>
+<td><p>geo-lineation</p></td>
+<td><p>Trend, Plunge</p></td>
+</tr>
+<tr class="row-odd"><td><p>Vertical lineation</p></td>
+<td><p>geo-lineation_vert</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Horizontal lineation</p></td>
+<td><p>geo-lineation_hor</p></td>
+<td><p>Trend</p></td>
+</tr>
+<tr class="row-odd"><td><p>Trend and plunge of lineation 2</p></td>
+<td><p>geo-lineation-2</p></td>
+<td><p>Trend, Plunge</p></td>
+</tr>
+<tr class="row-even"><td><p>Trend and plunge of lineation 3</p></td>
+<td><p>geo-lineation-3</p></td>
+<td><p>Trend, Plunge</p></td>
+</tr>
+</tbody>
+</table>
+<p>Symbols of the GMT geological symbols collection. The symbol short name is the name that should
+be used in <a class="reference internal" href="../../plot.html"><span class="doc">plot</span></a> <strong>-Sk</strong><em>symbolname</em>/<em>size</em>. The extra parameters needed for each symbol are
+shown on the order that is expected for the symbol definition.</p>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../biology/unidentifiedwhale_low.html" class="btn btn-neutral float-left" title="An Unidentified Whale (low)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geo-cleavage.html" class="btn btn-neutral float-right" title="Strike, dip direction and dip of cleavage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

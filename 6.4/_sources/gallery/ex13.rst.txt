@@ -1,0 +1,26 @@
+.. _example_13:
+
+(13) Plotting of vector fields
+------------------------------
+
+In many areas, such as fluid dynamics and elasticity, it is desirable to
+plot vector fields of various kinds. GMT provides a way to illustrate
+2-component vector fields using the
+:doc:`grdvector </grdvector>` utility. The two
+components of the field (Cartesian or polar components) are stored in
+separate grid files. In this example we use
+:doc:`grdmath </grdmath>` to generate a surface
+:math:`z(x, y) = x \cdot \exp(-x^2 -y^2)` and to calculate
+:math:`\nabla z` by returning the *x*- and *y*-derivatives separately.
+We superpose the gradient vector field and the surface *z* and also plot
+the components of the gradient in separate windows. A
+:doc:`text </text>` call to place a header finishes the plot
+
+.. literalinclude:: /_verbatim/ex13.txt
+   :language: bash
+
+.. figure:: /_images/ex13.*
+   :width: 500 px
+   :align: center
+
+   Display of vector fields in GMT.

@@ -1,0 +1,486 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>grdview &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grdvolume" href="grdvolume.html" />
+    <link rel="prev" title="grdvector" href="grdvector.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">Modules</a> &raquo;</li>
+      <li>grdview</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/grdview.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="grdview">
+<h1>grdview<a class="headerlink" href="#grdview" title="Permalink to this heading">¶</a></h1>
+<p>Create 3-D perspective image or surface mesh from a grid</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt grdview</strong> <em>reliefgrid</em> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
+[ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<em>cpt</em>]]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>drapegrid</em> | <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_r</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_g</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_b</em> ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>intensgrid</em>|<em>intensity</em>|<em>modifiers</em>] ]
+[ <a class="reference internal" href="#jz"><span><strong>-Jz</strong></span></a></strong>|<strong>Z</strong><em>parameters</em> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<em>level</em>][<strong>+g</strong><em>fill</em>] ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>args</em>[<strong>+m</strong>] ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>] ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>smooth</em> ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<strong>+o</strong>[<em>pen</em>]][<strong>+s</strong>] ]
+[ <a class="reference internal" href="#u"><span><strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><strong>c|m|f</strong><em>pen</em> ]
+[ <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
+[ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-n</strong><a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>grdview</strong> reads a 2-D grid file and produces a 3-D perspective plot by
+drawing a mesh, painting a colored/gray-shaded surface made up of
+polygons, or by scanline conversion of these polygons to a raster image.
+Options include draping a data set on top of a surface, plotting of
+contours on top of the surface, and apply artificial illumination based
+on intensities provided in a separate grid file.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>reliefgrid</em></dt><dd><p>2-D gridded data set to be imaged (the relief of the surface). (See
+<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
+</dd>
+</dl>
+<dl class="simple" id="j">
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<a class="reference internal" href="cookbook/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="c">
+<dt><strong>-C</strong>[<em>cpt</em>|<em>master</em>[<strong>+h</strong>[<em>hinge</em>]][<strong>+i</strong><em>zinc</em>][<strong>+u</strong>|<strong>U</strong><em>unit</em>] |<em>color1,color2</em>[,<em>color3</em>,…]]</dt><dd><p>Name of a CPT file. Alternatively, supply the name of a GMT color master
+dynamic CPT [<em>turbo</em>, but we use <em>geo</em> for &#64;earth_relief and <em>srtm</em> for &#64;srtm_relief data] to
+automatically determine a continuous CPT from the grid’s <em>z</em>-range; you may round the range
+to the nearest multiple of <em>zinc</em> by adding <strong>+i</strong><em>zinc</em>. If given a GMT Master soft-hinge CPT
+(see <a class="reference internal" href="cookbook/cpts.html#of-colors-and-color-legends"><span class="std std-ref">Of Colors and Color Legends</span></a>) then you can enable the hinge at data value <em>hinge</em> [0] via <strong>+h</strong>,
+whereas for hard-hinge CPTs you can adjust the location of the hinge [0].
+For other CPTs, you may convert their <em>z</em>-values from meter to another distance unit (append <strong>+U</strong><em>unit</em>)
+or from another unit to meter (append <strong>+u</strong><em>unit</em>), with <em>unit</em> taken from
+<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>.
+Yet another option is to specify <strong>-C</strong><em>color1</em>,<em>color2</em>[,<em>color3</em>,…]
+to build a linear continuous CPT from those colors automatically.
+In this case <em>color</em><strong>n</strong> can be a r/g/b triplet, a color name,
+or an HTML hexadecimal color (e.g. #aabbcc).  If no argument is given to <strong>-C</strong>
+then under modern mode we select the current CPT.</p>
+</dd>
+</dl>
+<dl class="simple" id="g">
+<dt><a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>drapegrid</em> | <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_r</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_g</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grd_b</em></dt><dd><p>Drape the image in <em>drapegrid</em> on top of the relief provided by
+<em>reliefgrid</em>. [Default determines colors from <em>reliefgrid</em>]. Note that <strong>-Jz</strong> and
+<a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> always refers to the <em>reliefgrid</em>. The <em>drapegrid</em> only
+provides the information pertaining to colors, which (if <em>drapegrid</em> is a grid) will be looked-up
+via the CPT (see <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>). Instead, you may give three grid files
+via separate <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> options in the specified order. These files must contain the red, green, and
+blue colors directly (in 0-255 range) and no CPT is needed. The
+<em>drapegrid</em> may be of a different resolution than the <em>reliefgrid</em>.
+Finally, <em>drapegrid</em> may be an image to be draped over the surface, in which
+case the <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> option is not required.</p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-I</strong>[<em>intensgrid</em>|<em>intensity</em>|<em>modifiers</em>]</dt><dd><p>Gives the name of a grid file with intensities in the (-1,+1) range,
+or a constant intensity to apply everywhere (affects the ambient light).
+Alternatively, derive an intensity grid from the input data grid <em>reliefgrid</em>
+via a call to <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a>; append <strong>+a</strong><em>azimuth</em>, <strong>+n</strong><em>args</em>,
+and <strong>+m</strong><em>ambient</em> to specify azimuth, intensity, and ambient arguments
+for that module, or just give <strong>+d</strong> to select the
+default arguments (<strong>+a</strong>-45<strong>+nt</strong>1<strong>+m</strong>0). If you want a more
+specific intensity scenario then run <a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a> separately first.
+If we should derive intensities from another file than <em>reliefgrid</em>, specify the file
+[Default is no illumination].</p>
+</dd>
+</dl>
+<dl class="simple" id="jz">
+<dt><strong>-Jz</strong>|<strong>Z</strong><em>parameters</em></dt><dd><p>Set z-axis scaling; same syntax as <a class="reference internal" href="gmt.html#jx-full"><span class="std std-ref">-Jx</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong>[<em>level</em>][<strong>+g</strong><em>fill</em>]</dt><dd><p>Draws a plane at this z-level. If the optional <em>color</em> is provided
+via the <strong>+g</strong> modifier, and the projection is not oblique,
+the frontal facade between the plane and the data perimeter is
+colored. See <strong>-Wf</strong> for setting the pen used for the outline.
+If no <em>level</em> is set then we default to the minimum value in the
+<em>reliefgrid</em>. However, if <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> was used to set <em>zmin/zmax</em> then we
+use that value if it is less than the grid minimum value.</p>
+</dd>
+</dl>
+<dl id="q">
+<dt><strong>-Q</strong><em>args</em>[<strong>+m</strong>]</dt><dd><p>Select one of following settings. For any of these choices, you may force
+a monochrome image by appending the modifier <strong>+m</strong>. Colors are then
+converted to shades of gray using the (monochrome television) YIQ transformation</p>
+<ol class="arabic simple">
+<li><p>Specify <strong>m</strong> for mesh plot [Default], and optionally append <em>color</em> for a different mesh paint [white].</p></li>
+<li><p>Specify <strong>mx</strong> or <strong>my</strong> for waterfall plots (row or column profiles). Specify color as for plain <strong>m</strong></p></li>
+<li><p>Specify <strong>s</strong> for surface plot, and optionally append <strong>m</strong> to have mesh lines drawn on top of surface.</p></li>
+<li><p>Specify <strong>i</strong> for image plot, and optionally append the effective dots-per-unit resolution for the rasterization [Default is <a class="reference internal" href="gmt.conf.html#term-GMT_GRAPHICS_DPU"><span class="xref std std-term">GMT_GRAPHICS_DPU</span></a>].</p></li>
+<li><p>Specify <strong>c</strong>. Same as <strong>-Qi</strong> but will make nodes with z = NaN transparent, using the colormasking
+feature in PostScript Level 3 (the PS device must support PS Level 3).</p></li>
+</ol>
+<p><strong>Note</strong>: If the CPT is categorical then only <strong>-Qm</strong> is available (but see <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>).</p>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<blockquote>
+<div><p>For perspective view <strong>-p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a> This option may be used to
+indicate the range used for the 3-D axes [Default is region given by
+the <em>reliefgrid</em>]. You may ask for a larger <em>w/e/s/n</em> region to
+have more room between the image and the axes. A smaller region than
+specified in the <em>reliefgrid</em> will result in a subset of the grid.</p>
+</div></blockquote>
+<dl class="simple" id="s">
+<dt><strong>-S</strong><em>smooth</em></dt><dd><p>Smooth the contours before plotting (see <a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a>) [Default is no smoothing].</p>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-T</strong>[<strong>+o</strong>[<em>pen</em>]][<strong>+s</strong>]</dt><dd><p>Plot image without any interpolation. This involves converting each
+node-centered bin into a polygon which is then painted separately.
+Append <strong>+s</strong> to skip nodes with z = NaN. This option is suitable for
+categorical data where interpolating between values is meaningless
+and a categorical CPT has been provided via <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>.
+Optionally, append <strong>+o</strong> to draw the tile outlines, and specify a
+custom pen if the default pen is not to your liking. As this option
+produces a flat surface it cannot be combined with <strong>-JZ</strong> or <strong>-Jz</strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="u">
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<p id="w"><strong>-W</strong><strong>c</strong>|<strong>m</strong>|<strong>f</strong><em>pen</em></p>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>-Wc</strong></dt><dd><p>Draw contour lines on top of surface or mesh (not image). Append pen
+attributes used for the contours. [Default: width = 0.75p, color =
+black, style = solid].</p>
+</dd>
+<dt><strong>-Wm</strong></dt><dd><p>Sets the pen attributes used for the mesh. [Default: width = 0.25p,
+color = black, style = solid]. You must also select <strong>-Qm</strong> or
+<strong>-Qsm</strong> for meshlines to be drawn.</p>
+</dd>
+<dt><strong>-Wf</strong></dt><dd><p>Sets the pen attributes used for the facade. [Default: width =
+0.25p, color = black, style = solid]. You must also select <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>
+for the facade outline to be drawn.</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="simple" id="x">
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="y">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify data types of input and/or output columns.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+c</strong>][<strong>+t</strong><em>threshold</em>] <a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select interpolation mode for grids.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select perspective view.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-t</strong><em>transp</em>[/<em>transp2</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level(s) in percent.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="consequences-of-grid-resampling">
+<h2>Consequences of grid resampling<a class="headerlink" href="#consequences-of-grid-resampling" title="Permalink to this heading">¶</a></h2>
+<p>Except for Cartesian cases, we need to resample your geographic grid onto
+an equidistant projected grid. In doing so various algorithms come into play
+that projects data from one lattice to another while avoiding anti-aliasing,
+leading to possible distortions.
+One expected effect of resampling with splines is the tendency for the new
+resampled grid to slightly exceed the global min/max limits of the original
+grid.  If this is coupled with tight CPT limits you may find that some
+map areas may show up with fore- or background color due to the resampling.
+In that case you have two options: (1) Modify your CPT to fit the resampled
+extrema (reported with <strong>-V</strong>) or (2) Impose clipping of resampled values
+so they do not exceed the input min/max values (add <strong>+c</strong> to your <strong>-n</strong>
+option). <strong>Note</strong>: If <strong>-n</strong> is not set and no CPT is given (or a master
+CPT is given or implied), we automatically set <strong>-nc+c</strong>.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p><strong>Note</strong>: Since many GMT plot examples are very short (i.e., one module call between the
+<strong>gmt begin</strong> and <strong>gmt end</strong> commands), we will often present them using the quick
+modern mode <a class="reference internal" href="cookbook/one-liner.html"><span class="doc">GMT Modern Mode One-line Commands</span></a> syntax, which simplifies such short scripts.</p>
+<p>To make a mesh plot from the file hawaii_grav.nc and drawing the
+contours given in the CPT hawaii.cpt on a Lambert map at
+1.5 cm/degree along the standard parallels 18 and 24, with vertical
+scale 20 mgal/cm, and looking at the surface from SW at 30 degree
+elevation, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdview hawaii_grav.nc -Jl18/24/1.5c -Chawaii.cpt -Jz0.05c -Qm -N-100 -p225/30 -Wc -pdf hawaii_grav_image
+</pre></div>
+</div>
+<p>To create an illuminated color perspective plot of the gridded data set
+image.nc, using the CPT color.cpt, with linear scaling at
+10 cm/x-unit and tickmarks every 5 units, with intensities provided by
+the file intens.nc, and looking from the SE, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdview image.nc -Jx10c -Ccolor.cpt -Qs -p135/30 -Iintens.nc -pdf image3D
+</pre></div>
+</div>
+<p>To make the same plot using the rastering option with dots-per-cm of 50, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdview image.nc -Jx10c -Ccolor.cpt -Qi50c -p135/30 -Iintens.nc -pdf image3D
+</pre></div>
+</div>
+<p>To create a color perspective plot of the gridded data set
+magnetics.nc, using the CPT mag_intens.cpt, draped over
+the relief given by the file topography.nc, with Mercator map width of 6
+inch and tickmarks every 1 degree, with intensities provided by the file
+topo_intens.nc, and looking from the SE, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdview topography.nc -JM6i -Gmagnetics.nc -Cmag_intens.cpt -Qs -p140/30 -Itopo_intens.nc -pdf draped3D
+</pre></div>
+</div>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
+<p>For the <strong>-Qs</strong> option: The PostScript language has no mechanism for smoothly varying
+colors within a polygon, so colors can only vary from polygon to
+polygon. To obtain smooth images this way you may resample the grid
+file(s) using <a class="reference internal" href="grdsample.html"><span class="doc">grdsample</span></a> or use a finer grid size when running
+gridding programs like <a class="reference internal" href="surface.html"><span class="doc">surface</span></a> or <a class="reference internal" href="nearneighbor.html"><span class="doc">nearneighbor</span></a>. Unfortunately,
+this produces huge PostScript files. The alternative is to use the
+<strong>-Qi</strong> option, which computes bilinear or bicubic continuous color
+variations within polygons by using scanline conversion to image the polygons.</p>
+</section>
+<section id="macos-preview-warning">
+<h2>MacOS Preview Warning<a class="headerlink" href="#macos-preview-warning" title="Permalink to this heading">¶</a></h2>
+<p>Low-resolution raster-images appearing in PDF or PostScript files may look blurry when viewed
+with the Preview application under macOS. This happens because Preview decides to resample very
+coarse (low dpi) images instead of leaving them alone; we do not know of a simple way to turn
+this feature off.  It is most noticeable in color bars for discrete CPTs (we now use <strong>-Np</strong> as
+the default setting for such CPTs) and very small grids plotted in either <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> or
+<a class="reference internal" href="#"><span class="doc">grdview</span></a> <strong>-Qi</strong>|<strong>c</strong>. However, if a raster format (such as JPG or PNG) is selected instead
+then here is no such blurring.  Other PDF viewers (e.g., Adobe Acrobat) do not seem similarly affected.</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
+<a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a>,
+<a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a>,
+<a class="reference internal" href="grdsample.html"><span class="doc">grdsample</span></a>,
+<a class="reference internal" href="nearneighbor.html"><span class="doc">nearneighbor</span></a>,
+<a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a>,
+<a class="reference internal" href="contour.html"><span class="doc">contour</span></a>, <a class="reference internal" href="text.html"><span class="doc">text</span></a>,
+<a class="reference internal" href="surface.html"><span class="doc">surface</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="grdvector.html" class="btn btn-neutral float-left" title="grdvector" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="grdvolume.html" class="btn btn-neutral float-right" title="grdvolume" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

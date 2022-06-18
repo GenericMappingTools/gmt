@@ -1,0 +1,615 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>text &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="trend1d" href="trend1d.html" />
+    <link rel="prev" title="ternary" href="ternary.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">Modules</a> &raquo;</li>
+      <li>text</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/text.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="text">
+<h1>text<a class="headerlink" href="#text" title="Permalink to this heading">¶</a></h1>
+<p>Plot or typeset text</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt text</strong> [ <em>textfiles</em> ]
+<a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> ]
+[ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<em>dx/dy</em>][<strong>+to</strong>|<strong>O</strong>|<strong>c</strong>|<strong>C</strong>] ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<strong>j</strong>|<strong>J</strong>]<em>dx</em>[/<em>dy</em>][<strong>+v</strong>[<em>pen</em>]] ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>+a</strong>[<em>angle</em>]][<strong>+c</strong>[<em>justify</em>]][<strong>+f</strong>[<em>font</em>]][<strong>+j</strong>[<em>justify</em>]][<strong>+h</strong>|<strong>l</strong>|<strong>r</strong>[<em>first</em>] |<strong>t</strong><em>text</em>|<strong>z</strong>[<em>format</em>]] ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>[<em>fill</em>][<strong>+n</strong>] ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> ] [ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> ] [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><strong>l</strong>|<strong>u</strong> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<em>dx</em>/<em>dy</em>/][<em>shade</em>] ]
+[ <a class="reference internal" href="#u"><span><strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>pen</em> ]
+[ <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
+[ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> ]
+[ <strong>-a</strong><em>col</em>=<em>name</em>[…] ]
+[ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-it</strong><em>word</em> ]
+[ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-qi</strong><a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="#tv-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>-w</strong><a class="reference internal" href="gmt.html#w-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>text</strong> plots text strings of variable size, font type, and
+orientation. Various map projections are provided, with the option to
+draw and annotate the map boundaries.</p>
+<p>Greek characters, subscript, superscript, and small
+caps are supported as follows:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 80%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Symbol</p></th>
+<th class="head"><p>Behavior</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>&#64;~</p></td>
+<td><p>Toggles between the selected font and Greek (Symbol)</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;%<em>font</em>%</p></td>
+<td><p>Switches to <em>font</em> where <em>font</em> can either be a font <em>number</em> or <em>name</em> (see <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>) (&#64;%% resets it)</p></td>
+</tr>
+<tr class="row-even"><td><p>&#64;-</p></td>
+<td><p>Toggles subscripts on/off</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;+</p></td>
+<td><p>Toggles superscript on/off</p></td>
+</tr>
+<tr class="row-even"><td><p>&#64;#</p></td>
+<td><p>Toggles small caps on/off</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;;<em>color</em></p></td>
+<td><p>Changes the font color (&#64;;; resets it)</p></td>
+</tr>
+<tr class="row-even"><td><p>&#64;:<em>size</em></p></td>
+<td><p>Changes the font size (&#64;:: resets it)</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;_</p></td>
+<td><p>Toggles underline on/off</p></td>
+</tr>
+<tr class="row-even"><td><p>&#64;&#64;</p></td>
+<td><p>Prints the &#64; sign</p></td>
+</tr>
+<tr class="row-odd"><td><p>&#64;.</p></td>
+<td><p>Prints the degree symbol</p></td>
+</tr>
+</tbody>
+</table>
+<p>&#64;a, &#64;c, &#64;e, &#64;i, &#64;n, &#64;o, &#64;s, &#64;u, &#64;A, &#64;C, &#64;E, &#64;N, &#64;O, and &#64;U give various accented European
+characters, as indicated in Table <a class="reference internal" href="cookbook/features.html#tbl-shorthand"><span class="std std-ref">escape</span></a>. Composite characters
+(overstrike) may be indicated with the &#64;!&lt;char1&gt;&lt;char2&gt; sequence, which will print the
+two characters on top of each other.</p>
+<p>To learn the octal codes for symbols not available on the
+keyboard and some accented European characters, see Section <a class="reference internal" href="cookbook/features.html#char-esc-seq"><span class="std std-ref">Character escape sequences</span></a> and
+Appendix <a class="reference internal" href="cookbook/octal-codes.html#chart-octal-codes-for-chars"><span class="std std-ref">Chart of Octal Codes for Characters</span></a> in the GMT Technical Reference and Cookbook. Note that
+<a class="reference internal" href="gmt.conf.html#term-PS_CHAR_ENCODING"><span class="xref std std-term">PS_CHAR_ENCODING</span></a> must be set to an extended character set in your
+<a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> file in order to use the accented characters.</p>
+<p>Using the <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> or <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> options, a rectangle underlying the text may be plotted
+(does not work for strings with sub/super scripts, symbols, or composite
+characters, except in paragraph mode (<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>)).</p>
+<p>Finally, you may typeset LaTeX expressions provided they are enclosed in &#64;[ … &#64;[ or &lt;math&gt; … &lt;/math&gt;;
+see Chapter <a class="reference internal" href="cookbook/gmt-latex.html"><span class="doc">Using LaTeX Expressions in GMT</span></a> for more details.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>textfiles</em></dt><dd><p>This is one or more files containing 1 or more records with (<em>x</em>
+<em>y</em> [<em>font</em> <em>angle</em> <em>justify</em>] <em>text</em>). The presence or absence of
+items in the brackets are determined by <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>. If no files
+are given, <strong>text</strong> will read standard input. <em>font</em> is a font
+specification with format [<em>size</em>,][<em>font</em>,][<em>color</em>] where
+<em>size</em> is text size in points, <em>font</em> is the font to use, and
+<em>color</em> sets the font color. To draw outline fonts you append
+=<em>pen</em> to the font specification. The <em>angle</em> is measured in degrees
+counter-clockwise from horizontal, and <em>justify</em> sets the alignment.
+If <em>font</em> is not an integer, then it is taken to be a text string
+with the desired font name (see <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> for available fonts). The
+alignment refers to the part of the text string that will be mapped
+onto the (<em>x</em>,<em>y</em>) point. Choose a 2 character combination of <strong>L</strong>,
+<strong>C</strong>, <strong>R</strong> (for left, center, or right) and <strong>T</strong>, <strong>M</strong>, <strong>B</strong>
+for top, middle, or bottom. e.g., <strong>BL</strong> for bottom left.</p>
+</dd>
+</dl>
+<dl class="simple" id="j">
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<a class="reference internal" href="cookbook/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<blockquote>
+<div><p>For perspective view <strong>-p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a>  </p>
+</div></blockquote>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="a">
+<dt><strong>-A</strong></dt><dd><p>Angles are given as azimuths; convert them to directions using the
+current projection.</p>
+</dd>
+</dl>
+<dl class="simple" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="c">
+<dt><strong>-C</strong>[<em>dx/dy</em>][<strong>+to</strong>|<strong>O</strong>|<strong>c</strong>|<strong>C</strong>]</dt><dd><p>Adjust the clearance between the text and the surrounding box [15%].
+Only used if <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> or <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> are specified. Append the unit you
+want (<strong>c</strong>m, <strong>i</strong>nch, or <strong>p</strong>oint; if not given we consult
+<a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>) or % for a percentage of the font size.
+Optionally, use modifier <strong>+t</strong> to set the shape of the textbox when using <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> and/or <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>.
+Append lower case <strong>o</strong> to get a straight rectangle [Default].
+Append upper case <strong>O</strong> to get a rounded rectangle. In paragraph
+mode (<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>) you can also append lower case <strong>c</strong> to get a concave
+rectangle or append upper case <strong>C</strong> to get a convex rectangle.</p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong>[<strong>j</strong>|<strong>J</strong>]<em>dx</em>[/<em>dy</em>][<strong>+v</strong>[<em>pen</em>]]</dt><dd><p>Offsets the text from the projected (<em>x</em>,<em>y</em>) point by <em>dx</em>,<em>dy</em>
+[0/0]. If <em>dy</em> is not specified then it is set equal to <em>dx</em>. Use
+<strong>-Dj</strong> to offset the text away from the point instead (i.e., the
+text justification will determine the direction of the shift). Using
+<strong>-DJ</strong> will shorten diagonal offsets at corners by
+sqrt(2). Optionally, append <strong>+v</strong> which will draw
+a line from the original point to the shifted point; append a <em>pen</em>
+to change the attributes for this line.  <strong>Note</strong>: The <strong>-Dj</strong>|<strong>J</strong>
+selection cannot be used with paragraph mode (<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>).</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong>[<strong>+a</strong>[<em>angle</em>]][<strong>+c</strong>[<em>justify</em>]][<strong>+f</strong>[<em>font</em>]][<strong>+j</strong>[<em>justify</em>]][<strong>+h</strong>|<strong>l</strong>|<strong>r</strong>[<em>first</em>]|<strong>t</strong><em>text</em>|<strong>z</strong>[<em>format</em>]]</dt><dd><p>By default, text will be placed horizontally, using the primary
+annotation font attributes (<a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a>), and centered
+on the data point. Use <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> to override these defaults by
+specifying up to three text attributes (font, angle, and
+justification) directly on the command line. Use modifier <strong>+f</strong> to set the
+font ([<em>size</em>][,<em>fontname</em>][,<em>color</em>]); if no font info is given then the input
+file must have this information in one of its columns. Use <strong>+a</strong> to
+set the <em>angle</em>; if no angle is given then the input file must have
+this as a column. Alternatively, use <strong>+A</strong> to force text-baselines
+to convert into the -90/+90 range.  Use <strong>+j</strong> to set the justification; if no
+justification is given then the input file must have this item as a
+column. Items read from the data file should be in the same order as
+the modifiers are specified with the <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> option. Example:
+<strong>-F</strong><strong>+f</strong>12p,Helvetica-Bold,red<strong>+j+a</strong> selects a 12p red
+Helvetica-Bold font and expects to read the justification and angle
+from the file, in that order, after <em>x</em> <em>y</em> and before <em>text</em>.
+In addition, the <strong>+c</strong><em>justification</em> lets us use <em>x,y</em> coordinates extracted from the
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> string instead of providing them in the input file. For example <strong>-F+c</strong>TL
+gets the <em>x_min</em>, <em>y_max</em> from the <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> string and plots the text
+at the Upper Left corner of the map.  Normally, the text to be plotted
+comes from the data record.  Instead, use <strong>+h</strong> or <strong>+l</strong> to select the
+text as the most recent segment header or segment label, respectively in
+a multisegment input file, <strong>+r</strong> to use the record number (counting up from <em>first</em>),
+<strong>+t</strong><em>text</em> to set a fixed text string (if <em>text</em> contains plus characters then the
+<strong>+t</strong> modifier must be the last modifier in <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>), or <strong>+z</strong> to format incoming <em>z</em> values
+to a string using the supplied <em>format</em> [use <a class="reference internal" href="gmt.conf.html#term-FORMAT_FLOAT_MAP"><span class="xref std std-term">FORMAT_FLOAT_MAP</span></a>].  <strong>Note</strong>: If <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> is
+in effect then the <em>z</em> value used for formatting is in the 4th, not 3rd column.
+If you only want a specific word from the trailing text and not the whole line,
+use <strong>-it</strong><em>word</em> to indicate which word (0 is the first word) you want.</p>
+</dd>
+</dl>
+<dl class="simple" id="g">
+<dt><strong>-G</strong>[<em>fill</em>][<strong>+n</strong>]</dt><dd><p>Sets the shade or color used for filling the text box [Default is no
+fill]. Alternatively, give no <em>fill</em> to plot text and then use the
+text dimensions (and <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>) to build clip paths and turn clipping on.
+This clipping can then be turned off later with <a class="reference internal" href="clip.html"><span class="doc">clip</span></a> <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>.
+To <strong>not</strong> plot the text but activate clipping, use <strong>-G+n</strong> instead.
+<strong>Note</strong>: cannot be used with LaTeX expressions.</p>
+</dd>
+</dl>
+<dl class="simple" id="l">
+<dt><strong>-L</strong></dt><dd><p>Lists the font-numbers and font-names available, then exits.</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong></dt><dd><p>Paragraph mode. Files must be multiple segment files. Segments are
+separated by a special record whose first character must be <em>flag</em>
+[Default is <strong>&gt;</strong>]. Starting in the 3rd field, we expect to find
+information pertaining to the typesetting of a text paragraph (the
+remaining lines until next segment header). The information expected
+is (<em>x y</em> [<em>font angle justify</em>] <em>linespace parwidth parjust</em>),
+where <em>x y font angle justify</em> are defined above (the presence or
+absence of <em>font</em>, <em>angle</em>, and <em>justify</em> are determined by <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>), while <em>linespace</em> and
+<em>parwidth</em> are the linespacing and paragraph width, respectively.
+The justification of the text paragraph is governed by <em>parjust</em>
+which may be <strong>l</strong>(eft), <strong>c</strong>(enter), <strong>r</strong>(ight), or
+<strong>j</strong>(ustified). The segment header is followed by one or more
+lines with paragraph text. Text may contain the escape sequences
+discussed above, although composite characters are not supported.
+Separate paragraphs with a blank line.  Note that here,
+the justification set via <strong>-F+j</strong> applies to the box alignment
+since the text justification is set by <em>parjust</em>.  <strong>Note</strong>:
+cannot be used with LaTeX expressions.</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong></dt><dd><p>Do NOT clip text at map boundaries [Default will clip].</p>
+</dd>
+</dl>
+<dl class="simple" id="q">
+<dt><strong>-Q</strong><strong>l</strong>|<strong>u</strong></dt><dd><p>Change all text to either <strong>l</strong>ower or <strong>u</strong>pper case [Default
+leaves all text as is].</p>
+</dd>
+</dl>
+<dl class="simple" id="s">
+<dt><strong>-S</strong>[<em>dx</em>/<em>dy</em>/][<em>shade</em>]</dt><dd><p>Plot an offset background shaded region beneath the text box. Here, <em>dx</em>/<em>dy</em>
+indicates the shift relative to the text box [4<strong>p</strong>/-4<strong>p</strong>] and <em>shade</em>
+sets the fill color to use for shading [gray50].</p>
+</dd>
+</dl>
+<dl class="simple" id="u">
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong><em>pen</em></dt><dd><p>Sets the pen used to draw a rectangle around the text string (see
+<a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>) [Default is width = default, color = black, style = solid].
+<strong>Note</strong>: cannot be used with LaTeX expressions.</p>
+</dd>
+</dl>
+<dl class="simple" id="x">
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="y">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="z">
+<dt><strong>-Z</strong></dt><dd><p>For 3-D projections: expect each item to have its own level given in
+the 3rd column, and <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> is implicitly set. (Not implemented for
+paragraph mode).  <strong>Note</strong>: If <strong>-F+z</strong> is used then the text level
+is based on the 4th data column instead.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-a</strong>[[<em>col</em>=]<em>name</em>[,<em>…</em>]] <a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set aspatial column associations <em>col</em>=<em>name</em>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>“pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Only accept data records that match the given pattern.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify data types of input and/or output columns.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>] <a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Skip or produce header record(s).  </p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-it</strong><em>word</em></dt><dd><p>In this module, <strong>-it</strong> can be used to select a specific word from the
+trailing text [Default is the entire trailing text].  The <em>word</em> indicates
+the word order, with the first word being 0.  No numerical columns can be specified.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select perspective view. (Not implemented for paragraph mode).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
+</dd>
+</dl>
+<dl class="simple" id="tv-full">
+<dt><strong>-t</strong>[<em>transp</em>[/<em>transp2</em>]][<strong>+f</strong>][<strong>+s</strong>]</dt><dd><p>Set transparency level for an overlay, in [0-100] percent range. [Default
+is 0, i.e., opaque].  Only visible when PDF or raster format output is selected.
+Only the PNG format selection adds a transparency layer in the image (for further processing).
+If given, <em>transp</em> applies to both fill and stroke, but you can limit the transparency to
+one of them by appending <strong>+f</strong> or <strong>+s</strong> for fill or stroke, respectively.  Alternatively,
+append /<em>transp2</em> to set separate transparencies for fills and strokes.  If no transparencies
+are given then we expect to read them from the last numerical column(s).  Use the modifiers
+to indicate which one(s) we should be reading (if both are requested, fill transparency is
+expected before stroke transparency in the column order).  If just <strong>-t</strong> is given then we
+interpret it to mean <strong>-t+f</strong> for fill transparency only.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-wy</strong>|<strong>a</strong>|<strong>w</strong>|<strong>d</strong>|<strong>h</strong>|<strong>m</strong>|<strong>s</strong>|<strong>c</strong><em>period</em>[/<em>phase</em>][<strong>+c</strong><em>col</em>] <a class="reference internal" href="gmt.html#w-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Convert an input coordinate to a cyclical coordinate.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Swap 1st and 2nd column on input and/or output.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p><strong>Note</strong>: Since many GMT plot examples are very short (i.e., one module call between the
+<strong>gmt begin</strong> and <strong>gmt end</strong> commands), we will often present them using the quick
+modern mode <a class="reference internal" href="cookbook/one-liner.html"><span class="doc">GMT Modern Mode One-line Commands</span></a> syntax, which simplifies such short scripts.</p>
+<p>To plot just the red outlines of the (lon lat text strings) stored in the
+file text.txt on a Mercator plot with the given specifications, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt text text.txt -R-30/30/-10/20 -Jm0.1i -F+f18p,Helvetica,-<span class="o">=</span><span class="m">0</span>.5p,red -B5 -pdf plot
+</pre></div>
+</div>
+<p>To plot a text at the upper left corner of a 10 cm map:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span> TopLeft <span class="p">|</span> gmt text -R1/10/1/10 -JX10 -B -F+cTL -pdf plot
+</pre></div>
+</div>
+<p>To add a typeset figure caption for a 3-inch wide illustration, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt text -R0/3/0/5 -JX3i -h1 -M -N -F+f12,Times-Roman+jLT -pdf figure <span class="s">&lt;&lt; EOF</span>
+<span class="s">This is an unmarked header record not starting with #</span>
+<span class="s">&gt; 0 -0.5 13p 3i j</span>
+<span class="s">@%5%Figure 1.@%% This illustration shows nothing useful, but it still needs</span>
+<span class="s">a figure caption. Highlighted in @;255/0/0;red@;; you can see the locations</span>
+<span class="s">of cities where it is @\_impossible@\_ to get any good Thai food; these are to be avoided.</span>
+<span class="s">EOF</span>
+</pre></div>
+</div>
+<p>To place a line containing a Latex equation, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="m">3</span> <span class="m">3</span> <span class="s1">&#39;Use @[\Delta g = 2\pi\rho Gh@[&#39;</span> <span class="p">|</span> gmt text -R0/6/0/6 -JX15c -B -F+f32p+a30 -pdf map
+</pre></div>
+</div>
+<p>To place text with a surrounding box and an underlying, shifted shade, both using a rounded rectangle, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt text -R0/10/0/5 -Jx1c -F+f32p+cCM+tWELCOME -B -Gyellow -Wfaint -S -C+tO -pdf map
+</pre></div>
+</div>
+</section>
+<section id="windows-remarks">
+<h2>Windows Remarks<a class="headerlink" href="#windows-remarks" title="Permalink to this heading">¶</a></h2>
+<p>Note that under Windows, the percent sign (%) is a variable indicator
+(like $ under Unix). To indicate a plain percentage sign in a batch
+script you need to repeat it (%%); hence the font switching mechanism
+(&#64;%<em>font</em>% and &#64;%%) may require twice the number of percent signs.
+This only applies to text inside a script or that otherwise is processed
+by DOS. Data files that are opened and read by the module do not need
+such duplication.</p>
+</section>
+<section id="composite-characters">
+<h2>Composite Characters<a class="headerlink" href="#composite-characters" title="Permalink to this heading">¶</a></h2>
+<p>If the two characters that are to be combined come from different
+fonts (say, Symbol and Times), then it is allowed for the <em>second</em>
+character (but not the first) to be surrounded by escape codes to
+temporarily change the font for that character.  For instance, the
+sequence “&#64;!\227&#64;~\145&#64;~” will print the epsilon character (octal code
+\145 from the Symbol font) with time-derivative indicated by the
+over-printed dot (octal code \227 from the current font, assuming the
+ISOLatin1 character set).</p>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading">¶</a></h2>
+<p>In paragraph mode, the presence of composite characters and other escape
+sequences may lead to unfortunate word splitting. Also, if a font is
+requested with an outline pen it will not be used in paragraph mode.
+Note if any single word is wider than your chosen paragraph width then
+the paragraph width is automatically enlarged to fit the widest word.</p>
+</section>
+<section id="use-from-external-interface">
+<h2>Use from external interface<a class="headerlink" href="#use-from-external-interface" title="Permalink to this heading">¶</a></h2>
+<p>When the module is called from external interfaces then we impose the following
+condition on the <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> setting: We require that <strong>+a</strong> (read angle from
+input), if specified, must appear before either of <strong>+f</strong> (read font from input) and <strong>+j</strong>
+(read justification from input), if these are present.  This is necessary because the
+angle is a numerical column while font and justification must be encoded as part of the
+trailing text.</p>
+</section>
+<section id="adding-more-fonts">
+<h2>Adding more fonts<a class="headerlink" href="#adding-more-fonts" title="Permalink to this heading">¶</a></h2>
+<p>To add custom fonts, please see <a class="reference internal" href="cookbook/postscript-fonts.html#non-default-fonts"><span class="std std-ref">General Features</span></a>.</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="clip.html"><span class="doc">clip</span></a>,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
+<a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a>,
+<a class="reference internal" href="basemap.html"><span class="doc">basemap</span></a>,
+<a class="reference internal" href="legend.html"><span class="doc">legend</span></a>, <a class="reference internal" href="plot.html"><span class="doc">plot</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ternary.html" class="btn btn-neutral float-left" title="ternary" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="trend1d.html" class="btn btn-neutral float-right" title="trend1d" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

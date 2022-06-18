@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(11) Wrapping the Marbles on a Sphere &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="(12) Image and Grid Manipulations" href="anim12.html" />
+    <link rel="prev" title="(10) The effect of sub-pixeling" href="anim10.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../animations.html">Animation Gallery</a> &raquo;</li>
+      <li>(11) Wrapping the Marbles on a Sphere</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/animations/anim11.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="wrapping-the-marbles-on-a-sphere">
+<span id="anim11"></span><h1>(11) Wrapping the Marbles on a Sphere<a class="headerlink" href="#wrapping-the-marbles-on-a-sphere" title="Permalink to this heading">¶</a></h1>
+<p>Using <a class="reference internal" href="../grdmix.html"><span class="doc">grdmix</span></a>, we are blending the NASA day and night views from the Blue and Black Marble mosaic
+images using a day-night mask set for the summer solstice midnight in Hawaii
+on June 20, 2020.  In addition, we adjust the colors using the intensities derived
+from the slopes of the earth relief grid.  We spin the view point around at 24 frames per second
+where each frame advances the viewpoint 0.25 degrees of longitude.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#</span>
+<span class="c1"># Blending the NASA day and night views from the Blue and Black Marble mosaic</span>
+<span class="c1"># images using a day-night mask set for the summer solstice midnight in Hawaii</span>
+<span class="c1"># on June 20, 2020.  In addition, we adjust the colors using the intensities derived</span>
+<span class="c1"># from the slopes of the earth relief grid.  We spin around at 24 frames per second</span>
+<span class="c1"># where each frame advances the viewpoint 0.25 degrees of longitude.</span>
+<span class="c1">#</span>
+<span class="c1"># DEM:    @earth_relief_02m</span>
+<span class="c1"># Images: @earth_day_02m @earth_night_02m from the GMT data server</span>
+<span class="c1"># </span>
+<span class="c1"># The finished movie is available in our YouTube channel as well:</span>
+<span class="c1"># https://youtu.be/nmxy9yb2cR8</span>
+<span class="c1"># The movie took ~2.75 hour to render on a 24-core MacPro 2013.</span>
+
+<span class="c1"># 1. Create background plot and data files needed in the loop</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
+<span class="s">gmt begin</span>
+<span class="s">  # Set view longitudes 0-360 with steps of 0.25 degree</span>
+<span class="s">  gmt math -T-180/180/0.25 -o0 T = view.txt</span>
+<span class="s">  # Make global grid with a smooth 2-degree day/night transition for the 2020 solstice.</span>
+<span class="s">  gmt grdmath -Rd -I2m -rp $(gmt solar -C -o0:1 -I+d2020-06-20+z-10) 2 DAYNIGHT = daynight.grd</span>
+<span class="s">  # We will create an intensity grid based on a DEM so that we can see structures in the oceans</span>
+<span class="s">  gmt grdgradient @earth_relief_02m -Nt0.75 -A45 -Gintens.grd</span>
+<span class="s">  # Make sure our remote files have been downloaded</span>
+<span class="s">  gmt which -Ga @earth_day_02m @earth_night_02m</span>
+<span class="s">gmt end</span>
+<span class="s">EOF</span>
+<span class="c1"># 2. Set up main script</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
+<span class="s">gmt begin</span>
+<span class="s">  # Let HSV minimum value go to zero and faint map border</span>
+<span class="s">  gmt set COLOR_HSV_MIN_V 0 MAP_FRAME_PEN=faint</span>
+<span class="s">  # Blend the day and night Earth images using the weights, so that when w is 1</span>
+<span class="s">  # we get the daytime view, and then adjust colors based on the intensity.</span>
+<span class="s">  gmt grdmix @earth_day_02m @earth_night_02m -Wdaynight.grd -Iintens.grd -Gview.tif</span>
+<span class="s">  # Plot this image on an Earth with view from current longitude</span>
+<span class="s">  gmt grdimage view.tif -JG${MOVIE_COL0}/30N/21.6c -Bafg -X0 -Y0</span>
+<span class="s">gmt end</span>
+<span class="s">EOF</span>
+<span class="c1"># 3. Run the movie, requesting a fade in/out via white</span>
+gmt movie main.sh -Sbpre.sh -C21.6cx21.6cx50 -Tview.txt -Nanim11 -Lf -Ls<span class="s2">&quot;Midnight in Hawaii&quot;</span>+jBR -H8 -Pb+w1c -Fmp4 -V -W -Zs
+</pre></div>
+</div>
+<div class="youtube_wrapper" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; width: 100%">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/nmxy9yb2cR8?autoplay=1" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
+</iframe></div></section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="anim10.html" class="btn btn-neutral float-left" title="(10) The effect of sub-pixeling" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="anim12.html" class="btn btn-neutral float-right" title="(12) Image and Grid Manipulations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

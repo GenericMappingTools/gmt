@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>x2sys_binlist &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="x2sys_cross" href="x2sys_cross.html" />
+    <link rel="prev" title="rotsmoother" href="../spotter/rotsmoother.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../modules.html">Modules</a> &raquo;</li>
+      <li>x2sys_binlist</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/x2sys/x2sys_binlist.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="x2sys-binlist">
+<h1>x2sys_binlist<a class="headerlink" href="#x2sys-binlist" title="Permalink to this heading">¶</a></h1>
+<p>Create bin index listing from track data files</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt x2sys_binlist</strong> <em>track(s)</em> <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>TAG</em>
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>x2sys_binlist</strong> reads one or more track data files and produces a
+multisegment ASCII track bin-index file (tbf) with the track name in the
+header and one data record per bin crossed; these records contain <em>lon</em>,
+<em>lat</em>, <em>index</em>, <em>flags</em>[, <em>dist</em>], where <em>lon</em>, <em>lat</em> are the
+coordinates of the center of the bin, the <em>index</em> is the 1-D number of
+the bin, and <em>flags</em> is a bitflag that describes which data fields were
+available in this bin. The optional <em>dist</em> requires <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>. The input
+files can be of any format, which must be described and passed with the
+<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> option. The bin-index listing is a crude representation of where
+the track goes and is used by the data archivist to build an x2sys track
+data base for miscellaneous track queries, such as when needing to
+determine which tracks should be compared in a crossover analysis. You
+must run <a class="reference internal" href="x2sys_init.html"><span class="doc">x2sys_init</span></a> to initialize the tag before you can run the
+indexing.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>tracks</em></dt><dd><p>Can be one or more ASCII, native binary, or COARDS netCDF 1-D data
+files. To supply the data files via a text file with a list of
+tracks (one per record), specify the name of the track list after a
+leading equal-sign (e.g., =tracks.lis). If the names are missing
+their file extension we will append the suffix specified for this
+<em>TAG</em>. Track files will be searched for first in the current
+directory and second in all directories listed in
+<strong>$X2SYS_HOME</strong>/<em>TAG</em>/<em>TAG</em>_paths.txt (if it exists). [If
+<strong>$X2SYS_HOME</strong> is not set it will default to
+<strong>$GMT_SHAREDIR</strong>/x2sys]. (<strong>Note</strong>: MGD77 files will also be looked
+for via <strong>MGD77_HOME</strong>/mgd77_paths.txt and *.gmt files will be
+searched for via <strong>$GMT_SHAREDIR</strong>/mgg/gmtfile_paths).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-T</strong><em>TAG</em></dt><dd><p>Specify the x2sys <em>TAG</em> which identifies the attributes of this data type.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="d">
+<dt><strong>-D</strong></dt><dd><p>Calculate the length of track-line segments per bin [Default skips
+this step]. The length fragments are given as the 5th output column
+(after the <em>flags</em>). The length units are obtained via the TAG
+setting (see <a class="reference internal" href="x2sys_init.html"><span class="doc">x2sys_init</span></a>).</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong></dt><dd><p>Convert geographic data to a cylindrical equal-area projection prior
+to binning. Basically, we apply the projection
+<strong>-JY</strong><em>lon0</em>/37:04:17.166076/360, where <em>lon0</em> is the
+mid-longitude of the region. Requires <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>, geographical data, and
+a global region (e.g., <strong>-Rg</strong> or <strong>-Rd</strong>). This option is useful
+for statistics related to track-line density but should not be used
+when preparing bin-index files for the x2sys track data bases.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p>To create a bin index file from the MGD77 file 01030061.mgd77 using the
+settings associated with the tag MGD77, do:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt x2sys_binlist <span class="m">01030061</span>.mgd77 -TMGD77 &gt; <span class="m">01030061</span>.tbf
+</pre></div>
+</div>
+<p>To create a track bin index file of all MGD77+ files residing in the
+current directory using the settings associated with the tag MGD77+ and
+calculate track distances, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt x2sys_binlist *.nc -TMGD77+ -D &gt; all.tbf
+</pre></div>
+</div>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<p>Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys
+package. <em>Computers and Geosciences</em>, <strong>36</strong>, 348-354, <a class="reference external" href="https://www.researchgate.net/publication/220164039_Tools_for_analyzing_intersecting_tracks_The_x2sys_package">https://www.researchgate.net/publication/220164039_Tools_for_analyzing_intersecting_tracks_The_x2sys_package</a>.</p>
+<p>Wessel, P. (1989), XOVER: A cross-over error detector for track data,
+<em>Computers and Geosciences</em>, <strong>15</strong>(3), 333-346, <a class="reference external" href="https://doi.org/10.1016/0098-3004(89)90044-7">https://doi.org/10.1016/0098-3004(89)90044-7</a>.</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="x2sys_cross.html"><span class="doc">x2sys_cross</span></a>,
+<a class="reference internal" href="x2sys_datalist.html"><span class="doc">x2sys_datalist</span></a>,
+<a class="reference internal" href="x2sys_get.html"><span class="doc">x2sys_get</span></a>,
+<a class="reference internal" href="x2sys_init.html"><span class="doc">x2sys_init</span></a>,
+<a class="reference internal" href="x2sys_put.html"><span class="doc">x2sys_put</span></a>,
+<a class="reference internal" href="x2sys_report.html"><span class="doc">x2sys_report</span></a>,
+<a class="reference internal" href="x2sys_solve.html"><span class="doc">x2sys_solve</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../spotter/rotsmoother.html" class="btn btn-neutral float-left" title="rotsmoother" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="x2sys_cross.html" class="btn btn-neutral float-right" title="x2sys_cross" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

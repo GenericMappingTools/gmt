@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2. Proposed Refactoring Implementation &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="1. Proposed Long-Options Implementation" href="long_options.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="devdocs.html">GMT Enhancement Proposals</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="long_options.html">1. Proposed Long-Options Implementation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2. Proposed Refactoring Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-the-problem">2.1. What is the problem?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-are-the-refactoring-goals">2.2. What are the refactoring goals?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-will-we-pass-all-those-module-settings">2.3. How will we pass all those module settings?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-will-we-pass-input-and-output">2.4. How will we pass input and output?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="devdocs.html">GMT Enhancement Proposals</a> &raquo;</li>
+      <li><span class="section-number">2. </span>Proposed Refactoring Implementation</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/devdocs/refactoring.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="proposed-refactoring-implementation">
+<span id="refactoring"></span><h1><span class="section-number">2. </span>Proposed Refactoring Implementation<a class="headerlink" href="#proposed-refactoring-implementation" title="Permalink to this heading">¶</a></h1>
+<p>These are the rambling thoughts of Paul Wessel on the C refactoring.  I start with explaining
+how the present API came into being and why, what the problems are with the current API, and what the
+challenges will be in deciding what the refactoring should accomplish.  This page will be
+updated as we debate and reach consensus on various steps.</p>
+<section id="what-is-the-problem">
+<h2><span class="section-number">2.1. </span>What is the problem?<a class="headerlink" href="#what-is-the-problem" title="Permalink to this heading">¶</a></h2>
+<p>The GMT API as of GMT 6.x is an unusual beast as far as APIs go.  Let me explain.
+When GMT 5 was released we had repackaged all the GMT programs (e.g., pscoast.c, surface.c)
+into API modules.  Those source files were still there, but instead of having a main function
+required for all C executable programs, they instead defined module functions called <em>GMT_pscoast</em>,
+<em>GMT_surface</em>, etc.  These all had exactly the same argument list, e.g.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>int GMT_surface <span class="o">(</span>void *API, int mode, void *args<span class="o">)</span>
+</pre></div>
+</div>
+<p>where all the arguments necessary for <a class="reference internal" href="../surface.html"><span class="doc">surface</span></a> to run were passed via the <em>args</em> pointer,
+with the <em>mode</em> flag indicating what type of arguments were passed.
+This module, as all others, would have the following common work flow:</p>
+<ol class="arabic simple">
+<li><p>Create a linked list of GMT options from the two last arguments</p></li>
+<li><p>Parse GMT common options given to the module</p></li>
+<li><p>Parse module-specific options given to the module</p></li>
+<li><p>Read the input data (if required)</p></li>
+<li><p>Perform the calculation</p></li>
+<li><p>Write output data or <em>PostScript</em> (if required)</p></li>
+</ol>
+<p>Since there no longer is a separate <strong>surface</strong> program, for command-line work we rely on the
+single program <a class="reference internal" href="../gmt.html"><span class="doc">gmt</span></a> which does the following:</p>
+<ol class="arabic simple">
+<li><p>Creates a new GMT session and returns an API pointer to an internal structure</p></li>
+<li><p>Calls the selected module via <em>GMT_Call_Module</em> and pass the arguments</p></li>
+<li><p>Destroys the GMT session</p></li>
+</ol>
+<p>The only price users had to pay when moving from GMT 4 to 5 was to get used to running modules as argument to
+the <strong>gmt</strong> program, e.g.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt surface -R0/5/0/6 -I5m my_table.txt -Gmy_grid.grd
+</pre></div>
+</div>
+<p>and if that was just too hard to get used to we added aliases and functions for shells
+as well as symbolic links to gmt in the name of all the modules, so if you compiled GMT
+yourself you could pretend to be in “GMT 4-ever” mode and keep running</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>surface -R0/5/0/6 -I5m my_table.txt -Gmy_grid.grd
+</pre></div>
+</div>
+<p>However, some modules are built slightly differently as far as i/o goes.  They instead follow this model:</p>
+<ol class="arabic">
+<li><p>Create a linked list of GMT options from the two last arguments</p></li>
+<li><p>Parse any GMT common options given to the module</p></li>
+<li><p>Parse the module-specific options given to the module</p></li>
+<li><p>Loop over input records until EOF</p>
+<p>4.1. Update the main calculation, optionally output new record</p>
+</li>
+<li><p>Finalize calculation, if relevant</p></li>
+<li><p>Write concluding data or <em>PostScript</em> (if required)</p></li>
+</ol>
+<p>Let us call this method <strong>B</strong> while the first one we introduced is method <strong>A</strong>.  We will soon return
+to the question of why we have two methods in the first place.</p>
+<p>Thus, all the work we did to create the API basically resulted in <em>no change</em> as far as users go.  So
+that begs two questions:</p>
+<ol class="arabic simple">
+<li><p>Why did we develop an API if it made no difference to users?</p></li>
+<li><p>Why did we implement the above design?</p></li>
+</ol>
+<p>The answer to the first question is this: We wanted to make it possible for a wide range of
+users and developers to take advantage of GMT’s capabilities from different environments,
+such as</p>
+<ol class="arabic simple">
+<li><p>Custom C, C++, and even FORTRAN programs</p></li>
+<li><p>The GMT modules themselves calling other modules</p></li>
+<li><p>Passing data to and from GMT modules in MATLAB</p></li>
+<li><p>Passing data to and from GMT modules in Python</p></li>
+<li><p>Passing data to and from GMT modules in ???</p></li>
+</ol>
+<p>There had been people who had used GMT from MATLAB and Python before, but
+apart from a basic read/write module for grids in MATLAB, any real work would require
+writing data to a temp file, using a system call to run a GMT program, and then
+reading the result back into MATLAB or Python.  The API was designed to avoid the
+system calls and instead call GMT API functions directly with in-memory data, eliminating
+the need for temporary files.</p>
+<p>However, there was a problem:  The original GMT programs were all stand-along
+programs. As discussed above, they would deal with option parsing, the i/o, and the calculations or plotting.
+In contrast, MATLAB or Python users may already have data in memory and want
+those to be used in the modules <em>without</em> temporary files.  We faced a big decision
+and not knowing all the ramifications I picked the simplest one that would most
+quickly get us to a working system: We simply converted each <em>main</em> function of
+the C programs to a new callable library function.  That meant all the steps that a module does listed
+above now happens inside an API function: parsing of arguments, i/o of data, and
+calculations.  An immediate dilemma then was how do you pass data residing in memory into
+a module that expects to read from files?  The solution that was selected was
+what we now call <em>virtual files</em>.  These are special filenames that contain meta-data
+about memory locations and are passed as regular filenames.  However, deep in the
+under-belly of the GMT i/o layer we know what these filenames mean and instead of
+reading a file (e.g., a grid) into a memory structure for a grid we instead
+simply pass the memory pointer to the grid we registered as a virtual file directly.  So no
+reading, just passing memory (well, I am ignoring some reformatting for special cases here),
+and the module is completely unaware of this sleight of hand.
+Because of this scheme we were able to convert all ~150 modules
+to an API.  The downside came later when we started working on the GMT/MATLAB wrapper
+first and later the GMT/Python wrapper (PyGMT).  Unhappy with MATLAB in general,
+Joaquim then got excited about the new language Julia, and building on the experience
+with GMT/MATLAB he quickly developed a wrapper around the GMT C API to provide a
+modern keyword/value interface to GMT from Julia.</p>
+</section>
+<section id="what-are-the-refactoring-goals">
+<h2><span class="section-number">2.2. </span>What are the refactoring goals?<a class="headerlink" href="#what-are-the-refactoring-goals" title="Permalink to this heading">¶</a></h2>
+<p>The goal of the C refactoring is to produce a second-generation API that
+separates the i/o part from the calculation part. Specifically, it would provide
+access to a new set of functions that expect input and parameters among the function
+arguments and that return output back via other arguments.  For now, we will
+focus on modules that do data processing and not plotting, since the latter tend
+to be used for adding map layers and there are additional complications here (for instance,
+we have no particular interest in receiving an incomplete layer of <em>PostScript</em> code).
+So, the goal is simple to state.  However, there are complications with this scheme:</p>
+<ol class="arabic">
+<li><p>All modules require a combination of common GMT settings as well as module-specific
+settings. These can range from a few to many.  How complicated do we want the
+function interface to be?  Internally, each module loops over the command-line
+options (step 1 for each model) and assigns a myriad of internal variables that
+are used in the execution of the algorithm. If there is no parsing of any command
+line, how are these set?</p></li>
+<li><p>The input is expected to be passed via function arguments. However, remember
+methods <strong>A</strong> and <strong>B</strong>. In case of <strong>B</strong> we never have the input data in memory
+as they processed record by record from a file.  This was done for several reasons:</p>
+<p>2.1. The algorithm lends itself to this (e.g., sum up values, plot a single point)
+so it was naturally implemented that way -- there was no reason to actually hold
+all the input data in memory at the same time.</p>
+<p>2.2. Some of the processing tools are expected
+to handle very large amounts of data records, beyond what most computers would be
+able to hold in memory.  That, of course, is an ever-moving target, but the concrete
+example we cite is trying to compute spatial averages on a global 15x15 arc-second grid
+for all the multi-beam bathymetry data ever collected, pushing a billion records.
+This may require over 100 Gb of RAM, which in 2021 is still too large. How can we
+handle these special cases?</p>
+<p>2.3. There may not be a simple way to add OpenMP to speed up calculations even if we
+had the data in memory.</p>
+</li>
+</ol>
+<p>Of course, in most cases the amount of data is manageable with method <strong>A</strong> and we
+may eventually convert the few model <strong>B</strong> modules to follow model <strong>A</strong>.  Perhaps it
+is possible to let a few modules have both models implemented just in case.</p>
+</section>
+<section id="how-will-we-pass-all-those-module-settings">
+<h2><span class="section-number">2.3. </span>How will we pass all those module settings?<a class="headerlink" href="#how-will-we-pass-all-those-module-settings" title="Permalink to this heading">¶</a></h2>
+<p>Because the GMT API is written in C we are limited to what that language has to offer.
+I think there are four ways to pass module options into a new function that can
+be called from various environments:</p>
+<ol class="arabic">
+<li><p>Have a long list of possible variables that may be set.  In that case the number
+of variables is <em>fixed</em> even if not all are set.  It may look like something like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmtlib_surface <span class="o">(</span>API, region, increment, registration, tension, input, output<span class="o">)</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>where region is an array of <em>xmin, xmax, ymin, ymax</em> and increment holds the <em>xinc</em> and
+<em>yinc</em> increments, etc., etc.  However, <a class="reference internal" href="../surface.html"><span class="doc">surface</span></a> has many more settings that a user may
+wish to access, so the number of arguments will quickly grow.  Having a function with
+10-20 arguments is not friendly. Furthermore, as soon as it is released, the developers
+decide to add yet another argument and now we must break the interface in the next release.</p>
+</li>
+<li><p>Another scheme relies on collecting all the possible options into a structure and then
+just pass the pointer to that structure to the function.  That way, we can still add new
+settings as new members of the structure without breaking the function interface.  We
+do something like this when GMT communicates with GDAL.</p></li>
+<li><p>The C language allows for a function with a <em>variable-length</em> argument list.  This makes it possible to implement a
+rudimentary keyword, value system where each string keyword is followed by a void pointer
+to the argument.  Internal parsing will use the keyword to know what its argument should
+be and obtain the value.  This avoids the breaking of the interface since optional arguments
+do not have to be listed.  It might look something like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmtlib_surface <span class="o">(</span>API, input, output, <span class="s2">&quot;region&quot;</span>, wesn, <span class="s2">&quot;increment&quot;</span>, incs, NULL<span class="o">)</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>where we have changed the location of the input and output arguments so that the variable
+list of keyword-value pairs can end with the required NULL pointer.</p>
+</li>
+<li><p>Finally, we could imagine some combination of the single structure pointer and the
+NULL-terminated list of keyword/argument pairs.  This is the one I am leaning towards.</p></li>
+</ol>
+<p>But first, in considering these four schemes I think we can exclude the first: it is simply unwieldy
+given the many options each module may offer.  The second scheme (structure) seems at first
+promising: In fact, all modules already have such a structure that we use when we parse the
+options internally.  For instance, the surface module has <em>struct SURFACE_CTRL</em> with sub-structures
+for each of the module-specific settings (<em>T</em> for tension, <em>N</em> for iteration count, <em>Z</em> for over-relaxation, etc.).
+While currently a private structure only used internally by the module, one can imagine making it an
+external structure so that developers could directly create a copy and fill in the values for
+the sub-structures (options) they wish. Alas, this is not a simple procedure.  The regular
+parser functions (one which there is one for each module) often do considerable work in translating a user
+text-string option into internal parameters.  It is often not possible to simply enter the
+value of the resulting parameter directly because intermediate steps are required that
+calculate the final parameter.  Hence, this scheme seems too low-level to be a flexible
+alternative to the current high-level (but limited) options strings, although we should look
+at this in detail before making that final determination.  With that caveat, this leaves us with
+the last two schemes.  I think either would allow workable solutions.  However, to ensure we
+are able to document the functions, maintain the current command-line option parsers, and
+allow for the long-option expansion discussed previously, I suggest the best solution may
+be a combination: We create a keyword-argument basic structure and wrap an array of these
+under a new GMT dictionary structure. It is this single pointer that we pass in for the
+settings, but it is not filled out like the low-level structure above but populated from
+a keyword-argument interface.</p>
+<p>Here is a sequence of commands that demonstrate how this might work.  I am using C
+syntax here but I anticipate simple wrappers around these if other languages need some
+variations on the theme:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">dict</span> <span class="o">=</span> gmt_create_dictionary <span class="o">(</span>API<span class="o">)</span><span class="p">;</span> /* Create a new and empty GMT dictionary */
+gmt_put_option <span class="o">(</span>API, dict, <span class="s2">&quot;region&quot;</span>, GMT_DOUBLE, <span class="m">4</span>, wesn<span class="o">)</span><span class="p">;</span>   /* Pass wesn array */
+gmt_put_modifier <span class="o">(</span>API, dict, <span class="s2">&quot;region&quot;</span>, <span class="s2">&quot;selection&quot;</span>, GMT_CHAR, <span class="m">0</span>, <span class="s2">&quot;diagonal&quot;</span><span class="o">)</span><span class="p">;</span>   /* Pass modifier +r or +selection<span class="o">=</span>diagonal */
+gmt_put_option <span class="o">(</span>API, dict, <span class="s2">&quot;increment&quot;</span>, GMT_DOUBLE, <span class="m">2</span>, incs<span class="o">)</span><span class="p">;</span>   /* Pass incs array */
+gmt_put_option <span class="o">(</span>API, dict, <span class="s2">&quot;registration&quot;</span>, GMT_INT, <span class="m">1</span>, GMT_GRID_PIXEL_REG<span class="o">)</span><span class="p">;</span>
+gmt_put_option <span class="o">(</span>API, dict, <span class="s2">&quot;tension&quot;</span>, GMT_DOUBLE, <span class="m">1</span>, tension<span class="o">)</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>We can now call the module:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmtlib_surface <span class="o">(</span>API, dict, input, output<span class="o">)</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Internally, we simply use the dictionary to create a linked list of GMT options and let the
+standard module parser translate the dictionary settings to the internal structure parameters.
+By using the long-options format for options and modifiers we simply use that as the documentation
+for both the command-line options/modifiers and the dictionary settings, and we can then easily
+produce one from the other. In other words, it builds on existing parsing schemes.</p>
+</section>
+<section id="how-will-we-pass-input-and-output">
+<h2><span class="section-number">2.4. </span>How will we pass input and output?<a class="headerlink" href="#how-will-we-pass-input-and-output" title="Permalink to this heading">¶</a></h2>
+<p>But what about the data that need to be passed in and out of a module? No longer relying
+on virtual files, we need to pass memory locations.  There are some complications here too:</p>
+<ol class="arabic simple">
+<li><p>Some environments may wish to pass a matrix for table input while others may wish
+to pass a set of column vectors. While many environments are able to combine column
+vectors into a matrix easily, others (e.g., C) cannot.</p></li>
+<li><p>Some environments use column-order while others use row-order; this affects how matrices
+can be processed.</p></li>
+<li><p>A few modules may still wish to give a filename instead of reading the data in first,
+as explained during our discussion of model <strong>B</strong>.</p></li>
+<li><p>Many use cases want to receive the data back to the calling environment but some may
+wish to write to a file directly (again, because it may just be too big).</p></li>
+<li><p>While passing in a table of data is not complicated, once we bring in grids there is
+the complication of how a grid is represented in the environment.  Perhaps it is a matrix.
+Then, there has to be additional variables to inform on region and grid spacing, for instance.
+Is the matrix a set of rows or a set of columns?  What type is the grid (float, integer, char)?
+How much of this variability should be support at this API level?</p></li>
+</ol>
+<p>Taking a lesson from how we handled settings, the simplest scheme for input and output is
+to use a structure to pass the various items.  Unlike the complexity of the myriad of
+module-specific options and sub-structures, for input and output we may be able to use a common
+IO structure such as this mock-up:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>struct GMT_IO <span class="o">{</span>
+    unsigned int mode<span class="p">;</span>
+    unsigned int type<span class="p">;</span>
+    void *data<span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>where the <em>type</em> integer controls <em>what</em> type of data is stored via the <em>data</em> pointer,
+and the <em>mode</em> integer controls <em>how</em> it is stored.  I suggest a separate structure is
+used for input and output since for some modules we may need to pass NULL for one or
+both of them to maintain the same interface with four arguments across all modules.
+The loading of the IO structure can be done via functions as well:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt_put_input <span class="o">(</span>API, struct GMT_IO item, unsigned int type, unsigned int mode<span class="o">)</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>with an example of passing a matrix to surface via a struct GMT_IO pointer looking like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt_define_io <span class="o">(</span>API, input, GMT_DOUBLE, GMT_IS_MATRIX<span class="o">)</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="long_options.html" class="btn btn-neutral float-left" title="1. Proposed Long-Options Implementation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

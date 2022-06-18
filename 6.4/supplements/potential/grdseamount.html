@@ -1,0 +1,702 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>grdseamount &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="talwani2d" href="talwani2d.html" />
+    <link rel="prev" title="grdredpol" href="grdredpol.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../modules.html">Modules</a> &raquo;</li>
+      <li>grdseamount</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/potential/grdseamount.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="grdseamount">
+<h1>grdseamount<a class="headerlink" href="#grdseamount" title="Permalink to this heading">¶</a></h1>
+<p>Create synthetic seamounts (Gaussian, parabolic, polynomial, cone or disc; circular or elliptical)</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt grdseamount</strong> [ <em>table</em> ]
+<a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
+<a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>increment</em>
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<em>out</em>/<em>in</em>][<strong>+s</strong><em>scale</em>] ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<strong>c</strong>|<strong>d</strong>|<strong>g</strong>|<strong>o</strong>|<strong>p</strong>] ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>unit</em> ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<em>flattening</em>] ]
+[ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong><em>H</em>/<em>rho_l</em>/<em>rho_h</em>[<strong>+d</strong><em>densify</em>][<strong>+p</strong><em>power</em>] ]
+[ <a class="reference internal" href="#k"><span><strong>-K</strong></span></a></strong>[<em>densitymodel</em>] ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<em>hn</em>] ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<em>list</em>] ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>norm</em> ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>bmode</em>[/<em>fmode</em>][<strong>+d</strong>] ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<strong>+a</strong>[<em>az1</em>/<em>az2</em>]][<strong>+b</strong>[<em>beta</em>]][<strong>+d</strong>[<em>hc</em>]][<strong>+h</strong>[<em>h1</em>/<em>h2</em>]][<strong>+p</strong>[<em>power</em>]][<strong>+t</strong>[<em>t0</em>/<em>t1</em>]][<strong>+u</strong>[<em>u0</em>]][<strong>+v</strong>[<em>phi</em>]] ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>t0</em>[/<em>t1</em>/<em>dt</em>][<strong>+l</strong>] ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>level</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>avedensity</em> ]
+[ <strong>-bi</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-r</strong><a class="reference internal" href="../../gmt.html#nodereg-full"><span class="std std-ref">reg</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>grdseamount</strong> will compute the combined topographic shape of multiple synthetic seamounts given
+their individual shape parameters.  We read from <em>table</em> (or standard input) a list of seamount
+locations and sizes and can evaluate either Gaussian, parabolic, conical, polynomial or disc
+shapes, which may be circular or elliptical, and optionally truncated. Various options are available
+to modify the result, including an option to add in a background depth or set unmodified nodes to NaN
+(more complicated backgrounds may be added separately via <a class="reference internal" href="../../grdmath.html"><span class="doc">grdmath</span></a>). The input data
+must contain <em>lon</em>, <em>lat</em>, <em>radius</em>, <em>height</em> for each seamount. For elliptical features (requires
+<strong>-E</strong>), we expect <em>lon</em>, <em>lat</em>, <em>azimuth</em>, <em>semi-major</em>, <em>semi-minor</em>, <em>height</em> instead. If
+flat seamount tops is specified (via <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>) with no value appended, then an extra column with
+<em>flattening</em> is expected (<strong>-F</strong> cannot be used for plateaus). For temporal evolution of topography
+the <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> option may be used, in which case the data file must have two additional columns with
+the start and stop time of seamount construction. In this case, you may choose to write out a
+cumulative shape or just the increments produced for each time step (see <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>).  If land slides
+are considered (<strong>-S</strong>), then this initial set of input columns are followed by one or more groups
+of slide parameters; see <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> for the arrangement. Finally, for mixing different seamount shapes
+in the input <em>table</em> you can use the trailing text to give the shape code by using <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> without
+appending an argument.</p>
+<figure class="align-center" id="id2">
+<span id="smt-slide"></span><a class="reference internal image-reference" href="../../_images/GMT_seamount_slide.png"><img alt="../../_images/GMT_seamount_slide.png" src="../../_images/GMT_seamount_slide.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Truncated polynomial seamount with the scars of two mass-wasting events on its flank.  Users can
+assign a time-span to the construction of the seamount and separate time-spans for any desired
+mass-wasting events.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="required-arguments-if-l-is-not-given">
+<h2>Required Arguments (if <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> is not given)<a class="headerlink" href="#required-arguments-if-l-is-not-given" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </p>
+</dd>
+</dl>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<blockquote>
+<div><p>Give the name of the output grid file. If <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is set then <em>outgrid</em> must be
+a filename template (See <a class="reference internal" href="#file-template">File Template</a> for details). Optionally, append =<em>ID</em> for writing a specific file format
+(<a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
+supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+d</strong> - Divide data values by given <em>divisor</em> [Default is 1].</p></li>
+<li><p><strong>+n</strong> - Replace data values matching <em>invalid</em> with a NaN.</p></li>
+<li><p><strong>+o</strong> - Offset data values by the given <em>offset</em>, or append <strong>a</strong> for
+automatic range offset to preserve precision for integer grids
+[Default is 0].</p></li>
+<li><p><strong>+s</strong> - Scale data values by the given <em>scale</em>, or append <strong>a</strong> for
+automatic scaling to preserve precision for integer grids [Default
+is 1].</p></li>
+</ul>
+</div></blockquote>
+<p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
+and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
+concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
+the <a class="reference internal" href="../../cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
+for more details.</p>
+</div></blockquote>
+<dl id="i">
+<dt><strong>-I</strong><em>x_inc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>y_inc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p>Set the grid spacing as <em>x_inc</em> [and optionally <em>y_inc</em>].</p>
+<p><strong>Geographical (degrees) coordinates</strong>: Optionally, append an increment unit.
+Choose among:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>m</strong> to indicate arc minutes</p></li>
+<li><p><strong>s</strong> to indicate arc seconds</p></li>
+<li><p><strong>e</strong> (meter), <strong>f</strong> (foot), <strong>k</strong> (km), <strong>M</strong> (mile), <strong>n</strong> (nautical
+mile) or <strong>u</strong> (US survey foot), in which case the increment will be
+converted to the equivalent degrees longitude at the middle latitude
+of the region  (the conversion depends on <a class="reference internal" href="../../gmt.conf.html#term-PROJ_ELLIPSOID"><span class="xref std std-term">PROJ_ELLIPSOID</span></a>). If
+<em>y_inc</em> is given but set to 0 it will be reset equal to <em>x_inc</em>;
+otherwise it will be converted to degrees latitude.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>All coordinates</strong>: The following modifiers are supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+e</strong> to slightly adjust the max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) to fit
+exactly the given increment if needed [Default is to slightly adjust
+the increment to fit the given domain].</p></li>
+<li><p><strong>+n</strong> to define the <em>number of nodes</em> rather than the increment, in
+which case the increment is recalculated from the number of nodes,
+the <em>registration</em> (see <a class="reference internal" href="../../cookbook/file-formats.html#gmt-file-formats"><span class="std std-ref">GMT File Formats</span></a>), and the domain.
+<strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used then the grid spacing and
+the registration have already been initialized; use <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> and <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>
+to override these values.</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="a">
+<dt><strong>-A</strong>[<em>out/in</em>][<strong>+s</strong><em>scale</em>]</dt><dd><p>Build a mask grid only that may be used to manipulate gridded data sets to exclude or to isolate
+seamount observations; append outside/inside values [1/NaN]. Here, height and flattening
+are ignored and <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>, <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> and <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> are disallowed. Optionally, use <strong>+s</strong> to
+increase all seamount radii or semi-axes first (e.g., “bleeding the mask outwards”) [1].</p>
+</dd>
+</dl>
+<dl class="simple" id="c">
+<dt><strong>-C</strong>[<strong>c</strong>|<strong>d</strong>|<strong>g</strong>|<strong>o</strong>|<strong>p</strong>]</dt><dd><p>Select a seamount <a class="reference internal" href="#smt-types"><span class="std std-ref">shape function</span></a>: choose among <strong>c</strong> (cone), <strong>d</strong> (disc), <strong>g</strong> (Gaussian)
+<strong>o</strong> (polynomial) and <strong>p</strong> (parabola) [Default is Gaussian].  All but the disc can furthermore
+be truncated via a flattening parameter <em>f</em> set by <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>.  If <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> is not given any argument,
+then we will read the shape code from the input file’s trailing text.  If <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>
+is not given at all, then we default to Gaussian seamounts [<strong>g</strong>].  <strong>Note</strong>: The polynomial
+model has a normalized amplitude <em>v</em> for a normalized radius <span class="math notranslate nohighlight">\(u = r / r_0\)</span> that is given
+by <span class="math notranslate nohighlight">\(v(u) = (1+u)^3(1-u)^3/(1+u^3)\)</span>. It is comparable to the Gaussian model (its
+volume is just ~2.4% larger), and <em>v</em> goes exactly to zero at the basal radius <span class="math notranslate nohighlight">\(r_0\)</span>.</p>
+</dd>
+</dl>
+<figure class="align-center" id="id3">
+<span id="smt-types"></span><a class="reference internal image-reference" href="../../_images/GMT_seamount_types.png"><img alt="../../_images/GMT_seamount_types.png" src="../../_images/GMT_seamount_types.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">The five types of seamounts selected via option <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>.  In all cases, <span class="math notranslate nohighlight">\(h_0\)</span> is the maximum
+<em>height</em>, <span class="math notranslate nohighlight">\(r_0\)</span> is the basal <em>radius</em>, <span class="math notranslate nohighlight">\(h_n\)</span> is the noise floor set via <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> [0], and
+<em>f</em> is the <em>flattening</em> set via <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> [0]. The top radius <span class="math notranslate nohighlight">\(r_t = f r_0\)</span> is only nonzero if
+there is flattening, hence it does not apply to the disc model.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<dl class="simple" id="d">
+<dt><strong>-D</strong><em>unit</em></dt><dd><p>Append the Cartesian unit used for horizontal distances in the input file (see <a class="reference internal" href="#units">Units</a>).
+Not allowed for geographic data, which we automatically convert to km using a flat Earth
+assumption.</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong></dt><dd><p>Set <a class="reference internal" href="#smt-map"><span class="std std-ref">elliptical</span></a> data file format. We expect input records to contain
+<em>lon, lat, azimuth, semi-major, semi-minor, height</em> (with  the latter in meter)
+for each seamount [Default is Circular data format, expecting <em>lon, lat, radius, height</em>].
+To mix circular and elliptical seamounts you must use <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> and provide the circular
+parameters as elliptical ones via <em>azimuth = 0</em> and <em>semi-major = semi-minor = radius</em>.</p>
+</dd>
+</dl>
+<figure class="align-center" id="id4">
+<span id="smt-map"></span><a class="reference internal image-reference" href="../../_images/GMT_seamount_map.png"><img alt="../../_images/GMT_seamount_map.png" src="../../_images/GMT_seamount_map.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Use <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> to select elliptical rather than circular shapes in map view.  Both shapes require
+lon, lat. Circular shapes only require the radius <span class="math notranslate nohighlight">\(r_0\)</span>, while elliptical ones require the
+azimuth <span class="math notranslate nohighlight">\(\alpha\)</span> of the major axis as well as the major and minor semi-axes .</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<dl class="simple" id="f">
+<dt><strong>-F</strong>[<em>flattening</em>]</dt><dd><p>Seamounts will be truncated to guyots.  Append <em>flattening</em> from 0 (no flattening) up to, but not
+including, 1. If no argument is given then we expect to find the flattening in the last input column
+[no truncation].  Ignored if used with <strong>-Cd</strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="h">
+<dt><strong>-H</strong><em>H</em>/<em>rho_l</em>/<em>rho_h</em>[<strong>+d</strong><em>densify</em>][<strong>+p</strong><em>power</em>]</dt><dd><p>Set reference seamount parameters for an <em>ad-hoc</em> variable radial <a class="reference internal" href="#smt-rho"><span class="std std-ref">density function</span></a>
+with depth. Give the low and high seamount densities in <span class="math notranslate nohighlight">\(\mbox{kg/m}^3\)</span> or <span class="math notranslate nohighlight">\(\mbox{g/cm}^3\)</span> and the fixed reference height
+<em>H</em> in meters. Use modifiers <strong>+d</strong> and <strong>+p</strong> to change the water-pressure-driven flank density increase
+over the full reference height [0] and set the variable density profile exponent <em>power</em> [1, i.e., a linear
+change]. Below, <em>h(r)</em> is the final height of any seamount and <em>z(r)</em> is a point inside the seamount.
+If the seamount is truncated (via <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>) then <em>h(r)</em> refers to the original height.  <strong>Note</strong>: If
+<a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong> is used then we report the mean density for each seamount processed.  The radial density function
+is thus defined (with <span class="math notranslate nohighlight">\(\Delta \rho_s = \rho_h - \rho_l\)</span> and the <em>densify</em> setting is <span class="math notranslate nohighlight">\(\Delta \rho_f\)</span>):</p>
+</dd>
+</dl>
+<div class="math notranslate nohighlight">
+\[\rho(r,z) = \rho_l + \Delta \rho_f \left (\frac{H-h(r)}{H} \right ) + \Delta \rho_s \left ( \frac{h(r)-z(r)}{H} \right )^p\]</div>
+<figure class="align-center" id="id5">
+<span id="smt-rho"></span><a class="reference internal image-reference" href="../../_images/GMT_seamount_density.png"><img alt="../../_images/GMT_seamount_density.png" src="../../_images/GMT_seamount_density.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">A linear density distribution selected with option <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>.  Flank density can be affected by water
+pressure if <span class="math notranslate nohighlight">\(\Delta \rho_f &gt; 0\)</span>, while the normalized internal density gradient is raised to
+power <em>p</em> to allow for nonlinear gradients.  <strong>Note</strong>: The reference height <em>H</em> refers to a very tall
+seamount for which the supplied densities are suitable.  Smaller seamounts will thus see lower core
+densities by virtue of being smaller.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<dl class="simple" id="k">
+<dt><strong>-K</strong><em>densitymodel</em></dt><dd><p>Append the file name for a crossection grid with the predicted densities of the reference model.
+We use normalized coordinates (both <em>x</em> (radius) and <em>y</em> (height) go from 0 to 1 in increments
+of 0.005), yielding a fixed 201 x 201 grid. <strong>Note</strong>: This option can be used without creating the
+seamount grid, hence <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>, <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>, <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>, and <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> are not required.</p>
+</dd>
+</dl>
+<dl class="simple" id="l">
+<dt><strong>-L</strong>[<em>hn</em>]</dt><dd><p>List <em>area</em>, <em>volume</em>, and <em>mean height</em> for each seamount; no grid will be created.
+Optionally, append <em>hn</em> for a noise-floor cutoff level below which we ignore area and volume [0].</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong>[<em>list</em>]</dt><dd><p>Write the times and names of all relief grids (and density grids if <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> is set) that were created
+to the text file <em>list</em>. Requires <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>.  If no <em>list</em> file is given then we write to standard output.
+The leading single numerical column will be time in years, while the last trailing text word is formatted time.
+The output listing is suitable as input to <a class="reference internal" href="grdflexure.html"><span class="doc">grdflexure</span></a>.
+<strong>Note</strong>: The output records thus contain <em>time reliefgrid</em> [ <em>densitygrid</em> ] <em>timetag</em>.</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong><em>norm</em></dt><dd><p>Normalize the relief grid(s) so the maximum grid height equals <em>norm</em> [no normalization].</p>
+</dd>
+</dl>
+<dl id="q">
+<dt><strong>-Q</strong><em>bmode</em>[/<em>fmode</em>][<strong>+d</strong>]</dt><dd><p>Set build modes. Can only be used in conjunction with <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>. The default is <strong>-Qc</strong>/<strong>g</strong>; append
+alternative mode settings (separated by a slash if both are specified) to change that:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The required <em>bmode</em> determines how we <a class="reference internal" href="#smt-inc"><span class="std std-ref">construct</span></a> the surface: Specify <strong>c</strong> for cumulative
+volume through time or <strong>i</strong> for the incremental volume added for each time increment.</p></li>
+<li><p>The optional <em>fmode</em> determines the <a class="reference internal" href="#smt-flux"><span class="std std-ref">volume flux curve</span></a> we use: Give <strong>c</strong> for a constant
+volume flux or <strong>g</strong> for a Gaussian volume flux [Default] between the start and stop times of each feature.</p></li>
+</ul>
+</div></blockquote>
+<p>These flux models integrate to a linear and error-function volume fraction curve over time, respectively, as
+shown below. By default, we compute the exact cumulative and incremental values for the seamounts
+specified.  Append <strong>+d</strong> to instead approximate each incremental layer by a disc of constant thickness.</p>
+</dd>
+</dl>
+<figure class="align-center" id="id6">
+<span id="smt-inc"></span><a class="reference internal image-reference" href="../../_images/GMT_seamount_cum_inc.png"><img alt="../../_images/GMT_seamount_cum_inc.png" src="../../_images/GMT_seamount_cum_inc.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Use <em>bmode</em> in <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> to choose between cumulative output (<strong>c</strong>; actual topography as function
+of time [left]) or incremental output (<strong>i</strong>; the differences in actual topography over five
+time-steps [right]).  Here, we used <strong>-Cg</strong> for a Gaussian model with no flattening and a Gaussian
+volume flux.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id7">
+<span id="smt-flux"></span><a class="reference internal image-reference" href="../../_images/GMT_seamount_flux.png"><img alt="../../_images/GMT_seamount_flux.png" src="../../_images/GMT_seamount_flux.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Use <em>fmode</em> in <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> to choose between a constant (<strong>c</strong>; dashed line) or Gaussian (<strong>g</strong>; heavy line)
+volume flux model.  <strong>Note</strong>: We adjust the error-function curve so that it goes exactly from
+0 to 1 over the time window.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p id="s"><strong>-S</strong>[<strong>+a</strong>[<em>az1</em>/<em>az2</em>]][<strong>+b</strong>[<em>beta</em>]][<strong>+d</strong>[<em>hc</em>]][<strong>+h</strong>[<em>h1</em>/<em>h2</em>]][<strong>+p</strong>[<em>power</em>]][<strong>+t</strong>[<em>t0</em>/<em>t1</em>]][<strong>+u</strong>[<em>u0</em>]][<strong>+v</strong>[<em>phi</em>]]</p>
+<blockquote>
+<div><p>Set parameters controlling the simulation of sectoral, rotational <a class="reference internal" href="#smt-slide"><span class="std std-ref">land slides</span></a> by providing
+suitable modifiers. Parameters given on the command line apply to all seamounts equally.
+However, if a modifier is set but not given an argument then we read those arguments from
+the end of the input record; the order of such input arguments follows alphabetically from
+the modifier codes (and not the order the modifiers may appear on the command line). Repeat
+the slide group columns if there is more than one slide to read per seamount. Use these
+modifiers to set relevant slide parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+a</strong> specifies the <a class="reference internal" href="#smt-specs"><span class="std std-ref">azimuthal sector</span></a> affected by the slide [0/360].</p></li>
+<li><p><strong>+b</strong> sets a positive power coefficient <span class="math notranslate nohighlight">\(\beta\)</span> for the normalized slide volume
+fraction <a class="reference internal" href="#smt-psi"><span class="std std-ref">time-curve</span></a> <span class="math notranslate nohighlight">\(\psi(\tau) = \tau^\beta\)</span> [Default is linear,
+i.e., 1]. See <strong>+t</strong> for definition of <span class="math notranslate nohighlight">\(\tau\)</span>.</p></li>
+<li><p><strong>+d</strong> sets the <a class="reference internal" href="#smt-specs"><span class="std std-ref">flank level</span></a> of the seamount where the debris deposit begins [<span class="math notranslate nohighlight">\(h_1/2\)</span>].</p></li>
+<li><p><strong>+h</strong> sets the <a class="reference internal" href="#smt-specs"><span class="std std-ref">lower and upper heights</span></a> of the flank source area generating the landslide.</p></li>
+<li><p><strong>+p</strong> activates <a class="reference internal" href="#smt-azim"><span class="std std-ref">angular variation</span></a> in the radial slide profile; append
+a power parameter <em>power &gt; 2</em>. <strong>Note</strong>: For multiple slides it is valid to provide <em>power</em>
+= 0 for some (either via command argument or read from file), which simply turns off angular
+variation for those slides. See <strong>+u</strong> for the radial slide profile setting.</p></li>
+<li><p><strong>+t</strong> sets the time span over which the slide develops via <span class="math notranslate nohighlight">\(\psi(\tau)\)</span> (see <strong>+b</strong>),
+where <span class="math notranslate nohighlight">\(\tau = (t - t_0)/(t_1 - t_0)\)</span> is the normalized time span 0-1 when the slide
+occurs; this modifier also requires <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> to be set.</p></li>
+<li><p><strong>+u</strong> sets normalized radial slide <a class="reference internal" href="#smt-u0"><span class="std std-ref">shape parameter</span></a> <span class="math notranslate nohighlight">\(u_0 &gt; 0\)</span> [0.2].</p></li>
+<li><p><strong>+v</strong> sets desired fractional volume <span class="math notranslate nohighlight">\(\phi\)</span> of the slide (in percent) relative to
+the entire seamount volume.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Note</strong>: If <strong>+v</strong> is set then we must compute the corresponding <em>u0</em>, hence <strong>+u</strong> is
+not allowed. If <strong>+b</strong>, <strong>+d</strong>, or <strong>+u</strong> are not set then their defaults are used for all slides.
+Currently, we support a maximum of 10 slides per seamount.</p>
+</div></blockquote>
+<figure class="align-center" id="id8">
+<span id="smt-specs"></span><a class="reference internal image-reference" href="../../_images/GMT_seamount_specs.png"><img alt="../../_images/GMT_seamount_specs.png" src="../../_images/GMT_seamount_specs.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">Geometry for an <em>ad hoc</em> landslide approximation (via cross-section modifiers <strong>+d</strong> and <strong>+h</strong>
+and map-view parameter <strong>+a</strong>). The volume of the slide material (pink) will be deposited at or
+below the toe of the surface rupture (light blue), starting at a height of <span class="math notranslate nohighlight">\(h_c\)</span> and linearly
+tapering to zero at a distal point <span class="math notranslate nohighlight">\(r_d\)</span>. The various radii are computed from the heights and
+the shape function of the seamount.  <strong>Note</strong>: <span class="math notranslate nohighlight">\(h_2 &gt; h_1\)</span> while <span class="math notranslate nohighlight">\(r_1 &gt; r_2\)</span>.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<dl class="simple" id="t">
+<dt><strong>-T</strong><em>t0</em>[/<em>t1</em>/<em>dt</em>][<strong>+l</strong>]</dt><dd><p>Specify <em>t0</em>, <em>t1</em>, and time increment (<em>dt</em>) for a sequence of calculations
+[Default is one step, with no time dependency]. For a single specific time, just
+give start time <em>t0</em>. Default <em>unit</em> is years; append <strong>k</strong> for kyr and <strong>M</strong> for Myr.
+For a logarithmic time scale, append <strong>+l</strong> and given the number of steps <em>n</em> instead
+of increment <em>dt</em>. Alternatively, give a file with the desired times in the first column
+(these times may have individual units appended, otherwise we assume year).  If <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is
+set, then the input seamount table is expected to have to extra columns for the <em>start</em>
+and <em>stop</em> time following the initial seamount parameters (but before any slide
+groups; see <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>). Because positive time is in years before present, we require
+<em>t0</em> &gt;= <em>t1</em> time. <strong>Note</strong>: A grid will be written for all time-steps even
+if there are no relief or changes for one or more output times.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong><em>avedensity</em></dt><dd><p>Give the name of the vertically averaged density grid file. If <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> is set then <em>avedensity</em> must
+be a filename template (See <a class="reference internal" href="#file-template">File Template</a> for details).
+Requires <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> to define the density model.</p>
+</dd>
+</dl>
+<dl class="simple" id="z">
+<dt><strong>-Z</strong><em>level</em></dt><dd><p>Set the background water depth [0]. As all seamounts have positive relief, you may
+use a larger negative <em>level</em> to place them under water. Alternatively, append NaN
+if you wish to flag unused nodes (not allowed if <strong>-Qi</strong> is used).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-bi</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for primary table input. [Default is 4 input columns].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>“pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Only accept data records that match the given pattern.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a></dt><dd><p>Geographic grids (dimensions of longitude, latitude) will be converted to
+km via a “Flat Earth” approximation using the current ellipsoid parameters.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Skip or produce header record(s). Not used with binary data.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-r</strong>[<strong>g</strong>|<strong>p</strong>] <a class="reference internal" href="../../gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set node registration [gridline].  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="../../gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Swap 1st and 2nd column on input and/or output.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="units">
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this heading">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default unless stated otherwise], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
+(see <a class="reference internal" href="../../gmt.conf.html#term-PROJ_MEAN_RADIUS"><span class="xref std std-term">PROJ_MEAN_RADIUS</span></a>). You can use <strong>-jf</strong> to perform
+“Flat Earth” calculations (quicker but less accurate) or <strong>-je</strong> to perform
+exact geodesic calculations (slower but more accurate; see
+<a class="reference internal" href="../../gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a> for method used).</p>
+</section>
+<section id="file-template">
+<span id="id1"></span><h2>File Template<a class="headerlink" href="#file-template" title="Permalink to this heading">¶</a></h2>
+<p>The format statements allowed in grid file templates require you to follow these rules:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>To use the formatted time-tag as part of the file name you must use just a single %s
+format as part of the template (e.g., smt_%s.grd).</p></li>
+<li><p>If you want to control the numerical formatting of the names but still have the common
+time unit appended then you must compose a template that has a floating point format
+before a later %c format for the unit.  For example, smt_%05.1f%c.grd will create
+names like smt_001.1M.grd names.  The times will be scaled to match the unit.</p></li>
+<li><p>If you do not want any units then simply give a template with just one floating point
+format, e.g., smt_%05.1f_name.grd.  The times will be used as is (i.e, unscaled).</p></li>
+</ul>
+</div></blockquote>
+<p>For details on the format statements, see <a class="reference external" href="https://en.wikipedia.org/wiki/Printf_format_string">printf</a>
+C language format syntax.</p>
+</section>
+<section id="slide-simulation-specifics">
+<h2>Slide simulation specifics<a class="headerlink" href="#slide-simulation-specifics" title="Permalink to this heading">¶</a></h2>
+<p>The simulation of land slides via <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> is not a physical model (apart from preserving mass).  Instead,
+we approximate the shapes of rotational landslides and their evolution via simple geometric shapes and functions.
+The <a class="reference internal" href="#smt-u0"><span class="std std-ref">radial slide height</span></a> is modeled as</p>
+<div class="math notranslate nohighlight">
+\[h_s(r) = h_s(u) = h_1 + (h_2 - h_1)q(u) = h_1 + (h_2 - h_1) u_0 \left (\frac{1 + u_0}{u + u_0} - 1\right ),\]</div>
+<p>where <span class="math notranslate nohighlight">\(u = (r - r_2)/(r_1 - r_2)\)</span> is the normalized horizontal distance of the rupture
+surface.  This shape can be modulated by using <strong>+u</strong> to change <span class="math notranslate nohighlight">\(u_0\)</span>.</p>
+<figure class="align-center" id="id9">
+<span id="smt-u0"></span><a class="reference internal image-reference" href="../../_images/GMT_seamount_u0.png"><img alt="../../_images/GMT_seamount_u0.png" src="../../_images/GMT_seamount_u0.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">A variety of normalized radial slide shapes <span class="math notranslate nohighlight">\(q(u)\)</span> is available by varying <span class="math notranslate nohighlight">\(u_0\)</span> (via modifier <strong>+u</strong>).
+For instance, the slide area for a conical seamount would be the area between the flank (dashed line) and the
+selected curve. A smaller <span class="math notranslate nohighlight">\(u_0\)</span> will cut more deeply into the seamount.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>By default, the radial slide profile is fixed regardless of where in the slide sector we look.  However,
+gentle or more abrupt <a class="reference internal" href="#smt-azim"><span class="std std-ref">angular variation</span></a> can be added to <span class="math notranslate nohighlight">\(h_s(r)\)</span> via the function</p>
+<div class="math notranslate nohighlight">
+\[s(\alpha) = s(\gamma) = 1 - \lvert \gamma \rvert ^p,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\gamma = 2 (\alpha - \alpha_1)/(\alpha_2 - \alpha_1) - 1\)</span> and <em>p</em> is the power exponent
+that can be set via <strong>+p</strong>. When enabled, we use <span class="math notranslate nohighlight">\(s(\alpha)\)</span> to scale the radial slide profile
+so that it starts of at zero at the two sectoral locations and then grows more (larger <em>p</em>) or less
+(smaller <em>p</em>) rapidly as we enter the slide sector.  This modifier has the effect of smoothing the step
+functions we otherwise encounter as we enter the slide sector.</p>
+<figure class="align-center" id="id10">
+<span id="smt-azim"></span><a class="reference internal image-reference" href="../../_images/GMT_seamount_azim.png"><img alt="../../_images/GMT_seamount_azim.png" src="../../_images/GMT_seamount_azim.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">A range of azimuthal amplitude variation in radial slide height <span class="math notranslate nohighlight">\(h_s(r)\)</span> can be achieved by modulating
+the power parameter, <em>p</em> (via modifier <strong>+p</strong>). This variation means the slide volume is reduced by
+<span class="math notranslate nohighlight">\(1 - \bar{s}\)</span> (dashed lines). E.g., for <em>p = 2</em> the slide volume is only 67% of the volume it
+would have been if there was no azimuthal variation (i.e., <em>s = 1</em> [Default]).</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Finally, an observed landslide may not have occurred instantly but developed over a finite time period.  We can
+simulate that by distributing the total slide volume over this time. The normalized volume rate distribution
+is simulated by</p>
+<div class="math notranslate nohighlight">
+\[\psi(t) = \psi(\tau) = \tau^\beta = \left (\frac{t - t_0}{t_1 - t_0} \right )^\beta,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\tau\)</span> is the normalized time during a slide event.  We use this function to compute the portion
+of the slide volume that should be deposited at a given time <em>t</em>.  Modifier <strong>+b</strong> is used to specify the
+power exponent <span class="math notranslate nohighlight">\(\beta\)</span> [1].</p>
+<figure class="align-center" id="id11">
+<span id="smt-psi"></span><a class="reference internal image-reference" href="../../_images/GMT_seamount_psi.png"><img alt="../../_images/GMT_seamount_psi.png" src="../../_images/GMT_seamount_psi.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">We can control how quickly a slide evolves over time by manipulating the <span class="math notranslate nohighlight">\(\psi(\tau)\)</span> function
+(via modifier <strong>+b</strong>). A linear curve means mass redistribution is taking place at a constant
+rate during the slide duration. Adjust <span class="math notranslate nohighlight">\(\beta\)</span> to have the bulk of the redistribution
+take place early (<span class="math notranslate nohighlight">\(\beta &lt; 1\)</span>) or closer to the end (<span class="math notranslate nohighlight">\(\beta &gt; 1\)</span>) of the event.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
+<p>Because the Gaussian curve only drops to 1.11% of its peak amplitude at the base radius (3 sigma)
+of a seamount, we actually evaluate Gaussian curves all the way to 4 sigma so that the amplitude
+drops to 0.034% of peak height before we jump to zero.  This prevents the otherwise very noticeable
+step at the base of the seamount.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p>To compute the shape of a circular Gaussian seamount located at 1W, 2S on a 1 arc minute grid for a basal radius
+of 30 km and a height of 4500 meters, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span> 1W 2S <span class="m">30</span> <span class="m">4500</span> <span class="p">|</span> gmt grdseamount -R1:30W/0:30W/2:30S/1:30S -I1m -Ggeo_circ_smt.nc
+gmt grdimage geo_circ_smt.nc -B -png circ
+</pre></div>
+</div>
+<p>To compute the shape of an elliptical conic seamount located at 200,400 on a 1x1 Cartesian grid for basal
+semi-major axis of 35 and semi-minor axis of 20, with an azimuth of 29 for the major axis,  a height of
+3700 meters, and some flattening (0.15), try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="m">200</span> <span class="m">400</span> <span class="m">29</span> <span class="m">35</span> <span class="m">20</span> <span class="m">3700</span> <span class="p">|</span> gmt grdseamount -R150/250/350/450 -I1 -E -F0.15 -Gcat_ell_smt.nc
+gmt grdview cat_ell_smt.nc -B -Qi -I+d -JZ2c -p195/20 -png ell
+</pre></div>
+</div>
+<p>To compute the incremental loads from two elliptical, truncated Gaussian seamounts being constructed
+from 3 Ma to 2 Ma and 2.8 M to 1.9 Ma using a constant volumetric production rate,
+and output an incremental grid every 0.1 Myr from 3 Ma to 1.9 Ma, and internally use meters for
+horizontal distances, we can try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat <span class="s">&lt;&lt; EOF &gt; t.txt</span>
+<span class="s">#lon lat azimuth, semi-major, semi-minor, height tstart tend</span>
+<span class="s">0   0       -20     120     60      5000    3.0M    2M</span>
+<span class="s">50  80      -40     110     50      4000    2.8M    21.9M</span>
+<span class="s">EOF</span>
+gmt grdseamount -R-1024/1022/-1122/924+uk -I2000 -Gsmt_%3.1f_%s.nc t.txt -T3M/1.9M/0.1M -Qi/c -Dk -E -F0.2 -Cg -Mfiles.txt
+</pre></div>
+</div>
+<p>The file files.txt will contain records with numerical time, gridfile, and formatted-time.</p>
+<p><strong>Note</strong>: There are many more examples of use, including working with <a class="reference internal" href="grdflexure.html"><span class="doc">grdflexure</span></a>, in the <a class="reference external" href="https://github.com/GenericMappingTools/gmt/tree/master/test/potential">test directory</a> for the potential supplement.</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="../../grdmath.html"><span class="doc">grdmath</span></a>,
+<a class="reference internal" href="gravfft.html"><span class="doc">gravfft</span></a>,
+<a class="reference internal" href="grdflexure.html"><span class="doc">grdflexure</span></a></p>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this heading">¶</a></h2>
+<p>Smith, J. R.  and Wessel, P., 2000, Isostatic consequences of giant landslides on the Hawaiian Ridge,
+Pure Appl. Geophys., 157, 1097-1114,
+<a class="reference external" href="https://doi.org/10.1007/s000240050019">https://doi.org/10.1007/s000240050019</a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="grdredpol.html" class="btn btn-neutral float-left" title="grdredpol" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="talwani2d.html" class="btn btn-neutral float-right" title="talwani2d" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

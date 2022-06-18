@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maintainers Guide &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Team Gallery" href="team.html" />
+    <link rel="prev" title="Contributors Guide" href="contributing.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Maintainers Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creating-source-packages">Creating source packages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#packaging">Packaging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#continuous-integration">Continuous Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#updating-the-changelog">Updating the changelog</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Maintainers Guide</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/devdocs/maintenance.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="maintainers-guide">
+<h1>Maintainers Guide<a class="headerlink" href="#maintainers-guide" title="Permalink to this heading">¶</a></h1>
+<p>This page contains instructions for project maintainers about making releases, creating source packages, managing CI, etc.</p>
+<p>If you want to make a contribution to the project, see the <a class="reference internal" href="contributing.html"><span class="doc">Contributing Guide</span></a> instead.</p>
+<section id="creating-source-packages">
+<h2>Creating source packages<a class="headerlink" href="#creating-source-packages" title="Permalink to this heading">¶</a></h2>
+<p>Edit <code class="docutils literal notranslate"><span class="pre">cmake/ConfigDefault.cmake</span></code> and set <code class="docutils literal notranslate"><span class="pre">GMT_PACKAGE_VERSION_MAJOR</span></code>, <code class="docutils literal notranslate"><span class="pre">GMT_PACKAGE_VERSION_MINOR</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">GMT_PACKAGE_VERSION_PATCH</span></code>. Also set <code class="docutils literal notranslate"><span class="pre">GMT_PUBLIC_RELEASE</span></code> to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>. Then create source packages with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake --build . --target gmt_release      <span class="c1"># export the source tree and documentation</span>
+cmake --build . --target gmt_release_tar  <span class="c1"># create tarballs (in tar.gz and tar.xz formats)</span>
+</pre></div>
+</div>
+</section>
+<section id="packaging">
+<h2>Packaging<a class="headerlink" href="#packaging" title="Permalink to this heading">¶</a></h2>
+<p>Currently, packaging with CPack works on macOS (Bundle, TGZ, TBZ2), Windows (ZIP, NSIS), and UNIX (TGZ, TBZ2). On
+Windows you need to install <a class="reference external" href="http://nsis.sourceforge.io/">NSIS</a>. After building GMT and the documentation,
+build and place the executables, including the supplements, with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake --build . --target install
+</pre></div>
+</div>
+<p>and then create the package with either one of these:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake --build . --target package
+cpack -G TGZ<span class="p">|</span>TBZ2<span class="p">|</span>Bundle<span class="p">|</span>ZIP<span class="p">|</span>NSIS
+</pre></div>
+</div>
+</section>
+<section id="continuous-integration">
+<h2>Continuous Integration<a class="headerlink" href="#continuous-integration" title="Permalink to this heading">¶</a></h2>
+<p>We use GitHub Actions Continuous Integration (CI) services to build and test the project on Linux, macOS, and Windows.</p>
+<p>There are 11 configuration files located in <code class="docutils literal notranslate"><span class="pre">.github/workflows/</span></code>:</p>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">backport.yml</span></code> (Backports Pull Requests with specific labels into the matching branch)</p>
+<p>This workflow backports Pull Requests labelled by “backport xxx” into the “xxx” branch. For example, the workflow
+backports Pull Requests labelled “backport 6.1” into the “6.1” branch. This workflow does not apply to Pull Requests
+from forks (<a class="reference external" href="https://github.com/GenericMappingTools/gmt/issues/3827">issue #3827</a>).</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">build.yml</span></code> (Build GMT and run a few simple tests)</p>
+<p>This workflow is run on every commit to the <em>master</em> branch and Pull Request branches. The workflow configures
+and builds GMT on Linux, macOS, and Windows and runs some simple tests. The workflow uses the scripts in the <code class="docutils literal notranslate"><span class="pre">ci/</span></code>
+directory for downloading/installing dependencies (<code class="docutils literal notranslate"><span class="pre">ci/download-coastlines.sh</span></code> and <code class="docutils literal notranslate"><span class="pre">ci/install-dependencies-*.sh</span></code>),
+configuring GMT (<code class="docutils literal notranslate"><span class="pre">ci/config-gmt-*.sh</span></code>), building GMT, and running some simple tests (<code class="docutils literal notranslate"><span class="pre">ci/simple-gmt-tests.*</span></code>).</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">check-links.yml</span></code> (Check links in the repository and website)</p>
+<p>This workflow is run every Sunday at 12:00 (UTC) to check all external links in plaintext and HTML files. It will
+create an issue if broken links are found.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ci-caches.yml</span></code> (Cache GMT remote data files and Windows vcpkg libraries needed for GitHub Actions CI)</p>
+<p>This workflow is run every Sunday at 12:00 (UTC). If new remote files are needed urgently, maintainers can
+manually uncomment the ‘pull_request:’ line in the <code class="docutils literal notranslate"><span class="pre">ci-caches.yml</span></code> file to refresh the cache. The workflow uses the
+script <code class="docutils literal notranslate"><span class="pre">ci/install-dependencies-windows.sh</span></code> to cache the vcpkg libraries.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">code-validator.yml</span></code> (Validate code consistency)</p>
+<p>This workflow is run on every commit to the <em>master</em> branch and Pull Request branches. It runs the scripts
+<code class="docutils literal notranslate"><span class="pre">src/gmt_make_PSL_strings.sh</span></code>, <code class="docutils literal notranslate"><span class="pre">src/gmt_make_enum_dicts.sh</span></code>, and <code class="docutils literal notranslate"><span class="pre">src/gmt_make_module_purpose.sh</span></code> and exits
+with an error if any changes are detected by git. It also checks the GMT version year in <code class="docutils literal notranslate"><span class="pre">ConfigDefault.cmake</span></code> and
+the permissions of the bash scripts.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docker.yml</span></code> (Build GMT on different Linux distros using dockers)</p>
+<p>This workflow is run when Pull Requests are merged into the <em>master</em> branch. It downloads/installs dependencies
+and configures and builds GMT on different Linux distributions using dockers.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs.yml</span></code>  (Build documentation on Linux/macOS/Windows)</p>
+<p>This workflow is run when Pull Requests are merged into the <em>master</em> branch, if the Pull Request involved changes to
+files in the <code class="docutils literal notranslate"><span class="pre">doc/</span></code>, <code class="docutils literal notranslate"><span class="pre">.github/workflows/</span></code>, or <code class="docutils literal notranslate"><span class="pre">ci/</span></code> directories.</p>
+<p>The workflow also handles the documentation deployment:</p>
+<ul class="simple">
+<li><p>Updating the development documentation by pushing the built HTML pages from the <em>master</em> branch into the <code class="docutils literal notranslate"><span class="pre">dev</span></code>
+folder of the <em>gh-pages</em> branch.</p></li>
+<li><p>Updating the <code class="docutils literal notranslate"><span class="pre">latest</span></code> documentation link to the new release.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">draft-release.yml</span></code> (Drafts the next release notes)</p>
+<p>This workflow is run to draft the next release notes when new tags are made. It downloads GMT tarballs, macOS bundle
+and Windows installers from the GMT FTP server, calculate their sha256sums and save into <cite>gmt-X.Y.Z-checksums.txt</cite>,
+draft the release notes, and uploads them as release assets. Maintainers still need to review the draft release
+notes and click the “publish” button.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lint-checker.yml</span></code> (Run cppchecks)</p>
+<p>This workflow is run every day at 12:00 (UTC) to run <cite>admin/run_cppcheck.sh</cite> on the source code.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scm-check.yml</span></code> (Check for new scientific color maps releases)</p>
+<p>This workflows is run every Sunday at 12:00 (UTC) to check whether there has been a new release of the
+<a class="reference external" href="http://www.fabiocrameri.ch/colourmaps.php">Scientific colour maps</a>. If a new release is found, it will open an
+issue automatically.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests.yml</span></code> (Tests on Linux/macOS/Windows)</p>
+<p>This workflow is run when Pull Requests are merged into the <em>master</em> branch, if the Pull Request involved changes
+to the folders that contain source code, workflows, tests, or scripts for generating documentation figures. It runs
+the full GMT test suite on Linux, macOS, and Windows.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">release-drafter.yml</span></code> (Drafts the next release notes)</p>
+<p>This workflow is run to update the next releases notes as pull requests are merged into master.</p>
+</li>
+</ol>
+</section>
+<section id="updating-the-changelog">
+<h2>Updating the changelog<a class="headerlink" href="#updating-the-changelog" title="Permalink to this heading">¶</a></h2>
+<p>The Release Drafter GitHub Action will automatically keep a draft changelog at
+<a class="reference external" href="https://github.com/GenericMappingTools/gmt/releases">https://github.com/GenericMappingTools/gmt/releases</a>, adding a new entry every time a Pull Request (with a proper label)
+is merged into the master branch. This release drafter tool has two configuration files, one for the GitHub Action
+at <code class="docutils literal notranslate"><span class="pre">.github/workflows/release-drafter.yml</span></code>, and one for the changelog template at <code class="docutils literal notranslate"><span class="pre">.github/release-drafter.yml</span></code>.
+Configuration settings can be found at <a class="reference external" href="https://github.com/release-drafter/release-drafter">https://github.com/release-drafter/release-drafter</a>. The maintenance documentation
+for this workflow is based on the <a class="reference external" href="https://www.pygmt.org/dev/maintenance.html">PyGMT Maintenance Documentation</a>.</p>
+<p>The drafted release notes are not perfect, so we will need to tidy it prior to publishing the actual release notes at
+<a class="reference external" href="https://docs.generic-mapping-tools.org/latest/changes.html">https://docs.generic-mapping-tools.org/latest/changes.html</a>.</p>
+<ol class="arabic simple">
+<li><p>Go to <a class="reference external" href="https://github.com/GenericMappingTools/gmt/releases">https://github.com/GenericMappingTools/gmt/releases</a> and click on the ‘Edit’ button next to the current draft
+release note. Copy the text of the automatically drafted release notes under the ‘Write’ tab to
+<code class="docutils literal notranslate"><span class="pre">doc/rst/source/changes.rst</span></code>.</p></li>
+<li><p>Open a new Pull Request using the title ‘Changelog entry for GMT X.Y.Z’ with the updated release notes, so that other
+people can help to review and collaborate on the changelog curation process described next.</p></li>
+<li><p>Edit the change list to remove any trivial changes (updates to the README, typo fixes, CI configuration, etc).</p></li>
+<li><p>Edit the formatting to use <a class="reference internal" href="rst-cheatsheet.html"><span class="doc">reStructuredText Cheatsheet</span></a>.</p></li>
+<li><p>Add links in the changelog to elements of the documentation as appropriate.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="contributing.html" class="btn btn-neutral float-left" title="Contributors Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="team.html" class="btn btn-neutral float-right" title="Team Gallery" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

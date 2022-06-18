@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>(15) Animating 2-D coupled gridding via SVD &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial in Bash" href="../tutorial.html" />
+    <link rel="prev" title="(14) Animating earthquake focal mechanisms" href="anim14.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../animations.html">Animation Gallery</a> &raquo;</li>
+      <li>(15) Animating 2-D coupled gridding via SVD</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/animations/anim15.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="animating-2-d-coupled-gridding-via-svd">
+<span id="anim15"></span><h1>(15) Animating 2-D coupled gridding via SVD<a class="headerlink" href="#animating-2-d-coupled-gridding-via-svd" title="Permalink to this heading">¶</a></h1>
+<p>Gridding via elastically coupled Green’s splines via <a class="reference internal" href="../supplements/geodesy/gpsgridder.html"><span class="doc">gpsgridder</span></a>
+is similar to <a class="reference internal" href="../greenspline.html"><span class="doc">greenspline</span></a> gridding in that a SVD-based solution allows for the
+use of a subset of the eigenvalues. While a good first step is to use 25% of them, this
+animation shows the solutions for all choices of eigenvalues and tracks the reduction
+of misfit (both total and separately for the east and north components.)  The movie
+shares the same data and setup as one of our test scripts (gpsgridder1.sh) but has been
+“weaponized” to do it via animation.  Note as we include the contributions from the
+tiniest eigenvalues we rapidly “improve” the misfit while adding spurious variations to
+the solution. The moral is to not try to fit the data exactly.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#</span>
+<span class="c1"># Gridding via elastically coupled Green&#39;s splines is similar to greenspline gridding</span>
+<span class="c1"># in that a SVD-based solution allows for the use of a subset of the eigenvalues.</span>
+<span class="c1"># While a good first step is to use 25% of them, this animation shows the solutions</span>
+<span class="c1"># for all choices of eigenvalues and tracks the reduction of misfit (both total and</span>
+<span class="c1"># separately for the east and north components.)  The movie shares the same data and</span>
+<span class="c1"># setup as one of our test scripts (gpsgridder1.sh) but has been weaponized to do it</span>
+<span class="c1"># via animation.  Note as we include the contributions from the tiniest eigenvalues</span>
+<span class="c1"># we rapidly &quot;improve&quot; the misfit while adding spurious variations to the solution.</span>
+<span class="c1"># The moral is to not try to fit the data exactly.</span>
+<span class="c1">#</span>
+<span class="c1"># The finished movie is available in our YouTube channel as well:</span>
+<span class="c1"># https://youtu.be/Pvvc4vb8G4Y</span>
+<span class="c1">#</span>
+<span class="c1"># The script took ~20 minutes to render on a 24-core MacPro 2013, with most of the</span>
+<span class="c1"># time being used to solve for the cumulative and incremental grid components.</span>
+
+<span class="c1"># A few common variables to include</span>
+cat <span class="s">&lt;&lt; EOF &gt; inc.sh</span>
+<span class="s">INC=5m	# Desired grid spacing</span>
+<span class="s">DEC=2	# Let grdvector only plot every other node</span>
+<span class="s">R=-R122.5W/115W/32.5N/38N	# Area of interest</span>
+<span class="s">RATE_CUM=50 # This is in mm/yr or km/Myr - change to use another scalebar</span>
+<span class="s">RATE_INC=5 # This is in mm/yr or km/Myr - change to use another scalebar</span>
+<span class="s">EOF</span>
+<span class="c1"># Background script doing the hard work plus making background map</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
+<span class="s">gmt begin</span>
+<span class="s">	# Prepare the GPS data set for use with a 1x1 arc minute grid</span>
+<span class="s">	gmt set MAP_VECTOR_SHAPE 0.5</span>
+<span class="s">	gmt select @wus_gps_final.txt -R122.5W/115W/32.5N/40N -fg -o0:5 &gt; data.lluv</span>
+<span class="s">#	Use blockmean to avoid aliasing</span>
+<span class="s">	gmt blockmean $R -I${INC} data.lluv -fg -i0:2,4 -W &gt; blk.llu</span>
+<span class="s">	gmt blockmean data.lluv -fg -i0,1,3,5 -W &gt; blk.llv</span>
+<span class="s">	gmt convert -A blk.llu blk.llv -o0:2,6,3,7 &gt; blk.lluv</span>
+<span class="s">	gmt select blk.lluv $R -fg | awk &#39;{ print($0,&quot; 0 &quot;) }&#39; &gt; data.lluvenct</span>
+<span class="s">#</span>
+<span class="s">#	Do the gridding. There are 2682 data and here we evaluate all possible solutions</span>
+<span class="s">	gmt gpsgridder $R -I${INC} -Gtmp.grd blk.lluv -fg -Emisfit.txt -Fd8 -C+c+i -S0.5 -V</span>
+<span class="s">#</span>
+<span class="s">#	Mask the grids</span>
+<span class="s">	cat &lt;&lt;- END &gt; corner.ll</span>
+<span class="s">	-114.9 37.</span>
+<span class="s">	-114.9 40.1</span>
+<span class="s">	-118 40.1</span>
+<span class="s">	-115.50 37</span>
+<span class="s">	-115.25 32.5</span>
+<span class="s">	-114.9 32.5</span>
+<span class="s">	-114.9 37</span>
+<span class="s">	END</span>
+<span class="s">	gmt grdlandmask -Gtmp_mask1.grd -Df</span>
+<span class="s">	gmt grdmask -Rtmp_mask1.grd corner.ll -Gtmp_mask2.grd -N1/0/0</span>
+<span class="s">	gmt grdmath tmp_mask1.grd tmp_mask2.grd MUL 0 NAN = mask.grd</span>
+
+<span class="s">#	Make a plot of GPS velocity vectors</span>
+<span class="s">	gmt coast -Rmask.grd -JM4.2i -Glightgray -Ba1f30m -BWSne -Df -X0.4i -Y0.25i -Wfaint</span>
+<span class="s">	gmt plot @CA_fault_data.txt -W0.5p</span>
+<span class="s">	gmt velo data.lluvenct -Se.008i/0.95+f8p -A9p -W0.2p,red</span>
+
+<span class="s">#	Place the scale using a geovector of length RATE_CUM</span>
+<span class="s">	echo 121.5W 33N 90 ${RATE_CUM}k   | gmt plot -S=0.06i+e+jc -Gblue -W1p,blue</span>
+<span class="s">	echo 121.5W 33N ${RATE_CUM} mm/yr | gmt text -F+f8p+jCB -D0/0.07i</span>
+<span class="s">#	Map for incremental vectors</span>
+<span class="s">	gmt coast -Glightgray -Ba1f30m -BESnw -Df -X4.4i -Wfaint</span>
+<span class="s">	gmt plot @CA_fault_data.txt -W0.5p</span>
+<span class="s">#	Place the scale using a geovector of length RATE_INC (10x scaling)</span>
+<span class="s">	echo 121.5W 33N 90 ${RATE_CUM}k   | gmt plot -S=0.06i+e+jc -Gblue -W1p,blue</span>
+<span class="s">	echo 121.5W 33N ${RATE_INC} mm/yr | gmt text -F+f8p+jCB -D0/0.07i</span>
+<span class="s">gmt end</span>
+<span class="s">EOF</span>
+<span class="c1"># Main script for the frames</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
+<span class="s">gmt begin</span>
+<span class="s">	# Prepare the masked cumulative u,v grids</span>
+<span class="s">	gmt grdmath tmp_u_cum_${MOVIE_ITEM}.grd mask.grd MUL = GPS_u.grd</span>
+<span class="s">	gmt grdmath tmp_v_cum_${MOVIE_ITEM}.grd mask.grd MUL = GPS_v.grd</span>
+<span class="s">	# Plot models</span>
+<span class="s">	# Shrink down heads of vectors shorter than 10 km</span>
+<span class="s">	gmt grdvector GPS_u.grd GPS_v.grd -Ix${DEC}/${DEC} -JM4.2i -Q0.06i+e+n10 -Gblue -W0.2p,blue -S100i -X0.4i -Y0.25i</span>
+<span class="s">	# Prepare the masked incremental grids scaled by 10</span>
+<span class="s">	gmt grdmath tmp_u_inc_${MOVIE_ITEM}.grd mask.grd MUL 10 MUL = GPS_du.grd</span>
+<span class="s">	gmt grdmath tmp_v_inc_${MOVIE_ITEM}.grd mask.grd MUL 10 MUL = GPS_dv.grd</span>
+<span class="s">	gmt grdvector GPS_du.grd GPS_dv.grd -Ix${DEC}/${DEC} -Q0.06i+e+n10 -Gblue -W0.2p,blue -S100i -X4.45i</span>
+<span class="s">	gmt plot misfit.txt -i0,4 -qi0:${MOVIE_FRAME} -R0/${MOVIE_NFRAMES}/0/7 -JX8.6i/0.7i -X-4.45i -Y4.0i -B -BWSrt -W0.25p,green</span>
+<span class="s">	# Show decrease in rms misfits</span>
+<span class="s">	gmt plot misfit.txt -i0,5 -qi0:${MOVIE_FRAME} -W0.25p,blue</span>
+<span class="s">	gmt plot misfit.txt -i0,3 -qi0:${MOVIE_FRAME} -W1p,red</span>
+<span class="s">gmt end</span>
+<span class="s">EOF</span>
+<span class="c1"># Run the movie</span>
+gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Nanim15 -H8 -M210,png -Tmisfit.txt -Lf+jTC+t<span class="s2">&quot;Cumulative and Incremental Vector Contributions for Eigenvalue %4.4d&quot;</span> <span class="se">\</span>
+	-Ls<span class="s2">&quot;rms@-u@-&quot;</span>+f12p,Helvetica,green+jTR+o0.5i/0.4i -Ls<span class="s2">&quot;rms@-v@-&quot;</span>+f12p,Helvetica,blue+jTR+o0.5i/0.55i -Ls<span class="s2">&quot;rms@-c@-&quot;</span>+f12p,Helvetica,red+jTR+o0.5i/0.7i -Fmp4 -V -Zs
+</pre></div>
+</div>
+<div class="youtube_wrapper" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; width: 100%">
+<iframe allowfullscreen="true" src="https://www.youtube.com/embed/Pvvc4vb8G4Y?autoplay=1" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%">
+</iframe></div></section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="anim14.html" class="btn btn-neutral float-left" title="(14) Animating earthquake focal mechanisms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tutorial.html" class="btn btn-neutral float-right" title="Tutorial in Bash" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

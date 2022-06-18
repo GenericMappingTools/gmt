@@ -1,0 +1,955 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>movie &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="nearneighbor" href="nearneighbor.html" />
+    <link rel="prev" title="mask" href="mask.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">Modules</a> &raquo;</li>
+      <li>movie</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/movie.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="movie">
+<h1>movie<a class="headerlink" href="#movie" title="Permalink to this heading">¶</a></h1>
+<p>Create animation sequences and movies</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt movie</strong> <em>mainscript</em>
+<a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>canvas</em>
+<a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>prefix</em>
+<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>nframes</em>|<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+n</strong>]|<em>timefile</em>[<strong>+p</strong><em>width</em>][<strong>+s</strong><em>first</em>][<strong>+w</strong>[<em>str</em>]|<strong>W</strong>]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>displayrate</em> ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>titlepage</em>[<strong>+d</strong>[<em>duration</em>[<strong>s</strong>]]][<strong>+f</strong>[<strong>i</strong>|<strong>o</strong>][<em>fade</em>[<strong>s</strong>]]][<strong>+g</strong><em>fill</em>] ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>gif</em>|<em>mp4</em>|<em>webm</em>|<em>png</em>[<strong>+l</strong>[<em>n</em>]][<strong>+o</strong><em>options</em>][<strong>+s</strong><em>stride</em>][<strong>+t</strong>] ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>[<em>fill</em>][<strong>+p</strong><em>pen</em>] ]
+[ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong><em>scale</em>]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>includefile</em> ]
+[ <a class="reference internal" href="#k"><span><strong>-K</strong></span></a></strong>[<strong>+f</strong>[<strong>i</strong>|<strong>o</strong>][<em>fade</em>[<strong>s</strong>]]][<strong>+g</strong><em>fill</em>][<strong>+p</strong>[<strong>i</strong>|<strong>o</strong>]] ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>labelinfo</em> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<em>frame</em>],[<em>format</em>][<strong>+r</strong><em>dpu</em>] ]
+[ <a class="reference internal" href="#p"><span><strong>-P</strong></span></a></strong><em>progress</em> ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<strong>s</strong>] ]
+[ <a class="reference internal" href="#sb"><span><strong>-Sb</strong></span></a></strong><em>background</em> ]
+[ <a class="reference internal" href="#sf"><span><strong>-Sf</strong></span></a></strong><em>foreground</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<em>dir</em>] ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[<strong>s</strong>] ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-x</strong>[[-]<a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">n</span></a>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p>The <strong>movie</strong> module can generate GMT animation sequences using a single-plot script
+that is repeated for all frames, with some variation using specific frame variables.  The
+module simplifies (and hides) most of the steps normally needed to set up a full-blown
+animation job.  Instead, the user can focus on composing the main frame plot and let the
+parallel execution of frames and assembly of images into a movie take place in the background.
+Individual frames are converted from <em>PostScript</em> plots to lossless, transparent PNG images and optionally
+assembled into an animation (this last step requires external tools that must be present in
+your path; see Technical Details below). The user can add title sequences, fading, labels, and
+progress indicators as desired.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>mainscript</em></dt><dd><p>Name of a stand-alone GMT modern mode script that makes the frame-dependent plot.  The
+script may access frame variables, such as frame number and others, and may be
+written using the Bourne shell (.sh), the Bourne again shell (.bash), the csh (.csh)
+or DOS batch language (.bat).  The script language is inferred from the file extension
+and we build hidden movie scripts using the same language.  Parameters that can be accessed
+are discussed below.</p>
+</dd>
+</dl>
+<dl id="c">
+<dt><strong>-C</strong><em>canvassize</em></dt><dd><p>Specify the canvas size used when composing the movie frames. You can choose from a
+set of preset formats (see Table <a class="reference internal" href="#tbl-presets"><span class="std std-ref">Presets</span></a>) or specify a custom layout.
+<strong>Note</strong>: Your <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> setting determines if <strong>movie</strong> sets
+you up to work with the SI or US canvas dimensions.  Instead of a named format you can
+request a custom format directly by giving <em>width</em><strong>x</strong><em>height</em><strong>x</strong><em>dpu</em>,
+where <em>dpu</em> is the dots-per-unit pixel density (pixel density is set automatically for the named formats).</p>
+<table class="docutils align-default" id="tbl-presets">
+<thead>
+<tr class="row-odd"><th class="head"><p>Preset format (alias)</p></th>
+<th class="head"><p>Pixel dimensions</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><em>16:9 (24x13.5 cm or 9.6x5.4 inch)</em></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>4320p (8k and uhd-2)</p></td>
+<td><p>7680 x 4320</p></td>
+</tr>
+<tr class="row-even"><td><p>2160p (4k and uhd)</p></td>
+<td><p>3840 x 2160</p></td>
+</tr>
+<tr class="row-odd"><td><p>1080p (hd)</p></td>
+<td><p>1920 x 1080</p></td>
+</tr>
+<tr class="row-even"><td><p>720p</p></td>
+<td><p>1280 x 720</p></td>
+</tr>
+<tr class="row-odd"><td><p>540p</p></td>
+<td><p>960 x 540</p></td>
+</tr>
+<tr class="row-even"><td><p>480p</p></td>
+<td><p>854 x 480</p></td>
+</tr>
+<tr class="row-odd"><td><p>360p</p></td>
+<td><p>640 x 360</p></td>
+</tr>
+<tr class="row-even"><td><p>240p</p></td>
+<td><p>426 x 240</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>4:3 (24x18 cm or 9.6x7.2 inch)</em></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>uxga</p></td>
+<td><p>1600 x 1200</p></td>
+</tr>
+<tr class="row-odd"><td><p>sxga+</p></td>
+<td><p>1400 x 1050</p></td>
+</tr>
+<tr class="row-even"><td><p>xga</p></td>
+<td><p>1024 x 768</p></td>
+</tr>
+<tr class="row-odd"><td><p>svga</p></td>
+<td><p>800 x 600</p></td>
+</tr>
+<tr class="row-even"><td><p>dvd</p></td>
+<td><p>640 x 480</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong><em>prefix</em></dt><dd><p>Determines the name of the final movie file and a sub-directory with frame images (but see <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>).
+<strong>Note</strong>: If the subdirectory exist then we exit immediately.  You are therefore required to remove any
+old directory by that name first.  This is done to prevent the accidental loss of valuable data.
+You can prevent this issue by using <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> to delete the directory after a successful run.</p>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-T</strong><em>nframes</em>|<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+n</strong>]|<em>timefile</em>[<strong>+p</strong><em>width</em>][<strong>+s</strong><em>first</em>][<strong>+w</strong>[<em>str</em>]|<strong>W</strong>]</dt><dd><p>Either specify how many image frames to make, create a one-column data set width values from <em>min</em>
+to <em>max</em> every <em>inc</em> , or supply a file with a set of parameters, one record (i.e., row) per frame.
+The values in the columns will be available to the <em>mainscript</em> as named variables <strong>MOVIE_COL0</strong>,
+<strong>MOVIE_COL1</strong>, etc., while any trailing text can be accessed via the variable <strong>MOVIE_TEXT</strong>. The
+number of records equals the number of frames. Note that the <em>background</em> script is allowed to create
+<em>timefile</em>, hence we check for its existence both before <em>and</em> after the background script has completed.
+<strong>Note</strong>: If just <em>nframes</em> is given then only <strong>MOVIE_FRAME</strong> is available as no data file is available.
+For details on array creation, see <a class="reference internal" href="#generate-1d-array">Generate 1D Array</a>.  Several modifiers are also available:</p>
+<ul class="simple">
+<li><p><strong>+n</strong> indicates that <em>inc</em> is the desired <em>number</em> of frames from <em>min</em> to <em>max</em> instead of an increment.</p></li>
+<li><p><strong>+p</strong> can be used to set the tag <em>width</em> of the frame number format used in naming frames.  For
+instance, name_000010.png has a tag width of 6.  By default, this width is automatically set, but
+if you are splitting large jobs across several computers (via <strong>+s</strong>) then you must ensure the same
+tag width for all frame names.</p></li>
+<li><p><strong>+s</strong> starts the output frame numbering at <em>first</em> instead of 0. <strong>Note</strong>: All frames are still
+included; this modifier only affects the <em>numbering</em> of the specific frames on output.</p></li>
+<li><p><strong>+w</strong> will split the trailing text string into individual words that can be accessed via variables
+<strong>MOVIE_WORD0</strong>, <strong>MOVIE_WORD1</strong>, etc. By default we look for either tabs or spaces to separate the
+words.  Append <em>str</em> to select other character(s) as the valid separator(s) instead. To just use TAB
+as the <em>only</em> valid separator, use modifier <strong>+W</strong> instead.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="d">
+<dt><strong>-D</strong><em>displayrate</em></dt><dd><p>Set the display frame rate in frames per seconds for the final animation [24].</p>
+</dd>
+</dl>
+<dl id="e">
+<dt><strong>-E</strong><em>titlepage</em>[<strong>+d</strong>[<em>duration</em>[<strong>s</strong>]]][<strong>+f</strong>[<strong>i</strong>|<strong>o</strong>][<em>fade</em>[<strong>s</strong>]]][<strong>+g</strong><em>fill</em>]</dt><dd><p>Give a <em>titlepage</em> script that creates a static title page for the movie [no title sequence].
+Alternatively, <em>titlepage</em> can be a <em>PostScript</em> or <em>EPS</em> plot (with file extension .ps) of dimensions
+exactly matching the canvas size set in <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>. Modifiers control the attributes of the title sequence:</p>
+<ul class="simple">
+<li><p><strong>+d</strong> sets the duration of the title sequence. Append the number of frames or give a duration in seconds
+by appending <strong>s</strong> [Default is 4s].</p></li>
+<li><p><strong>+f</strong> adds fading. Append the <em>fade</em> length in frames or seconds (append <strong>s</strong>) [1s]. Use <strong>+fi</strong>
+and/or <strong>+fo</strong> to specify one-sided fading or to give two unequal fade intervals [Default is the same
+duration for both]. The fading affects the beginning and end of the title page <em>duration</em>.</p></li>
+<li><p><strong>+g</strong><em>fill</em> sets an alternate terminal fade color [black].</p></li>
+</ul>
+<p>See <a class="reference internal" href="#fading">Fading</a> for more details on fading (which also involves <a class="reference internal" href="#k"><span><strong>-K</strong></span></a></strong>).</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong><em>gif</em>|<em>mp4</em>|<em>webm</em>|<em>png</em>[<strong>+l</strong>[<em>n</em>]][<strong>+o</strong><em>options</em>][<strong>+s</strong><em>stride</em>][<strong>+t</strong>]</dt><dd><p>Select a video product.  Repeatable to make more than one product.  Choose from <em>gif</em> (animated GIF),
+<em>mp4</em> (MPEG-4 movie), <em>webm</em> (WebM movie) or just <em>png</em> images (implied by all the others).  If just
+<em>png</em> is chosen then no animation will be assembled. No <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> means no video products are created at
+all; this requires <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>.  Several modifiers are available:</p>
+<ul class="simple">
+<li><p><strong>+l</strong> turns on looping for <em>gif</em> animations; optionally append how many times to repeat [infinite].</p></li>
+<li><p><strong>+o</strong> may be used to add additional FFmpeg encoding settings for <em>mp4</em> and <em>webm</em> (in quotes if more
+than one word).</p></li>
+<li><p><strong>+s</strong> creates a crude animated <em>gif</em> provided either a <em>mp4</em> or <em>webm</em> product has been selected. You
+can limit the frames being used to make a GIF animation by appending <em>stride</em> to only use every <em>stride</em>
+frame, with <em>stride</em> being one of a fixed set of strides: 2, 5, 10, 20, 50, 100, 200, and 500.</p></li>
+<li><p><strong>+t</strong> selects generation of transparent PNG images [opaque]; see <a class="reference internal" href="#transparency">Transparency</a> for more details.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple" id="g">
+<dt><strong>-G</strong>[<em>fill</em>][<strong>+p</strong><em>pen</em>] <a class="reference internal" href="cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set the canvas color or fill before plotting commences [no fill].
+Optionally, append <strong>+p</strong> to draw the canvas outline with <em>pen</em> [no outline].</p>
+</dd>
+</dl>
+<dl class="simple" id="h">
+<dt><strong>-H</strong><em>scale</em></dt><dd><p>Given the finite dots-per-unit used to rasterize <em>PostScript</em> frames to PNGs, the quantizing of features
+to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings.  However,
+changes from frame to frame is outside the control of the individual frame rasterization and we
+find that, in particular, moving text may appear jittery when seen in the final animation.  You can mitigate
+this effect by selecting an integer <em>scale</em> that, in effect, temporarily increases the effective dots-per-unit
+by <em>scale</em>, rasterizes the frame, then down-samples the image by the same scale at the end.  The larger
+the <em>scale</em>, the smoother the transitions.  Because processing time increases with <em>scale</em> we suggest you
+try values in the 2-5 range.  Note that images can also suffer from quantizing when the original data have
+much higher resolution than your final frame pixel dimensions.  The <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> option may then be used to smooth the
+result to avoid aliasing [no downsampling].  This effect is called <a class="reference external" href="https://en.wikipedia.org/wiki/Subpixel_rendering">subpixel</a> rendering.</p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-I</strong><em>includefile</em></dt><dd><p>Insert the contents of <em>includefile</em> into the movie_init.sh script that is accessed by all movie scripts.
+This mechanism is used to add information (typically constant variable assignments) that the <em>mainscript</em>
+and any optional <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> scripts rely on.</p>
+</dd>
+</dl>
+<dl id="k">
+<dt><strong>-K</strong>[<strong>+f</strong>[<strong>i</strong>|<strong>o</strong>]<em>fade</em>[<strong>s</strong>]][<strong>+g</strong><em>fill</em>][<strong>+p</strong>[<strong>i</strong>|<strong>o</strong>]] ]</dt><dd><p>Add fading in and out for the main animation sequence [no fading]. Modifiers can be used to change
+the attributes of the fading:</p>
+<ul class="simple">
+<li><p><strong>+f</strong> sets the fading attributes. Append the <em>fade</em> length in frames or seconds (append <strong>s</strong>)
+[Default is 1s]. Use <strong>+fi</strong> and/or <strong>+fo</strong> to specify one-sided fading or to give two unequal
+fade intervals [Default is the same duration for both].</p></li>
+<li><p><strong>+g</strong><em>fill</em> sets an alternate terminal fade color [black].</p></li>
+<li><p><strong>+p</strong> preserves all frames.  Normally, fading will be overlaid on the first and last <em>fade</em>
+frames of the main animation.  Use <strong>+p</strong> to <em>preserve</em> these frames by fading over the repeated
+first and last animation frames instead. Append <strong>i</strong> or <strong>o</strong> to only preserve the frame involved
+during the fade in or fade out, respectively.</p></li>
+</ul>
+<p>See <a class="reference internal" href="#fading">Fading</a> for more details on fading (which may also involve <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>).</p>
+</dd>
+</dl>
+<dl id="l">
+<dt><strong>-L</strong><em>labelinfo</em>[<em>modifiers</em>]</dt><dd><p>Automatic labeling of individual frames. Repeatable up to 32 labels.  Places the chosen label at the frame perimeter:</p>
+<ul class="simple">
+<li><p><strong>e</strong> selects the elapsed time in seconds as the label; append <strong>+s</strong><em>scale</em> to set the length
+in seconds of each frame [Default is 1/<em>framerate</em>].</p></li>
+<li><p><strong>s</strong><em>string</em> uses the fixed text <em>string</em> as the label.</p></li>
+<li><p><strong>f</strong> selects the running frame number as the label [Default].</p></li>
+<li><p><strong>p</strong> selects the percentage of progress so far.</p></li>
+<li><p><strong>c</strong><em>col</em> uses the value in column number <em>col</em> of <em>timefile</em> as label (first column is 0).</p></li>
+<li><p><strong>t</strong><em>col</em> uses word number <em>col</em> from the trailing text in <em>timefile</em> (first word is 0).</p></li>
+</ul>
+<p><strong>Note</strong>: If you use <strong>-Lc</strong> with an absolute time column, then the format of the timestamp will depend
+on the two default settings <a class="reference internal" href="gmt.conf.html#term-FORMAT_DATE_MAP"><span class="xref std std-term">FORMAT_DATE_MAP</span></a> and <a class="reference internal" href="gmt.conf.html#term-FORMAT_CLOCK_MAP"><span class="xref std std-term">FORMAT_CLOCK_MAP</span></a>.  By default,
+both <em>date</em> and <em>time</em> are displayed (with a space between); set one of the settings to “-” to skip that component.
+Several modifiers control the appearance of the label:</p>
+<ul class="simple">
+<li><p><strong>+c</strong><em>dx</em>[/<em>dy</em>] sets the clearance between label and bounding box; only used if <strong>+g</strong> or <strong>+p</strong> are set.
+Append units <strong>c</strong>|<strong>i</strong>|<strong>p</strong> or % of the font size [15%].</p></li>
+<li><p><strong>+f</strong> seelcts a specific <em>font</em> [<a class="reference internal" href="gmt.conf.html#term-FONT_TAG"><span class="xref std std-term">FONT_TAG</span></a>].</p></li>
+<li><p><strong>+g</strong> will fill the label bounding box with <em>fill</em> color [no fill].</p></li>
+<li><p><strong>+h</strong>[<em>dx</em>/<em>dy</em>/][<em>shade</em>] will place drop-down shade behind the label bounding box. You can
+adjust the offset with <em>dx</em>/<em>dy</em> [4p/-4p] and shade color [gray50]; requires <strong>+g</strong> [no shade].</p></li>
+<li><p><strong>+j</strong><em>refpoint</em> specifies where the label should be plotted [TL].</p></li>
+<li><p><strong>+o</strong><em>dx</em>[/<em>dy</em>] will offset the label in direction implied by <em>justify</em>. Append units
+<strong>c</strong>|<strong>i</strong>|<strong>p</strong> or % of the font size [20% of font size].</p></li>
+<li><p><strong>+p</strong> will draw the outline of the bounding box using selected <em>pen</em> [no outline].</p></li>
+<li><p><strong>+r</strong> in conjunction with <strong>+g</strong> or <strong>+p</strong> will select a rounded rectangular label box [straight].</p></li>
+<li><p><strong>+t</strong> sets a <em>format</em> statement to be used with the label item selected [no special formatting].</p></li>
+</ul>
+<p><strong>Note</strong>: If <strong>-Lt</strong> is used then the format statement must contain a %s-like format, else it may have an
+integer (%d) or floating point  (%e, %f, %g) format specification (see C language <a class="reference external" href="https://en.wikipedia.org/wiki/Printf_format_string">printf</a> syntax).</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong>[<em>frame</em>|<strong>f</strong>|<strong>m</strong>|<strong>l</strong>],[<em>format</em>][<strong>+r</strong><em>dpu</em>]</dt><dd><p>In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
+be written to the current directory with name <em>prefix.format</em>, where <em>format</em> can be one of the
+graphics extensions from the allowable graphics <a class="reference internal" href="begin.html#tbl-formats"><span class="std std-ref">formats</span></a> [pdf].  Instead of a frame number
+we also recognize the codes <strong>f</strong>irst, <strong>m</strong>iddle, and <strong>l</strong>ast frame. <strong>Note</strong>: For raster frame formats
+you may optionally specify an alternate <em>dpu</em> of that frame via the <strong>+r</strong> modifier [same dpu as the movie frames].</p>
+</dd>
+</dl>
+<dl class="simple" id="p">
+<dt><strong>-P</strong><em>progress</em>[<em>modifiers</em>]</dt><dd><p>Automatic placement of progress indicator(s). Repeatable up to 32 indicators.  Places the chosen indicator at the
+frame perimeter according to the justification selected. Select from six indicators called <strong>a</strong>-<strong>f</strong> [<strong>a</strong>].
+Indicators <strong>a</strong>-<strong>c</strong> are different types of circular indicators while <strong>d</strong>-<strong>f</strong> are linear (axis-like)
+indicators. See <a class="reference internal" href="#progress-indicators">Progress_indicators</a> for details. Several modifiers control their appearance:</p>
+<ul class="simple">
+<li><p><strong>+a</strong> enables annotation for some progress indicators: Indicators <strong>b</strong>-<strong>f</strong> can optionally add annotations; append
+one of <strong>e</strong>|<strong>f</strong>|<strong>p</strong>|<strong>s</strong>|<strong>c</strong><em>col</em>|<strong>t</strong><em>col</em> to indicate what should be annotated (see <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>
+for more information on what these are).</p></li>
+<li><p><strong>+f</strong> selects a specific <em>font</em> [<a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_SECONDARY"><span class="xref std std-term">FONT_ANNOT_SECONDARY</span></a> scaled as needed].</p></li>
+<li><p><strong>+g</strong> sets the moving item <em>fill</em> color [see below for defaults].</p></li>
+<li><p><strong>+G</strong> sets the static item <em>fill</em> color [see below for defaults].</p></li>
+<li><p><strong>+j</strong><em>justify</em> sets the placement on the canvas [TR for circular and BC for axes].</p></li>
+<li><p><strong>+o</strong><em>dx</em>[/<em>dy</em>] offsets the indicator in direction implied by <em>justify</em>.</p></li>
+<li><p><strong>+p</strong><em>pen</em> sets the moving item <em>pen</em>.</p></li>
+<li><p><strong>+P</strong><em>pen</em> sets the static item <em>pen</em>.</p></li>
+<li><p><strong>+w</strong><em>width</em> sets the dimension of the indicator [5% of max canvas dimension for circular indicators and
+60% of relevant canvas dimension (height or width depending on <strong>+j</strong>) for the linear indicators].</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple" id="q">
+<dt><strong>-Q</strong>[<strong>s</strong>]</dt><dd><p>Debugging: Leave all files and directories we create behind for inspection.  Alternatively, append <strong>s</strong> to
+only build the movie scripts but not perform any execution.  One exception involves the optional
+background script derived from <strong>-Sb</strong> which is always executed since it may produce data needed when
+building the movie scripts.</p>
+</dd>
+</dl>
+<dl class="simple" id="sb">
+<dt><strong>-Sb</strong><em>background</em></dt><dd><p>The optional GMT modern mode <em>background</em> (written in the same scripting language as <em>mainscript</em>) can be
+used for one or two purposes: (1) It may create files (such as <em>timefile</em>) that will be needed by <em>mainscript</em>
+to make the movie, and (2) It may make a static background plot that should form the background for all frames.
+If a plot is generated the script must make sure it uses the same positioning (i.e., <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong> and <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>) as the main script
+so that the layered plot will stack correctly (unless you actually want a different offset).  Alternatively,
+<em>background</em> can be a <em>PostScript</em> or <em>EPS</em> plot layer of dimensions exactly matching the canvas size.</p>
+</dd>
+</dl>
+<dl class="simple" id="sf">
+<dt><strong>-Sf</strong><em>foreground</em></dt><dd><p>The optional GMT modern mode <em>foreground</em> (written in the same scripting language as <em>mainscript</em>) can be
+used to make a static foreground plot that should be overlain on all frames.  Make sure the script uses the same
+positioning (i.e., <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong> and <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>) as the main script so that the layers will stack correctly.  Alternatively,
+<em>foreground</em> can be a <em>PostScript</em> or <em>EPS</em> plot layer of dimensions exactly matching the canvas size.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong>[<em>dir</em>]</dt><dd><p>By default, all temporary files and frame PNG file are created in the subdirectory <em>prefix</em> set via <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>.
+You can override that selection by giving another <em>dir</em> as a relative or full directory path. If no
+path is given then we create a working directory in the system temp folder named <em>prefix</em>.  The main benefit
+of a working directory is to avoid endless syncing by agents like DropBox or TimeMachine, or to avoid
+problems related to low space in the main directory.</p>
+</dd>
+</dl>
+<dl class="simple" id="z">
+<dt><strong>-Z</strong>[<strong>s</strong>]</dt><dd><p>Erase the entire <em>prefix</em> directory after assembling the final movie [Default leaves directory with all images;
+the temporary script files, parameter files, and layer <em>PostScript</em> files are all removed (but see <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>)].
+If your <em>mainscript</em> and all input scripts via <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>, <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>, and <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> should be deleted as well then
+append <strong>s</strong>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify data types of input and/or output columns.  </p>
+</dd>
+</dl>
+<dl class="simple" id="cores">
+<dt><strong>-x</strong>[[-]<em>n</em>]</dt><dd><p>Limit the number of cores used when making the individual frames.
+By default we try to use all available cores.  Append <em>n</em> to only use <em>n</em> cores
+(if too large it will be truncated to the maximum cores available).  Finally,
+give a negative <em>n</em> to select (all - <em>n</em>) cores (or at least 1 if <em>n</em> equals or exceeds all).
+The parallel processing does not depend on OpenMP. <strong>Note</strong>: One core is utilized by
+<strong>movie</strong> so in effect <em>n-1</em> cores are used for the individual frames.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="generate-1d-array">
+<h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this heading">¶</a></h2>
+<p>We will demonstrate the use of options for creating 1-D arrays via <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>.
+Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>, e.g.,:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.1/4.2/0.1 <span class="nv">T</span> <span class="o">=</span>
+<span class="m">3</span>.1
+<span class="m">3</span>.2
+<span class="m">3</span>.3
+<span class="m">3</span>.4
+<span class="m">3</span>.5
+<span class="m">3</span>.6
+<span class="m">3</span>.7
+</pre></div>
+</div>
+<p>Append <strong>+b</strong> if we should take log2 of <em>min</em> and <em>max</em>, get their nearest integers,
+build an equidistant log2-array using <em>inc</em> integer increments in log2, then undo
+the log2 conversion. E.g., <strong>-T</strong>3/20/1<strong>+b</strong> will produce this sequence:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3/20/1+b <span class="nv">T</span> <span class="o">=</span>
+<span class="m">4</span>
+<span class="m">8</span>
+<span class="m">16</span>
+</pre></div>
+</div>
+<p>Append <strong>+l</strong> if we should take log10 of <em>min</em> and <em>max</em> and build an
+array where <em>inc</em> can be 1 (every magnitude), 2, (1, 2, 5 times magnitude) or 3
+(1-9 times magnitude).  E.g., <strong>-T</strong>7/135/2<strong>+l</strong> will produce this sequence:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T7/135/2+l <span class="nv">T</span> <span class="o">=</span>
+<span class="m">10</span>
+<span class="m">20</span>
+<span class="m">50</span>
+<span class="m">100</span>
+</pre></div>
+</div>
+<p>For output values less frequently than every magnitude, use a negative integer <em>inc</em>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T1e-4/1e4/-2+l <span class="nv">T</span> <span class="o">=</span>
+<span class="m">0</span>.0001
+<span class="m">0</span>.01
+<span class="m">1</span>
+<span class="m">100</span>
+<span class="m">10000</span>
+</pre></div>
+</div>
+<p>Append <strong>+i</strong> if <em>inc</em> is a fractional number and it is cleaner to give its reciprocal
+value instead.  To set up times for a 24-frames per second animation lasting 1 minute, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T0/60/24+i <span class="nv">T</span> <span class="o">=</span>
+<span class="m">0</span>
+<span class="m">0</span>.0416666666667
+<span class="m">0</span>.0833333333333
+<span class="m">0</span>.125
+<span class="m">0</span>.166666666667
+...
+</pre></div>
+</div>
+<p>Append <strong>+n</strong> if <em>inc</em> is meant to indicate the <em>number</em> of equidistant coordinates
+instead.  To have exactly 5 equidistant values from 3.44 and 7.82, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T3.44/7.82/5+n <span class="nv">T</span> <span class="o">=</span>
+<span class="m">3</span>.44
+<span class="m">4</span>.535
+<span class="m">5</span>.63
+<span class="m">6</span>.725
+<span class="m">7</span>.82
+</pre></div>
+</div>
+<p>Alternatively, let <em>inc</em> be a <em>file</em> with output coordinates in the first column,
+or provide a comma-separated <em>list</em> of specific coordinates, such as the first 6
+Fibonacci numbers:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T0,1,1,2,3,5 <span class="nv">T</span> <span class="o">=</span>
+<span class="m">0</span>
+<span class="m">1</span>
+<span class="m">1</span>
+<span class="m">2</span>
+<span class="m">3</span>
+<span class="m">5</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: Should you need to ensure that the coordinates are unique and sorted (in case the
+<em>file</em> or <em>list</em> are not sorted or have duplicates) then supply the <strong>+u</strong> modifier.</p>
+<p>If you only want a <em>single</em> value
+then you must append a comma to distinguish the list from the setting of an increment.</p>
+<p>If the module allows you to set up an absolute time series, append a valid time unit from the list
+<strong>y</strong>ear, m<strong>o</strong>nth, <strong>d</strong>ay, <strong>h</strong>our, <strong>m</strong>inute, and <strong>s</strong>econd
+to the given increment; add <strong>+t</strong> to ensure time column (or use <strong>-f</strong>). <strong>Note</strong>: The internal time
+unit is still controlled independently by <a class="reference internal" href="gmt.conf.html#term-TIME_UNIT"><span class="xref std std-term">TIME_UNIT</span></a>.  The first 7 days of March 2020:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T2020-03-01T/2020-03-07T/1d <span class="nv">T</span> <span class="o">=</span>
+<span class="m">2020</span>-03-01T00:00:00
+<span class="m">2020</span>-03-02T00:00:00
+<span class="m">2020</span>-03-03T00:00:00
+<span class="m">2020</span>-03-04T00:00:00
+<span class="m">2020</span>-03-05T00:00:00
+<span class="m">2020</span>-03-06T00:00:00
+<span class="m">2020</span>-03-07T00:00:00
+</pre></div>
+</div>
+<p>A few modules allow for <strong>+a</strong> which will paste the coordinate array to the output table.</p>
+<p>Likewise, if the module allows you to set up a spatial distance series (with distances computed
+from the first two data columns), specify a new increment as <em>inc</em> with a geospatial distance unit from the list
+<strong>d</strong>egree (arc), <strong>m</strong>inute (arc), <strong>s</strong>econd (arc), m<strong>e</strong>ter, <strong>f</strong>oot, <strong>k</strong>ilometer,
+<strong>M</strong>iles (statute), <strong>n</strong>autical miles, or s<strong>u</strong>rvey foot; see <strong>-j</strong> for calculation mode.
+To interpolate Cartesian distances instead, you must use the special unit <strong>c</strong>.</p>
+<p>Finally, if you are only providing an increment and will obtain <em>min</em> and <em>max</em> from the data, then it is
+possible (<em>max</em> - <em>min</em>)/<em>inc</em> is not an integer, as required.  If so, then <em>inc</em> will be adjusted to fit the range.
+Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust <em>max</em> instead (keeping <em>min</em> fixed).</p>
+</section>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h2>
+<p>Several parameters are automatically assigned and can be used when composing <em>mainscript</em> and the optional
+<em>background</em> and <em>foreground</em> scripts. There are two sets of parameters: Those that are constants
+and those that change with the frame number.  The constants are accessible by all the scripts:
+<strong>MOVIE_WIDTH</strong>: The width of the canvas (the full movie frame),
+<strong>MOVIE_HEIGHT</strong>: The height of the canvas (the full movie frame),
+<strong>MOVIE_DPU</strong>: The current dots-per-unit,
+<strong>MOVIE_RATE</strong>: The current number of frames per second,
+<strong>MOVIE_NFRAMES</strong>: The total number of frames.
+Also, if <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> was used then any static parameters listed there will be available to all the scripts as well.
+In addition, the <em>mainscript</em> also has access to parameters that vary with the frame counter:
+<strong>MOVIE_FRAME</strong>: The current frame number (an integer, e.g., 136),
+<strong>MOVIE_ITEM</strong>: The formatted frame number (a string, e.g., 000136), and
+<strong>MOVIE_NAME</strong>: The name prefix for the current frame (i.e., <em>prefix</em>_<strong>MOVIE_ITEM</strong>),
+Furthermore, if a <em>timefile</em> was given then variables <strong>MOVIE_COL0</strong>, <strong>MOVIE_COL1</strong>, etc. are
+also set, yielding one variable per column in <em>timefile</em>.  If <em>timefile</em> has trailing text then that text can
+be accessed via the variable <strong>MOVIE_TEXT</strong>, and if word-splitting was explicitly requested by <strong>-T+w</strong> or
+implicitly by selecting word labels in <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> or <a class="reference internal" href="#p"><span><strong>-P</strong></span></a></strong>) then
+the trailing text is also split into individual word parameters <strong>MOVIE_WORD0</strong>, <strong>MOVIE_WORD1</strong>, etc.</p>
+</section>
+<section id="data-files">
+<h2>Data Files<a class="headerlink" href="#data-files" title="Permalink to this heading">¶</a></h2>
+<p>The movie scripts will be able to find any files present in the starting directory when <strong>movie</strong> was initiated,
+as well as any new files produced by <em>mainscript</em> or the optional scripts set via <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>.
+No path specification is needed to access these files.  Other files may
+require full paths unless their directories were already included in the <a class="reference internal" href="gmt.conf.html#term-DIR_DATA"><span class="xref std std-term">DIR_DATA</span></a> setting.</p>
+</section>
+<section id="custom-gmt-conf-files">
+<h2>Custom gmt.conf files<a class="headerlink" href="#custom-gmt-conf-files" title="Permalink to this heading">¶</a></h2>
+<p>If you have a gmt.conf file in the top directory with your main script prior to running <strong>movie</strong> then it will be
+used and shared across all the scripts created and executed <em>unless</em> your scripts use <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> when starting a new
+modern mode session. The preferred ways of changing GMT defaults is via <a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a> calls in your input scripts.
+<strong>Note</strong>: Each script is run in isolation (modern) mode so trying to create a gmt.conf file via the <em>preflight</em>
+script to be used by other scripts is futile.</p>
+</section>
+<section id="plotting-temporal-changes">
+<h2>Plotting Temporal Changes<a class="headerlink" href="#plotting-temporal-changes" title="Permalink to this heading">¶</a></h2>
+<p>A movie is not very interesting if nothing changes.  For the animation to change you need to have your <em>mainscript</em>
+either access a <em>different</em> data set as the frame counter changes, or you need to plot only a varying <em>subset</em> of a data set,
+showing only the part that should be displayed in each frame.  There are several strategies you can use to
+accomplish these effects:</p>
+<ol class="arabic simple">
+<li><p>Your <em>timefile</em> passed to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> may have names of specific data files and you simply have your <em>mainscript</em>
+use the relevant <strong>MOVIE_TEXT</strong> or <strong>MOVIE_WORD?</strong> to access the frame-specific file name.</p></li>
+<li><p>You have a single data table which includes absolute time for each record, and you wish to plot these <em>events</em> as time
+moves forward, yet not displaying events still in the future.  This effect is achieved via the module <a class="reference internal" href="events.html"><span class="doc">events</span></a>.</p></li>
+<li><p>You have a 3-D grid (or a stack of 2-D grids) and you want to interpolate along the axis perpendicular to the
+2-D slices (e.g., time, or it could be depth).  In this situation you will use the module <a class="reference internal" href="grdinterpolate.html"><span class="doc">grdinterpolate</span></a>
+to have the <em>mainscript</em> obtain a slice for the correct time (this may be an interpolation between two different
+times or depths) and make the frame plot with this temporary grid file.</p></li>
+<li><p>You may be creating data on the fly using <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a> or <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>, or perhaps processing data slightly
+differently per frame (using parameters in the <em>timefile</em>) and displaying these or the changes between frames.</p></li>
+</ol>
+</section>
+<section id="your-canvas">
+<h2>Your Canvas<a class="headerlink" href="#your-canvas" title="Permalink to this heading">¶</a></h2>
+<figure class="align-center" id="id5">
+<a class="reference internal image-reference" href="_images/GMT_movie_canvas.png"><img alt="_images/GMT_movie_canvas.png" src="_images/GMT_movie_canvas.png" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">The <strong>MOVIE_WIDTH</strong> and <strong>MOVIE_HEIGHT</strong> parameters reflect your canvas dimension.  You can use the
+regular <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong> and <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong> options to set a logical origin for your intended plot [72p, 72p] and use your
+projection parameters (<a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong>) to indicate the area selected for plotting (green).</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>As you can see from <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>, unless you specified a custom format you are given a canvas size that is either 24 x 13.5 cm (16:9)
+or 24 x 18 cm (4:3).  If your <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> setting is inch then the custom canvas sizes are just
+slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4” or 9.6 x 7.2”); this has no effect on the size of the movie
+frames but allow us to use good sizes that work well with the <em>dpu</em> chosen.  You should compose your plots using
+the given canvas size, and <strong>movie</strong> will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
+to use <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong> and <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong> to allow for suitable margins and any positioning of items on the canvas.  To minimize processing time it is
+recommended that any static part of the movie be considered either a static background (to be made once by <em>background</em>; see <strong>-Sb</strong>) and/or
+a static foreground (to be made once by <em>foreground</em>; see <strong>-Sf</strong>); <strong>movie</strong> will then assemble these layers per frame.  Also, any computation of
+static data files to be used in the loop over frames can be produced by <em>background</em>.  Any data or variables that depend on the
+frame number must be computed or set by <em>mainscript</em> or provided via the parameters as discussed above.  <strong>Note</strong>: Using
+the variables <strong>MOVIE_WIDTH</strong> or <strong>MOVIE_HIGHT</strong> to set plot dimensions may lead to clipping against the canvas since these are also the
+exact canvas dimensions.</p>
+</section>
+<section id="external-postscript-layers">
+<h2>External <em>PostScript</em> Layers<a class="headerlink" href="#external-postscript-layers" title="Permalink to this heading">¶</a></h2>
+<p>Instead of passing GMT modern scripts to <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> you can alternatively provide the name of <em>PostScript</em>
+plot layer files. Note that these must exactly match the canvas size.  As a simple example, if you are
+making a HD movie using the US unit dimensions then a background pink layer would be created by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt basemap -R0/9.6/0/5.4 -Jx1i -B+gpink -X0 -Y0 --PS_MEDIA<span class="o">=</span><span class="m">9</span>.6ix5.4i -ps background
+</pre></div>
+</div>
+<p>Note the canvas selection via <a class="reference internal" href="gmt.conf.html#term-PS_MEDIA"><span class="xref std std-term">PS_MEDIA</span></a>, the matching region and projection, and
+the zero location of the origin.</p>
+</section>
+<section id="basemap-frames">
+<h2>Basemap Frames<a class="headerlink" href="#basemap-frames" title="Permalink to this heading">¶</a></h2>
+<p>Some map projections will by default draw a <em>fancy</em> map frame; this feature is under the control of <a class="reference internal" href="gmt.conf.html#term-MAP_FRAME_TYPE"><span class="xref std std-term">MAP_FRAME_TYPE</span></a>.
+However, whether a <em>fancy</em> or <em>plain</em> frame is actually drawn also depends on the projection center <em>latitude</em>.
+Thus, if your movie varies the projection center latitude by changing the view, you should set the frame
+setting to <em>plain</em> as part of your setup.</p>
+</section>
+<section id="transparent-images">
+<span id="transparency"></span><h2>Transparent Images<a class="headerlink" href="#transparent-images" title="Permalink to this heading">¶</a></h2>
+<p>By default, <strong>movie</strong> will build <em>opaque</em> PNG images which can then be assembled into an animation.
+The vast majority of movies is likely to be made that way. Use the <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> option’s experimental modifier
+<strong>+t</strong> to make <em>transparent</em> PNG images.  Currently, very few video codecs support
+transparency.  It is claimed both H.265 (HECV) and VP9 (Webm) offer this capability; we have only been
+able to verify the latter by viewing a transparent webm movie in Chrome. Animated GIFs can be built from
+transparent PNGs as well and here each additional frame accumulate in the final movie. Experts may create
+transparent PNGs and create movies in professional tools that support a movie alpha channel.</p>
+</section>
+<section id="technical-details">
+<h2>Technical Details<a class="headerlink" href="#technical-details" title="Permalink to this heading">¶</a></h2>
+<p>The <strong>movie</strong> module creates several hidden script files that are used in
+the generation of the images (here we have left the file extension off since it depends on the
+scripting language used): <em>movie_init</em> (initializes variables related to canvas size and dots-per-unit,
+and includes the contents of the optional <em>includefile</em>), <em>movie_preflight</em> (optional since it derives
+from <strong>-Sb</strong> and computes needed data files and possibly a background layer), <em>movie_postflight</em>
+(optional since it derives from <strong>-Sf</strong> and builds a foreground layer), <em>movie_frame</em> (accepts a frame counter
+argument and builds the frame image), and <em>movie_cleanup</em> (removes temporary files at the end of the
+run). For each frame there is a separate <em>movie_params_######</em> script that provides frame-specific
+variables (e.g., frame number and anything given via <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>).  The pre- and post-flight scripts have
+access to the information in <em>movie_init</em> while the frame script in addition has access to the frame-specific
+parameter file.  Using the <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> option will just produce these scripts which you can then examine.
+<strong>Note</strong>: The <em>mainscript</em> is duplicated per frame and each copy is run simultaneously on all available cores.
+Multi-treaded GMT modules will therefore be limited to a single core as well.</p>
+<p>The conversion of PNG frames to an animated GIF (<strong>-F</strong><em>gif</em>) relies on <a class="reference external" href="http://www.graphicsmagick.org/">GraphicsMagick</a>.
+Thus, <strong>gm</strong> must be accessible via your standard search path. Likewise, the conversion of
+PNG frames to an MP4 (<strong>-F</strong><em>mp4</em>) or WebM (<strong>-F</strong><em>webm</em>) movie relies on <a class="reference external" href="https://www.ffmpeg.org/">FFmpeg</a>.</p>
+</section>
+<section id="shell-limitations">
+<h2>Shell Limitations<a class="headerlink" href="#shell-limitations" title="Permalink to this heading">¶</a></h2>
+<p>As we cannot control how a shell (e.g., bash or csh) implements piping between two processes (it often
+involves a sub-shell), we advice against using commands in your main script that involve piping the result
+from one GMT module into another (e.g., gmt blockmean ….. | gmt surface …).  Because <strong>movie</strong> is running
+many instances of your main script simultaneously, odd things can happen when sub-shells are involved.
+In our experience, piping in the context of movie script may corrupt the GMT history files, resulting in
+stray messages from some frames, such as region not set, etc.  Split such pipe constructs into two using
+a temporary file when writing movie main scripts. <strong>Note</strong>: Piping from a non-GMT module into a GMT module
+or vice versa is not a problem (e.g., echo ….. | gmt plot …).</p>
+</section>
+<section id="hints-for-movie-makers">
+<h2>Hints for Movie Makers<a class="headerlink" href="#hints-for-movie-makers" title="Permalink to this heading">¶</a></h2>
+<p>Composing movies is relatively simple but you have to think in terms of variables.
+Examine the examples we have described.  Then, start by making a single plot script (your <em>mainscript</em>) and identify which
+things should change with time (i.e., with the frame number).  Create variables for these values. If they
+are among the listed parameters that <strong>movie</strong> creates then use those names.  Unless you only
+require the frame number you will need to make a file that you can pass to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>.  This file should
+then have all the values you need, per frame (i.e., row), with values across all the columns you need.
+If you need to assign various fixed variables that do not change with time then your <em>mainscript</em>
+will look shorter and cleaner if you offload those assignments to a separate <em>includefile</em> (<a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>).
+To test your movie, start by using options <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> and <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> to ensure your master frame page looks correct.
+This page shows you one frame of your movie (you can select which frame via the <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> arguments).  Fix any
+issues with your use of variables and options until this works.  You can then try to remove <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>.
+We recommend you make a very short (i.e., <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>) and small (i.e., <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>) movie so you don’t have to wait very
+long to see the result.  Once things are working you can beef up number of frames and movie quality.</p>
+</section>
+<section id="color-table-usage">
+<h2>Color Table Usage<a class="headerlink" href="#color-table-usage" title="Permalink to this heading">¶</a></h2>
+<p>Because <strong>movie</strong> launches individual frame plots as separate sessions running in parallel, we cannot
+utilize the current CPT (i.e., the last CPT created directly by <a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a> or <a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a>, or
+indirectly by <a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a> or  <a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a>).  Instead, you must create CPTs using explicit
+files and pass those names to the modules that require CPT information.  In modern mode, this means
+you need to use the <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> option in <a class="reference internal" href="makecpt.html"><span class="doc">makecpt</span></a> or <a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a> in order to redirect their output
+to named files.</p>
+</section>
+<section id="progress-indicators">
+<span id="id1"></span><h2>Progress Indicators<a class="headerlink" href="#progress-indicators" title="Permalink to this heading">¶</a></h2>
+<figure class="align-center" id="id6">
+<a class="reference internal image-reference" href="_images/GMT_movie_progress.png"><img alt="_images/GMT_movie_progress.png" src="_images/GMT_movie_progress.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">The six types of movie progress indicators.  All have default sizes, placements, colors and pens (shown)
+but these can be overridden by the corresponding modifiers (see below).</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The letters <strong>a</strong>-<strong>f</strong> select one of the six progress indicators shown above; each has default attributes that can
+be changed via modifiers:</p>
+<ul class="simple">
+<li><p><strong>a</strong> needs a static [lightgreen] and moving [lightred] <em>fill</em> (set via <strong>+G</strong> and <strong>+g</strong>); there is no label option.</p></li>
+<li><p><strong>b</strong> takes a static [lightblue] and moving [blue] <em>pen</em> (set via <strong>+P</strong> and <strong>+p</strong>), and if <strong>+a</strong> is set we place
+a centered label with a font size scaled to 30% of indicator size (unless <strong>+f</strong> was set which is used as given).</p></li>
+<li><p><strong>c</strong> takes a static [dashed darkred, pen width is 1% of indicator size] and moving [red] <em>pen</em> (default pen width is
+5% of indicator size) for a circular arrow (head size is 20% of indicator size), with a central label (if given <strong>+a</strong>)
+with a font size 30% of indicator size (unless <strong>+f</strong> was set which we will honor).</p></li>
+<li><p><strong>d</strong> takes a static [black] and moving [yellow, width 0.5% of length] <em>pen</em> for a rounded line with a cross-mark. If
+label is requested (<strong>+a</strong>) we use a font size that is twice the static pen thickness (unless <strong>+f</strong> was set).</p></li>
+<li><p><strong>e</strong> takes a static [red] and moving [lightgreen] <em>pen</em>. If labels are requested (<strong>+a</strong>) we use a font size that is
+twice the static pen thickness (unless <strong>+f</strong> was set).</p></li>
+<li><p><strong>f</strong> takes a <em>pen</em> for the static axis [black] and a <em>fill</em> for the moving triangle [red]; the triangle size is scaled
+to twice the axis width (see below), and a font size scaled to thrice the axis width.</p></li>
+</ul>
+<p>Note for indicators <strong>d</strong>-<strong>f</strong>: If percentage labels are selected (<strong>+ap</strong>), then the axes display a unit label,
+otherwise no unit label is supplied.  These indicators are horizontal for all <em>justify</em> codes except for <strong>ML</strong> and <strong>MR</strong>.
+The default pen thickness for the linear static lines is the smallest of 2.5% of their lengths and 8p (1.5% and 3p for f).
+If no size is specified (<strong>+w</strong>) then we default to 5% of canvas width for the three circular indicators and
+60% of the relevant canvas dimension (height or width, depending on <strong>+j</strong>) for the linear indicators.</p>
+</section>
+<section id="title-sequence-and-fading">
+<span id="fading"></span><h2>Title Sequence and Fading<a class="headerlink" href="#title-sequence-and-fading" title="Permalink to this heading">¶</a></h2>
+<figure class="align-center" id="id7">
+<a class="reference internal image-reference" href="_images/GMT_title_fade.png"><img alt="_images/GMT_title_fade.png" src="_images/GMT_title_fade.png" style="width: 500px;" /></a>
+<figcaption>
+<p><span class="caption-text">The fade-level (0 means black, 100 means normal visibility) for the complete movie, including
+an optional title sequence.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The complete movie may have an optional leading title sequence (<a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>) of a given <em>duration</em>. A short section
+at the beginning and/or end of this duration may be designated to fade in/out via the designated fade
+color [black].  The main animation sequence may also have an optional fade in and/or out section (<a class="reference internal" href="#k"><span><strong>-K</strong></span></a></strong>). Here, you
+can choose to fade on top of the animation or you can “freeze” the first and/or last animation frame and only fade over
+those static images (via modifier <strong>+p</strong>) in order to preserve the whole animation sequence.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p>To make an animated GIF movie based on the script globe.sh, which simply spins a globe using the
+frame number to serve as the view longitude, using a custom square 600 by 600 pixel canvas and 360 frames,
+place a frame counter in the top left corner, and place a progress indicator in the top right corner, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt movie globe.sh -Nglobe -T360 -Fgif -C6ix6ix100 -Lf -P
+</pre></div>
+</div>
+<p>Here, the globe.sh bash script simply plots a map with <a class="reference internal" href="coast.html"><span class="doc">coast</span></a> but uses the frame number variable
+as the center longitude:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin
+   gmt coast -Rg -JG<span class="si">${</span><span class="nv">MOVIE_FRAME</span><span class="si">}</span>/20/<span class="si">${</span><span class="nv">MOVIE_WIDTH</span><span class="si">}</span> -Gmaroon -Sturquoise -Bg -X0 -Y0
+gmt end
+</pre></div>
+</div>
+<p>As the automatic frame loop is executed the different frames will be produced with different
+longitudes.  The equivalent DOS batch script setup would be:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt movie globe.bat -Nglobe -T360 -Fgif -C6ix6ix100 -Lf -P
+</pre></div>
+</div>
+<p>Now, the globe.bat DOS script is simply:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin
+   gmt coast -Rg -JG%MOVIE_FRAME%/20/%MOVIE_WIDTH% -Gmaroon -Sturquoise -Bg -X0 -Y0
+gmt end
+</pre></div>
+</div>
+<p>i.e., the syntax of how variables are used vary according to the scripting language. At the
+end of the execution we find the animated GIF globe.gif and a directory (called globe) that contains all 360 PNG images.
+Note that there is no information in the globe scripts that reflects the name of the plot, the canvas size,
+the dimensions of the rasterized <em>PostScript</em>, and so on.  That information is hidden from the user;
+the actual movie scripts that execute are derived from the user-provided scripts and supply
+the extra machinery. The <strong>movie</strong> module automatically manages the parallel execution loop over all frames using
+all available cores.</p>
+</section>
+<section id="longer-examples">
+<h2>Longer Examples<a class="headerlink" href="#longer-examples" title="Permalink to this heading">¶</a></h2>
+<p>To explore more elaborate movies, see the Animations examples under our <a class="reference internal" href="animations.html"><span class="doc">GMT Animations</span></a> or view
+high-resolution movies on the GMT <a class="reference external" href="https://www.youtube.com/channel/UCo1drOh0OZPcB7S8TmIyf8Q/">Youtube</a> channel.</p>
+</section>
+<section id="other-movie-formats">
+<h2>Other Movie Formats<a class="headerlink" href="#other-movie-formats" title="Permalink to this heading">¶</a></h2>
+<p>As configured, <strong>movie</strong> only offers the MP4 and WebM formats for movies.  The conversion is performed by the
+tool <a class="reference external" href="https://www.ffmpeg.org/">FFmpeg</a>, which has more codecs and processing options than there are children in China.
+If you wish to run FFmpeg with other options, run <strong>movie</strong> with one of the two video formats.
+At the end it will print the FFmpeg command used.  You can copy, paste, and modify this command to
+select other codecs, bit-rates, and arguments.  You can also use the PNG sequence as input to tools such
+as QuickTime Player, iMovie, MovieMaker, and other commercial programs to make a movie that way.</p>
+</section>
+<section id="remaking-movie-with-existing-png-frames">
+<h2>Remaking Movie with Existing PNG Frames<a class="headerlink" href="#remaking-movie-with-existing-png-frames" title="Permalink to this heading">¶</a></h2>
+<p>Perhaps you made your movie and then decided you want to change the frame rate or adjust something else in
+how the movie is put together from all the still images.  If you kept all the frame images then
+you do not have to rerun the whole render process.  Assuming you want a MP4 movie and that you
+want to rerun just the ffmpeg command, here is an example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ffmpeg -loglevel warning -f image2 -framerate <span class="m">24</span> -y -i <span class="s2">&quot;mydir/myimages_%04d.png&quot;</span> -vcodec libx264 -pix_fmt yuv420p mymovie.mp4
+</pre></div>
+</div>
+<p>This command is also written out when movie performs this step.
+For other movie formats you will need to consult the <a class="reference external" href="https://www.ffmpeg.org/">FFmpeg</a> documentation.
+<strong>Note</strong>: On Windows, the percentage character is special (like the dollar sign under shells) so you will need to enter two (%%).</p>
+</section>
+<section id="manipulating-multiple-movies">
+<h2>Manipulating Multiple Movies<a class="headerlink" href="#manipulating-multiple-movies" title="Permalink to this heading">¶</a></h2>
+<p>If you are making a series of similar movies, you can use FFmpeg to paste and stitch them into a single movie.
+Assume we have four movies called movie_1.mp4, movie_2.mp4, movie_3.mp4, and movie_4.mp4, and you wish to combine
+them into a 2x2 panel showing the four movies simultaneously.  You would first combine movies (1,2) and (3,4)
+horizontally, then combine the two resulting strips vertically:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ffmpeg -i movie_1.mp4 -i movie_2.mp4 -filter_complex <span class="nv">hstack</span><span class="o">=</span><span class="nv">inputs</span><span class="o">=</span><span class="m">2</span> top.mp4
+ffmpeg -i movie_3.mp4 -i movie_4.mp4 -filter_complex <span class="nv">hstack</span><span class="o">=</span><span class="nv">inputs</span><span class="o">=</span><span class="m">2</span> bottom.mp4
+ffmpeg -i top.mp4 -i bottom.mp4 -filter_complex <span class="nv">vstack</span><span class="o">=</span><span class="nv">inputs</span><span class="o">=</span><span class="m">2</span> four_movies.mp4
+</pre></div>
+</div>
+<p>For more information on such manipulations, see the FFmpeg documentation.</p>
+</section>
+<section id="adding-an-audio-track">
+<h2>Adding an Audio Track<a class="headerlink" href="#adding-an-audio-track" title="Permalink to this heading">¶</a></h2>
+<p>If you wish to add an <em>audio</em> track to the animation, say a narration that explains your animation,
+you can record your audio using a suitable tool and save it to a *.mp3 or *.m4a file.  The audio track
+should be approximately the same length as the video.  Then, simply combine the two with FFmpeg:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ffmpeg -loglevel warning -i yourslientmovie.mp4 -y -i narration.m4a final.mp4
+</pre></div>
+</div>
+<p>For more information on audio manipulations, see the FFmpeg documentation.</p>
+</section>
+<section id="deprecations">
+<h2>Deprecations<a class="headerlink" href="#deprecations" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>6.3.0: Consolidate -A into -F for a more unified option. <a class="reference external" href="https://github.com/GenericMappingTools/gmt/pull/5613">#5613</a></p></li>
+</ul>
+</section>
+<section id="macos-issues">
+<h2>macOS Issues<a class="headerlink" href="#macos-issues" title="Permalink to this heading">¶</a></h2>
+<p><strong>Note</strong>: The limit on the number of concurrently open files is relatively small by default on macOS and when building
+numerous frames at the same time it is not unusual to get failures in <strong>movie</strong> jobs with the message “Too many open files”.
+We refer you to this helpful
+<a class="reference external" href="https://superuser.com/questions/433746/is-there-a-fix-for-the-too-many-open-files-in-system-error-on-os-x-10-7-1">article</a>
+for various solutions.</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>,
+<a class="reference internal" href="grdinterpolate.html"><span class="doc">grdinterpolate</span></a>,
+<a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>,
+<a class="reference internal" href="events.html"><span class="doc">events</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mask.html" class="btn btn-neutral float-left" title="mask" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="nearneighbor.html" class="btn btn-neutral float-right" title="nearneighbor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

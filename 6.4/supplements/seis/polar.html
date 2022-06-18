@@ -1,0 +1,619 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>polar &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="sac" href="sac.html" />
+    <link rel="prev" title="meca" href="meca.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../modules.html">Modules</a> &raquo;</li>
+      <li>polar</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/seis/polar.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="polar">
+<h1>polar<a class="headerlink" href="#polar" title="Permalink to this heading">¶</a></h1>
+<p>Plot polarities on the lower hemisphere of the focal sphere</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt polar</strong>
+[ <em>table</em> ]
+<a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>lon/lat</em>
+<a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
+<a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><em>size</em>[<strong>+m</strong><em>mag</em>]
+<a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>&lt;symbol&gt;&lt;size&gt;</em>
+[ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>fill</em> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>fill</em> ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>fill</em> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>mode</em>[<em>args</em>] ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<strong>+a</strong><em>angle</em>][<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]] ]
+[ <a class="reference internal" href="#u"><span><strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>pen</em> ]
+[ <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
+[ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
+[ <strong>-di</strong><a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
+[ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-qi</strong><a class="reference internal" href="../../gmt.html#qi-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p>Plot observations from a single earthquake observed at various stations
+at different azimuths and distances on the lower hemisphere of the focal
+sphere.  The focal sphere is typically plotted at the location of the earthquake,
+specified via <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>. Reads data values from <em>files</em> [or standard input].</p>
+<p>Parameters are expected to be in the following columns:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><strong>1</strong>,<strong>2</strong>,<strong>3</strong>:</dt><dd><p><em>station-code azimuth take-off-angle</em>
+(all three columns must contain numerical values)</p>
+</dd>
+<dt><strong>4</strong>:</dt><dd><p>polarity:</p>
+<ul class="simple">
+<li><p>compression can be c,C,u,U,+</p></li>
+<li><p>rarefaction can be d,D,r,R,-</p></li>
+<li><p>not defined is anything else</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
+table file(s) holding a number of data columns. If no tables are given
+then we read from standard input.  </p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong><em>lon/lat</em></dt><dd><p>Centers the focal sphere at given longitude and latitude point on the map.</p>
+</dd>
+</dl>
+<dl class="simple" id="j">
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="../../gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<a class="reference internal" href="../../cookbook/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong><em>size</em>[<strong>+m</strong><em>mag</em>]</dt><dd><p>Sets the size of the focal sphere to plot polarities in. <em>size</em> is in
+default units (unless <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> is appended).
+Optionally append <strong>+m</strong><em>mag</em> to specify its magnitude,
+then focal sphere size is <em>mag</em> / 5.0 * <em>size</em>.</p>
+</dd>
+</dl>
+<span class="target" id="r"></span><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</p>
+<blockquote>
+<div><p>Specify the region of interest. <strong>Note</strong>: If using modern mode and <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> is not provided, the region
+will be set based on previous plotting commands. If this is the first plotting command in the
+<a class="reference internal" href="../../cookbook/features.html#gmt-modern-mode-hierarchical-levels"><span class="std std-ref">modern mode levels</span></a> and <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> is not
+provided, the region will be automatically determined based on the data in <em>table</em>
+(equivalent to using <strong>-Ra</strong>). <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+<p>The region may be specified in one of several ways:</p>
+<ol class="arabic">
+<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>. This is the standard way to specify geographic regions
+when using map projections where meridians and parallels are rectilinear. The coordinates may be specified in
+decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format.</p></li>
+<li><p><strong>-R</strong><em>west</em>/<em>south</em>/<em>east</em>/<em>north</em><strong>+r</strong>. This form is useful for map projections that are oblique,
+making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner
+and upper right corner geographic coordinates, followed by the modifier <strong>+r</strong>. This form guarantees a
+rectangular map even though lines of equal longitude and latitude are not straight lines.</p></li>
+<li><p><strong>-R</strong><strong>g</strong> or <strong>-R</strong><strong>d</strong>. These forms can be used to quickly specify the global domain (0/360 for <strong>-Rg</strong>
+and -180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).</p></li>
+<li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
+consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
+countries given by the codes. Simply append one or more comma-separated countries using either the two-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
+country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
+or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
+Finally, append any <a class="reference internal" href="../../coast.html#id1"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
+the collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
+national bounding box of France rounded to nearest integer degree, where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+R</strong> to adjust the region by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension], where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box is adjusted by at least 0.25 times the
+increment [default is no adjustment], where <em>inc</em> can be positive to expand the region or negative to shrink
+the region.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+u</strong><em>unit</em>] specifies a region in projected units (e.g., UTM meters)
+where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible with the chosen projection
+(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="../../cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
+actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
+<strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults to <em>halfwidth</em> if not given.
+This short-hand requires the <strong>+u</strong> modifier.</p></li>
+<li><p><strong>-R</strong><em>justify</em><em>lon0</em>/<em>lat0</em>/<em>nx</em>/<em>ny</em>, where <em>justify</em> is a 2-character combination of
+<strong>L</strong>|<strong>C</strong>|<strong>R</strong> (for left, center, or right) and <strong>T</strong>|<strong>M</strong>|<strong>B</strong> (for top, middle, or bottom)
+(e.g., <strong>BL</strong> for lower left). The two character code <em>justify</em> indicates which point on a rectangular region
+region the <em>lon0</em>/<em>lat0</em> coordinates refer to and the grid dimensions <em>nx</em> and <em>ny</em> are used with grid spacings
+given via <strong>-I</strong> to create the corresponding region. This method can be used when creating grids. For example,
+<strong>-RCM</strong><em>25</em>/<em>25</em>/<em>50</em>/<em>50</em> specifies a <em>50</em>x<em>50</em> grid centered on <em>25</em>,<em>25</em>.</p></li>
+<li><p><strong>-R</strong><em>gridfile</em>. This will copy the domain settings found for the grid in specified file. Note that depending
+on the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration
+(see <a class="reference internal" href="../../cookbook/options.html#grid-registration-the-r-option"><span class="std std-ref">Grid registration: The -r option</span></a>).</p></li>
+<li><p><strong>-Ra</strong>[<strong>uto</strong>] or <strong>-Re</strong>[<strong>xact</strong>]. Under modern mode, and for <em>plotting</em> modules only, you can automatically
+determine the region from the data used. You can either get the exact area using <strong>-Re</strong> [Default if no <strong>-R</strong>
+is given] or a slightly larger area sensibly rounded outwards to the next multiple of increments that depend on
+the data range using <strong>-Ra</strong>.</p></li>
+</ol>
+</div></blockquote>
+<dl class="simple" id="s">
+<dt><strong>-S</strong><em>&lt;symbol_type&gt;&lt;size&gt;</em></dt><dd><p>Selects <em>symbol_type</em> and symbol <em>size</em>. Size is in default units (unless
+<strong>c</strong>, <strong>i</strong>, or <strong>p</strong> is appended). Choose symbol type from
+st(<em>a</em>)r, (<em>c</em>)ircle, (<em>d</em>)iamond, (<em>h</em>)exagon, (<em>i</em>)nverted
+triangle, (<em>p</em>)oint, (<em>s</em>)quare, (<em>t</em>)riangle, (<em>x</em>)cross.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="../../gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong><em>fill</em> <a class="reference internal" href="../../cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Selects filling of symbols for stations in extensive quadrants. Set
+the color [Default is 250]. If <strong>-E</strong><em>fill</em> is the same as
+<strong>-F</strong><em>fill</em>, use <strong>-Qe</strong> to outline.</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong><em>fill</em> <a class="reference internal" href="../../cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Sets background color of the focal sphere. Default is no fill.</p>
+</dd>
+</dl>
+<dl class="simple" id="g">
+<dt><strong>-G</strong><em>fill</em> <a class="reference internal" href="../../cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Selects filling of symbols for stations in compressional quadrants.
+Set the color [Default is black].</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong></dt><dd><p>Does <strong>not</strong> skip symbols that fall outside map border [Default plots points inside border only].</p>
+</dd>
+</dl>
+<dl id="q">
+<dt><strong>-Q</strong><em>mode</em>[<em>args</em>]</dt><dd><p>Sets one or more attributes; repeatable. The various combinations are</p>
+<dl class="simple">
+<dt><strong>-Qe</strong>[pen]</dt><dd><p>Outline symbols in extensive quadrants using <em>pen</em> or the default pen (see <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>).</p>
+</dd>
+<dt><strong>-Qf</strong>[pen]</dt><dd><p>Outline the focal sphere using <em>pen</em> or the default pen (see <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>).</p>
+</dd>
+<dt><strong>-Qg</strong>[pen]</dt><dd><p>Outline symbols in compressional quadrants using <em>pen</em> or the default pen (see <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>).</p>
+</dd>
+<dt><strong>-Qh</strong></dt><dd><p>Use special format derived from HYPO71 output</p>
+</dd>
+<dt><strong>-Qs</strong><em>half-size</em>[<strong>+v</strong><em>v_size</em>[<em>vecspecs</em>]]</dt><dd><p>Plots S polarity azimuth. S polarity is in last column. Append <strong>+v</strong> to select a vector
+and append head size and any vector specifications.  If <strong>+v</strong> is given without arguments then we
+default to <strong>+v</strong>0.3i+e+gblack [Default is a line segment].
+Give <em>half-size</em> in default units (unless <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> is appended).
+See <a class="reference internal" href="#vector-attributes">Vector Attributes</a> for specifying additional attributes.</p>
+</dd>
+<dt><strong>-Qt</strong><em>pen</em></dt><dd><p>Set pen color to write station code. Default uses the default pen (see <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="t">
+<dt><strong>-T</strong>[<strong>+a</strong><em>angle</em>][<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Write station code near symbols.</p>
+<p>Optionally append <strong>+a</strong><em>angle</em> to change the text angle;
+<strong>+f</strong><em>font</em> to set the font of the text;
+append <strong>+j</strong><em>justify</em> to change the text location relative to the symbol;
+append <strong>+o</strong> to offset the text string by <em>dx</em>/<em>dy</em>.
+[Default to write station code above the symbol; the default font size is 12p]</p>
+</dd>
+</dl>
+<dl class="simple" id="u">
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="../../gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong>[<strong>-</strong>|<strong>+</strong>][<em>pen</em>][<em>attr</em>] <a class="reference internal" href="../../cookbook/features.html#wpen-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set current pen attributes [Default pen is default,black,solid].</p>
+</dd>
+</dl>
+<dl class="simple" id="x">
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="../../gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="y">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="../../gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-di</strong><em>nodata</em>[<strong>+c</strong><em>col</em>] <a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Replace input columns that equal <em>nodata</em> with NaN.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>“pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Only accept data records that match the given pattern.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-qi</strong>[~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>t</strong>|<strong>s</strong>] <a class="reference internal" href="../../gmt.html#qi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input rows or data limit(s) [default is all rows].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-t</strong><em>transp</em>[/<em>transp2</em>] <a class="reference internal" href="../../gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level(s) in percent.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="../../gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Swap 1st and 2nd column on input and/or output.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="vector-attributes">
+<h2>Vector Attributes<a class="headerlink" href="#vector-attributes" title="Permalink to this heading">¶</a></h2>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../../_images/GMT_vector.png"><img alt="../../_images/GMT_vector.png" src="../../_images/GMT_vector.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Vector attributes are controlled by options and modifiers.  We will refer to
+this figure and the labels therein when introducing the corresponding modifiers.
+All vectors require you to specify the <strong>b</strong>egin point <span class="math notranslate nohighlight">\(x_b, y_b\)</span> and
+the <strong>e</strong>nd point <span class="math notranslate nohighlight">\(x_e, y_e\)</span>, or alternatively the direction <em>d</em> and length
+<em>L</em>, while for map projections we usually specify the azimuth <span class="math notranslate nohighlight">\(\alpha\)</span> instead.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Several modifiers may be appended to vector-producing options for
+specifying the placement of vector heads, their shapes, and the
+justification of the vector. Below, left and right refers to the
+side of the vector line when viewed from the beginning point (<strong>b</strong>) to the
+end point (<strong>e</strong>) of a line segment:</p>
+<blockquote>
+<div><p><strong>+a</strong><em>angle</em> sets the angle <span class="math notranslate nohighlight">\(\theta\)</span> of the vector head apex [30].</p>
+<p><strong>+b</strong> places a vector head at the <strong>b</strong>eginning of the vector path [none].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
+<strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
+and <strong>I</strong> for plain open tail. <strong>Note</strong>: For geovectors only <strong>a</strong> and <strong>A</strong> are available.
+Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
+half-sides of this head [both sides].</p>
+<p><strong>+c</strong> selects the vector data quantity <em>magnitude</em> for use with CPT color look-up [Default
+requires a separate data column following the 2 or 3 coordinates]. Requires that data
+quantity scaling (with unit <strong>q</strong> via <strong>+v</strong> or <strong>+z</strong>) and a CPT have been selected.</p>
+<p><strong>+e</strong> places a vector head at the <strong>e</strong>nd of the vector path [none].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
+<strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
+and <strong>I</strong> for plain open tail. <strong>Note</strong>: For geovectors only <strong>a</strong> and <strong>A</strong> are available.
+Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
+half-sides of this head [both sides].</p>
+<p><strong>+g</strong>[<em>fill</em>] sets the vector head fill [Default fill is used, which may be no fill].
+Turn off vector head fill by not appending a <em>fill</em>.  Some modules have a separate
+<strong>-G</strong><em>fill</em> option and if used will select the fill as well.</p>
+<p><strong>+h</strong><em>shape</em> sets the shape of the vector head (range -2/2). Default
+is controlled by <a class="reference internal" href="../../gmt.conf.html#term-MAP_VECTOR_SHAPE"><span class="xref std std-term">MAP_VECTOR_SHAPE</span></a> [default is <a class="reference internal" href="../../theme-settings.html"><span class="doc">theme dependent</span></a>].
+A zero value produces no notch. Positive values moves the notch toward the head apex while a
+negative value moves it away. The example above uses <strong>+h</strong>0.5.</p>
+<p><strong>+m</strong> places a vector head at the mid-point the vector path [none].
+Append <strong>f</strong> or <strong>r</strong> for forward or reverse direction of the vector [forward].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
+<strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
+and <strong>I</strong> for plain open tail. Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
+half-sides of this head [both sides].  Cannot be combined with <strong>+b</strong> or <strong>+e</strong>.</p>
+<p><strong>+n</strong>[<em>norm</em>[/<em>min</em>]] scales down vector attributes (pen thickness, head size)
+with decreasing length, where vector plot lengths shorter than <em>norm</em> will have
+their attributes scaled by length/<em>norm</em> [other arrow attributes remain
+invariant to length]. Optionally, append /<em>min</em> for the minimum shrink factor (in the
+0-1 range) that we will shrink to [0.25]. For Cartesian vectors, please specify a <em>norm</em>
+in plot units, while for geovectors specify a <em>norm</em> in map units (see <a class="reference internal" href="../../cookbook/features.html#distance-units"><span class="std std-ref">Distance units</span></a>) [k].
+Alternatively, append unit <strong>q</strong> to indicate we should use user quantity units in making the
+decision; this means the user also must select user quantity input via <strong>+v</strong> or <strong>+z</strong>.</p>
+<p>If no argument is given then <strong>+n</strong> ensures vector heads are not shrunk and always
+plotted regardless of vector length [Vector heads are not plotted if exceeding vector length].</p>
+<p><strong>+o</strong>[<em>plon</em>/<em>plat</em>] specifies the oblique pole for the great or
+small circles.  Only needed for great circles if <strong>+q</strong> is given. If no
+pole is appended then we default to the north pole. Input arguments are then
+<em>lon lat arclength</em> with the latter in map distance units; see <strong>+q</strong> of angular limits instead.</p>
+<p><strong>+p</strong>[<em>pen</em>] sets the vector pen attributes. If no <em>pen</em> is appended
+then the head outline is not drawn. [Default pen is half the width of stem pen, and
+head outline is drawn]. Above, we used <strong>+p</strong>2p,orange.  The vector stem attributes are
+controlled by <strong>-W</strong>.</p>
+<p><strong>+q</strong> means the input <em>direction</em>, <em>length</em> data instead represent the <em>start</em> and <em>stop</em>
+opening angles of the arc segment relative to the given point. See <strong>+o</strong> to specify
+a specific pole for the arc [north pole].</p>
+<p><strong>+t</strong>[<strong>b</strong>|<strong>e</strong>]<em>trim</em> will shift the beginning or end point (or both)
+along the vector segment by the given <em>trim</em>; append suitable unit (<strong>c</strong>, <strong>i</strong>, or <strong>p</strong>). If the modifiers
+<strong>b</strong>|<strong>e</strong> are not used then <em>trim</em> may be two values separated by a slash,
+which is used to specify different trims for the beginning and end.  Positive trims
+will shorted the vector while negative trims will lengthen it [no trim].</p>
+</div></blockquote>
+<p>In addition, all but circular vectors may take these modifiers:</p>
+<blockquote>
+<div><p><strong>+j</strong><em>just</em> determines how the input <em>x</em>,<em>y</em> point relates to the
+vector. Choose from <strong>b</strong>eginning [default], <strong>e</strong>nd, or <strong>c</strong>enter.</p>
+<p><strong>+s</strong> means the input <em>angle</em>, <em>length</em> are instead the <span class="math notranslate nohighlight">\(x_e, y_e\)</span>
+coordinates of the vector end point.</p>
+</div></blockquote>
+<p>Finally, Cartesian vectors and geovectors may take these modifiers (except in <a class="reference internal" href="../../grdvector.html"><span class="doc">grdvector</span></a>)
+which can be used to convert vector components to polar form or magnify user quantity magnitudes
+into plot lengths.</p>
+<blockquote>
+<div><p><strong>+v</strong>[<strong>i</strong>|<strong>l</strong>]<em>scale</em> expects a <em>scale</em> to magnify the polar length in the given
+unit.  If <strong>i</strong> is prepended we use the inverse scale while if <strong>l</strong> is prepended then it is
+taken as a fixed length to override input lengths. Append unit <strong>q</strong> if input magnitudes are
+given in user quantity units and we will scale them to current plot unit for Cartesian vectors
+(see <a class="reference internal" href="../../gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> for how to change the plot unit) or to km for geovectors.  In addition,
+if <strong>+c</strong> is selected then the vector magnitudes may be used for CPT color-lookup (and no extra data
+column is required by <strong>-C</strong>).</p>
+<p><strong>+z</strong>[<em>scale</em>] expects input <span class="math notranslate nohighlight">\(\Delta x, \Delta y\)</span> vector components and
+uses the <em>scale</em> [1] to convert to polar coordinates with length in given unit.
+Append unit <strong>q</strong> if input components are given in user quantity units and we will scale to current plot unit
+for Cartesian vectors (see <a class="reference internal" href="../../gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> for how to change the plot unit) or to
+km for geovectors.  In addition, if <strong>+c</strong> is selected then the vector magnitudes may be used
+for CPT color-lookup (and no extra data column is required by <strong>-C</strong>).</p>
+</div></blockquote>
+<p><strong>Note</strong>: Vectors were completely redesigned for GMT5 which separated the vector head (a polygon)
+from the vector stem (a line).  In GMT4, the entire vector was a polygon and it could only
+be a straight Cartesian vector. Yes, the old GMT4 vector shape remains accessible if
+you specify a vector (<strong>-Sv</strong>|<strong>V</strong>) using the GMT4 syntax, explained here: <em>size</em>, if present, will
+be interpreted as <span class="math notranslate nohighlight">\(t_w/h_l/h_w\)</span> or <em>tailwidth/headlength/halfheadwidth</em> [Default is 0.075c/0.3c/0.25c (or
+0.03i/0.12i/0.1i)]. By default, arrow attributes remain invariant to the length of the
+arrow. To have the size of the vector scale down with decreasing size, append <strong>+n</strong><em>norm</em>,
+where vectors shorter than <em>norm</em> will have their attributes scaled by <em>length</em>/<em>norm</em>.
+To center the vector on the balance point, use <strong>-Svb</strong>; to align point with the vector head,
+use <strong>-Svh</strong>; to align point with the vector tail, use <strong>-Svt</strong> [Default]. To give the
+head point’s coordinates instead of direction and length, use <strong>-Svs</strong>. Upper case
+<strong>B</strong>, <strong>H</strong>, <strong>T</strong>, <strong>S</strong> will draw a double-headed vector [Default is single head].
+<strong>Note</strong>: If <span class="math notranslate nohighlight">\(h_l/h_w\)</span> are given as 0/0 then only the head-less vector stick will be plotted.</p>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../../_images/GMT_vector4.png"><img alt="../../_images/GMT_vector4.png" src="../../_images/GMT_vector4.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">A GMT 4 vector has no separate pen for the stem -- it is all part of a Cartesian polygon.
+You may optionally fill and draw its outline.  The modifiers listed above generally do
+not apply.  <strong>Note</strong>: While the <em>tailwidth</em> (<span class="math notranslate nohighlight">\(t_w\)</span>) and <em>headlength</em> (<span class="math notranslate nohighlight">\(h_l\)</span>)
+parameters are given as indicated, the <em>halfheadwidth</em> (<span class="math notranslate nohighlight">\(h_w\)</span>) is oddly given as the
+half-width in GMT 4 so we retain that convention here (but have updated the documentation;
+blue lines indicate these three parameters).</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p><strong>Note</strong>: Since many GMT plot examples are very short (i.e., one module call between the
+<strong>gmt begin</strong> and <strong>gmt end</strong> commands), we will often present them using the quick
+modern mode <a class="reference internal" href="../../cookbook/one-liner.html"><span class="doc">GMT Modern Mode One-line Commands</span></a> syntax, which simplifies such short scripts.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt polar -R239/240/34/35.2 -JM8c -N -Sc0.4 -D239.5/34.5 -M5 -pdf <span class="nb">test</span> <span class="s">&lt;&lt; END</span>
+<span class="s">#stat azim ih pol</span>
+<span class="s">0481 11 147 c</span>
+<span class="s">6185 247 120 d</span>
+<span class="s">0485 288 114 +</span>
+<span class="s">0490 223 112 -</span>
+<span class="s">0487 212 109 .</span>
+<span class="s">END</span>
+</pre></div>
+</div>
+<p>Use special format derived from HYPO71 output:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt polar -R239/240/34/35.2 -JM8c -N -Sc0.4 -D239:30E/34:30N -M5 -Qh -pdf <span class="nb">test</span> <span class="s">&lt;&lt;END</span>
+<span class="s">#Date Or. time stat azim ih</span>
+<span class="s">910223 1 22 0481 11 147 ipu0</span>
+<span class="s">910223 1 22 6185 247 120 ipd0</span>
+<span class="s">910223 1 22 0485 288 114 epu0</span>
+<span class="s">910223 1 22 0490 223 112 epd0</span>
+<span class="s">910223 1 22 0487 212 109 epu0</span>
+<span class="s">END</span>
+</pre></div>
+</div>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Aki, K., &amp; Richards, P. G. (1980). Quantitative seismology: theory and methods. San Francisco: W. H. Freeman.</p></li>
+<li><p>Dahlen, F. A., &amp; Tromp, J. (1998). Theoretical global seismology. Princeton, N.J: Princeton University Press.</p></li>
+<li><p>Frohlich, C. (1996). Cliff’s Nodes Concerning Plotting Nodal Lines for P, SH and SV. Seismological Research Letters, 67(1), 16–24. <a class="reference external" href="https://doi.org/10.1785/gssrl.67.1.16">https://doi.org/10.1785/gssrl.67.1.16</a></p></li>
+<li><p>Lay, T., &amp; Wallace, T. C. (1995). Modern global seismology. San Diego: Academic Press.</p></li>
+</ul>
+</section>
+<section id="author">
+<h2>Author<a class="headerlink" href="#author" title="Permalink to this heading">¶</a></h2>
+<p>Genevieve Patau, <a class="reference external" href="http://www.ipgp.fr/fr/sismo/sismologie">Laboratory of Seismogenesis</a>,
+Institut de Physique du Globe de Paris, Departement de Sismologie, Paris, France</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="meca.html"><span class="doc">meca</span></a>,
+<a class="reference internal" href="coupe.html"><span class="doc">coupe</span></a>,
+<a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="../../basemap.html"><span class="doc">basemap</span></a>, <a class="reference internal" href="../../plot.html"><span class="doc">plot</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="meca.html" class="btn btn-neutral float-left" title="meca" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sac.html" class="btn btn-neutral float-right" title="sac" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

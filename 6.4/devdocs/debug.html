@@ -1,0 +1,529 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Debugging for Developers &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GMT C API" href="api.html" />
+    <link rel="prev" title="reStructuredText Cheatsheet" href="rst-cheatsheet.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Debugging GMT</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#xcode-on-macos">Xcode on macOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debug-pygmt-in-xcode-on-macos">Debug PyGMT in Xcode on macOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debug-gmt-jl-in-xcode-on-macos">Debug GMT.jl in Xcode on macOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visual-studio-code-on-macos">Visual Studio Code on macOS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getting-started">Getting started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-gmt">Building GMT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debugging-gmt">Debugging GMT</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Debugging for Developers</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/devdocs/debug.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="debugging-for-developers">
+<span id="index-0"></span><h1>Debugging for Developers<a class="headerlink" href="#debugging-for-developers" title="Permalink to this heading">¶</a></h1>
+<p>GMT developers may need to run GMT in a debugger to figure out the problem reported by
+an issue.  Often there is a bit of detective work involved to find out where a module
+crashes and then step carefully through that section, examining variables etc., to learn
+why something fails.  This process depends on the particular debug tool one uses.  This page
+will explain the steps a developer must take to build gmt so it is suitable for your debug
+tool and how to use that tool.  <strong>Note</strong>: If the offending script is coming from PyGMT,
+GMT.jl, or GMT/MEX there are instructions below on how to connect your debugger to that
+process and have you land in the debugger when the script is run.</p>
+<section id="xcode-on-macos">
+<h2>Xcode on macOS<a class="headerlink" href="#xcode-on-macos" title="Permalink to this heading">¶</a></h2>
+<p>Developers on macOS are most likely to want to use Xcode for this purpose. Chances are they
+are already using the command-line tools from Xcode (gcc, linker) anyway.  To use the GUI
+part of Xcode you must have installed the full Xcode (you most likely did, but there are
+ways to <em>only</em> install the command-line tools, so make sure you have an Xcode icon under
+Applications).  Xcode may change as versions change; the images below is for Xcode 10-11.</p>
+<ol class="arabic">
+<li><p>You will need to make some changes to your <em>cmake/ConfigUserAdvanced.cmake</em> file. Scroll down to the
+section that says “# Extra debugging for developers:” and uncomment the ~6 lines that has
+the if-test on “Xcode”.  This will pass a few flags that are used when debugging via Xcode.
+Also uncomment the two “add_definitions” lines that contain the word “DEBUG” in it somewhere.</p></li>
+<li><p>You will need to build GMT again.  I recommend you do this in a separate build directory (I
+call mine <em>xbuild</em>, and while at it I use <em>rbuild</em> for “Release Builds” and <em>dbuild</em> for regular
+debug command line builds, and <em>build</em> for the final build for the releases).  If you are in
+the <em>xbuild</em> directory, these two commands will do the build:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cmake -DCMAKE_INSTALL_PREFIX<span class="o">=</span>gmt6 -DCMAKE_BUILD_TYPE<span class="o">=</span>Debug -G Xcode ..
+xcodebuild
+</pre></div>
+</div>
+</li>
+<li><p>After this step you can launch the Xcode application and then use the File-&gt;Open menu to
+open the project file <em>xbuild/GMT.xcodeproj</em>.  After it opens it may looks something like
+this (click on the figure to enlarge it):</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/xcode-1.png"><img alt="../_images/xcode-1.png" src="../_images/xcode-1.png" style="width: 100%;" /></a>
+</figure>
+</li>
+<li><p>Pull down the tab that says “&#64; ALL_BUILD” and select “gmt” about 35 lines down, then in the
+left sidebar open the folder called gmt-&gt;Source Files and select gmt.c. Now you may wish
+to drag the window to be a bit wider so the lines don’t wrap around so much.  After that step
+your screen may look more like this:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/xcode-2.png"><img alt="../_images/xcode-2.png" src="../_images/xcode-2.png" style="width: 100%;" /></a>
+</figure>
+</li>
+<li><p>Scroll down to the part around line 119 and click the line number to place a stop point; it
+will add a blue fat arrow at that line:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/xcode-3.png"><img alt="../_images/xcode-3.png" src="../_images/xcode-3.png" style="width: 100%;" /></a>
+</figure>
+<p>This is <em>usually</em> the first stop you want in Xcode.  The exception would be if you are debugging
+gmt.c itself or you need to examine the code that creates the session via a call to GMT_Create_Session
+earlier in the program.</p>
+</li>
+<li><p>Now we need to specify the particular command we wish to debug.  Let’s pretend that <a class="reference internal" href="../pstext.html"><span class="doc">pstext</span></a>
+crashes when we run the command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt pstext my_text.txt -R0/30/-10/20 -JM15c -Baf -F+f16p &gt; text.ps
+</pre></div>
+</div>
+<p>Copy that command minus the initial “gmt ” part.  Now pull down the menu item “Product-&gt;Scheme-&gt;Edit Scheme”,
+then make sure “Arguments” tab is highlighted in blue in the top table, then click the “+” symbol beneath the
+section that says “Arguments Passed on Launch” and paste in our command; it should result in this display:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/xcode-4.png"><img alt="../_images/xcode-4.png" src="../_images/xcode-4.png" style="width: 100%;" /></a>
+</figure>
+<p>Normally you do not need to set any “Environmental Variables”, but if you are debugging a module that
+calls an external program (e.g., <em>gs</em>, <em>gdal_translate</em>, etc.) then you may need to add the name PATH and
+place the path to that program under “Value”.  Likewise, if the module needs to find a particular environmental
+setting like $X2SYS_HOME, then you must set those here as well.</p>
+</li>
+<li><p>For problems involving memory access errors (SEGV, etc.) you may need to visit the “Diagnostics” tab and set
+as many of the Memory Management checks as you can.  For other types of errors you may need to play with
+the Runtime Sanitization settings, and so on. This tab looks something like this:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/xcode-4b.png"><img alt="../_images/xcode-4b.png" src="../_images/xcode-4b.png" style="width: 100%;" /></a>
+</figure>
+<p>We must often make sure these are set so that Xcode will actually show the error. Experience has taught us
+that many crashes reported on Windows or Linux do not necessarily crash on macOS but they will in Xcode <em>if</em>
+we engage these diagnostic settings. Finally, use the “Options” tab to change the current directory where
+the debug session is run and inputs and outputs are read and written.</p>
+</li>
+<li><p>Any data files your command will read must either be placed in the <em>xbuild/src/Debug</em> subdirectory or you must
+change the command you pasted above to use the full path instead.  In other words, when Xcode runs
+your command, your current directory becomes <em>xbuild/src/Debug</em>.</p></li>
+<li><p>Click close and hit the “Play” button next to the green circle in the top left corner.  It may do some
+building and indexing before it starts and then stops at your highlighted line, opening up a display console
+below the source code:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/xcode-5.png"><img alt="../_images/xcode-5.png" src="../_images/xcode-5.png" style="width: 100%;" /></a>
+</figure>
+<p>You will see the current line is highlighted light greenish and the execution is stopped.  Below the code is a new window that
+lists some of the variables in the current scope.  You can examine that window to see what the variables are set
+to, you can type “print variable” in the lldb command window on the right (e.g., “print argc”), or you can place
+the cursor over a variable and a pop-up box will display its value.  Below I placed the cursor on the variable
+“module” on line 119 and this is what it looks like (minus the cursor which is not screen-grabbed!).</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/xcode-6.png"><img alt="../_images/xcode-6.png" src="../_images/xcode-6.png" style="width: 100%;" /></a>
+</figure>
+</li>
+<li><p>The tool bar below the source code has a pause-play button (continue to next stop point), a step-over button (execute
+next step but do not go <em>into</em> a function, the step-into button (execute next step which may be going into a function)
+and the step-out button (finish running current function then step back out).  Step into the GMT_Call_Module function
+using the step-into button, then scroll down to around line 10094 and place another stop point there like I did.  Press
+the pause-play button and you are now about to call your actual C function that correspond to the module (here pstext):</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/xcode-7.png"><img alt="../_images/xcode-7.png" src="../_images/xcode-7.png" style="width: 100%;" /></a>
+</figure>
+</li>
+<li><p>Click the step-into button and find yourself at the first executable line of code in GMT_pstext, the underlying
+C function at the heart of the pstext module.  You can now step your way down the code, using step-over to avoid going
+into the details of GMT sub-functions (or step-into it if that is the problem), set stop points and push pause-play to
+advance to the next stop point, examine variables, and so on.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/xcode-8.png"><img alt="../_images/xcode-8.png" src="../_images/xcode-8.png" style="width: 100%;" /></a>
+</figure>
+</li>
+</ol>
+</section>
+<section id="debug-pygmt-in-xcode-on-macos">
+<h2>Debug PyGMT in Xcode on macOS<a class="headerlink" href="#debug-pygmt-in-xcode-on-macos" title="Permalink to this heading">¶</a></h2>
+<p><strong>Note</strong>: Tested with Xcode 12.0.  Install PyGMT following the official instructions at <a class="reference external" href="https://www.pygmt.org/dev/install">https://www.pygmt.org/dev/install</a>.
+If you already have the dev version then you may just need to run <cite>conda activate pygmt</cite> and <cite>cd</cite> into your pygmt dir and call git pull:</p>
+<ol class="arabic">
+<li><p>Add conda-forge channel and activate virtual environment (optional):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda config --prepend channels conda-forge
+**Note**: The next step is different from the PyGMT official instructions, because we want to use the GMT dev version
+conda create --name pygmt <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8 pip numpy pandas xarray netcdf4 packaging
+
+<span class="c1"># Activate the PyGMT environment</span>
+conda activate pygmt
+</pre></div>
+</div>
+</li>
+<li><p>Install PyGMT in editable/development mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> pygmt
+pip install --editable .
+</pre></div>
+</div>
+</li>
+<li><p>Compile GMT using Xcode (see <a class="reference internal" href="#xcode-on-macos">Xcode on macOS</a>), then let $GMT_LIBRARY_PATH point to the full path that contains the src/Debug
+directory created by xcodebuild so that PyGMT can find the GMT library, and set $GMT_SHAREDIR to point to the full path that
+contains the share directory.</p></li>
+<li><p>Open Xcode, select scheme “gmtlib”, navigate to gmt_api.c in the source listing, and set a stop point in the editor,
+say in <em>GMT_Call_Module</em> or <em>GMT_Create_Session</em> and Xcode will stop at the breakpoint when it is reached.</p></li>
+<li><p>Type python in the terminal to get a python console, attach the process id or name to Xcode (menu item Debug-&gt;Attach to Process by PID or Name),
+and run PyGMT codes in the Python console. Execution should
+stop at your stop point after the first GMT library call takes place from your python script. You are now in Xcode
+and can follow strategies outlined above (<a class="reference internal" href="#xcode-on-macos">Xcode on macOS</a>).</p></li>
+</ol>
+</section>
+<section id="debug-gmt-jl-in-xcode-on-macos">
+<h2>Debug GMT.jl in Xcode on macOS<a class="headerlink" href="#debug-gmt-jl-in-xcode-on-macos" title="Permalink to this heading">¶</a></h2>
+<p><strong>Note</strong>: Tested with Xcode 11.7. First install Julia from your distribution if you have not done so already (e.g., via brew or port).  Once that is
+done you can proceed to installing the master GMT.jl:</p>
+<ol class="arabic">
+<li><p>Compile GMT using Xcode (see <a class="reference internal" href="#xcode-on-macos">Xcode on macOS</a>), then let $GMT_LIBRARY point to the full path to the libgmt.* file in the src/Debug
+directory created by xcodebuild so that GMT.jl can find the GMT library.</p></li>
+<li><p>Type julia in a terminal to get a Julia console, and in that console, update to latest GMT.jl master version by typing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">]</span>
+add GMT#master
+</pre></div>
+</div>
+</li>
+<li><p>When done, end package install mode by hitting backspace.  Then, load and precompile GMT by typing “using GMT”.</p></li>
+<li><p>Open Xcode, select scheme “gmtlib”, navigate to gmt_api.c in the source listing, and set a stop point in the editor,
+say in <em>GMT_Call_Module</em> or <em>GMT_Create_Session</em> and Xcode will stop at the breakpoint when it is reached.</p></li>
+<li><p>Attach the Julia process id or name in Xcode (menu item Debug-&gt;Attach to Process by PID or Name), and run GMT.jl
+codes in the Julia console. Execution should
+stop at your stop point after the first GMT library call takes place from your Julia script. You are now in Xcode
+and can follow strategies outlined above (<a class="reference internal" href="#xcode-on-macos">Xcode on macOS</a>).</p></li>
+</ol>
+</section>
+<section id="visual-studio-code-on-macos">
+<h2>Visual Studio Code on macOS<a class="headerlink" href="#visual-studio-code-on-macos" title="Permalink to this heading">¶</a></h2>
+<p>Developers may want to use Visual Studio Code rather than Xcode because it is often faster to configure than Xcode and
+can be used on multiple platforms. For general information about Visual Studio Code, refer to the
+<a class="reference external" href="https://code.visualstudio.com/docs">VSCode documentation</a>.</p>
+<section id="prerequisites">
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Install the <a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md#build-and-runtime-dependencies">GMT build and runtime dependencies</a>.
+These instructions assume that you have the Ninja build system installed.</p></li>
+<li><p>Setup your <code class="docutils literal notranslate"><span class="pre">ConfigUser.cmake</span></code> and <code class="docutils literal notranslate"><span class="pre">ConfigUserAdvanced.cmake</span></code> following the instructions in <a class="reference internal" href="contributing.html#setting-up-your-environment"><span class="std std-ref">setting up your environment</span></a>.</p></li>
+<li><p>Install Visual Studio Code.</p></li>
+<li><p>Install the <code class="docutils literal notranslate"><span class="pre">C/C++</span></code> extension by Microsoft (Click on the extensions tab or View/Extensions). Additional
+extensions that you may find helpful are <code class="docutils literal notranslate"><span class="pre">CMake</span></code> by twxs, <code class="docutils literal notranslate"><span class="pre">CMake</span> <span class="pre">Tools</span></code> by Microsoft, and <code class="docutils literal notranslate"><span class="pre">Bash</span> <span class="pre">Debug</span></code> by rogalmic.</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">.vscode/</span></code> to your global .gitignore.</p></li>
+</ol>
+</section>
+<section id="getting-started">
+<h3>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p>Navigate to the top of your cloned GMT repository. If you are using the <a class="reference internal" href="contributing.html#using-build-and-test-aliases"><span class="std std-ref">developer aliases</span></a>,
+you can enter <code class="docutils literal notranslate"><span class="pre">gtop</span></code> in the terminal.</p></li>
+<li><p>Open the workspace in VSCode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>code .
+</pre></div>
+</div>
+</li>
+<li><p>You will need to check the repository path in the pop-up window and click ‘Yes, I trust the authors’ in order to debug
+GMT with VSCode.</p></li>
+<li><p>Press command+shift+P to open the VSCode command palette. Select ‘C/C++: Edit Configurations (JSON)’. This will
+create a new <code class="docutils literal notranslate"><span class="pre">.vscode</span></code> directory that contains all VSCode project settings and a <code class="docutils literal notranslate"><span class="pre">.vscode/c_cpp_properties.json</span></code>
+file. This new file should not be listed by <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">status</span></code> if you properly completed the prerequisite steps.
+If needed, you can edit the compiler path or add header files to the intellisense includePath. You may need to update
+<code class="docutils literal notranslate"><span class="pre">macFrameworkPath</span></code> when you update your operating system.</p></li>
+<li><p>Create a new file <code class="docutils literal notranslate"><span class="pre">.vscode/project.env</span></code> that will contain environment variables for your project. In VSCode, you can
+quickly create a new file by right-clicking on the <code class="docutils literal notranslate"><span class="pre">.vscode</span></code> folder in the file explorer and typing the file name.
+Add these contents to <code class="docutils literal notranslate"><span class="pre">project.env</span></code> and modify to fit your set-up (i.e., set <code class="docutils literal notranslate"><span class="pre">USER_NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">REPO_DIR</span></code>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GMT_SESSION_NAME</span><span class="o">=</span><span class="s2">&quot;vscodedebug&quot;</span>
+<span class="nv">USER_NAME</span><span class="o">=</span><span class="s2">&quot;&lt;your user name&gt;&quot;</span>
+<span class="nv">REPO_DIR</span><span class="o">=</span><span class="s2">&quot;&lt;path to the local GMT repository&gt;&quot;</span>
+<span class="nv">GMT_LIBRARY_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">REPO_DIR</span><span class="si">}</span><span class="s2">/vbuild/gmt6/lib&quot;</span>
+<span class="nv">GMT_SHARE_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">REPO_DIR</span><span class="si">}</span><span class="s2">/vbuild/gmt6/share&quot;</span>
+<span class="nv">GMT_DATA_SERVER</span><span class="o">=</span>https://oceania.generic-mapping-tools.org
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="building-gmt">
+<h3>Building GMT<a class="headerlink" href="#building-gmt" title="Permalink to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p>Create a new <code class="docutils literal notranslate"><span class="pre">.vscode/tasks.json</span></code> file. Add these contents to <code class="docutils literal notranslate"><span class="pre">.vscode/tasks.json</span></code>
+and modify to fit your set-up (e.g., update the <code class="docutils literal notranslate"><span class="pre">CMAKE_OSX_DEPLOYMENT_TARGET</span></code> flag for your OS):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span>
+    <span class="s2">&quot;version&quot;</span>: <span class="s2">&quot;2.0.0&quot;</span>,
+    <span class="s2">&quot;tasks&quot;</span>: <span class="o">[</span>
+        <span class="o">{</span>
+            <span class="s2">&quot;label&quot;</span>: <span class="s2">&quot;ninja build&quot;</span>,
+            <span class="s2">&quot;type&quot;</span>: <span class="s2">&quot;shell&quot;</span>,
+            <span class="s2">&quot;options&quot;</span>: <span class="o">{</span>
+                <span class="s2">&quot;cwd&quot;</span>: <span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">&quot;</span>,
+                <span class="s2">&quot;env&quot;</span>: <span class="o">{</span>
+                    <span class="s2">&quot;ADD_FLAGS&quot;</span>: <span class="s2">&quot;-DCMAKE_OSX_DEPLOYMENT_TARGET=12.1&quot;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>,
+            <span class="s2">&quot;command&quot;</span>: <span class="s2">&quot;rm -rf vbuild; mkdir vbuild; cd vbuild; cmake -DCMAKE_INSTALL_PREFIX=\&quot;</span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">/vbuild/gmt6\&quot; -DCMAKE_BUILD_TYPE=Debug </span><span class="si">${</span><span class="nv">ADD_FLAGS</span><span class="si">}</span><span class="s2"> -G \&quot;Ninja\&quot; ..; ninja; ninja install; mkdir debug; cp </span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">/.vscode/project.env debug/project.env&quot;</span>
+        <span class="o">}</span>,
+        <span class="o">{</span>
+            <span class="s2">&quot;label&quot;</span>: <span class="s2">&quot;ninja rebuild&quot;</span>,
+            <span class="s2">&quot;type&quot;</span>: <span class="s2">&quot;shell&quot;</span>,
+            <span class="s2">&quot;options&quot;</span>: <span class="o">{</span>
+                <span class="s2">&quot;cwd&quot;</span>: <span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="o">}</span>,
+            <span class="s2">&quot;command&quot;</span>: <span class="s2">&quot;cd vbuild; ninja; ninja install; mkdir debug; cp </span><span class="si">${</span><span class="nv">workspaceRoot</span><span class="si">}</span><span class="s2">/.vscode/project.env debug/project.env&quot;</span>
+        <span class="o">}</span>
+    <span class="o">]</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Press command+shift+p to open the command palette. Select <code class="docutils literal notranslate"><span class="pre">Tasks:</span> <span class="pre">Run</span> <span class="pre">Task</span></code>, then select <code class="docutils literal notranslate"><span class="pre">ninja</span> <span class="pre">build</span></code>, and finally
+select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">without</span> <span class="pre">scanning</span> <span class="pre">the</span> <span class="pre">task</span> <span class="pre">output</span></code>.</p></li>
+<li><p>If you make changes to the source code and did not delete the <code class="docutils literal notranslate"><span class="pre">vbuild</span></code> directory, you can update by pressing
+command+shift+p, selecting <code class="docutils literal notranslate"><span class="pre">Tasks:</span> <span class="pre">Run</span> <span class="pre">Task</span></code> and selecting <code class="docutils literal notranslate"><span class="pre">ninja</span> <span class="pre">rebuild</span></code>.</p></li>
+</ol>
+</section>
+<section id="debugging-gmt">
+<h3>Debugging GMT<a class="headerlink" href="#debugging-gmt" title="Permalink to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p>Create a new <code class="docutils literal notranslate"><span class="pre">.vscode/launch.json</span></code> file. Add these contents and modify to fit your needs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span>
+    <span class="s2">&quot;version&quot;</span>: <span class="s2">&quot;2.0.0&quot;</span>,
+    <span class="s2">&quot;configurations&quot;</span>: <span class="o">[</span>
+        <span class="o">{</span>
+            <span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;begin&quot;</span>,
+            <span class="s2">&quot;type&quot;</span>: <span class="s2">&quot;cppdbg&quot;</span>,
+            <span class="s2">&quot;request&quot;</span>: <span class="s2">&quot;launch&quot;</span>,
+            <span class="s2">&quot;program&quot;</span>: <span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/src/gmt&quot;</span>,
+            <span class="s2">&quot;args&quot;</span>: <span class="o">[</span><span class="s2">&quot;begin&quot;</span>,<span class="s2">&quot;test&quot;</span>,<span class="s2">&quot;png&quot;</span><span class="o">]</span>,
+            <span class="s2">&quot;stopAtEntry&quot;</span>: false,
+            <span class="s2">&quot;cwd&quot;</span>: <span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/&quot;</span>,
+            <span class="s2">&quot;environment&quot;</span>: <span class="o">[]</span>,
+            <span class="s2">&quot;envFile&quot;</span>: <span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/project.env&quot;</span>,
+            <span class="s2">&quot;externalConsole&quot;</span>: false,
+            <span class="s2">&quot;MIMode&quot;</span>: <span class="s2">&quot;lldb&quot;</span>
+        <span class="o">}</span>,
+        <span class="o">{</span>
+            <span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;basemap&quot;</span>,
+            <span class="s2">&quot;type&quot;</span>: <span class="s2">&quot;cppdbg&quot;</span>,
+            <span class="s2">&quot;request&quot;</span>: <span class="s2">&quot;launch&quot;</span>,
+            <span class="s2">&quot;program&quot;</span>: <span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/src/gmt&quot;</span>,
+            <span class="s2">&quot;args&quot;</span>: <span class="o">[</span><span class="s2">&quot;basemap&quot;</span>,<span class="s2">&quot;-R0/120/-90/-45&quot;</span>,<span class="s2">&quot;-Bfg&quot;</span>,<span class="s2">&quot;-JS0/-90/10c&quot;</span><span class="o">]</span>,
+            <span class="s2">&quot;stopAtEntry&quot;</span>: true,
+            <span class="s2">&quot;cwd&quot;</span>: <span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/&quot;</span>,
+            <span class="s2">&quot;environment&quot;</span>: <span class="o">[]</span>,
+            <span class="s2">&quot;envFile&quot;</span>: <span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/project.env&quot;</span>,
+            <span class="s2">&quot;externalConsole&quot;</span>: false,
+            <span class="s2">&quot;MIMode&quot;</span>: <span class="s2">&quot;lldb&quot;</span>
+        <span class="o">}</span>,
+        <span class="o">{</span>
+            <span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;end&quot;</span>,
+            <span class="s2">&quot;type&quot;</span>: <span class="s2">&quot;cppdbg&quot;</span>,
+            <span class="s2">&quot;request&quot;</span>: <span class="s2">&quot;launch&quot;</span>,
+            <span class="s2">&quot;program&quot;</span>: <span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/src/gmt&quot;</span>,
+            <span class="s2">&quot;args&quot;</span>: <span class="o">[</span><span class="s2">&quot;end&quot;</span>,<span class="s2">&quot;show&quot;</span><span class="o">]</span>,
+            <span class="s2">&quot;stopAtEntry&quot;</span>: false,
+            <span class="s2">&quot;cwd&quot;</span>: <span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/&quot;</span>,
+            <span class="s2">&quot;environment&quot;</span>: <span class="o">[]</span>,
+            <span class="s2">&quot;envFile&quot;</span>: <span class="s2">&quot;</span><span class="si">${</span><span class="nv">workspaceFolder</span><span class="si">}</span><span class="s2">/vbuild/debug/project.env&quot;</span>,
+            <span class="s2">&quot;externalConsole&quot;</span>: false,
+            <span class="s2">&quot;MIMode&quot;</span>: <span class="s2">&quot;lldb&quot;</span>
+        <span class="o">}</span>
+    <span class="o">]</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">src/gmt.c</span></code> and add a breakpoint at this line (usually ~L112) by clicking just left of the line number:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">status</span> <span class="o">=</span> GMT_Call_Module <span class="o">(</span>api_ctrl, module, argc-1-modulename_arg_n, argv+1+modulename_arg_n<span class="o">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Click on the debug panel and select <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">begin</span></code> in the dropdown menu.</p></li>
+<li><p>Click on the green arrow next to <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">begin</span></code>.</p></li>
+<li><p>You can then use the debug panel for standard debugging actions including continue, step over, step into, etc.</p></li>
+<li><p>You can use the variables panel to inspect options or hover the mouse over the variable in the file window for a
+quick view.</p></li>
+<li><p>Usually, you would just click continue on the debugger for the <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">begin</span></code> step. Then, you can switch the debugger
+to the actual command task that you want to debug (in this example <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">basemap</span></code>) and once again click the green arrow.</p></li>
+<li><p>To finalize the session and view the output, select the <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">end</span></code> step in the debugger and click the green arrow.</p></li>
+</ol>
+<p>To change the GMT module to debug, either create a new task based on the template provided or modify the <code class="docutils literal notranslate"><span class="pre">name</span></code>
+and <code class="docutils literal notranslate"><span class="pre">args</span></code> settings for the <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">basemap</span></code> task in <code class="docutils literal notranslate"><span class="pre">tasks.json</span></code>. The first argument should be the gmt module and the
+remaining arguments to the gmt module are provided as a comma separated list. Any files required by the command should
+be placed in <code class="docutils literal notranslate"><span class="pre">vbuild/debug</span></code>.</p>
+<p>You can skip debugging <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">begin</span></code>, <code class="docutils literal notranslate"><span class="pre">gmt</span> <span class="pre">end</span></code>, or other GMT commands by opening a terminal, adding
+<code class="docutils literal notranslate"><span class="pre">vbuild/gmt6/bin</span></code> to your path, exporting <code class="docutils literal notranslate"><span class="pre">GMT_SESSION_NAME=vscodedebug</span></code>, and then mixing VSCode
+debugging with CLI commands.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rst-cheatsheet.html" class="btn btn-neutral float-left" title="reStructuredText Cheatsheet" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api.html" class="btn btn-neutral float-right" title="GMT C API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>grdmix &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grdpaste" href="grdpaste.html" />
+    <link rel="prev" title="grdmath" href="grdmath.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">Modules</a> &raquo;</li>
+      <li>grdmix</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/grdmix.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="grdmix">
+<h1>grdmix<a class="headerlink" href="#grdmix" title="Permalink to this heading">¶</a></h1>
+<p>Blending and transforming grids and images</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt grdmix</strong>
+<em>raster1</em> [ <em>raster2</em> [ <em>raster3</em>]]
+<a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outfile</em>
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>alpha</em> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>intensity</em> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>][<em>divisor</em>] ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>weights</em> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>grdmix</strong> will perform various operations involving images and grids.
+We either use an <em>alpha</em> grid, image, or constant to add a new alpha
+(transparency) layer to the image given as <em>raster1</em>, or we will blend
+the two <em>raster1</em> and <em>raster2</em> (grids or images) using the <em>weights</em> for
+<em>raster1</em> and the complementary <em>1 - weights</em> for <em>raster2</em> and save to
+<em>outfile</em>. Alternatively, we will deconstruct an image into its component
+(red, green, blue or gray) grid layers or we construct an image from its
+normalized component grids.
+All operations support adjusting the final color image via an <em>intensity</em>
+grid, converting a color image to monochrome, or strip off the alpha layer.
+All <em>raster?</em>, <em>alpha</em>, <em>intensity</em> and <em>weights</em> files must have the same
+dimensions. The optional <em>alpha</em>, <em>intensity</em> and <em>weights</em> files may be
+replaced by constant values instead.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>raster?</em></dt><dd><p>If only one is given and <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> is not set then <em>raster1</em> must be an image.
+If two are given then <em>raster1</em> and <em>raster2</em> must both be either
+images or grids.  If three are given then they must all be grids and
+<a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> must be set.</p>
+</dd>
+</dl>
+<dl class="simple" id="g">
+<dt><strong>-G</strong><em>outfile</em></dt><dd><p>The name for the output raster.  For images, use one of these extensions:
+tif (GeoTIFF), gif, png, jpg, bmp, or ppm. For grids, see
+<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="a">
+<dt><strong>-A</strong><em>alpha</em></dt><dd><p>Get a constant alpha (0-1), or a grid (0-1) or image (0-255) with alphas.
+The final image will have a transparency layer add based on these values.</p>
+</dd>
+</dl>
+<dl class="simple" id="c">
+<dt><strong>-C</strong></dt><dd><p><strong>C</strong>onstruct an output image from one or three normalized input grids;
+these grids must all have values in the 0-1 range only (see <strong>-Ni</strong> if they don’t).
+Optionally, use <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> to add transparency and <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> to add intensity
+to the colors before writing the image. For three layers the input order must
+be red grid first, then the green grid, and finally the blue grid.</p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong></dt><dd><p><strong>D</strong>econstruct a single image into one or three output grids.
+An extra grid will be written if the image contains an alpha (transparency layer).
+All grids written will reflect the original image values in the 0-255 range exclusively;
+however, you can use <strong>-No</strong> to normalize the values to the 0-1 range.
+The output names uses the name template given by <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> which must contain the
+C-format string “%c”.  This code is replaced by the codes R, G, B and A for color
+images and g, A for gray-scale images.</p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-I</strong><em>intensity</em></dt><dd><p>A constant intensity or grid (-1 to +1 range) to modify final output image colors.</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong></dt><dd><p>Force conversion to monochrome image using the (television) YIQ
+transformation.</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong>[<strong>i</strong>|<strong>o</strong>][<em>divisor</em>]</dt><dd><p>Normalize all input grids from 0-255 to 0-1 and all output grids from 0-1 to 0-255.
+To only turn on normalization for input <em>or</em> output, use <strong>-Ni</strong> or <strong>-No</strong> instead.
+To divide by another value than 255, append an optional <em>divisor</em>.</p>
+</dd>
+</dl>
+<dl class="simple" id="q">
+<dt><strong>-Q</strong></dt><dd><p>Make the final image opaque by removing the alpha layer (if present).</p>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong><em>weights</em></dt><dd><p>A constant weight (0-1), or a grid (0-1) or image (0-255) with weights.
+When two input rasters are given, the weights are applied to <em>raster1</em> and
+(<em>1-weights</em>) are applied to <em>raster2</em>, then the products are summed.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify data types of input and/or output columns.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p>To blend the night and day views of the Earth using a weight image computed for
+a particular day/night terminus, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdmix @earth_day_06m @earth_night_06m -W@weight.png -Gnewmap.png
+</pre></div>
+</div>
+<p>Suppose map1.png and map2.png are overlapping maps of different quantities, but we wish
+to use the image visible.png to blend them into a single image: Where visible.png has
+values close to 255 we will see predominantly the map1.png contents while for values
+closer to zero we will mostly see map2.png - values in between these extremes will
+lead to a weighted average.  We try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdmix map1.png map2.png -Wvisible.png -Gnewmap.png -V
+</pre></div>
+</div>
+<p>To insert the values from the grid transparency.grd into the image gravity.tif as an alpha
+(transparency) layer, and write out a transparent PNG image, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdmix gravity.tif -Atransparency.grd -Gmap.png
+</pre></div>
+</div>
+<p>To break the color image layers.png into separate, normalized red, green, and blue grids (and possibly an alpha grid),
+we run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdmix layers.png -D -Glayer_%c.grd -No
+</pre></div>
+</div>
+<p>To recombine the three normalized grids red.grd, green.grd, and blue.grd into a TIFF file, but
+applying intensities from intens.grd and add transparency from transp.grd grids, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdmix red.grd green.grd and blue.grd -Glayer.tif -Atransp.grd -Iintens.grd
+</pre></div>
+</div>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="grdblend.html"><span class="doc">grdblend</span></a>,
+<a class="reference internal" href="grdclip.html"><span class="doc">grdclip</span></a>,
+<a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a>,
+<a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a>,
+<a class="reference internal" href="grdsample.html"><span class="doc">grdsample</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="grdmath.html" class="btn btn-neutral float-left" title="grdmath" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="grdpaste.html" class="btn btn-neutral float-right" title="grdpaste" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

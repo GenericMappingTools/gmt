@@ -1,0 +1,416 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>psimage &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="pslegend" href="pslegend.html" />
+    <link rel="prev" title="pshistogram" href="pshistogram.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules-classic.html">Modules (Classic Mode)</a> &raquo;</li>
+      <li>psimage</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/psimage.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="psimage">
+<h1>psimage<a class="headerlink" href="#psimage" title="Permalink to this heading">¶</a></h1>
+<p>Plot raster or EPS images</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt psimage</strong> <em>imagefile</em>
+[ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>refpoint</em> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>box</em> ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>[<em>color</em>][<strong>+b</strong>|<strong>f</strong>|<strong>t</strong>] ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> ]
+[ <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em> ]
+[ <a class="reference internal" href="#k"><span><strong>-K</strong></span></a></strong> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> ]
+[ <a class="reference internal" href="#o"><span><strong>-O</strong></span></a></strong> ]
+[ <a class="reference internal" href="#p"><span><strong>-P</strong></span></a></strong> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>] ]
+[ <a class="reference internal" href="#u"><span><strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
+[ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
+[ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>image</strong> reads an Encapsulated PostScript file or a raster image
+file and plots it on a map. The image can be scaled arbitrarily, and
+1-bit raster images can be (1) inverted, i.e., black
+pixels (on) becomes white (off) and vice versa, or
+(2) colorized, by assigning different foreground and
+background colors, and (3) made transparent where one of
+back- or foreground is painted only. As an option, the user may choose
+to convert colored raster images to grayscale using TV’s
+YIQ-transformation. For raster files, the user can select which color to
+be made transparent. The user may also choose to replicate the image
+which, when preceded by appropriate clip paths, may allow larger
+custom-designed fill patterns to be implemented (the <strong>-Gp</strong> mechanism
+offered in most GMT programs is limited to rasters smaller than 146
+by 146).</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>imagefile</em></dt><dd><p>This must be an Encapsulated PostScript (EPS) file or a raster
+image. An EPS file must contain an appropriate BoundingBox. A raster
+file can have a depth of 1, 8, 24, or 32 bits and is read via GDAL.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl id="d">
+<dt><strong>-D</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+r</strong><em>dpi</em><strong>+w</strong>[<strong>-</strong>]<em>width</em>[/<em>height</em>][<strong>+j</strong><em>justify</em>][<strong>+n</strong><em>nx</em>[/<em>ny</em>] ][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Sets reference point on the map for the image using one of four coordinate systems:</p>
+<ol class="arabic simple">
+<li><p>Append <strong>g</strong><em>lon</em>/<em>lat</em> for <a class="reference internal" href="cookbook/features.html#reference-points-g"><span class="std std-ref">map coordinates</span></a>. Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>j</strong><em>code</em> or <strong>J</strong><em>code</em> for setting the <em>refpoint</em> via a 2-char
+<a class="reference internal" href="cookbook/features.html#reference-points-j"><span class="std std-ref">justification code</span></a> that refers to the (invisible) projected map bounding box. Requires
+both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>n</strong><em>xn</em>/<em>yn</em> for <a class="reference internal" href="cookbook/features.html#reference-points-n"><span class="std std-ref">normalized bounding box coordinates</span></a> (0-1). Requires both
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>x</strong><em>x</em>/<em>y</em> for <a class="reference internal" href="cookbook/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or
+<strong>p</strong>point).</p></li>
+</ol>
+<p>By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
+can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em> (see <a class="reference internal" href="text.html"><span class="doc">text</span></a>).
+<strong>Note</strong>: If <strong>-Dj</strong> is used then <em>justify</em> defaults to the same as <em>refpoint</em>,
+if <strong>-DJ</strong> is used then <em>justify</em> defaults to the mirror opposite of <em>refpoint</em>.
+Specify image size in one of two ways:
+Use <strong>+r</strong><em>dpi</em> to set the dpi of the image in dots per inch, or use
+<strong>+w</strong>[<strong>-</strong>]<em>width</em>[/<em>height</em>] to
+set the width (and height) of the image in plot coordinates
+(inches, cm, etc.). If <em>height</em> is not given, the original aspect
+ratio of the image is maintained. If <em>width</em> is negative we use the
+absolute value and interpolate image to the device resolution using
+the PostScript image operator. If neither size nor <em>dpi</em> is set then we
+revert to the default dpi [<a class="reference internal" href="gmt.conf.html#term-GMT_GRAPHICS_DPU"><span class="xref std std-term">GMT_GRAPHICS_DPU</span></a>].  Optionally, use
+<strong>+n</strong><em>nx</em>[/<em>ny</em>] to replicate the image <em>nx</em> times horizontally and <em>ny</em> times
+vertically. If <em>ny</em> is omitted, it will be identical to <em>nx</em> [Default is 1/1].</p>
+</dd>
+</dl>
+<p id="f"><strong>-F</strong>[<strong>+c</strong><em>clearances</em>][<strong>+g</strong><em>fill</em>][<strong>+i</strong>[[<em>gap</em>/]<em>pen</em>]][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>[<em>radius</em>]][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]]]</p>
+<blockquote>
+<div><p>Without further options, draws a rectangular border around the image using <a class="reference internal" href="gmt.conf.html#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a>. The following
+modifiers can be appended to <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>, with additional explanation and examples provided in the <a class="reference internal" href="cookbook/features.html#background-panel"><span class="std std-ref">The background panel</span></a>
+cookbook section:</p>
+<ul class="simple">
+<li><p><strong>+c</strong><em>clearance</em> where <em>clearance</em> is either <em>gap</em>, <em>xgap</em>/<em>ygap</em>, or <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> and <em>gap</em> gives a uniform <a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">clearance</span></a>, <em>xgap</em>/<em>ygap</em> gives separate
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">clearances</span></a> in the x- and y- directions, and <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> gives
+individual <a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">clearances</span></a> between the map embellishment and the border for each side.</p></li>
+<li><p><strong>+g</strong><em>fill</em> to fill the box with a color specified by <a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> [default is no fill].</p></li>
+<li><p><strong>+i</strong>[[<em>gap</em>/]<em>pen</em>] to draw a secondary, inner border as well. Optionally, specify the
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">gap</span></a> between the inner and outer border and the <a class="reference internal" href="cookbook/features.html#wpen-attrib"><span class="std std-ref">pen</span></a> for the inner border
+[default is a uniform <em>gap</em> between borders of <strong>2p</strong> and the <a class="reference internal" href="gmt.conf.html#term-MAP_DEFAULT_PEN"><span class="xref std std-term">MAP_DEFAULT_PEN</span></a>].</p></li>
+<li><p><strong>+p</strong><em>pen</em> to specify different <a class="reference internal" href="cookbook/features.html#wpen-attrib"><span class="std std-ref">pen</span></a> attributes.</p></li>
+<li><p><strong>+r</strong>[<em>radius</em>] to draw rounded rectangular borders instead with a corner radius set by <em>radius</em> (append
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">units</span></a>) [defaults is <strong>6p</strong>].</p></li>
+<li><p><strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]] to draw an offset background shaded region. Here, <em>dx</em>/<em>dy</em> indicates the
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">shift</span></a> relative to the foreground frame [default is <strong>4p</strong>/<strong>-4p</strong>] and <em>shade</em> sets the
+<a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> style to use for shading [default is <strong>gray50</strong>].</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple" id="g">
+<dt><strong>-G</strong>[<em>color</em>][<strong>+b</strong>|<strong>f</strong>|<strong>t</strong>]</dt><dd><p>Change certain pixel values to another color or make them transparent.
+For 1-bit images you can specify an alternate <em>color</em> for the background (<strong>+b</strong>)
+or the foreground (<strong>+f</strong>) pixels, or give no color to make those pixels
+transparent.  Alternatively, for color images you can select a single <em>color</em>
+that should be made transparent instead  (<strong>+t</strong>).</p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-I</strong></dt><dd><p>Invert 1-bit image before plotting. This is what is done when you
+use <strong>-GP</strong> to invert patterns in other GMT plotting programs.  Ignored
+if used with color images.</p>
+</dd>
+</dl>
+<dl class="simple" id="j">
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. (Used only with <strong>-p</strong>)</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong></dt><dd><p>Convert color image to monochrome grayshades using the (television)
+YIQ-transformation.</p>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. (Used only with <strong>-p</strong>) <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<blockquote>
+<div><p>For perspective view <strong>-p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a>  </p>
+</div></blockquote>
+<dl class="simple" id="u">
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="x">
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="y">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select perspective view. (Requires <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> for proper functioning).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-t</strong><em>transp</em>[/<em>transp2</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level(s) in percent.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> and <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> options are for raster images only. They have
+no effect when placing Encapsulated <em>PostScript</em> files.</p>
+</section>
+<section id="classic-mode-arguments">
+<h2>Classic Mode Arguments<a class="headerlink" href="#classic-mode-arguments" title="Permalink to this heading">¶</a></h2>
+<p>These options are used to manipulate the building of layered GMT PostScript plots in classic mode.
+They are not available when using GMT modern mode.</p>
+<dl class="simple" id="k">
+<dt><strong>-K</strong> <a class="reference internal" href="gmt.html#k-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Do not finalize the PostScript plot.</p>
+</dd>
+</dl>
+<dl class="simple" id="o">
+<dt><strong>-O</strong> <a class="reference internal" href="gmt.html#o-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Append to existing PostScript plot.</p>
+</dd>
+</dl>
+<dl class="simple" id="p">
+<dt><strong>-P</strong> <a class="reference internal" href="gmt.html#p-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select “Portrait” plot orientation.</p>
+</dd>
+</dl>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p>To plot the remote image needle.jpg, scaling it be 7 cm wide (height is scaled
+accordingly), use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psimage @needle.jpg -Dx0/0+w7c &gt; image.ps
+</pre></div>
+</div>
+<p>To plot the same file but reversing the bands, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psimage @needle.jpg+b2,1,0 -Dx0/0+w7c &gt; image.ps
+</pre></div>
+</div>
+<p>To only plot its red band as gray shade, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psimage @needle.jpg+b0 -Dx0/0+w7c &gt; image.ps
+</pre></div>
+</div>
+<p>To include an Encapsulated PostScript file gallo.eps with its upper
+right corner 2 inch to the right and 1 inch up from the current
+location, and have its width scaled to 3 inches, while keeping the
+aspect ratio, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psimage @gallo.eps -Dx2i/1i+jTR+w3i &gt; image.ps
+</pre></div>
+</div>
+<p>To replicate the 1-bit remote raster image vader1.png, colorize it
+(dark gray background and yellow foreground), and setting each of 6 by 12 tiles
+to be 2.5 cm wide, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt psimage @vader1.png -Gdarkgray+b -Gyellow+f -Dx0/0+w2.5c+n6/12 -P &gt; image.ps
+</pre></div>
+</div>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>, <a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a>
+<a class="reference internal" href="pslegend.html"><span class="doc">pslegend</span></a>, <a class="reference internal" href="psscale.html"><span class="doc">psscale</span></a>
+<a class="reference internal" href="psxy.html"><span class="doc">psxy</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pshistogram.html" class="btn btn-neutral float-left" title="pshistogram" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pslegend.html" class="btn btn-neutral float-right" title="pslegend" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,410 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>grdproject &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grdsample" href="grdsample.html" />
+    <link rel="prev" title="grdpaste" href="grdpaste.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">Modules</a> &raquo;</li>
+      <li>grdproject</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/grdproject.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="grdproject">
+<h1>grdproject<a class="headerlink" href="#grdproject" title="Permalink to this heading">¶</a></h1>
+<p>Forward and inverse map transformation of grids</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt grdproject</strong> <em>ingrid</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<em>dx/dy</em>] ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>xinc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<strong>+e</strong>|<strong>n</strong>]] ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>dpi</em> ] [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>|<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>] ] [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> ] [ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><strong>c</strong>|<strong>i</strong>|<strong>p</strong> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-n</strong><a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-r</strong><a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">reg</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>grdproject</strong> will do one of two things depending whether <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> has
+been set. If set, it will transform a gridded data set from a
+rectangular coordinate system onto a geographical system by resampling
+the surface at the new nodes. If not set, it will project a geographical
+gridded data set onto a rectangular grid. To obtain the value at each
+new node, its location is inversely projected back onto the input grid
+after which a value is interpolated between the surrounding input grid
+values. By default bi-cubic interpolation is used. Aliasing is avoided
+by also forward projecting the input grid nodes. If two or more nodes
+are projected onto the same new node, their average will dominate in the
+calculation of the new node value. Interpolation and aliasing is
+controlled with the <strong>-n</strong> option. The new node spacing may be
+determined in one of several ways by specifying the grid spacing, number
+of nodes, or resolution. Nodes not constrained by input data are set to
+NaN.</p>
+<p>The <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> option can be used to select a map region larger or smaller
+than that implied by the extent of the grid file.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<p><em>ingrid</em>[=<em>ID</em>|?<em>varname</em>][<strong>+b</strong><em>band</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>][<strong>+s</strong><em>scale</em>]</p>
+<blockquote>
+<div><p>2-D gridded data set to be transformed. Optionally, append =<em>ID</em> for reading a specific file
+format [Default is =<em>nf</em>] or ?<em>varname</em> for a specific netCDF variable
+[Default is the first 2-D grid found by GMT]
+(<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
+supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+b</strong> - Select a <em>band</em> (for images only) [Default is 0].</p></li>
+<li><p><strong>+d</strong> - Divide data values by the given <em>divisor</em> [Default is 1].</p></li>
+<li><p><strong>+n</strong> - Replace data values matching <em>invalid</em> with NaN.</p></li>
+<li><p><strong>+o</strong> - Offset data values by the given <em>offset</em> [Default is 0].</p></li>
+<li><p><strong>+s</strong> - Scale data values by the given <em>scale</em> [Default is 1].</p></li>
+</ul>
+</div></blockquote>
+<p>Note: Any offset is added after any scaling.</p>
+</div></blockquote>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<blockquote>
+<div><p>Give the name of the output grid file. Optionally, append =<em>ID</em> for writing a specific file format
+(<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
+supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+d</strong> - Divide data values by given <em>divisor</em> [Default is 1].</p></li>
+<li><p><strong>+n</strong> - Replace data values matching <em>invalid</em> with a NaN.</p></li>
+<li><p><strong>+o</strong> - Offset data values by the given <em>offset</em>, or append <strong>a</strong> for
+automatic range offset to preserve precision for integer grids
+[Default is 0].</p></li>
+<li><p><strong>+s</strong> - Scale data values by the given <em>scale</em>, or append <strong>a</strong> for
+automatic scaling to preserve precision for integer grids [Default
+is 1].</p></li>
+</ul>
+</div></blockquote>
+<p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
+and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
+concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
+the <a class="reference internal" href="cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
+for more details.</p>
+</div></blockquote>
+<dl class="simple" id="j">
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<a class="reference internal" href="cookbook/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="c">
+<dt><strong>-C</strong>[<em>dx/dy</em>]</dt><dd><p>Let projected coordinates be relative to projection center [Default
+is relative to lower left corner]. Optionally, add offsets in the
+projected units to be added (or subtracted when <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> is set) to
+(from) the projected coordinates, such as false eastings and
+northings for particular projection zones [0/0].</p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong><em>xinc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p>Set the grid spacing for the new grid.  If neither <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> nor <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> are set then we
+select the same number of output nodes as there are input nodes.
+Optionally append a suffix modifier.
+<strong>Geographical (degrees) coordinates</strong>: Append
+<strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
+of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
+instead, the increment is assumed to be given in meter, foot, km, Mile,
+nautical mile or US survey foot, respectively, and will be converted to
+the equivalent degrees longitude at the middle latitude of the region
+(the conversion depends on <a class="reference internal" href="gmt.conf.html#term-PROJ_ELLIPSOID"><span class="xref std std-term">PROJ_ELLIPSOID</span></a>). If <em>y_inc</em> is given
+but set to 0 it will be reset equal to <em>x_inc</em>; otherwise it will be
+converted to degrees latitude. <strong>All coordinates</strong>: If <strong>+e</strong> is appended
+then the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
+adjusted to fit exactly the given increment [by default the increment
+may be adjusted slightly to fit the given domain]. Finally, instead of
+giving an increment you may specify the <em>number of nodes</em> desired by
+appending <strong>+n</strong> to the supplied integer argument; the increment is then
+recalculated from the number of nodes and the domain. The resulting
+increment value depends on whether you have selected a
+gridline-registered or pixel-registered grid; see <a class="reference internal" href="cookbook/file-formats.html#gmt-file-formats"><span class="std std-ref">GMT File Formats</span></a> for
+details. <strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used then the grid spacing (and registration) have
+already been initialized; use <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> (and <strong>-r</strong>) to override the values.</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong><em>dpi</em></dt><dd><p>Set the resolution for the new grid in dots per inch.</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>|<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>]</dt><dd><p>Force 1:1 scaling, i.e., output (or input, see <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>) data are in
+actual projected meters [<strong>e</strong>]. To specify other units, append
+<strong>f</strong> (foot), <strong>k</strong> (km), <strong>M</strong> (statute mile), <strong>n</strong> (nautical
+mile), <strong>u</strong> (US survey foot), <strong>i</strong> (inch), <strong>c</strong> (cm), or <strong>p</strong>
+(point). Without <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>, the output (or input, see <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>) are in
+the units specified by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> (but see <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>).</p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-I</strong></dt><dd><p>Do the Inverse transformation, from rectangular to geographical.</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-Mc</strong>|<strong>i</strong>|<strong>p</strong></dt><dd><p>Append <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> to indicate that cm, inch, or point
+should be the projected measure unit [Default is set by
+<a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> in <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>]. Cannot be used with <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. You may ask to project only a subset of the grid by specifying a smaller input <em>w/e/s/n</em> region
+[Default is the region given by the grid file]. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+c</strong>][<strong>+t</strong><em>threshold</em>] <a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select interpolation mode for grids.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-r</strong>[<strong>g</strong>|<strong>p</strong>] <a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set node registration [gridline].  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p>To transform a chunk of the geographical remote grid earth_relief_05m onto a pixel Mercator grid at 300 dpi
+given a scale of 0.25 inches per degree, run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdproject @earth_relief_05m -R20/50/12/25 -Jm0.25i -E300 -r -Getopo5_merc.nc -Mi
+</pre></div>
+</div>
+</div></blockquote>
+<p>To inversely transform the file topo_tm.nc back onto a geographical grid, use</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdproject topo_tm.nc -R-80/-70/20/40 -Jt-75/1:500000 -I -D5m -V -Gtopo.nc
+</pre></div>
+</div>
+</div></blockquote>
+<p>This assumes, of course, that the coordinates in topo_tm.nc were
+created with the same projection parameters.</p>
+<p>To inversely transform the file topo_utm.nc (which is in UTM meters)
+back to a geographical grid we specify a one-to-one mapping with meter
+as the measure unit:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdproject topo_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Gtopo.nc -V
+</pre></div>
+</div>
+</div></blockquote>
+<p>To inversely transform the file data.nc (which is in Mercator meters with Greenwich
+as the central longitude and a false easting of -4 and produced on the ellipse WGS-72)
+back to a geographical grid we specify a one-to-one mapping with meter
+as the measure unit:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdproject data.nc -Jm/1:1 -I -F -C-4/0 -Gdata_geo.nc -V --PROJ_ELLIPSOID<span class="o">=</span>WGS-72
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="restrictions">
+<h2>Restrictions<a class="headerlink" href="#restrictions" title="Permalink to this heading">¶</a></h2>
+<p>The boundaries of a projected (rectangular) data set will not
+necessarily give rectangular geographical boundaries (Mercator is one
+exception). In those cases some nodes may be unconstrained (set to NaN).
+To get a full grid back, your input grid may have to cover a larger area
+than you are interested in.</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>, <a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="grdpaste.html" class="btn btn-neutral float-left" title="grdpaste" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="grdsample.html" class="btn btn-neutral float-right" title="grdsample" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

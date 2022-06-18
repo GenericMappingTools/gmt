@@ -1,0 +1,35 @@
+.. _example_05:
+
+(5) A 3-D illuminated surface (in bw)
+-------------------------------------
+
+Instead of a mesh plot we may choose to show 3-D surfaces using
+artificial illumination. For this example we will use
+:doc:`grdmath </grdmath>` to make a grid file that
+contains the surface given by the function
+:math:`z(x, y) = \cos (2\pi r/8)\cdot e^{-r/10}`, where
+:math:`r^2 = (x^2 + y^2)`. The illumination is obtained by passing the
+grid file to :doc:`grdview </grdview>` and requesting that artificial
+shading be derived from the  horizontal gradients in the direction of
+the artificial light source (set by **-I**).
+The :doc:`makecpt </makecpt>` command creates a simple color scheme for a constant
+gray level of 128. Thus, variations in shade are entirely due to
+variations in gradients, or illuminations. We choose to illuminate from
+the SW and view the surface from SE:
+
+.. literalinclude:: /_verbatim/ex05.txt
+   :language: bash
+
+The variations in intensity could be made more dramatic by using
+:doc:`grdmath </grdmath>` to scale the intensity file
+before running :doc:`grdview </grdview>`. For very rough
+data sets one may improve the smoothness of the intensities by computing
+them first with :doc:`grdgradient </grdgradient>` and then pass them to
+:doc:`grdhisteq </grdhisteq>`. The shell-script above
+will result in a plot like the one in Figure.
+
+.. figure:: /_images/ex05.*
+   :width: 500 px
+   :align: center
+
+   3-D illuminated surface.

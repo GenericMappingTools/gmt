@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1. Proposed Long-Options Implementation &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2. Proposed Refactoring Implementation" href="refactoring.html" />
+    <link rel="prev" title="GMT Enhancement Proposals" href="devdocs.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="devdocs.html">GMT Enhancement Proposals</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">1. Proposed Long-Options Implementation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-the-problem">1.1. What is the problem?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#abstraction">1.2. Abstraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#implementation-details">1.3. Implementation Details</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#common-options">1.3.1. Common Options</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-options">1.3.2. Module Options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refactoring.html">2. Proposed Refactoring Implementation</a></li>
+</ul>
+</li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="devdocs.html">GMT Enhancement Proposals</a> &raquo;</li>
+      <li><span class="section-number">1. </span>Proposed Long-Options Implementation</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/devdocs/long_options.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="proposed-long-options-implementation">
+<span id="long-options"></span><h1><span class="section-number">1. </span>Proposed Long-Options Implementation<a class="headerlink" href="#proposed-long-options-implementation" title="Permalink to this heading">¶</a></h1>
+<section id="what-is-the-problem">
+<h2><span class="section-number">1.1. </span>What is the problem?<a class="headerlink" href="#what-is-the-problem" title="Permalink to this heading">¶</a></h2>
+<p>Since GMT was first initiated, the modules have used a terse UNIX-inspired command-line
+syntax:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt blockmean -R0/5/0/6 -I1 my_table.txt &gt; new_table.txt
+</pre></div>
+</div>
+<p>It is not immediately obvious to a new user what the two options means.  UNIX tools
+have the same problem, e.g., for sorting data into numerical order, one may use</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sort -g my_table.txt &gt; sorted_table.txt
+</pre></div>
+</div>
+<p>and nobody will know without reading the documentation for sort what <strong>-g</strong> means.  However, one
+can now use the equivalent command</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sort --sort<span class="o">=</span>general-numeric my_table.txt &gt; sorted_table.txt
+</pre></div>
+</div>
+<p>which is pretty self-explanatory.  In the case of GMT, similar long-options alternatives will be
+implemented.  For instance, the above <a class="reference internal" href="../blockmean.html"><span class="doc">blockmean</span></a> command can also be written</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt blockmean --region<span class="o">=</span><span class="m">0</span>/5/0/6 --increment<span class="o">=</span><span class="m">1</span> my_table.txt &gt; new_table.txt
+</pre></div>
+</div>
+<p>which now becomes much easier to parse (for humans). Unfortunately, GMT syntax is a bit
+more complicated for many options.  Due to the inexorable growth of new capabilities,
+many options have become more complex and may have optional <em>modifiers</em> appended to them.
+Consider the common option <strong>-i</strong> that is used to specify which input columns the modules should read.  Not only
+can it select <em>which</em> columns (e.g., <strong>-i</strong>3,2,7-9), it allows optional modifiers that may be
+repeated for each column (or column group) that handles basic data transformations.  For instance,
+let us imagine that the above example needs column 3 to be used as is, but column 2 needs
+to be converted by the log10 operator and columns 7-9 must be scaled by 10 and offset by -5.  In
+standard (short) GMT syntax we would write</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-i3,2+l,7-9+s10+o-6
+</pre></div>
+</div>
+<p>which only makes immediate sense to those who wrote the parser.  In contrast, for the
+long-format syntax it will instead be</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>--read-columns<span class="o">=</span><span class="m">3</span>,2+log10,7-9+scale<span class="o">=</span><span class="m">10</span>+offset<span class="o">=</span>-5
+</pre></div>
+</div>
+<p>which most users might be able to decipher.</p>
+</section>
+<section id="abstraction">
+<h2><span class="section-number">1.2. </span>Abstraction<a class="headerlink" href="#abstraction" title="Permalink to this heading">¶</a></h2>
+<p>So, there are several steps needed to implement this scheme across all GMT modules:</p>
+<ol class="arabic simple">
+<li><p>Build a set of long-option to short-option equivalences for the standard GMT
+<a class="reference internal" href="../std-opts.html"><span class="doc">Common Options</span></a>. This is only about 30 options.</p></li>
+<li><p>Build sets of long-option to short-option equivalences for all the unique
+module options spread across ~150 modules (which includes the supplements).</p></li>
+</ol>
+<p>Clearly, these translation tables will need to address not only the longer <em>names</em> for the options but
+also the longer names for <em>modifiers</em>.  We can now be more abstract and state that a general
+GMT short-format option actually follows a specific syntax:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>-option<span class="o">[</span>directive<span class="o">][</span>arg<span class="o">][</span>+modifier1<span class="o">[</span>arg1<span class="o">]][</span>+modifier2<span class="o">[</span>arg2<span class="o">]][</span>...<span class="o">]</span>
+</pre></div>
+</div>
+<p>where <em>option</em>, <em>directive</em>, and any <em>modifier</em> are single characters and there may be none, one,
+or more modifiers following the initial option and the
+optional <em>directive</em> (and optional <em>arg</em>).  As we saw in the case of <strong>-i</strong>, the sequence of “optional directive
+followed by optional modifiers” may in fact be repeated by separating these sequences with
+a comma.  The corresponding long-format syntax format is represented this way:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>--long-option<span class="o">[=[</span>directive:<span class="o">]</span>arg<span class="o">][</span>+modifier1<span class="o">[=</span>arg1<span class="o">]][</span>+modifier2<span class="o">[=</span>arg2<span class="o">]][</span>...<span class="o">]</span>
+</pre></div>
+</div>
+<p>where the key differences are</p>
+<ol class="arabic simple">
+<li><p>The <em>option</em> is a mnemonic word and not a single letter</p></li>
+<li><p>Optional directives are appended after an equal sign</p></li>
+<li><p>Optional argument are appended after an equal sign or after the directive colon.</p></li>
+<li><p>Optional <em>modifiers</em> use mnemonic words and not a single letter</p></li>
+<li><p>Optional modifier arguments are appended after another equal sign</p></li>
+</ol>
+</section>
+<section id="implementation-details">
+<h2><span class="section-number">1.3. </span>Implementation Details<a class="headerlink" href="#implementation-details" title="Permalink to this heading">¶</a></h2>
+<section id="common-options">
+<h3><span class="section-number">1.3.1. </span>Common Options<a class="headerlink" href="#common-options" title="Permalink to this heading">¶</a></h3>
+<p>The approach taken has been to create a master translation table that relates the short and long
+option syntax formats so that a function can be used to translate any general long-option
+argument to the equivalent short-option argument.  That way, we only need to call this
+function at the start of a module and do the replacement.  Then, the specific
+parsers we already have for common and module options will work as is.  This design simplifies
+the coding tremendously and only requires us to create the translation tables.
+The approach has already been implemented and tested for the ~30 GMT Common Options and
+developers can play with this by adding the compiler flag <strong>-DUSE_COMMON_LONG_OPTIONS</strong>
+when building GMT.
+The translations for the GMT common options are encapsulated in a single include file
+(gmt_common_longoptions.h) that populates a <em>gmt_common_kw</em> structure and looks like this:</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span>    <span class="cm">/* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers */</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;B&#39;</span><span class="p">,</span> <span class="s">&quot;frame&quot;</span><span class="p">,</span>         <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;b,g,i,n,o,s,t,w,x,y,z&quot;</span><span class="p">,</span>        <span class="s">&quot;box,fill,interior,noframe,pole,subtitle,pen,yzfill,xzfill,xyfill&quot;</span> <span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;B&#39;</span><span class="p">,</span> <span class="s">&quot;axis&quot;</span><span class="p">,</span>          <span class="s">&quot;x,y,z&quot;</span><span class="p">,</span>   <span class="s">&quot;x,y,z&quot;</span><span class="p">,</span>                                    <span class="s">&quot;a,f,l,L,p,s,S,u&quot;</span><span class="p">,</span>              <span class="s">&quot;angle,fancy,label,hlabel,prefix,alt_label,alt_hlabel,unit&quot;</span> <span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;J&#39;</span><span class="p">,</span> <span class="s">&quot;projection&quot;</span><span class="p">,</span>    <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;&quot;</span><span class="p">,</span>                             <span class="s">&quot;&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;R&#39;</span><span class="p">,</span> <span class="s">&quot;region&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;r,u&quot;</span><span class="p">,</span>                          <span class="s">&quot;rectangular,unit&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;U&#39;</span><span class="p">,</span> <span class="s">&quot;timestamp&quot;</span><span class="p">,</span>     <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;c,j,o&quot;</span><span class="p">,</span>                        <span class="s">&quot;command,justify,offset&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;V&#39;</span><span class="p">,</span> <span class="s">&quot;verbosity&quot;</span><span class="p">,</span>     <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;&quot;</span><span class="p">,</span>                             <span class="s">&quot;&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;X&#39;</span><span class="p">,</span> <span class="s">&quot;xshift&quot;</span><span class="p">,</span>        <span class="s">&quot;a,c,f,r&quot;</span><span class="p">,</span> <span class="s">&quot;absolute,center,fixed,relative&quot;</span><span class="p">,</span>           <span class="s">&quot;&quot;</span><span class="p">,</span>                             <span class="s">&quot;&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;Y&#39;</span><span class="p">,</span> <span class="s">&quot;yshift&quot;</span><span class="p">,</span>        <span class="s">&quot;a,c,f,r&quot;</span><span class="p">,</span> <span class="s">&quot;absolute,center,fixed,relative&quot;</span><span class="p">,</span>           <span class="s">&quot;&quot;</span><span class="p">,</span>                             <span class="s">&quot;&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;a&#39;</span><span class="p">,</span> <span class="s">&quot;aspatial&quot;</span><span class="p">,</span>      <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;&quot;</span><span class="p">,</span>                             <span class="s">&quot;&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;b&#39;</span><span class="p">,</span> <span class="s">&quot;binary&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;b,l&quot;</span><span class="p">,</span>                          <span class="s">&quot;big_endian,little_endian&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;c&#39;</span><span class="p">,</span> <span class="s">&quot;panel&quot;</span><span class="p">,</span>         <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;&quot;</span><span class="p">,</span>                             <span class="s">&quot;&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;d&#39;</span><span class="p">,</span> <span class="s">&quot;nodata&quot;</span><span class="p">,</span>        <span class="s">&quot;i,o&quot;</span><span class="p">,</span>     <span class="s">&quot;in,out&quot;</span><span class="p">,</span>                                   <span class="s">&quot;&quot;</span><span class="p">,</span>                             <span class="s">&quot;&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;e&#39;</span><span class="p">,</span> <span class="s">&quot;find&quot;</span><span class="p">,</span>          <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;f&quot;</span><span class="p">,</span>                            <span class="s">&quot;file&quot;</span><span class="p">},</span>
+    <span class="p">{</span> <span class="sc">&#39;,&#39;</span><span class="p">,</span> <span class="sc">&#39;f&#39;</span><span class="p">,</span> <span class="s">&quot;coltypes&quot;</span><span class="p">,</span>      <span class="s">&quot;i,o&quot;</span><span class="p">,</span>     <span class="s">&quot;in,out&quot;</span><span class="p">,</span>                                   <span class="s">&quot;&quot;</span><span class="p">,</span>                             <span class="s">&quot;&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;g&#39;</span><span class="p">,</span> <span class="s">&quot;gap&quot;</span><span class="p">,</span>           <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;n,p&quot;</span><span class="p">,</span>                          <span class="s">&quot;negative,positive&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;h&#39;</span><span class="p">,</span> <span class="s">&quot;header&quot;</span><span class="p">,</span>        <span class="s">&quot;i,o&quot;</span><span class="p">,</span>     <span class="s">&quot;in,out&quot;</span><span class="p">,</span>                                   <span class="s">&quot;c,d,r,t&quot;</span><span class="p">,</span>                      <span class="s">&quot;columns,delete,remark,title&quot;</span><span class="p">},</span>
+    <span class="p">{</span> <span class="sc">&#39;,&#39;</span><span class="p">,</span> <span class="sc">&#39;i&#39;</span><span class="p">,</span> <span class="s">&quot;incols&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;l,o,s&quot;</span><span class="p">,</span>                        <span class="s">&quot;log10,offset,scale&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;j&#39;</span><span class="p">,</span> <span class="s">&quot;distance&quot;</span><span class="p">,</span>     <span class="s">&quot;e,f,g&quot;</span><span class="p">,</span>   <span class="s">&quot;ellipsoidal,flatearth,spherical&quot;</span><span class="p">,</span>           <span class="s">&quot;&quot;</span><span class="p">,</span>                             <span class="s">&quot;&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;l&#39;</span><span class="p">,</span> <span class="s">&quot;legend&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;D,G,H,L,N,S,V,f,g,j,o,p,s,w&quot;</span><span class="p">,</span>  <span class="s">&quot;hline,gap,header,linetext,ncols,size,vline,font,fill,justify,offset,pen,scale,width&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;n&#39;</span><span class="p">,</span> <span class="s">&quot;interpolation&quot;</span><span class="p">,</span> <span class="s">&quot;b,c,l,n&quot;</span><span class="p">,</span> <span class="s">&quot;bspline,bicubic,linear,nearneighbor&quot;</span><span class="p">,</span>      <span class="s">&quot;a,b,c,t&quot;</span><span class="p">,</span>                      <span class="s">&quot;anti_alias,bc,clip,threshold&quot;</span><span class="p">},</span>
+    <span class="p">{</span> <span class="sc">&#39;,&#39;</span><span class="p">,</span> <span class="sc">&#39;o&#39;</span><span class="p">,</span> <span class="s">&quot;outcols&quot;</span><span class="p">,</span>       <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;&quot;</span><span class="p">,</span>                             <span class="s">&quot;&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;p&#39;</span><span class="p">,</span> <span class="s">&quot;perspective&quot;</span><span class="p">,</span>   <span class="s">&quot;x,y,z&quot;</span><span class="p">,</span>   <span class="s">&quot;x,y,z&quot;</span><span class="p">,</span>                                    <span class="s">&quot;v,w&quot;</span><span class="p">,</span>                          <span class="s">&quot;view,world&quot;</span><span class="p">},</span>
+    <span class="p">{</span> <span class="sc">&#39;,&#39;</span><span class="p">,</span> <span class="sc">&#39;q&#39;</span><span class="p">,</span> <span class="s">&quot;inrows&quot;</span><span class="p">,</span>        <span class="s">&quot;~&quot;</span><span class="p">,</span>       <span class="s">&quot;invert&quot;</span><span class="p">,</span>                                   <span class="s">&quot;a,c,f,s&quot;</span><span class="p">,</span>                      <span class="s">&quot;byset,column,byfile,bysegment&quot;</span><span class="p">},</span>    <span class="cm">/* Actually -qi */</span>
+    <span class="p">{</span> <span class="sc">&#39;,&#39;</span><span class="p">,</span> <span class="sc">&#39;q&#39;</span><span class="p">,</span> <span class="s">&quot;outrows&quot;</span><span class="p">,</span>       <span class="s">&quot;~&quot;</span><span class="p">,</span>       <span class="s">&quot;invert&quot;</span><span class="p">,</span>                                   <span class="s">&quot;a,c,f,s&quot;</span><span class="p">,</span>                      <span class="s">&quot;byset,column,byfile,bysegment&quot;</span><span class="p">},</span>    <span class="cm">/* Actually -qo */</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;r&#39;</span><span class="p">,</span> <span class="s">&quot;registration&quot;</span><span class="p">,</span>  <span class="s">&quot;g,p&quot;</span><span class="p">,</span>     <span class="s">&quot;gridline,pixel&quot;</span><span class="p">,</span>                           <span class="s">&quot;&quot;</span><span class="p">,</span>                             <span class="s">&quot;&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;s&#39;</span><span class="p">,</span> <span class="s">&quot;skiprows&quot;</span><span class="p">,</span>      <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;a,r&quot;</span><span class="p">,</span>                          <span class="s">&quot;any,reverse&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;t&#39;</span><span class="p">,</span> <span class="s">&quot;transparency&quot;</span><span class="p">,</span>  <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;&quot;</span><span class="p">,</span>                             <span class="s">&quot;&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;w&#39;</span><span class="p">,</span> <span class="s">&quot;wrap&quot;</span><span class="p">,</span>  <span class="s">&quot;a,y,w,d,h,m,s,p&quot;</span><span class="p">,</span> <span class="s">&quot;annual,year,week,day,hour,min,sec,period&quot;</span><span class="p">,</span> <span class="s">&quot;c&quot;</span><span class="p">,</span>                            <span class="s">&quot;column&quot;</span><span class="p">},</span>
+    <span class="p">{</span>   <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;x&#39;</span><span class="p">,</span> <span class="s">&quot;cores&quot;</span><span class="p">,</span>         <span class="s">&quot;&quot;</span><span class="p">,</span>        <span class="s">&quot;&quot;</span><span class="p">,</span>                                         <span class="s">&quot;&quot;</span><span class="p">,</span>                             <span class="s">&quot;&quot;</span><span class="p">},</span>
+</pre></div>
+</div>
+<p>Here, <em>separator</em> is a comma if more than one repetition of the sequence is allowed, otherwise
+it is 0.</p>
+</section>
+<section id="module-options">
+<h3><span class="section-number">1.3.2. </span>Module Options<a class="headerlink" href="#module-options" title="Permalink to this heading">¶</a></h3>
+<p>For the ~150 individual modules it is probably not a good idea to introduce ~150 new
+include files as was done for the common options above.  Instead, the translation structure
+can be stored directly in the module C file.  For instance, the local <em>module_kw</em> structure
+embedded in the blockmean.c module C code looks like this:</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span>	<span class="cm">/* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers */</span>
+	<span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;A&#39;</span><span class="p">,</span> <span class="s">&quot;fields&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;C&#39;</span><span class="p">,</span> <span class="s">&quot;center&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;E&#39;</span><span class="p">,</span> <span class="s">&quot;extend&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;P,p&quot;</span><span class="p">,</span> <span class="s">&quot;prop-simple,prop-weighted&quot;</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;G&#39;</span><span class="p">,</span> <span class="s">&quot;gridfile&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span> <span class="p">},</span>
+	<span class="n">GMT_INCREMENT_KW</span><span class="p">,</span>	<span class="cm">/* Defined in gmt_constant.h since not a true GMT common option (but almost) */</span>
+	<span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;S&#39;</span><span class="p">,</span> <span class="s">&quot;select&quot;</span><span class="p">,</span> <span class="s">&quot;m,n,s,w&quot;</span><span class="p">,</span> <span class="s">&quot;mean,count,sum,weight&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;W&#39;</span><span class="p">,</span> <span class="s">&quot;weights&quot;</span><span class="p">,</span> <span class="s">&quot;i,o&quot;</span><span class="p">,</span> <span class="s">&quot;in,out&quot;</span><span class="p">,</span> <span class="s">&quot;s&quot;</span><span class="p">,</span> <span class="s">&quot;sigma&quot;</span> <span class="p">},</span>
+	<span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="sc">&#39;\0&#39;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">}</span>	<span class="cm">/* End of list marked with empty option and strings */</span>
+</pre></div>
+</div>
+<p>Given these translations we can execute long-format commands like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt blockmean --region<span class="o">=</span><span class="m">0</span>/20/10/56 --increment<span class="o">=</span><span class="m">1</span> --registration<span class="o">=</span>pixel --select<span class="o">=</span>sum data.txt &gt; sums.txt
+</pre></div>
+</div>
+<p>that will sum up all the values that fell inside each bin.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="devdocs.html" class="btn btn-neutral float-left" title="GMT Enhancement Proposals" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="refactoring.html" class="btn btn-neutral float-right" title="2. Proposed Refactoring Implementation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

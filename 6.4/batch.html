@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>batch &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="begin" href="begin.html" />
+    <link rel="prev" title="basemap" href="basemap.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">Modules</a> &raquo;</li>
+      <li>batch</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/batch.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="batch">
+<h1>batch<a class="headerlink" href="#batch" title="Permalink to this heading">¶</a></h1>
+<p>Automate batch job processing</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt batch</strong> <em>mainscript</em>
+<a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>prefix</em>
+<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>njobs</em>|<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+n</strong>]|<em>timefile</em>[<strong>+p</strong><em>width</em>][<strong>+s</strong><em>first</em>][<strong>+w</strong>[<em>str</em>]|<strong>W</strong>]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>includefile</em> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<em>job</em>] ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<strong>s</strong>] ]
+[ <a class="reference internal" href="#sb"><span><strong>-Sb</strong></span></a></strong><em>preflight</em> ]
+[ <a class="reference internal" href="#sf"><span><strong>-Sf</strong></span></a></strong><em>postflight</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<em>dir</em>] ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-x</strong>[[-]<a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">n</span></a>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p>The <strong>batch</strong> module can generate GMT processing jobs using a single master script
+that is repeated for all jobs, with some variation using specific job variables.  The
+module simplifies (and hides) most of the steps normally needed to set up a full-blown
+processing sequence.  Instead, the user can focus on composing the main processing script and let the
+parallel execution of jobs be automatic.  We can set up required data sets and do one-time calculations
+via an optional <em>preflight</em> script.  After completion we can optionally assemble the data output
+and make summary plots or similar in the <em>postflight</em> script.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>mainscript</em></dt><dd><p>Name of a stand-alone GMT modern mode processing script that makes the parameter-dependent calculations.  The
+script may access job variables, such as job number and others defined below, and may be
+written using the Bourne shell (.sh), the Bourne again shell (.bash), the csh (.csh)
+or DOS batch language (.bat).  The script language is inferred from the file extension
+and we build hidden batch scripts using the same language.  Parameters that can be accessed
+are discussed below.</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong><em>prefix</em></dt><dd><p>Determines the prefix of the batch file products and the final sub-directory with all job products.</p>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-T</strong><em>njobs</em>|<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+n</strong>]|<em>timefile</em>[<strong>+p</strong><em>width</em>][<strong>+s</strong><em>first</em>][<strong>+w</strong>[<em>str</em>]|<strong>W</strong>]</dt><dd><p>Either specify how many jobs to make, create a one-column data set width values from
+<em>min</em> to <em>max</em> every <em>inc</em> (append <strong>+n</strong> if <em>inc</em> is number of jobs instead), or supply a file with
+a set of parameters, one record (i.e., row) per job.  The values in the columns will be available to the
+<em>mainscript</em> as named variables <strong>BATCH_COL0</strong>, <strong>BATCH_COL1</strong>, etc., while any trailing text
+can be accessed via the variable <strong>BATCH_TEXT</strong>.  Append <strong>+w</strong> to split the trailing
+string into individual <em>words</em> that can be accessed via variables <strong>BATCH_WORD0</strong>, <strong>BATCH_WORD1</strong>,
+etc. By default we look for either tabs or spaces to separate words.  Append <em>str</em> to select other character(s)
+as the valid separator(s) instead. To just use TAB as the only valid separator use <strong>+W</strong> instead.
+The number of records equals the number of jobs. Note that the <em>preflight</em> script is allowed to
+create <em>timefile</em>, hence we check for its existence both before <em>and</em> after the <em>preflight</em> script has
+completed.  Normally, the job numbering starts at 0; you can change this by appending a different starting
+job number via <strong>+s</strong><em>first</em>.  <strong>Note</strong>: All jobs are still included; this modifier only affects
+the numbering of the given jobs.  Finally, <strong>+p</strong> can be used to set the tag <em>width</em> of the format
+used in naming jobs.  For instance, name_000010.grd has a tag width of 6.  By default, this is
+automatically set but if you are splitting large jobs across several computers (via <strong>+s</strong>) then you
+must use the same tag width for all names. <strong>Note</strong>: If just <em>njobs</em> is given then only <strong>BATCH_JOB</strong>
+is available as no data file is available.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="i">
+<dt><strong>-I</strong><em>includefile</em></dt><dd><p>Insert the contents of <em>includefile</em> into the batch_init.sh script that is accessed by all batch scripts.
+This mechanism is used to add information (typically constant variable assignments) that the <em>mainscript</em>
+and any optional <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> scripts can rely on.</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong>[<em>job</em>]</dt><dd><p>Instead of making and launching the full processing sequence, select a single master job [0] for testing.
+The master job will be run and its product(s) are placed in the top directory. While any <em>preflight</em> script
+will be run prior to the master job, the <em>postflight</em> script will not be executed (but it will be created).</p>
+</dd>
+</dl>
+<dl class="simple" id="q">
+<dt><strong>-Q</strong>[<strong>s</strong>]</dt><dd><p>Debugging: Leave all files and directories we create behind for inspection.  Alternatively, append <strong>s</strong> to
+only build the batch scripts but <em>not</em> perform any executions.  One exception involves the optional
+<em>preflight</em> script derived from <strong>-Sb</strong> which is always executed since it may produce data needed when
+building the main batch (or master) scripts.</p>
+</dd>
+</dl>
+<dl class="simple" id="sb">
+<dt><strong>-Sb</strong><em>preflight</em></dt><dd><p>The optional GMT modern mode <em>preflight</em> (written in the same scripting language as <em>mainscript</em>) can be
+used to download or copy data files or create files (such as <em>timefile</em>) that will be needed by <em>mainscript</em>.
+It is always run <strong>b</strong>efore the main sequence of batch scripts.</p>
+</dd>
+</dl>
+<dl class="simple" id="sf">
+<dt><strong>-Sf</strong><em>postflight</em></dt><dd><p>The optional <em>postflight</em> (written in the same scripting language as <em>mainscript</em>) can be
+used to perform final processing steps <strong>f</strong>ollowing the completion of all the individual jobs, such as
+assembling all the products into a single larger file.  The script may also make one or more illustrations
+using the products or stacked data after the main processing is completed. It does not have to be a GMT
+script.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong>[<em>dir</em>]</dt><dd><p>By default, all temporary files and job products are created in the subdirectory <em>prefix</em> set via <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>.
+You can override that selection by giving another <em>dir</em> as a relative or full directory path. If no
+path is given then we create a working directory in the system temp folder named <em>prefix</em>.  The main benefit
+of a working directory is to avoid endless syncing by agents like DropBox or TimeMachine, or to avoid
+problems related to low space in the main directory.  The product files will still be placed in the <em>prefix</em>
+directory.  The <em>dir</em> is removed unless <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> is specified for debugging.</p>
+</dd>
+</dl>
+<dl class="simple" id="z">
+<dt><strong>-Z</strong></dt><dd><p>Erase the <em>mainscript</em> and all input scripts given via <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> and <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> upon completion.  Not compatible
+with <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify data types of input and/or output columns.  </p>
+</dd>
+</dl>
+<dl class="simple" id="cores">
+<dt><strong>-x</strong>[[-]<em>n</em>]</dt><dd><p>Limit the number of cores to use when loading up the cores.
+By default we try to use all available cores.  Append <em>n</em> to only use <em>n</em> cores
+(if too large it will be truncated to the maximum cores available).  Finally,
+give a negative <em>n</em> to select (all - <em>n</em>) cores (or at least 1 if <em>n</em> equals or exceeds all).
+The parallel processing does not depend on OpenMP; new jobs are launched when the previous ones
+complete. <strong>Note</strong>: One core is reserved by <strong>batch</strong> so in effect <em>n-1</em> are used for the jobs.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h2>
+<p>Several parameters are automatically assigned and can be used when composing the <em>mainscript</em> and the
+optional <em>preflight</em> and <em>postflight</em> scripts. There are two sets of parameters: Those that are constants
+and those that change with the job number.  The constants are accessible by all the scripts:
+<strong>BATCH_PREFIX</strong>: The common prefix of the batch jobs (it is set with <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>). <strong>BATCH_NJOBS</strong>: The
+total number of jobs (given or inferred from <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>). Also, if <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> was used then any static parameters
+listed therein will be available to all the scripts as well. In addition, the <em>mainscript</em> also has access
+to parameters that vary with the job counter: <strong>BATCH_JOB</strong>: The current job number (an integer, e.g., 136),
+<strong>BATCH_ITEM</strong>: The formatted job number given the precision (a string, e.g., 000136), and <strong>BATCH_NAME</strong>:
+The name prefix unique to the current job (i.e., <em>prefix</em>_<strong>BATCH_ITEM</strong>), Furthermore, if a <em>timefile</em>
+was given then variables <strong>BATCH_COL0</strong>, <strong>BATCH_COL1</strong>, etc. are also set, yielding one variable per
+column in <em>timefile</em>.  If <em>timefile</em> has trailing text then that text can be accessed via the variable
+<strong>BATCH_TEXT</strong>, and if word-splitting was explicitly requested by <strong>+w</strong> modifier to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> then the trailing
+text is also split into individual word parameters <strong>BATCH_WORD0</strong>, <strong>BATCH_WORD1</strong>, etc. <strong>Note</strong>: Any
+product(s) made by the processing scripts should be named using <strong>BATCH_NAME</strong> as their name prefix as these
+will be automatically moved up to the starting directory upon completion.</p>
+</section>
+<section id="data-files">
+<h2>Data Files<a class="headerlink" href="#data-files" title="Permalink to this heading">¶</a></h2>
+<p>The batch scripts will be able to find any files present in the starting directory when <strong>batch</strong> was initiated,
+as well as any new files produced by <em>mainscript</em> or the optional scripts set via <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>.
+No path specification is needed to access these files.  Other files may
+require full paths unless their directories were already included in the <a class="reference internal" href="gmt.conf.html#term-DIR_DATA"><span class="xref std std-term">DIR_DATA</span></a> setting.</p>
+</section>
+<section id="custom-gmt-conf-files">
+<h2>Custom gmt.conf files<a class="headerlink" href="#custom-gmt-conf-files" title="Permalink to this heading">¶</a></h2>
+<p>If you have a gmt.conf file in the top directory with your main script prior to running <strong>batch</strong> then it will be
+used and shared across all the scripts created and executed <em>unless</em> your scripts use <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> when starting a new
+modern mode session. The preferred ways of changing GMT defaults is via <a class="reference internal" href="gmtset.html"><span class="doc">gmtset</span></a> calls in your input scripts.
+<strong>Note</strong>: Each script is run in isolation (modern) mode so trying to create a gmt.conf file via the <em>preflight</em>
+script to be used by other scripts is futile.</p>
+</section>
+<section id="constructing-the-main-script">
+<h2>Constructing the Main Script<a class="headerlink" href="#constructing-the-main-script" title="Permalink to this heading">¶</a></h2>
+<p>A batch sequence is not very interesting if nothing changes between calls.  For the process to change you need
+to have your <em>mainscript</em> either access a <em>different</em> data set as the job number changes, or you need to access
+only a varying <em>subset</em> of a data set, or the processing parameters need to change, or all of the above.  There
+are several strategies you can use to accomplish these effects:</p>
+<ol class="arabic simple">
+<li><p>Your <em>timefile</em> passed to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> may list names of specific data files and you simply have your <em>mainscript</em>
+use the relevant <strong>BATCH_TEXT</strong> or <strong>BATCH_WORD?</strong> to access the job-specific file name.</p></li>
+<li><p>You have a 3-D grid (or a stack of 2-D grids) and you want to interpolate along the axis perpendicular to the
+2-D slices (e.g., time, or it could be depth).  In this situation you will use the module <a class="reference internal" href="grdinterpolate.html"><span class="doc">grdinterpolate</span></a>
+to have the <em>mainscript</em> obtain a slice for the correct time (this may be an interpolation between two different
+times or depths) and process this temporary grid file.</p></li>
+<li><p>You may be creating data on the fly using <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a> or <a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a>, or perhaps processing data slightly
+differently per job (using parameters in the <em>timefile</em>) and computing these or the changes between jobs.</p></li>
+<li><p>Use your imagination to pass whatever arguments are needed via <em>timefile</em>.</p></li>
+</ol>
+</section>
+<section id="technical-details">
+<h2>Technical Details<a class="headerlink" href="#technical-details" title="Permalink to this heading">¶</a></h2>
+<p>The <strong>batch</strong> module creates several hidden script files that are used in the generation of the products
+(here we have left the script file extension off since it depends on the scripting language used): <em>batch_init</em>
+(initializes variables related to the overall batch job and includes the contents of the optional <em>includefile</em>),
+<em>batch_preflight</em> (optional since it derives from <strong>-Sb</strong> and computes or prepares needed data files), <em>batch_postflight</em>
+(optional since it derives from <strong>-Sf</strong> and processes files once all the batch job complete), <em>batch_job</em>
+(accepts a job counter argument and processes data for those parameters), and <em>batch_cleanup</em> (removes temporary
+files at the end of the process). For each job, there is a separate <em>batch_params_######</em> script that provides
+job-specific variables (e.g., job number and anything given via <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>).  The <em>preflight</em> and <em>postflight</em> scripts
+have access to the information in <em>batch_init</em>, while the <em>batch_job</em> script in addition has access to the job-specific
+parameter file.  Using the <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> option will just produce these scripts which you can then examine.
+<strong>Note</strong>: The <em>mainscript</em> is duplicated per job and many of these are run simultaneously on all available cores.
+Multi-treaded GMT modules will therefore be limited to a single core per call.  Because we do not know how
+many products each batch job makes, we ensure each job creates a unique file when it is finished.  Checking for
+these special (and empty) files is how <strong>batch</strong> learns that a particular job has completed and it is time to
+launch another one.</p>
+</section>
+<section id="shell-limitations">
+<h2>Shell Limitations<a class="headerlink" href="#shell-limitations" title="Permalink to this heading">¶</a></h2>
+<p>As we cannot control how a shell (e.g., bash or csh) implements piping between two processes (it often
+involves a sub-shell), we advice against using commands in your main script that involve piping the result
+from one GMT module into another (e.g., gmt blockmean ….. | gmt surface …).  Because <strong>batch</strong> is running
+many instances of your main script simultaneously, odd things can happen when sub-shells are involved.
+In our experience, piping in the context of batch script may corrupt the GMT history files, resulting in
+stray messages from some frames, such as region not set, etc.  Split such pipe constructs into two using
+a temporary file when writing batch main scripts. <strong>Note</strong>: Piping from a non-GMT module into a GMT module
+or vice versa is not a problem (e.g., echo ….. | gmt convert …).</p>
+</section>
+<section id="hints-for-batch-makers">
+<h2>Hints for Batch Makers<a class="headerlink" href="#hints-for-batch-makers" title="Permalink to this heading">¶</a></h2>
+<p>Composing batch jobs is relatively simple, but you have to think in terms of <em>variables</em>. Examine the examples
+we describe.  Then, start by making a single script (i.e., your <em>mainscript</em>) and identify which
+things should change with time (i.e., with the job number).  Create variables for these values. If they
+are among the listed parameters that <strong>batch</strong> creates automatically then use those names.  Unless you only
+require the job number you will need to make a file that you can pass via <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>.  This file should
+then have all the values you need, per job (i.e., per row), with values across all the columns you need.
+If you need to assign various <em>fixed</em> variables that do not change with time, then your <em>mainscript</em>
+will look shorter and cleaner if you offload those assignments to a separate <em>includefile</em> (via <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>).
+To test your <em>mainscript</em>, start by using options <strong>-Q -M</strong> to ensure that your master job results are correct.
+The <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> option simply runs one job of your batch sequence (you can select which one via the <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>
+arguments [0]).  Fix any issues with your use of variables and options until this works.  You can then try
+to remove <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>. We recommend you make a very short (i.e., via <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>) and small batch sequence so you don’t
+have to wait very long to see the result.  Once things are working you can beef up number of jobs.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p>We extract a subset of bathymetry for the Gulf of Guinea from the 2x2 arc minute resolution Earth DEM and compute
+Gaussian filtered high-pass grids using filter widths ranging from 10 to 200 km in steps of 10 km. When the grids
+are all completed we determine the standard deviation in the result.  To replicate our setup, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
+<span class="s">gmt begin</span>
+<span class="s">    gmt math -o0 -T10/200/10 T = widths.txt</span>
+<span class="s">    gmt grdcut -R-10/20/-10/20 @earth_relief_02m -Gdata.grd</span>
+<span class="s">gmt end</span>
+<span class="s">EOF</span>
+cat <span class="s">&lt;&lt; EOF &gt; main.sh</span>
+<span class="s">gmt begin</span>
+<span class="s">    gmt grdfilter data.grd -Fg\${BATCH_COL0}+h -G\${BATCH_NAME}.grd -D2</span>
+<span class="s">gmt end</span>
+<span class="s">EOF</span>
+cat <span class="s">&lt;&lt; EOF &gt; post.sh</span>
+<span class="s">gmt begin \${BATCH_PREFIX} pdf</span>
+<span class="s">    gmt grdmath \${BATCH_PREFIX}_*.grd -S STD = \${BATCH_PREFIX}_std.grd</span>
+<span class="s">    gmt grdimage \${BATCH_PREFIX}_std.grd -B -B+t&quot;STD of Gaussians residuals&quot; -Chot</span>
+<span class="s">    gmt coast -Wthin,white</span>
+<span class="s">gmt end show</span>
+<span class="s">EOF</span>
+gmt batch main.sh -Sbpre.sh -Sfpost.sh -Twidths.txt -Nfilter -V -Z
+</pre></div>
+</div>
+<p>Of course, the syntax of how variables are used vary according to the scripting language. Here, we actually
+build the pre.sh, main.sh, and post.sh scripts on the fly, hence we need to escape any variables (since they
+start with a dollar sign that we need to be written verbatim). At the end of the execution we find 20 grids
+(e.g., such as filter_07.grd), as well as the filter_std.grd file obtained by stacking all the individual
+scripts and computing a standard deviation. The information needed to do all of this is hidden from the user;
+the actual batch scripts that we execute are derived from the user-provided main.sh script and <strong>batch</strong>
+supplies the extra machinery. The <strong>batch</strong> module automatically manages the parallel execution loop over all
+jobs using all available cores and launches new jobs as old ones complete.</p>
+<p>As another example, we get a list of all European countries and make a simple coast plot of each of them,
+placing their name in the title and the 2-character ISO code in the upper left corner, then in postflight
+we combine all the individual PDFs into a single PDF file and delete the individual files:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
+<span class="s">gmt begin</span>
+<span class="s">    gmt coast -E=EU+l &gt; countries.txt</span>
+<span class="s">gmt end</span>
+<span class="s">EOF</span>
+cat <span class="s">&lt;&lt; EOF &gt; main.sh</span>
+<span class="s">gmt begin \${BATCH_NAME} pdf</span>
+<span class="s">    gmt coast -R\${BATCH_WORD0}+r2 -JQ10c -Glightgray -Slightblue -B -B+t&quot;\${BATCH_WORD1}&quot; -E\${BATCH_WORD0}+gred+p0.5p</span>
+<span class="s">    echo \${BATCH_WORD0} | gmt text -F+f16p+jTL+cTL -Gwhite -W1p</span>
+<span class="s">gmt end</span>
+<span class="s">EOF</span>
+cat <span class="s">&lt;&lt; EOF &gt; post.sh</span>
+<span class="s">gs -dQUIET -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=\${BATCH_PREFIX}.pdf -dBATCH \${BATCH_PREFIX}_*.pdf</span>
+<span class="s">rm -f \${BATCH_PREFIX}_*.pdf</span>
+<span class="s">EOF</span>
+gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w<span class="s2">&quot;\t&quot;</span> -Ncountries -V -W -Zs
+</pre></div>
+</div>
+<p>Here, the postflight script is not even a GMT script; it simply runs gs (Ghostscript) and deletes what we don’t want to keep.</p>
+</section>
+<section id="macos-issues">
+<h2>macOS Issues<a class="headerlink" href="#macos-issues" title="Permalink to this heading">¶</a></h2>
+<p><strong>Note</strong>: The limit on the number of concurrently open files is relatively small by default on macOS and when executing
+numerous jobs at the same time it is not unusual to get failures in <strong>batch</strong> jobs with the message “Too many open files”.
+We refer you to this helpful
+<a class="reference external" href="https://superuser.com/questions/433746/is-there-a-fix-for-the-too-many-open-files-in-system-error-on-os-x-10-7-1">article</a>
+for various solutions.</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>,
+<a class="reference internal" href="grdinterpolate.html"><span class="doc">grdinterpolate</span></a>,
+<a class="reference internal" href="grdmath.html"><span class="doc">grdmath</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="basemap.html" class="btn btn-neutral float-left" title="basemap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="begin.html" class="btn btn-neutral float-right" title="begin" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,360 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gmtgravmag3d &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="gravfft" href="gravfft.html" />
+    <link rel="prev" title="gmtflexure" href="gmtflexure.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../modules.html">Modules</a> &raquo;</li>
+      <li>gmtgravmag3d</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/potential/gmtgravmag3d.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="gmtgravmag3d">
+<h1>gmtgravmag3d<a class="headerlink" href="#gmtgravmag3d" title="Permalink to this heading">¶</a></h1>
+<p>Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt gravmag3d</strong> <em>xyz_file</em> <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>v</strong><em>vert_file</em> OR <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>r|s</strong><em>raw_file</em> OR <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><strong>+s</strong><em>body,params</em>
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>density</em> ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>thickness</em> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>xy_file</em> ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em> ]
+[ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong><em>f_dec</em>/<em>f_dip</em>/<em>m_int</em>/<em>m_dec</em>/<em>m_dip</em> ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>z_observation</em> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>radius</em> ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>level</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <strong>-fg</strong>]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>gravmag3d</strong> will compute the gravity or magnetic anomaly of a body described by a set of triangles.
+The output can either be along a given set of xy locations or on a grid. This method is not particularly
+fast but allows computing the anomaly of arbitrarily complex shapes.</p>
+</section>
+<section id="required-arguments-not-all">
+<h2>Required Arguments (not all)<a class="headerlink" href="#required-arguments-not-all" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="c">
+<dt><strong>-C</strong><em>density</em></dt><dd><p>Sets body density in SI. This option is mutually exclusive with <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="h">
+<dt><strong>-H</strong><em>f_dec</em>/<em>f_dip</em>/<em>m_int</em>/<em>m_dec</em>/<em>m_dip</em></dt><dd><p>Sets parameters for computing a magnetic anomaly. Use <em>f_dec</em>/<em>f_dip</em> to set the geomagnetic
+declination/inclination in degrees. <em>m_int</em>/<em>m_dec</em>/<em>m_dip</em> are the body magnetic intensity
+declination and inclination.</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong><em>xy_file</em></dt><dd><p>Provide locations where the anomaly will be computed. Note this
+option is mutually exclusive with <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>.</p>
+</dd>
+</dl>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<blockquote>
+<div><p>Give the name of the output grid file. Optionally, append =<em>ID</em> for writing a specific file format
+(<a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
+supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+d</strong> - Divide data values by given <em>divisor</em> [Default is 1].</p></li>
+<li><p><strong>+n</strong> - Replace data values matching <em>invalid</em> with a NaN.</p></li>
+<li><p><strong>+o</strong> - Offset data values by the given <em>offset</em>, or append <strong>a</strong> for
+automatic range offset to preserve precision for integer grids
+[Default is 0].</p></li>
+<li><p><strong>+s</strong> - Scale data values by the given <em>scale</em>, or append <strong>a</strong> for
+automatic scaling to preserve precision for integer grids [Default
+is 1].</p></li>
+</ul>
+</div></blockquote>
+<p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
+and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
+concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
+the <a class="reference internal" href="../../cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
+for more details.</p>
+</div></blockquote>
+<dl id="m">
+<dt><strong>-M+s</strong><em>body,params</em> (An alternative to <strong>-Tr</strong>/<strong>-Ts</strong>). Create geometric bodies and compute their grav/mag effect.</dt><dd><p>Select among one or more of the following bodies, where <em>x0</em> &amp; <em>y0</em> represent the horizontal coordinates
+of the body center [default to 0,0 positive up], <em>npts</em> is the number of points that a circle is discretized
+and <em>n_slices</em> apply when bodies are made by a pile of slices. For example Spheres and Ellipsoids are made of
+<em>2 x n_slices</em> and Bells have <em>n_slices</em> [Default 5]. It is even possible to select more than one body. For example
+<strong>-M+s</strong><em>prism,1/1/1/-5/-10/1</em><strong>+s</strong><em>sphere,1/-5</em> computes the effect of a prism and a sphere. Unfortunately there is
+no current way of selecting distinct densities or magnetic parameters for each body.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>bell,height/sx/sy/z0[/x0/y0/n_sig/npts/n_slices]</em> Gaussian of height <em>height</em> with characteristic STDs <em>sx</em> and <em>sy</em>. The base width (at depth <em>z0</em>) is controlled by the number of sigmas (<em>n_sig</em>) [Default = 2]</p></li>
+<li><p><em>cylinder,rad/height/z0[/x0/y0/npts/n_slices]</em> Cylinder of radius <em>rad</em> and height <em>height</em> and base at depth <em>z0</em></p></li>
+<li><p><em>cone,semi_x/semi_y/height/z0[/x0/y0/npts]</em> Cone of semi axes <em>semi_x/semi_y</em> height <em>height</em> and base at depth <em>z0</em></p></li>
+<li><p><em>ellipsoid,semi_x/semi_y/semi_z/z_center[/x0/y0/npts/n_slices]</em> Ellipsoid of semi axes <em>semi_x/semi_y/semi_z</em> and center depth <em>z_center</em></p></li>
+<li><p><em>prism,side_x/side_y/side_z/z0[/x0/y0]</em> Prism of sides <em>x/y/z</em> and base at depth <em>z0</em></p></li>
+<li><p><em>pyramid,side_x/side_y/height/z0[/x0/y0]</em> Pyramid of sides <em>x/y</em> height <em>height</em> and base at depth <em>z0</em></p></li>
+<li><p><em>sphere,rad/z_center[/x0/y0/npts/n_slices]</em> Sphere of radius <em>rad</em> and center at depth <em>z_center</em></p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-Tv</strong><em>vert_file</em> (must have when passing a <em>xyz_file</em>) OR <strong>-Tr|s</strong><em>raw_file</em></dt><dd><p>Gives names of a xyz and vertex (<strong>-Tv</strong><em>vert_file</em>) files defining a close surface.
+The file formats correspond to the output of the <a class="reference internal" href="../../triangulate.html"><span class="doc">triangulate</span></a> program.
+The <em>xyz</em> file can have 3, 4, 5, 6 or 8 columns. In first case (3 columns) the magnetization (or density) are
+assumed constant (controlled by <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> or <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>). Following cases are: 4 columns -&gt; 4rth col magnetization intensity;
+5 columns: mag, mag dip; 6 columns: mag, mag dec, mag dip; 8 columns: field dec, field dip, mag, mag dec, mag dip.
+When n columns &gt; 3 the third argument of the <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> option is ignored. A <em>raw</em> format (selected by the <strong>-Tr</strong> option)
+is a file with N rows (one per triangle) and 9 columns corresponding to the x,y,x coordinates of each of the three
+vertex of each triangle. Alternatively, the <strong>-Ts</strong> option indicates that the surface file is in the ASCII STL
+(Stereo Lithographic) format. These two type of files are used to provide a closed surface.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong>[<em>thickness</em>]</dt><dd><p>give layer thickness in m [Default = 0 m]. Use this option only when
+the triangles describe a non-closed surface and you want the anomaly
+of a constant thickness layer.</p>
+</dd>
+</dl>
+<dl class="simple" id="l">
+<dt><strong>-L</strong>[<em>z_observation</em>]</dt><dd><p>sets level of observation [Default = 0]. That is the height (z) at
+which anomalies are computed.</p>
+</dd>
+</dl>
+<dl class="simple" id="s">
+<dt><strong>-S</strong><em>radius</em></dt><dd><p>search radius in km. Triangle centroids that are further away than
+<em>radius</em> from current output point will not be taken into account.
+Use this option to speed up computation at expenses of a less
+accurate result.</p>
+</dd>
+</dl>
+<dl class="simple" id="z">
+<dt><strong>-Z</strong>[<em>level</em>]</dt><dd><p>level of reference plane [Default = 0]. Use this option when the
+triangles describe a non-closed surface and the volume is defined
+from each triangle and this reference level. An example will be the
+hater depth to compute a Bouguer anomaly.</p>
+</dd>
+<dt><strong>-fg</strong></dt><dd><p>Geographic grids (dimensions of longitude, latitude) will be converted to
+meters via a “Flat Earth” approximation using the current ellipsoid parameters.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="grid-distance-units">
+<h2>Grid Distance Units<a class="headerlink" href="#grid-distance-units" title="Permalink to this heading">¶</a></h2>
+<p>If the grid does not have meter as the horizontal unit, append <strong>+u</strong><em>unit</em> to the input file name to convert from the
+specified unit to meter.  If your grid is geographic, convert distances to meters by supplying <strong>-fg</strong> instead.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p>To compute the magnetic anomaly of a cube of unit sides located at 5 meters depth and centered at -10,1 in a domain
+<em>-R-15/15/-15/15</em> with a magnetization of 10 Am with a declination of 10 degrees, inclination of 60 in a magnetic field
+with -10 deg of declination and 40 deg of inclination, do:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt gmtgravmag3d -R-15/15/-15/15 -I1 -H10/60/10/-10/40 -M+sprism,1/1/1/-5/-10/1 -Gcube_mag_anom.grd
+</pre></div>
+</div>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="grdgravmag3d.html"><span class="doc">grdgravmag3d</span></a>,
+<a class="reference internal" href="talwani2d.html"><span class="doc">talwani2d</span></a>,
+<a class="reference internal" href="talwani3d.html"><span class="doc">talwani3d</span></a></p>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Permalink to this heading">¶</a></h2>
+<p>Okabe, M., 1979, Analytical expressions for gravity anomalies due to
+polyhedral bodies and translation into magnetic anomalies, <em>Geophysics</em>,
+44, 730-741.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gmtflexure.html" class="btn btn-neutral float-left" title="gmtflexure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gravfft.html" class="btn btn-neutral float-right" title="gravfft" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

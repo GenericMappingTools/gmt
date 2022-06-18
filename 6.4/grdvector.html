@@ -1,0 +1,595 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>grdvector &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="grdview" href="grdview.html" />
+    <link rel="prev" title="grdtrend" href="grdtrend.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">Modules</a> &raquo;</li>
+      <li>grdvector</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/grdvector.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="grdvector">
+<h1>grdvector<a class="headerlink" href="#grdvector" title="Permalink to this heading">¶</a></h1>
+<p>Plot vector field from two component grids</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt grdvector</strong> <em>compx.nc</em> <em>compy.nc</em> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> ]
+[ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em> ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>fill</em> ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<strong>x</strong>]<em>dx</em>[/<em>dy</em>] ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ] [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>parameters</em> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<strong>i</strong>|<strong>l</strong>]<em>scale</em>[<strong>+c</strong>[[<em>slon</em>/]<em>slat</em>]][<strong>+s</strong><em>refsize</em>] ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> ]
+[ <a class="reference internal" href="#u"><span><strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>pen</em> ]
+[ <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
+[ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-l</strong><a class="reference internal" href="gmt.html#l-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-t</strong><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>grdvector</strong> reads two 2-D grid files which represents the <em>x</em>- and
+<em>y</em>-components of a vector field and produces a vector field plot by
+drawing vectors with orientation and length according to the information
+in the files. Alternatively, polar coordinate <em>r</em>, <em>theta</em> grids may be given
+instead.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>compx.nc</em></dt><dd><p>Contains the x-components of the vector field. (See <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
+</dd>
+<dt><em>compy.nc</em></dt><dd><p>Contains the y-components of the vector field. (See <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
+</dd>
+</dl>
+<dl class="simple" id="j">
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<a class="reference internal" href="cookbook/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="a">
+<dt><strong>-A</strong></dt><dd><p>The grid files contain polar (r, theta) components instead of
+Cartesian (x, y) [Default is Cartesian components].</p>
+</dd>
+</dl>
+<dl class="simple" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="c">
+<dt><strong>-C</strong>[<em>cpt</em>|<em>master</em>[<strong>+h</strong>[<em>hinge</em>]][<strong>+i</strong><em>zinc</em>][<strong>+u</strong>|<strong>U</strong><em>unit</em>] |<em>color1,color2</em>[,<em>color3</em>,…]]</dt><dd><p>Name of a CPT file. Alternatively, supply the name of a GMT color master
+dynamic CPT [<em>turbo</em>, but we use <em>geo</em> for &#64;earth_relief and <em>srtm</em> for &#64;srtm_relief data] to
+automatically determine a continuous CPT from the grid’s <em>z</em>-range; you may round the range
+to the nearest multiple of <em>zinc</em> by adding <strong>+i</strong><em>zinc</em>. If given a GMT Master soft-hinge CPT
+(see <a class="reference internal" href="cookbook/cpts.html#of-colors-and-color-legends"><span class="std std-ref">Of Colors and Color Legends</span></a>) then you can enable the hinge at data value <em>hinge</em> [0] via <strong>+h</strong>,
+whereas for hard-hinge CPTs you can adjust the location of the hinge [0].
+For other CPTs, you may convert their <em>z</em>-values from meter to another distance unit (append <strong>+U</strong><em>unit</em>)
+or from another unit to meter (append <strong>+u</strong><em>unit</em>), with <em>unit</em> taken from
+<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>.
+Yet another option is to specify <strong>-C</strong><em>color1</em>,<em>color2</em>[,<em>color3</em>,…]
+to build a linear continuous CPT from those colors automatically.
+In this case <em>color</em><strong>n</strong> can be a r/g/b triplet, a color name,
+or an HTML hexadecimal color (e.g. #aabbcc).  If no argument is given to <strong>-C</strong>
+then under modern mode we select the current CPT.</p>
+</dd>
+</dl>
+<dl class="simple" id="g">
+<dt><strong>-G</strong><em>fill</em></dt><dd><p>Sets color or shade for vector interiors [Default is no fill].
+Alternatively, the fill may be set via <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-I</strong>[<strong>x</strong>]<em>dx</em>[/<em>dy</em>]</dt><dd><p>Only plot vectors at nodes every <em>x_inc</em>, <em>y_inc</em> apart (must be
+multiples of original grid spacing). Append <strong>m</strong> for arc minutes or
+<strong>s</strong> for arc seconds.  Alternatively, use <strong>-Ix</strong> to specify the
+multiples <em>multx</em>[/<em>multy</em>] directly [Default plots every node].</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong></dt><dd><p>Do NOT clip vectors at map boundaries [Default will clip].</p>
+</dd>
+</dl>
+<dl class="simple" id="q">
+<dt><strong>-Q</strong><em>parameters</em></dt><dd><p>Modify vector parameters. For vector heads, append vector head
+<em>size</em> [Default is 0, i.e., stick-plot]. See <a class="reference internal" href="#vector-attributes">Vector Attributes</a> for
+specifying additional attributes.</p>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. Specify a subset of the grid. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="s">
+<dt><strong>-S</strong>[<strong>i</strong>|<strong>l</strong>]<em>scale</em>[<strong>+c</strong>[[<em>slon</em>/]<em>slat</em>]][<strong>+s</strong><em>refsize</em>]</dt><dd><p>Sets scale for vector plot lengths in data units per plot distance measurement unit.
+Append <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> to indicate the desired plot distance measurement
+unit (cm, inch, or point); if no unit is given we use the default value that
+is controlled by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>.  Vector lengths converted via plot unit
+scaling will plot as straight Cartesian vectors and their lengths are not
+affected by map projections and coordinate locations.
+For geographic data you may alternatively give <em>scale</em> in data units per map distance
+unit (see <a class="reference internal" href="#units">Units</a>). Then, your vector magnitudes (in data units) are scaled to map
+<em>distances</em> in the given distance unit, and finally projected onto the Earth to give
+<em>plot</em> dimensions.  These are geo-vectors that follow great circle paths and their
+lengths may be affected by the map projection and their coordinates.  Finally, use
+<strong>-Si</strong> if it is simpler to give the reciprocal scale in plot length or distance units
+per data unit.  Alternatively, use <strong>-Sl</strong><em>length</em> to set a fixed plot length for all
+vectors. To report the minimum, maximum, and mean data and plot vector lengths
+of all vectors plotted, use <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>. If an automatic legend entry is desired via <strong>-l</strong>,
+or or two modifiers will be required:</p>
+<ul class="simple">
+<li><p><strong>+c</strong>[[<em>slon</em>/]<em>slat</em>] controls where on a geographic map a geovector’s <em>refsize</em>
+length applies. The modifier is neither needed nor available when plotting Cartesian vectors.
+The length is calculated for latitude <em>slat</em> (optionally supply longitude <em>slon</em> for
+oblique projections [default is central meridian]). If <strong>+c</strong> is given with no arguments
+then we select the reference length origin to be the middle of the map.</p></li>
+<li><p><strong>+s</strong><em>refsize</em> sets the desired reference vector magnitude in data units. E.g., for a
+reference length of 25 mm/yr for plate motions, use modifier <strong>+s</strong>25 with a corresponding
+option <strong>-l</strong>“Velocity (25 mm/yr)”.  If <em>refsize</em> is not specified we default to the <em>scale</em>
+given above.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-T</strong></dt><dd><p>Means the azimuths of Cartesian data sets should be adjusted according to the
+signs of the scales in the x- and y-directions [Leave alone].  This option can
+be used to convert vector azimuths in cases when a negative scale is used in
+one of both directions (e.g., positive down).</p>
+</dd>
+</dl>
+<dl class="simple" id="u">
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong><em>pen</em></dt><dd><p>Change the pen attributes used for vector outlines [Default: width =
+default, color = black, style = solid].</p>
+</dd>
+</dl>
+<dl class="simple" id="x">
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="y">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="z">
+<dt><strong>-Z</strong></dt><dd><p>The theta grid provided contains azimuths rather than directions (implies <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify data types of input and/or output columns.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-l</strong>[<em>label</em>][<strong>+D</strong><em>pen</em>][<strong>+G</strong><em>gap</em>][<strong>+H</strong><em>header</em>][<strong>+L</strong>[<em>code</em>/]<em>txt</em>][<strong>+N</strong><em>cols</em>][<strong>+S</strong><em>size</em>[/<em>height</em>]][<strong>+V</strong>[<em>pen</em>]][<strong>+f</strong><em>font</em>][<strong>+g</strong><em>fill</em>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>off</em>][<strong>+p</strong><em>pen</em>][<strong>+s</strong><em>scale</em>][<strong>+w</strong><em>width</em>] <a class="reference internal" href="gmt.html#l-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Add a legend entry for the symbol or line being plotted.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] <a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select perspective view.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-t</strong><em>transp</em>[/<em>transp2</em>] <a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set transparency level(s) in percent.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="units">
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this heading">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default unless stated otherwise], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
+(see <a class="reference internal" href="gmt.conf.html#term-PROJ_MEAN_RADIUS"><span class="xref std std-term">PROJ_MEAN_RADIUS</span></a>). You can use <strong>-jf</strong> to perform
+“Flat Earth” calculations (quicker but less accurate) or <strong>-je</strong> to perform
+exact geodesic calculations (slower but more accurate; see
+<a class="reference internal" href="gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a> for method used).</p>
+</section>
+<section id="vector-attributes">
+<h2>Vector Attributes<a class="headerlink" href="#vector-attributes" title="Permalink to this heading">¶</a></h2>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/GMT_vector.png"><img alt="_images/GMT_vector.png" src="_images/GMT_vector.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Vector attributes are controlled by options and modifiers.  We will refer to
+this figure and the labels therein when introducing the corresponding modifiers.
+All vectors require you to specify the <strong>b</strong>egin point <span class="math notranslate nohighlight">\(x_b, y_b\)</span> and
+the <strong>e</strong>nd point <span class="math notranslate nohighlight">\(x_e, y_e\)</span>, or alternatively the direction <em>d</em> and length
+<em>L</em>, while for map projections we usually specify the azimuth <span class="math notranslate nohighlight">\(\alpha\)</span> instead.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>Several modifiers may be appended to vector-producing options for
+specifying the placement of vector heads, their shapes, and the
+justification of the vector. Below, left and right refers to the
+side of the vector line when viewed from the beginning point (<strong>b</strong>) to the
+end point (<strong>e</strong>) of a line segment:</p>
+<blockquote>
+<div><p><strong>+a</strong><em>angle</em> sets the angle <span class="math notranslate nohighlight">\(\theta\)</span> of the vector head apex [30].</p>
+<p><strong>+b</strong> places a vector head at the <strong>b</strong>eginning of the vector path [none].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
+<strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
+and <strong>I</strong> for plain open tail. <strong>Note</strong>: For geovectors only <strong>a</strong> and <strong>A</strong> are available.
+Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
+half-sides of this head [both sides].</p>
+<p><strong>+c</strong> selects the vector data quantity <em>magnitude</em> for use with CPT color look-up [Default
+requires a separate data column following the 2 or 3 coordinates]. Requires that data
+quantity scaling (with unit <strong>q</strong> via <strong>+v</strong> or <strong>+z</strong>) and a CPT have been selected.</p>
+<p><strong>+e</strong> places a vector head at the <strong>e</strong>nd of the vector path [none].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
+<strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
+and <strong>I</strong> for plain open tail. <strong>Note</strong>: For geovectors only <strong>a</strong> and <strong>A</strong> are available.
+Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
+half-sides of this head [both sides].</p>
+<p><strong>+g</strong>[<em>fill</em>] sets the vector head fill [Default fill is used, which may be no fill].
+Turn off vector head fill by not appending a <em>fill</em>.  Some modules have a separate
+<strong>-G</strong><em>fill</em> option and if used will select the fill as well.</p>
+<p><strong>+h</strong><em>shape</em> sets the shape of the vector head (range -2/2). Default
+is controlled by <a class="reference internal" href="gmt.conf.html#term-MAP_VECTOR_SHAPE"><span class="xref std std-term">MAP_VECTOR_SHAPE</span></a> [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>].
+A zero value produces no notch. Positive values moves the notch toward the head apex while a
+negative value moves it away. The example above uses <strong>+h</strong>0.5.</p>
+<p><strong>+m</strong> places a vector head at the mid-point the vector path [none].
+Append <strong>f</strong> or <strong>r</strong> for forward or reverse direction of the vector [forward].
+Optionally, append <strong>t</strong> for a terminal line, <strong>c</strong> for a circle,
+<strong>a</strong> for arrow [Default], <strong>i</strong> for tail, <strong>A</strong> for plain open arrow,
+and <strong>I</strong> for plain open tail. Further append <strong>l</strong>|<strong>r</strong> to only draw the left or right
+half-sides of this head [both sides].  Cannot be combined with <strong>+b</strong> or <strong>+e</strong>.</p>
+<p><strong>+n</strong>[<em>norm</em>[/<em>min</em>]] scales down vector attributes (pen thickness, head size)
+with decreasing length, where vector plot lengths shorter than <em>norm</em> will have
+their attributes scaled by length/<em>norm</em> [other arrow attributes remain
+invariant to length]. Optionally, append /<em>min</em> for the minimum shrink factor (in the
+0-1 range) that we will shrink to [0.25]. For Cartesian vectors, please specify a <em>norm</em>
+in plot units, while for geovectors specify a <em>norm</em> in map units (see <a class="reference internal" href="cookbook/features.html#distance-units"><span class="std std-ref">Distance units</span></a>) [k].
+Alternatively, append unit <strong>q</strong> to indicate we should use user quantity units in making the
+decision; this means the user also must select user quantity input via <strong>+v</strong> or <strong>+z</strong>.</p>
+<p>If no argument is given then <strong>+n</strong> ensures vector heads are not shrunk and always
+plotted regardless of vector length [Vector heads are not plotted if exceeding vector length].</p>
+<p><strong>+o</strong>[<em>plon</em>/<em>plat</em>] specifies the oblique pole for the great or
+small circles.  Only needed for great circles if <strong>+q</strong> is given. If no
+pole is appended then we default to the north pole. Input arguments are then
+<em>lon lat arclength</em> with the latter in map distance units; see <strong>+q</strong> of angular limits instead.</p>
+<p><strong>+p</strong>[<em>pen</em>] sets the vector pen attributes. If no <em>pen</em> is appended
+then the head outline is not drawn. [Default pen is half the width of stem pen, and
+head outline is drawn]. Above, we used <strong>+p</strong>2p,orange.  The vector stem attributes are
+controlled by <strong>-W</strong>.</p>
+<p><strong>+q</strong> means the input <em>direction</em>, <em>length</em> data instead represent the <em>start</em> and <em>stop</em>
+opening angles of the arc segment relative to the given point. See <strong>+o</strong> to specify
+a specific pole for the arc [north pole].</p>
+<p><strong>+t</strong>[<strong>b</strong>|<strong>e</strong>]<em>trim</em> will shift the beginning or end point (or both)
+along the vector segment by the given <em>trim</em>; append suitable unit (<strong>c</strong>, <strong>i</strong>, or <strong>p</strong>). If the modifiers
+<strong>b</strong>|<strong>e</strong> are not used then <em>trim</em> may be two values separated by a slash,
+which is used to specify different trims for the beginning and end.  Positive trims
+will shorted the vector while negative trims will lengthen it [no trim].</p>
+</div></blockquote>
+<p>In addition, all but circular vectors may take these modifiers:</p>
+<blockquote>
+<div><p><strong>+j</strong><em>just</em> determines how the input <em>x</em>,<em>y</em> point relates to the
+vector. Choose from <strong>b</strong>eginning [default], <strong>e</strong>nd, or <strong>c</strong>enter.</p>
+<p><strong>+s</strong> means the input <em>angle</em>, <em>length</em> are instead the <span class="math notranslate nohighlight">\(x_e, y_e\)</span>
+coordinates of the vector end point.</p>
+</div></blockquote>
+<p>Finally, Cartesian vectors and geovectors may take these modifiers (except in <a class="reference internal" href="#"><span class="doc">grdvector</span></a>)
+which can be used to convert vector components to polar form or magnify user quantity magnitudes
+into plot lengths.</p>
+<blockquote>
+<div><p><strong>+v</strong>[<strong>i</strong>|<strong>l</strong>]<em>scale</em> expects a <em>scale</em> to magnify the polar length in the given
+unit.  If <strong>i</strong> is prepended we use the inverse scale while if <strong>l</strong> is prepended then it is
+taken as a fixed length to override input lengths. Append unit <strong>q</strong> if input magnitudes are
+given in user quantity units and we will scale them to current plot unit for Cartesian vectors
+(see <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> for how to change the plot unit) or to km for geovectors.  In addition,
+if <strong>+c</strong> is selected then the vector magnitudes may be used for CPT color-lookup (and no extra data
+column is required by <strong>-C</strong>).</p>
+<p><strong>+z</strong>[<em>scale</em>] expects input <span class="math notranslate nohighlight">\(\Delta x, \Delta y\)</span> vector components and
+uses the <em>scale</em> [1] to convert to polar coordinates with length in given unit.
+Append unit <strong>q</strong> if input components are given in user quantity units and we will scale to current plot unit
+for Cartesian vectors (see <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> for how to change the plot unit) or to
+km for geovectors.  In addition, if <strong>+c</strong> is selected then the vector magnitudes may be used
+for CPT color-lookup (and no extra data column is required by <strong>-C</strong>).</p>
+</div></blockquote>
+<p><strong>Note</strong>: Vectors were completely redesigned for GMT5 which separated the vector head (a polygon)
+from the vector stem (a line).  In GMT4, the entire vector was a polygon and it could only
+be a straight Cartesian vector. Yes, the old GMT4 vector shape remains accessible if
+you specify a vector (<strong>-Sv</strong>|<strong>V</strong>) using the GMT4 syntax, explained here: <em>size</em>, if present, will
+be interpreted as <span class="math notranslate nohighlight">\(t_w/h_l/h_w\)</span> or <em>tailwidth/headlength/halfheadwidth</em> [Default is 0.075c/0.3c/0.25c (or
+0.03i/0.12i/0.1i)]. By default, arrow attributes remain invariant to the length of the
+arrow. To have the size of the vector scale down with decreasing size, append <strong>+n</strong><em>norm</em>,
+where vectors shorter than <em>norm</em> will have their attributes scaled by <em>length</em>/<em>norm</em>.
+To center the vector on the balance point, use <strong>-Svb</strong>; to align point with the vector head,
+use <strong>-Svh</strong>; to align point with the vector tail, use <strong>-Svt</strong> [Default]. To give the
+head point’s coordinates instead of direction and length, use <strong>-Svs</strong>. Upper case
+<strong>B</strong>, <strong>H</strong>, <strong>T</strong>, <strong>S</strong> will draw a double-headed vector [Default is single head].
+<strong>Note</strong>: If <span class="math notranslate nohighlight">\(h_l/h_w\)</span> are given as 0/0 then only the head-less vector stick will be plotted.</p>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="_images/GMT_vector4.png"><img alt="_images/GMT_vector4.png" src="_images/GMT_vector4.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">A GMT 4 vector has no separate pen for the stem -- it is all part of a Cartesian polygon.
+You may optionally fill and draw its outline.  The modifiers listed above generally do
+not apply.  <strong>Note</strong>: While the <em>tailwidth</em> (<span class="math notranslate nohighlight">\(t_w\)</span>) and <em>headlength</em> (<span class="math notranslate nohighlight">\(h_l\)</span>)
+parameters are given as indicated, the <em>halfheadwidth</em> (<span class="math notranslate nohighlight">\(h_w\)</span>) is oddly given as the
+half-width in GMT 4 so we retain that convention here (but have updated the documentation;
+blue lines indicate these three parameters).</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p><strong>Note</strong>: Below are some examples of valid syntax for this module.
+The examples that use remote files (file names starting with <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>)
+can be cut and pasted into your terminal for testing.
+Other commands requiring input files are just dummy examples of the types
+of uses that are common but cannot be run verbatim as written.</p>
+<p><strong>Note</strong>: Since many GMT plot examples are very short (i.e., one module call between the
+<strong>gmt begin</strong> and <strong>gmt end</strong> commands), we will often present them using the quick
+modern mode <a class="reference internal" href="cookbook/one-liner.html"><span class="doc">GMT Modern Mode One-line Commands</span></a> syntax, which simplifies such short scripts.</p>
+<p>To draw the vector field given by the files r.nc and theta.nc on a
+linear plot with scale 5 cm per data unit, using vector rather than
+stick plot, scale vector magnitudes so that 10 units equal 1 inch, and
+center vectors on the node locations, run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdvector r.nc theta.nc -Jx5c -A -Q0.1i+e+jc -S10i -pdf gradient
+</pre></div>
+</div>
+</div></blockquote>
+<p>To plot a geographic data sets given the files comp_x.nc and comp_y.nc,
+using a length scale of 200 km per data unit and only plot every 3rd node in either direction, try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdvector comp_x.nc comp_y.nc -Ix3 -JH0/20c -Q0.1i+e+jc -S200k -pdf globe
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="vector-scaling-and-unit-effects">
+<h2>Vector scaling and unit effects<a class="headerlink" href="#vector-scaling-and-unit-effects" title="Permalink to this heading">¶</a></h2>
+<p>The scale given via <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> may require some consideration. As explained in <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>,
+it is specified in data-units per plot or distance unit. The plot or distance unit
+chosen will affect the type of vector you select. In all cases, we first compute
+the magnitude <em>r</em> of the user’s data vectors at each selected node from the <em>x</em> and <em>y</em>
+components (unless you are passing <em>r</em>, <em>theta</em> grids directly with <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>).  These
+magnitudes are given in whatever data units they come with.  Let us pretend our data
+grids record secular changes in the Earth’s magnetic horizontal vector field in units
+of nTesla/year, and that at a particular node the magnitude is 28 nTesla/year (in some
+direction). If you specify the scale using plot distance units (<strong>c</strong>|<strong>i</strong>|<strong>p</strong>)
+then you are selecting <em>Cartesian</em> vectors. Let us further pretend that you selected
+<strong>-S</strong>10c as your scale option.  That means you want 10 nTesla/year to equate to a
+1 cm plot length. Internally, we convert this scale to a plot scale of 1/10  = 0.1 cm
+per nTesla/year. Given our vector magnitude of 28 nTesla/year, we multiply it by our
+plot scale and finally obtain a vector length of 2.8 cm, which is then plotted.
+The user’s data units do not enter of course, i.e., they always cancel [Likewise, if
+we had used <strong>-S</strong>25i (25 nTesla/year per inch) the plot scale would be (1/25) = 0.04
+inch per nTesla/year and the vector plot lengths would be 28 * 0.04 inch = 1.12 inch].
+If we now wished to plot a 10 nTesla/year reference vector in the map legend we would
+plot one that is 10 times 0.1 cm = 1 cm long since the scale length is <em>constant</em>
+regardless of map projection and location. A 10 nTesla/year vector will be 1 cm anywhere.</p>
+<p>Let us contrast this behavior with what happens if we use a geographic distance unit
+instead, say <strong>-S</strong>0.5k (0.5 nTesla/year per km). Internally, this becomes a map scale of
+2 km per nTesta/year. Given our node magnitude of 28 nTesla/year, the vector length will
+be 28 x 2 km = 56 km. Again, the user’s data unit do not enter. Now, that vector length
+of 56 km must be projected onto the Earth, and because of map distortions, a 56 km vector
+will be mapped to a length on the plot that is a function of the user’s map projection,
+the map scale, and possibly the location on the map. E.g., a 56 km vector due east at
+Equator on a Mercator map would seem to equal ~0.5 degree longitude but at 60 north it
+would be more like ~1 degree longitude. A consequence of this effect is that a user
+who wants to add a 10 nTesla/year reference vector to a legend faces the same problem we do
+when we wish to draw a 100 km map scale on a map: the plotted length usually will depend
+on latitude and hence that reference scale is only useful around that latitude.</p>
+<p>This brings us to the inverse scale option, <strong>-Si</strong><em>length</em>.  This variant is useful
+when providing the inverse of the scale is simpler. In the Cartesian case above, we
+could instead give <strong>-Si</strong>0.1c which would directly imply a plot scale of 0.1 cm per
+nTesla/year. Likewise, for geographic distances we could give <strong>-Si</strong>2k for 2 km per
+nTesla/year scale as well. As the <strong>-Si</strong> argument increases, the plotted vector length
+increases as well, while for plain <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> the plot length decreases with increasing scale.</p>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h2>
+<p>Be aware that using <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> may lead to aliasing unless
+your grid is smoothly varying over the new length increments.
+It is generally better to filter your grids and resample at a
+larger grid increment and use these grids instead of the originals.</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>, <a class="reference internal" href="gmtcolors.html"><span class="doc">gmtcolors</span></a>,
+<a class="reference internal" href="grdcontour.html"><span class="doc">grdcontour</span></a>, <a class="reference internal" href="plot.html"><span class="doc">plot</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="grdtrend.html" class="btn btn-neutral float-left" title="grdtrend" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="grdview.html" class="btn btn-neutral float-right" title="grdview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

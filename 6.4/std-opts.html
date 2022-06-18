@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Common Options &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gmt.conf" href="gmt.conf.html" />
+    <link rel="prev" title="The Generic Mapping Tools Documentation" href="index.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Common Options</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/std-opts.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="common-options">
+<h1>Common Options<a class="headerlink" href="#common-options" title="Permalink to this heading">¶</a></h1>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>STANDARDIZED COMMAND LINE OPTIONS</p></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>-B</strong><em>information</em></p></td>
+<td><p><a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">Specify map frame and axes parameters</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-J</strong><em>parameters</em></p></td>
+<td><p><a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">Select map projection</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-R</strong><em>west/east/south/north</em>[<em>/zmin/zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">Specify region of interest</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">Plot time-stamp on plot</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-V</strong>[<em>verbosity</em>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">Run in verbose mode</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>]<em>xshift</em></p></td>
+<td><p><a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">Shift plot origin in x-direction</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>]<em>yshift</em></p></td>
+<td><p><a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">Shift plot origin in y-direction</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-a</strong>[<em>col</em>=]<em>name</em>[,<em>…</em>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">Associates aspatial data with columns</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-bi</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">Select binary input</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-bo</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">Select binary output</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-c</strong>[<em>row</em>,<em>col</em>|<em>index</em>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#c-full"><span class="std std-ref">Advance plot focus to selected (or next) subplot panel</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em>[<strong>+c</strong><em>col</em>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">Replace columns with nodata with NaN</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-e</strong>[<strong>~</strong>]<em>“pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">Filter data records that match the given pattern</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em></p></td>
+<td><p><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">Set column content of input or output</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-g</strong><strong>x</strong>|<strong>y</strong>|<strong>z</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong><em>gap</em>[<strong>u</strong>][<strong>+a</strong>][<strong>+c</strong><em>col</em>][<strong>+n</strong>|<strong>p</strong>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">Segment data by detecting gaps</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">ASCII tables have header record[s]</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]]</p></td>
+<td><p><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">Selection of input columns</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-je</strong>|<strong>f</strong>|<strong>g</strong></p></td>
+<td><p><a class="reference internal" href="gmt.html#distcalc-full"><span class="std std-ref">Mode of spherical distance calculation</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-l</strong>[<em>label</em>][<em>modifiers</em>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#l-full"><span class="std std-ref">Add an item to the automatic plot legend</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+c</strong>][<strong>+t</strong><em>threshold</em>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">Set grid interpolation mode</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-o</strong><em>cols</em>[,…][,<strong>t</strong>[<em>word</em>]]</p></td>
+<td><p><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">Selection of output columns</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-p</strong>[<strong>x</strong>|<strong>y</strong>|<strong>z</strong>]<em>azim</em>[/<em>elev</em>[/<em>zlevel</em>]][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">Control 3-D perspective view</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">Selection of input or output rows</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-r</strong>[<strong>g</strong>|<strong>p</strong>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">Sets grid registration</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-s</strong>[<em>cols</em>][<strong>+a</strong>|<strong>r</strong>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#s-full"><span class="std std-ref">Control treatment of NaN records</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-t</strong><em>transparency</em></p></td>
+<td><p><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">Set layer transparency</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-wy</strong>|<strong>a</strong>|<strong>w</strong>|<strong>d</strong>|<strong>h</strong>|<strong>m</strong>|<strong>s</strong>|<strong>c</strong><em>period</em>[/<em>phase</em>][<strong>+c</strong><em>col</em>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#w-full"><span class="std std-ref">Convert selected coordinate to repeating cycles</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>-x</strong>[[-]<em>n</em>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#core-full"><span class="std std-ref">Set number of cores in multi-threaded modules</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>]</p></td>
+<td><p><a class="reference internal" href="gmt.html#colon-full"><span class="std std-ref">Expect y/x input rather than x/y</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="The Generic Mapping Tools Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gmt.conf.html" class="btn btn-neutral float-right" title="gmt.conf" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

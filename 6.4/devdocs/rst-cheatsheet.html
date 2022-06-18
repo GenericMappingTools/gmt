@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>reStructuredText Cheatsheet &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Debugging for Developers" href="debug.html" />
+    <link rel="prev" title="Team Gallery" href="team.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">Team Gallery</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">reStructuredText Cheatsheet</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#formatting-text">Formatting text</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lists">Lists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#table">Table</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#simple-table">Simple Table</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#grid-table">Grid Table</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#links">Links</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#external-links">External links</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#internal-links">Internal links</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#codes">Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#images">Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#math">Math</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>reStructuredText Cheatsheet</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/devdocs/rst-cheatsheet.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="restructuredtext-cheatsheet">
+<h1>reStructuredText Cheatsheet<a class="headerlink" href="#restructuredtext-cheatsheet" title="Permalink to this heading">¶</a></h1>
+<p>The GMT documentations are written in <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructureText (ReST)</a>
+and built by <a class="reference external" href="https://www.sphinx-doc.org/">Sphinx</a>.
+Here is a quick and dirty cheat sheet for some common ReST stuff used in GMT documentations.
+You can see the literal source code of the ReST file on the right,
+and the rendered web page on the left.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Try a online reStructuredText editor (e.g. <a class="reference external" href="https://livesphinx.herokuapp.com/">https://livesphinx.herokuapp.com/</a>),
+if you want to preview texts written in ReST.</p>
+<p>For a more complete description of ReST syntax, please visit
+<a class="reference external" href="http://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html">the Sphinx documentation</a>.</p>
+</div>
+<div style="float: left; width:49%"><section id="formatting-text">
+<h2>Formatting text<a class="headerlink" href="#formatting-text" title="Permalink to this heading">¶</a></h2>
+<p>Paragraphs are simply chunks of text separated by one or
+more blank lines.</p>
+<p>It’s simple to use inline markup to have <em>italic text</em>,
+<strong>bold text</strong>, and <code class="docutils literal notranslate"><span class="pre">inline</span> <span class="pre">source</span> <span class="pre">codes</span></code>.</p>
+<p>It’s a little complicated to write a GMT option.
+You need to use backslash + pipe to have a pipe (|) and
+backslash + whitespace to separate inline markups.</p>
+<p><strong>-A</strong><em>value</em>[<strong>+w</strong><em>pen</em>][<strong>+a</strong>|<strong>b</strong>|<strong>c</strong>]</p>
+</section>
+<section id="lists">
+<h2>Lists<a class="headerlink" href="#lists" title="Permalink to this heading">¶</a></h2>
+<p><strong>Bullet list:</strong></p>
+<ul class="simple">
+<li><p>Point A</p></li>
+<li><p>Point B</p></li>
+<li><p>Point C</p></li>
+<li><p>Point D</p></li>
+</ul>
+<p><strong>Numbered list</strong>:</p>
+<ol class="arabic simple">
+<li><p>Point 1</p></li>
+<li><p>Point 2</p></li>
+<li><p>Point 3</p></li>
+<li><p>Point 4</p></li>
+</ol>
+<p><strong>Definition list</strong>:</p>
+<dl class="simple">
+<dt>term1</dt><dd><p>Definition of term1</p>
+</dd>
+<dt>term2</dt><dd><p>Definition of term2</p>
+</dd>
+</dl>
+</section>
+<section id="table">
+<h2>Table<a class="headerlink" href="#table" title="Permalink to this heading">¶</a></h2>
+<p>ReST supports multiple ways to make a table.</p>
+<section id="simple-table">
+<h3>Simple Table<a class="headerlink" href="#simple-table" title="Permalink to this heading">¶</a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>A</p></th>
+<th class="head"><p>B</p></th>
+<th class="head"><p>A and B</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>False</p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>True</p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>False</p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="grid-table">
+<h3>Grid Table<a class="headerlink" href="#grid-table" title="Permalink to this heading">¶</a></h3>
+<table class="docutils align-default" id="tbl-grid">
+<thead>
+<tr class="row-odd"><th class="head"><p>Header row, column 1</p></th>
+<th class="head"><p>Header 2</p></th>
+<th class="head"><p>Header 3</p></th>
+<th class="head"><p>Header 4</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>body row 1, column 1</p></td>
+<td><p>column 2</p></td>
+<td><p>column 3</p></td>
+<td><p>column 4</p></td>
+</tr>
+<tr class="row-odd"><td><p>body row 2</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="links">
+<h2>Links<a class="headerlink" href="#links" title="Permalink to this heading">¶</a></h2>
+<section id="external-links">
+<h3>External links<a class="headerlink" href="#external-links" title="Permalink to this heading">¶</a></h3>
+<p><a class="reference external" href="https://www.generic-mapping-tools.org">https://www.generic-mapping-tools.org</a></p>
+<p><a class="reference external" href="https://forum.generic-mapping-tools.org/">GMT Forum</a></p>
+</section>
+<section id="internal-links">
+<h3>Internal links<a class="headerlink" href="#internal-links" title="Permalink to this heading">¶</a></h3>
+<p>Link to the a module with <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a> or <a class="reference internal" href="../plot.html"><span class="doc">plot</span></a>.</p>
+<p>Link to a section title with <a class="reference internal" href="#lists">Lists</a>.</p>
+<p>Link to a target with <a class="reference internal" href="#tbl-grid"><span class="std std-ref">Link to a table</span></a>.</p>
+<p>Link to a GMT parameter <a class="reference internal" href="../gmt.conf.html#term-FONT_TITLE"><span class="xref std std-term">FONT_TITLE</span></a>.</p>
+</section>
+</section>
+<section id="codes">
+<h2>Codes<a class="headerlink" href="#codes" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin map
+gmt basemap -R0/10/0/10 -JX10c/10c -Baf
+gmt end
+</pre></div>
+</div>
+</section>
+<section id="images">
+<h2>Images<a class="headerlink" href="#images" title="Permalink to this heading">¶</a></h2>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">figure</span></code> directive to include images:</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/GMT_coverlogo.png"><img alt="../_images/GMT_coverlogo.png" src="../_images/GMT_coverlogo.png" style="width: 90%;" /></a>
+<figcaption>
+<p><span class="caption-text">Figure caption</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="math">
+<h2>Math<a class="headerlink" href="#math" title="Permalink to this heading">¶</a></h2>
+<p>reST also supports LaTeX-style math.</p>
+<p>This is an inline math <span class="math notranslate nohighlight">\(x^2+y^2=z^2\)</span>.</p>
+<p>For long equations, use the <code class="docutils literal notranslate"><span class="pre">math</span></code> directive:</p>
+<div class="math notranslate nohighlight">
+\[\gamma = \sqrt{(\alpha^2 + \beta^2)}\]</div>
+</div>
+</div>
+<div style="float: right; width:49%"><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Formatting text
+===============
+
+Paragraphs are simply chunks of text separated by one or
+more blank lines.
+
+
+It&#39;s simple to use inline markup to have *italic text*,
+**bold text**, and ``inline source codes``.
+
+
+It&#39;s a little complicated to write a GMT option.
+You need to use backslash + pipe to have a pipe (|) and
+backslash + whitespace to separate inline markups.
+
+
+
+**-A**\ *value*\ [**+w**\ *pen*][**+a**\|\ **b**\|\ **c**]
+
+
+Lists
+=====
+
+**Bullet list:**
+
+- Point A
+- Point B
+- Point C
+- Point D
+
+
+
+
+**Numbered list**:
+
+#. Point 1
+#. Point 2
+#. Point 3
+#. Point 4
+
+
+
+
+**Definition list**:
+
+term1
+    Definition of term1
+term2
+    Definition of term2
+
+
+
+
+
+
+
+Table
+=====
+
+ReST supports multiple ways to make a table.
+
+
+Simple Table
+------------
+
+=====  =====  =======
+A      B      A and B
+=====  =====  =======
+False  False  False
+True   False  False
+False  True   False
+True   True   True
+=====  =====  =======
+
+
+
+
+
+Grid Table
+----------
+
+.. _tbl-grid:
+
++----------------------+------------+----------+----------+
+| Header row, column 1 | Header 2   | Header 3 | Header 4 |
+|                      |            |          |          |
++======================+============+==========+==========+
+| body row 1, column 1 | column 2   | column 3 | column 4 |
++----------------------+------------+----------+----------+
+| body row 2           | ...        | ...      |          |
++----------------------+------------+----------+----------+
+
+Links
+=====
+
+External links
+--------------
+
+https://www.generic-mapping-tools.org
+
+`GMT Forum &lt;https://forum.generic-mapping-tools.org/&gt;`_
+
+Internal links
+--------------
+
+Link to the a module with :doc:`/plot` or :doc:`/plot`.
+
+Link to a section title with `Lists`_.
+
+Link to a target with :ref:`Link to a table &lt;tbl-grid&gt;`.
+
+Link to a GMT parameter :term:`FONT_TITLE`.
+
+
+
+
+Codes
+=====
+
+::
+
+    gmt begin map
+    gmt basemap -R0/10/0/10 -JX10c/10c -Baf
+    gmt end
+
+Images
+======
+
+Use the ``figure`` directive to include images:
+
+.. figure:: /_images/GMT_coverlogo.png
+   :width: 90%
+
+   Figure caption
+
+
+
+Math
+====
+
+reST also supports LaTeX-style math.
+
+This is an inline math :math:`x^2+y^2=z^2`.
+
+For long equations, use the ``math`` directive:
+
+.. math::
+
+   \gamma = \sqrt{(\alpha^2 + \beta^2)}
+</pre></div>
+</div>
+</div></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="team.html" class="btn btn-neutral float-left" title="Team Gallery" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="debug.html" class="btn btn-neutral float-right" title="Debugging for Developers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

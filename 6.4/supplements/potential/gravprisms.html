@@ -1,0 +1,514 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gravprisms &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="grdflexure" href="grdflexure.html" />
+    <link rel="prev" title="gravfft" href="gravfft.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../modules.html">Modules</a> &raquo;</li>
+      <li>gravprisms</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/potential/gravprisms.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="gravprisms">
+<h1>gravprisms<a class="headerlink" href="#gravprisms" title="Permalink to this heading">¶</a></h1>
+<p>Compute geopotential anomalies over 3-D vertical prisms</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt gravprisms</strong> [ <em>table</em> ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<strong>+q</strong>][<strong>+w</strong><em>file</em>][<strong>+z</strong><em>dz</em>] ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>density</em> ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>dx</em>[/<em>dy</em>] ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><strong>f</strong>|<strong>n</strong>[<em>lat</em>]|<strong>v</strong> ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outfile</em> ]
+[ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong><em>H</em>/<em>rho_l</em>/<em>rho_h</em>[<strong>+d</strong><em>densify</em>][<strong>+p</strong><em>power</em>] ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>increment</em> ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>base</em> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<strong>h</strong>][<strong>z</strong>] ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>trackfile</em> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>shapegrid</em> ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>top</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>avedens</em> ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>level</em>|<em>obsgrid</em> ]
+[ <strong>-bo</strong><a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
+[ <strong>-d</strong><a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">nodata</span></a>[<strong>+c</strong><em>col</em>] ]
+[ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-i</strong><a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-o</strong><a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-r</strong><a class="reference internal" href="../../gmt.html#nodereg-full"><span class="std std-ref">reg</span></a> ]
+[ <strong>-x</strong>[[-]<a class="reference internal" href="../../gmt.html#core-full"><span class="std std-ref">n</span></a>] ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>gravprisms</strong> will compute the geopotential field over vertically oriented, rectangular prisms.
+We either read the multi-segment <em>table</em> from file (or standard input), which may contain up to
+7 columns: The first four are <em>x y z_low z_high</em>, i.e., the center <em>x, y</em> coordinates and the
+vertical range of the prism from <em>z_low</em> to <em>z_high</em>, while the next two columns hold the dimensions
+<em>dx dy</em> of each prism (see <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> if all prisms have the same <em>x</em>- and <em>y</em>-dimensions).
+Last column may contain individual prism densities (but will be overridden by fixed or variable density contrasts
+if given via <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>).  Alternatively, we can use <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> to <em>create</em> the prisms needed to approximate
+the entire feature (<strong>-S</strong>) or just the volume between two surfaces (one of which may be a constant)
+that define a layer (set via <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> and <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>).  If a variable density model (<strong>-H</strong>) is selected
+then each vertical prism will be broken into constant-density, stacked sub-prisms using a prescribed
+vertical increment <em>dz</em>, otherwise single tall prisms are created with constant or spatially variable densities (<strong>-D</strong>).
+We can compute anomalies on an equidistant grid (by specifying a new grid with
+<strong>-R</strong> and <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> or provide an observation grid with desired elevations) or at arbitrary
+output points specified via <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>.  Choose between free-air anomalies, vertical
+gravity gradient anomalies, or geoid anomalies.  Options are available to control
+axes units and direction.</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../../_images/GMT_seamount_prisms.png"><img alt="../../_images/GMT_seamount_prisms.png" src="../../_images/GMT_seamount_prisms.png" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Three density models modeled by prisms for a truncated Gaussian seamount via <strong>-C</strong>: (left) Constant
+density (<strong>-D</strong>), (middle) vertically-averaged density varying radially (<strong>-D</strong>), and
+(right) density varies with <em>r</em> and <em>z</em> (<strong>-H</strong>), requiring a stack of prisms.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>table</em></dt><dd><p>The file describing the prisms with record format <em>x y z_lo z_hi</em> [ <em>dx dy</em> ] [ <em>rho</em> ],
+where the optional items are controlled by options <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> and <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>, respectively.
+Density contrasts can be given in <span class="math notranslate nohighlight">\(\mbox{kg/m}^3\)</span> of <span class="math notranslate nohighlight">\(\mbox{g/cm}^3\)</span>. <strong>Note</strong>: If <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> is used then
+no <em>table</em> will be read.</p>
+</dd>
+</dl>
+<dl id="i">
+<dt><strong>-I</strong><em>x_inc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>y_inc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p>Set the grid spacing as <em>x_inc</em> [and optionally <em>y_inc</em>].</p>
+<p><strong>Geographical (degrees) coordinates</strong>: Optionally, append an increment unit.
+Choose among:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>m</strong> to indicate arc minutes</p></li>
+<li><p><strong>s</strong> to indicate arc seconds</p></li>
+<li><p><strong>e</strong> (meter), <strong>f</strong> (foot), <strong>k</strong> (km), <strong>M</strong> (mile), <strong>n</strong> (nautical
+mile) or <strong>u</strong> (US survey foot), in which case the increment will be
+converted to the equivalent degrees longitude at the middle latitude
+of the region  (the conversion depends on <a class="reference internal" href="../../gmt.conf.html#term-PROJ_ELLIPSOID"><span class="xref std std-term">PROJ_ELLIPSOID</span></a>). If
+<em>y_inc</em> is given but set to 0 it will be reset equal to <em>x_inc</em>;
+otherwise it will be converted to degrees latitude.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>All coordinates</strong>: The following modifiers are supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+e</strong> to slightly adjust the max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) to fit
+exactly the given increment if needed [Default is to slightly adjust
+the increment to fit the given domain].</p></li>
+<li><p><strong>+n</strong> to define the <em>number of nodes</em> rather than the increment, in
+which case the increment is recalculated from the number of nodes,
+the <em>registration</em> (see <a class="reference internal" href="../../cookbook/file-formats.html#gmt-file-formats"><span class="std std-ref">GMT File Formats</span></a>), and the domain.
+<strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used then the grid spacing and
+the registration have already been initialized; use <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> and <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>
+to override these values.</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="a">
+<dt><strong>-A</strong></dt><dd><p>The <em>z</em>-axis should be positive upwards [Default is down].</p>
+</dd>
+</dl>
+<dl class="simple" id="c">
+<dt><strong>-C</strong>[<strong>+q</strong>][<strong>+w</strong><em>file</em>][<strong>+z</strong><em>dz</em>] ]</dt><dd><p>Create prisms for the entire feature given by <strong>-S</strong><em>height</em>, or just for the layer between the two surfaces
+specified via <strong>-L</strong><em>base</em> and <strong>-T</strong><em>top</em>. For layers, either <em>base</em> or <em>top</em> may be a constant rather
+than a grid.  If only <em>height</em> is given then we assume we will approximate the entire feature from <em>base</em> = 0
+to <em>height</em>.  If <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> is used to compute variable density contrasts then we must split each prism into a stack
+of sub-prisms with individual densities; thus <em>dz</em> needs to be set for the heights of these sub-prisms (the first
+and last sub-prisms in the stack may have their heights adjusted to match the limits of the surfaces).  Without
+<a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> we only create a single uniform-density prism, but those prisms may have spatially varying densities via
+<a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>.  Append <strong>+w</strong><em>file</em> to save the prisms to a table, and optionally use <strong>+q</strong> to quit execution once
+that file has been saved, i.e., no geopotential calculations will take place.</p>
+</dd>
+</dl>
+<dl class="simple" id="d">
+<dt><strong>-D</strong><em>density</em></dt><dd><p>Sets a fixed density contrast that overrides any individual prism settings in the prisms file, in <span class="math notranslate nohighlight">\(\mbox{kg/m}^3\)</span> of <span class="math notranslate nohighlight">\(\mbox{g/cm}^3\)</span>. Alternatively, give name of an input grid with spatially varying, vertically-averaged
+prism densities. This requires <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> and the grid must be co-registered with the grid provided by <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>
+(or <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> and <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>).</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong><em>dx</em>[/<em>dy</em>]</dt><dd><p>If all prisms in <em>table</em> have constant x/y-dimensions then they can be set here.  In that case <em>table</em>
+must only contain the centers of each prism and the <em>z</em> range (and optionally <em>density</em>; see <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>).
+If only <em>dx</em> is given then we set <em>dy = dx</em>. <strong>Note</strong>: For geographic coordinates the <em>dx</em> dimension
+is in geographic longitude increment and hence the physical width of the prism will decrease with latitude
+if <em>dx</em> stays numerically the same.</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong><strong>f</strong>|<strong>n</strong>[<em>lat</em>]|<strong>v</strong></dt><dd><p>Specify desired gravitational field component.  Choose between <strong>f</strong> (free-air anomaly) [Default],
+<strong>n</strong> (geoid; optionally append average latitude for normal gravity reference value [Default is
+mid-grid (or mid-profile if <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>)]) or <strong>v</strong> (vertical gravity gradient).</p>
+</dd>
+</dl>
+<dl class="simple" id="g">
+<dt><strong>-G</strong><em>outfile</em></dt><dd><p>Specify the name of the output data (for grids, see <a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>). Required when an equidistant grid is implied for output.
+If <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> is used then output is written to standard output unless <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>
+specifies an output table name.</p>
+</dd>
+</dl>
+<dl class="simple" id="h">
+<dt><strong>-H</strong><em>H</em>/<em>rho_l</em>/<em>rho_h</em>[<strong>+d</strong><em>densify</em>][<strong>+p</strong><em>power</em>]</dt><dd><p>Set reference seamount parameters for an <em>ad-hoc</em> variable radial density function with depth. Give
+the low and high seamount densities in <span class="math notranslate nohighlight">\(\mbox{kg/m}^3\)</span> or <span class="math notranslate nohighlight">\(\mbox{g/cm}^3\)</span> and the fixed reference height <em>H</em> in meters.
+Use modifiers <strong>+d</strong> and <strong>+p</strong> to change the water-pressure-driven flank density increase over the
+full reference height [0] and the variable density profile exponent <em>power</em> [1, i.e., a linear change].
+Requires <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> to know the full height of the seamount.
+See <a class="reference internal" href="grdseamount.html"><span class="doc">grdseamount</span></a> for more details.</p>
+</dd>
+</dl>
+<dl class="simple" id="l">
+<dt><strong>-L</strong><em>base</em></dt><dd><p>Give name of the base surface grid for a layer we wish to approximate with prisms, or give
+a constant <em>z</em>-level [0].</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong>[<strong>h</strong>][<strong>z</strong>]</dt><dd><p>Sets distance units used.  Append <strong>h</strong> to indicate that both horizontal distances are in km [m],
+and append <strong>z</strong> to indicate vertical distances are in km [m].  If selected, we will internally
+convert any affected distance provided by data input or command line options to meters. <strong>Note</strong>:
+Any output will retain the original units.</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong><em>trackfile</em></dt><dd><p>Specifies individual (x, y[, z]) locations where we wish to compute the predicted value.
+When this option is used there are no grids involved and the output data records are written
+to standard output (see <strong>-bo</strong> for binary output). If <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> is not set then <em>trackfile</em> must
+have 3 columns and we take the <em>z</em> value as our observation level; otherwise s constant level must be
+set via <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>. <strong>Note</strong>: If <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> is used to set an output file we will write the output table
+to that file instead of standard output.</p>
+</dd>
+</dl>
+<dl class="simple" id="s">
+<dt><strong>-S</strong><em>height</em></dt><dd><p>Give name of grid with the full seamount heights, either for making prisms or as required by <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-T</strong><em>top</em></dt><dd><p>Give name of the top surface grid for a layer we wish to approximate with prisms, or give a
+constant <em>z</em>-level.</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong><em>avedens</em></dt><dd><p>Give name of an output grid with spatially varying, vertically-averaged prism densities created
+by <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> and <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="z">
+<dt><strong>-Z</strong><em>level</em>|<em>obsgrid</em></dt><dd><p>Set observation level, either as a constant or variable by giving the name of a grid with observation
+levels.  If the latter is used then this grid determines the output grid region as well [0].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-bo</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for table output. [Default is 2 output columns].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>][<strong>+c</strong><em>col</em>]<em>nodata</em> <a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-e</strong>[<strong>~</strong>]<em>“pattern”</em> | <strong>-e</strong>[<strong>~</strong>]/<em>regexp</em>/[<strong>i</strong>] <a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Only accept data records that match the given pattern.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a></dt><dd><p>Geographic grids (i.e., dimensions of longitude, latitude) will be converted to
+km via a “Flat Earth” approximation using the current ellipsoidal parameters.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Skip or produce header record(s). Not used with binary data.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-o</strong><em>cols</em>[,…][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns (0 is first column; <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-r</strong>[<strong>g</strong>|<strong>p</strong>] <a class="reference internal" href="../../gmt.html#nodereg-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set node registration [gridline].  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-x</strong>[[-]<em>n</em>] <a class="reference internal" href="../../gmt.html#core-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Limit number of cores used in multi-threaded algorithms (OpenMP required).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] <a class="reference internal" href="../../gmt.html#colon-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Swap 1st and 2nd column on input and/or output.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="units">
+<h2>Units<a class="headerlink" href="#units" title="Permalink to this heading">¶</a></h2>
+<p>For map distance unit, append <em>unit</em> <strong>d</strong> for arc degree, <strong>m</strong> for arc
+minute, and <strong>s</strong> for arc second, or <strong>e</strong> for meter [Default unless stated otherwise], <strong>f</strong>
+for foot, <strong>k</strong> for km, <strong>M</strong> for statute mile, <strong>n</strong> for nautical mile,
+and <strong>u</strong> for US survey foot. By default we compute such distances using
+a spherical approximation with great circles (<strong>-jg</strong>) using the authalic radius
+(see <a class="reference internal" href="../../gmt.conf.html#term-PROJ_MEAN_RADIUS"><span class="xref std std-term">PROJ_MEAN_RADIUS</span></a>). You can use <strong>-jf</strong> to perform
+“Flat Earth” calculations (quicker but less accurate) or <strong>-je</strong> to perform
+exact geodesic calculations (slower but more accurate; see
+<a class="reference internal" href="../../gmt.conf.html#term-PROJ_GEODESIC"><span class="xref std std-term">PROJ_GEODESIC</span></a> for method used).</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<p>We have prepared a set of 2828 prisms that represent a truncated Gaussian seamount of
+height 6000 m, radius 30 km, with the base at z = 0 m, available in the remote file &#64;prisms.txt.
+A quick view of the 3-D model can be had via:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt plot3d -R-30/30/-30/30/0/7000 -JX12c -JZ3c -Ggray -So1q+b @prisms.txt -B -Wfaint -p200/20 -pdf smt
+</pre></div>
+</div>
+<p>To compute the free-air anomalies on a grid over the set of prisms given in &#64;prisms.txt,
+using 1700 <span class="math notranslate nohighlight">\(\mbox{kg/m}^3\)</span> as a fixed density contrast, with horizontal distances in km and
+vertical distances in meters, observed at 7000 m, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt gravprisms -R-40/40/-40/40 -I1 -Mh -G3dgrav.nc @prisms.txt -D1700 -Ff -Z7000
+gmt grdimage 3dgrav.nc -B -pdf 3dgrav
+</pre></div>
+</div>
+<p>To obtain the vertical gravity gradient anomaly along the track given in crossing.txt
+for the same model, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -T-30/30/0.1 T <span class="m">0</span> <span class="nv">MUL</span> <span class="o">=</span> crossing.txt
+gmt gravprisms -Ncrossing.txt -Mh @prisms.txt -D1700 -Fv -Z7000 &gt; vgg_crossing.txt
+gmt plot vgg_crossing.txt -R-30/30/-50/400 -i0,3 -W1p -B -pdf vgg_crossing
+</pre></div>
+</div>
+<p>Finally, redo the gravity calculation but now use the individual prism densities in the
+prism file and restrict calculations to the same crossing profile, i.e.:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt gravprisms -Ncrossing.txt -Mh @prisms.txt -Ff -Z7000 &gt; faa_crossing.txt
+gmt plot faa_crossing.txt -R-30/30/0/350 -i0,3 -W1p -B -pdf faa_crossing
+</pre></div>
+</div>
+</section>
+<section id="note">
+<h2>Note<a class="headerlink" href="#note" title="Permalink to this heading">¶</a></h2>
+<p>The analytical expression for the geoid over a vertical prism (Nagy et al., 2000) is
+fairly involved and contains 48 terms.  Due to various cancellations the end result
+is more unstable than the simpler expressions for gravity and VGG.  Be aware that the
+result may have less significant digits that you may expect.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<p>Grant, F. S. and West, G. F., 1965, <em>Interpretation Theory in Applied Geophysics</em>,
+583 pp., McGraw-Hill.</p>
+<p>Kim, S.-S., and P. Wessel, 2016, New analytic solutions for modeling vertical
+gravity gradient anomalies, <em>Geochem. Geophys. Geosyst., 17</em>,
+<a class="reference external" href="https://doi.org/10.1002/2016GC006263">https://doi.org/10.1002/2016GC006263</a>.</p>
+<p>Nagy D., Papp G., Benedek J., 2000, The gravitational potential and its derivatives
+for the prism, <em>J. Geod., 74</em>, 552–560,
+<a class="reference external" href="https://doi.org/10.1007/s001900000116">https://doi.org/10.1007/s001900000116</a>.</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a>,
+<a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a>,
+<a class="reference internal" href="../../grdmath.html"><span class="doc">grdmath</span></a>,
+<a class="reference internal" href="gravfft.html"><span class="doc">gravfft</span></a>,
+<a class="reference internal" href="gmtgravmag3d.html"><span class="doc">gmtgravmag3d</span></a>,
+<a class="reference internal" href="grdgravmag3d.html"><span class="doc">grdgravmag3d</span></a>,
+<a class="reference internal" href="grdseamount.html"><span class="doc">grdseamount</span></a>,
+<a class="reference internal" href="talwani2d.html"><span class="doc">talwani2d</span></a>,
+<a class="reference internal" href="talwani3d.html"><span class="doc">talwani3d</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gravfft.html" class="btn btn-neutral float-left" title="gravfft" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="grdflexure.html" class="btn btn-neutral float-right" title="grdflexure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

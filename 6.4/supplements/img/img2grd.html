@@ -1,0 +1,541 @@
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>img2grd &mdash; GMT 6.4.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script>let toggleHintShow = 'Click to show example script';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mgd77convert" href="../mgd77/mgd77convert.html" />
+    <link rel="prev" title="gshhg" href="../gshhg/gshhg.html" />
+
+
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> GMT
+          </a>
+              <div class="version">
+                6.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Illustration Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../animations.html">Animation Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial in Bash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_jl.html">Tutorial in Julia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.pygmt.org/latest/tutorials/index.html">Tutorials in PyGMT</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-scripts.html">Users Script Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../std-opts-classic.html">Common Options (Classic Mode)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules-classic.html">Modules (Classic Mode)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">Getting help</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://www.generic-mapping-tools.org/"><i class="fa fa-home fa-fw"></i> GMT Homepage</a></li>
+            
+                <li class="toctree-l1"><a href="https://forum.generic-mapping-tools.org/"><i class="fa fa-comment fa-fw"></i> GMT Community Forum</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt/blob/master/LICENSE.TXT"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/GenericMappingTools/gmt"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GMT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../modules.html">Modules</a> &raquo;</li>
+      <li>img2grd</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/img/img2grd.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <span class="target" id="index-0"></span><section id="img2grd">
+<h1>img2grd<a class="headerlink" href="#img2grd" title="Permalink to this heading">¶</a></h1>
+<p>Extract a subset from an img file in Mercator or Geographic format</p>
+<section id="synopsis">
+<h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
+<p><strong>gmt img2grd</strong> <em>imgfile</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grdfile</em>
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<em>minlat/maxlat</em>] ] [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> ] [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>inc</em> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> ] [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>navg</em> ] [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<em>scale</em>] ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>type</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>maxlon</em> ]
+[ <strong>-n</strong><a class="reference internal" href="../../gmt.html#n-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>--PAR</strong>=<em>value</em> ]</p>
+<p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
+</section>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
+<p><strong>img2grd</strong> reads an img format file, extracts a subset, and writes it
+to a grid file. The <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> option dictates whether or not the Spherical
+Mercator projection of the img file is preserved or if a Geographic grid
+should be written by undoing the Mercator projection. If geographic grid
+is selected you can also request a resampling onto the exact <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> given.</p>
+</section>
+<section id="required-arguments">
+<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt><em>imgfile</em></dt><dd><p>A Mercator img format file such as the marine gravity or seafloor
+topography fields estimated from satellite altimeter data by
+Sandwell and Smith. If the user has set an environment variable
+<strong>$GMT_DATADIR</strong>, then <strong>img2grd</strong> will try to find <em>imgfile</em> in
+<strong>$GMT_DATADIR</strong>; else it will try to open <em>imgfile</em> directly.</p>
+</dd>
+</dl>
+<span class="target" id="g"></span><p><strong>-G</strong><em>outgrid</em>[=<em>ID</em>][<strong>+d</strong><em>divisor</em>][<strong>+n</strong><em>invalid</em>][<strong>+o</strong><em>offset</em>|<strong>a</strong>][<strong>+s</strong><em>scale</em>|<strong>a</strong>][:<em>driver</em>[<em>dataType</em>][<strong>+c</strong><em>options</em>]]</p>
+<blockquote>
+<div><p>Give the name of the output grid file. Optionally, append =<em>ID</em> for writing a specific file format
+(<a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">See full description</span></a>). The following modifiers are
+supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+d</strong> - Divide data values by given <em>divisor</em> [Default is 1].</p></li>
+<li><p><strong>+n</strong> - Replace data values matching <em>invalid</em> with a NaN.</p></li>
+<li><p><strong>+o</strong> - Offset data values by the given <em>offset</em>, or append <strong>a</strong> for
+automatic range offset to preserve precision for integer grids
+[Default is 0].</p></li>
+<li><p><strong>+s</strong> - Scale data values by the given <em>scale</em>, or append <strong>a</strong> for
+automatic scaling to preserve precision for integer grids [Default
+is 1].</p></li>
+</ul>
+</div></blockquote>
+<p>Note: Any offset is added before any scaling. <strong>+sa</strong> also sets <strong>+oa</strong>
+(unless overridden). To write specific formats via GDAL, use =<em>gd</em>
+and supply <em>driver</em> (and optionally <em>dataType</em>) and/or one or more
+concatenated GDAL <strong>-co</strong> options using <strong>+c</strong>. See
+the <a class="reference internal" href="../../cookbook/features.html#write-grids-images"><span class="std std-ref">“Writing grids and images” cookbook section</span></a>
+for more details.</p>
+</div></blockquote>
+<span class="target" id="r"></span><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</p>
+<blockquote>
+<div><p>Specify the region of interest.  </p>
+<p>The region may be specified in one of several ways:</p>
+<ol class="arabic">
+<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>. This is the standard way to specify geographic regions
+when using map projections where meridians and parallels are rectilinear. The coordinates may be specified in
+decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format.</p></li>
+<li><p><strong>-R</strong><em>west</em>/<em>south</em>/<em>east</em>/<em>north</em><strong>+r</strong>. This form is useful for map projections that are oblique,
+making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner
+and upper right corner geographic coordinates, followed by the modifier <strong>+r</strong>. This form guarantees a
+rectangular map even though lines of equal longitude and latitude are not straight lines.</p></li>
+<li><p><strong>-R</strong><strong>g</strong> or <strong>-R</strong><strong>d</strong>. These forms can be used to quickly specify the global domain (0/360 for <strong>-Rg</strong>
+and -180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).</p></li>
+<li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
+consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
+countries given by the codes. Simply append one or more comma-separated countries using either the two-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a> (e.g., NO) or the full
+country name (e.g., Norway). To select a state within a country (if available), append .state (e.g, US.TX),
+or the full state name (e.g., Texas). To specify a whole continent, spell out the full continent name (e.g., -RAfrica).
+Finally, append any <a class="reference internal" href="../../coast.html#id1"><span class="std std-ref">DCW collection</span></a> abbreviations or full names for the extent of
+the collection or named region. All names are case-insensitive. The following modifiers can be appended:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
+national bounding box of France rounded to nearest integer degree, where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+R</strong> to adjust the region by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension], where <em>inc</em> can be positive to expand the
+region or negative to shrink the region.</p></li>
+<li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box is adjusted by at least 0.25 times the
+increment [default is no adjustment], where <em>inc</em> can be positive to expand the region or negative to shrink
+the region.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+u</strong><em>unit</em>] specifies a region in projected units (e.g., UTM meters)
+where <em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em> are Cartesian projected coordinates compatible with the chosen projection
+(<strong>-J</strong>) and <em>unit</em> is an allowable <a class="reference internal" href="../../cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a> [e]; we inversely project to determine the
+actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
+<strong>-R</strong><em>halfwidth</em>[/<em>halfheight</em>]<strong>+u</strong><em>unit</em>, where <em>halfheight</em> defaults to <em>halfwidth</em> if not given.
+This short-hand requires the <strong>+u</strong> modifier.</p></li>
+<li><p><strong>-R</strong><em>justify</em><em>lon0</em>/<em>lat0</em>/<em>nx</em>/<em>ny</em>, where <em>justify</em> is a 2-character combination of
+<strong>L</strong>|<strong>C</strong>|<strong>R</strong> (for left, center, or right) and <strong>T</strong>|<strong>M</strong>|<strong>B</strong> (for top, middle, or bottom)
+(e.g., <strong>BL</strong> for lower left). The two character code <em>justify</em> indicates which point on a rectangular region
+region the <em>lon0</em>/<em>lat0</em> coordinates refer to and the grid dimensions <em>nx</em> and <em>ny</em> are used with grid spacings
+given via <strong>-I</strong> to create the corresponding region. This method can be used when creating grids. For example,
+<strong>-RCM</strong><em>25</em>/<em>25</em>/<em>50</em>/<em>50</em> specifies a <em>50</em>x<em>50</em> grid centered on <em>25</em>,<em>25</em>.</p></li>
+<li><p><strong>-R</strong><em>gridfile</em>. This will copy the domain settings found for the grid in specified file. Note that depending
+on the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration
+(see <a class="reference internal" href="../../cookbook/options.html#grid-registration-the-r-option"><span class="std std-ref">Grid registration: The -r option</span></a>).</p></li>
+<li><p><strong>-Ra</strong>[<strong>uto</strong>] or <strong>-Re</strong>[<strong>xact</strong>]. Under modern mode, and for <em>plotting</em> modules only, you can automatically
+determine the region from the data used. You can either get the exact area using <strong>-Re</strong> [Default if no <strong>-R</strong>
+is given] or a slightly larger area sensibly rounded outwards to the next multiple of increments that depend on
+the data range using <strong>-Ra</strong>.</p></li>
+</ol>
+</div></blockquote>
+</section>
+<section id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">¶</a></h2>
+<dl class="simple" id="d">
+<dt><strong>-D</strong>[<em>minlat/maxlat</em>]</dt><dd><p>Use the extended latitude range -80.738/+80.738. Alternatively,
+append <em>minlat/maxlat</em> as the latitude extent of the input img file.
+[Default is -72.006/72.006]. Not usually required since we can
+determine the extent from inspection of the file size.</p>
+</dd>
+</dl>
+<dl class="simple" id="e">
+<dt><strong>-E</strong></dt><dd><p>Can be used when <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> is not set to force the final grid to have
+the exact same region as requested with <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>. By default, the
+final region is a direct projection of the original Mercator region
+and will typically extend slightly beyond the requested latitude
+range, and furthermore the grid increment in latitude does not match
+the longitude increment. However, the extra resampling introduces
+small interpolation errors and should only be used if the output
+grid must match the requested region and have x_inc = y_inc. In
+this case the region set by <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> must be given in multiples of the
+increment (e.g., <strong>-R</strong>0/45/45/72).</p>
+</dd>
+</dl>
+<dl class="simple" id="f">
+<dt><strong>-F</strong></dt><dd><p>Translate the x and y Mercator coordinates so that they are relative
+to the lower left corner, which then is (0,0). Requires <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>.</p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-I</strong></dt><dd><p>Indicate <em>inc</em> as the width of an input img pixel in minutes of
+longitude [Default is 2]. Append <strong>m</strong> [Default] or <strong>s</strong> to
+indicate unit.  Not usually required since we can
+determine the pixel size from inspection of the size.</p>
+</dd>
+</dl>
+<dl class="simple" id="m">
+<dt><strong>-M</strong></dt><dd><p>Output a Spherical Mercator grid [Default is a geographic lon/lat
+grid]. The Spherical Mercator projection of the img file is
+preserved, so that the region <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> set by the user is modified
+slightly; the modified region corresponds to the edges of pixels [or
+groups of <em>navg</em> pixels]. The grid file header is set so that the x
+and y axis lengths represent distance relative to projection center
+using a <strong>-Jm</strong>1 projection.  See <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> to set coordinates to
+instead be distances from the west and south edges
+of the image, measured in user default units, with <strong>-Jm</strong>1 and
+the adjusted <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong>. By setting the default <strong>PROJ_ ELLIPSOID</strong> =
+Sphere, the user can make overlays with the adjusted <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> so that
+they match. See <strong>EXAMPLES</strong> below. The adjusted <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> is also
+written in the grid header remark, so it can be found later.</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong><em>navg</em></dt><dd><p>Average the values in the input img pixels into <em>navg</em> by <em>navg</em>
+squares, and create one output pixel for each such square. If used
+with <strong>-T</strong><em>3</em> it will report an average constraint between 0 and
+1. If used with <strong>-T</strong><em>2</em> the output will be average data value or
+NaN according to whether average constraint is &gt; 0.5. <em>navg</em> must
+evenly divide into the dimensions of the imgfile in pixels. [Default
+<em>1</em> does no averaging].</p>
+</dd>
+</dl>
+<dl class="simple" id="s">
+<dt><strong>-S</strong>[<em>scale</em>]</dt><dd><p>Multiply the img file values by <em>scale</em> before storing in grid file.
+[Default is 1.0]. For recent img files: img topo files are stored in
+(corrected) meters [<strong>-S</strong>1]; free-air gravity files in mGal*10
+[<strong>-S</strong>0.1 to get mGal]; vertical deflection files in
+micro-radians*10 [<strong>-S</strong>0.1 to get micro-radians], vertical gravity
+gradient files in Eotvos*10 [<strong>-S</strong>0.1 to get Eotvos, or
+<strong>-S</strong>0.01 to get mGal/km]). If no <em>scale</em> is given we try to
+determine the scale by examining the file name for clues.</p>
+</dd>
+</dl>
+<dl class="simple" id="t">
+<dt><strong>-T</strong><em>type</em></dt><dd><p><em>type</em> handles the encoding of constraint information. <em>type</em> = 0
+indicates that no such information is encoded in the img file (used
+for pre-1995 versions of the gravity data) and gets all data. <em>type</em>
+&gt; 0 indicates that constraint information is encoded (1995 and later
+(current) versions of the img files) so that one may produce a grid
+file as follows: <strong>-T</strong><em>1</em> gets data values at all points,
+<strong>-T</strong><em>2</em> gets data values at constrained points and NaN at
+interpolated points; <strong>-T</strong><em>3</em> gets 1 at constrained points and 0
+at interpolated points [Default is 1].</p>
+</dd>
+</dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. Particularly recommended here, as it is
+helpful to see how the coordinates are adjusted. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="w">
+<dt><strong>-W</strong><em>maxlon</em></dt><dd><p>Indicate <em>maxlon</em> as the maximum longitude extent of the input img
+file. Versions since 1995 have had <em>maxlon</em> = 360.0, while some
+earlier files had <em>maxlon</em> = 390.0. [Default is 360.0].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+c</strong>][<strong>+t</strong><em>threshold</em>] <a class="reference internal" href="../../gmt.html#n-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select interpolation mode for grids.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-^</strong> or just <strong>-</strong></dt><dd><p>Print a short message about the syntax of the command, then exit (<strong>Note</strong>: on Windows just use <strong>-</strong>).</p>
+</dd>
+<dt><strong>-+</strong> or just <strong>+</strong></dt><dd><p>Print an extensive usage (help) message, including the explanation of
+any module-specific option (but not the GMT common options), then exit.</p>
+</dd>
+<dt><strong>-?</strong> or no arguments</dt><dd><p>Print a complete usage (help) message, including the explanation of all options, then exit.</p>
+</dd>
+<dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="../../gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
+</dd>
+</dl>
+</section>
+<section id="geographic-examples">
+<h2>Geographic Examples<a class="headerlink" href="#geographic-examples" title="Permalink to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> option should be excluded if you need the output grid to be
+in geographic coordinates. To extract data in the region
+<strong>-R</strong>-40/40/-70/-30 from <em>world_grav.img.7.2</em> and reproject to yield
+geographic coordinates, you can try</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt img2grd world_grav.img.16.1 -Gmerc_grav.nc -R-40/40/-70/-30 -V
+</pre></div>
+</div>
+</div></blockquote>
+<p>Because the latitude spacing in the img file is equidistant in Mercator
+units, the resulting grid will not match the specified <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> exactly,
+and the latitude spacing will not equal the longitude spacing. If you
+need an exact match with your <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and the same spacing in longitude
+and latitude, use the <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> option:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt img2grd world_grav.img.16.1 -Gmerc_grav.nc -R-40/40/-70/-30 -E -V
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="mercator-examples">
+<h2>Mercator Examples<a class="headerlink" href="#mercator-examples" title="Permalink to this heading">¶</a></h2>
+<p>Since the img files are in a Mercator projection, you should NOT extract
+a geographic grid if your plan is to make a Mercator map. If you did
+that you end of projecting and reprojection the grid, losing
+short-wavelength detail. Better to use <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> and plot the grid using a
+linear projection with the same scale as the desired Mercator projection
+(see GMT Example 29).
+To extract data in the region <strong>-R</strong>-40/40/-70/-30 from
+<em>world_grav.img.7.2</em>, run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt img2grd -M world_grav.img.7.2 -Gmerc_grav.nc -R-40/40/-70/-30 -V
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note that the <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong> option tells us that the range was adjusted to
+<strong>-R</strong>-40/40/-70.0004681551/-29.9945810754. For scripting purposes we
+can extract this original region string using <a class="reference internal" href="../../grdinfo.html"><span class="doc">grdinfo</span></a> <strong>-Ii</strong>.
+Furthermore, we can also use <a class="reference internal" href="../../grdinfo.html"><span class="doc">grdinfo</span></a>
+to find that the grid file header shows its region to be
+<strong>-R</strong>-40/40/-99.4333333333/-31.4666666667. This is the range of x,y we will get from a
+Spherical Mercator projection using
+<strong>-R</strong>-40/40/-70.0004681551/-29.9945810754 and <strong>-Jm</strong>1. Thus, to take
+ship.lonlatgrav and use it to sample the merc_grav.nc, we can do this:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt <span class="nb">set</span> PROJ_ELLIPSOID Sphere
+
+gmt mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -C ship.lonlatgrav <span class="p">|</span> <span class="se">\</span>
+          gmt grdtrack -Gmerc_grav.nc <span class="p">|</span> <span class="se">\</span>
+          gmt mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I -C &gt; ship.lonlatgravsat
+</pre></div>
+</div>
+</div></blockquote>
+<p>It is recommended to use the above method of projecting and unprojecting
+the data in such an application, because then there is only one
+interpolation step (in <a class="reference internal" href="../../grdtrack.html"><span class="doc">grdtrack</span></a>). If one first tries to convert the
+grid file to lon,lat and then sample it, there are two interpolation
+steps (in conversion and in sampling).</p>
+<p>To make a lon,lat grid from the above grid we can use</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdproject merc_grav.nc -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I -D2m -Ggrav.nc
+</pre></div>
+</div>
+</div></blockquote>
+<p>In some cases this will not be easy as the <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> in the two coordinate
+systems may not align well. When this happens, we can also use (in fact,
+it may be always better to use)</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grd2xyz merc_grav.nc <span class="p">|</span> <span class="se">\</span>
+    gmt mapproject -R-40/40/-70.0004681551/-29.994581075 -Jm1i -I <span class="p">|</span> <span class="se">\</span>
+    gmt surface -R-40/40/-70/70 -I2m -Ggrav.nc
+</pre></div>
+</div>
+</div></blockquote>
+<p>To make a Mercator map of the above region, suppose our gmt.conf value
+for <a class="reference internal" href="../../gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> is inch. Then since the above merc_grav.nc
+file is projected with <strong>-Jm</strong>1i it is 80 inches wide. We can make a
+map 8 inches wide by using <strong>-Jx</strong>0.1i on any map programs applied to
+this grid (e.g., <a class="reference internal" href="../../grdcontour.html"><span class="doc">grdcontour</span></a>,
+<a class="reference internal" href="../../grdimage.html"><span class="doc">grdimage</span></a>, <a class="reference internal" href="../../grdview.html"><span class="doc">grdview</span></a>), and then
+for overlays which work in lon,lat (e.g., <a class="reference internal" href="../../plot.html"><span class="doc">plot</span></a>, <a class="reference internal" href="../../coast.html"><span class="doc">coast</span></a>) we can
+use the above adjusted <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <strong>-Jm</strong>0.1 to get the two systems to
+match up.</p>
+<p>However, we can be smarter than this. Realizing that the input img file
+had pixels 2.0 minutes wide (or checking the nx and ny with <a class="reference internal" href="../../grdinfo.html"><span class="doc">grdinfo</span></a>
+merc_grav.nc) we realize that merc_grav.nc used the full resolution of
+the img file and it has 2400 by 2039 pixels, and at 8 inches wide this
+is 300 pixels per inch. We decide we do not need that many and we will be
+satisfied with 100 pixels per inch, so we want to average the data into
+3 by 3 squares. (If we want a contour plot we will probably choose to
+average the data much more (e.g., 6 by 6) to get smooth contours.) Since
+2039 isn’t divisible by 3 we will get a different adjusted <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> this time:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt img2grd -M world_grav.img.7.2 -Gmerc_grav_2.nc -R-40/40/-70/-30 -N3 -V
+</pre></div>
+</div>
+</div></blockquote>
+<p>This time we find the adjusted region is
+<strong>-R</strong>-40/40/-70.023256525/-29.9368261101 and the output is 800 by 601
+pixels, a better size for us. Now we can create an artificial
+illumination file for this using <a class="reference internal" href="../../grdgradient.html"><span class="doc">grdgradient</span></a>:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdgradient merc_grav_2.nc -Gillum.nc -A0/270 -Ne0.6
+</pre></div>
+</div>
+</div></blockquote>
+<p>and if we also have a CPT called “grav.cpt” we can create a color
+shaded relief map like this:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin
+  gmt grdimage merc_grav_2.nc -Iillum.nc -Cgrav.cpt -Jx0.1i
+  gmt basemap -R-40/40/-70.023256525/-29.9368261101 -Jm0.1i -Ba10
+gmt end
+</pre></div>
+</div>
+</div></blockquote>
+<p>Suppose you want to obtain only the constrained data values from an img
+file, in lat/lon coordinates. Then run <strong>img2grd</strong> with the <strong>-T</strong>2
+option, use <a class="reference internal" href="../../grd2xyz.html"><span class="doc">grd2xyz</span></a> to dump the values, pipe through grep -v NaN to
+eliminate NaNs, and pipe through <a class="reference internal" href="../../mapproject.html"><span class="doc">mapproject</span></a> with the inverse projection as above.</p>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="../../gmt.html"><span class="doc">gmt</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../gshhg/gshhg.html" class="btn btn-neutral float-left" title="gshhg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../mgd77/mgd77convert.html" class="btn btn-neutral float-right" title="mgd77convert" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The GMT Team.
+      <span class="lastupdated">Last updated on Jun 18, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>
