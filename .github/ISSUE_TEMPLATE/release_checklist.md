@@ -64,7 +64,7 @@ assignees: ''
 - [ ] upload the tarball to zenodo (@PaulWessel)
 - [ ] make announcements in the [GMT forum](https://forum.generic-mapping-tools.org/)
 - [ ] make announcements on the [GMT twitter](https://twitter.com/gmt_dev)
-- [ ] make announcements on the [GMT Instagram](https://instagram.com/gmt_dev)
+- [ ] make announcements on the [GMT Instagram](https://www.instagram.com/genericmappingtools/)
 - [ ] update links on the main site (Download & Documentation)
 - [ ] update install instructions on the wiki if needed
 
