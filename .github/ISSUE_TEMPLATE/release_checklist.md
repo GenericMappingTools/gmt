@@ -43,7 +43,7 @@ assignees: ''
 - [ ] create Windows installers (win32 and win64) (@joa-quim)
 - [ ] check if the source tarballs for Linux work well (@Esteban82, @anbj)
 - [ ] check if the macOS bundles work well (@seisman, @meghanrjones)
-- [ ] check if the Windows installers work well (@seisman)
+- [ ] check if the Windows installers work well (volunteers needed!)
 - [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
 - [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
 - [ ] make a tag and push it to github (**Must be done after uploading packages to the GMT FTP**)
