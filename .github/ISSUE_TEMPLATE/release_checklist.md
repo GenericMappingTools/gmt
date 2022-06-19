@@ -41,7 +41,9 @@ assignees: ''
 - [ ] create source tarballs (tar.gz and tar.xz) (@PaulWessel)
 - [ ] create macOS bundle (@PaulWessel)
 - [ ] create Windows installers (win32 and win64) (@joa-quim)
-- [ ] check if the source tarballs, macOS bundle and Windows installers work well
+- [ ] check if the source tarballs for Linux work well (@Esteban82, @anbj)
+- [ ] check if the macOS bundles work well (@seisman, @meghanrjones)
+- [ ] check if the Windows installers work well (volunteers needed!)
 - [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
 - [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
 - [ ] make a tag and push it to github (**Must be done after uploading packages to the GMT FTP**)
@@ -62,7 +64,8 @@ assignees: ''
 - [ ] upload the tarball to zenodo (@PaulWessel)
 - [ ] make announcements in the [GMT forum](https://forum.generic-mapping-tools.org/)
 - [ ] make announcements on the [GMT twitter](https://twitter.com/gmt_dev)
-- [ ] update links on the main site (News, Download & Documentation)
+- [ ] make announcements on the [GMT Instagram](https://www.instagram.com/genericmappingtools/)
+- [ ] update links on the main site (Download & Documentation)
 - [ ] update install instructions on the wiki if needed
 
 **After release**:
