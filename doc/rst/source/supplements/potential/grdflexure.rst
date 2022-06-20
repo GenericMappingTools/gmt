@@ -81,6 +81,10 @@ Required Arguments
     - A file list with extension ".lis" does not need the **+l** modifier
       and will be automatically recognized as a file list.
 
+    **Note**: The horizontal dimensions are expected to be in meters.  If you
+    have grids in km then you can append **+uk** to do the required conversion
+    when the grid is read.  All input grids must have the same dimensions.
+
 .. _-D:
 
 **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*
