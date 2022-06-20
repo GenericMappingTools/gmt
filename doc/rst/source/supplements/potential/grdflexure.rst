@@ -81,12 +81,18 @@ Required Arguments
     - A file list with extension ".lis" does not need the **+l** modifier
       and will be automatically recognized as a file list.
 
+    **Note**: The horizontal dimensions are expected to be in meters.  If you
+    have grids in km then you can append **+uk** to do the required conversion
+    when the grid is read.  All input grids must have the same dimensions.
+
 .. _-D:
 
 **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*
     Sets density for mantle, load, infill, and water (or air).  If *ri* differs from
     *rl* then an approximate solution will be found.  If *ri* is not given
     then it defaults to *rl*.  Values may be given in km/m^3 or g/cm^3.
+    **Note**: If a variable load density grid is supplied via |-H| then *rl*
+    must be given as -.
 
 .. _-E:
 
@@ -95,9 +101,9 @@ Required Arguments
     If the elastic thickness exceeds 1e10 it will be interpreted as
     a flexural rigidity *D* (by default, *D* is computed from *Te*, Young's
     modulus, and Poisson's ratio; see |-C| to change these values).
-    If just |-E| is given and |-F| is used it means no plate is given
+    If |-E| is given with no arguments and |-F| is given it means no plate is present
     and we will return a purely viscous response with or without an asthenospheric layer.
-    Select a general linear viscoelastic response by supplying both an initial and
+    Select a general linear viscoelastic response instead by supplying both an initial and
     final elastic thickness *Te2*; this response also requires |-M|.
 
 .. _-G:
@@ -143,7 +149,8 @@ Optional Arguments
 **-H**\ *rhogrid*
     Supply optional variable load density grid.  It can be a single
     grid or a grid name template (see `Name Template`_ for details). Requires
-    *rho_l* be set to - in |-D|.  **Note**: If *input* is given as
+    *rho_l* be set to - in |-D|.  The density grid may be NaN at nodes where the
+    load grid is NaN (or zero).  **Note**: If *input* is given as
     a list file then the optional density grids must be given as part of
     the list and not via |-H|.
 
@@ -330,6 +337,21 @@ topographic load in the wavenumber domain, *A* is the Airy density ratio, :math:
 on the infill density, and :math:`\Phi(\mathbf{k},t)` is the response function for the selected rheology. The **grdflexure**
 module read one or more loads *h*, transforms them to *H*, evaluates and applies the response function, and
 inversely transform the results back to yield on or more *w* solutions.
+
+Variable load density
+~~~~~~~~~~~~~~~~~~~~~
+
+If the load density is variable (i.e., provided as a grid via |-H|) then we simply adjust the load height to be
+the equivalent height for the average load density. This is accomplished on a node-by-node basis by honoring the
+equality :math:`\rho_l(\mathbf{x})\cdot h(\mathbf{x}) = \bar{\rho_l}\cdot h'(\mathbf{x})`, where the prime height
+is the adjusted amplitude.
+
+Submarine and subaerial loads
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If the water depth is specified via |-W| then we check if the (possibly adjusted) load height exceeds the water
+depth for any node.  If so, then we adjust the load height that is above water to what it needs to be if the density
+contrast were against water and not air.  The subaerial height component is thus extended by :math:`\frac{\rho_l}{\rho_l - \rho_w}`.
 
 Variable infill approximation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

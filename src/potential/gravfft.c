@@ -587,20 +587,7 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->In.n_grids == 2) {	/* If given 2 grids, make sure they are co-registered and has same size, registration, etc. */
-		if(Orig[0]->header->registration != Orig[1]->header->registration) {
-			GMT_Report (API, GMT_MSG_ERROR, "The two grids have different registrations!\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (!gmt_M_grd_same_shape (GMT, Orig[0], Orig[1])) {
-			GMT_Report (API, GMT_MSG_ERROR, "The two grids have different dimensions\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (!gmt_M_grd_same_region (GMT, Orig[0], Orig[1])) {
-			GMT_Report (API, GMT_MSG_ERROR, "The two grids have different regions\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (!gmt_M_grd_same_inc (GMT, Orig[0], Orig[1])) {
-			GMT_Report (API, GMT_MSG_ERROR, "The two grids have different intervals\n");
+		if (!gmt_grd_domains_match (GMT, Orig[0], Orig[1], NULL)) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
@@ -608,20 +595,7 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 	if (Ctrl->D.variable) {	/* Read density contrast grid */
 		if ((Rho = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->D.file, NULL)) == NULL)
 			Return (API->error);
-		if(Orig[0]->header->registration != Rho->header->registration) {
-			GMT_Report (API, GMT_MSG_ERROR, "Surface and density grids have different registrations!\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (!gmt_M_grd_same_shape (GMT, Orig[0], Rho)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Surface and density grids have different dimensions\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (!gmt_M_grd_same_region (GMT, Orig[0], Rho)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Surface and density grids have different regions\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (!gmt_M_grd_same_inc (GMT, Orig[0], Rho)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Surface and density grids have different intervals\n");
+		if (!gmt_grd_domains_match (GMT, Orig[0], Rho, "surface and density")) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		for (m = 0; m < Rho->header->size; m++) if (gmt_M_is_fnan (Rho->data[m])) Rho->data[m] = Rho->header->z_min;	/* Replace any NaNs with the minimum density */
