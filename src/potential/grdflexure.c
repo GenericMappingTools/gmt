@@ -950,6 +950,9 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the header of file %s - file skipped\n", rho);
 			return NULL;
 		}
+		if (!gmt_grd_domains_match (GMT, Grid, Rho, "load and density")) {	/* Not co-registered */
+			return NULL;
+		}
 		if (strstr (Rho->header->remark, "Mean Load Density:")) {	/* Got the remark about mean load density */
 			char *c = strchr (Rho->header->remark, ':');	/* Get pointer to start of colon: and next allow for 1 space */
 			mean_rho_l = atof (&c[1]);	/* Get the mean load density */
@@ -970,17 +973,16 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 			if (gmt_M_is_fnan (Rho->data[node])) continue;	/* Outside the load */
 			Grid->data[node] *= (gmt_grdfloat)(Rho->data[node] * boost);
 		}
+		/* Now load amplitudes have been adjusted to correspond to a common load density mean_rho_l */
 	}
+	else
+		mean_rho_l = Ctrl->D.rhol;	/* Constant load density */
 
 	if (Ctrl->W.active) {	/* See if any part of the load sticks above water, and if so scale this amount as if it was submerged */
 		uint64_t n_subaerial = 0;
-		double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);	/* For constant density case */
+		double boost = mean_rho_l / (mean_rho_l - Ctrl->D.rhow);	/* For constant density case */
 		for (node = 0; node < Grid->header->size; node++) {
 			if (Grid->data[node] > Ctrl->W.water_depth) {	/* Sticking above the water line */
-				if (Ctrl->D.var_rhol) {	/* Must use the local mean density unless outside the load */
-					if (gmt_M_is_fnan (Rho->data[node])) continue;	/* Outside the load, do nothing */
-					boost = Rho->data[node] / (Rho->data[node] - Ctrl->D.rhow);	/* Update boost factor for this mean load density */
-				}
 				Grid->data[node] = (gmt_grdfloat)(Ctrl->W.water_depth + (Grid->data[node] - Ctrl->W.water_depth) * boost);
 				n_subaerial++;
 			}
@@ -1142,7 +1144,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	struct GMT_FFT_WAVENUMBER *K = NULL;
 	struct GRDFLEXURE_RHEOLOGY *R = NULL;
 	struct GRDFLEXURE_GRID **Load = NULL, *This_Load = NULL;
-	struct GMT_GRID *Out = NULL;
+	struct GMT_GRID *Out = NULL, *Grid_A = NULL;
 	struct GMT_DATASET *L = NULL;
 	struct GRDFLEXURE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -1191,6 +1193,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 			}
 			Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, zfile, rho, &Ctrl->T.time[t_load]);
 			if (!Ctrl->D.var_rhol) Load[t_load]->rho_load = Ctrl->D.rhol;
+			if (Grid_A == NULL && Load[t_load]->Grid) Grid_A = Load[t_load]->Grid;	/* First grid read */
 		}
 	}
 	else if (Ctrl->In.list) {	/* Must read a list of files and their load times (format: filename [rhofile] loadtime) */
@@ -1226,6 +1229,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 				Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, zfile, r_arg, &this_time);
 				if (!Ctrl->D.var_rhol) 
 					Load[t_load]->rho_load = (ns == 3) ? atof (r_arg) : Ctrl->D.rhol;
+				if (Grid_A == NULL && Load[t_load]->Grid) Grid_A = Load[t_load]->Grid;	/* First grid read */
 			}
 		}
 		if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {
@@ -1243,6 +1247,15 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	if (n_load_times > 1) {	/* Sort to ensure load array goes from old to young loads */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Sort %u loads from old to young\n", n_load_times);
 		qsort (Load, n_load_times, sizeof (struct GRDFLEXURE_GRID *), grdflexure_compare_loads);
+		/* Do a check that all grids are coregistered */
+		for (t_load = 0; t_load < n_load_times; t_load++) {	/* For each load  */
+			if (Grid_A == NULL) continue;	/* Safety valve */
+			if (Load[t_load] == NULL) continue;	/* Quietly skip times with no load */
+			if (Load[t_load]->Grid == NULL) continue;	/* Quietly skip times with no load */
+			if (!gmt_grd_domains_match (GMT, Grid_A, Load[t_load]->Grid, "load")) {
+				error = GMT_RUNTIME_ERROR;	goto cleanup_time;
+			}
+		}
 	}
 	K = Load[0]->K;	/* We only need one pointer to get to wavenumbers as they are all the same for all grids */
 	fixed_rho_load = Ctrl->D.rhol;	/* Remember the setting since we may change it temporarily below */
