@@ -653,18 +653,20 @@ MAP Parameters
     **MAP_ANNOT_OBLIQUE**
         This setting applies to "oblique" projections, which in this context
         means maps whose boundary is a rectangle not specified by meridians
-        and parallels.  We expect a comma-separated list of up to seven keywords:
-        **separate** means longitudes will be annotated on the lower and upper
-        boundaries only, and latitudes will be annotated on the left and right
-        boundaries only; **anywhere** means annotations will occur wherever an
-        imaginary gridline crosses the map boundaries; **lon_horizontal** means
-        longitude annotations will be plotted horizontally; **lat_horizontal**
-        means latitude annotations will be plotted horizontally; **tick_extend**
-        means tick-marks are extended so the distance from the tip of the oblique
-        tick to the map frame equals the specified tick length; **tick_normal**
-        means tick-marks will be drawn normal to the border regardless of
-        gridline angle; **lat_parallel** means latitude annotations will be
-        plotted parallel to the border [default is **anywhere**].
+        and parallels.  We expect a comma-separated list of up to seven
+        keywords [default is **anywhere**]:
+
+        ============== ============================================================================================================
+        Keyword        Meaning
+        ============== ============================================================================================================
+        separate       Annotate longitudes on lower and upper boundaries only, and latitudes on the left and right boundaries only
+        anywhere       Annotations will occur wherever an imaginary gridline crosses the map boundaries
+        lon_horizontal Longitude annotations will be plotted horizontally
+        lat_horizontal Latitude annotations will be plotted horizontally
+        tick_extend    Extend tick-marks so distance from tip of the oblique tick to map frame equals specified tick length
+        tick_normal    Draw tick-marks normal to the border regardless of gridline angle
+        lat_parallel   Latitude annotations will be plotted parallel to the border
+        ============== ============================================================================================================
 
     **MAP_ANNOT_OFFSET**
         Sets both :term:`MAP_ANNOT_OFFSET_PRIMARY` and
