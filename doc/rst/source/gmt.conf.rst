@@ -656,17 +656,17 @@ MAP Parameters
         and parallels.  We expect a comma-separated list of up to seven
         keywords [default is **anywhere**]:
 
-        ============== ==========================================================================================================================================
+        ============== ============================================================================================================
         Keyword        Meaning
-        ============== ==========================================================================================================================================
-        separate       longitudes will be annotated on the lower and upper boundaries only, and latitudes will be annotated on the left and right boundaries only
-        anywhere       annotations will occur wherever an imaginary gridline crosses the map boundaries
-        lon_horizontal longitude annotations will be plotted horizontally
-        lat_horizontal latitude annotations will be plotted horizontally
-        tick_extend    tick-marks are extended so the distance from the tip of the oblique tick to the map frame equals the specified tick length
-        tick_normal    tick-marks will be drawn normal to the border regardless of gridline angle
-        lat_parallel   latitude annotations will be plotted parallel to the border
-        ============== ==========================================================================================================================================
+        ============== ============================================================================================================
+        separate       Annotate longitudes on lower and upper boundaries only, and latitudes on the left and right boundaries only
+        anywhere       Annotations will occur wherever an imaginary gridline crosses the map boundaries
+        lon_horizontal Longitude annotations will be plotted horizontally
+        lat_horizontal Latitude annotations will be plotted horizontally
+        tick_extend    Extend tick-marks so distance from tip of the oblique tick to map frame equals specified tick length
+        tick_normal    Draw tick-marks normal to the border regardless of gridline angle
+        lat_parallel   Latitude annotations will be plotted parallel to the border
+        ============== ============================================================================================================
 
     **MAP_ANNOT_OFFSET**
         Sets both :term:`MAP_ANNOT_OFFSET_PRIMARY` and
