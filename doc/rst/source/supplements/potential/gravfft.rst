@@ -136,6 +136,8 @@ Optional Arguments
     theoretical admittance, and **t** writes a fourth column with "elastic
     plate" theoretical admittance.
 
+.. _-N:
+
 .. include:: ../../explain_fft.rst_
 
 .. _-Q:
