@@ -389,7 +389,7 @@ GMT Miscellaneous Parameters
         return NaN for any element of x that is outside range. Second case lets
         the selected algorithm compute the extrapolation values. Third case sets
         the extrapolation values to the constant value passed in *value* (this
-        value must off course be numeric) [default is **NaN**].
+        value must of course be numeric) [default is **NaN**].
 
     **GMT_CUSTOM_LIBS**
         Comma-separated list of GMT-compliant shared libraries that extend
