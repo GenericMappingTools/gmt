@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * Authord:     Paul Wessel
+ * Author:      Paul Wessel
  * Date:        12-MAR-2022
  *
  *
@@ -58,9 +58,6 @@ enum gravprisms_fields {
 };
 
 struct GRAVPRISMS_CTRL {
-	struct GRAVPRISMS_A {	/* -A Set positive up  */
-		bool active;
-	} A;
 	struct GRAVPRISMS_C {	/* -C[+q][+w<file>][+z<dz>] creates prisms between surfaces set in -L -S -T */
 		bool active;
 		bool quit;
@@ -169,9 +166,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 
-			case 'A':	/* Specify z-axis is positive up [Default is down] */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
-				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
+			case 'A':	/* Specify z-axis is positive up [Default is down] [DEPRECATED in 6.5 ins z is always positive up] */
+				GMT_Report (API, GMT_MSG_COMPAT, "Option -A is deprecated; All potential supplement modules use z positive up.\n");
 				break;
 			case 'C':	/* Create prisms from layer between two surfaces */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
@@ -352,7 +348,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <prismfile> [-A] [-C[+q][+w<file>][+z<dz>]] [-D<density>] [-E<dx>[/<dy>]] [-Ff|n[<lat>]|v] "
+	GMT_Usage (API, 0, "usage: %s <prismfile> [-C[+q][+w<file>][+z<dz>]] [-D<density>] [-E<dx>[/<dy>]] [-Ff|n[<lat>]|v] "
 		"[-G<outfile>] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] [%s] [-L<base>] [-M[hz]] [-N<trktable>] [%s] "
 		"[-S<shapegrd>] [-T<top>] [%s] [-W<avedens>] [-Z<level>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
 		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
@@ -365,7 +361,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "One or more multiple-segment ASCII data files. If no files are given, standard "
 		"input is read. Contains (x,y,z_lo,z_hi), i.e., center coordinates of prisms and z-range, with optional [ dx dy] [rho] if not set via -E and -D.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A The z-axis is positive upwards [Default is positive down].");
 	GMT_Usage (API, 1, "\n-C[+q][+w<file>][+z<dz>]");
 	GMT_Usage (API, -2, "Create prisms from the <base> (-L) level to <top> (-T) level, or for the full seamount <height> (-S).  No <prismfile> will be read. Modifiers are:");
 	GMT_Usage (API, 3, "+q Quit execution once prism file has been written (see +w).  No geopotential calculations are preformed.");
@@ -678,7 +673,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 	/* Handle any -M[hv] settings so that internally we have meters */
 	scl_xy = (Ctrl->M.active[GRAVPRISMS_HOR]) ? METERS_IN_A_KM : 1.0;
 	scl_z  = (Ctrl->M.active[GRAVPRISMS_VER]) ? METERS_IN_A_KM : 1.0;
-	if (Ctrl->A.active) scl_z = -scl_z;
+	scl_z = -scl_z;	/* Since algorithms actually had z positive down */
 	i_scl_xy = 1.0 / scl_xy;	/* Scale use for output horizontal distances */
 	i_scl_z  = 1.0 / scl_z;		/* Scale use for output vertical distances */
 
@@ -919,7 +914,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		goto end_it_all;
 	}
 
-	if (Ctrl->A.active) Ctrl->Z.level = -Ctrl->Z.level;
+	Ctrl->Z.level = -Ctrl->Z.level;	/* Since algorithm had z positive down */
 
 	/* Read polygon information from multiple segment file */
 

@@ -137,14 +137,18 @@ Optional Arguments
 
 **-W**\ *wd*\ [**k**]
     Specify water depth in m; append **k** for km.  Must be positive [0].
-    Any subaerial topography will be scaled via the densities set in |-D|
+    Any subaerial topography (i.e., amplitudes in the input relief that
+    exceeds this depth) will be scaled via the densities set in |-D|
     to compensate for the larger density contrast with air.
 
 .. _-Z:
 
 **-Z**\ *zm*\ [**k**]
-    Specify reference depth to flexed surface in m; append **k** for km.  Must be positive [0].
-    We add this value to the flexed surface before output.
+    Undeformed plate flexure means *z = 0*. Specify the distance between the
+    observation level [*z = 0*] and the undeformed flexed surface in m; append **k** for km.
+    Must be positive [0]. We subtract this value from the flexed surface before output.
+    Thus, if the observation level is at sealevel and you are looking a seafloor deformation
+    in 5 km of water, use -Z5k and the undeformed surface will have *z = -5000* on output.
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bi.rst_
@@ -168,6 +172,8 @@ Optional Arguments
 .. include:: ../../explain_help.rst_
 
 .. include:: ../../explain_array.rst_
+
+.. include:: explain_geometry.rst_
 
 Note on Units
 -------------

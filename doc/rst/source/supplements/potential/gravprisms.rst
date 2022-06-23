@@ -13,7 +13,6 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt gravprisms** [ *table* ]
-[ |-A| ]
 [ |-C|\ [**+q**][**+w**\ *file*][**+z**\ *dz*] ]
 [ |-D|\ *density* ]
 [ |-E|\ *dx*\ [/*dy*] ]
@@ -90,11 +89,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. _-A:
-
-**-A**
-    The *z*-axis should be positive upwards [Default is down].
 
 .. _-C:
 
@@ -264,8 +258,10 @@ prism file and restrict calculations to the same crossing profile, i.e.::
     gmt plot faa_crossing.txt -R-30/30/0/350 -i0,3 -W1p -B -pdf faa_crossing
 
 
-Note
-----
+.. include:: explain_geometry.rst_
+
+Note on Precision
+-----------------
 
 The analytical expression for the geoid over a vertical prism (Nagy et al., 2000) is
 fairly involved and contains 48 terms.  Due to various cancellations the end result
