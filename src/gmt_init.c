@@ -10817,6 +10817,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else if (!strncmp (lower_value, "graph", 5U)) {
 				char *c = NULL;
 				GMT->current.setting.map_frame_type = GMT_IS_GRAPH;
+				if (strstr (lower_value, "-centered")) GMT->current.setting.map_graph_centered = true;
 				if ((c = strchr (lower_value, ','))) {	/* Also specified vector extension setting */
 					size_t last = strlen (lower_value) - 1;
 					char unit = lower_value[last];
@@ -12404,6 +12405,7 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				strcpy (value, "plain");
 			else if (GMT->current.setting.map_frame_type == GMT_IS_GRAPH) {
 				strcpy (value, "graph");
+				if (GMT->current.setting.map_graph_centered) strcat (value, "-centered");
 				if (GMT->current.setting.map_graph_extension_unit != GMT_GRAPH_EXTENSION_UNIT || !doubleAlmostEqual (GMT->current.setting.map_graph_extension, GMT_GRAPH_EXTENSION)) {
 					char tmp[GMT_LEN32] = {""};
 					/* Not the default, specify what we are using */

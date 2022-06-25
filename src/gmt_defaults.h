@@ -161,6 +161,7 @@ struct GMT_DEFAULTS {
 	double map_label_mode[2];		/* If label is relative to annotation (0) or axis (1) for x/t [0/0] */
 	bool map_annot_oblique_set;		/* true if user changed map_annot_oblique via a gmt.conf or --par=val */
 	bool map_logo;			/* Plot time and map projection on map [false] */
+	bool map_graph_centered;			/* Center any GRAPH frames [false] */
 	struct GMT_PEN map_default_pen;		/* Default pen for most pens [0.25p] */
 	struct GMT_PEN map_frame_pen;		/* Pen attributes for map boundary [1.25p] */
 	struct GMT_PEN map_grid_pen[2];		/* Pen attributes for primary and secondary gridlines [default,black/thinner,black] */
