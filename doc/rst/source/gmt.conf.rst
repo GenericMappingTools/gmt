@@ -753,8 +753,8 @@ MAP Parameters
         to shift the **W** and **S** axes so they intersect at the user data
         (0, 0) origin instead.  In this mode, only the **W** and **S** axes can be 
         selected (or **w**, **s**, **l**, and **b** too); the **E** and **N** (and
-        **e**, **n**, **r** and **t**) will be ignored.  **Note**: The annotations
-        at the intersection will be suppressed.  To select another intersection point
+        **e**, **n**, **r** and **t**) will be ignored.  **Note**: Annotations
+        at any axes intersections will be suppressed.  To select another intersection point
         than the data origin you may append **+o**\ *xorig*/*yorig* [0/0].
 
         .. toggle::

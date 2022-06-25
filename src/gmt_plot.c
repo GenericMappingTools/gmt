@@ -5618,6 +5618,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	bool skip = false, just_set = false;
 	bool save_pi = GMT->current.plot.substitute_pi;
     bool skip_center_annot = false; /* May be set to true to avoid annotation where two graph axes intersect */
+    bool center_reset = false;
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
 	double x, t_use, text_angle, cos_a = 0.0, sin_a = 0.0, delta;	/* Misc. variables */
 	double x_angle_add = 0.0, y_angle_add = 0.0;	/* Used when dealing with perspectives */
@@ -5706,7 +5707,8 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		else if (y_axis_pos > GMT->current.map.height) y_axis_pos = GMT->current.map.height;
 		x_axis_pos -= x0;	/* Since we do PSL_setorigin below we must counter act that for these values */
 		y_axis_pos -= y0;
-        skip_center_annot = true;
+		center_reset = true;
+        skip_center_annot = (GMT->current.map.frame.side[W_SIDE] && GMT->current.map.frame.side[S_SIDE]);
 		if (!below) return;
 	}
 
@@ -5956,7 +5958,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	else
 		PSL_comment (PSL, below ? "End of front z-axis\n" : "End of back z-axis\n");
 
-	if (skip_center_annot) {
+	if (center_reset) {	/* Undo temporary origin shifts needed to move axes */
 		if (horizontal) 
 			PSL_setorigin (PSL, 0.0, -y_axis_pos, 0.0, PSL_INV);
 		else
