@@ -153,6 +153,7 @@ struct GMT_DEFAULTS {
 	double map_vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
 	double map_graph_extension;		/* If map_frame_type is graph, how must longer to make axis length. [7.5%] */
 	double map_graph_origin[2];		/* x- and y-origin of graph axis if graph-centered is in use [data 0/0] */
+	double map_graph_shift;			/* Extra offset for title to avoid overwriting the centered y-axis */
 	unsigned int map_annot_oblique;	/* Controls annotations and tick angles etc. [GMT_OBL_ANNOT_ANYWHERE] */
 	unsigned int map_grid_cross_type[2];	/* 0 = normal cross, 1 = symmetric tick, 2 = asymmetric tick */
 	unsigned int map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */

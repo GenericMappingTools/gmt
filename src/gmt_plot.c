@@ -466,6 +466,8 @@ GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTR
 				GMT->current.setting.map_graph_origin_txt);
 			gmt_M_memset (GMT->current.setting.map_graph_origin, 2, double);
 		}
+		GMT->current.setting.map_graph_shift = 0.0;
+
 	}
 
 	PSL_command (PSL, "/PSL_slant_y 0 def /PSL_slant_x 0 def\n");	/* Unless x-annotations are slanted there is no adjustment. PSL_slant_y may be revised in gmt_xy_axis */
@@ -488,6 +490,8 @@ GMT_LOCAL void gmtplot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTR
 	if (!GMT->current.map.frame.header[0] || GMT->current.map.frame.plotted_header) return;	/* No title (and optional subtitle) today */
 
 	PSL_comment (PSL, "Placing plot title\n");
+
+	y_length += GMT->current.setting.map_graph_shift;  /* Extra shift (set in gmt_xy_axis) for map title when we have a centered y-axis with vector */
 
 	if (!GMT->current.map.frame.draw || GMT->current.map.frame.side[N_SIDE] <= GMT_AXIS_DRAW || GMT->current.setting.map_frame_type == GMT_IS_INSIDE)
 		PSL_defunits (PSL, "PSL_H_y", GMT->current.setting.map_title_offset);	/* No ticks or annotations, offset by map_title_offset only */
@@ -5782,6 +5786,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				dim[1] = g_scale_begin * length - g_ext;
 			PSL_plotsymbol (PSL, x_axis_pos, y, dim, PSL_VECTOR);
 			PSL_setorigin (PSL, x_axis_pos, 0.0, 0.0, PSL_FWD);
+			GMT->current.setting.map_graph_shift = fabs (dim[1] - length);
 		}
 		if (axis == GMT_X)
 			skip_val = GMT->current.setting.map_graph_origin[GMT_X];
