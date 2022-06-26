@@ -5709,7 +5709,10 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		y_axis_pos -= y0;
 		center_reset = true;
         skip_center_annot = (GMT->current.map.frame.side[W_SIDE] && GMT->current.map.frame.side[S_SIDE]);
-		if (!below) return;
+		if (!below) { /* Warn that these are skipped */
+            GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_xy_axis: MAP_FRAME_TYPE=graph-centered only expects -B frame selections W, S, w, s, l, b\n");
+           return;
+        }
 	}
 
 	/* Ready to draw axis */
@@ -5767,7 +5770,6 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				dim[0] = g_scale_begin * length - g_ext;
 			PSL_plotsymbol (PSL, x, y_axis_pos, dim, PSL_VECTOR);
 			PSL_setorigin (PSL, 0.0, y_axis_pos, 0.0, PSL_FWD);
-			fprintf (stderr, "Horizontal\n");
 		}
 		else {
 			double y = 0.0;
@@ -5780,7 +5782,6 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				dim[1] = g_scale_begin * length - g_ext;
 			PSL_plotsymbol (PSL, x_axis_pos, y, dim, PSL_VECTOR);
 			PSL_setorigin (PSL, x_axis_pos, 0.0, 0.0, PSL_FWD);
-			fprintf (stderr, "Vertical\n");
 		}
 		if (axis == GMT_X)
 			skip_val = GMT->current.setting.map_graph_origin[GMT_X];
