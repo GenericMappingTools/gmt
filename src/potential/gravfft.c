@@ -767,7 +767,7 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 			if (Ctrl->F.slab) {	/* Do the slab adjustment */
 				if (Ctrl->D.variable) Ctrl->misc.rho = Rho->header->z_min;
 				slab_gravity = (gmt_grdfloat) (1.0e5 * 2 * M_PI * Ctrl->misc.rho * NEWTON_G *
-				                        fabs (Ctrl->W.water_depth - Ctrl->misc.z_level));
+				                        (Ctrl->W.water_depth - Ctrl->misc.z_level));
 				GMT_Report (API, GMT_MSG_INFORMATION, "Add %g mGal to predicted FAA grid to account for implied slab\n", slab_gravity);
 				if (Ctrl->F.bouguer)		/* The complete Bouguer contribution */
 					for (m = 0; m < Grid[0]->header->size; m++) Grid[0]->data[m] = slab_gravity - Grid[0]->data[m];
