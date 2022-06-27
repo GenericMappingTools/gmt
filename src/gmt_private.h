@@ -172,6 +172,7 @@ struct GMTAPI_CTRL {
 	char error_msg[4096];			/* The cached last error message */
 	bool internal;				/* true if session was initiated by gmt.c */
 	bool deep_debug;			/* temporary for debugging */
+	bool parker_fft_default;	/* Used to alter the default in -N FFT settings */
 	int (*print_func) (FILE *, const char *);	/* Pointer to fprintf function (may be reset by external APIs like MEX) */
 	unsigned int do_not_exit;		/* 0 by default, meaning it is OK to call exit  (may be reset by external APIs like MEX to call return instead) */
 	struct GMT_LIBINFO *lib;		/* List of shared libs to consider */

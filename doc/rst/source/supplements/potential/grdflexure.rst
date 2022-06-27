@@ -263,6 +263,12 @@ The calculations are done using a rectangular Cartesian FFT operation. If your
 geographic region is close to either pole, you should consider using a Cartesian
 setup instead; you can always project it back to geographic using :doc:`grdproject </grdproject>`.
 
+Data Detrending
+---------------
+
+The default detrending mode is to remove a best-fitting linear plane (**+d**).
+Consult and use |-N| to select other modes.
+
 Transfer Functions
 ------------------
 
