@@ -16,9 +16,9 @@
         dimensions >= data which optimize speed and accuracy of FFT. If FFT
         dimensions > grid file dimensions, data are extended and tapered to zero.
 
-    Control detrending of data: Append modifiers for removing a linear trend:
+    Control detrending of data: Append modifiers for removing a linear trend. Consult module documentation for the default action:
 
-        **+d**: Detrend data, i.e. remove best-fitting linear trend [Default].
+        **+d**: Detrend data, i.e. remove best-fitting linear trend.
 
         **+a**: Only remove mean value.
 
