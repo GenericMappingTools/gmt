@@ -5786,7 +5786,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				dim[1] = g_scale_begin * length - g_ext;
 			PSL_plotsymbol (PSL, x_axis_pos, y, dim, PSL_VECTOR);
 			PSL_setorigin (PSL, x_axis_pos, 0.0, 0.0, PSL_FWD);
-			GMT->current.setting.map_graph_shift = fabs (dim[1] - length);
+			if (GMT->current.setting.map_graph_centered) GMT->current.setting.map_graph_shift = fabs (dim[1] - length);
 		}
 		if (axis == GMT_X)
 			skip_val = GMT->current.setting.map_graph_origin[GMT_X];
