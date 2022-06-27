@@ -10818,7 +10818,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				char *c = NULL, *o = NULL;
 				GMT->current.setting.map_frame_type = GMT_IS_GRAPH;
 				gmt_M_memset (GMT->current.setting.map_graph_origin_txt, GMT_LEN256, char);
-				if (strstr (lower_value, "-centered")) {
+				if (strstr (lower_value, "-origin")) {
 					/* Future expansion will look for x/y graph origin, save, and convert once we know coordinate type */
 					/* For now GMT->current.setting.map_graph_origin is [0, 0] */
 					GMT->current.setting.map_graph_centered = true;
@@ -12413,7 +12413,7 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				strcpy (value, "plain");
 			else if (GMT->current.setting.map_frame_type == GMT_IS_GRAPH) {
 				strcpy (value, "graph");
-				if (GMT->current.setting.map_graph_centered) strcat (value, "-centered");
+				if (GMT->current.setting.map_graph_centered) strcat (value, "-origin");
 				if (GMT->current.setting.map_graph_extension_unit != GMT_GRAPH_EXTENSION_UNIT || !doubleAlmostEqual (GMT->current.setting.map_graph_extension, GMT_GRAPH_EXTENSION)) {
 					char tmp[GMT_LEN32] = {""};
 					/* Not the default, specify what we are using */
