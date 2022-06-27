@@ -512,6 +512,7 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	API->parker_fft_default = true;	/* So that GMT_FFT_Option can report +h as default */
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);
 	if (API->error) return (API->error);	/* Set or get option list */

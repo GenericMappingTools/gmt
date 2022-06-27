@@ -207,6 +207,12 @@ meters, select |SYN_OPT-f|. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using :doc:`grdproject </grdproject>`.
 
+Data Detrending
+---------------
+
+The default detrending mode follows Parker [1972] and removes the mid-value (**+h**).
+Consult and use |-N| to select other modes.
+
 Plate Flexure
 -------------
 

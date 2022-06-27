@@ -11745,12 +11745,20 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, const c
 	/* For programs that needs to do either 1-D or 2-D FFT work */
 	unsigned int d1 = dim - 1;	/* Index into the info text strings below for 1-D (0) and 2-D (1) case */
 	char *data_type[2] = {"table", "grid"}, *dim_name[2] = {"<n_columns>", "<n_columns>/<n_rows>"}, *trend_type[2] = {"line", "plane"};
-	char *dim_ref[2] = {"dimension", "dimensions"}, *linear_type[2] = {"linear", "planar"};
-    struct GMTAPI_CTRL *API = NULL;
+	char *dim_ref[2] = {"dimension", "dimensions"}, *linear_type[2] = {"linear", "planar"}, *d_msg, *h_msg;
+	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (dim > 2) return_error (V_API, GMT_DIM_TOO_LARGE);
 	if (dim == 0) return_error (V_API, GMT_DIM_TOO_SMALL);
-    API = gmtapi_get_api_ptr (V_API);
+	API = gmtapi_get_api_ptr (V_API);
+	if (API->parker_fft_default) {	/* +h is default here as a special case */
+		d_msg = "";
+		h_msg = " [Default]";
+	}
+	else {	/* +d is default */
+		d_msg = " [Default]";
+		h_msg = "";
+	}
 	if (string && string[0] == ' ') GMT_Report (V_API, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
 	GMT_Usage (API, 1, "\n-%c%s", option, GMT_FFT_OPT);
 	GMT_Usage (API, -2, "Choose or inquire about suitable %s %s for %u-D FFT, and set modifiers.", data_type[d1], dim_ref[d1], dim);
@@ -11763,9 +11771,9 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, const c
 	GMT_Usage (API, -2, "Alternatively, append %s to do FFT on array size %s (Must be >= %s size) "
 	   "[Default chooses %s >= %s %s to optimize speed and accuracy of the FFT.]", dim_name[d1], dim_name[d1], data_type[d1], dim_ref[d1], data_type[d1], dim_ref[d1]);
 	GMT_Usage (API, -2, "%s Append modifiers for removing a %s trend:", GMT_LINE_BULLET, linear_type[d1]);
-	GMT_Usage (API, 3, "+d Detrend data, i.e., remove best-fitting %s [Default].", trend_type[d1]);
+	GMT_Usage (API, 3, "+d Detrend data, i.e., remove best-fitting %s%s.", trend_type[d1], d_msg);
 	GMT_Usage (API, 3, "+a Only remove mean value.");
-	GMT_Usage (API, 3, "+h Only remove mid value, i.e., 0.5 * (max + min).");
+	GMT_Usage (API, 3, "+h Only remove mid value, i.e., 0.5 * (max + min)%s.", h_msg);
 	GMT_Usage (API, 3, "+l Leave data alone.");
 	GMT_Usage (API, -2, "%s If FFT %s > %s %s, data are extended via edge point symmetry "
 	   "and tapered to zero.  Several modifiers can be set to change this behavior:", GMT_LINE_BULLET, dim_ref[d1], data_type[d1], dim_ref[d1]);
