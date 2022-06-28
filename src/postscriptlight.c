@@ -3341,9 +3341,12 @@ static char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset) {
     double w;
 	if (pattern && pattern[0]) {
 		while (*pattern) {
-            w = atof(pattern) * PSL->internal.dpp;
-            if (w > 0.0) non_zero++;
-            sprintf (&text[len], "%c%lg", mark, w);
+			w = atof(pattern) * PSL->internal.dpp;
+			if (w > 0.0) non_zero++;
+			if (w > 4.0)	/* Set as integer PS. Max error 12.5% (e.g.,  4.499999 -> 4), dropping for larger w */
+				sprintf (&text[len], "%c%d", mark, (int)rint (w));
+			else	/* Too small for integer, set as floating point */
+				sprintf (&text[len], "%c%lg", mark, w);
 			while (*pattern && *pattern != ' ') pattern++;
 			while (*pattern && *pattern == ' ') pattern++;
 			mark = ' ';
