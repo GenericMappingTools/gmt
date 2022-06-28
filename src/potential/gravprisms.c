@@ -199,8 +199,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 					Ctrl->D.file = strdup (opt->arg);
 					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->D.file))) n_errors++;
 				}
-				else
+				else {	/* Gave a constant density contrast */
 					Ctrl->D.rho = atof (opt->arg);
+					if (gmt_M_is_zero (Ctrl->D.rho)) {
+						GMT_Report (API, GMT_MSG_WARNING, "Option -D: Density contrast cannot be 0\n");
+						n_errors++;
+					}
+				}
 				break;
 			case 'E':	/* Set fixed prism dx, dy parameters instead of reading from prismfile */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
@@ -329,8 +334,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 	                                 "Option -H: Cannot be used with -D.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->D.active && !Ctrl->H.active,
 	                                 "option -C: Need to select either -D or -H.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->H.active && Ctrl->C.dz == 0.0,
-	                                 "Option -C: Requires +z<dz> when -H is selected\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->H.active && Ctrl->C.dz <= 0.0,
+	                                 "Option -C: Requires +z<dz> with a positive <dz> when -H is selected\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->H.active && !Ctrl->S.active,
 	                                 "Option -C: Requires -S when -H is set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && !Ctrl->C.active && !Ctrl->H.active,
@@ -681,8 +686,9 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "All z-values are assumed to be given in %s\n",   uname[Ctrl->M.active[GRAVPRISMS_VER]]);
 
 	if (Ctrl->C.active) {	/* Need to create prisms from two surfaces first */
+		bool flip_order = false;
 		struct GMT_GRID *B = NULL, *T = NULL, *H = NULL, *Rho = NULL;
-		double base = 0.0, top = 0.0, z1, z2, z_prev, z_next, z_mid, rs = 0.0, ws = 0.0;
+		double base = 0.0, top = 0.0, z1, z2, z_prev, z_next, z_mid, rs = 0.0, ws = 0.0, s = 1.0;
 		size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 
 		if (Ctrl->L.active) {	/* Specified layer base */
@@ -714,53 +720,72 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 			if ((Rho = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->D.file, NULL)) == NULL)
 				Return (API->error);
 		}
+
+		/* Some applications will give a interface that straddles z = 0.  In that case we want prisms to
+		 * go from a negative z to zero, and if z is positive, from 0 to a positive z. An example of such
+		 * a surface is plate flexure deflections beneath a load, which will have positive bulges. In
+		 * this case we also want to flip the sign of the given density contrast for negative z. */
+
+		if (Ctrl->L.active && !Ctrl->T.active && B)	/* Just a base no top, does it straddle a zero level? */
+			flip_order = (B->header->z_max > 0.0 && B->header->z_min < 0.0);
+		else if (Ctrl->T.active && !Ctrl->L.active && T)	/* Just a top, no base, does it straddle a zero level? */
+			flip_order = (T->header->z_max > 0.0 && T->header->z_min < 0.0);
 		dx = 0.5 * H->header->inc[GMT_X];	dy = 0.5 * H->header->inc[GMT_Y];
 		rho = Ctrl->D.rho;	/* Only initialized if -D is set */
-		for (k = 0; k < 7; k++)
+		for (k = 0; k < 7; k++)	/* Allocate memory for the 7 columns */
 			prism[k] = gmt_M_memory (GMT, NULL, n_alloc, double);
 
-		gmt_M_grd_loop (GMT, H, row, col, node) {
-			z2 = (T) ? T->data[node] : top;
+		gmt_M_grd_loop (GMT, H, row, col, node) {	/* Visit every grid node */
+			z2 = (T) ? T->data[node] : top;	/* z-value at the top of the layer
 			if (gmt_M_is_dnan (z2)) continue;	/* Cannot work with NaNs - probably outside the feature */
-			z1 = (B) ? B->data[node] : base;
+			z1 = (B) ? B->data[node] : base;	/* z-value at the bottom of the layer */
 			if (gmt_M_is_dnan (z1)) continue;	/* Cannot work with NaNs - probably outside the feature */
+			if (Ctrl->D.file && gmt_M_is_zero (Rho->data[node])) continue;	/* Need a nonzero density contrast to do any damage */
+			if (flip_order) {	/* E.g., when a flexure surface goes from moat to bulge */
+				if (z2 < z1) {	/* Must flip order and change density sign */
+					gmt_M_double_swap (z1, z2);
+					s = -1.0;	/* Flip density contrast too */
+				}
+				else	/* Good as is, reset density sign */
+					s = 1.0;
+			}
 			if (z2 <= z1) continue;	/* No layer thickness detected */
 			z_prev = z1;	/* We start exactly at z = z1 */
-			do {	/* Will at least be one prism */
-				if (Ctrl->H.active) {	/* Variable density means stacked prisms, most of thickness dz, at same point */
+			do {	/* There will at least be one prism */
+				if (Ctrl->H.active) {	/* Variable density model which means stacked prisms, most of thickness dz, at the same (x,y) */
 					/* First and last prisms in the stack are adjusted to have the height needed to match the surface boundaries */
 					z_next = (floor (z_prev / Ctrl->C.dz) + 1.0) * Ctrl->C.dz;	/* Presumably next regular z-spacing */
 					if (z_next <= z_prev) z_next += Ctrl->C.dz;	/* Can happen if z1 is a multiple of dz */
 					else if (z_next > z2) z_next = z2;	/* At the top, clip to limit */
-					z_mid = 0.5 * (z_prev + z_next);	/* Middle of prism - used to look up density */
+					z_mid = 0.5 * (z_prev + z_next);	/* Middle of prism - used to look up density from model */
 					rho = gravprisms_mean_density (Ctrl, H->data[node], z_prev, z_next);
 				}
 				else {	/* Constant density rho (set above via -D) or by Rho (via -W), just need a single prism per location */
 					z_next = z2;
-					if (Ctrl->D.file)
-						rho = Rho->data[node];	/* Update constant density for this prism */
+					if (Ctrl->D.file)	/* Update constant density for this prism */
+						rho = Rho->data[node];
 				}
 				if (n_prisms == n_alloc) {	/* Need to allocate more memory for the prisms */
 					n_alloc <<= 1;	/* Double it */
 					for (k = 0; k < 7; k++)
 						prism[k] = gmt_M_memory (GMT, prism[k], n_alloc, double);
 				}
-				/* Here we ensure prism is in meters */
+				/* Here we ensure prism dimensions are given in meters */
 				prism[0][n_prisms] = scl_xy * (H->x[col] - dx);	prism[1][n_prisms] = scl_xy * (H->x[col] + dx);
 				prism[2][n_prisms] = scl_xy * (H->y[row] - dy);	prism[3][n_prisms] = scl_xy * (H->y[row] + dy);
 				prism[4][n_prisms] = scl_z * z_prev;			prism[5][n_prisms] = scl_z * z_next;
-				prism[6][n_prisms] = rho;
+				prism[6][n_prisms] = s * rho;
 				n_prisms++;
-				z_prev = z_next;	/* The the top of this prism be the bottom of the next */
-			} while (z_prev < z2);	/* Until we run out of this stack */
+				z_prev = z_next;	/* The top of this prism will be the bottom of the next in the variable density case */
+			} while (z_prev < z2);	/* Until we run out of this stack of prisms */
 			if (Ctrl->W.active) {	/* Get vertical average density and keep track of means */
-				double dz = z2 - z1;
+				double dz = z2 - z1;	/* Prism height */
 				Rho->data[node] = gravprisms_mean_density (Ctrl, H->data[node], z1, z2);
 				rs += Rho->data[node] * dz;
 				ws += dz;
 			}
 		}
-		/* Finalize allocation */
+		/* Finalize memory allocation */
 		for (k = 0; k < 7; k++)
 			prism[k] = gmt_M_memory (GMT, prism[k], n_prisms, double);
 		GMT_Report (API, GMT_MSG_INFORMATION, "# of prisms constructed: %" PRIu64 "\n", n_prisms);
