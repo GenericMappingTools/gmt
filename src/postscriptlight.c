@@ -3332,14 +3332,14 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 
 static char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset) {
 	/* Writes the dash pattern.  Note: Unlike a pen width, the dashes and gaps
-     * set here cannot all be zero - it results in a PostScript error for discussion
-     * see https://github.com/GenericMappingTools/gmt/issues/6833. Here, we will
-     * ensure that this does not happen by printing a nasty warning if it happens. */
+	 * set here cannot all be zero - it results in a PostScript error for discussion
+	 * see https://github.com/GenericMappingTools/gmt/issues/6833. Here, we will
+	 * ensure that this does not happen by printing a nasty warning if it happens. */
 	static char text[PSL_BUFSIZ];
-	char mark = '[';
-	size_t len = 0, non_zero = 0;
-    double w;
 	if (pattern && pattern[0]) {
+		char mark = '[';
+		size_t len = 0, non_zero = 0;
+		double w;
 		while (*pattern) {
 			w = atof(pattern) * PSL->internal.dpp;
 			if (w > 0.0) non_zero++;
