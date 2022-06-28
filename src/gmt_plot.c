@@ -5714,7 +5714,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		center_reset = true;
         skip_center_annot = (GMT->current.map.frame.side[W_SIDE] && GMT->current.map.frame.side[S_SIDE]);
 		if (!below) { /* Warn that these are skipped */
-            GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_xy_axis: MAP_FRAME_TYPE=graph-centered only expects -B frame selections W, S, w, s, l, b\n");
+            GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_xy_axis: MAP_FRAME_TYPE=graph-origin only expects -B frame selections W, S, w, s, l, b\n");
            return;
         }
 	}
