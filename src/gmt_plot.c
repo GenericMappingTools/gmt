@@ -5801,6 +5801,12 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	}
 
 	if (side == GMT_AXIS_DRAW) {	/* Just drawing the axis for this one */
+		if (center_reset) {	/* Undo temporary origin shifts needed to move axes */
+			if (horizontal) 
+				PSL_setorigin (PSL, 0.0, -y_axis_pos, 0.0, PSL_INV);
+			else
+				PSL_setorigin (PSL, -x_axis_pos, 0.0, 0.0, PSL_INV);
+		}
 		PSL_setorigin (PSL, -x0, -y0, 0.0, PSL_INV);
 		return;
 	}
