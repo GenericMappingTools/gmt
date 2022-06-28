@@ -10822,7 +10822,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					/* Future expansion will look for x/y graph origin, save, and convert once we know coordinate type */
 					/* For now GMT->current.setting.map_graph_origin is [0, 0] */
 					GMT->current.setting.map_graph_centered = true;
-					if ((o = strstr (lower_value, "+o")) && strchr (o, '/'))	/* Also specified graph origin */
+					if ((o = strstr (lower_value, "+o")) && (strchr (o, '/') || !strcmp (o, "+oc")))	/* Also specified graph origin or c*/
 						strncpy (GMT->current.setting.map_graph_origin_txt, o, GMT_LEN256);
 				}
 				if ((c = strchr (lower_value, ','))) {	/* Also specified vector extension setting */

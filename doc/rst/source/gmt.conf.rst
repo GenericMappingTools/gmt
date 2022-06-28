@@ -755,7 +755,8 @@ MAP Parameters
         selected (or **w**, **s**, **l**, and **b** too); the **E** and **N** (and
         **e**, **n**, **r** and **t**) will be ignored.  **Note**: Annotations
         at any axes intersections will be suppressed.  To select another intersection point
-        than the data origin you may append **+o**\ *xorig*/*yorig* [0/0].
+        than the data origin you may append **+o**\ *xorig*/*yorig* or the short-cut
+        **+oc** to center the axes on the current data domain [0/0].
 
         .. toggle::
 
