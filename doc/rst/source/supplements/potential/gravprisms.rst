@@ -264,8 +264,8 @@ prism file and restrict calculations to the same crossing profile, i.e.::
     gmt plot faa_crossing.txt -R-30/30/0/350 -i0,3 -W1p -B -pdf faa_crossing
 
 To build prisms using a variable density grid for an interface crossing the zero level
-and obtain prisms with the negative density contrast if below zero and a positive
-density contrast if above zero, then try::
+and obtain prisms with the negative of the given density contrast if below zero and the
+positive density contrast if above zero, try::
 
     gmt gravprisms -TFlexure_surf.grd -C+wprisms_var.txt+q -DVariable_drho.grd
 
