@@ -15896,7 +15896,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		GMT->current.ps.oneliner = false;
 		if (gmt_get_current_item (GMT, "cpt", false)) {	/* One-liner with a current CPT, place it on top */
 			gmtinit_init_zproject (GMT);	/* Reset to 2-D view just in case */
-			if ((i = GMT_Call_Module (GMT->parent, "colorbar", GMT_MODULE_CMD, "-DJBC -Baf"))) {
+			GMT->current.map.frame.init = false;	/* Since we want -B to be parsed below */
+			if ((i = GMT_Call_Module (GMT->parent, "colorbar", GMT_MODULE_CMD, "-DJBC -Bxaf"))) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to call module colorbar for a one-liner plot.\n");
 				return;
 			}
