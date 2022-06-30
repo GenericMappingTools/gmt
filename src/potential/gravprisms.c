@@ -334,10 +334,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 	                                 "Option -Z: Cannot also specify -N if a level grid has been supplied\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && !Ctrl->G.active && !Ctrl->C.quit,
 	                                 "Option -G: Must specify output gridfile name if -N is not used.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->H.active,
-	                                 "Option -H: Cannot be used with -D.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.file && Ctrl->H.active,
+	                                 "Option -H: Cannot be used with -D<file>.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->D.active && !Ctrl->H.active,
-	                                 "option -C: Need to select either -D or -H.\n");
+	                                 "option -C: Need to select either -D or -H (or both).\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->H.active && Ctrl->C.dz <= 0.0,
 	                                 "Option -C: Requires +z<dz> with a positive <dz> when -H is selected\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->H.active && !Ctrl->S.active,
@@ -379,6 +379,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D<density>");
 	GMT_Usage (API, -2, "Set fixed density contrast (in kg/m^3) [Default reads it from last numerical column or computes it via -H]. "
 		"Alternatively, read grid with vertically-averaged spatially varying densities from file <density>.\n");
+	GMT_Usage (API, -2, "Note: If -H is used then -D<rho> can be used to compute density contrasts relative to <rho> [0].");
 	GMT_Usage (API, 1, "\n-E<dx>/<dy>");
 	GMT_Usage (API, -2, "Set fixed x- and y-dimensions for all prisms [Default reads it from columns 4-5].");
 	GMT_Usage (API, 1, "\n-Ff|n[<lat>]|v]");
@@ -763,7 +764,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 					if (z_next <= z_prev) z_next += Ctrl->C.dz;	/* Can happen if z1 is a multiple of dz */
 					else if (z_next > z2) z_next = z2;	/* At the top, clip to limit */
 					z_mid = 0.5 * (z_prev + z_next);	/* Middle of prism - used to look up density from model */
-					rho = gravprisms_mean_density (Ctrl, H->data[node], z_prev, z_next);
+					rho = gravprisms_mean_density (Ctrl, H->data[node], z_prev, z_next) - Ctrl->D.rho;	/* Get density or density contrast (if -D is set) */
 				}
 				else {	/* Constant density rho (set above via -D) or by Rho (via -W), just need a single prism per location */
 					z_next = z2;
