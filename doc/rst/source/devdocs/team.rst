@@ -89,10 +89,10 @@ the GMT project have 'Maintainer' listed below their names.
     <div class="team-card">
         <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/14077947?v=4" alt="Card image">
         <div class="team-card-body">
-            <h6 class="team-card-text">Meghan Jones</h6>
+            <h6 class="team-card-text">Max Jones</h6>
             <h7 class="team-card-text">Joined GMT 6</h7>
             <h7 class="team-card-text">Maintainer</h7>
-            <h7class="team-card-text"><a href="https://github.com/meghanrjones" >@meghanrjones</a></h7>
+            <h7class="team-card-text"><a href="https://github.com/maxrjones" >@maxrjones</a></h7>
         </div>
     </div>
     <div class="team-card">
