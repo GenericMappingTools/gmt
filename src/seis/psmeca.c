@@ -854,8 +854,20 @@ EXTERN_MSC int GMT_psmeca (void *V_API, int mode, void *args) {
 						else if (n_scanned == 2)	/* Got no title */
 							event_title[0] = '\0';
 					}
-					else if (n_scanned == 1)	/* Only got event title */
+					else if (n_scanned == 1) {	/* Only got event title */
 						strncpy (event_title, S->text[row], GMT_BUFSIZ-1);
+						/* So here's the story. For some historical reason the parser only reads the strict number
+						   of columns needed for each convention and if there are more they are left as text.
+						   When it's asked to plot an offset ball the plotting coords are scanned from the remaining
+						   text (the n_scanned = sscanf(...) above). But from externals all numeric columns were read
+						   and the fishing in text fails resulting in no offset. The following patch solves the
+						   issue but it's only that a dumb patch. Better would be to solve in origin but that's risky.
+						*/
+						if (API->external && Ctrl->A.active && (S->n_columns - GMT->current.io.max_cols_to_read) == 2) {
+							xynew[GMT_X] = S->data[GMT->current.io.max_cols_to_read][row];
+							xynew[GMT_Y] = S->data[GMT->current.io.max_cols_to_read+1][row];
+						}
+					}
 					else	/* Got no title */
 						event_title[0] = '\0';
 				}

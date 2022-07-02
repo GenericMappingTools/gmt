@@ -114,7 +114,8 @@ Optional Arguments
 **-D**\ *density*
     Sets a fixed density contrast that overrides any individual prism settings in the prisms file, in :math:`\mbox{kg/m}^3` of :math:`\mbox{g/cm}^3`. Alternatively, give name of an input grid with spatially varying, vertically-averaged
     prism densities. This requires |-C| and the grid must be co-registered with the grid provided by |-S|
-    (or |-L| and |-T|).
+    (or |-L| and |-T|).  **Note**: If |-H| is used then a fixed density may be set via |-D| and it will be used to compute
+    *density contrasts* in the seamount relative to the fixed *density* (such as density of seawater for underwater seamounts).
 
 .. _-E:
 
