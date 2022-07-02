@@ -749,6 +749,14 @@ MAP Parameters
         instead).  The vector stem is set to match :term:`MAP_FRAME_WIDTH`, while
         the vector head length and width are 10 and 5 times this width,
         respectively.  You may control its shape via :term:`MAP_VECTOR_SHAPE`.
+        The graph vectors are plotted as normal boundary axes.  Use **graph-origin**
+        to shift the **W** and **S** axes so they intersect at the user data
+        (0, 0) origin instead.  In this mode, only the **W** and **S** axes can be 
+        selected (or **w**, **s**, **l**, and **b** too); the **E** and **N** (and
+        **e**, **n**, **r** and **t**) will be ignored.  **Note**: Annotations
+        at any axes intersections will be suppressed.  To select another intersection point
+        than the data origin you may append **+o**\ *xorig*/*yorig* or the short-cut
+        **+oc** to center the axes on the current data domain [0/0].
 
         .. toggle::
 
