@@ -935,31 +935,22 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 		GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the data of file %s - file skipped\n", file);
 		return NULL;
 	}
-	HH = gmt_get_H_hidden (Orig->header);
-	if (HH->has_NaNs == GMT_GRID_HAS_NANS) {
-		GMT_Report (API, GMT_MSG_ERROR, "Load grid %s has NaNs, cannot be used with FFTs - file skipped\n", file);
-		return NULL;
-	}
 	/* Note: If input grid is read-only then we must duplicate it; otherwise Grid points to Orig */
 	(void) gmt_set_outgrid (API->GMT, file, false, 0, Orig, &Grid);
-	/* Ensure any NaNs are set to 0 here. This can happen with data from grdseamount, for instance. We cannot have NaNs when doing FFTs */
-	for (node = 0; node < Grid->header->size; node++) {
-		if (gmt_M_is_fnan (Grid->data[node])) Grid->data[node] = 0.0;	/* Outside seamounts, probably */
-	}
-	if (Ctrl->W.active) {	/* See if any part of the load sticks above water, and if so scale this amount as if it was submerged */
-		uint64_t n_subaerial = 0;
-		double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);
-		for (node = 0; node < Grid->header->size; node++) {
-			if (Grid->data[node] > Ctrl->W.water_depth) {
-				Grid->data[node] = (gmt_grdfloat)(Ctrl->W.water_depth + (Grid->data[node] - Ctrl->W.water_depth) * boost);
-				n_subaerial++;
-			}
-		}
-		if (n_subaerial) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " nodes were subaerial so heights were scaled for the equivalent submerged case\n", n_subaerial);
+	HH = gmt_get_H_hidden (Grid->header);
+	if (HH->has_NaNs == GMT_GRID_HAS_NANS) {	/* Must deal with load NaNs */
+		/* Ensure any NaNs are set to 0 here. This can happen with data from grdseamount, for instance. We cannot have NaNs when doing FFTs */
+		GMT_Report (API, GMT_MSG_WARNING, "Load grid %s has NaNs, these will be replaced with zeros\n", file);
+		for (node = 0; node < Grid->header->size; node++)
+			if (gmt_M_is_fnan (Grid->data[node])) Grid->data[node] = 0.0;	/* Outside the load, probably */
+		HH->has_NaNs = GMT_GRID_NO_NANS;	/* Since we replaced them */
 	}
 	if (Ctrl->D.var_rhol) {	/* Must load variable density grid, get mean load density, and scale height accordingly */
 		if ((Rho = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, rho, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the header of file %s - file skipped\n", rho);
+			return NULL;
+		}
+		if (!gmt_grd_domains_match (GMT, Grid, Rho, "load and density")) {	/* Not co-registered */
 			return NULL;
 		}
 		if (strstr (Rho->header->remark, "Mean Load Density:")) {	/* Got the remark about mean load density */
@@ -971,7 +962,7 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 			GMT_Report (API, GMT_MSG_ERROR, "Failure to extract mean load density from %s - file skipped\n", rho);
 			return NULL;
 		}
-		/* Note: Density grid may have NaNs outside the feature since we are not taking FFT of the density grid */
+		/* Note: Density grid are allowed to have NaNs outside the feature since we are not taking FFT of the density grid */
 		if ((Rho = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY |
 	 		GMT_GRID_IS_COMPLEX_REAL, NULL, rho, Rho)) == NULL) {	/* Get header and data */
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the data of file %s - file skipped\n", rho);
@@ -979,13 +970,28 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 		}
 		boost = 1.0 / mean_rho_l;	/* To avoid division below */
 		for (node = 0; node < Rho->header->size; node++) {
-			if (gmt_M_is_fnan (Rho->data[node])) continue;	/* Outside seamounts */
+			if (gmt_M_is_fnan (Rho->data[node])) continue;	/* Outside the load */
 			Grid->data[node] *= (gmt_grdfloat)(Rho->data[node] * boost);
 		}
-		/* Free density grid */
-		if (GMT_Destroy_Data (API, &Rho) != GMT_NOERROR)
-			return NULL;
+		/* Now load amplitudes have been adjusted to correspond to a common load density mean_rho_l */
 	}
+	else
+		mean_rho_l = Ctrl->D.rhol;	/* Constant load density */
+
+	if (Ctrl->W.active) {	/* See if any part of the load sticks above water, and if so scale this amount as if it was submerged */
+		uint64_t n_subaerial = 0;
+		double boost = mean_rho_l / (mean_rho_l - Ctrl->D.rhow);	/* For constant density case */
+		for (node = 0; node < Grid->header->size; node++) {
+			if (Grid->data[node] > Ctrl->W.water_depth) {	/* Sticking above the water line */
+				Grid->data[node] = (gmt_grdfloat)(Ctrl->W.water_depth + (Grid->data[node] - Ctrl->W.water_depth) * boost);
+				n_subaerial++;
+			}
+		}
+		if (n_subaerial) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " nodes were subaerial so heights were scaled for the equivalent submerged case\n", n_subaerial);
+	}
+	/* Free any density grid */
+	if (Ctrl->D.var_rhol && GMT_Destroy_Data (API, &Rho) != GMT_NOERROR)
+		return NULL;
 	/* From here we address the grid via Grid; we are done with using the address Orig directly. */
 	G = gmt_M_memory (GMT, NULL, 1, struct GRDFLEXURE_GRID);	/* Allocate a Flex structure */
 	G->K = GMT_FFT_Create (API, Grid, GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);	/* Also detrends, if requested */
@@ -1138,7 +1144,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	struct GMT_FFT_WAVENUMBER *K = NULL;
 	struct GRDFLEXURE_RHEOLOGY *R = NULL;
 	struct GRDFLEXURE_GRID **Load = NULL, *This_Load = NULL;
-	struct GMT_GRID *Out = NULL;
+	struct GMT_GRID *Out = NULL, *Grid_A = NULL;
 	struct GMT_DATASET *L = NULL;
 	struct GRDFLEXURE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -1187,6 +1193,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 			}
 			Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, zfile, rho, &Ctrl->T.time[t_load]);
 			if (!Ctrl->D.var_rhol) Load[t_load]->rho_load = Ctrl->D.rhol;
+			if (Grid_A == NULL && Load[t_load]->Grid) Grid_A = Load[t_load]->Grid;	/* First grid read */
 		}
 	}
 	else if (Ctrl->In.list) {	/* Must read a list of files and their load times (format: filename [rhofile] loadtime) */
@@ -1222,6 +1229,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 				Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, zfile, r_arg, &this_time);
 				if (!Ctrl->D.var_rhol) 
 					Load[t_load]->rho_load = (ns == 3) ? atof (r_arg) : Ctrl->D.rhol;
+				if (Grid_A == NULL && Load[t_load]->Grid) Grid_A = Load[t_load]->Grid;	/* First grid read */
 			}
 		}
 		if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {
@@ -1239,6 +1247,15 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	if (n_load_times > 1) {	/* Sort to ensure load array goes from old to young loads */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Sort %u loads from old to young\n", n_load_times);
 		qsort (Load, n_load_times, sizeof (struct GRDFLEXURE_GRID *), grdflexure_compare_loads);
+		/* Do a check that all grids are coregistered */
+		for (t_load = 0; t_load < n_load_times; t_load++) {	/* For each load  */
+			if (Grid_A == NULL) continue;	/* Safety valve */
+			if (Load[t_load] == NULL) continue;	/* Quietly skip times with no load */
+			if (Load[t_load]->Grid == NULL) continue;	/* Quietly skip times with no load */
+			if (!gmt_grd_domains_match (GMT, Grid_A, Load[t_load]->Grid, "load")) {
+				error = GMT_RUNTIME_ERROR;	goto cleanup_time;
+			}
+		}
 	}
 	K = Load[0]->K;	/* We only need one pointer to get to wavenumbers as they are all the same for all grids */
 	fixed_rho_load = Ctrl->D.rhol;	/* Remember the setting since we may change it temporarily below */

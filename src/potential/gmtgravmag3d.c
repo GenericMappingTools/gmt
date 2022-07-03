@@ -34,7 +34,7 @@
 #define THIS_MODULE_PURPOSE	"Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe"
 #define THIS_MODULE_KEYS	"<D{,TD(,FD(,MD(,GG},>D)"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVf"
+#define THIS_MODULE_OPTIONS "-:RVfhior"
 
 struct GMTGRAVMAG3D_CTRL {
 	struct GMTGRAVMAG3D_C {	/* -C */
@@ -99,7 +99,7 @@ struct GMTGRAVMAG3D_CTRL {
 	} box;
 	int  n_triang, n_vert, n_raw_triang;
 	int  npts_circ;		/* Number of points in which a circle is descretized. */
-	int  n_slices;		/* Spheres and Ellipsoides are made by 2*n_slices. Bells are made by n_slices. */
+	int  n_slices;		/* Spheres and Ellipsoids are made by 2*n_slices. Bells are made by n_slices. */
 	int  n_sigmas;		/* Number of sigmas which will determine the bell's base width */
 	struct GMTGRAVMAG3D_XYZ *triang;
 	struct GMTGRAVMAG3D_XYZ *t_center;
@@ -179,8 +179,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<xyz_file>] -Tv<vert_file> | -Tr|s<raw_file> | -M+s<body>/<pars> [-C<density>] [-E<thickness>] "
 		"[-F<xy_file>] [-G%s] [-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [%s] [-L<z_observation>] [%s] "
-		"[-S<radius>] [-Z<level>] [%s] [-fg] [%s] [%s]\n",
-		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_r_OPT, GMT_PAR_OPT);
+		"[-S<radius>] [-Z<level>] [%s] [-fg] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -240,7 +240,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set z level of reference plane [Default = 0].");
 	GMT_Option (API, "bi");
 	GMT_Usage (API, 1, "\n-fg Converts geographic grids to meters using a \"Flat Earth\" approximation.");
-	GMT_Option (API, "r,:,.");
+	GMT_Option (API, "h,i,o,r,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -276,7 +276,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				if ((sscanf(opt->arg, "%lf/%lf/%lf/%lf/%lf",
 					    &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -H: Can't dechiper values\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -H: Can't decipher values\n");
 					n_errors++;
 				}
 				Ctrl->C.active = false;
@@ -392,7 +392,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 						return GMT_PARSE_ERROR;
 					}
 					if (err_npar) {
-						GMT_Report (API, GMT_MSG_ERROR, "Model prism option, wrong number of parametrs.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Model prism option, wrong number of parameters.\n");
 						return GMT_PARSE_ERROR;
 					}
 				}
@@ -458,7 +458,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->I.active, "Must specify -I option\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 ,
-	                                  "Must specify either -Cdensity or -H<stuff>\n");
+	                                  "Must specify either -C<density> or -H<stuff>\n");
 	j = gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 	if (gmt_M_check_condition(GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
 		Ctrl->S.active = false;
@@ -667,7 +667,7 @@ GMT_LOCAL int read_raw(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl) {
 	if ((In = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->T.raw_file, NULL)) == NULL)
 		return GMT->parent->error;
 	if (In->n_columns < 9) {	/* Trouble */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ts: %s does not have 9 columns with 3 triang vertices\n", Ctrl->T.raw_file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ts: %s does not have 9 columns with 3 triangle vertices\n", Ctrl->T.raw_file);
 		return -1;
 	}
 

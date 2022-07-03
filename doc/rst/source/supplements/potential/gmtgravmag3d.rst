@@ -23,6 +23,10 @@ Synopsis
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
 [ **-fg**]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -145,6 +149,16 @@ Optional Arguments
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
+.. |Add_-h| replace:: Not used with binary data.
+.. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_-icols.rst_
+
+.. include:: ../../explain_-ocols.rst_
+
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_nodereg.rst_
+
 .. include:: ../../explain_help.rst_
 
 Grid Distance Units
@@ -166,6 +180,7 @@ See Also
 --------
 
 :doc:`gmt </gmt>`, :doc:`grdgravmag3d`,
+:doc:`gravprisms </supplements/potential/gravprisms>`,
 :doc:`talwani2d </supplements/potential/talwani2d>`,
 :doc:`talwani3d </supplements/potential/talwani3d>`
 

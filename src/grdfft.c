@@ -868,20 +868,7 @@ EXTERN_MSC int GMT_grdfft (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->In.n_grids == 2) {	/* If given 2 grids, make sure they are co-registered and has same size, registration, etc. */
-		if(Orig[0]->header->registration != Orig[1]->header->registration) {
-			GMT_Report (API, GMT_MSG_ERROR, "The two grids have different registrations!\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (!gmt_M_grd_same_shape (GMT, Orig[0], Orig[1])) {
-			GMT_Report (API, GMT_MSG_ERROR, "The two grids have different dimensions\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (!gmt_M_grd_same_region (GMT, Orig[0], Orig[1])) {
-			GMT_Report (API, GMT_MSG_ERROR, "The two grids have different regions\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (!gmt_M_grd_same_inc (GMT, Orig[0], Orig[1])) {
-			GMT_Report (API, GMT_MSG_ERROR, "The two grids have different intervals\n");
+		if (!gmt_grd_domains_match (GMT, Orig[0], Orig[1], NULL)) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}

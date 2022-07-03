@@ -10815,8 +10815,16 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			if (!strcmp (lower_value, "plain"))
 				GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 			else if (!strncmp (lower_value, "graph", 5U)) {
-				char *c = NULL;
+				char *c = NULL, *o = NULL;
 				GMT->current.setting.map_frame_type = GMT_IS_GRAPH;
+				gmt_M_memset (GMT->current.setting.map_graph_origin_txt, GMT_LEN256, char);
+				if (strstr (lower_value, "-origin")) {
+					/* Future expansion will look for x/y graph origin, save, and convert once we know coordinate type */
+					/* For now GMT->current.setting.map_graph_origin is [0, 0] */
+					GMT->current.setting.map_graph_centered = true;
+					if ((o = strstr (lower_value, "+o")) && (strchr (o, '/') || !strcmp (o, "+oc")))	/* Also specified graph origin or c*/
+						strncpy (GMT->current.setting.map_graph_origin_txt, o, GMT_LEN256);
+				}
 				if ((c = strchr (lower_value, ','))) {	/* Also specified vector extension setting */
 					size_t last = strlen (lower_value) - 1;
 					char unit = lower_value[last];
@@ -10833,6 +10841,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					GMT->current.setting.map_graph_extension_unit = GMT_GRAPH_EXTENSION_UNIT;
 					GMT->current.setting.map_graph_extension = GMT_GRAPH_EXTENSION;
 				}
+				if (o) o[0] = '+';	/* Restore modifier */
 			}
 			else if (!strcmp (lower_value, "fancy"))
 				GMT->current.setting.map_frame_type = GMT_IS_FANCY;
@@ -12404,6 +12413,7 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				strcpy (value, "plain");
 			else if (GMT->current.setting.map_frame_type == GMT_IS_GRAPH) {
 				strcpy (value, "graph");
+				if (GMT->current.setting.map_graph_centered) strcat (value, "-origin");
 				if (GMT->current.setting.map_graph_extension_unit != GMT_GRAPH_EXTENSION_UNIT || !doubleAlmostEqual (GMT->current.setting.map_graph_extension, GMT_GRAPH_EXTENSION)) {
 					char tmp[GMT_LEN32] = {""};
 					/* Not the default, specify what we are using */
@@ -12415,6 +12425,8 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 					}
 					strcat (value, tmp);
 				}
+				if (GMT->current.setting.map_graph_origin_txt[0])	/* Append graph origin */
+					strcat (value, GMT->current.setting.map_graph_origin_txt);
 			}
 			else if (GMT->current.setting.map_frame_type == GMT_IS_FANCY)
 				strcpy (value, "fancy");
@@ -15884,7 +15896,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		GMT->current.ps.oneliner = false;
 		if (gmt_get_current_item (GMT, "cpt", false)) {	/* One-liner with a current CPT, place it on top */
 			gmtinit_init_zproject (GMT);	/* Reset to 2-D view just in case */
-			if ((i = GMT_Call_Module (GMT->parent, "colorbar", GMT_MODULE_CMD, "-DJBC -Baf"))) {
+			GMT->current.map.frame.init = false;	/* Since we want -B to be parsed below */
+			if ((i = GMT_Call_Module (GMT->parent, "colorbar", GMT_MODULE_CMD, "-DJBC -Bxaf"))) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to call module colorbar for a one-liner plot.\n");
 				return;
 			}
