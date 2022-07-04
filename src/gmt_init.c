@@ -520,8 +520,8 @@ GMT_LOCAL void gmtinit_handle_escape_text (char *text, char key, int way) {
 
 /*! . */
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *kw1, struct GMT_KEYWORD_DICTIONARY *kw2, char *arg, int *k) {
-	/* Determine if this long-format arg is found in one of the two keyword lists kw1 (common) and kw2 (module).
-	 * If we find a match we return a pointer to the corresponding keyword list and the index *k for the array entry.
+	/* Determine if this long-format arg is found in one of the two keyword lists kw1 (common) and kw2 (current module).
+	 * If we find a match we return a pointer to the corresponding keyword list and the index *k for the array entry index.
 	 * If not found then we return NULL and set index to -1 (GMT_NOTSET) */
 	size_t len, len_given_keyword = strlen(arg);	/* Get the length of given argument */
 	struct GMT_KEYWORD_DICTIONARY *kw[2] = {kw1, kw2};	/* kw1 is the common options and kw2 is any module options available in long-format version */
@@ -547,21 +547,21 @@ GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, c
 	size_t len, lent = strlen(text);
 	char *c = NULL, m = 0, item[GMT_LEN64] = {""};
 	gmt_M_unused (API);
-	if ((c = strchr (text, sep))) c[0] = '\0';	/* Chop off the colon or equal and what follows for now */
-	while (m == 0 && (gmt_strtok (longlist, ",", &pos, item))) {	/* While there are unprocessed directives to examine */
+	if ((c = strchr (text, sep))) c[0] = '\0';	/* Chop off the colon or equal sign and thus hide what follows for now */
+	while (m == 0 && (gmt_strtok (longlist, ",", &pos, item))) {	/* While there are unprocessed directives to examine... */
 		len = MIN (lent, strlen(item));	/* Only compare up to the given # of characters, but less than length of item */
 		if (!strncmp (item, text, len))	/* Found this directive in the text */
 			m = shortlist[k];	/* Assign the corresponding short modifier to m and this stops the while loop */
-		k += 2;	/* Go to next char in comma-separated list of single characters (2 since we skip the comma) */
+		k += 2;	/* Go to next char in comma-separated list of single characters (2 since we skip the commas) */
 	}
-	if (m && c)	/* We found a short-option flag and there is an argument that follows a colon or equal sign */
-		strcpy (argument, &c[1]);	/* Pass out the directive argument */
-	else if (m)	/* Found a short-option flag but there is nothing that follows */
+	if (m && c)	/* We found a short-option flag and there is an argument that follows a colon (or equal sign) */
+		strcpy (argument, &c[1]);	/* Pass back out the directive argument */
+	else if (m)	/* Found a short-option flag but there is no arguments that follows */
 		argument[0] = '\0';	/* Nothing */
 	else	/* Not a directive, m is 0 and c is NULL */
 		strcpy (argument, text);	/* Not a directive, pass out the argument as is */
-	if (c) c[0] = sep;		/* Restore colon/equal sign we masked out earlier */
-	return m;	/* Returns 0 if no modifier was found */
+	if (c) c[0] = sep;		/* Restore the colon or equal sign we masked out earlier */
+	return m;	/* Returns 0 if no modifier was found, else the modifier character */
 }
 
 GMT_LOCAL int gmtinit_get_section (struct GMTAPI_CTRL *API, char *arg, char separator, int k, int *sx) {
@@ -571,17 +571,17 @@ GMT_LOCAL int gmtinit_get_section (struct GMTAPI_CTRL *API, char *arg, char sepa
 	while (arg[j] && kk < k) {	/* We need to skip previous sections */
 		if (arg[j] == separator) {	/* Start of a new section separated by / or comma, probably */
 			kk++;		/* kk is now the section number, i.e., this will become 0 the first time we get here */
-			s0 = s;		/* Keep previous start position */
-			s = j+1;	/* This is position of first character in this section */
+			s0 = s;		/* Remember previous start position */
+			s = j+1;	/* This is the position of the first character in this section */
 			last_s = j;	/* Position of previous separator before this section */
 			if (kk < k) j++;	/* If not at desired section, increment j */
 		}
 		else	/* Not there yet, keep going */
 			j++;
 	}
-	if (kk == k) {	/* Found the separator and is now at k'th section */
+	if (kk == k) {	/* Found the separator and is now at start of the k'th section */
 		arg[j] = '\0';	/* Hide the rest of the string */
-		*sx = j;	/* Return position of separator that was removed */
+		*sx = j;	/* Return position of the separator that was removed */
 	}
 	else if (last_s) {	/* Must be the last section since it is missing a trailing separator */
 		*sx = GMT_NOTSET;	/* Nothing to chop */
@@ -595,7 +595,7 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 	/* Loop over given options and replace any recognized long-form --parameter[=value] arguments
 	 * with the corresponding classic short-format version -<code>[value]. Specifically, long-format is defined as
 	 *
-	 * --longoption[=[<directive>:]<arg>][+<mod1>[=<arg1>]][+<mod2>[=<arg2>]]...
+	 * --longoption[=<directive>[:<arg>]][+<mod1>[=<arg1>]][+<mod2>[=<arg2>]][...]
 	 *
 	 * For options that take more than one section of arguments (e.g., -Idx/dy or -icols1,cols2,...)
 	 * the section
@@ -616,89 +616,89 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 	if (options == NULL) return;	/* Nothing to process */
 
 	#if !defined(USE_MODULE_LONG_OPTIONS)
-	this_module_kw = NULL;	/* Debugging: Not testing the module long-options */
+	this_module_kw = NULL;	/* Debugging: Not testing the module long-options yet */
 	#endif
 
-	for (opt = *options; opt; opt = opt->next) {
-		if (opt->option != GMT_OPT_PARAMETER) continue;	/* Cannot be a --keyword[=value] pair */
-		if (isupper (opt->arg[0])) continue;		/* Skip the upper-case GMT Default parameter settings, e.g., --FONT_TITLE=12p */
+	for (opt = *options; opt; opt = opt->next) {	/* Examine all incoming options */
+		if (opt->option != GMT_OPT_PARAMETER) continue;	/* Cannot be a --keyword[=value] long-option pair */
+		if (isupper (opt->arg[0])) continue;		/* Skip any upper-case GMT Default parameter settings, e.g., --FONT_TITLE=12p */
 		strcpy (orig, opt->arg);			/* Retain a copy of current option arguments */
 		strcpy (copy, opt->arg);			/* Retain another copy of current option arguments */
 		gmtinit_handle_escape_text (copy, '+', +1);	/* Hide any escaped +? sequences */
-		directive = strchr (copy, '=');		/* Get location of equal sign, if present */
-		modifier  = strchr (copy, '+');		/* Get location of plus sign, if present */
-		got_directive = got_modifier = false;	/* Reset these to be false */
-		/* Check for case where the = is part of a modifier, hence not a value or directive */
+		directive = strchr (copy, '=');		/* Get location of the equal sign, if it is present */
+		modifier  = strchr (copy, '+');		/* Get location of the first plus sign, if any are present */
+		got_directive = got_modifier = false;	/* Reset these to be false for this option */
+		/* Check for the case where the = is part of a modifier, hence not a value or directive */
 		if (directive && modifier && ((directive - copy) > (modifier - copy)))
-			directive = NULL;				/* The = is part of a modifier and not the directive, so ignore it for now */
-		if (directive) directive[0] = '\0', got_directive = true;	/* Cut off =value for now so opt->arg only has the keyword, but remember a directive was found */
-		if (modifier) modifier[0] = '\0', got_modifier = true;		/* Cut off +modifier for now so orig only has the keyword, but remember a modifier was found */
-		if ((kw = gmtinit_find_kw (API, gmt_common_kw, this_module_kw, orig, &k)) == NULL) {	/* Find matching keyword listing */
-			/* Did not find matching long format keyword; undo damage and move to next option */
-			if (directive) directive[0] = '=';
-			if (modifier) modifier[0] = '+';
+			directive = NULL;				/* The = is part of a modifier and not the directive, so we ignore it for now */
+		if (directive) directive[0] = '\0', got_directive = true;	/* Cut off =value for now so opt->arg only has the keyword, but remember if a directive was found */
+		if (modifier) modifier[0] = '\0', got_modifier = true;		/* Cut off +modifier for now so orig only has the keyword, but remember if a modifier was found */
+		if ((kw = gmtinit_find_kw (API, gmt_common_kw, this_module_kw, orig, &k)) == NULL) {	/* Find the matching keyword listing */
+			/* Did not find matching long format keyword; undo damage and move on to next option */
+			if (directive) directive[0] = '=';	/* Restore the hidden equal sign */
+			if (modifier) modifier[0] = '+';	/* Restore the hidden plus sign */
 			continue;
 		}
 
-		/* Here we found a matching long-format option name, returned as the kw[k] struct element */
-		/* Do the long to short option substitution */
+		/* Here we found a matching long-format option name, returned as the kw[k] struct element. */
+		/* We now do the long to short option substitution */
 
 		e_code = '=';	/* When we remove the '=' we will replace it, but in multi-sections the code may change after the first section */
-		n_sections = ((kw[k].separator) ? gmt_count_char (API->GMT, orig, kw[k].separator) : 0) + 1;
+		n_sections = ((kw[k].separator) ? gmt_count_char (API->GMT, orig, kw[k].separator) : 0) + 1;	/* How many sections? */
 		opt->option = kw[k].short_option;	/* Update the option character first */
-		sep[0] = kw[k].separator;			/* Need a string with separator to strcat below */
-		new_arg[0] = '\0';					/* Initialize short option arguments */
+		sep[0] = kw[k].separator;			/* Need a string with separator when using strcat below */
+		new_arg[0] = '\0';					/* Initialize the short option arguments */
 		modified = true;					/* We have at least modified one option */
 		/* Special handling for --inrows and --outrows since they both map to q and need -qi and -qo, respectively */
 		if (!strcmp (kw[k].long_option, "inrows"))
-			strcat (new_arg, "i");
+			strcat (new_arg, "i");	/* -qi */
 		else if (!strcmp (kw[k].long_option, "outrows"))
-			strcat (new_arg, "o");
+			strcat (new_arg, "o");	/* -qo */
 
-		for (section = 0; section < n_sections; section++) {	/* Parse the sections separately but strcat together a single short option */
+		for (section = 0; section < n_sections; section++) {	/* Parse the sections separately but strcat them together for a single short option */
 			/* Make sure a few things are correct */
-			/* Find separator, set to 0, check if modifier is after, if so set to NULL. */
+			/* Find separator, set to 0, check if a modifier follows, if so set to NULL. */
 			if (n_sections > 1) {	/* Special case since there is only one leading =<value>; other values are given after separators */
-				got_modifier = false;	/* Start over for each new section since modifiers are section-limited */
+				got_modifier = false;	/* Start over for each new section since modifiers are section-specific */
 				sect_start = gmtinit_get_section (API, orig, kw[k].separator, section, &sect_end);	/* Get next section start and truncate */
-				if (directive)	/* Update what directive is pointing to since no leading keyword for later sections */
-					directive = (sect_start) ? orig + sect_start - 1 : strchr (orig, '=');	/* directive points to = or char before value */
+				if (directive)	/* Update what directive is pointing to since there is no leading keyword for later sections */
+					directive = (sect_start) ? orig + sect_start - 1 : strchr (orig, '=');	/* directive points to = or the char before value */
 				modifier = strchr (directive, '+');	/* Must also update to see if this section has modifiers... */
-				if (modifier) modifier[0] = '\0', got_modifier = true;	/* ...and if it does we temporarily chop it off here but remember we found one */
+				if (modifier) modifier[0] = '\0', got_modifier = true;	/* ...and if it does we temporarily chop it off here but remember that we found one */
 			}
 
 			if (got_directive) {	/* Process a <directive>[:<arg>] or possibly just the <arg> */
 				if ((code = gmtinit_find_argument (API, kw[k].long_directives, kw[k].short_directives, &directive[1], ':', argument)))	/* Get the directive, or return 0 if it is an argument instead */
-					sprintf (add, "%c%s", code, argument);	/* Prepend the directive code */
+					sprintf (add, "%c%s", code, argument);	/* Prepend the directive code before the argument */
 				else	/* Just got an argument; no directive code */
 					sprintf (add, "%s", argument);
-				strcat (new_arg, add);	/* Add string to the short-format option argument */
+				strcat (new_arg, add);	/* Add the string to the growing short-format option argument */
 				directive[0] = e_code;	/* Put back the = character (at least the first time; later it is a separator) */
 			}
-			if (got_modifier) {	/* We have one of more modifiers to process */
+			if (got_modifier) {	/* We have one or more modifiers to process */
 				unsigned int pos = 0;
 				char item[GMT_LEN64] = {""};
 				modifier[0] = '+';	/* Put back the plus sign for the first modifier */
-				while ((gmt_strtok (modifier, "+", &pos, item))) {	/* While there are unprocessed modifiers */
+				while ((gmt_strtok (modifier, "+", &pos, item))) {	/* While there are unprocessed modifiers... */
 					if ((code = gmtinit_find_argument (API, kw[k].long_modifiers, kw[k].short_modifiers, item, '=', argument)))	/* Get the modifier, or return 0 if unrecognized */
-						sprintf (add, "+%c%s", code, argument);	/* Append modifier with argument next to it (may be empty) */
-					else {
+						sprintf (add, "+%c%s", code, argument);	/* Append modifier with argument next to it (it may be empty) */
+					else {	/* Well, something does not align */
 						GMT_Report (API, GMT_MSG_WARNING, "Long-modifier form %s for option -%c not recognized!\n", &directive[1], opt->option);
-						add[0] = '\0';
+						add[0] = '\0';	/* Pass nothing */
 					}
-					strcat (new_arg, add);	/* Add to the short-format option argument */
+					strcat (new_arg, add);	/* Add to the growing short-format option argument */
 				}
 			}
 			if (n_sections > 1) {	/* Need to separate results per section with the separator character */
-				if (section < (n_sections - 1))	/* Except for last we need to append separator */
-					strcat (new_arg, sep);	/* Add to the short-format option argument */
+				if (section < (n_sections - 1))	/* Except for last section we need to append separator between them */
+					strcat (new_arg, sep);	/* Add to the growing short-format option argument */
 				if (sect_end > 0) orig[sect_end] = kw[k].separator;	/* Put back separator at end of current section */
 				e_code = kw[k].separator;	/* Since after first section we no longer have '=' to replace */
 			}
 		}
-		gmt_M_str_free (opt->arg);		/* Free old par=value string argument */
-		gmtinit_handle_escape_text (new_arg, '+', -1);	/* Restore escaped +? sequences */
-		opt->arg = strdup (new_arg);	/* Allocate copy of new argument */
+		gmt_M_str_free (opt->arg);		/* Free the old par=value string argument */
+		gmtinit_handle_escape_text (new_arg, '+', -1);	/* Restore any escaped +? sequences we found */
+		opt->arg = strdup (new_arg);	/* Allocate copy of new short-option argument */
 	}
 	if (modified && gmt_M_is_verbose (API->GMT, GMT_MSG_INFORMATION)) {	/* Echo the converted options */
 		char *cmd = GMT_Create_Cmd (API, *options);
@@ -712,12 +712,12 @@ GMT_LOCAL void gmtinit_translate_to_long_options (struct GMTAPI_CTRL *API, struc
 	/* Loop over given options and replace any standard short-form -<code>[value] option with the equivalent
 	 *  long-form --parameter[=value] arguments. Specifically, long-format is defined as
 	 *
-	 * --longoption[=[<directive>:]<arg>][+<mod1>[=<arg1>]][+<mod2>[=<arg2>]]...
+	 * --longoption[=<directive>[:<arg>][+<mod1>[=<arg1>]][+<mod2>[=<arg2>]][...]
 	 *
 	 * For options that take more than one section of arguments (e.g., -Idx/dy or -icols1,cols2,...)
 	 * the section
 	 *
-	 * [<arg>][+<mod1>[=<arg1>]][+<mod2>[=<arg2>]]
+	 * [<arg>][+<mod1>[=<arg1>]][+<mod2>[=<arg2>]][...]
 	 *
 	 * may appear more than once after a section separator (e.g., '/' or ',').  The separator is an entry
 	 * in kw.separator, or it is 0 if the option does not take more than one section.

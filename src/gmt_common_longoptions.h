@@ -22,7 +22,8 @@
      *
      * separator:        Indicates if option accepts a series of comma-separated items, e.g., -i0:3,4+s2,8:10,
      *                   where we give several column-ranges, each of which may have their own modifiers. The
-     *                   options that behave like that have separator "," which otherwise is set to 0.
+     *                   options that behave like that have separator "," which otherwise is set to 0. Another
+     *                   separator may be "/", as in -Idx/dy (see GMT_INCREMENT_KW in gmt_constants.h).
      * short_option:     The standard short GMT option letter, e.g., R for -R.
      * long_option:      The corresponding long-format option word, e.g. region for --region
      * short_directives: Comma-separated list of allowable directive letters
