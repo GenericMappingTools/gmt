@@ -742,7 +742,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 			prism[k] = gmt_M_memory (GMT, NULL, n_alloc, double);
 
 		gmt_M_grd_loop (GMT, H, row, col, node) {	/* Visit every grid node */
-			z2 = (T) ? T->data[node] : top;	/* z-value at the top of the layer
+			z2 = (T) ? T->data[node] : top;	/* z-value at the top of the layer */
 			if (gmt_M_is_dnan (z2)) continue;	/* Cannot work with NaNs - probably outside the feature */
 			z1 = (B) ? B->data[node] : base;	/* z-value at the bottom of the layer */
 			if (gmt_M_is_dnan (z1)) continue;	/* Cannot work with NaNs - probably outside the feature */
