@@ -1219,7 +1219,7 @@ GMT_LOCAL void earthtide_solid_ts (struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, d
 		if (T.unit == 'm')
 		tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
 		else if (T.unit == 's')
-			tdel2 = 1.0 / (24 * 3600);	/* 1 secons steps (????) */
+			tdel2 = 1.0 / (24 * 3600);	/* 1 second steps (????) */
 		else if (T.unit == 'h')
 			tdel2 = 1.0 / 24;			/* 1 hour steps */
 		else if (T.unit == 'd')
