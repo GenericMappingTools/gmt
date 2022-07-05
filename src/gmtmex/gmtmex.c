@@ -63,6 +63,8 @@
 #include <limits.h>
 #include <ctype.h>
 
+#define gmt_M_unused(x) (void)(x)
+
 #ifdef GMT_OCTOCT
 #	include <oct.h>
 #else
@@ -149,6 +151,12 @@ typedef int mwSize;
 	/* And this on GMT_CUBE */
 #	define MEXU_IJK(M,layer,row,col) ((layer)*M->header->nm + (col)*M->header->n_rows + M->header->n_rows - (row) - 1)
 #endif
+
+/* These 4 functions are used by gmtmex.c: */
+EXTERN_MSC char   GMTMEX_objecttype (const mxArray *ptr);
+EXTERN_MSC int    GMTMEX_print_func (FILE *fp, const char *message);
+EXTERN_MSC void   GMTMEX_Set_Object (void *API, struct GMT_RESOURCE *X, const mxArray *ptr);
+EXTERN_MSC void * GMTMEX_Get_Object (void *API, struct GMT_RESOURCE *X);
 
 /* Definitions of MEX structures used to hold GMT objects.
  * DO NOT MODIFY THE ORDER OF THE FIELDNAMES */
@@ -280,7 +288,7 @@ static int gmtmex_print_func (FILE *fp, const char *message) {
 	 * API->print_func.  Purpose of this is to allow MATLAB (which cannot use
 	 * printf) to reset API->print_func to this function via GMT_Create_Session.
 	 * This allows GMT's errors and warnings to appear in MATLAB console. */
-
+	gmt_M_unused (fp);
 	mexPrintf (message);
 	return 0;
 }
@@ -472,9 +480,9 @@ static void *gmtmex_get_cube (void *API, struct GMT_CUBE *U) {
 	y = mxGetData (mxptr[2]);
 	z = mxGetData (mxptr[3]);
 	memcpy (z, U->z, U->header->n_bands  * sizeof (double));
-	memcpy (x, U->x, U->header->n_columns * sizeof (double));
+	memcpy (x, U_x, U->header->n_columns * sizeof (double));
 	for (k = 0; k < U->header->n_rows; k++)
-		y[U->header->n_rows-1-k] = U->y[k];	/* Must reverse the y-array */
+		y[U->header->n_rows-1-k] = U_y[k];	/* Must reverse the y-array */
 	for (k = 0; k < N_MEX_FIELDNAMES_CUBE; k++)
 		mxSetField (U_struct, 0, gmtmex_fieldname_cube[k], mxptr[k]);
 	return (U_struct);
@@ -496,6 +504,7 @@ static void *gmtmex_get_dataset (void *API, struct GMT_DATASET *D) {
 	double *data = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	mxArray *D_struct = NULL, *mxheader = NULL, *mxdata = NULL, *mxtext = NULL, *mxstring = NULL;
+	gmt_M_unused (API);
 
 	if (D == NULL) {	/* No output produced (?) - return a null data set */
 		D_struct = mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_DATASET, gmtmex_fieldname_dataset);
@@ -535,7 +544,7 @@ static void *gmtmex_get_dataset (void *API, struct GMT_DATASET *D) {
 			}
 			if (n_headers) {	/* First segment will get any headers, the rest nothing */
 				mxtext = mxCreateCellMatrix (n_headers, n_headers ? 1 : 0);
-				for (k = 0; k < n_headers; k++) {
+				for (k = 0; k < (uint64_t)n_headers; k++) {
 					mxstring = mxCreateString (D->table[0]->header[k]);
 					mxSetCell (mxtext, (int)k, mxstring);
 				}
@@ -559,6 +568,7 @@ static void *gmtmex_get_postscript (void *API, struct GMT_POSTSCRIPT *P) {
 	uint64_t k, *length = NULL;
 	unsigned int *mode = NULL;
 	mxArray *P_struct = NULL, *mxptr[N_MEX_FIELDNAMES_PS], *mxstring = NULL;
+	gmt_M_unused (API);
 
 	if (P == NULL)	/* Safety valve */
 		mexErrMsgTxt ("gmtmex_get_postscript: programming error, input POSTSCRIPT struct P is NULL or data string is empty\n");
@@ -615,6 +625,7 @@ static void *gmtmex_get_palette (void *API, struct GMT_PALETTE *C) {
 	unsigned int k, j, n_colors, *depth = NULL;
 	double *color = NULL, *cpt = NULL, *alpha = NULL, *minmax = NULL, *range = NULL, *hinge = NULL, *cyclic = NULL, *bfn = NULL;
 	mxArray *C_struct = NULL, *mxptr[N_MEX_FIELDNAMES_CPT], *mxstring = NULL;
+	gmt_M_unused (API);
 
 	if (C == NULL)	/* Safety valve */
 		mexErrMsgTxt ("gmtmex_get_palette: programming error, output CPT C is empty\n");
@@ -1883,6 +1894,8 @@ static void *alloc_default_plhs (void *API, struct GMT_RESOURCE *X) {
 	   when we do for example (i.e. no lhs):  sqrt([4 9])
 	*/
 	void *ptr = NULL;
+	gmt_M_unused (API);
+
 	switch (X->family) {
 		case GMT_IS_CUBE:
 			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_CUBE, gmtmex_fieldname_cube);
@@ -2207,6 +2220,6 @@ void GMT_mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
 	return;
 }
 
-void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
+EXTERN_MSC void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	GMT_mexFunction (nlhs, plhs, nrhs, prhs);
 }
