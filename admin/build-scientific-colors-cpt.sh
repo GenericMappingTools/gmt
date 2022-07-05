@@ -92,7 +92,7 @@ EOF
 here=`pwd`
 cd $DIR
 # Make formatted list of lines suitable for copying into gmt_cpt_masters.h
-awk -F'|' '{printf "\"%-10s  : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
+awk -F'|' '{printf "\"crameri/%-10s : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
 # Make list of CPTs with a hinge of some soft since these need to insert a true z = 0 slice
 grep "\[H," /tmp/cpt.info | awk -F'|' '{print $1}' > /tmp/hinge.lis
 grep "\[S," /tmp/cpt.info | awk -F'|' '{print $1}' >> /tmp/hinge.lis
@@ -109,7 +109,7 @@ while read line; do
 	cat <<- EOF > gmt_cpts/$cpt.cpt
 	#
 	EOF
-	echo $line | awk -F'|' '{printf "# %s\n", $2}' >> gmt_cpts/$cpt.cpt
+	echo $line | awk -F'|' '{printf "# crameri/%s : %s\n", $1, $2}' >> gmt_cpts/$cpt.cpt
 	last_char=$(echo $cpt | awk '{print substr($1,length($1),1)}')
 	if [ "X${last_char}" = "XS" ]; then
 		tmp=$(echo $cpt | awk '{print substr($1,1, length($1)-1)}')
@@ -128,13 +128,11 @@ while read line; do
 	# Note: Original file converted to GMT version >= 5 CPT format.
 	EOF
 	#if [ "$cpt" = "broc" ] || [ "$cpt" = "cork" ] || [ "$cpt" = "vik" ] || [ "$cpt" = "lisbon" ] || [ "$cpt" = "tofino" ] || [ "$cpt" = "berlin" ] || [ "$cpt" = "oleron" ] ; then
-	if [ $(echo $line | grep -c "\[H") -eq 1 ]; then
-		hinge="HARD_HINGE"
-	elif [ $(echo $line | grep -c "\[S") -eq 1 ]; then
-		hinge="SOFT_HINGE"
-	else
-		hinge=""
-	fi
+	case $line in
+	*\[H*) hinge="HARD_HINGE" ;;
+	*\[S*) hinge="SOFT_HINGE" ;;
+	    *) hinge="" ;;
+	esac
 	if [ "X${last_char}" = "XS" ]; then
 		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt

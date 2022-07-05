@@ -47,8 +47,7 @@ You define an equidistant set of contour intervals or pass
 your own z-table or list, and create a new CPT based on an existing master (dynamic)
 CPT. The resulting CPT can be reversed relative to the master
 cpt, and can be made continuous or discrete.  For color tables beyond the
-standard GMT offerings, visit `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_ and
-`Scientific Colour-Maps <http://www.fabiocrameri.ch/colourmaps.php>`_.
+current GMT offerings, visit `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_.
 
 The CPT includes three additional colors beyond the range of
 z-values. These are the background color (B) assigned to values lower

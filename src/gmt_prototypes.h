@@ -204,6 +204,7 @@ EXTERN_MSC bool gmt_file_is_cache (struct GMTAPI_CTRL *API, const char *file);
 
 /* gmt_grdio.c: */
 
+EXTERN_MSC bool gmt_grd_domains_match (struct GMT_CTRL *GMT, struct GMT_GRID *A, struct GMT_GRID *B, char *comment);
 EXTERN_MSC unsigned int gmt_grid_perimeter (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double **x, double **y);
 EXTERN_MSC void gmt_change_grid_history (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_GRID_HEADER *h, char *command);
 EXTERN_MSC char *gmt_get_grd_title (struct GMT_GRID_HEADER *h);
@@ -502,7 +503,7 @@ EXTERN_MSC void gmt_just_to_code (struct GMT_CTRL *GMT, int justify, char *key);
 EXTERN_MSC int gmt_just_validate (struct GMT_CTRL *GMT, char *key, char *def);
 EXTERN_MSC char * gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lower);
 EXTERN_MSC char * gmt_argv2str (struct GMT_CTRL *GMT, int argc, char *argv[]);
-EXTERN_MSC bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt);
+EXTERN_MSC char * gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt);
 EXTERN_MSC char * gmt_assign_text (struct GMT_CTRL *GMT, char *p);
 EXTERN_MSC char * gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep);
 EXTERN_MSC unsigned int gmt_getmodopt (struct GMT_CTRL *GMT, const char option, const char *string, const char *sep, unsigned int *pos, char *token, unsigned int *err);

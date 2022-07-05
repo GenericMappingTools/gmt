@@ -3,49 +3,19 @@
 #	Makes the insets for Appendix M(cpt)
 #	[skip srtm which is just a special version of dem2]
 #
-# We have four sets of CPT figures to make:
+# We have five sets of CPT figures to make:
 # 1a) Our regular, traditional GMT CPTs [44]
 # 1b) The regular Scientific Color Maps* [30]
-# 1c) Categorical CPTs (ours and SCM*)  [18]
-# 1d) Cyclic CPTs from SCM* [5]
+# 1c) Categorical CPTs [18]
+# 1d) Cyclic CPTs [7]
+# 1e) Colormaps from cmocean [22]
 #
 # *from Fabio [www.fabiocrameri.ch/visualisation]
 
 GMT_SHAREDIR=$(gmt --show-sharedir)
 
 # Here we list all the non-categorical/cyclic cpts from the SCM:
-cat << EOF > tt.lis
-acton
-bam
-bamako
-batlow
-batlowK
-batlowW
-berlin
-bilbao
-broc
-buda
-bukavu
-cork
-davos
-devon
-fes
-grayC
-hawaii
-imola
-lajolla
-lapaz
-lisbon
-nuuk
-oleron
-oslo
-roma
-tofino
-tokyo
-turku
-vanimo
-vik
-EOF
+sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | egrep SCM | egrep -v "categorical|cyclic" | awk '{print $1}' | sort -r > tt.lis
 
 n=$(cat tt.lis | wc -l)
 let n2=n/2

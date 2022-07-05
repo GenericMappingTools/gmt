@@ -216,13 +216,13 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. --W:
+.. _-W:
 
 **-W**\ *dist*\[*unit*][**+f**\|\ **l**]
     Extend all segments with a new first and last point such that these points are *dist* away
     from their neighbor point in the direction implied by the two points at each end of the
     segment.  For geographic data you may append a *unit* (see `Units`_). To give separate
-    distances for the two ends, give distf*\[*unit*]/distl*\[*unit*] instead.  Optionally,
+    distances for the two ends, give *distf*\[*unit*]/*distl*\[*unit*] instead.  Optionally,
     append either **+f** or **+l** to only extend the first or last point this way [both].
     The mode of geographical calculations depends on **-j**.
 

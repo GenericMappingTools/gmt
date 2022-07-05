@@ -487,16 +487,14 @@ GMT_LOCAL void gmtsupport_rgb_to_cmyk (double rgb[], double cmyk[]) {
 	int i;
 
 	cmyk[4] = rgb[3];	/* Pass transparency unchanged */
-	for (i = 0; i < 3; i++) cmyk[i] = 1.0 - rgb[i];
-	cmyk[3] = MIN (cmyk[0], MIN (cmyk[1], cmyk[2]));	/* Default Black generation */
-	if (cmyk[3] < GMT_CONV8_LIMIT) cmyk[3] = 0.0;
+	cmyk[3] = 1.0 - MAX (rgb[0], MAX (rgb[1], rgb[2]));	/* Black K */
+	if (doubleAlmostEqual (cmyk[3], 1.0))	/* All black */
+		cmyk[0] = cmyk[1] = cmyk[2] = 0.0;
+	else	/* Safe to divide by 1-k */
+		for (i = 0; i < 3; i++) cmyk[i] = (1.0 - rgb[i] - cmyk[3]) / (1.0 - cmyk[3]);
+	if (cmyk[3] < GMT_CONV8_LIMIT) cmyk[3] = 0.0;	/* Fix minor black round-off */
 
 	/* To implement device-specific blackgeneration, supply lookup table K = BG[cmyk[3]] */
-
-	for (i = 0; i < 3; i++) {
-		cmyk[i] -= cmyk[3];		/* Default undercolor removal */
-		if (cmyk[i] < GMT_CONV8_LIMIT) cmyk[i] = 0.0;
-	}
 
 	/* To implement device-specific undercolor removal, supply lookup table u = UR[cmyk[3]] */
 }
@@ -509,7 +507,10 @@ GMT_LOCAL void gmtsupport_cmyk_to_rgb (double rgb[], double cmyk[]) {
 	int i;
 
 	rgb[3] = cmyk[4];	/* Pass transparency unchanged */
-	for (i = 0; i < 3; i++) rgb[i] = 1.0 - cmyk[i] - cmyk[3];
+	if (doubleAlmostEqual (cmyk[3], 1.0))	/* All black */
+		rgb[0] = rgb[1] = rgb[2] = 0.0;
+	else	/* Safe to divide by 1-k */
+		for (i = 0; i < 3; i++) rgb[i] = (1.0 - cmyk[i]) * (1.0 - cmyk[3]);
 }
 
 /*! . */
@@ -4004,7 +4005,7 @@ GMT_LOCAL uint64_t gmtsupport_delaunay_watson (struct GMT_CTRL *GMT, double *x_i
 	r2_circum = gmt_M_memory (GMT, NULL, size, double);
 	x = gmt_M_memory (GMT, NULL, n, double);
 	y = gmt_M_memory (GMT, NULL, n, double);
-	if (index == NULL || istack == NULL || x_tmp == NULL || y_tmp == NULL || x_circum == NULL | y_circum == NULL \
+	if (index == NULL || istack == NULL || x_tmp == NULL || y_tmp == NULL || x_circum == NULL || y_circum == NULL \
 		|| r2_circum == NULL || x == NULL || y == NULL)
 		return (0);
 	x[0] = x[1] = -1.0;	x[2] = 5.0;
@@ -7737,10 +7738,10 @@ void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 /*! Adds listing of available GMT cpt choices to a program's usage message */
 int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	char line[GMT_LEN256] = {""};
-	char divider[110] = {"-----------------------------------------------------------------------------------------------------------"};
+	char divider[115] = {"----------------------------------------------------------------------------------------------------------------"};
 	struct GMTAPI_CTRL *API = GMT->parent;
-	/* Note: 108 is the max length of entries in gmt_cpt_masters.h.  Update 110 and 108 if that changes */
-	int L = MAX (MIN (API->terminal_width-5, 108), 0);	/* Number of dashes to print in divider line */
+	/* Note: 108 is the max length of entries in gmt_cpt_masters.h.  Update 115 and 113 if that changes */
+	int L = MAX (MIN (API->terminal_width-5, 113), 0);	/* Number of dashes to print in divider line */
 	GMT_Usage (API, 1, "\n-%c Specify a colortable [Default is %s]:", option, GMT->current.setting.cpt);
 	GMT_Usage (API, 2, "[Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]");
 	divider[L] = '\0';	/* Truncate the line */
@@ -7760,16 +7761,20 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL bool gmtsupport_cpt_master_index (struct GMT_CTRL *GMT, char *name) {
+/*! . */
+GMT_LOCAL char *gmtsupport_cpt_master_index (struct GMT_CTRL *GMT, char *name) {
+	/* Returns the full cpt name after looking it up in the master list. NULL if not master. */
 	size_t len;
 	gmt_M_unused(GMT);
-	if (name == NULL) return true;	/* true, because no name means we default to GMT->current.setting.cpt */
 	len = strlen (name);	/* Length of the master table name so we can limit comparison to just those characters */
-	/* Note: THere are near-duplicate names like broc and brocO, but since they are ordered alphabetically our
-	 * search for broc will first compare with broc before broc0 so not an issue. */
-	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) if (!strncmp (name, GMT_CPT_master[k], len))
-		return true;
-	return false;
+	/* Note: There are near-duplicate names like broc and brocO, but since they are ordered alphabetically our
+	 * search for broc will first compare with broc before brocO so not an issue. */
+	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) {
+		char *c = strchr(GMT_CPT_master[k], ' ');
+		if (!strncmp (name, c - len, len))	/* Match the end of the cpt name */
+			return strndup (GMT_CPT_master[k], c - GMT_CPT_master[k]);	/* Return the full cpt name */
+	}
+	return NULL;
 }
 
 /*! . */
@@ -8454,23 +8459,20 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file, struct G
 	return (strdup (API->remote_info[k_data].CPT));
 }
 
-bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
-	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
-	char *c = NULL, *f = NULL;
-	if (cpt == NULL) return true;	/* No cpt given means use GMT->current.setting.cpt master */
-	if (gmt_M_file_is_memory (cpt)) return false;	/* A CPT was given via memory location so cannot be a master reference */
+char *gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
+	/* If cpt is the name of a GMT CPT master table, return that name, otherwise NULL */
+	char *c = NULL, *f = NULL, *master = NULL;
+	if (!cpt || !cpt[0]) return gmtsupport_cpt_master_index (GMT, GMT->current.setting.cpt);	/* No cpt given means use GMT->current.setting.cpt master */
+	if (gmt_M_file_is_memory (cpt)) return NULL;	/* A CPT was given via memory location so cannot be a master reference */
 	if ((f = gmt_strrstr (cpt, GMT_CPT_EXTENSION)))	/* Only examine modifiers from there onwards */
 		c = gmtlib_last_valid_file_modifier (GMT->parent, f, GMT_CPTFILE_MODIFIERS);
 	else	/* Must examine the entire file name for modifiers */
 		c = gmtlib_last_valid_file_modifier (GMT->parent, cpt, GMT_CPTFILE_MODIFIERS);
 	if (c && (f = gmt_first_modifier (GMT, c, GMT_CPTFILE_MODIFIERS)))
 		f[0] = '\0';	/* Must chop off modifiers for further checks to work */
-	if (gmtsupport_cpt_master_index (GMT, cpt)) {
-		if (c && f) f[0] = '+';	/* Restore modifier before we return */
-		return true;
-	}
-	if (cpt[0] && !gmt_access (GMT, cpt, R_OK)) return false;	/* A CPT was given and exists */
-	return false;	/* Well, what can we do at this point */
+	if (gmt_access (GMT, cpt, R_OK)) master = gmtsupport_cpt_master_index (GMT, cpt);
+	if (c && f) f[0] = '+';	/* Restore modifier before we return */
+	return master;
 }
 
 int gmtlib_set_current_item_file (struct GMT_CTRL *GMT, const char *item, char *file) {
@@ -8576,7 +8578,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 
 	struct GMT_PALETTE *P = NULL;
 	unsigned int continuous = (file && strchr(file,',')), first = 0;
-	bool is_cpt_master = false;
+	char *master = NULL;
 
 	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT to be present; GMT_Read_Data will work or fail accordingly */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|continuous, NULL, file, NULL);
@@ -8597,9 +8599,9 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 	if (gmt_file_is_cache (GMT->parent, file))	/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, file, 0);
 	if (first == 0)	/* Check if given a master or a real file */
-		is_cpt_master = gmt_is_cpt_master (GMT, file);
-	if (is_cpt_master) {	/* Take master cpt and stretch to fit data range using continuous colors */
-		char *master = NULL, *current_cpt = NULL;
+		master = gmt_is_cpt_master (GMT, file);
+	if (master) {	/* Take master cpt and stretch to fit data range using continuous colors */
+		char *current_cpt = NULL;
 		double noise;
 		struct GMT_PALETTE_HIDDEN *PH = NULL;
 
@@ -8619,7 +8621,6 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			return (P);
 		}
 
-		master = (file && file[0]) ? file : GMT->current.setting.cpt;	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
 		/* Stretch to fit the data range */

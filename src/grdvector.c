@@ -483,8 +483,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 		gmt_grd_init (GMT, Grid[k]->header, options, true);
 	}
 
-	if (!(gmt_M_grd_same_shape (GMT, Grid[0], Grid[1]) && gmt_M_grd_same_region (GMT, Grid[0], Grid[1]) && gmt_M_grd_same_inc (GMT, Grid[0], Grid[1]))) {
-		GMT_Report (API, GMT_MSG_ERROR, "files %s and %s does not match!\n", Ctrl->In.file[0], Ctrl->In.file[1]);
+	if (!gmt_grd_domains_match (GMT, Grid[0], Grid[1], "input component")) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 

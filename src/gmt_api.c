@@ -7806,10 +7806,12 @@ GMT_LOCAL int gmtapi_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned i
 	/* Take comma-separated color entries given in lieu of a file and build a linear, discrete CPT.
 	 * This may be converted to a continuous CPT if -Z is used by makecpt/grd2cpt.
 	 * We check if a color is valid then write the given entries verbatim to the temp file.
+	 * If a soft hinge has been requested then we must add flag to temp file and pass hinge on via filename.
 	 * Returns GMT_NOTSET on error, 0 if no CPT is created (str presumably held a CPT name) and 1 otherwise.
 	*/
-	unsigned int pos = 0, z = 0;
-	char *pch = NULL, color[GMT_LEN256] = {""}, tmp_file[GMT_LEN64] = "";
+	unsigned int pos = 0;
+	int z = 0, n;
+	char *pch = NULL, color[GMT_LEN256] = {""}, tmp_file[GMT_LEN64] = "", *h = NULL;
 	double rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	FILE *fp = NULL;
 
@@ -7840,6 +7842,22 @@ GMT_LOCAL int gmtapi_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned i
 	}
 	fprintf (fp, "# COLOR_LIST\n");	/* Flag that we are building a CPT from a list of discrete colors */
 
+	if ((h = strstr (*str, "+h"))) /* See if we got a hinge modifier */
+		h[0] = '\0'; /* Hide hinge modifier */
+
+	n = gmt_count_char (API->GMT, *str, ',') + 1;	/* Number of colors */
+	if (n && (*str)[strlen(*str)-1] == ',') n--;	/* Stray trailing comma with no color ignored */
+	if (h) {	/* Check if number of colors is odd when a hinge is specified */
+		if (n%2) {	/* Should be OK */
+			fprintf (fp, "# SOFT_HINGE\n");	/* Flag that we are building a CPT with a soft hinge */
+			z = -(n - 1)/2;	/* Start z value for CPT centered on 0 */
+		}
+		else {
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot build soft-hinge CPT from an even number of colors\n");
+			return (GMT_NOTSET);
+		}
+	}
+
 	if ((*mode) & GMT_CPT_CONTINUOUS) {	/* Make a continuous cpt from the colors */
 		char last_color[GMT_LEN256] = {""};
 		if (!gmt_strtok (*str, ",", &pos, last_color)) {	/* Get 1st color entry */
@@ -7852,7 +7870,7 @@ GMT_LOCAL int gmtapi_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned i
 			fclose (fp);
 			return (GMT_NOTSET);
 		}
-		while (gmt_strtok (*str, ",", &pos, color)) {	/* Get color entries */
+		while (gmt_strtok (*str, ",", &pos, color) && color[0]) {	/* Get color entries */
 			if (gmt_getrgb (API->GMT, color, rgb)) {
 				GMT_Report (API, GMT_MSG_ERROR, "Badly formatted color entry: %s\n", color);
 				fclose (fp);
@@ -7863,14 +7881,14 @@ GMT_LOCAL int gmtapi_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned i
 			z++;	/* Increment z-slice values */
 		}
 		*mode -= GMT_CPT_CONTINUOUS;	/* Served its purpose */
-		if (z == 0) {	/* Needed at least two colors to specify a ramp */
+		if (n == 1) {	/* Needed at least two colors to specify a ramp */
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot make a continuous color ramp from a single color: %s\n", *str);
 			fclose (fp);
 			return (GMT_NOTSET);
 		}
 	}
 	else {
-		while (gmt_strtok (*str, ",", &pos, color)) {	/* Get color entries */
+		while (gmt_strtok (*str, ",", &pos, color) && color[0]) {	/* Get color entries */
 			if (gmt_getrgb (API->GMT, color, rgb)) {
 				GMT_Report (API, GMT_MSG_ERROR, "Badly formatted color entry: %s\n", color);
 				fclose (fp);
@@ -7884,6 +7902,10 @@ GMT_LOCAL int gmtapi_colors2cpt (struct GMTAPI_CTRL *API, char **str, unsigned i
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Converted %s to CPT %s\n", *str, tmp_file);
 
+	if (h) { /* Restore hinge modifier and append it to filename */
+		h[0] = '+';
+		strcat (tmp_file, h);
+	}
 	gmt_M_str_free (*str);		/* Because it was allocated with strdup */
 	*str = strdup (tmp_file);	/* Pass out the temp file name instead */
 
@@ -9408,8 +9430,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 				return_null (API, GMT_CPT_READ_ERROR);	/* Failed in the conversion */
 			}
 			else if (c_err == 0) {	/* Regular cpt (master or local), append .cpt and set path */
-				bool is_cpt_master = gmt_is_cpt_master (API->GMT, file);
-				char *q = NULL;
+				char *cpt_master = gmt_is_cpt_master (API->GMT, file), *q = NULL;
 
 				/* Need to check for CPT filename modifiers */
 				if ((f = gmt_strrstr (file, GMT_CPT_EXTENSION)))
@@ -9421,8 +9442,8 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 					if ((q = gmtlib_cptfile_unitscale (API, m))) q[0] = '\0';    /* Truncate modifier after processing the unit */
 					if (m[0] && (q = strstr (m, "+h"))) q[0] = '\0';    /* Truncate +h modifier (checking for m[0] since the line above could leave it blank) */
 				}
-				if (is_cpt_master)	/* Master: Append extension and supply path */
-					gmt_getsharepath (API->GMT, "cpt", file, GMT_CPT_EXTENSION, CPT_file, R_OK);
+				if (cpt_master)	/* Master: Append extension and supply path */
+					gmt_getsharepath (API->GMT, "cpt", cpt_master, GMT_CPT_EXTENSION, CPT_file, R_OK);
 				else if (!gmt_getdatapath (API->GMT, file, CPT_file, R_OK)) {	/* Use name.cpt as is but look for it */
 					GMT_Report (API, GMT_MSG_ERROR, "GMT_Read_Data: File not found: %s\n", file);
 					gmt_M_str_free (input);
@@ -11724,12 +11745,20 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, const c
 	/* For programs that needs to do either 1-D or 2-D FFT work */
 	unsigned int d1 = dim - 1;	/* Index into the info text strings below for 1-D (0) and 2-D (1) case */
 	char *data_type[2] = {"table", "grid"}, *dim_name[2] = {"<n_columns>", "<n_columns>/<n_rows>"}, *trend_type[2] = {"line", "plane"};
-	char *dim_ref[2] = {"dimension", "dimensions"}, *linear_type[2] = {"linear", "planar"};
-    struct GMTAPI_CTRL *API = NULL;
+	char *dim_ref[2] = {"dimension", "dimensions"}, *linear_type[2] = {"linear", "planar"}, *d_msg, *h_msg;
+	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (dim > 2) return_error (V_API, GMT_DIM_TOO_LARGE);
 	if (dim == 0) return_error (V_API, GMT_DIM_TOO_SMALL);
-    API = gmtapi_get_api_ptr (V_API);
+	API = gmtapi_get_api_ptr (V_API);
+	if (API->parker_fft_default) {	/* +h is default here as a special case */
+		d_msg = "";
+		h_msg = " [Default]";
+	}
+	else {	/* +d is default */
+		d_msg = " [Default]";
+		h_msg = "";
+	}
 	if (string && string[0] == ' ') GMT_Report (V_API, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
 	GMT_Usage (API, 1, "\n-%c%s", option, GMT_FFT_OPT);
 	GMT_Usage (API, -2, "Choose or inquire about suitable %s %s for %u-D FFT, and set modifiers.", data_type[d1], dim_ref[d1], dim);
@@ -11742,9 +11771,9 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, const c
 	GMT_Usage (API, -2, "Alternatively, append %s to do FFT on array size %s (Must be >= %s size) "
 	   "[Default chooses %s >= %s %s to optimize speed and accuracy of the FFT.]", dim_name[d1], dim_name[d1], data_type[d1], dim_ref[d1], data_type[d1], dim_ref[d1]);
 	GMT_Usage (API, -2, "%s Append modifiers for removing a %s trend:", GMT_LINE_BULLET, linear_type[d1]);
-	GMT_Usage (API, 3, "+d Detrend data, i.e., remove best-fitting %s [Default].", trend_type[d1]);
+	GMT_Usage (API, 3, "+d Detrend data, i.e., remove best-fitting %s%s.", trend_type[d1], d_msg);
 	GMT_Usage (API, 3, "+a Only remove mean value.");
-	GMT_Usage (API, 3, "+h Only remove mid value, i.e., 0.5 * (max + min).");
+	GMT_Usage (API, 3, "+h Only remove mid value, i.e., 0.5 * (max + min)%s.", h_msg);
 	GMT_Usage (API, 3, "+l Leave data alone.");
 	GMT_Usage (API, -2, "%s If FFT %s > %s %s, data are extended via edge point symmetry "
 	   "and tapered to zero.  Several modifiers can be set to change this behavior:", GMT_LINE_BULLET, dim_ref[d1], data_type[d1], dim_ref[d1]);
