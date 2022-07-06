@@ -313,7 +313,7 @@ GMT_LOCAL unsigned int psmeca_A_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL 
 					}
 					break;
 				case 's':	/* Circle diameter */
-					if (p[1] == '\0' || (Ctrl->A.size = gmt_M_to_inch (GMT, (p+2))) < 0.0) {
+					if (p[1] == '\0' || (Ctrl->A.size = gmt_M_to_inch (GMT, &p[1])) < 0.0) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Circle diameter cannot be negative or not given!\n");
 						n_errors++;
 					}
