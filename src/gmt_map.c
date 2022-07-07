@@ -9079,7 +9079,7 @@ int gmt_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D) {
 	return 0;
 }
 
-/*! Compute the Abridged Molodensky transformation (3 parametrs). */
+/*! Compute the Abridged Molodensky transformation (3 parameters). */
 void gmt_conv_datum (struct GMT_CTRL *GMT, double in[], double out[]) {
 	/* Evaluate J^-1 and B on from ellipsoid */
 	/* Based on Standard Molodensky Datum Conversion, implemented from
