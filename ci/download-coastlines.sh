@@ -7,10 +7,10 @@ GSHHG_VERSION="2.3.7"
 GSHHG="gshhg-gmt-${GSHHG_VERSION}"
 GSHHG_URL="https://github.com/GenericMappingTools/gshhg-gmt/releases/download/${GSHHG_VERSION}/${GSHHG}.${EXT}"
 MD5_GSHHG=8ee2653f9daf84d49fefbf990bbfa1e7
-DCW_VERSION="2.0.0"
+DCW_VERSION="2.1.1"
 DCW="dcw-gmt-${DCW_VERSION}"
 DCW_URL="https://github.com/GenericMappingTools/dcw-gmt/releases/download/${DCW_VERSION}/${DCW}.${EXT}"
-MD5_DCW=1c817d29313be265e895be4534eccb01
+MD5_DCW=52644de3c3c720b59961d23d805d3497
 
 # Used for checking the downloaded files:
 check_md5 ()
