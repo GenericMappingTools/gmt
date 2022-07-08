@@ -4,6 +4,7 @@
 ![Ubuntu package](https://img.shields.io/ubuntu/v/gmt)
 ![Debian package](https://img.shields.io/debian/v/gmt)
 ![Fedora package](https://img.shields.io/fedora/v/GMT)
+![Arch Linux package](https://img.shields.io/archlinux/v/community/x86_64/gmt)
 ![homebrew version](https://img.shields.io/homebrew/v/gmt)
 ![Conda](https://img.shields.io/conda/v/conda-forge/gmt)
 
@@ -165,7 +166,7 @@ Install GMT via:
 You may also install other optional dependencies for more capabilities within GMT:
 
     sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-`rpm -E %fedora`.noarch.rpm
-    sudo dnf install ffmpeg
+    sudo dnf install ffmpeg GraphicsMagick
 
 ### RHEL/CentOS
 
@@ -184,7 +185,7 @@ Install GMT via:
 You may also install other optional dependencies for more capabilities within GMT:
 
     sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-`rpm -E %rhel`.noarch.rpm
-    sudo yum install ffmpeg
+    sudo yum install ffmpeg GraphicsMagick
 
 ### Ubuntu/Debian
 
@@ -274,7 +275,7 @@ The FreeBSD Ports Collection is a diverse collection of utility and application 
 Install precompiled gmt binaries with
 
 ```
-$ pkg install gmt
+pkg install gmt
 ```
 
 **Compile from Ports**
