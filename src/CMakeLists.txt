@@ -264,7 +264,6 @@ if (GMT_OPENMP)
 	message (WARNING "CMake variable GMT_OPENMP is deprecated and will be removed in the future releases. Use GMT_ENABLE_OPENMP instead.")
 endif (GMT_OPENMP)
 if (OPENMP_FOUND AND GMT_ENABLE_OPENMP)
-    target_link_libraries(gmtlib PUBLIC OpenMP::OpenMP_C)
 	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 	set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${OpenMP_SHARED_LINKER_FLAGS}")
@@ -520,6 +519,10 @@ target_link_libraries (gmtlib
 	${NETCDF_LIBRARIES}
 	${GMT_OPTIONAL_LIBRARIES}
 	pslib)
+
+if (OPENMP_FOUND AND GMT_ENABLE_OPENMP)
+    target_link_libraries(gmtlib PUBLIC OpenMP::OpenMP_C)
+endif (OPENMP_FOUND AND GMT_ENABLE_OPENMP)
 
 if (HAVE_M_LIBRARY)
 	# link the math library
