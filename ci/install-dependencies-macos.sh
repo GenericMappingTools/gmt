@@ -17,7 +17,7 @@ PACKAGE="${PACKAGE:-false}"
 
 # packages for compiling GMT
 # cmake is pre-installed on GitHub Actions
-packages="ninja curl pcre2 netcdf gdal geos fftw ghostscript"
+packages="ninja curl pcre2 netcdf gdal geos fftw ghostscript libomp"
 
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
