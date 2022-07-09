@@ -520,10 +520,6 @@ target_link_libraries (gmtlib
 	${GMT_OPTIONAL_LIBRARIES}
 	pslib)
 
-if (OPENMP_FOUND AND GMT_ENABLE_OPENMP)
-    target_link_libraries(gmtlib PUBLIC OpenMP::OpenMP_C)
-endif (OPENMP_FOUND AND GMT_ENABLE_OPENMP)
-
 if (HAVE_M_LIBRARY)
 	# link the math library
 	target_link_libraries (gmtlib m)
