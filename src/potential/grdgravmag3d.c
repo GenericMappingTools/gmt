@@ -679,15 +679,8 @@ EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			Return(API->error);
 		}
 
-		if(GridA->header->registration != GridS->header->registration) {
-			GMT_Report(API, GMT_MSG_ERROR, "Up surface and source grids have different registrations!\n");
+		if (!gmt_grd_domains_match (GMT, GridA, GridS, "up surface and source")) {
 			Return (GMT_RUNTIME_ERROR);
-		}
-
-		if (fabs (GridA->header->inc[GMT_X] - GridS->header->inc[GMT_X]) > 1.0e-6 ||
-		          fabs(GridA->header->inc[GMT_Y] - GridS->header->inc[GMT_Y]) > 1.0e-6) {
-			GMT_Report(API, GMT_MSG_ERROR, "Up surface and source grid increments do not match!\n");
-			Return(GMT_RUNTIME_ERROR);
 		}
 
 		if (GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_padded,

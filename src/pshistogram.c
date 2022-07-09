@@ -927,9 +927,15 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pshistogram main code ----------------------------*/
 
-	if (!Ctrl->I.active && GMT->current.proj.projection != GMT_LINEAR) {
-		GMT_Report (API, GMT_MSG_ERROR, "Option -J: Only Cartesian scaling available in this module.\n");
-		Return (GMT_RUNTIME_ERROR);
+	if (!Ctrl->I.active) {	/* Need a linear projection either set explicitly (classic) or implicitly (modern only) */
+		if (GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->common.J.active) {	/* -J is required, exit at this point */
+			GMT_Report (API, GMT_MSG_ERROR, "Must specify Cartesian scales or dimensions of the domain via -Jx or -JX.\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (GMT->current.proj.projection != GMT_LINEAR) {	/* Must have given a nonlinear map projection by mistake */
+			GMT_Report (API, GMT_MSG_ERROR, "Option -J: Only Cartesian scaling available in this module.\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");

@@ -232,7 +232,7 @@ Optional Arguments
 
     - **+c**\ *dx*\ [/*dy*] sets the clearance between label and bounding box; only used if **+g** or **+p** are set.
       Append units **c**\|\ **i**\|\ **p** or % of the font size [15%].
-    - **+f** seelcts a specific *font* [:term:`FONT_TAG`].
+    - **+f** selects a specific *font* [:term:`FONT_TAG`].
     - **+g** will fill the label bounding box with *fill* color [no fill].
     - **+h**\ [*dx*/*dy*/][*shade*] will place drop-down shade behind the label bounding box. You can
       adjust the offset with *dx*/*dy* [4p/-4p] and shade color [gray50]; requires **+g** [no shade].

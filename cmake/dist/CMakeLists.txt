@@ -82,12 +82,12 @@ set (CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 set (CPACK_DEBIAN_PACKAGE_MAINTAINER "GMT Team <gmt-help@lists.hawaii.edu>")
 set (CPACK_DEBIAN_PACKAGE_SECTION science)
 # set (CPACK_PACKAGE_DESCRIPTION_SUMMARY ${CPACK_PACKAGE_DESCRIPTION_SUMMARY})
-# set (CPACK_PACKAGE_DESCRIPTION "GMT is an open source collection of ~80
+# set (CPACK_PACKAGE_DESCRIPTION "GMT is an open source collection of ~100
 # command-line tools for manipulating geographic and Cartesian data sets
 # (including filtering, trend fitting, gridding, projecting, etc.) and
-# producing PostScript illustrations ranging from simple x-y plots via contour
+# producing publication-quality illustrations ranging from simple x-y plots via contour
 # maps to artificially illuminated surfaces and 3D perspective views; the GMT
-# supplements add another ~40 more specialized tools. GMT supports over 30 map
+# supplements add another ~50 more specialized tools. GMT supports over 30 map
 # projections and transformations and comes with support data such as GSHHG
 # coastlines, rivers, and political boundaries.")
 

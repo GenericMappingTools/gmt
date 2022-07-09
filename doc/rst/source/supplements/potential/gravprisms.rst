@@ -114,7 +114,8 @@ Optional Arguments
 **-D**\ *density*
     Sets a fixed density contrast that overrides any individual prism settings in the prisms file, in :math:`\mbox{kg/m}^3` of :math:`\mbox{g/cm}^3`. Alternatively, give name of an input grid with spatially varying, vertically-averaged
     prism densities. This requires |-C| and the grid must be co-registered with the grid provided by |-S|
-    (or |-L| and |-T|).
+    (or |-L| and |-T|).  **Note**: If |-H| is used then a fixed density may be set via |-D| and it will be used to compute
+    *density contrasts* in the seamount relative to the fixed *density* (such as density of seawater for underwater seamounts).
 
 .. _-E:
 
@@ -263,15 +264,32 @@ prism file and restrict calculations to the same crossing profile, i.e.::
     gmt gravprisms -Ncrossing.txt -Mh @prisms.txt -Ff -Z7000 > faa_crossing.txt
     gmt plot faa_crossing.txt -R-30/30/0/350 -i0,3 -W1p -B -pdf faa_crossing
 
+To build prisms using a variable density grid for an interface crossing the zero level
+and obtain prisms with the negative of the given density contrast if below zero and the
+positive density contrast if above zero, try::
 
-Note
-----
+    gmt gravprisms -TFlexure_surf.grd -C+wprisms_var.txt+q -DVariable_drho.grd
+
+Grids Straddling Zero Level
+---------------------------
+
+When creating prisms from grids via |-C|, a special case arises when a single surface (set via
+|-L| or |-T|) straddles zero.  This may happen if the surface reflects flexure beneath a
+load, which has in a negative moat flanked by positive bulges.  When such a *interface* grid
+is detected we build prisms going from *z* to zero for negative *z* and from 0 to *z* for
+positive *z*. As we flip below zero we also change the sign of the given density contrast.
+You can override this behavior by specifying the opposite layer surface either by a constant
+or another grid. E.g., if |-L| specifies the base surface you can eliminate prisms exceeding zero
+via **-T**\ 0, and by interchanging the |-L| and |-T| arguments you can eliminate prisms below
+zero.  **Note**: When two surfaces are implied we keep the given density contrast as given.
+
+Note on Precision
+-----------------
 
 The analytical expression for the geoid over a vertical prism (Nagy et al., 2000) is
 fairly involved and contains 48 terms.  Due to various cancellations the end result
 is more unstable than the simpler expressions for gravity and VGG.  Be aware that the
 result may have less significant digits that you may expect.
-
 
 References
 ----------

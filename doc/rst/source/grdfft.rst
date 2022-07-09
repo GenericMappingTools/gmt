@@ -200,6 +200,12 @@ meters, select |SYN_OPT-f|. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using :doc:`grdproject`
 
+Data Detrending
+---------------
+
+The default detrending mode is to remove a best-fitting linear plane (**+d**).
+Consult and use |-N| to select other modes.
+
 Normalization of Spectrum
 -------------------------
 

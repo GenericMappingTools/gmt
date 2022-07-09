@@ -98,7 +98,7 @@ operation.  We gratefully acknowledge the importance to GMT of these products.
 GMT may be linked with these libraries (* means optional):
 
 [Network Common Data Form (netCDF)](https://www.unidata.ucar.edu/software/netcdf/),
-[Geospatial Data Abstraction Library (GDAL*)](https://gdal.org),
+[Geospatial Data Abstraction Library (GDAL)](https://gdal.org),
 [Perl Compatible Regular Expressions (PCRE*)](https://www.pcre.org),
 [Fastest Fourier Transform in the West (FFTW*)](http://www.fftw.org),
 [Linear Algebra Package (LAPACK*)](http://www.netlib.org/lapack/),

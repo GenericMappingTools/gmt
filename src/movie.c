@@ -2062,7 +2062,6 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		else
 			gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_BACKGROUND", "");		/* Nothing */
 		if (Ctrl->F.transparent && Ctrl->F.active[MOVIE_GIF]) place_background = false;	/* Only place background once if transparent images */
-		gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_ITEM", state_tag);		/* Current frame tag (formatted frame number) */
 		for (col = 0; col < n_values; col++) {	/* Derive frame variables from <timefile> in each parameter file */
 			sprintf (string, "MOVIE_COL%u", col);
 			gmt_set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][data_frame]);

@@ -731,7 +731,7 @@ GMT_LOCAL void surface_initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INF
 }
 
 GMT_LOCAL int surface_read_data (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options) {
-	/* Procdss input data into data structure */
+	/* Process input data into data structure */
 	int col, row, error;
 	uint64_t k = 0, kmax = 0, kmin = 0, n_dup = 0;
 	double *in, half_dx, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
@@ -1294,7 +1294,7 @@ GMT_LOCAL void surface_throw_away_unusables (struct GMT_CTRL *GMT, struct SURFAC
 	   We sort, mark redundant data as SURFACE_OUTSIDE, and sort again, chopping off the excess.
 	*/
 
-	uint64_t last_index = UINTMAX_MAX, n_outside = 0, k;
+	uint64_t last_index = UINTMAX_MAX, n_outside = 0, k, last_k;
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Eliminate data points that are not nearest a node.\n");
 
@@ -1309,9 +1309,12 @@ GMT_LOCAL void surface_throw_away_unusables (struct GMT_CTRL *GMT, struct SURFAC
 		if (C->data[k].index == last_index) {	/* Same node but further away than our guy */
 			C->data[k].index = SURFACE_OUTSIDE;
 			n_outside++;
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Skipping unusable point at (%.16lg %.16lg %.16lg) as (%.16lg %.16lg %.16lg) is closer to node %" PRIu64 "\n",
+					C->data[k].x, C->data[k].y, C->data[k].z, C->data[last_k].x, C->data[last_k].y, C->data[last_k].z, last_index);
 		}
 		else {	/* New index, just update last_index */
 			last_index = C->data[k].index;
+			last_k = k;
 		}
 	}
 
