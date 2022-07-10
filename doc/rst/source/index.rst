@@ -36,62 +36,65 @@ Quick links
    gmtcolors
    theme-settings
 
-.. panels::
 
-    .. toctree::
-        :maxdepth: 1
-        :caption: Getting started
+.. grid:: 2
 
-        gallery
-        animations
-        tutorial
-        tutorial_jl
-        Tutorials in PyGMT <https://www.pygmt.org/latest/tutorials/index.html>
+    .. grid-item-card::
 
-    ---
+        .. toctree::
+            :maxdepth: 1
+            :caption: Getting started
 
-    .. toctree::
-        :maxdepth: 1
-        :caption: Reference documentation
+            gallery
+            animations
+            tutorial
+            tutorial_jl
+            Tutorials in PyGMT <https://www.pygmt.org/latest/tutorials/index.html>
 
-        modules
-        cookbook
-        datasets
+    .. grid-item-card::
 
-    ---
+        .. toctree::
+            :maxdepth: 1
+            :caption: Reference documentation
 
-    .. toctree::
-        :maxdepth: 1
-        :caption: Resources
+            modules
+            cookbook
+            datasets
 
-        changes
-        users-contrib-scripts
-        users-contrib-symbols
-        deprecated-defaults
-        switching
-        migrating
+    .. grid-item-card::
 
-    ---
+        .. toctree::
+            :maxdepth: 1
+            :caption: Resources
 
-    .. toctree::
-        :maxdepth: 1
-        :caption: Classic Mode
+            changes
+            users-contrib-scripts
+            users-contrib-symbols
+            deprecated-defaults
+            switching
+            migrating
 
-        std-opts-classic
-        modules-classic
+    .. grid-item-card::
 
-    ---
+        .. toctree::
+            :maxdepth: 1
+            :caption: Classic Mode
 
-    .. toctree::
-        :maxdepth: 1
-        :caption: Development
+            std-opts-classic
+            modules-classic
 
-        Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
-        /devdocs/contributing
-        /devdocs/maintenance
-        /devdocs/team
-        reStructuredText Cheatsheet </devdocs/rst-cheatsheet>
-        Debugging GMT </devdocs/debug>
-        GMT C API </devdocs/api>
-        PostScriptLight C API </devdocs/postscriptlight>
-        /devdocs/devdocs
+    .. grid-item-card::
+
+        .. toctree::
+            :maxdepth: 1
+            :caption: Development
+
+            Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
+            /devdocs/contributing
+            /devdocs/maintenance
+            /devdocs/team
+            reStructuredText Cheatsheet </devdocs/rst-cheatsheet>
+            Debugging GMT </devdocs/debug>
+            GMT C API </devdocs/api>
+            PostScriptLight C API </devdocs/postscriptlight>
+            /devdocs/devdocs
