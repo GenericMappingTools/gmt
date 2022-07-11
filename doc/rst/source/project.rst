@@ -368,5 +368,4 @@ See Also
 :doc:`gmtvector`,
 :doc:`grdtrack`,
 :doc:`mapproject`,
-:doc:`grdproject`,
-:doc:`grdtrack`
+:doc:`grdproject`
