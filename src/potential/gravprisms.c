@@ -86,10 +86,10 @@ struct GRAVPRISMS_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct GRAVPRISMS_H {	/* -H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>] */
+	struct GRAVPRISMS_H {	/* -H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>][+b<boost>] */
 		bool active;
 		double H, rho_l, rho_h;
-		double p, densify;
+		double p, densify, boost;
 		double del_rho;	/* Computed as rho_h - rho_l */
 		double p1;	/* Will be p + 1 to avoid addition in loops */
 	} H;
@@ -138,6 +138,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->F.lat = 45.0;	/* So we compute normal gravity at 45 */
 	C->H.p = 1.0;	/* Linear density increase */
 	C->H.densify = 0.0;	/* No water-driven compaction on flanks */
+	C->H.boost = 1.0;	/* No boost */
 
 	return (C);
 }
@@ -236,10 +237,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 				break;
 			case 'H':	/* Reference seamount density parameters for rho(z) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
-				if ((c = gmt_first_modifier (GMT, opt->arg, "dp"))) {
+				if ((c = gmt_first_modifier (GMT, opt->arg, "bdp"))) {
 					unsigned int pos = 0;
 					char txt[GMT_LEN256] = {""};
-					while (gmt_getmodopt (GMT, 'H', c, "dp", &pos, txt, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'H', c, "bdp", &pos, txt, &n_errors) && n_errors == 0) {
 						switch (txt[0]) {
 							case 'd':	/* Get densify rate over reference water depth H */
 								Ctrl->H.densify = atof (&txt[1]);
@@ -247,6 +248,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 								break;
 							case 'p':	/* Get power coefficient */
 								Ctrl->H.p = atof (&txt[1]);
+								break;
+							case 'b':	/* Get boost */
+								Ctrl->H.boost = atof (&txt[1]);
 								break;
 							default:
 								n_errors++;
@@ -358,7 +362,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <prismfile> [-A] [-C[+q][+w<file>][+z<dz>]] [-D<density>] [-E<dx>[/<dy>]] [-Ff|n[<lat>]|v] "
-		"[-G<outfile>] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] [%s] [-L<base>] [-M[hz]] [-N<trktable>] [%s] "
+		"[-G<outfile>] [-H<H>/<rho_l>/<rho_h>[+b<boost>][+d<densify>][+p<power>]] [%s] [-L<base>] [-M[hz]] [-N<trktable>] [%s] "
 		"[-S<shapegrd>] [-T<top>] [%s] [-W<avedens>] [-Z<level>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
 		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
@@ -390,9 +394,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "v: Vertical Gravity Gradient anomalies (Eotvos = 0.1 mGal/km).");
 	GMT_Usage (API, 1, "\n-G<outfile>");
 	GMT_Usage (API, -2, "Set name of output file. Grid file name is requires unless -N is used.");
-	GMT_Usage (API, 1, "\n-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]");
+	GMT_Usage (API, 1, "\n-H<H>/<rho_l>/<rho_h>[+b<boost>][+d<densify>][+p<power>]");
 	GMT_Usage (API, -2, "Set parameters for the reference seamount height (in m), flank and deep core densities (kg/m^3 or g/cm^3). "
 		"Control the density function by these modifiers:");
+	GMT_Usage (API, 3, "+b To simulate guyot truncation effect, boost seamount height used in density calculation by <boost> [1].");
 	GMT_Usage (API, 3, "+d Density increase (kg/m^3 or g/cm^3) due to water pressure over full depth implied by <H> [0].");
 	GMT_Usage (API, 3, "+p Exponential <power> coefficient (> 0) for density change with burial depth [1 (linear)].");
 	GMT_Option (API, "I");
@@ -627,10 +632,11 @@ GMT_LOCAL double gravprisms_get_one_v_output_geo (double x, double y, double z, 
 	return (v);	/* Converted units from mGal/m to Eotvos = 0.1 mGal/km */
 }
 
-GMT_LOCAL double gravprisms_mean_density (struct GRAVPRISMS_CTRL *Ctrl, double h, double z1, double z2) {
+GMT_LOCAL double gravprisms_mean_density (struct GRAVPRISMS_CTRL *Ctrl, double h_orig, double z1, double z2) {
 	/* Passing in the current seamounts height h(r) and the two depths z1(r) and z2(r) defining a prism.
 	 * When doing the whole seamount we pass z2 = 0 and z1 = h(r).
 	 * The vertically averaged density for this radial position and range of z is returned */
+	double h = h_orig * Ctrl->H.boost;	/* Simulate flattening */
 	double u1 = (h - z1) / Ctrl->H.H;
 	double u2 = (h - z2) / Ctrl->H.H;
 	double q = (Ctrl->H.H - h) / Ctrl->H.H;
