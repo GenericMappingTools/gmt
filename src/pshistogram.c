@@ -1359,7 +1359,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			else
 				S.size_y = S.size_x / 1.5;	/* Width to height ratio is 3:2 */
 		}
-		gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+		gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item), NULL);
 	}
 	
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */

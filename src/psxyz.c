@@ -1111,7 +1111,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for variable symbol size unless +S<size> is used. Option -l ignored.\n");
 			else {
 				/* For specified symbol, size, color we can do an auto-legend entry under modern mode */
-				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item), NULL);
 			}
 		}
 		n = 0;
@@ -1989,12 +1989,13 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (S.symbol == GMT_SYMBOL_LINE) {
 				if (polygon || Ctrl->L.active) {	/* Place a rectangle in the legend */
 					int symbol = S.symbol;
-					S.symbol = PSL_RECT;
-					gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+					char *cpen = (Ctrl->L.outline) ? &(Ctrl->L.pen) : NULL;
+					S.symbol = (Ctrl->L.active && Ctrl->G.active && Ctrl->W.active) ? 'L' : PSL_RECT;	/* L means confidence-line */
+					gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item), cpen);
 					S.symbol = symbol;
 				}
 				else	/* For specified line, width, color we can do an auto-legend entry under modern mode */
-					gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+					gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item), NULL);
 			}
 			else
 				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for selected feature. Option -l ignored.\n");
@@ -2033,14 +2034,15 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				if (seq_legend && seq_n_legends >= 0 && (seq_frequency == GMT_COLOR_AUTO_SEGMENT || seg == 0)) {
 					if (GMT->common.l.item.label_type == GMT_LEGEND_LABEL_HEADER && L->header)	/* Use a segment label if found in header */
 						gmt_extract_label (GMT, L->header, GMT->common.l.item.label, SH->ogr);
-					if (polygon) {	/* Place a rectangle in the legend */
+					if (polygon || Ctrl->L.active) {	/* Place a rectangle in the legend */
 						int symbol = S.symbol;
-						S.symbol = PSL_RECT;
-						gmt_add_legend_item (API, &S, Ctrl->G.active, &current_fill, Ctrl->W.active, &current_pen, &(GMT->common.l.item));
+						char *cpen = (Ctrl->L.outline) ? &(Ctrl->L.pen) : NULL;
+						S.symbol = (Ctrl->L.active && Ctrl->G.active && Ctrl->W.active) ? 'L' : PSL_RECT;	/* L means confidence-line */
+						gmt_add_legend_item (API, &S, Ctrl->G.active, &current_fill, Ctrl->W.active, &current_pen, &(GMT->common.l.item), cpen);
 						S.symbol = symbol;
 					}
 					else	/* For specified line, width, color we can do an auto-legend entry under modern mode */
-						gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &current_pen, &(GMT->common.l.item));
+						gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &current_pen, &(GMT->common.l.item), NULL);
 					seq_n_legends--;	/* One less to do */
 					GMT->common.l.item.ID++;	/* Increment the label counter */
 				}
