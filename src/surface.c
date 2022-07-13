@@ -58,6 +58,24 @@
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVabdefhiqrw" GMT_ADD_x_OPT GMT_OPT("FH")
 
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
+	/* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers */
+	GMT_INCREMENT_KW,       /* Defined in gmt_constants.h since not a true GMT common option (but almost) */
+	{ 0, 'A', "aspect",        "m",   "middle",            "", "" },
+	{ 0, 'C', "convergence",   "",    "",                  "", "" },
+	{ 0, 'D', "breakline",     "",    "",                  "z", "zvalue" },
+	{ 0, 'L', "limit",         "l,u", "lower,upper",       "", "" },
+	{ 0, 'M', "maskradius",    "",    "",                  "", "" },
+	{ 0, 'N', "maxiterations", "",    "",                  "", "" },
+	{ 0, 'Q', "quicksize",     "r",   "region",            "", "" },
+	{ 0, 'S', "searchradius",  "",    "",                  "", "" },
+	{ 0, 'T', "tension",       "b,i", "boundary,interior", "", "" },
+	{ 0, 'W', "logfile",       "",    "",                  "", "" },
+	{ 0, 'Z', "relax",         "",    "",                  "", "" },
+	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+};
+
+
 struct SURFACE_CTRL {
 	struct SURFACE_A {	/* -A<aspect_ratio> */
 		bool active;
@@ -113,7 +131,7 @@ struct SURFACE_CTRL {
 		char unit;
 	} S;
 	struct SURFACE_T {	/* -T<tension>[i][b] */
-		bool active;
+		bool active[2];
 		double b_tension, i_tension;
 	} T;
 	struct SURFACE_W {	/* -W[<logfile>] */
@@ -190,6 +208,8 @@ enum surface_limit { NONE = 0, DATA = 1, VALUE = 2, SURFACE = 3 };
 enum surface_conv { BY_VALUE = 0, BY_PERCENT = 1 };
 
 enum surface_iter { GRID_NODES = 0, GRID_DATA = 1 };
+
+enum surface_tension { BOUNDARY = 0, INTERIOR = 1 };
 
 struct SURFACE_DATA {	/* Data point and index to node it currently constrains  */
 	gmt_grdfloat x, y, z;
@@ -1898,7 +1918,6 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'T':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				k = 0;
 				if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 syntax allowed for upper case */
 					modifier = opt->arg[strlen(opt->arg)-1];
@@ -1912,12 +1931,19 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 					k = 1;
 				}
 				if (modifier == 'b') {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[BOUNDARY]);
 					Ctrl->T.b_tension = atof (&opt->arg[k]);
 				}
 				else if (modifier == 'i') {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[INTERIOR]);
 					Ctrl->T.i_tension = atof (&opt->arg[k]);
 				}
 				else if (modifier == '.' || (modifier >= '0' && modifier <= '9')) {
+					/* specification of a numeric string with no b or i directive will
+					   set both tension values, meaning that we must test that neither
+					   has already been set via some preceding -T specification */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[BOUNDARY]);
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[INTERIOR]);
 					Ctrl->T.i_tension = Ctrl->T.b_tension = atof (opt->arg);
 				}
 				else {
@@ -1984,7 +2010,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
