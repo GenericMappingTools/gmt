@@ -127,7 +127,7 @@ Optional Arguments
     The following modifiers are supported:
 
     - **+l** to just list the countries and their codes (no data extraction or plotting takes place).
-    - **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
+    - **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Norway, Russia and the US.
     - **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list countries in that continent or country;
       repeat if more than one continent or country is requested.
     - **+n** to list the named :ref:`DCW collections <dcw-collections>` or regions (**-E**\ *code*\ **+n** will list
