@@ -19,7 +19,7 @@ Synopsis
 [ |-E|\ *dx*\ [/*dy*] ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-G|\ *outfile* ]
-[ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
+[ |-H|\ *H*/*rho_l*/*rho_h*\ [**+b**\ *boost*][**+d**\ *densify*][**+p**\ *power*] ]
 [ |SYN_OPT-I| ]
 [ |-L|\ *base* ]
 [ |-M|\ [**h**]\ [**z**] ]
@@ -143,11 +143,12 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
+**-H**\ *H*/*rho_l*/*rho_h*\ [**+b**\ *boost*][**+d**\ *densify*][**+p**\ *power*]
     Set reference seamount parameters for an *ad-hoc* variable radial density function with depth. Give
     the low and high seamount densities in :math:`\mbox{kg/m}^3` or :math:`\mbox{g/cm}^3` and the fixed reference height *H* in meters.
     Use modifiers **+d** and **+p** to change the water-pressure-driven flank density increase over the
     full reference height [0] and the variable density profile exponent *power* [1, i.e., a linear change].
+    To simulate the higher starting densities in truncated guyots you can *boost* the seamount height by this factor [1].
     Requires |-S| to know the full height of the seamount.
     See :doc:`grdseamount </supplements/potential/grdseamount>` for more details.
 

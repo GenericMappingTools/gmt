@@ -37,7 +37,7 @@ if [ "$BUILD_DOCS" = "true" ]; then
     # Add sphinx to PATH
     echo "$(python -m site --user-site)\..\Scripts" >> $GITHUB_PATH
 
-    choco install pngquant
+    # choco install pngquant
 fi
 
 if [ "$RUN_TESTS" = "true" ]; then

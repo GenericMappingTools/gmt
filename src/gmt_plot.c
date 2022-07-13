@@ -10746,6 +10746,7 @@ int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, u
 		if (close_file) fclose (fp);
 		return (GMT_DATA_WRITE_ERROR);
 	}
+    fflush (fp);    /* Make sure we flush the pipe since we don't know if fclose will happen */
 	if (close_file) fclose (fp);
 	return (GMT_NOERROR);
 }
