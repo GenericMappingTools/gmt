@@ -700,9 +700,18 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 		gmtinit_handle_escape_text (new_arg, '+', -1);	/* Restore any escaped +? sequences we found */
 		opt->arg = strdup (new_arg);	/* Allocate copy of new short-option argument */
 	}
+#if 0
 	if (modified && gmt_M_is_verbose (API->GMT, GMT_MSG_INFORMATION)) {	/* Echo the converted options */
 		char *cmd = GMT_Create_Cmd (API, *options);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Reformatted options: %s\n", cmd);
+	/* we actually cannot yet tell if gmt_M_is_verbose(... GMT_MSG_INFORMATION ...)
+	   will come to pass without working a bit harder as args are not yet fully parsed,
+	   and also note that at this point we will always be at GMT_MSG_WARNING or whatever
+	   default verbosity level the program is initialized with -- fix this later (or not)! */
+#endif /* 0 */
+	if (modified) {
+		char *cmd = GMT_Create_Cmd (API, *options);
+		GMT_Report (API, GMT_MSG_WARNING, "Reformatted options: %s\n", cmd);
 		GMT_Destroy_Cmd (API, &cmd);	/* Free string */
 	}
 }
