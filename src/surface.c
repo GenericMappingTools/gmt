@@ -1329,7 +1329,7 @@ GMT_LOCAL void surface_throw_away_unusables (struct GMT_CTRL *GMT, struct SURFAC
 		if (C->data[k].index == last_index) {	/* Same node but further away than our guy */
 			C->data[k].index = SURFACE_OUTSIDE;
 			n_outside++;
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Skipping unusable point at (%.16lg %.16lg %.16lg) as (%.16lg %.16lg %.16lg) is closer to node %" PRIu64 "\n",
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Skipping unusable point at (%.16lg %.16lg %.16lg) as (%.16lg %.16lg %.16lg) is closer to node %" PRIu64 "\n",
 					C->data[k].x, C->data[k].y, C->data[k].z, C->data[last_k].x, C->data[last_k].y, C->data[last_k].z, last_index);
 		}
 		else {	/* New index, just update last_index */
