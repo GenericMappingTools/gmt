@@ -290,10 +290,10 @@ Optional Arguments
 
 .. module_common_ends
 
+.. _dcw-collections:
+
 DCW Collections
 ---------------
-
-.. _dcw-collections:
 
 The |-E| and |-R| options can be expanded to take the user's own custom collections
 and named regions.  Users can create a dcw.conf file and place it in their
