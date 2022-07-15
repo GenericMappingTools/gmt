@@ -257,7 +257,7 @@ according to their ID, try
    ::
 
     gmt triangulate samples.xyz -M -Qn -R-100/-90/30/34 -JM15c | \
-        gmt plot -R-100/-90/30/34 -JM15c -W0.5p+cf -L -B1 -Ccolors.cpt -L -pdf polygons
+        gmt plot -R-100/-90/30/34 -JM15c -W0.5p+cf -B1 -Ccolors.cpt -pdf polygons
 
 To grid the data using the natural nearest neighbor algorithm, try
 
