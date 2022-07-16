@@ -1945,7 +1945,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		gmt_reset_meminc (GMT);
 	}
 	else {	/* Line/polygon part */
-		bool duplicate = false;
+		bool duplicate = false, conf_line = false;
 		int outline_setting;
 		uint64_t seg;
 		struct GMT_PALETTE *A = NULL;
@@ -1985,9 +1985,11 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 		}
 
+		conf_line = (Ctrl->L.anchor >= PSXYZ_POL_SYMM_DEV && Ctrl->L.anchor <= PSXYZ_POL_ASYMM_ENV);
+
 		if (!seq_legend && GMT->common.l.active) {
 			if (S.symbol == GMT_SYMBOL_LINE) {
-				if (polygon || Ctrl->L.active) {	/* Place a rectangle in the legend */
+				if (polygon || conf_line) {	/* Place a rectangle in the legend */
 					int symbol = S.symbol;
 					struct GMT_PEN *cpen = (Ctrl->L.outline) ? &(Ctrl->L.pen) : NULL;
 					S.symbol = (Ctrl->L.active && Ctrl->G.active && Ctrl->W.active) ? 'L' : PSL_RECT;	/* L means confidence-line */
@@ -2034,7 +2036,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				if (seq_legend && seq_n_legends >= 0 && (seq_frequency == GMT_COLOR_AUTO_SEGMENT || seg == 0)) {
 					if (GMT->common.l.item.label_type == GMT_LEGEND_LABEL_HEADER && L->header)	/* Use a segment label if found in header */
 						gmt_extract_label (GMT, L->header, GMT->common.l.item.label, SH->ogr);
-					if (polygon || Ctrl->L.active) {	/* Place a rectangle in the legend */
+					if (polygon || conf_line) {	/* Place a rectangle in the legend */
 						int symbol = S.symbol;
 						struct GMT_PEN *cpen = (Ctrl->L.outline) ? &(Ctrl->L.pen) : NULL;
 						S.symbol = (Ctrl->L.active && Ctrl->G.active && Ctrl->W.active) ? 'L' : PSL_RECT;	/* L means confidence-line */
