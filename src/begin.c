@@ -38,7 +38,7 @@
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<prefix>] [<formats>] [<psconvertoptions] [-C] [%s]\n", name, GMT_V_OPT);
+	GMT_Usage (API, 0, "usage: %s [<prefix>] [<formats>] [<psconvertoptions>] [-C] [%s]\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 

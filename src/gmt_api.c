@@ -13989,13 +13989,22 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *f
 	struct GMT_WORD *W = gmtapi_split_words (in_line);	/* Create array of words */
 	char message[GMT_MSGSIZ] = {""};
 
+#ifdef DEBUG_USAGE_OPTIONS
+	{	/* Breaks usage string into one word per line.  See gmt_usage_messages.sh in the sandbox/guru repo for what to do next */
+		strcpy (message, in_line);
+		gmt_strrepc (message, ' ', '\n');
+		API->print_func (fp, message);  /* Do the printing */
+		return;
+	}
+ #endif
+
 	/* Start with any fixed indent */
 	level = abs (level);	/* In case it was negative */
-    if (level > 6) {    /* Place custom level in last entry.  This is to help g**math issue wrapped operator messages */
-        gmtapi_indent[7] = level;
-        level = 7;
-        go = false;   /* Already indented and ready to go */
-    }
+	if (level > 6) {    /* Place custom level in last entry.  This is to help g**math issue wrapped operator messages */
+		gmtapi_indent[7] = level;
+		level = 7;
+		go = false;   /* Already indented and ready to go */
+	}
 	next_level = (keep_same_indent) ? level : level + 1;	/* Do we indent when we wrap or not */
 	for (j = 0; go && j < gmtapi_indent[level]; j++) strcat (message, " ");	/* Starting spaces */
 	current_width = gmtapi_indent[level];
@@ -14009,7 +14018,7 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *f
 			free (W[k].word);	/* Free the word we are done with */
 			if (W[k+1].word == NULL)	/* Finalize the last line */
 				strcat (message, "\n");
-            force = false;  /* In case it was set */
+			force = false;  /* In case it was set */
 		}
 		else {	/* Must split at the current break point and continue on next line */
 			if (W[k].space) { /* No break character needed since space separation is expected */
@@ -14026,9 +14035,9 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *f
 			}
 			W[k].space = 0;	/* Can be no leading space if starting a the line */
 			k--;	/* Since k will be incremented by loop and we did not write this word yet */
-            try++;
-            if (try == 2) /* Word is longer than effective terminal width - must force output (even if too long) to get past this stalemate */
-                force = true, try = 0;
+			try++;
+			if (try == 2) /* Word is longer than effective terminal width - must force output (even if too long) to get past this stalemate */
+				force = true, try = 0;
 		}
 	}
 	free (W);	/* Free the structure array */

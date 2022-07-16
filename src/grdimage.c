@@ -153,7 +153,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s %s%s [%s] [-C<cpt>] [-D[r]] [-Ei|<dpi>] "
 		"[-G<rgb>[+b|f]] [-I[<intensgrid>|<value>|<modifiers>]] %s[-M] [-N] %s%s[-Q[<color>][+z<value>]] "
-		"[%s] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[%s] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]%s[%s]\n",
 		name, GMT_INGRID, GMT_J_OPT, extra[API->external], GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT, GMT_U_OPT,
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_x_OPT, GMT_PAR_OPT);
 

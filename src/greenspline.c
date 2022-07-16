@@ -230,8 +230,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]] "
 		"[-D<information>] [-E[<misfitfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L] [-N<nodefile>] [-Q<az>] "
-		"[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] "
-		"[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s [%s]%s[%s] [%s]\n",
+		"[-R<xmin>/<xmax>[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] "
+		"[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n",
 		name, GMT_V_OPT,GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_o_OPT, GMT_q_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
