@@ -106,7 +106,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s %s [-F<polygontable>] [-G%s] [%s] [%s] [-N<upper_age>] "
 		"[-SadrswxyXY] [-T<time>] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_INGRID, SPOTTER_E_OPT, GMT_OUTGRID, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_r_OPT, GMT_PAR_OPT);
+		name, GMT_INGRID, SPOTTER_E_OPT, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -120,8 +120,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_outgrid_syntax (API, 'G', "Set output filename with the model predictions. "
 		"Must contain %%s if more than one item is specified in -S. "
 		"Default writes x,y,<predictions> to standard output.");
-	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
-	GMT_Usage (API, -2, "Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].");
+	GMT_Option (API, "I");
 	GMT_Usage (API, 1, "\n-N<upper_age>");
 	GMT_Usage (API, -2, "Extend earliest stage pole back to <upper_age> [no extension].");
 	GMT_Option (API, "Rg");
