@@ -114,16 +114,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <segyfile> -G%s %s %s [-A[n|z]] [%s] [-L<nsamp>] "
 		"[-M<ntraces>] [-Q<mode><value>] [-S<header>] [%s] [%s] [%s] [%s]\n",
-		name, GMT_OUTGRID, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_GRDEDIT2D, GMT_V_OPT, GMT_di_OPT, GMT_r_OPT, GMT_PAR_OPT);
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_GRDEDIT2D, GMT_V_OPT, GMT_di_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<segyfile> is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.");
 	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
-	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
-	GMT_Usage (API, -2, "Specify grid size(s).");
-	GMT_Option (API, "R");
+	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A[n|z]");
 	GMT_Usage (API, -2, "Add multiple entries at the same node according to directive:");

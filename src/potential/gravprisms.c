@@ -700,7 +700,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {	/* Need to create prisms from two surfaces first */
 		bool flip_order = false;
 		struct GMT_GRID *B = NULL, *T = NULL, *H = NULL, *Rho = NULL;
-		double base = 0.0, top = 0.0, z1, z2, z_prev, z_next, z_mid, rs = 0.0, ws = 0.0, s = 1.0;
+		double base = 0.0, top = 0.0, z1, z2, z_prev, z_next, z_mid, z_max, rs = 0.0, ws = 0.0, s = 1.0;
 		size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 
 		if (Ctrl->L.active) {	/* Specified layer base */
@@ -753,6 +753,9 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 			z1 = (B) ? B->data[node] : base;	/* z-value at the bottom of the layer */
 			if (gmt_M_is_dnan (z1)) continue;	/* Cannot work with NaNs - probably outside the feature */
 			if (Ctrl->D.file && gmt_M_is_zero (Rho->data[node])) continue;	/* Need a nonzero density contrast to do any damage */
+			z_max = H->data[node];	/* Current seamount height, which may be higher or lower than z1 if -S was used with a filtered surface */
+			if (gmt_M_is_dnan (z_max)) continue;	/* Cannot work with NaNs - probably outside the feature */
+			if (z_max < z2) z_max = z2;	/* Cannot be less since it would give NaN in gravprisms_mean_density */
 			if (flip_order) {	/* E.g., when a flexure surface goes from moat to bulge */
 				if (z2 < z1) {	/* Must flip order and change density sign */
 					gmt_M_double_swap (z1, z2);
@@ -770,7 +773,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 					if (z_next <= z_prev) z_next += Ctrl->C.dz;	/* Can happen if z1 is a multiple of dz */
 					else if (z_next > z2) z_next = z2;	/* At the top, clip to limit */
 					z_mid = 0.5 * (z_prev + z_next);	/* Middle of prism - used to look up density from model */
-					rho = gravprisms_mean_density (Ctrl, H->data[node], z_prev, z_next) - Ctrl->D.rho;	/* Get density or density contrast (if -D is set) */
+					rho = gravprisms_mean_density (Ctrl, z_max, z_prev, z_next) - Ctrl->D.rho;	/* Get density or density contrast (if -D is set) */
 				}
 				else {	/* Constant density rho (set above via -D) or by Rho (via -W), just need a single prism per location */
 					z_next = z2;
@@ -783,18 +786,26 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 						prism[k] = gmt_M_memory (GMT, prism[k], n_alloc, double);
 				}
 				/* Here we ensure prism dimensions are given in meters */
-				prism[0][n_prisms] = scl_xy * (H->x[col] - dx);	prism[1][n_prisms] = scl_xy * (H->x[col] + dx);
-				prism[2][n_prisms] = scl_xy * (H->y[row] - dy);	prism[3][n_prisms] = scl_xy * (H->y[row] + dy);
-				prism[4][n_prisms] = scl_z * z_prev;			prism[5][n_prisms] = scl_z * z_next;
-				prism[6][n_prisms] = s * rho;
-				n_prisms++;
+				if (gmt_M_is_dnan (rho))
+					GMT_Report (API, GMT_MSG_WARNING, "Density computation for node %" PRIu64 " at depths %lg/%lg resulted in NaN - skipped\n", node, z_prev, z_next);
+				else {	/* OK to add */
+					prism[0][n_prisms] = scl_xy * (H->x[col] - dx);	prism[1][n_prisms] = scl_xy * (H->x[col] + dx);
+					prism[2][n_prisms] = scl_xy * (H->y[row] - dy);	prism[3][n_prisms] = scl_xy * (H->y[row] + dy);
+					prism[4][n_prisms] = scl_z * z_prev;			prism[5][n_prisms] = scl_z * z_next;
+					prism[6][n_prisms] = s * rho;
+					n_prisms++;
+				}
 				z_prev = z_next;	/* The top of this prism will be the bottom of the next in the variable density case */
 			} while (z_prev < z2);	/* Until we run out of this stack of prisms */
 			if (Ctrl->W.active) {	/* Get vertical average density and keep track of means */
 				double dz = z2 - z1;	/* Prism height */
-				Rho->data[node] = gravprisms_mean_density (Ctrl, H->data[node], z1, z2);
-				rs += Rho->data[node] * dz;
-				ws += dz;
+				Rho->data[node] = gravprisms_mean_density (Ctrl, z_max, z1, z2);
+				if (gmt_M_is_dnan (Rho->data[node]))
+					GMT_Report (API, GMT_MSG_WARNING, "Mean Density computation for node %" PRIu64 " resulted in NaN - skipped\n", node);
+				else {	/* OK to add */
+					rs += Rho->data[node] * dz;
+					ws += dz;
+				}
 			}
 		}
 		/* Finalize memory allocation */
