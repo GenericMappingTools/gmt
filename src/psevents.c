@@ -112,7 +112,7 @@ struct PSEVENTS_CTRL {
 		unsigned int mode;
 		double length;
 	} L;
-	struct PSEVENTS_M {	/* 	-M[i|s|t|v]<val1>[+c<val2] */
+	struct PSEVENTS_M {	/* 	-M[i|s|t|v]<val1>[+c<val2>] */
 		bool active[4];
 		double value[4][2];
 	} M;
@@ -184,7 +184,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s -T<now> [-Ar[<dpu>[c|i][+v[<value>]]]|s] [%s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
 		"[-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]] [-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] "
-		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t|v<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>]] [%s] [%s] [-Z\"<command>\"] "
+		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t|v<val1>[+c<val2>]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>]] [%s] [%s] [-Z\"<command>\"] "
 		"[%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_b_OPT,
 		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_qi_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -248,7 +248,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set finite length of events, otherwise we assume they are all infinite. "
 		"If no arg we read lengths from file; append t for reading end times instead. "
 		"If -L0 is given the event only lasts one frame.");
-	GMT_Usage (API, 1, "\n-Mi|s|t|v<val1>[+c<val2]");
+	GMT_Usage (API, 1, "\n-Mi|s|t|v<val1>[+c<val2>]");
 	GMT_Usage (API, -2, "Append i for intensity, s for size, t for transparency, and v for dz (requires -C); repeatable. "
 		"Append value to use during rise, plateau, or decay phases. "
 		"Append +c to set a separate terminal value for the coda [no coda].");

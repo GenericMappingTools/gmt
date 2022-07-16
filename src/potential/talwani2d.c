@@ -218,7 +218,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <modelfile> [-A] [-D<density>] [-Ff|n[<lat>]|v] [-M[hz]] "
-		"[-N<trktable>] [-T<xmin>/<xmax>/<xinc>[+i|n]|<file>|<list>] [%s] [-Z[<level>][/<ymin/<ymax>]] "
+		"[-N<trktable>] [-T<xmin>/<xmax>/<xinc>[+i|n]|<file>|<list>] [%s] [-Z[<level>][/<ymin>/<ymax>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT,
 		GMT_x_OPT, GMT_PAR_OPT);
@@ -253,9 +253,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+n Indicate <inc> is the number of t-values to produce instead.");
 	GMT_Usage (API, -2, "Alternatively, give a <file> with output positions in the first column, or a comma-separated <list>.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-Z[<level>][/<ymin/<ymax>]");
+	GMT_Usage (API, 1, "\n-Z[<level>][/<ymin>/<ymax>]");
 	GMT_Usage (API, -2, "-Z Set observation level for output locations [0]. "
-		"For FAA only: Optionally append /<ymin/ymax> to get a 2.5-D solution.");
+		"For FAA only: Optionally append /<ymin>/<ymax> to get a 2.5-D solution.");
 	GMT_Option (API, "bi,bo,d,e,h,i,o,x,.");
 	return (GMT_MODULE_USAGE);
 }
