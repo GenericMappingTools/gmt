@@ -843,13 +843,13 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							break;
 
 						case 'S':	/* Symbol record: S [dx1 symbol size fill pen [ dx2 text ]] */
-							if (column_number%n_columns == 0 && line[0] != 'L') {	/* Skip L to not count both symbols making up the confidence line */
+							text[0] = '\0';
+							n_scan = sscanf (line, "%*s %*s %s %s %*s %*s %s %[^\n]", symbol, size, txt_b, text);
+							if (column_number%n_columns == 0 && symbol[0] != 'L') {	/* Skip L to not count both symbols making up the confidence line */
 								height += one_line_spacing;
 								column_number = 0;
 							}
 							column_number++;
-							text[0] = '\0';
-							n_scan = sscanf (line, "%*s %*s %s %s %*s %*s %s %[^\n]", symbol, size, txt_b, text);
 							/* Find the largest symbol size specified */
 							gmt_strrepc (size, '/', ' ');	/* Replace any slashes with spaces */
 							gmt_strrepc (size, ',', ' ');	/* Replace any commas with spaces */

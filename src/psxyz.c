@@ -1989,7 +1989,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (S.symbol == GMT_SYMBOL_LINE) {
 				if (polygon || Ctrl->L.active) {	/* Place a rectangle in the legend */
 					int symbol = S.symbol;
-					char *cpen = (Ctrl->L.outline) ? &(Ctrl->L.pen) : NULL;
+					struct GMT_PEN *cpen = (Ctrl->L.outline) ? &(Ctrl->L.pen) : NULL;
 					S.symbol = (Ctrl->L.active && Ctrl->G.active && Ctrl->W.active) ? 'L' : PSL_RECT;	/* L means confidence-line */
 					gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item), cpen);
 					S.symbol = symbol;
@@ -2036,7 +2036,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						gmt_extract_label (GMT, L->header, GMT->common.l.item.label, SH->ogr);
 					if (polygon || Ctrl->L.active) {	/* Place a rectangle in the legend */
 						int symbol = S.symbol;
-						char *cpen = (Ctrl->L.outline) ? &(Ctrl->L.pen) : NULL;
+						struct GMT_PEN *cpen = (Ctrl->L.outline) ? &(Ctrl->L.pen) : NULL;
 						S.symbol = (Ctrl->L.active && Ctrl->G.active && Ctrl->W.active) ? 'L' : PSL_RECT;	/* L means confidence-line */
 						gmt_add_legend_item (API, &S, Ctrl->G.active, &current_fill, Ctrl->W.active, &current_pen, &(GMT->common.l.item), cpen);
 						S.symbol = symbol;
