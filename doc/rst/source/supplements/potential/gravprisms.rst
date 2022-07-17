@@ -15,7 +15,7 @@ Synopsis
 **gmt gravprisms** [ *table* ]
 [ |-A| ]
 [ |-C|\ [**+q**][**+w**\ *file*][**+z**\ *dz*] ]
-[ |-D|\ *density* ]
+[ |-D|\ *density*\ [**+c**] ]
 [ |-E|\ *dx*\ [/*dy*] ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-G|\ *outfile* ]
@@ -111,11 +111,14 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *density*
-    Sets a fixed density contrast that overrides any individual prism settings in the prisms file, in :math:`\mbox{kg/m}^3` of :math:`\mbox{g/cm}^3`. Alternatively, give name of an input grid with spatially varying, vertically-averaged
-    prism densities. This requires |-C| and the grid must be co-registered with the grid provided by |-S|
-    (or |-L| and |-T|).  **Note**: If |-H| is used then a fixed density may be set via |-D| and it will be used to compute
-    *density contrasts* in the seamount relative to the fixed *density* (such as density of seawater for underwater seamounts).
+**-D**\ *density*\ [**+c**]
+    Sets a fixed density contrast that overrides any individual prism settings in the prisms file, in
+    :math:`\mbox{kg/m}^3` of :math:`\mbox{g/cm}^3`. Append **+c** to instead subtract this density from
+    the individual prism densities. Alternatively, give name of an input grid with spatially varying,
+    vertically-averaged prism densities. This requires |-C| and the grid must be co-registered with the
+    grid provided by |-S| (or |-L| and |-T|).  **Note**: If |-H| is used then a fixed density may be set
+    via |-D| provided its modifier **+c** is set. We will then compute *density contrasts* in the seamount
+    relative to the fixed *density* (such as density of seawater for underwater seamounts).
 
 .. _-E:
 
