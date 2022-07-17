@@ -14179,7 +14179,7 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 				error = true;
 		}
 		if (error) {
-			GMT_Report (API, GMT_MSG_WARNING, "Your filename %s have what appears as valid GMT modifiers (from list +%s) but are embedded rather than appended to the filename - modifiers ignored\n", filename, mods);
+			GMT_Report (API, GMT_MSG_WARNING, "Your filename %s has what appears as valid GMT modifiers (from list +%s) but they are embedded rather than appended to the filename - modifiers ignored\n", filename, mods);
 			modifiers = NULL;
 		}
 	}
