@@ -14157,7 +14157,7 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 					case 'o': case 's':	/* +o<offset>|a,  +s<scale>|a */
 						allow_a = true;	/* Argument "a" for auto is OK for these modifiers */
 						/* Fall through on purpose */
-					case 'h': case 'i': case 'n': 	/* +h[<hinge>], +i<inc>, +n<nodata> */
+					case 'd': case 'h': case 'i': case 'n': 	/* +d<div>, +h[<hinge>], +i<inc>, +n<nodata> */
 						k++;	/* Move to start of argument, next modifier, or NULL */
 						while (modifiers[k] && modifiers[k] != '+' && strchr ("-+.0123456789eE", modifiers[k])) k++;	/* Skip a numerical argument */
 						if (allow_a && modifiers[k] == 'a') k++;	/* Ok with a for this modifier */
@@ -14179,7 +14179,7 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 				error = true;
 		}
 		if (error) {
-			GMT_Report (API, GMT_MSG_WARNING, "Your filename %s have what appears as valid GMT modifiers (from list +%s) but are embedded rather than appended to the filename - modifiers ignored\n", filename, mods);
+			GMT_Report (API, GMT_MSG_WARNING, "Your filename %s has what appears as valid GMT modifiers (from list +%s) but they are embedded rather than appended to the filename - modifiers ignored\n", filename, mods);
 			modifiers = NULL;
 		}
 	}
