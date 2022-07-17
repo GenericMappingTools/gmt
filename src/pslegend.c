@@ -531,6 +531,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	int i, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan, status = 0, max_cols = 0;
 	bool flush_paragraph = false, v_line_draw_now = false, gave_label, gave_mapscale_options, did_old = false, use[2] = {false, true};
 	bool drawn = false, b_cpt = false, C_is_active = false, do_width = false, in_PS_ok = true, got_line = false, got_geometric = false;
+	bool confidence_band = false;
 	uint64_t seg, row, n_fronts = 0, n_quoted_lines = 0, n_decorated_lines = 0, n_symbols = 0, n_par_lines = 0, n_par_total = 0, krow[N_DAT], n_records = 0;
 	int64_t n_para = -1;
 	size_t n_char = 0;
@@ -543,7 +544,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	char module_options[GMT_LEN256] = {""}, r_options[GMT_LEN256] = {""}, xy_mode[3] = {""}, J_arg[GMT_LEN64] = {"-Jx1i"};
 	char txtcolor[GMT_LEN256] = {""}, def_txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""}, legend_file[PATH_MAX] = {""};
 	char path[PATH_MAX] = {""}, B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""}, p[GMT_LEN256] = {""};
-	char *plot_points[2] = {"psxy", "plot"}, *plot_text[2] = {"pstext", "text"};
+	char *plot_points[2] = {"psxy", "plot"}, *plot_text[2] = {"pstext", "text"}, orig_symbol = 0;
 	char *line = NULL, string[GMT_VF_LEN] = {""}, *c = NULL, *fill[PSLEGEND_MAX_COLS];
 #ifdef DEBUG
 	char *dname[N_DAT] = {"symbol", "front", "qline", "textline", "partext"};
@@ -842,13 +843,13 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							break;
 
 						case 'S':	/* Symbol record: S [dx1 symbol size fill pen [ dx2 text ]] */
-							if (column_number%n_columns == 0) {
+							text[0] = '\0';
+							n_scan = sscanf (line, "%*s %*s %s %s %*s %*s %s %[^\n]", symbol, size, txt_b, text);
+							if (column_number%n_columns == 0 && symbol[0] != 'L') {	/* Skip L to not count both symbols making up the confidence line */
 								height += one_line_spacing;
 								column_number = 0;
 							}
 							column_number++;
-							text[0] = '\0';
-							n_scan = sscanf (line, "%*s %*s %s %s %*s %*s %s %[^\n]", symbol, size, txt_b, text);
 							/* Find the largest symbol size specified */
 							gmt_strrepc (size, '/', ' ');	/* Replace any slashes with spaces */
 							gmt_strrepc (size, ',', ' ');	/* Replace any commas with spaces */
@@ -1534,11 +1535,13 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								n_scan = sscanf (&line[2], "%s %s %s %s %s %s %[^\n]", txt_a, symbol, size, txt_c, txt_d, txt_b, text);
 							else	/* No args given means skip to next cell */
 								n_scan = 0;
+							orig_symbol = symbol[0];	/* Needed for L since we change it to r herein */
 							if (column_number%n_columns == 0) {	/* Symbol in first column, also fill row if requested */
 								pslegend_fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-one_line_spacing, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
-								row_base_y -= one_line_spacing;
+								if (!confidence_band) row_base_y -= one_line_spacing;
 								column_number = 0;
 							}
+							if (symbol[0] == 'L') symbol[0] = 'r';	/* L means rectangle followed by central line */
 							if (n_scan <= 0) {	/* No symbol, just skip to next cell */
 								column_number++;
 								GMT_Report (API, GMT_MSG_DEBUG, "The S record give no info so skip to next cell\n");
@@ -1848,7 +1851,8 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								pslegend_maybe_realloc_segment (GMT, S[TXT]);
 								GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
 							}
-							column_number++;
+							confidence_band = (orig_symbol == 'L');	/* Next entry will do line and need to overwrite */
+							if (!confidence_band) column_number++;
 							if (Ctrl->F.debug) pslegend_drawbase (GMT, PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->x + Ctrl->D.dim[GMT_X], row_base_y);
 							drawn = true;
 							break;

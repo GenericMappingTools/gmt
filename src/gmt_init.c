@@ -19383,7 +19383,7 @@ GMT_LOCAL void gmtinit_set_symbol_size (struct GMTAPI_CTRL *API, struct GMT_SYMB
 	}
 }
 
-void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do_fill, struct GMT_FILL *fill, bool do_line, struct GMT_PEN *pen, struct GMT_LEGEND_ITEM *item) {
+void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do_fill, struct GMT_FILL *fill, bool do_line, struct GMT_PEN *pen, struct GMT_LEGEND_ITEM *item, struct GMT_PEN *cpen) {
 	/* Adds a new entry to the auto-legend information file hidden in the session directory */
 	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""}, size_string[GMT_LEN128] = {""}, symbol;
 	bool gap_done = false;
@@ -19534,6 +19534,11 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			if (S->D.pen[0])  strcat (scode, "+p"), strcat (scode, S->D.pen);
 			if (S->D.fill[0]) strcat (scode, "+g"), strcat (scode, S->D.fill);
 			fprintf (fp, "S - %s - %s %s - %s\n", scode, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		}
+		else if (symbol == 'L') {	/* Confidence-bound line [Experimental] */
+			/* Confidence band with line is plotted as two symbol; pslegend will not advance y after L */
+			fprintf (fp, "S - L %s %s %s - %s\n", size_string, gmtlib_putfill (API->GMT, fill), (cpen) ? gmt_putpen (API->GMT, cpen) : "-", label);
+			fprintf (fp, "S - - %s - %s - %s\n", size_string, gmt_putpen (API->GMT, pen), "");
 		}
 		else
 			fprintf (fp, "S - %c %s %s %s - %s\n", symbol, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
