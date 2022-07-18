@@ -150,6 +150,7 @@ struct GMTAPI_CTRL {
 	bool no_history;					/* true if we want to disable the gmt.history mechanism */
 	bool got_remote_wesn;				/* true if we obtained w/e/sn via a remote grid/image with no resolution given */
 	bool use_gridline_registration;	/* true if default remote grid registration should be gridline, not pixel */
+	bool use_gridline_registration_warn;	/* true if we should warn about the above */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */
