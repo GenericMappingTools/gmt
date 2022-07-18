@@ -43,13 +43,14 @@
 
 #define GMT_FFT_DIM	2	/* Dimension of FFT needed */
 
-#define FLX_E	0	/* Elastic */
-#define FLX_VE	1	/* Viscoelastic */
-#define FLX_GL	2	/* General Linear model */
-#define FLX_FV1	3	/* Firmoviscous 1-layer */
-#define FLX_FV2	4	/* Firmoviscous 2-layer */
-#define FLX_V1	5	/* Viscous 1-layer */
-#define FLX_V2	6	/* Viscous 2-layer */
+#define FLX_A	0	/* Airy */
+#define FLX_E	1	/* Elastic */
+#define FLX_VE	2	/* Viscoelastic */
+#define FLX_GL	3	/* General Linear model */
+#define FLX_FV1	4	/* Firmoviscous 1-layer */
+#define FLX_FV2	5	/* Firmoviscous 2-layer */
+#define FLX_V1	6	/* Viscous 1-layer */
+#define FLX_V2	7	/* Viscous 2-layer */
 
 #define TE_INIT	0
 #define TE_END	1
@@ -416,6 +417,13 @@ GMT_LOCAL double grdflexure_transfer_elastic (double *k, struct GRDFLEXURE_RHEOL
 	return (grdflexure_transfer_fn);
 }
 
+GMT_LOCAL double grdflexure_transfer_Airy (double *k, struct GRDFLEXURE_RHEOLOGY *R) {
+	/* Airy transfer function (isotropic and independent of k) */
+	gmt_M_unused (k);
+	double grdflexure_transfer_fn = R->scale;
+	return (grdflexure_transfer_fn);
+}
+
 GMT_LOCAL void grdflexure_setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GRDFLEXURE_RHEOLOGY *R) {
 	/* Do the isostatic response function convolution in the Freq domain.
 	   All units assumed to be in SI (that is kx, ky, modk wavenumbers in m**-1,
@@ -440,13 +448,22 @@ GMT_LOCAL void grdflexure_setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE
 		Ctrl->D.rhoi = Ctrl->S.beta * Ctrl->D.rhoi + Ctrl->D.rhow * (1.0 - Ctrl->S.beta);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Starved moat with beta = %g implies an effective rho_i  = %g\n", Ctrl->S.beta, Ctrl->D.rhol);
 	}
+	else if (rho_load != Ctrl->D.rhoi)	/* In case rho_load was derived from a density grid */
+		Ctrl->D.approx = true;
+
 	if (Ctrl->D.approx) {	/* Do approximate calculation when both rhol and rhoi were set */
 		char way = (Ctrl->D.rhoi < Ctrl->D.rhol) ? '<' : '>';
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Approximate FFT-solution to flexure since rho_i (%g) %c rho_l (%g)\n", Ctrl->D.rhoi, way, Ctrl->D.rhol);
+		if (Ctrl->E.te[TE_INIT] > 0.0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Approximate FFT-solution to flexure since rho_i (%g) %c rho_l (%g)\n", Ctrl->D.rhoi, way, Ctrl->D.rhol);
 		rho_load = Ctrl->D.rhoi;
 		A = sqrt ((Ctrl->D.rhom - Ctrl->D.rhoi)/(Ctrl->D.rhom - Ctrl->D.rhol));
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Using effective load density rho_l = %g and Airy boost factor A = %g\n", rho_load, A);
+	R->scale = -A * (rho_load - Ctrl->D.rhow)/(Ctrl->D.rhom - rho_load);
+	if (gmt_M_is_zero (Ctrl->E.te[TE_INIT])) {	/* Just Airy, so rigidity etc are all zero */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Airy setup: R->scale = %g\n", R->scale);
+		return;
+	}
+
 	rigidity_d = (Ctrl->C.E * Ctrl->E.te[TE_INIT] * Ctrl->E.te[TE_INIT] * Ctrl->E.te[TE_INIT]) / (12.0 * (1.0 - Ctrl->C.nu * Ctrl->C.nu));
 	R->ce[TE_INIT] = rigidity_d / ( (Ctrl->D.rhom - rho_load) * NORMAL_GRAVITY);
 	if (Ctrl->A.active) {	/* Specified in-plane forces */
@@ -460,7 +477,6 @@ GMT_LOCAL void grdflexure_setup_elastic (struct GMT_CTRL *GMT, struct GRDFLEXURE
 		R->isotropic = true;
 		R->tr_elastic_sub = grdflexure_transfer_elastic_sub_iso;
 	}
-	R->scale = -A * (rho_load - Ctrl->D.rhow)/(Ctrl->D.rhom - rho_load);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Elastic setup: R->scale = %g D = %g R->ce[TE_INIT] = %g R->Nx_e = %g R->Ny_e = %g R->Nyx_e = %g\n",
 		R->scale, rigidity_d, R->ce[TE_INIT], R->Nx_e, R->Ny_e, R->Nxy_e);
 	if (Ctrl->E.two) {	/* Got two elastic thickness for general linear VE model */
@@ -1058,12 +1074,17 @@ GMT_LOCAL struct GRDFLEXURE_RHEOLOGY *grdflexure_select_rheology (struct GMT_CTR
 	}
 	else if (Ctrl->M.active)	/* Viscoelastic */
 		fmode = FLX_VE;
-	else				/* Elastic */
+	else if (Ctrl->E.te[TE_INIT] > 0.0)		/* Elastic */
 		fmode = FLX_E;
+	else
+		fmode = (Ctrl->Q.active) ? FLX_E : FLX_A;	/* Airy unless -Q -E */
 
 	R = gmt_M_memory (GMT, NULL, 1, struct GRDFLEXURE_RHEOLOGY);	/* Allocate rheology structure */
 
 	switch (fmode) {	/* Set function pointers */
+		case FLX_A:
+			GMT_Report (API, GMT_MSG_INFORMATION, "Selected Airy transfer function\n");
+			R->setup = grdflexure_setup_elastic;	R->transfer = grdflexure_transfer_Airy;		break;
 		case FLX_E:
 			GMT_Report (API, GMT_MSG_INFORMATION, "Selected Elastic transfer function\n");
 			R->setup = grdflexure_setup_elastic;	R->transfer = grdflexure_transfer_elastic;		break;
@@ -1114,7 +1135,7 @@ GMT_LOCAL int grdflexure_write_transfer_function (struct GMT_CTRL *GMT, struct G
 	uint64_t k;
 	int t, s, n_times, n_te;
 	char file[GMT_LEN64] = {""};
-	static char *FLX_response[6] = {"Elastic", "Viscoelastic", "Firmoviscous (1 layer)", "Firmoviscous (2 layer)", "Viscous (1 layer)", "Viscous (2 layer)"};
+	static char *FLX_response[7] = {"Airy", "Elastic", "Viscoelastic", "Firmoviscous (1 layer)", "Firmoviscous (2 layer)", "Viscous (1 layer)", "Viscous (2 layer)"};
 	uint64_t dim[4] = {1, 0, 0, 0};
 	double *kr, K[3], te[7] = {1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0};
 	double times[12] = {1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0, 1000.0, 2000.0, 5000.0};	/* Times in kiloyears */
