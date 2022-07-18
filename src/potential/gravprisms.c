@@ -1063,19 +1063,19 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Dealing with a grid */
-		openmp_int row, col, n_columns = (openmp_int)G->header->n_columns, n_rows = (openmp_int)G->header->n_rows;	/* To shut up compiler warnings */
+		openmp_int th = 0, row, col, n_columns = (openmp_int)G->header->n_columns, n_rows = (openmp_int)G->header->n_rows;	/* To shut up compiler warnings */
 		double y_obs, *x_obs = gmt_M_memory (GMT, NULL, G->header->n_columns, double);
 		for (col = 0; col < n_columns; col++) {
 			x_obs[col] = scl_xy * gmt_M_grd_col_to_x (GMT, col, G->header);
 		}
 #ifdef _OPENMP
 		/* Spread calculation over selected cores */
-#pragma omp parallel for private(row,y_obs,col,node,z_level) shared(n_rows,scl_xy,GMT,G,Ctrl,n_columns,eval,x_obs,scl_z,n_prisms,prism,G0)
+#pragma omp parallel for private(row,y_obs,col,node,z_level,th) shared(n_rows,scl_xy,GMT,G,Ctrl,n_columns,eval,x_obs,scl_z,n_prisms,prism,G0)
 #endif
 		for (row = 0; row < n_rows; row++) {	/* Do row-by-row and report on progress if -V */
 			y_obs = scl_xy * gmt_M_grd_row_to_y (GMT, row, G->header);
-#ifndef _OPENMP
-			GMT_Report (API, GMT_MSG_INFORMATION, "Finished row %5d\n", row);
+#ifdef _OPENMP
+			th = omp_get_thread_num();
 #endif
 			for (col = 0; col < n_columns; col++) {
 				/* Loop over cols; always save the next level before we update the array at that col */
@@ -1083,6 +1083,11 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 				z_level = (Ctrl->Z.mode == 1) ? G->data[node] : Ctrl->Z.level;	/* Default observation z level unless provided in input grid */
 				G->data[node] = (gmt_grdfloat) eval (x_obs[col], y_obs, z_level * scl_z, n_prisms, prism, G0);
 			}
+#ifdef _OPENMP
+			GMT_Report (API, GMT_MSG_INFORMATION, "Finished row %5d (thread %d)\n", row, th);
+#else
+			GMT_Report (API, GMT_MSG_INFORMATION, "Finished row %5d\n", row);
+#endif
 		}
 		gmt_M_free (GMT, x_obs);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Create %s\n", Ctrl->G.file);
