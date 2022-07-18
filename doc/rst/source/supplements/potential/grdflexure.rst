@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt grdflexure** *input*
-|-D|\ *rm*/*rl*\ [/*ri*]\ /*rw*
+|-D|\ *rm*/*rl*\ [/*ri*]\ /*rw*\ [**+r**\ *rr*]
 |-E|\ [*Te*\ [**k**][/*Te2*\ [**k**]]]
 |-G|\ *outgrid*
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
@@ -87,12 +87,15 @@ Required Arguments
 
 .. _-D:
 
-**-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*
+**-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*\ [**+r**\ *rr*]
     Sets density for mantle, load, infill, and water (or air).  If *ri* differs from
-    *rl* then an approximate solution will be found.  If *ri* is not given
-    then it defaults to *rl*.  Values may be given in km/m^3 or g/cm^3.
+    *rl* then an approximate solution will be found.  If *ri* is not given then it
+    defaults to *rl*.  Values may be given in :math:`\mbox{kg/m}^3` or :math:`\mbox{g/cm}^3`.
     **Note**: If a variable load density grid is supplied via |-H| then *rl*
-    must be given as -.
+    must be given as -. Whether the load density is variable or not, you can (via
+    the **+r** modifier) specify a fixed *root* density, i.e., the infill density
+    just beneath the load. This will force the load topography to be rescaled by
+    the ratio *rl/rr* and then *rl* will be reset to *rr* for flexure calculations.
 
 .. _-E:
 

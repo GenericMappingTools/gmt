@@ -67,10 +67,10 @@ struct GRDFLEXURE_CTRL {
 		bool active[2];
 		double E, nu;
 	} C;
-	struct GRDFLEXURE_D {	/* -D<rhom/rhol[/rhoi]/rhow> */
-		bool active, approx, var_rhol;
+	struct GRDFLEXURE_D {	/* -D<rhom/rhol[/rhoi]/rhow>[+r<rhor] */
+		bool active, approx, var_rhol, root;
 		unsigned int mode;
-		double rhom, rhol, rhoi, rhow;
+		double rhom, rhol, rhoi, rhow, rhor;
 	} D;
 	struct GRDFLEXURE_E {	/* -E<te>[/<te2] */
 		bool active;
@@ -709,6 +709,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 				break;
 			case 'D':	/* Set densities */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				if ((c = strstr (opt->arg, "+r"))) {	/* Got constant root [load] density */
+					Ctrl->D.rhor = atof (&c[2]);
+					if (Ctrl->D.rhor < 10.0) Ctrl->D.rhor *= 1000;	/* Gave units of g/cm^3 */
+					Ctrl->D.root = true;
+					c[0] = '\0';	/* Hide modifier */
+				}
 				n = sscanf (opt->arg, "%lf/%[^/]/%lf/%lf", &Ctrl->D.rhom, A, &Ctrl->D.rhoi, &Ctrl->D.rhow);
 				if (!(n == 4 || n == 3)) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: must give 3-4 density values\n");
@@ -728,6 +734,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 				}
 				else if (Ctrl->D.rhol > 0.0 && Ctrl->D.rhol != Ctrl->D.rhoi)
 					Ctrl->D.approx = true;
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'E':	/* Set elastic thickness(es) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
@@ -849,7 +856,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <input> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E[<te>[k][/<te2>[k]]] -G%s [-A<Nx/Ny/Nxy>] [-Cp|y<value>] [-F<nu_a>[/<h_a>[k]/<nu_m>]] "
+	GMT_Usage (API, 0, "usage: %s <input> -D<rhom>/<rhol>[/<rhoi>]/<rhow>[+r<rhor>] -E[<te>[k][/<te2>[k]]] -G%s [-A<Nx/Ny/Nxy>] [-Cp|y<value>] [-F<nu_a>[/<h_a>[k]/<nu_m>]] "
 		"[-H<rhogrid>] [-L<list>] [-M<tm>[k|M]] [-N%s] [-Q] [-S<beta>] [-T<t0>[/<t1>/<dt>[+l]]|<file>] [%s] [-W<wd>[k]] [-Z<zm>[k]] [-fg] [%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_FFT_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
@@ -863,9 +870,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"(time steps with no corresponding load file are allowed).", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s A table <list>+l, where <list> records have load times and grids from grdseamount -M.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s A table <list>.lis, again with records from grdseamount -M.", GMT_LINE_BULLET);
-	GMT_Usage (API, 1, "\n-D<rhom>/<rhol>[/<rhoi>]/<rhow>");
+	GMT_Usage (API, 1, "\n-D<rhom>/<rhol>[/<rhoi>]/<rhow>[+r<rhor>]");
 	GMT_Usage (API, -2, "Set density of mantle, load(crust), optional moat infill [same as load], and water|air in kg/m^3 or g/cm^3. "
-		"Set <rhol> to - if <list> contains variable density grid names.");
+		"Set <rhol> to - if -H is used or <list> contains variable density grid names.");
+	GMT_Usage (API, 3, "+r Set a fixed root density. The load topography will be scaled to reflect new load density rhor.");
 	GMT_Usage (API, 1, "\n-E[<te>[k][/<te2>[k]]]");
 	GMT_Usage (API, -2, "Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted "
 		"as the flexural rigidity [Default computes D from Te, Young's modulus, and Poisson's ratio]. "
@@ -1010,6 +1018,13 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 		}
 		if (n_subaerial) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " nodes were subaerial so heights were scaled for the equivalent submerged case\n", n_subaerial);
 	}
+	if (Ctrl->D.root) {	/* Need to adjust h(x,y) to reflect a the same load density as the root */
+		boost = mean_rho_l / Ctrl->D.rhor;	/* To avoid division below */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Convert h(x,y) and rho_l to equivalent height h'(x,y) for rho_r via scale %lg\n", boost);
+		for (node = 0; node < Grid->header->size; node++)
+			Grid->data[node] *= boost;
+		mean_rho_l = Ctrl->D.rhor;
+	}
 	/* Free any density grid */
 	if (Ctrl->D.var_rhol && GMT_Destroy_Data (API, &Rho) != GMT_NOERROR)
 		return NULL;
@@ -1027,7 +1042,7 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 		G->Time = gmt_M_memory (GMT, NULL, 1, struct GMT_MODELTIME);	/* Allocate one Model time structure */
 		gmt_M_memcpy (G->Time, this_time, 1, struct GMT_MODELTIME);	/* Just duplicate input time (unless NULL) */
 	}
-	if (Ctrl->D.var_rhol) G->rho_load = mean_rho_l;
+	if (Ctrl->D.var_rhol || Ctrl->D.root) G->rho_load = mean_rho_l;	/* Update what the actual load density now is */
 	return (G);
 }
 
@@ -1213,7 +1228,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 				rho = rfile;
 			}
 			Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, zfile, rho, &Ctrl->T.time[t_load]);
-			if (!Ctrl->D.var_rhol) Load[t_load]->rho_load = Ctrl->D.rhol;
+			if (!(Ctrl->D.var_rhol || Ctrl->D.root)) Load[t_load]->rho_load = Ctrl->D.rhol;
 			if (Grid_A == NULL && Load[t_load]->Grid) Grid_A = Load[t_load]->Grid;	/* First grid read */
 		}
 	}
@@ -1248,7 +1263,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 				this_time.unit  = s_unit;
 				this_time.u = (s_unit == 'M') ? 2 : ((s_unit == 'k') ? 1 : 0);
 				Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, zfile, r_arg, &this_time);
-				if (!Ctrl->D.var_rhol) 
+				if (!(Ctrl->D.var_rhol || Ctrl->D.root)) 
 					Load[t_load]->rho_load = (ns == 3) ? atof (r_arg) : Ctrl->D.rhol;
 				if (Grid_A == NULL && Load[t_load]->Grid) Grid_A = Load[t_load]->Grid;	/* First grid read */
 			}
@@ -1262,7 +1277,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		n_load_times = 1;
 		Load = gmt_M_memory (GMT, NULL, n_load_times, struct GRDFLEXURE_GRID *);	/* Allocate grid array structure with one entry */
 		Load[0] = grdflexure_prepare_load (GMT, options, Ctrl, Ctrl->In.file, Ctrl->H.file, NULL);	/* The single load [and rho] grid (no time info) */
-		if (!Ctrl->D.var_rhol) Load[0]->rho_load = Ctrl->D.rhol;
+		if (!(Ctrl->D.var_rhol || Ctrl->D.root)) Load[0]->rho_load = Ctrl->D.rhol;
 	}
 
 	if (n_load_times > 1) {	/* Sort to ensure load array goes from old to young loads */
