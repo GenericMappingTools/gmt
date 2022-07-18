@@ -378,6 +378,17 @@ void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *format, struct 
 		sprintf (file, format, T->value);
 }
 
+GMT_LOCAL double grdflexure_mean_load_density (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *R) {
+	uint64_t node;
+	double rz_sum = 0.0, z_sum = 0.0;
+	for (node = 0; node < G->header->size; node++) {
+		if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_fnan (R->data[node])) continue;
+		rz_sum += G->data[node] * R->data[node];
+		z_sum  += G->data[node];
+	}
+	return ((z_sum > 0.0) ? rz_sum / z_sum : GMT->session.d_NaN);
+}
+
 GMT_LOCAL double grdflexure_transfer_elastic_sub_iso (double *k, struct GRDFLEXURE_RHEOLOGY *R) {
 	/* Elastic transfer function (isotropic) */
 	double grdflexure_transfer_fn = 1.0 / (R->ce[TE_INIT] * pow (k[GMT_FFT_K_IS_KR], 4.0) + 1.0);
@@ -908,7 +919,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT, struct GMT_OPTION *options, struct GRDFLEXURE_CTRL *Ctrl, char *file, char *rho, struct GMT_MODELTIME *this_time) {
 	uint64_t node;
-	double boost = 1.0, mean_rho_l = 0.0;
+	double boost = 1.0, mean_rho_l = 0.0, mean_rho_l_actual = 0.0, mean_rho_l_reported = 0.0;
 	struct GMT_GRID *Grid = NULL, *Orig = NULL, *Rho = NULL;
 	struct GRDFLEXURE_GRID *G = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
@@ -953,22 +964,29 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 		if (!gmt_grd_domains_match (GMT, Grid, Rho, "load and density")) {	/* Not co-registered */
 			return NULL;
 		}
-		if (strstr (Rho->header->remark, "Mean Load Density:")) {	/* Got the remark about mean load density */
-			char *c = strchr (Rho->header->remark, ':');	/* Get pointer to start of colon: and next allow for 1 space */
-			mean_rho_l = atof (&c[1]);	/* Get the mean load density */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Extracted mean load density of %lg from file %s\n", mean_rho_l, rho);
-		}
-		else {
-			GMT_Report (API, GMT_MSG_ERROR, "Failure to extract mean load density from %s - file skipped\n", rho);
-			return NULL;
-		}
 		/* Note: Density grid are allowed to have NaNs outside the feature since we are not taking FFT of the density grid */
 		if ((Rho = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY |
 	 		GMT_GRID_IS_COMPLEX_REAL, NULL, rho, Rho)) == NULL) {	/* Get header and data */
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading the data of file %s - file skipped\n", rho);
 			return NULL;
 		}
+		if (strstr (Rho->header->remark, "Mean Load Density:")) {	/* Got the remark about mean load density */
+			char *c = strchr (Rho->header->remark, ':');	/* Get pointer to start of colon: and next allow for 1 space */
+			mean_rho_l_reported = atof (&c[1]);	/* Get the reported mean load density */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Extracted mean load density of %lg from file %s\n", mean_rho_l_reported, rho);
+		}
+		else
+			GMT_Report (API, GMT_MSG_INFORMATION, "No mean load density attribute found in %s\n", rho);
+		mean_rho_l_actual = grdflexure_mean_load_density (GMT, Grid, Rho);
+		if (mean_rho_l_reported > 0.0 && fabs (mean_rho_l_reported - mean_rho_l_actual) > 0.005) {	/* Allow for some slop ~1e-5 */
+			GMT_Report (API, GMT_MSG_WARNING, "Reported and actual mean for %s differ: %lg vs %lg - the latter will be used\n",
+				rho, mean_rho_l_reported, mean_rho_l_actual);
+			mean_rho_l = mean_rho_l_actual;	/* We use the mean density we actually computed */
+		}
+		else
+			mean_rho_l = mean_rho_l_reported;	/* We use the reported mean density */
 		boost = 1.0 / mean_rho_l;	/* To avoid division below */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Convert h(x,y) and rho(x,y) to equivalent height h'(x,y) for fixed density %lg\n", mean_rho_l);
 		for (node = 0; node < Rho->header->size; node++) {
 			if (gmt_M_is_fnan (Rho->data[node])) continue;	/* Outside the load */
 			Grid->data[node] *= (gmt_grdfloat)(Rho->data[node] * boost);
