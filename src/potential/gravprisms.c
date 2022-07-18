@@ -68,8 +68,9 @@ struct GRAVPRISMS_CTRL {
 		char *file;
 		double dz;
 	} C;
-	struct GRAVPRISMS_D {	/* -D<rho>|<avedens> fixed density or grid with densities to override individual prisms */
+	struct GRAVPRISMS_D {	/* -D<rho>[+c]|<avedens> fixed density (or contrast) or grid with densities to override individual prisms */
 		bool active;
+		bool contrast;
 		char *file;
 		double rho;
 	} D;
@@ -200,11 +201,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 				break;
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				if ((c = strstr (opt->arg, "+c"))) {	/* Flag for contrast */
+					Ctrl->D.contrast = true;
+					c[0] = '\0';	/* Hide modifier */
+				}
 				if (!gmt_access (GMT, opt->arg, F_OK)) {	/* Gave grid with densities */
 					Ctrl->D.file = strdup (opt->arg);
 					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->D.file))) n_errors++;
 				}
-				else {	/* Gave a constant density contrast */
+				else {	/* Gave a constant density value */
 					Ctrl->D.rho = atof (opt->arg);
 					if (gmt_M_is_zero (Ctrl->D.rho)) {
 						GMT_Report (API, GMT_MSG_WARNING, "Option -D: Density contrast cannot be 0\n");
@@ -340,6 +345,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 	                                 "Option -G: Must specify output gridfile name if -N is not used.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.file && Ctrl->H.active,
 	                                 "Option -H: Cannot be used with -D<file>.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->H.active && !Ctrl->D.contrast,
+	                                 "Option -H: Cannot be used with -D<density> without the +c modifier.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->D.active && !Ctrl->H.active,
 	                                 "option -C: Need to select either -D or -H (or both).\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->H.active && Ctrl->C.dz <= 0.0,
@@ -361,7 +368,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVPRISMS_CTRL *Ctrl, struct GMT
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <prismfile> [-A] [-C[+q][+w<file>][+z<dz>]] [-D<density>] [-E<dx>[/<dy>]] [-Ff|n[<lat>]|v] "
+	GMT_Usage (API, 0, "usage: %s <prismfile> [-A] [-C[+q][+w<file>][+z<dz>]] [-D<density>[+c]] [-E<dx>[/<dy>]] [-Ff|n[<lat>]|v] "
 		"[-G<outfile>] [-H<H>/<rho_l>/<rho_h>[+b<boost>][+d<densify>][+p<power>]] [%s] [-L<base>] [-M[hz]] [-N<trktable>] [%s] "
 		"[-S<shapegrd>] [-T<top>] [%s] [-W<avedens>] [-Z<level>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
 		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
@@ -383,6 +390,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D<density>");
 	GMT_Usage (API, -2, "Set fixed density contrast (in kg/m^3) [Default reads it from last numerical column or computes it via -H]. "
 		"Alternatively, read grid with vertically-averaged spatially varying densities from file <density>.\n");
+	GMT_Usage (API, 3, "+c Use prism densities but subtract <density> to yield new density contrasts.");
 	GMT_Usage (API, -2, "Note: If -H is used then -D<rho> can be used to compute density contrasts relative to <rho> [0].");
 	GMT_Usage (API, 1, "\n-E<dx>/<dy>");
 	GMT_Usage (API, -2, "Set fixed x- and y-dimensions for all prisms [Default reads it from columns 4-5].");
@@ -862,7 +870,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 	else {	/* Read prisms from stdin or input file(s) */
 		unsigned int n_expected = 7;	/* Max number of columns */
 		/* Specify input expected columns to be at least 3 */
-		if (Ctrl->D.active) n_expected--;		/* Not reading density from records */
+		if (Ctrl->D.active && !Ctrl->D.contrast) n_expected--;		/* Not reading density from records */
 		if (Ctrl->E.active) n_expected -= 2;	/* Not reading dx dy from records */
 		if ((error = GMT_Set_Columns (API, GMT_IN, n_expected, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
@@ -881,7 +889,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 
 		/* Fill in prism arrays from data set, including optional choices for fixed or variable dimension and density, then free the dataset */
 		dx = 0.5 * Ctrl->E.dx;	dy = 0.5 * Ctrl->E.dy;	/* Distances from prism center to respective edges */
-		rho = Ctrl->D.rho;
+		rho = Ctrl->D.rho;	/* Constant density override if -D was set without +c */
 		col = (Ctrl->E.active) ? 4 : 6;	/* Input column for density, if -D is not set */
 		for (tbl = k = 0; tbl < P->n_tables; tbl++) {
 			for (seg = 0; seg < P->table[tbl]->n_segments; seg++) {
@@ -892,7 +900,12 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 						dx = 0.5 * S->data[4][row];
 						dy = 0.5 * S->data[5][row];
 					}
-					if (!Ctrl->D.active) rho = S->data[col][row];
+					if (Ctrl->D.contrast)	/* Need prism rho - constant rho as the contrast */
+						rho = S->data[col][row] - Ctrl->D.rho;
+					else if (!Ctrl->D.active)	/* Use the prism density as is */
+						rho = S->data[col][row];
+					/* else -Drho was given and it is set once above before the loop */
+
 					/* Here we ensure prism is in meters */
 					prism[0][k] = (S->data[GMT_X][row] - dx) * scl_xy;	/* Store the x-coordinates of the x-edges of prism */
 					prism[1][k] = (S->data[GMT_X][row] + dx) * scl_xy;
