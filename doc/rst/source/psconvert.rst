@@ -407,7 +407,7 @@ Ghostscript Options
 
 Most of the conversions done in **psconvert** are handled by
 Ghostscript. On most Unixes this program is available as **gs**; for
-Windows there is a version called **gswin32c**. Ghostscript accepts a
+Windows there is a version called **gswin64c**. Ghostscript accepts a
 rich selection of command-line options that modify its behavior. Many of
 these are set indirectly by the options available above. However,
 hard-core usage may require some users to add additional options to
