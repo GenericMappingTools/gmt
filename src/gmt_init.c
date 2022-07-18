@@ -15097,8 +15097,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	#endif
 
 	is_PS = gmtinit_is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
-	if (!is_PS && !(strcmp (mod_name, "grd2cpt") == 0 || strcmp (mod_name, "grd2kml")))	/* Override API default since module is a data processor (with some exceptions) */
+	if (!is_PS) {	/* Override API default since module is a data processor */
 		API->use_gridline_registration = true;
+		API->use_gridline_registration_warn = (strcmp (mod_name, "grd2cpt") && strcmp (mod_name, "grd2kml"));	/* Give warning unless it is these two clowns */
+	}
 
 	/* First handle any halfhearted naming of remote datasets where _g or _p should be appended */
 
@@ -15889,6 +15891,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	double spacing[2];
 
 	GMT->parent->use_gridline_registration = false;	/* Reset API default setting on grid registration */
+	GMT->parent->use_gridline_registration_warn = false;	/* Reset API default setting on grid registration warning */
 
 	gmt_M_memcpy (spacing, GMT->current.plot.gridline_spacing, 2U, double);	/* Remember these so they can survive the end of the module */
 
