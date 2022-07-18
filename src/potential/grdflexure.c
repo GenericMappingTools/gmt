@@ -379,10 +379,13 @@ void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *format, struct 
 }
 
 GMT_LOCAL double grdflexure_mean_load_density (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *R) {
+	/* Compute the weighted mean value of the density grid (weighted by the load heights).
+	 * This constant density is then used later to scale the load heights with variable rho
+	 * to the equivalent heights given this fixed density */
 	uint64_t node;
 	double rz_sum = 0.0, z_sum = 0.0;
 	for (node = 0; node < G->header->size; node++) {
-		if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_fnan (R->data[node])) continue;
+		if (gmt_M_is_fnan (G->data[node]) || gmt_M_is_fnan (R->data[node])) continue;	/* Skip useless NaNs */
 		rz_sum += G->data[node] * R->data[node];
 		z_sum  += G->data[node];
 	}
