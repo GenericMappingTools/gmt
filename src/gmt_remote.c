@@ -487,8 +487,9 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	if (q == NULL) return;	/* Should never happen but definitively nothing more to do here - just a safety valve */
 	q += strlen (p);	/* Move to the end of family name after which any registration codes would be found */
 	if (strstr (q, "_p") || strstr (q, "_g")) goto clean_up;	/* Already have the registration codes */
-	if (API->use_gridline_registration_warn) {	/* Switch order so checking for g first, then p */
-		GMT_Report (API, GMT_MSG_WARNING, "Remote dataset given to a data processing module but no registration was specified - default to gridline registration (if available)\n");
+	if (API->use_gridline_registration) {	/* Switch order so checking for g first, then p */
+		if (API->use_gridline_registration_warn)
+			GMT_Report (API, GMT_MSG_WARNING, "Remote dataset given to a data processing module but no registration was specified - default to gridline registration (if available)\n");
 		kstart = 1; kstop = -1; kinc = -1;
 	}
 	for (k = kstart; k != kstop; k += kinc) {
