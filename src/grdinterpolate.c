@@ -779,6 +779,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (inc, G[0]->header->inc, 2U, double);
 		if ((C[GMT_IN] = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, dims, wesn, inc, G[0]->header->registration, GMT_NOTSET, NULL)) == NULL)
 			Return (GMT_MEMORY_ERROR);
+		if (G[0]->header->x_units[0]) strncpy (C[GMT_IN]->header->x_units, G[0]->header->x_units, GMT_GRID_UNIT_LEN80);
+		if (G[0]->header->y_units[0]) strncpy (C[GMT_IN]->header->y_units, G[0]->header->y_units, GMT_GRID_UNIT_LEN80);
 		for (k = 0; k < n_layers; k++, here += G[0]->header->size)
 			gmt_M_memcpy (&(C[GMT_IN]->data[here]), G[k]->data, G[0]->header->size, gmt_grdfloat);
 		if (GMT_Destroy_Group (API, &G, n_layers))
