@@ -314,7 +314,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 GMT_LOCAL bool grdinterpolate_equidistant_levels (struct GMT_CTRL *GMT, double *z, unsigned int nz) {
 	/* Return true if spacing between layers is constant */
 	unsigned int k;
-	double dz;
+	double dz, dz_try, noise;
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Report levels */
 		for (k = 0; k < nz; k++)
@@ -322,8 +322,13 @@ GMT_LOCAL bool grdinterpolate_equidistant_levels (struct GMT_CTRL *GMT, double *
 	}
 	if (nz < 3) return true;	/* Special case of a single layer */
 	dz = z[1] - z[0];	/* Get first increment, then compare to the rest */
-	for (k = 2; k < nz; k++)
-		if (!doubleAlmostEqual (dz, z[k]-z[k-1])) return false;
+	if (dz == 0.0) return false;	/* Safety valve plus cannot be true if zero */
+	for (k = 2; k < nz; k++) {
+		dz_try = z[k]-z[k-1];
+		if (dz_try == 0.0) return false;	/* Safety valve plus cannot be true if zero */
+		noise = fabs (remainder (dz_try, dz));
+		if (noise > GMT_CONV12_LIMIT) return false;
+	}
 	return true;
 }
 
