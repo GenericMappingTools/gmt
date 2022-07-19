@@ -314,16 +314,21 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 GMT_LOCAL bool grdinterpolate_equidistant_levels (struct GMT_CTRL *GMT, double *z, unsigned int nz) {
 	/* Return true if spacing between layers is constant */
 	unsigned int k;
-	double dz;
+	double dz_first, dz_next, noise;
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Report levels */
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Report z-levels */
 		for (k = 0; k < nz; k++)
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: %g\n", k, z[k]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: %lg\n", k, z[k]);
 	}
-	if (nz < 3) return true;	/* Special case of a single layer */
-	dz = z[1] - z[0];	/* Get first increment, then compare to the rest */
-	for (k = 2; k < nz; k++)
-		if (!doubleAlmostEqual (dz, z[k]-z[k-1])) return false;
+	if (nz < 3) return true;	/* Special case of just one increment between two layers is by definition equidistant */
+	dz_first = z[1] - z[0];	/* Get first increment, then use it as truth and compare to the other increments */
+	if (dz_first == 0.0) return false;	/* Safety valve, plus cannot be equidistant if increment is zero */
+	for (k = 2; k < nz; k++) {	/* We start at layer 3 and get dz back from 2, etc */
+		dz_next = z[k] - z[k-1];	/* Next level increment */
+		if (dz_next == 0.0) return false;	/* Safety valve, plus cannot be equidistant if increment is zero */
+		noise = fabs (remainder (dz_next, dz_first));	/* Get a positive remainder or zero */
+		if (noise > GMT_CONV12_LIMIT) return false;	/* Sorry buddy, you are off */
+	}
 	return true;
 }
 
