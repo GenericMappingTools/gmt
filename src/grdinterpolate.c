@@ -323,7 +323,7 @@ GMT_LOCAL bool grdinterpolate_equidistant_levels (struct GMT_CTRL *GMT, double *
 	if (nz < 3) return true;	/* Special case of just one increment between two layers is by definition equidistant */
 	dz_first = z[1] - z[0];	/* Get first increment, then use it as truth and compare to the other increments */
 	if (dz_first == 0.0) return false;	/* Safety valve, plus cannot be equidistant if increment is zero */
-	for (k = 2; k < nz; k++) {	/* We start at layer 3 get get dz back from 2, etc */
+	for (k = 2; k < nz; k++) {	/* We start at layer 3 and get dz back from 2, etc */
 		dz_next = z[k] - z[k-1];	/* Next level increment */
 		if (dz_next == 0.0) return false;	/* Safety valve, plus cannot be equidistant if increment is zero */
 		noise = fabs (remainder (dz_next, dz_first));	/* Get a positive remainder or zero */
