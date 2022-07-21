@@ -656,8 +656,12 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			first_char = 0, option = GMT_OPT_INFILE;
 		else if (!args[arg][1])	/* Found the special synopsis option "-" */
 			first_char = 1, option = GMT_OPT_SYNOPSIS;
-		else if (!strcmp(args[arg], "--help"))	/* Translate '--help' to '-?' */
+		else if (!strcmp(args[arg], "--help"))	        /* mimic '-?' */
 			first_char = 6, option = GMT_OPT_USAGE;
+		else if (!strcmp(args[arg], "--shorthelp"))	/* mimic '-+' */
+			first_char = 11, option = GMT_OPT_USAGE, G->common.synopsis.extended = true;
+		else if (!strcmp(args[arg], "--synopsis"))	/* mimic '-^' */
+			first_char = 10, option = GMT_OPT_SYNOPSIS;
 		else if ((isdigit ((int)args[arg][1]) || args[arg][1] == '.') && !gmt_not_numeric (API->GMT, args[arg])) /* A negative number, most likely; convert to "file" for now */
 			first_char = 0, option = GMT_OPT_INFILE;
 		else {	/* Most likely found a regular option flag (e.g., -D45.0/3) */
