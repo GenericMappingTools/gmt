@@ -2716,8 +2716,8 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 	/* If either is zero, adjust width or height to the other */
 
 	if (GMT->current.proj.scale[GMT_X] == 0) {	/* Must redo x-scaling by using y-scale */
-		GMT->current.proj.scale[GMT_X] = GMT->current.proj.autoscl[GMT_X] * GMT->current.proj.scale[GMT_Y];
-		if (GMT->current.proj.autoscl[GMT_X] == -1) GMT->current.proj.xyz_pos[GMT_X] = !GMT->current.proj.xyz_pos[GMT_Y];
+		GMT->current.proj.scale[GMT_X] = GMT->current.proj.autoscl[GMT_X] * fabs (GMT->current.proj.scale[GMT_Y]);
+		GMT->current.proj.xyz_pos[GMT_X] = (GMT->current.proj.autoscl[GMT_X] == +1);
 		switch ( (GMT->current.proj.xyz_projection[GMT_X]%3)) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 			case GMT_LINEAR:	/* Regular scaling */
 				if (GMT->current.proj.xyz_pos[GMT_X]) {
@@ -2742,8 +2742,8 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.proj.pars[0] = GMT->current.proj.scale[GMT_X] * fabs (xmin - xmax);
 	}
 	else if (GMT->current.proj.scale[GMT_Y] == 0) {	/* Must redo y-scaling by using x-scale */
-		GMT->current.proj.scale[GMT_Y] = GMT->current.proj.autoscl[GMT_Y] * GMT->current.proj.scale[GMT_X];
-		if (GMT->current.proj.autoscl[GMT_Y] == -1) GMT->current.proj.xyz_pos[GMT_Y] = !GMT->current.proj.xyz_pos[GMT_X];
+		GMT->current.proj.scale[GMT_Y] = GMT->current.proj.autoscl[GMT_Y] * fabs (GMT->current.proj.scale[GMT_X]);
+		GMT->current.proj.xyz_pos[GMT_Y] = (GMT->current.proj.autoscl[GMT_Y] == +1);
 		switch (GMT->current.proj.xyz_projection[GMT_Y]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 			case GMT_LINEAR:	/* Regular scaling */
 				if (GMT->current.proj.xyz_pos[GMT_Y]) {
