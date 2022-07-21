@@ -977,11 +977,12 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 	(void) gmt_set_outgrid (API->GMT, file, false, 0, Orig, &Grid);
 	HH = gmt_get_H_hidden (Grid->header);
 	if (HH->has_NaNs == GMT_GRID_HAS_NANS) {	/* Must deal with load NaNs */
+		uint64_t n_NaN = 0;
 		/* Ensure any NaNs are set to 0 here. This can happen with data from grdseamount, for instance. We cannot have NaNs when doing FFTs */
-		GMT_Report (API, GMT_MSG_WARNING, "Load grid %s has NaNs, these will be replaced with zeros\n", file);
 		for (node = 0; node < Grid->header->size; node++)
-			if (gmt_M_is_fnan (Grid->data[node])) Grid->data[node] = 0.0;	/* Outside the load, probably */
+			if (gmt_M_is_fnan (Grid->data[node])) Grid->data[node] = 0.0, n_NaN++;	/* Outside the load, probably */
 		HH->has_NaNs = GMT_GRID_NO_NANS;	/* Since we replaced them */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Load grid %s had %" PRIu64 " NaNs, these were replaced with zeros\n", file, n_NaN);
 	}
 	if (Ctrl->D.var_rhol) {	/* Must load variable density grid, get mean load density, and scale height accordingly */
 		if ((Rho = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, rho, NULL)) == NULL) {

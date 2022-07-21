@@ -83,7 +83,9 @@ Required Arguments
 
     **Note**: The horizontal dimensions are expected to be in meters.  If you
     have grids in km then you can append **+uk** to do the required conversion
-    when the grid is read.  All input grids must have the same dimensions.
+    when the grid is read.  All input grids must have the same dimensions. If
+    a grid contains NaNs then they are quietly replaced with zeros; use |-V| to
+    get a report when this happens.
 
 .. _-D:
 
