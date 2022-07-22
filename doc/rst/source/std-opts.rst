@@ -58,7 +58,7 @@ Common Options
      - :ref:`Sets grid registration <nodereg_full>`
    * - **-s**\ [*cols*][**+a**\|\ **r**]
      - :ref:`Control treatment of NaN records <-s_full>`
-   * - **-t**\ *transparency*
+   * - **-t**\ [*transp*\ [/*transp2*]][**+f**][**+s**]
      - :ref:`Set layer transparency <-t_full>`
    * - **-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\ *period*\ [/*phase*][**+c**\ *col*]
      - :ref:`Convert selected coordinate to repeating cycles <-w_full>`
