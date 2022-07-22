@@ -7,7 +7,7 @@ This is a community driven project and everyone is welcome to contribute. The pr
 `GMT GitHub repository <https://github.com/GenericMappingTools/gmt>`_.
 
 The goal is to maintain a diverse community that's pleasant for everyone. **Please be considerate and respectful of
-others**. Everyone must abide by our `Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>`_
+others**. Everyone must abide by our `Code of Conduct <https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md>`_
 and we encourage all to read it carefully.
 
 Ways to Contribute
