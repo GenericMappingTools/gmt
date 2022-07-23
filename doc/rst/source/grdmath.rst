@@ -714,12 +714,11 @@ Notes On Operators
    two grids, the real (cosine) and imaginary (sine) component of the
    complex spherical harmonic. Use the **POP** operator (and **EXCH**) to
    get rid of one of them, or save both by giving two consecutive = file.nc calls.
-
    The orthonormalized complex harmonics **YLM** are most commonly used in
    physics and seismology. The square of **YLM** integrates to 1 over a
    sphere. In geophysics, **YLMg** is normalized to produce unit power when
    averaging the cosine and sine terms (separately!) over a sphere (i.e.,
-   their squares each integrate to 4 pi). The Condon-Shortley phase :math:`(-1)^M`
+   their squares each integrate to :math:`4 \pi`). The Condon-Shortley phase :math:`(-1)^M`
    is not included in **YLM** or **YLMg**, but it can be added by using *-M*
    as argument.
 
@@ -785,17 +784,36 @@ Macros
 ------
 
 Users may save their favorite operator combinations as macros via the
-file *grdmath.macros* in their current or user directory. The file may contain
+file *grdmath.macros* in their current or user (~/.gmt) directory. The file may contain
 any number of macros (one per record); comment lines starting with # are
 skipped. The format for the macros is **name** = **arg1 arg2 ... arg2**
 : *comment* where **name** is how the macro will be used. When this
 operator appears on the command line we simply replace it with the
 listed argument list. No macro may call another macro. As an example,
 the following macro expects three arguments (radius x0 y0) and sets the
-nodes that are inside the given circle to 1 and those outside to 0:
+nodes that are inside the given Cartesian circle to 1 and those outside to 0:
 
 **INCIRCLE** = **CDIST EXCH DIV** 1 **LE** : usage: r x y INCIRCLE to return 1
 inside circle
+
+Marine geophysicist often need to evaluate predicted seafloor depth from an age grid.
+One such model is the classic *Parsons and Sclater* [1977] curve.  It may be written
+
+.. math::
+
+    z(t) = \left \{ \begin{array}{rr} 
+            2500 + 350 \sqrt{t}, & t \leq 70 \\
+            6400 - 3200 \exp{\left (\frac{-t}{62.8}\right)}, & t > 20
+        \end{array} \right.
+
+A good cross-over age for these curves is 26.2682 Myr. A macro for this system is a bit awkward due to the split but can be written
+
+**PS77** = **STO@T POP** 6400 **RCL@T** 62.8 **DIV NEG EXP** 3200 **MUL SUB RCL@T** 26.2682 **GT MUL** 2500 350 **RCL@T SQRT MUL ADD RCL@T** 26.2682 **LE MUL ADD** : usage: age PS77 returns depth
+
+i.e., we evaluate both expressions and multiply them by 1 or 0 depending where they apply, and then add them.  With this macro
+installed you can compute predicted depths in the Pacific northwest via::
+
+    gmt grdmath -R200/240/40/60 @earth_age_01m_g PS77 = depth_ps77.grd
 
 **Note**: Because geographic or time constants may be present in a macro, it
 is required that the optional comment flag (:) must be followed by a space.
@@ -866,8 +884,11 @@ Functions*, Applied Mathematics Series, vol. 55, Dover, New York.
 
 Holmes, S. A., and W. E. Featherstone, 2002, A unified approach to the
 Clenshaw summation and the recursive computation of very high degree and
-order normalized associated Legendre functions. *Journal of Geodesy*,
+order normalized associated Legendre functions. *J. of Geodesy*,
 76, 279-299.
+
+B. Parsons and J. G. Sclater, 1977, An analysis of the variation of ocean
+floor bathymetry and heat flow with age, *J. Geophys. Res.*, 82, 803-827.
 
 Press, W. H., S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery,
 1992, *Numerical Recipes*, 2nd edition, Cambridge Univ., New York.
