@@ -530,8 +530,7 @@ GMT_LOCAL char * gmtinit_strchr_predexcl (char *string, char target, char predex
 	char *c;
 	if (string == NULL) return NULL;
 	for (c = string; *c != '\0'; c++)
-		if ((*c == target) &&
-		    ((c == string) || (*(c-1) != predexcl))) return c;
+		if ((*c == target) && ((c == string) || (*(c-1) != predexcl))) return c;
 	return NULL;
 }
 
