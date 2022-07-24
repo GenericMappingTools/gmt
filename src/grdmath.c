@@ -6872,6 +6872,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		if (op == GRDMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible way to go... */
 
 		if (op == GRDMATH_ARG_IS_SAVE) {	/* Time to save the current stack to output and pop the stack */
+			struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 			if (nstack <= 0) {
 				GMT_Report (API, GMT_MSG_ERROR, "No items on stack are available for output!\n");
 				Return (GMT_RUNTIME_ERROR);
@@ -6893,6 +6894,9 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 			gmt_grd_init (GMT, stack[this_stack]->G->header, options, true);	/* Update command history only */
 
 			gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
+
+			HH = gmt_get_H_hidden (stack[this_stack]->G->header);
+			if (HH->cpt) gmt_M_str_free (HH->cpt);	/* Must wipe any CPT inherited from input grid */
 
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, stack[this_stack]->G)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, opt->arg, stack[this_stack]->G) != GMT_NOERROR) {
