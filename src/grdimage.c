@@ -42,7 +42,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 /* ?? -A not possible because of = usage, e.g., -Aout_img=driver ? */
 	{ 0, 'C', "cpt",
                   "",                  "",
-                  "h,i,u,U",           "hinge,zinc,tometers,frommeters" },
+                  "h,i,u,U",           "hinge,zinc,fromunit,tounit" },
 	{ 0, 'D', "autodetect",
                   "r",                 "region",
                   "",                  "" },
@@ -57,9 +57,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
                   "a,d,m,n",           "azimuth,default,ambient,intensity" },
 	{ 0, 'M', "monochrome",        "", "", "", "" },
 	{ 0, 'N', "noclip",            "", "", "", "" },
-/* ?? -Q below uses 'transnode' to avoid conflict with
-   common .h -t (latter now changed to 'transpercent') */
-	{ 0, 'Q', "transnode",
+	{ 0, 'Q', "mask",
                   "",                  "",
                   "z",                 "gridvalue" },
 	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
