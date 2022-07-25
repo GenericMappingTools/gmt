@@ -83,7 +83,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	          "z,Z",               "scale,width",
 	          "",                  "" },
 	{ 0, 'L', "mapscale",
-	          "g,j,n,x",           "mapcoords,jcode,boxcoords,plotcoords",
+	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
 	          "w,a,c,f,j,l,o,u,v", "length,align,loc,fancy,janchor,label,anchoroffset,units,vertical" },
 	{ 0, 'M', "list",              "", "", "", "" },
 	{ 0, 'N', "boundaries",        "", "", "", "" },
