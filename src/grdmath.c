@@ -6897,6 +6897,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 
 			HH = gmt_get_H_hidden (stack[this_stack]->G->header);
 			if (HH->cpt) gmt_M_str_free (HH->cpt);	/* Must wipe any CPT inherited from input grid */
+			API->ignore_remote_cpt = true;	/* Since we cannot keep track of what grdimath did to this grid */
 
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, stack[this_stack]->G)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, opt->arg, stack[this_stack]->G) != GMT_NOERROR) {

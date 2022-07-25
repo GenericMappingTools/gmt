@@ -1035,7 +1035,7 @@ L100:
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		gmtnc_put_units (ncid, z_id, header->z_units);
-		if (GMT->parent->remote_info && GMT->parent->remote_id != GMT_NOTSET && GMT->parent->remote_info[GMT->parent->remote_id].CPT[0] != '-')	/* Subset of remote grid with default CPT, save name as an attribute */
+		if (!GMT->parent->ignore_remote_cpt && GMT->parent->remote_info && GMT->parent->remote_id != GMT_NOTSET && GMT->parent->remote_info[GMT->parent->remote_id].CPT[0] != '-')	/* Subset of remote grid with default CPT, save name as an attribute */
 			HH->cpt = strdup (GMT->parent->remote_info[GMT->parent->remote_id].CPT);
 
 		if (header->z_scale_factor != 1.0) {
