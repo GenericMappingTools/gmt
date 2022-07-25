@@ -111,6 +111,10 @@ struct GRDMATH_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
+	struct GRDMATH_C {	/* -C[<cpt>] */
+		bool active;
+		char *cpt;
+	} C;
 	struct GRDMATH_D {	/* -D<resolution>[+f] */
 		bool active;
 		bool force;	/* if true, select next highest level if current set is not available */
@@ -514,6 +518,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OP
 			case 'A':	/* Restrict GSHHS features */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
+				break;
+			case 'C':	/* Control default CPT */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				if (opt->arg[0]) Ctrl->C.cpt = opt->arg;	/* Just pass pointer if given an argument */
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
@@ -6860,7 +6868,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 
 		/* First check if we should skip optional arguments */
 
-		if (strchr ("ADIMNRVbfnr-" GMT_OPT("F") GMT_ADD_x_OPT, opt->option)) continue;
+		if (strchr ("ACDIMNRVbfnr-" GMT_OPT("F") GMT_ADD_x_OPT, opt->option)) continue;
 		if (opt->option == 'S' && nstack > 1) {	/* Turn on reducing stack behavior */
 			opt = opt->next;	/* Skip to actual operator */
 			if (grdmath_collapse_stack (GMT, &info, stack, nstack, opt->arg)) continue;	/* Failed, just ignore */
@@ -6896,8 +6904,19 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 			gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 			HH = gmt_get_H_hidden (stack[this_stack]->G->header);
-			if (HH->cpt) gmt_M_str_free (HH->cpt);	/* Must wipe any CPT inherited from input grid */
-			API->meta.ignore_remote_cpt = true;	/* Since we cannot keep track of what grdimath did to this grid */
+			if (Ctrl->C.active) {	/* Keep or replace the grid's default CPT */
+				if (Ctrl->C.cpt) {	/* Setting another default CPT */
+					if (HH->cpt) gmt_M_str_free (HH->cpt);	/* Must wipe any CPT inherited from input grid */
+					HH->cpt = strdup (Ctrl->C.cpt);
+					API->meta.ignore_remote_cpt = true;	/* Since we just specified something else */
+				}
+				else	/* Want to keep what we have or assign the remote CPT if this is a remote grid */
+					API->meta.ignore_remote_cpt = false;	/* Just in case it had been set elsewhere */
+			}
+			else {	/* Default is to get rid of the grid's default CPT since we cannot know if it is valid anymore */
+				gmt_M_str_free (HH->cpt);	/* Must wipe any CPT inherited from input grid */
+				API->meta.ignore_remote_cpt = true;	/* Since we cannot keep track of what grdmath did to this grid */
+			}
 
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, stack[this_stack]->G)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, opt->arg, stack[this_stack]->G) != GMT_NOERROR) {
