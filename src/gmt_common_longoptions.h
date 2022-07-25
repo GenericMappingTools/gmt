@@ -119,7 +119,7 @@
     {   0, 's', "skiprows",
                 "",                      "",
                 "a,r",                   "any,reverse" },
-    {   0, 't', "transpercent",
+    {   0, 't', "transparency",
                 "",                      "",
                 "f,s",                   "fill,stroke" },
     {   0, 'w', "wrap",
