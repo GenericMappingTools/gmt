@@ -120,6 +120,10 @@ struct GMTAPI_DATA_OBJECT {
 #endif
 };
 
+struct API_META {	/* Items related to passing or not passing certain meta data from one grid to the next */
+	bool ignore_remote_cpt;			/* true if we should not store the remote CPT associated with the origin of this grid */
+};
+
 struct GMTAPI_CTRL {
 	/* Master controller which holds all GMT API related information at run-time for a single session.
 	 * Users can run several GMT sessions concurrently; each session requires its own structure.
@@ -218,6 +222,7 @@ struct GMTAPI_CTRL {
 	struct GMT_COMMON *common_snapshot;	/* Holds the latest GMT common option settings after a module completes. */
 	bool inset_shrink;	/* True if gmt inset gets a -R -J that forces us to shrink the scale to fit the inset size */
 	double inset_shrink_scale;	/* The amount of shrinking.  Reset to false and 1 in gmt inset end */
+	struct API_META meta;	/* For controlling meta data */
 };
 
 /* Macro to test if filename is a special name indicating memory location */
