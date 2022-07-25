@@ -14,6 +14,7 @@ Synopsis
 
 **gmt grdmath**
 [ |SYN_OPT-Area| ]
+[ |-C|\ [*cpt*] ]
 [ |-D|\ *resolution*\ [**+f**] ]
 [ |SYN_OPT-I| ]
 [ |-M| ] [ |-N| ]
@@ -72,6 +73,12 @@ Optional Arguments
 
 .. |Add_-A| replace:: (|-A| is only relevant to the **LDISTG** operator)
 .. include:: explain_-A.rst_
+
+.. _-C:
+
+**-C**\ [*cpt*]
+    Retain the grid's default CPT (if it has one), or alternatively replace it with a
+    new default *cpt* [Default removes any default CPT from the output grid].
 
 .. _-D:
 
