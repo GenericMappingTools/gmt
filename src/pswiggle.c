@@ -40,6 +40,28 @@
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqtxyw" GMT_OPT("EHMmc")
 
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
+	/* separator, short_option, long_option,
+	          short_directives,    long_directives,
+	          short_modifiers,     long_modifiers */
+	{ 0, 'A', "azimuth",           "", "", "", "" },
+	{ 0, 'C', "center",            "", "", "", "" },
+	{ 0, 'D', "mapscale",
+	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
+	          "w,j,a,o,l",         "length,janchor,side,anchoroffset,label" },
+	{ 0, 'F', "frmpen",
+	          "",                  "",
+	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,radius,shade" },
+	{ 0, 'G', "fill",
+                  "",                  "",
+                  "n,p",               "negative,positive" },
+	{ 0, 'I', "fixedazimuth",      "", "", "", "" },
+	{ 0, 'T', "trackpen",          "", "", "", "" },
+	{ 0, 'W', "outlinepen",        "", "", "", "" },
+	{ 0, 'Z', "anomalyscale",      "", "", "", "" },
+	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+};
+
 #define PSWIGGLE_POS	0
 #define PSWIGGLE_NEG	1
 
@@ -481,7 +503,7 @@ EXTERN_MSC int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
