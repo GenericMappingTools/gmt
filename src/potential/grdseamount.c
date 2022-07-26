@@ -359,12 +359,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 
 			case 'A':	/* Mask option */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				Ctrl->A.mask = true;
 				if ((c = strstr (opt->arg, "+s"))) {	/* Got a radial boost factor */
 					Ctrl->A.r_scale = atof (&c[2]);
 					c[0] = '\0';	/* Hide modifier */
 				}
 				if (opt->arg[0]) {	/* Want to build a mask grid instead of relief */
-					Ctrl->A.mask = true;
 					if ((n = sscanf (opt->arg, "%[^/]/%s", T1, T2)) == 2) {
 						Ctrl->A.value[GMT_OUT] = (T1[0] == 'N') ? GMT->session.f_NaN : (gmt_grdfloat)atof (T1);
 						Ctrl->A.value[GMT_IN]  = (T2[0] == 'N') ? GMT->session.f_NaN : (gmt_grdfloat)atof (T2);
