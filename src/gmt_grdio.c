@@ -3897,7 +3897,7 @@ bool gmt_grd_domains_match (struct GMT_CTRL *GMT, struct GMT_GRID *A, struct GMT
 	/* Return true if both grids A and B have exactly the same domain, registration, intervals.
 	 * Otherwise we print an error message and return false.
 	 */
-	char *msg = (comment = NULL) ? "two" : comment;
+	char *msg = (comment == NULL) ? "two" : comment;
 	if (A->header->registration != B->header->registration) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "The %s grids have different registrations!\n", msg);
 		return (false);
