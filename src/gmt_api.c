@@ -2419,19 +2419,19 @@ GMT_LOCAL void gmtapi_update_grd_item (struct GMTAPI_CTRL *API, unsigned int mod
 		if (mode & GMT_COMMENT_IS_TITLE) {    /* Place title */
 			if (HH->title) gmt_M_str_free (HH->title);  /* Free previous string */
 			HH->title = strdup (buffer);
-			GMT_Report (API, GMT_MSG_WARNING,
+			GMT_Report (API, GMT_MSG_INFORMATION,
 				"Title string exceeds upper length of %d characters (will be truncated in non-netCDF grid files)\n", length);
 		}
 		if (mode & GMT_COMMENT_IS_COMMAND) {   /* Place command string */
 			if (HH->command) gmt_M_str_free (HH->command);  /* Free previous string */
 			HH->command = strdup (buffer);
-			GMT_Report (API, GMT_MSG_WARNING,
+			GMT_Report (API, GMT_MSG_INFORMATION,
 				"Command string exceeds upper length of %d characters (will be truncated in non-netCDF grid files)\n", length);
 		}
 		if (mode & GMT_COMMENT_IS_REMARK) {   /* Place remark */
 			if (HH->remark) gmt_M_str_free (HH->remark);  /* Free previous string */
 			HH->remark = strdup (buffer);
-			GMT_Report (API, GMT_MSG_WARNING,
+			GMT_Report (API, GMT_MSG_INFORMATION,
 				"Remark string exceeds upper length of %d characters (will be truncated in non-netCDF grid files)\n", length);
 		}
 	}
