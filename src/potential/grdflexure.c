@@ -1007,7 +1007,7 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 			GMT_Report (API, GMT_MSG_INFORMATION, "No mean load density attribute found in %s\n", rho);
 		mean_rho_l_actual = grdflexure_mean_load_density (GMT, Grid, Rho);
 		if (mean_rho_l_reported > 0.0 && fabs (mean_rho_l_reported - mean_rho_l_actual) > 0.005) {	/* Allow for some slop ~1e-5 */
-			GMT_Report (API, GMT_MSG_WARNING, "Reported and actual mean for %s differ: %lg vs %lg - the latter will be used\n",
+			GMT_Report (API, GMT_MSG_INFORMATION, "Reported and actual mean for %s differ: %lg vs %lg - the latter will be used\n",
 				rho, mean_rho_l_reported, mean_rho_l_actual);
 			mean_rho_l = mean_rho_l_actual;	/* We use the mean density we actually computed */
 		}
