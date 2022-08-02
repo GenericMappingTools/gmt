@@ -679,7 +679,7 @@ A global transverse Mercator map - the equivalent of the 360° Mercator map - ca
 Note that when a world map is given (indicated by **-R**\ *0/360/s/n*), the arguments are interpreted to mean oblique
 degrees, i.e., the 360° range is understood to mean the extent of the plot along the central meridian, while the "south"
 and "north" values represent how far from the central longitude we want the plot to extend. These values correspond to
-latitudes in the regular Mercator projection and must therefore be less than 90.
+latitudes in the regular Mercator projection and must therefore be less than 90°.
 
 
 
