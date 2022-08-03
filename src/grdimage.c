@@ -1631,6 +1631,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			double zmin = Grid_orig->header->z_min, zmax = Grid_orig->header->z_max;
 			char *cpt = gmt_cpt_default (API, Ctrl->C.file, Ctrl->In.file, Grid_orig->header);
 			grdimage_reset_grd_minmax (GMT, Grid_orig, &zmin, &zmax);
+			HH = gmt_get_H_hidden (Grid_orig->header);
+			if (HH->has_NaNs == GMT_GRID_HAS_NANS && doubleAlmostEqual (zmin, 1.0) && doubleAlmostEqual (zmax, 1.0)) {	/* Mask grid, just nudge max to 2 */
+				zmax = 2.0;	/* Otherwise we get annoying warning */
+			}
 			if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, zmin, zmax, Ctrl->C.dz)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to read CPT %s.\n", Ctrl->C.file);
 				gmt_free_header (API->GMT, &header_G);
