@@ -15,6 +15,7 @@ Synopsis
 **gmt batch** *mainscript*
 |-N|\ *prefix*
 |-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
+[ |-D| ]
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
@@ -81,6 +82,12 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-D:
+
+**-D**
+    The main script does not produce products that are named using the prefix **BATCH_NAME**, so we do not attempt
+    to move such files to the top directory.  The main script will instead handle this in a different way.
 
 .. _-I:
 

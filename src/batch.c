@@ -58,6 +58,9 @@ struct BATCH_CTRL {
 		char *file;	/* Name of main script */
 		FILE *fp;	/* Open file pointer to main script */
 	} In;
+	struct BATCH_D {	/* -D */
+		bool active;
+	} D;
 	struct BATCH_I {	/* -I<includefile> */
 		bool active;
 		char *file;	/* Name of include script */
@@ -175,7 +178,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <mainscript> -N<prefix> -T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W] "
-		"[-I<includefile>] [-M[<job>]] [-Q[s]] [-Sb<postflight>] [-Sf<preflight>] "
+		"[-D] [-I<includefile>] [-M[<job>]] [-Q[s]] [-Sb<postflight>] [-Sf<preflight>] "
 		"[%s] [-W[<dir>]] [-Z] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -195,6 +198,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"We use space or TAB as separators; append <str> to set custom characters as separators instead.");
 	GMT_Usage (API, 3, "+W Same as +w but only use TAB as separator.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D");
+	GMT_Usage (API, -2, "There are no product files up to main directory [Default assumes there are named products].");
 	GMT_Usage (API, 1, "\n-I<includefile>");
 	GMT_Usage (API, -2, "Specify a script file to be inserted into the batch_init.sh script [none]. "
 		"Used to add constant variables needed by all batch scripts.");
@@ -242,6 +247,10 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 			case '<':	/* Input file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
 				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
+				break;
+
+			case 'D':	/* Turn off moving products up to top dir */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				break;
 
 			case 'I':	/* Include file with settings used by all scripts */
@@ -829,8 +838,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		}
 	}
 	fclose (Ctrl->In.fp);	/* Done reading the main script */
-	/* Move job products up to main directory */
-	fprintf (fp, "%s %s.* %s\n", mvfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_NAME"), topdir);
+	if (!Ctrl->D.active)	/* Move job products up to main directory */
+		fprintf (fp, "%s %s.* %s\n", mvfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_NAME"), topdir);
 	fprintf (fp, "cd ..\n");	/* cd up to parent dir */
 	/* Create completion file so batch knows this job is done */
 	fprintf (fp, "%s %s.___\n", createfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_NAME"));
