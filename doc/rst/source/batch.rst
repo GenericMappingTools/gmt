@@ -196,7 +196,8 @@ column in *timefile*.  If *timefile* has trailing text then that text can be acc
 **BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to |-T| then the trailing
 text is also split into individual word parameters **BATCH_WORD0**\ , **BATCH_WORD1**\ , etc. **Note**: Any
 product(s) made by the processing scripts should be named using **BATCH_NAME** as their name prefix as these
-will be automatically moved up to the starting directory upon completion.
+will be automatically moved up to the starting directory upon completion. However, note that |-F| can be
+used to select more diverse product names based on the input parameters given via |-T|.
 
 Data Files
 ----------
