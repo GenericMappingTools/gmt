@@ -181,10 +181,10 @@ GMT_LOCAL int batch_delete_scripts (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctr
 
 GMT_LOCAL void batch_set_product_prefix (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned int row, unsigned int n_fmts, char *template, char *custom_name) {
 	/* Create the custom product file prefix */
-	struct GMT_DATASEGMENT *S = D->table[0]->segment[0];
+	struct GMT_DATASEGMENT *S = D->table[0]->segment[0];	/* Current (and only) segment */
 	gmt_M_unused (GMT);
 	if (D->type == GMT_READ_DATA) {	/* No trailing text used */
-		switch (n_fmts) {
+		switch (n_fmts) {	/* May use 1-5 numerical columns */
 			case 1:	sprintf (custom_name, template, S->data[0][row]);	break;
 			case 2:	sprintf (custom_name, template, S->data[0][row], S->data[1][row]);	break;
 			case 3:	sprintf (custom_name, template, S->data[0][row], S->data[1][row], S->data[2][row]);	break;
@@ -194,7 +194,7 @@ GMT_LOCAL void batch_set_product_prefix (struct GMT_CTRL *GMT, struct GMT_DATASE
 		}
 	}
 	else {	/* Use the trailing text as well */
-		switch (n_fmts) {
+		switch (n_fmts) {	/* May use 0-5 numerical columns since trailing text is also used */
 			case 0:	sprintf (custom_name, template, S->text[row]);	break;
 			case 1:	sprintf (custom_name, template, S->data[0][row], S->text[row]);	break;
 			case 2:	sprintf (custom_name, template, S->data[0][row], S->data[1][row], S->text[row]);	break;
@@ -234,7 +234,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "No product files to move to the main directory [Default assumes there are named products].");
 	GMT_Usage (API, 1, "\n-F<template>");
 	GMT_Usage (API, -2, "Create unique BATCH_NAME file prefixes using the <template> and the columns in <timefile> [use running job numbers]. "
-		"Requires -T with the same number of columns as format statements in <template>.");
+		"Requires -T with at least the same number of columns as format statements in <template>.");
 	GMT_Usage (API, 1, "\n-I<includefile>");
 	GMT_Usage (API, -2, "Specify a script file to be inserted into the batch_init.sh script [none]. "
 		"Used to add constant variables needed by all batch scripts.");
@@ -738,7 +738,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		if (strstr (Ctrl->F.template, "%s")) {
 			n_fmts--;	/* One less since trailing text will be used */
 			if (D->type == GMT_READ_DATA) {
-				GMT_Report (API, GMT_MSG_ERROR, "Option -F: A string expected for the template but input file has no trailing text.\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Option -F: A string is expected by the template but your -T file has no trailing text.\n");
 				fclose (Ctrl->In.fp);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -749,7 +749,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (n_fmts > D->n_columns) {
-			GMT_Report (API, GMT_MSG_ERROR, "Option -F: Not enough input columns in -T file to satisfy template.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -F: Not enough input columns in your -T file to satisfy template.\n");
 			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
 		}
