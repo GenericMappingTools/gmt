@@ -101,11 +101,11 @@ Optional Arguments
     is not used.  (2) The previous *N* format statements will be filled using the first *N* data columns
     in *timefile*; there is no option to skip a column or to specify a specific order of columns in the
     template. (3) A maximum of 5 numerical statements may be used (provided the *timefile* has enough
-    columns), including none.  E.g., -Fmy_data_%5.2lf_%7.0lf_%s will use the first two columns in *timefile*
+    columns), including none.  E.g., -Fmy_data_%05.2lf_%07.0lf_%s will use the first two columns in *timefile*
     as well as the trailing text to create unique product prefix names. **Note**: Since the data set internally
     is using double precision variables you must use floating point format statements even if some or all
     of your data columns are integers. Finally, if your choice of format statements and trailing text yield
-    spaces in the final prefix we will automatically replace those with underscores.
+    tabs or spaces in the final prefix we will automatically replace those with underscores.
 
 .. _-I:
 
