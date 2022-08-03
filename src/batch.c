@@ -205,6 +205,7 @@ GMT_LOCAL void batch_set_product_prefix (struct GMT_CTRL *GMT, struct GMT_DATASE
 		}
 	}
 	gmt_strrepc (custom_name, ' ', '_');	/* Replace any spaces with underscores to avoid template disasters */
+	gmt_strrepc (custom_name, '\t', '_');	/* Replace any tabs with underscores to avoid template disasters */
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
