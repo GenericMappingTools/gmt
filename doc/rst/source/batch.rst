@@ -87,9 +87,9 @@ Optional Arguments
 .. _-D:
 
 **-D**
-    The main script does not produce products named using the prefix **BATCH_NAME**, so we do not attempt
-    to move such files to the top directory, or the main script will handle the placement of any such
-    product files directly.
+    Select this option if (1) the main script does not produce products named using the prefix **BATCH_NAME**,
+    so we should not attempt to move such files to the top directory, or (2) the main script will handle the
+    placement of any such product files directly.
 
 .. _-F:
 
