@@ -93,13 +93,17 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *template*
-    Rather than build product file names with single running numbers for **BATCH_NAME**, use this C-format template instead
-    and create unique names by formatting the data columns given by *timefile*.  Some limitations apply: (1) If *timefile* has
-    trailing text then it may be used with a single %s format as the last format statement in *template*.  If no %s is
-    found then the trailing text is not used.  (2) The previous *N* format statements will be filled using the first *N*
-    columns in *timefile*; there is no option to skip a column or to specify a specific order. (3) A maximum of 5 numerical
-    statement may be used.  E.g., -Fmy_data_%5.2lf_%7.0lf_%s will use the first two columns in *tiimefile* as well as the
-    trailing text to create unique product prefix names.
+    Rather than build product file names from the **BATCH_NAME** prefix based on a single running number,
+    use this C-format *template* instead and create unique names by formatting the data columns given by
+    *timefile*.  Some limitations apply: (1) If *timefile* has trailing text then it may be used with a
+    single %s code as the last format statement in *template*.  If no %s is found then the trailing text
+    is not used.  (2) The previous *N* format statements will be filled using the first *N* data columns
+    in *timefile*; there is no option to skip a column or to specify a specific order of columns in the
+    template. (3) A maximum of 5 numerical statements may be used (provided the *timefile* has enough
+    columns).  E.g., -Fmy_data_%5.2lf_%7.0lf_%s will use the first two columns in *timefile* as well as
+    the trailing text to create unique product prefix names. **Note**: Since the data set internally is
+    using double precision variables you must use floating point format statements even if some or all
+    of your data columns are integers.
 
 .. _-I:
 
