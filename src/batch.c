@@ -779,6 +779,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		sprintf (state_prefix, "Parameter file for job %s", state_tag);
 		gmt_set_comment (fp, Ctrl->In.mode, state_prefix);
 		sprintf (state_prefix, "%s_%s", Ctrl->N.prefix, state_tag);
+		gmt_set_tvalue (fp, Ctrl->In.mode, false, "BATCH_DIR", state_prefix);	/* Current directory name for the job (e.g., my_job_0003) */
 		gmt_set_tvalue (fp, Ctrl->In.mode, false, "BATCH_NAME", state_prefix);	/* Current job name prefix (e.g., my_job_0003) */
 		gmt_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_JOB", data_job);		/* Current job number (e.g., 3) */
 		gmt_set_tvalue (fp, Ctrl->In.mode, false, "BATCH_ITEM", state_tag);		/* Current job tag (formatted job number, e.g, 0003) */
@@ -824,8 +825,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	gmt_set_comment (fp, Ctrl->In.mode, "Include static and job-specific parameters");
 	fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 	fprintf (fp, "%s batch_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the job parameters */
-	fprintf (fp, "mkdir %s\n", gmt_place_var (Ctrl->In.mode, "BATCH_NAME"));	/* Make a temp directory for this job */
-	fprintf (fp, "cd %s\n", gmt_place_var (Ctrl->In.mode, "BATCH_NAME"));		/* cd to the temp directory */
+	fprintf (fp, "mkdir %s\n", gmt_place_var (Ctrl->In.mode, "BATCH_DIR"));	/* Make a temp directory for this job */
+	fprintf (fp, "cd %s\n", gmt_place_var (Ctrl->In.mode, "BATCH_DIR"));		/* cd to the temp directory */
 	while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the main script and copy to loop script, with some exceptions */
 		if (gmt_is_gmtmodule (line, "begin")) {	/* Must insert DIR_DATA setting */
 			fprintf (fp, "%s", line);
@@ -842,10 +843,10 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		fprintf (fp, "%s %s.* %s\n", mvfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_NAME"), topdir);
 	fprintf (fp, "cd ..\n");	/* cd up to parent dir */
 	/* Create completion file so batch knows this job is done */
-	fprintf (fp, "%s %s.___\n", createfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_NAME"));
+	fprintf (fp, "%s %s.___\n", createfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_DIR"));
 	if (!Ctrl->Q.active) {	/* Delete evidence; otherwise we want to leave debug evidence when doing a single job only */
 		gmt_set_comment (fp, Ctrl->In.mode, "Remove job directory and job parameter file");
-		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_NAME"));	/* Remove the work dir and any files in it */
+		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_DIR"));	/* Remove the work dir and any files in it */
 		fprintf (fp, "%s batch_params_%c1.%s\n", rmfile[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Remove the parameter file for this job */
 	}
 	if (Ctrl->In.mode == GMT_DOS_MODE)	/* This is crucial to the "start /B ..." statement below to ensure the DOS process terminates */
