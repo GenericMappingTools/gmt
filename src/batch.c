@@ -199,7 +199,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+W Same as +w but only use TAB as separator.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-D");
-	GMT_Usage (API, -2, "There are no product files up to main directory [Default assumes there are named products].");
+	GMT_Usage (API, -2, "No product files to move to the main directory [Default assumes there are named products].");
 	GMT_Usage (API, 1, "\n-I<includefile>");
 	GMT_Usage (API, -2, "Specify a script file to be inserted into the batch_init.sh script [none]. "
 		"Used to add constant variables needed by all batch scripts.");
