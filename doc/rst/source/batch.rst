@@ -87,8 +87,9 @@ Optional Arguments
 .. _-D:
 
 **-D**
-    The main script does not produce products that are named using the prefix **BATCH_NAME**, so we do not attempt
-    to move such files to the top directory.  The main script will instead handle this in a different way.
+    The main script does not produce products named using the prefix **BATCH_NAME**, so we do not attempt
+    to move such files to the top directory, or the main script will handle the placement of any such
+    product files directly.
 
 .. _-F:
 
@@ -100,9 +101,9 @@ Optional Arguments
     is not used.  (2) The previous *N* format statements will be filled using the first *N* data columns
     in *timefile*; there is no option to skip a column or to specify a specific order of columns in the
     template. (3) A maximum of 5 numerical statements may be used (provided the *timefile* has enough
-    columns).  E.g., -Fmy_data_%5.2lf_%7.0lf_%s will use the first two columns in *timefile* as well as
-    the trailing text to create unique product prefix names. **Note**: Since the data set internally is
-    using double precision variables you must use floating point format statements even if some or all
+    columns), including none.  E.g., -Fmy_data_%5.2lf_%7.0lf_%s will use the first two columns in *timefile*
+    as well as the trailing text to create unique product prefix names. **Note**: Since the data set internally
+    is using double precision variables you must use floating point format statements even if some or all
     of your data columns are integers.
 
 .. _-I:
@@ -196,8 +197,8 @@ column in *timefile*.  If *timefile* has trailing text then that text can be acc
 **BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to |-T| then the trailing
 text is also split into individual word parameters **BATCH_WORD0**\ , **BATCH_WORD1**\ , etc. **Note**: Any
 product(s) made by the processing scripts should be named using **BATCH_NAME** as their name prefix as these
-will be automatically moved up to the starting directory upon completion. However, note that |-F| can be
-used to select more diverse product names based on the input parameters given via |-T|.
+will be automatically moved up to the starting directory upon completion (unless |-D| is in effect). However,
+note that |-F| can be used to select more diverse product names based on the input parameters given via |-T|.
 
 Data Files
 ----------

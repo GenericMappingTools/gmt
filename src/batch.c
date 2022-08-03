@@ -195,6 +195,7 @@ GMT_LOCAL void batch_set_product_prefix (struct GMT_CTRL *GMT, struct GMT_DATASE
 	}
 	else {	/* Use the trailing text as well */
 		switch (n_fmts) {
+			case 0:	sprintf (custom_name, template, S->text[row]);	break;
 			case 1:	sprintf (custom_name, template, S->data[0][row], S->text[row]);	break;
 			case 2:	sprintf (custom_name, template, S->data[0][row], S->data[1][row], S->text[row]);	break;
 			case 3:	sprintf (custom_name, template, S->data[0][row], S->data[1][row], S->data[2][row], S->text[row]);	break;
@@ -741,6 +742,11 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				fclose (Ctrl->In.fp);
 				Return (GMT_RUNTIME_ERROR);
 			}
+		}
+		else if (n_fmts == 0) {
+			GMT_Report (API, GMT_MSG_ERROR, "Option -F: Your template has no format statements so cannot be used.\n");
+			fclose (Ctrl->In.fp);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		if (n_fmts > D->n_columns) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -F: Not enough input columns in -T file to satisfy template.\n");
