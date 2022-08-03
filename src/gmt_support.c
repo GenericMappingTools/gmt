@@ -8610,9 +8610,15 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "All data points are NaNs so cannot do meaningful automatic CPT generation\n");
 			zmin = 0.0;	zmax = 1.0;	/* Does not matter since only NaN color will be used */
 		}
-		if (zmax <= zmin) {	/* Safety valve 2 */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Passing zmax <= zmin prevents automatic CPT generation!\n");
-			return (NULL);
+		if (zmax <= zmin) {	/* Safety valve 2 [min == max] */
+			/* Have a constant grid or a mask grid with NaNs and a constant [1] - adjust min or max so that we can do an automatic CPT */
+			if (zmin > 0.0)	/* Both are positive so just increase max */
+				zmax = 2.0 * zmin;
+			else if (zmin < 0.0)	/* Both are negative so just decrease min */
+				zmin = 2.0 * zmax;
+			else	/* All zeros, must set max to 1 */
+				zmax = 1.0;
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Found zmax == zmin, replaced with %lg and %lg to allow automatic CPT generation!\n", zmin, zmax);
 		}
 
 		if (file == NULL && (current_cpt = gmt_get_current_item (GMT, "cpt", false))) {	/* There is a current CPT in modern mode */
