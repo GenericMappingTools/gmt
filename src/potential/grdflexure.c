@@ -888,7 +888,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s A table <list>.lis, again with records from grdseamount -M.", GMT_LINE_BULLET);
 	GMT_Usage (API, 1, "\n-D<rhom>/<rhol>[/<rhoi>]/<rhow>[+r<rhor>]");
 	GMT_Usage (API, -2, "Set density of mantle, load(crust), optional moat infill [same as load], and water|air in kg/m^3 or g/cm^3. "
-		"Set <rhol> to - if -H is used or <list> contains variable density grid names.");
+		"Set <rhol> to - if -H is used or if the input <list> contains variable density grid names.");
 	GMT_Usage (API, 3, "+r Set a fixed root density. The load topography will be scaled to reflect new load density rhor.");
 	GMT_Usage (API, 1, "\n-E[<te>[k][/<te2>[k]]]");
 	GMT_Usage (API, -2, "Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted "
@@ -1035,9 +1035,9 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 		}
 		if (n_subaerial) GMT_Report (API, GMT_MSG_WARNING, "%" PRIu64 " nodes were subaerial so heights were scaled for the equivalent submerged case\n", n_subaerial);
 	}
-	if (Ctrl->D.root) {	/* Need to adjust h(x,y) to reflect a the same load density as the root */
+	if (Ctrl->D.root) {	/* Need to adjust h(x,y) to reflect the same load density as the root */
 		boost = mean_rho_l / Ctrl->D.rhor;	/* To avoid division below */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Convert h(x,y) and rho_l to equivalent height h'(x,y) for rho_r via scale %lg\n", boost);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Convert h(x,y) and rho_l to equivalent height h'(x,y) for rho_l = rho_r via scale %lg\n", boost);
 		for (node = 0; node < Grid->header->size; node++)
 			Grid->data[node] *= boost;
 		mean_rho_l = Ctrl->D.rhor;
@@ -1045,6 +1045,10 @@ GMT_LOCAL struct GRDFLEXURE_GRID *grdflexure_prepare_load (struct GMT_CTRL *GMT,
 	/* Free any density grid */
 	if (Ctrl->D.var_rhol && GMT_Destroy_Data (API, &Rho) != GMT_NOERROR)
 		return NULL;
+
+	/* Here, topography have possibly been adjusted to reflect the same uniform density in both the edifice and immediate
+	 * root below. This load density may still differ from the infill density if that was set separately via -D */
+
 	/* From here we address the grid via Grid; we are done with using the address Orig directly. */
 	G = gmt_M_memory (GMT, NULL, 1, struct GRDFLEXURE_GRID);	/* Allocate a Flex structure */
 	G->K = GMT_FFT_Create (API, Grid, GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);	/* Also detrends, if requested */
