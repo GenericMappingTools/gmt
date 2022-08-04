@@ -95,16 +95,17 @@ Optional Arguments
 
 **-F**\ *template*
     Rather than build product file names from the **BATCH_NAME** prefix based on a single running number,
-    use this C-format *template* instead and create unique names by formatting the data columns given by
-    *timefile*.  Some limitations apply: (1) If *timefile* has trailing text then it may be used with a
-    single %s code as the last format statement in *template*.  If no %s is found then the trailing text
-    is not used.  (2) The previous *N* format statements will be filled using the first *N* data columns
-    in *timefile*; there is no option to skip a column or to specify a specific order of columns in the
-    template. (3) A maximum of 5 numerical statements may be used (provided the *timefile* has enough
-    columns), including none.  E.g., -Fmy_data_%05.2lf_%07.0lf_%s will use the first two columns in *timefile*
-    as well as the trailing text to create unique product prefix names. **Note**: Since the data set internally
+    use this `C-format <https://en.wikipedia.org/wiki/Printf_format_string>`_ *template* instead and create
+    unique names by formatting the data columns given by *timefile*.  Some limitations apply: (1) If *timefile*
+    has trailing text then it may be used with a single %s code as the *last* format statement in *template*.
+    If no %s is found then any trailing text present will not be used.  (2) The previous *N* format statements
+    will be used to convert the first *N* data columns in *timefile*; there is no option to skip a column or
+    to specify a specific order of columns in the template (but see |SYN_OPT-i| to rearrange the input order).
+    (3) Up to five numerical statements may be used (provided the *timefile* has enough columns),
+    including none.  E.g., **-F**\ my_data_%05.2lf_%07.0lf_%s will use the first two numerical columns in *timefile*
+    as well as the trailing text to create a unique product prefix. **Note**: Since a GMT data set internally
     is using double precision variables you must use floating point format statements even if some or all
-    of your data columns are integers. Finally, if your choice of format statements and trailing text yield
+    of your data columns are integers. Finally, if your choice of format statement and trailing text yield
     tabs or spaces in the final prefix we will automatically replace those with underscores.
 
 .. _-I:
