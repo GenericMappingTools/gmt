@@ -332,7 +332,7 @@ we always get a color regardless of the *z* value, try
 To build a categorical table with 3 categories and add specific category
 names to them, try::
 
-    gmt makecpt -Ccubhelix -T0/3/1 -F+cClouds,Trees,Water > cat.cpt
+    gmt makecpt -Ccubhelix -T0/2/1 -F+cClouds,Trees,Water > cat.cpt
 
 To instead add unique category labels A, B, C, ... to a 10-item categorical CPT, try::
 
