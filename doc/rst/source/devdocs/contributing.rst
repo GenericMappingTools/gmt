@@ -333,7 +333,7 @@ As the baseline images are large blob files that can change often, it is not ide
 we use `data version control (dvc) <https://dvc.org/>`_ to track the test images, which is like ``git`` but for data.
 ``dvc`` stores the hash (md5sum) of a file or an md5sum that describes the contents of a directory. For each test
 ``test/<module>/*.sh`` that generates a .PS file, there is a baseline image file in ``test/baseline/<module>/``
-that is compared to the test result using `GraphicsMagick <www.graphicsmagick.org>`_. Each of the
+that is compared to the test result using `GraphicsMagick <http://www.graphicsmagick.org/>`_. Each of the
 directories ``test/baseline/<module>`` are tracked by ``dvc`` using the file ``test/baseline/<module>.dvc``. This file
 contains the hash of a JSON .dir file stored in the .dvc cache. The .dir file contains information about each tracked
 file in the directory, which is used to push/pull the files to/from remote storage. The ``test/baseline/<module>.dvc``
@@ -439,7 +439,7 @@ Adding new tests
 ^^^^^^^^^^^^^^^^
 
 If you are fixing a bug or adding a new feature, you should add a test with your pull request. Most of the tests are
-image based and compare a result against a reference PostScript file using `GraphicsMagick <www.graphicsmagick.org>`_.
+image based and compare a result against a reference PostScript file using `GraphicsMagick <http://www.graphicsmagick.org/>`_.
 
 To add a PostScript based test (e.g., `box.sh <https://github.com/GenericMappingTools/gmt/blob/master/test/modern/box.sh>`_):
 
