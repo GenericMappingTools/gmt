@@ -338,8 +338,8 @@ GMT 6.0 is a major revision of GMT and its eco-system.  At the top level,
 there are numerous changes:
 
 #. An entirely new and permanent address with a brand new website layout and
-   organization: http://www.generic-mapping-tools.org.
-#. A new discussion forum at http://forum.generic-mapping-tools.org.
+   organization: https://www.generic-mapping-tools.org/.
+#. A new discussion forum at https://forum.generic-mapping-tools.org/.
 #. A data server in Hawaii (oceania.generic-mapping-tools.org) with plans
    for new mirror servers around the world.  This is where the remote files
    that start with @ come from.
