@@ -599,7 +599,12 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 		if (!gmt_grd_domains_match (GMT, Orig[0], Rho, "surface and density")) {
 			Return (GMT_RUNTIME_ERROR);
 		}
-		for (m = 0; m < Rho->header->size; m++) if (gmt_M_is_fnan (Rho->data[m])) Rho->data[m] = Rho->header->z_min;	/* Replace any NaNs with the minimum density */
+		HH = gmt_get_H_hidden (Rho->header);
+		if (HH->has_NaNs == GMT_GRID_HAS_NANS) {
+			uint64_t n_nan = 0;
+			for (m = 0; m < Rho->header->size; m++) if (gmt_M_is_fnan (Rho->data[m])) Rho->data[m] = Rho->header->z_min, n_nan++;	/* Replace any NaNs with the minimum density */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Density grid %s had %" PRIu64 " NaNs; these have been replaced by the minimum density %lg\n", Ctrl->In.file[k], n_nan, Rho->header->z_min);
+		}
 	}
 
 	/* Grids are compatible. Initialize FFT structs, grid headers, read data, and check for NaNs */
@@ -610,12 +615,13 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
                                       GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)	/* Get data only */
 			Return (API->error);
 		HH = gmt_get_H_hidden (Orig[k]->header);
-		if (HH->has_NaNs == GMT_GRID_HAS_NANS) {
-			GMT_Report (API, GMT_MSG_ERROR, "Input grid %s has NaNs, cannot be used with FFTs\n", Ctrl->In.file[k]);
-			Return (GMT_RUNTIME_ERROR);
-		}
 		/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k] */
 		(void) gmt_set_outgrid (GMT, Ctrl->In.file[k], false, 0, Orig[k], &Grid[k]);
+		if (HH->has_NaNs == GMT_GRID_HAS_NANS) {
+			uint64_t n_nan = 0;
+			for (m = 0; m < Grid[k]->header->size; m++) if (gmt_M_is_fnan (Grid[k]->data[m])) Grid[k]->data[m] = 0.0, n_nan++;	/* Replace any NaNs with zero */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Input grid %s had %" PRIu64 " NaNs; these have been replaced with 0\n", Ctrl->In.file[k], n_nan);
+		}
 	}
 
 	/* From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
