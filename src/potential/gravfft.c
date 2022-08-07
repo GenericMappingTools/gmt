@@ -75,10 +75,11 @@ struct GRAVFFT_CTRL {
 		bool active;
 		unsigned int n_terms;
 	} E;
-	struct GRAVFFT_F {	/* -F[f[+s]|b|g|e|n|v] */
+	struct GRAVFFT_F {	/* -F[f[+s|z]|b|g|e|n|v] */
 		bool active;
 		bool slab;
 		bool bouguer;
+		bool zero;
 		unsigned int mode;
 	} F;
 	struct GRAVFFT_G {	/* -G<outfile> */
@@ -273,6 +274,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 					case 'f': default:
 						Ctrl->F.mode = GRAVFFT_FAA; 	   /* FAA */
 					 	if (opt->arg[1] == '+' && (opt->arg[2] == 's' || opt->arg[2] == '\0')) Ctrl->F.slab = true;
+					 	else if (opt->arg[1] == '+' && (opt->arg[2] == 'z' || opt->arg[2] == '\0')) Ctrl->F.zero = true;
 						break;
 				}
 				break;
@@ -420,7 +422,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s [<ingrid2>] -G%s [-C<n/wavelength/mean_depth/tbw>] "
-		"[-D<density>] [-E<n_terms>] [-F[f[+s]|b|g|v|n|e]] [-I<cbktw>] [-N%s] [-Q] [-S] "
+		"[-D<density>] [-E<n_terms>] [-F[f[+s|z]|b|g|v|n|e]] [-I<cbktw>] [-N%s] [-Q] [-S] "
 		"[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>[k]] [-Z<zm>[/<zl>]] [-fg] [%s]\n",
 		name, GMT_INGRID, GMT_OUTGRID, GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
@@ -444,11 +446,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Append a co-registered density grid for a variable density contrast or a constant <density>.");
 	GMT_Usage (API, 1, "\n-E<n_terms>");
 	GMT_Usage (API, -2, "Number of terms used in Parker's expansion [Default = 3].");
-	GMT_Usage (API, 1, "\n-F[f[+s]|b|g|v|n|e]");
+	GMT_Usage (API, 1, "\n-F[f[+s|z]|b|g|v|n|e]");
 	GMT_Usage (API, -2, "Specify desired geopotential field:");
 	GMT_Usage (API, 3, "b: Bouguer anomalies (mGal).");
-	GMT_Usage (API, 3, "f: Free-air anomalies (mGal) [Default].");
+	GMT_Usage (API, 3, "f: Free-air anomalies (mGal) [Default]. Optionally choose one modifier:");
 	GMT_Usage (API, 4, "+s Adjust for implied slab correction [none].");
+	GMT_Usage (API, 4, "+z Adjust the field so the far-field is exactly zero [no shift].");
 	GMT_Usage (API, 3, "g: Geoid anomalies (m).");
 	GMT_Usage (API, 3, "v: Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).");
 	GMT_Usage (API, 3, "e: East deflections of the vertical (micro-radian).");
@@ -780,6 +783,12 @@ EXTERN_MSC int GMT_gravfft (void *V_API, int mode, void *args) {
 					for (m = 0; m < Grid[0]->header->size; m++) Grid[0]->data[m] = slab_gravity - Grid[0]->data[m];
 				else
 					for (m = 0; m < Grid[0]->header->size; m++) Grid[0]->data[m] += slab_gravity;
+			}
+			else if (Ctrl->F.zero) {	/* Shift so average FAA at the four corners is zero */
+				double far_field = 0.25 * (Grid[0]->data[gmt_M_ijp(Grid[0]->header, 0, 0)] + Grid[0]->data[gmt_M_ijp(Grid[0]->header, Grid[0]->header->n_rows-1, 0)]
+					+ Grid[0]->data[gmt_M_ijp(Grid[0]->header, 0, Grid[0]->header->n_columns-1)] + Grid[0]->data[gmt_M_ijp(Grid[0]->header, Grid[0]->header->n_rows-1, Grid[0]->header->n_columns-1)]);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Subtract %g mGal from predicted FAA grid to force far-field to be zero\n", far_field);
+					for (m = 0; m < Grid[0]->header->size; m++) Grid[0]->data[m] -= far_field;
 			}
 			break;
 		case GRAVFFT_GEOID:

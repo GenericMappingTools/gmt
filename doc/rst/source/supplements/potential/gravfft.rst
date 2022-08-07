@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *n/wavelength/mean\_depth*/**t**\|\ **b**\|\ **w** ]
 [ |-D|\ *density*\|\ *rhogrid* ]
 [ |-E|\ *n_terms* ]
-[ |-F|\ [**f**\ [**+s**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**] ]
+[ |-F|\ [**f**\ [**+s**\|\ **z**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**] ]
 [ |-I|\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k** ]
 [ |-N|\ *params* ]
 [ |-Q| ]
@@ -103,12 +103,14 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**f**\ [**+s**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**]
+**-F**\ [**f**\ [**+s**\|\ **z**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**]
     Specify desired geopotential field: compute geoid rather than gravity
 
        **f** = Free-air anomalies (mGal) [Default].  Append **+s** to add
        in the slab implied when removing the mean value from the topography.
-       This requires zero topography to mean no mass anomaly.
+       This requires zero topography to mean no mass anomaly. Alternatively,
+       to force the far-field to be exactly zero (i.e., the corner nodes of
+       the grid), select **+z** instead.
 
        **b** = Bouguer gravity anomalies (mGal).
 
