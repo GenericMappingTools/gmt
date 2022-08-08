@@ -57,7 +57,7 @@ Required Arguments
     - *flag* = p: grid (px,py) with *width* an odd number of pixels;
       Cartesian distances.
     - *flag* = 0: grid (x,y) same units as *width*, Cartesian distances.
-    - *flag* = 1: grid (x,y) in degrees, *width* in kilometers, Cartesian
+    - *flag* = 1: grid (x,y) in degrees, *width* in km, Cartesian
       distances.
     - *flag* = 2: grid (x,y) in degrees, *width* in km, dx scaled by
       cos(middle y), Cartesian distances.
