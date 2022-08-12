@@ -48,6 +48,49 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>JRVbdefghijopqs" GMT_OPT("HMm")
 
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
+	/* separator, short_option, long_option,
+	          short_directives,          long_directives,
+	          short_modifiers,           long_modifiers */
+	{ 0, 'A', "azimuth",
+	          "b,B,f,F,o,O",             "back,backgeodetic,forward,forwardgeodetic,orient,orientgeodetic",
+	          "v",                       "variable" },
+	{ 0, 'C', "center",
+	          "",                        "",
+	          "m",                       "merclat" },
+	{ 0, 'D', "lengthunit",
+	          "c,i,p",                   "cm,inch,point",
+	          "",                        "" },
+	{ 0, 'E', "ecef",                    "", "", "", "" },
+	{ 0, 'F', "projunit",
+	          "d,m,s,e,f,k,M,n,u,c,i,p", "deg,min,sec,meter,foot,km,smile,nmile,ussft,cm,inch,point",
+	          "",                        "" },
+	{ 0, 'G', "stride",
+	          "",                        "",
+	          "a,i,u,v",                 "accumulated,incremental,unit,variable" },
+	{ 0, 'I', "inverse",                 "", "", "", "" },
+	{ 0, 'L', "proximity",
+	          "",                        "",
+	          "p,u",                     "segmentpoint,unit" },
+	{ 0, 'N', "latconvert",
+	          "a,c,g,m",                 "authalic,conformal,geocentric,meridional",
+	          "",                        "" },
+	{ 0, 'Q', "listprojparams",
+	          "d,e",                     "datums,ellipsoids",
+	          "",                        "" },
+	{ 0, 'S', "suppress",                "", "", "", "" },
+	{ 0, 'Q', "transformdatum",
+	          "h",                       "height",
+	          "",                        "" },
+	{ 0, 'W', "mapinfo",
+	          "e,E,g,h,j,n,o,O,r,R,w,x", "encompass,encompasstext,plotcoords,height,justify,normalize,cornercoords,regiontext,width,xy",
+	          "n",                       "npoints" },
+	{ 0, 'Z', "traveltime",
+	          "",                        "",
+	          "a,i,f,t",                 "accumulated,incremental,isoformat,epochtime" },
+	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+};
+
 enum GMT_mp_Gcodes {	/* Support for -G parsing */
 	GMT_MP_VAR_POINT   = 1,	/* Compute distances from points given along a track */
 	GMT_MP_FIXED_POINT = 2,	/* Compute distances from data to fixed point given by -Gx0/y0[...] */
@@ -899,7 +942,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

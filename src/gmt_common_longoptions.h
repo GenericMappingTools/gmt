@@ -13,7 +13,7 @@
      * Such an option is then expected to correspond exactly to this long-option format:
      *
      * General long-option syntax:
-     *        --<long_option>[=<long_directives>[:<arg>]][+<long_modifier1>[=<arg1>]][+<long_modifier2>[=<arg2>]][...]
+     *        --<long_option>[=<long_directives>[:=<arg>]][+<long_modifier1>[=<arg1>]][+<long_modifier2>[=<arg2>]][...]
      *
      * As we run into module options that DO NOT follow this template we will most likely need
      * to introduce a revised syntax and allow for a backwards compatible parsing option.
@@ -72,8 +72,8 @@
                 "",                      "" },
     {   0, 'a', "aspatial",              "", "", "", "" },
     {   0, 'b', "binary",
-                "",                      "",
-                "b,l",                   "big_endian,little_endian" },
+                "i,o",                   "in,out",
+                "b,l",                   "bigendian,littleendian" },
     {   0, 'c', "panel",                 "", "", "", "" },
     {   0, 'd', "nodata",
                 "i,o",                   "in,out",
@@ -85,11 +85,11 @@
                 "i,o",                   "in,out",
                 "",                      "" },
     {   0, 'g', "gap",
-                "",                      "",
+                "x,y,z,d,X,Y,D",         "x,y,z,distance,xproj,yproj,distanceproj",
                 "a,c,n,p",               "all,column,negative,positive" },
     {   0, 'h', "header",
                 "i,o",                   "in,out",
-                "c,d,h,r,t",             "columns,delete,header,remark,title" },
+                "c,d,m,r,t",             "columns,delete,header,remark,title" },
     { ',', 'i', "incols",
                 "",                      "",
                 "l,d,o,s",               "log10,divide,offset,scale" },
@@ -123,7 +123,7 @@
                 "",                      "",
                 "f,s",                   "fill,stroke" },
     {   0, 'w', "wrap",
-                "a,y,w,d,h,m,s,p",       "annual,year,week,day,hour,min,sec,period",
+                "y,a,w,d,h,m,s,c",       "year,annual,week,day,hour,min,sec,custom",
                 "c",                     "column" },
     {   0, 'x', "cores",                 "", "", "", "" },
     {   0, ':', "swapcols",

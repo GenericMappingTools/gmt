@@ -534,7 +534,6 @@ GMT_LOCAL char * gmtinit_strchr_predexcl (char *string, char target, char predex
 	return NULL;
 }
 
-
 /*! . */
 GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *kw1, struct GMT_KEYWORD_DICTIONARY *kw2, char *arg, int *k) {
 	/* Determine if this long-format arg is found in one of the two keyword lists kw1 (common) and kw2 (current module).
@@ -624,6 +623,70 @@ GMT_LOCAL int gmtinit_get_section (struct GMTAPI_CTRL *API, char *arg, char sepa
 }
 
 /*! . */
+GMT_LOCAL char * gmtinit_getfirstmodifier (char *string) {
+	/* Return a pointer to the + character that marks the start
+	 * of the first modifier substring within string, where such
+	 * a substring always begins with a + character followed by
+	 * an alphabetic character and is NEVER immediately preceded
+	 * by an = character. */
+	char *c;
+	if (string == NULL) return NULL;
+	for (c = string; *c != '\0'; c++) {
+		if (*c != '+') continue;
+		if ((c > string) && (*(c-1) == '=')) continue;
+		if (isalpha(*(c+1))) return c;
+	}
+	return NULL;
+}
+
+/*! . */
+GMT_LOCAL unsigned int gmtinit_copymodifier (char *string, unsigned int *srchstartpos, char *modstr) {
+	/* This routine is very loosely based (at least in terms of its
+	 * arguments and returns) on gmt_strtok() which was formerly used
+	 * in this context to return the next modifier substring within a string.
+	 * Breaks string into substrings separated by the commencement of a
+	 * modifier sequence, which must consist of a + character (i) immediately
+	 * followed by an alphabetic character but (ii) not preceded by an
+	 * = character. Caller must set *srchstartpos to 0 before first call.
+	 * Unlike strtok(), always pass the original string as first argument,
+	 * which is never modified by this routine (again unlike strtok()).
+	 * Returns 1 if it finds a modifier sequence and 0 otherwise,
+	 * and a copy of the found modifier substring (starting with the
+	 * alphabetic character immediately after the + and ending with either
+	 * (i) the character immediately preceding the + which starts the next
+	 * modifier sequence, if any, or if none then (ii) the end of string) is
+	 * written to modstr, which must point to memory of length >= strlen (string).
+	 * *srchstartpos is updated so as to start the next modifier search (via a
+	 * subsequent call to this routine) in such a manner that the next modifier
+	 * sequence after modstr will be found.
+	 */
+
+	char *currmodstart, *nextmodstart;
+	size_t slen, cmlen;
+
+	slen = strlen (string);
+
+	/* find the first (if any) modifier substring after the starting search position, then skip
+	   the +, noting that gmtinit_getfirstmodifier() guarantees a following alphabetic character */
+	if ((currmodstart = gmtinit_getfirstmodifier (&(string[*srchstartpos]))) == NULL) return 0;
+	currmodstart++;
+
+	/* find the next modifier substring after the first modifier substring
+	   if any, otherwise locate the original string's terminating '\0' */
+	if ((nextmodstart = gmtinit_getfirstmodifier (currmodstart)) == NULL)
+		nextmodstart= string + slen;
+	cmlen = nextmodstart - currmodstart;
+
+	/* save modifier substring */
+	(void) strncpy (modstr, currmodstart, cmlen);
+	modstr[cmlen] = '\0';
+
+	*srchstartpos = nextmodstart - string;
+
+	return 1;
+}
+
+/*! . */
 GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options) {
 	/* Loop over given options and replace any recognized long-form --parameter[=value] arguments
 	 * with the corresponding classic short-format version -<code>[value]. Specifically, long-format is defined as
@@ -659,7 +722,7 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 		strcpy (copy, opt->arg);			/* Retain another copy of current option arguments */
 		gmtinit_handle_escape_text (copy, '+', +1);	/* Hide any escaped +? sequences */
 		directive = gmtinit_strchr_predexcl (copy, '=', ':');	/* Get location of the equal sign, if it is present */
-		modifier  = strchr (copy, '+');			/* Get location of the first plus sign, if any are present */
+		modifier = gmtinit_getfirstmodifier (copy);	/* Get location of the first modifier, if any are present */
 		got_directive = got_modifier = false;		/* Reset these to be false for this option */
 
 		/* Check for the case where the = is part of a modifier, hence not a value or directive */
@@ -680,9 +743,9 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 		e_code = '=';	/* When we remove the '=' we will replace it, but in multi-sections the code may change after the first section */
 		n_sections = ((kw[k].separator) ? gmt_count_char (API->GMT, orig, kw[k].separator) : 0) + 1;	/* How many sections? */
 		opt->option = kw[k].short_option;	/* Update the option character first */
-		sep[0] = kw[k].separator;			/* Need a string with separator when using strcat below */
-		new_arg[0] = '\0';					/* Initialize the short option arguments */
-		modified = true;					/* We have at least modified one option */
+		sep[0] = kw[k].separator;		/* Need a string with separator when using strcat below */
+		new_arg[0] = '\0';			/* Initialize the short option arguments */
+		modified = true;			/* We have at least modified one option */
 		/* Special handling for --inrows and --outrows since they both map to q and need -qi and -qo, respectively */
 		if (!strcmp (kw[k].long_option, "inrows"))
 			strcat (new_arg, "i");	/* -qi */
@@ -697,7 +760,7 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 				sect_start = gmtinit_get_section (API, orig, kw[k].separator, section, &sect_end);	/* Get next section start and truncate */
 				if (directive)	/* Update what directive is pointing to since there is no leading keyword for later sections */
 					directive = (sect_start) ? orig + sect_start - 1 : gmtinit_strchr_predexcl (orig, '=', ':');	/* directive points to = or the char before value */
-				modifier = strchr (directive, '+');	/* Must also update to see if this section has modifiers... */
+				modifier = gmtinit_getfirstmodifier (directive);	/* Must also update to see if this section has modifiers... */
 				if (modifier) modifier[0] = '\0', got_modifier = true;	/* ...and if it does we temporarily chop it off here but remember that we found one */
 			}
 
@@ -713,11 +776,11 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 				unsigned int pos = 0;
 				char item[GMT_LEN64] = {""};
 				modifier[0] = '+';	/* Put back the plus sign for the first modifier */
-				while ((gmt_strtok (modifier, "+", &pos, item))) {	/* While there are unprocessed modifiers... */
+				while ((gmtinit_copymodifier (modifier, &pos, item))) {	/* While there are unprocessed modifiers... */
 					if ((code = gmtinit_find_argument (API, kw[k].long_modifiers, kw[k].short_modifiers, item, GMT_FINDARG_EQUAL, argument)))	/* Get the modifier, or return 0 if unrecognized */
 						sprintf (add, "+%c%s", code, argument);	/* Append modifier with argument next to it (it may be empty) */
 					else {	/* Well, something does not align */
-						GMT_Report (API, GMT_MSG_WARNING, "Long-modifier form %s for option -%c not recognized!\n", &directive[1], opt->option);
+						GMT_Report (API, GMT_MSG_WARNING, "Long-modifier form %s for option -%c not recognized!\n", item, opt->option);
 						add[0] = '\0';	/* Pass nothing */
 					}
 					strcat (new_arg, add);	/* Add to the growing short-format option argument */
@@ -755,7 +818,7 @@ GMT_LOCAL void gmtinit_translate_to_long_options (struct GMTAPI_CTRL *API, struc
 	/* Loop over given options and replace any standard short-form -<code>[value] option with the equivalent
 	 *  long-form --parameter[=value] arguments. Specifically, long-format is defined as
 	 *
-	 * --longoption[=<directive>[:<arg>][+<mod1>[=<arg1>]][+<mod2>[=<arg2>]][...]
+	 * --longoption[=<directive>[:=<arg>][+<mod1>[=<arg1>]][+<mod2>[=<arg2>]][...]
 	 *
 	 * For options that take more than one section of arguments (e.g., -Idx/dy or -icols1,cols2,...)
 	 * the section
