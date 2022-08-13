@@ -273,7 +273,6 @@ Optional Arguments
     - **+o**\ *dx*\ [/*dy*] offsets the indicator in direction implied by *justify*.
     - **+p**\ *pen* sets the moving item *pen*.
     - **+P**\ *pen* sets the static item *pen*.
-    - **+P**\ *pen* sets the static item *pen*.
     - **+s**\ *scale* means we compute elapsed time as frame number times *scale*.
     - **+t**\ *format* sets a C-format statement to be used with the item selected [none].
     - **+w**\ *width* sets the dimension of the indicator [5% of max canvas dimension for circular indicators and
