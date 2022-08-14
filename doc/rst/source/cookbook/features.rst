@@ -2445,7 +2445,7 @@ does not allow piping.
 
 Everything looks clearer after a few examples:
 
-*  To write a native binary float grid file, specify the name as ``my_file.f4=bf`` .
+*  To write a native binary float grid file, specify the name as ``my_file.f4=bf``.
 
 *  To read a native short integer grid file, multiply the data by 10 and
    then add 32000, but first let values that equal 32767 be set to NaN,
@@ -2466,13 +2466,13 @@ Everything looks clearer after a few examples:
    offset, give filename as ``=nb+oa``.
 
 *  To read a short integer *.bil* grid file stored in binary and and force
-   the reading via GDAL, add suffix *=gd* as in ``n45_e008_1arc_v3.bil=gd``
+   the reading via GDAL, add suffix *=gd* as in ``n45_e008_1arc_v3.bil=gd``.
 
 *  To write a lossless, deflate compressed, and tiled GeoTIFF grid (or image) use,
-   ``output.tif=gd:GTiff+cTILED=YES+cCOMPRESS=DEFLATE+cPREDICTOR=3``
+   ``output.tif=gd:GTiff+cTILED=YES+cCOMPRESS=DEFLATE+cPREDICTOR=3``.
    See also :ref:`Writing grids and images <Write-grids-images>` as well as available options
    for each output format from the GDAL driver documentation,
-   `for example <https://gdal.org/drivers/raster/gtiff.html>`_
+   `for example <https://gdal.org/drivers/raster/gtiff.html>`_.
 
 Programs that both read and/or write more than one grid file may specify
 different formats and/or scaling for the files involved. The only
