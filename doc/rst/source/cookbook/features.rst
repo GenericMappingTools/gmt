@@ -879,7 +879,7 @@ different phase *offset* and color. See the :doc:`/gmt.conf` man page for more i
    :width: 500 px
    :align: center
 
-   Line appearance can be varied by using :term:`PS_LINE_CAP`
+   Line appearance can be varied by using :term:`PS_LINE_CAP`.
 
 .. toggle::
 
