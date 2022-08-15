@@ -1048,7 +1048,7 @@ void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 		GMT_Usage (API, 3, "+g Fill polygons using given <fill> to fill [none].");
 	}
 	GMT_Usage (API, 3, "+l Just list the countries and their codes [no %s takes place].", action2[plot]);
-	GMT_Usage (API, 3, "+L List states/territories for Argentina, Australia, Brazil, Canada, China, India, Norway, Russia and the US."
+	GMT_Usage (API, 3, "+L List states/territories for Argentina, Australia, Brazil, Canada, China, India, Norway, Russia and the US. "
 		"Select =<continent>+l|L to only list countries from that continent or <code>+L for that country(repeatable).");
 	GMT_Usage (API, 3, "+n List collections and named regions, their codes and list of items (or region) [no %s takes place].", action2[plot]);
 	if (plot == 1)
