@@ -10,7 +10,7 @@
    **-J**\ "*+proj=merc +ellps=WGS84 +units=m*\ " or just glue all parameters like in
    **-J**\ *+proj=merc+ellps=WGS84+units=m*.
 
-   Using `EPSG codes <http://spatialreference.org>`_ is also possible (but need the setting of the **GDAL_DATA**
+   Using `EPSG codes <https://spatialreference.org>`_ is also possible (but need the setting of the **GDAL_DATA**
    environment variable to point to the GDAL's *data* sub-directory). For example **-JEPSG:4326** sets
    the WGS-84 system.
 
