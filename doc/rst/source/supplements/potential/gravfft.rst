@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *n/wavelength/mean\_depth*/**t**\|\ **b**\|\ **w** ]
 [ |-D|\ *density*\|\ *rhogrid* ]
 [ |-E|\ *n_terms* ]
-[ |-F|\ [**f**\ [**+s**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**] ]
+[ |-F|\ [**f**\ [**+s**\|\ **z**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**] ]
 [ |-I|\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k** ]
 [ |-N|\ *params* ]
 [ |-Q| ]
@@ -99,16 +99,18 @@ Optional Arguments
 
 **-E**\ *n_terms*
     Number of terms used in Parker expansion (limit is 10, otherwise
-    terms depending on n will blow out the program) [Default = 3]
+    terms depending on n will blow out the program) [Default = 3].
 
 .. _-F:
 
-**-F**\ [**f**\ [**+s**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**]
+**-F**\ [**f**\ [**+s**\|\ **z**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**]
     Specify desired geopotential field: compute geoid rather than gravity
 
        **f** = Free-air anomalies (mGal) [Default].  Append **+s** to add
        in the slab implied when removing the mean value from the topography.
-       This requires zero topography to mean no mass anomaly.
+       This requires zero topography to mean no mass anomaly. Alternatively,
+       to force the far-field to be exactly zero (i.e., the corner nodes of
+       the grid), select **+z** instead.
 
        **b** = Bouguer gravity anomalies (mGal).
 
@@ -146,7 +148,7 @@ Optional Arguments
     Writes out a grid with the flexural topography (with z positive up)
     whose average depth was set by **-Z**\ *zm* and model parameters by |-T|
     (and output by |-G|). That is the "gravimetric Moho". |-Q|
-    implicitly sets **-N+h**
+    implicitly sets **-N+h**.
 
 .. _-S:
 
@@ -167,7 +169,7 @@ Optional Arguments
     is > 1e10 it will be interpreted as the flexural rigidity (by default it is
     computed from *te* and Young modulus). Optionally, append *+m* to write a grid
     with the Moho's geopotential effect (see |-F|) from model selected by |-T|.
-    If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
+    If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**.
 
 .. _-W:
 
@@ -206,6 +208,13 @@ other grids geographical grids were you want to convert degrees into
 meters, select |SYN_OPT-f|. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using :doc:`grdproject </grdproject>`.
+
+Handling of Grids with NaNs
+---------------------------
+
+Since we cannot take FFTs of 2-D grids that contain NaNs, we perform simple substitutions.
+If any of the input grids contain NaNs they will be replaced with zeros. In contrast, if **-D**
+passes a grid with density contrasts then we replace any NaNs with the minimum density in the grid.
 
 Data Detrending
 ---------------

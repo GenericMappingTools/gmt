@@ -444,6 +444,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+o Offset indicator by <dx>[/<dy>] in direction implied by <justify> [%d%% of font size].", GMT_TEXT_OFFSET);
 	GMT_Usage (API, 3, "+P Set background (static) pen for indicator [Depends in indicator selected].");
 	GMT_Usage (API, 3, "+p Set foreground (moving) pen for indicator [Depends in indicator selected].");
+	GMT_Usage (API, 3, "+s Compute elapsed time as frame counter times appended <scale> [no scaling].");
 	GMT_Usage (API, 3, "+t Provide a C-format statement to be used with the item selected [none].");
 	GMT_Usage (API, 3, "+w Specify indicator size [5%% of max canvas dimension for circles, 60%% for axes].");
 	GMT_Usage (API, 1, "\n-Q[s]");
@@ -1780,7 +1781,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	if (Ctrl->T.precision)	/* Precision was prescribed */
 		precision = Ctrl->T.precision;
 	else	/* Compute width from largest frame number */
-		precision = irint (ceil (log10 ((double)(Ctrl->T.start_frame+n_frames+Ctrl->E.duration+n_fade_frames))+0.1));	/* Width needed to hold largest frame number, guaranteed to give at least 1 */
+		precision = irint (ceil (log10 ((double)(Ctrl->T.start_frame+n_frames+Ctrl->E.duration+n_fade_frames-1))+0.1));	/* Width needed to hold largest frame number, guaranteed to give at least 1 */
 
 	if (Ctrl->S[MOVIE_POSTFLIGHT].active) {	/* Prepare the postflight script */
 		if (Ctrl->S[MOVIE_POSTFLIGHT].PS)	/* Just got a PS file, nothing to do */
