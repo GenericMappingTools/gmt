@@ -36,6 +36,37 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>RVabdefghijnoqsw" GMT_OPT("HMmQ")
 
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
+	/* separator, short_option, long_option,
+	          short_directives,          long_directives,
+	          short_modifiers,           long_modifiers */
+	{ 0, 'A', "resample",
+	          "f,p,m,r,R",               "keeporig,pmfollow,mpfollow,equidistant,exactfit",
+	          "l",                       "rhumb" },
+	{ 0, 'C', "crossing",
+	          "",                        "",
+	          "a,v,d,f,l,r",             "alternate,wesn,deviant,fixed,left,right" },
+	{ 0, 'D', "linefile",                "", "", "", "" },
+	{ 0, 'E', "linesegs",
+	          "",                        "",
+	          "a,c,d,g,i,l,n,o,r",       "azimuth,connect,distance,degrees,incr,length,npoints,origin,radius" },
+	{ 0, 'F', "findcross",
+	          "",                        "",
+	          "b,n,r,z",                 "balance,negative,rms,zvalue" },
+	{ 0, 'G', "grid",
+	          "",                        "",
+	          "l",                       "list" },
+	{ 0, 'N', "noskip",                  "", "", "", "" },
+	{ 0, 'S', "singleprofile",
+	          "a,m,p,l,L,u,U",           "average,median,mode,lower,lowerpos,upper,upperneg",
+	          "a,d,r,s,c",               "values,deviations,residuals,save,envelope" },
+	{ 0, 'T', "nearestnode",
+	          "",                        "",
+	          "e,p",                     "report,replace" },
+	{ 0, 'Z', "zvalues",                 "", "", "", "" },
+	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+};
+
 #define MAX_GRIDS GMT_BUFSIZ	/* Change and recompile if we need to sample more than GMT_BUFSIZ grids */
 
 enum grdtrack_enum_stack {STACK_MEAN = 0,	/* Compute stack as mean value for same distance across all profiles */
@@ -749,7 +780,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

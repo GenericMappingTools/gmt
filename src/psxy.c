@@ -36,6 +36,34 @@
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpqtw" GMT_OPT("Mmc")
 
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
+	/* separator, short_option, long_option,
+	          short_directives,          long_directives,
+	          short_modifiers,           long_modifiers */
+	{ 0, 'A', "straightlines",
+	          "m,p,x,y,r,t",             "mpfollow,pmfollow,xyalong,yxalong,rtalong,tralong",
+	          "",                        "" },
+	{ 0, 'C', "cpt",                     "", "", "", "" },
+	{ 0, 'D', "offset",                  "", "", "", "" },
+	{ 0, 'E', "errorbars",
+	          "x,y,X,Y",                 "xbar,ybar,boxwhisker,stemleaf",
+	          "a,A,c,n,w,p",             "asymmetrical,lhbounds,symbolfill,notch,capwidth,pen" },
+	{ 0, 'F', "scheme",
+	          "c,n,p",                   "continuous,network,refpoint",
+	          "",                        "" },
+	{ 0, 'H', "scale",                   "", "", "", "" },
+	{ 0, 'I', "intensity",               "", "", "", "" },
+	{ 0, 'L', "polygons",
+		  "",                        "",
+	          "b,d,D,x,y,p",             "bounds,symdev,asymdev,xanchor,yanchor,pen" },
+	{ 0, 'N', "noclip",
+	          "c,r",                     "clipnorepeat,repeatnoclip",
+	          "",                        "" },
+	{ 0, 'T', "ignoreinfiles",           "", "", "", "" },
+	{ 0, 'Z', "zvalue",                  "", "", "", "" },
+	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+};
+
 /* Control structure for psxy */
 
 #define PSXY_E_OPT "-E[x|y|X|Y][+a|A][+c[l|f]][+n][+p<pen>][+w<width>]"
@@ -1086,7 +1114,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 
 	/* Initialize GMT_SYMBOL structure */
