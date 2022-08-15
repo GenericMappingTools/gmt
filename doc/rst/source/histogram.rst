@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt histogram** [ *table* ] |-J|\ **x**\|\ **X**\ *parameters*
+**gmt histogram** [ *table* ]
 |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
 [ |-A| ]
 [ |SYN_OPT-B| ]
@@ -22,6 +22,7 @@ Synopsis
 [ |-F| ]
 [ |-G|\ *fill* ]
 [ |-I|\ [**o**\|\ **O**] ]
+[ |-J|\ **x**\|\ **X**\ *parameters* ]
 [ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-L|\ **l**\|\ **h**\|\ **b** ]
 [ |-N|\ [*mode*][**+p**\ *pen*] ]
@@ -69,7 +70,7 @@ Required Arguments
 
 **-Jx**
     *xscale*\ [/*yscale*] (Linear scale(s) in distance unit/data unit), or
-    **-JX** with *width*\ [/*height*] dimensions.
+    **-JX** with *width*\ [/*height*] dimensions.  **Note**: Optional in modern mode.
 
 .. _-T:
 

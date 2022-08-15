@@ -927,9 +927,15 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pshistogram main code ----------------------------*/
 
-	if (!Ctrl->I.active && GMT->current.proj.projection != GMT_LINEAR) {
-		GMT_Report (API, GMT_MSG_ERROR, "Option -J: Only Cartesian scaling available in this module.\n");
-		Return (GMT_RUNTIME_ERROR);
+	if (!Ctrl->I.active) {	/* Need a linear projection either set explicitly (classic) or implicitly (modern only) */
+		if (GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->common.J.active) {	/* -J is required, exit at this point */
+			GMT_Report (API, GMT_MSG_ERROR, "Must specify Cartesian scales or dimensions of the domain via -Jx or -JX.\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (GMT->current.proj.projection != GMT_LINEAR) {	/* Must have given a nonlinear map projection by mistake */
+			GMT_Report (API, GMT_MSG_ERROR, "Option -J: Only Cartesian scaling available in this module.\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
@@ -1353,7 +1359,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			else
 				S.size_y = S.size_x / 1.5;	/* Width to height ratio is 3:2 */
 		}
-		gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+		gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item), NULL);
 	}
 	
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */

@@ -29,9 +29,9 @@
     Control extension and tapering of data:
     Use modifiers to control how the extension and tapering are to be performed:
 
-        **+e** extends the grid by imposing edge-point symmetry [Default],
+        **+e** extends the grid by imposing edge-point symmetry [Default].
 
-        **+m** extends the grid by imposing edge mirror symmetry
+        **+m** extends the grid by imposing edge mirror symmetry.
 
         **+n** turns off data extension.
 

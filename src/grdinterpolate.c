@@ -49,7 +49,7 @@ struct GRDINTERPOLATE_CTRL {
 		bool active;
 		char *information;
 	} D;
-	struct GRDINTERPOLATE_E {	/* -E<file>|<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x] */
+	struct GRDINTERPOLATE_E {	/* -E<file>|<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np>][+o<az>][+p][+r<radius>][+x] */
 		bool active;
 		unsigned int mode;
 		char *lines;
@@ -119,7 +119,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <cube> | <grd1> <grd2> <grd3> ... -G<outfile> [%s] "
-		"[-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]] "
+		"[-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np>][+o<az>][+p][+r<radius>][+x]] "
 		"[-Fl|a|c|n[+1|2]] [%s] [-S<x>/<y>|<table>[+h<header>]] [-T[<min>/<max>/]<inc>[+i|n]] [%s] "
 		"[-Z[<levels>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 			name,  GMT_GRDEDIT3D, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
@@ -137,7 +137,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"-G for embedding the level in the file name.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_cube_info_syntax (API->GMT, 'D');
-	GMT_Usage (API, 1, "\n-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]");
+	GMT_Usage (API, 1, "\n-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np>][+o<az>][+p][+r<radius>][+x]");
 	GMT_Usage (API, -2, "Set up a single cross-section based on <file> or on the given <line1>[,<line2>,...]. Give "
 		"start and stop coordinates for each line segment.  The format of each <line> is <start>/<stop>, where "
 		"<start> or <stop> are coordinate pairs, e.g., <lon1/lat1>/<lon2>/<lat2>. Append +i<inc> to set the "
@@ -314,16 +314,21 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 GMT_LOCAL bool grdinterpolate_equidistant_levels (struct GMT_CTRL *GMT, double *z, unsigned int nz) {
 	/* Return true if spacing between layers is constant */
 	unsigned int k;
-	double dz;
+	double dz_first, dz_next, noise;
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Report levels */
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Report z-levels */
 		for (k = 0; k < nz; k++)
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: %g\n", k, z[k]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: %lg\n", k, z[k]);
 	}
-	if (nz < 3) return true;	/* Special case of a single layer */
-	dz = z[1] - z[0];	/* Get first increment, then compare to the rest */
-	for (k = 2; k < nz; k++)
-		if (!doubleAlmostEqual (dz, z[k]-z[k-1])) return false;
+	if (nz < 3) return true;	/* Special case of just one increment between two layers is by definition equidistant */
+	dz_first = z[1] - z[0];	/* Get first increment, then use it as truth and compare to the other increments */
+	if (dz_first == 0.0) return false;	/* Safety valve, plus cannot be equidistant if increment is zero */
+	for (k = 2; k < nz; k++) {	/* We start at layer 3 and get dz back from 2, etc */
+		dz_next = z[k] - z[k-1];	/* Next level increment */
+		if (dz_next == 0.0) return false;	/* Safety valve, plus cannot be equidistant if increment is zero */
+		noise = fabs (remainder (dz_next, dz_first));	/* Get a positive remainder or zero */
+		if (noise > GMT_CONV12_LIMIT) return false;	/* Sorry buddy, you are off */
+	}
 	return true;
 }
 
@@ -779,6 +784,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (inc, G[0]->header->inc, 2U, double);
 		if ((C[GMT_IN] = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, dims, wesn, inc, G[0]->header->registration, GMT_NOTSET, NULL)) == NULL)
 			Return (GMT_MEMORY_ERROR);
+		if (G[0]->header->x_units[0]) strncpy (C[GMT_IN]->header->x_units, G[0]->header->x_units, GMT_GRID_UNIT_LEN80);
+		if (G[0]->header->y_units[0]) strncpy (C[GMT_IN]->header->y_units, G[0]->header->y_units, GMT_GRID_UNIT_LEN80);
 		for (k = 0; k < n_layers; k++, here += G[0]->header->size)
 			gmt_M_memcpy (&(C[GMT_IN]->data[here]), G[k]->data, G[0]->header->size, gmt_grdfloat);
 		if (GMT_Destroy_Group (API, &G, n_layers))

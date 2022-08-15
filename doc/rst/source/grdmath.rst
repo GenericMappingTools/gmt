@@ -14,6 +14,7 @@ Synopsis
 
 **gmt grdmath**
 [ |SYN_OPT-Area| ]
+[ |-C|\ [*cpt*] ]
 [ |-D|\ *resolution*\ [**+f**] ]
 [ |SYN_OPT-I| ]
 [ |-M| ] [ |-N| ]
@@ -72,6 +73,12 @@ Optional Arguments
 
 .. |Add_-A| replace:: (|-A| is only relevant to the **LDISTG** operator)
 .. include:: explain_-A.rst_
+
+.. _-C:
+
+**-C**\ [*cpt*]
+    Retain the grid's default CPT (if it has one), or alternatively replace it with a
+    new default *cpt* [Default removes any default CPT from the output grid].
 
 .. _-D:
 
@@ -792,7 +799,7 @@ skipped. The format for the macros is **name** = **arg1 arg2 ... arg2**
 operator appears on the command line we simply replace it with the
 listed argument list. No macro may call another macro. As an example,
 the following macro expects three arguments (radius x0 y0) and sets the
-modes that are inside the given circle to 1 and those outside to 0:
+nodes that are inside the given circle to 1 and those outside to 0:
 
 **INCIRCLE** = **CDIST EXCH DIV** 1 **LE** : usage: r x y INCIRCLE to return 1
 inside circle

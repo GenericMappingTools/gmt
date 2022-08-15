@@ -48,6 +48,49 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>JRVbdefghijopqs" GMT_OPT("HMm")
 
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
+	/* separator, short_option, long_option,
+	          short_directives,          long_directives,
+	          short_modifiers,           long_modifiers */
+	{ 0, 'A', "azimuth",
+	          "b,B,f,F,o,O",             "back,backgeodetic,forward,forwardgeodetic,orient,orientgeodetic",
+	          "v",                       "variable" },
+	{ 0, 'C', "center",
+	          "",                        "",
+	          "m",                       "merclat" },
+	{ 0, 'D', "lengthunit",
+	          "c,i,p",                   "cm,inch,point",
+	          "",                        "" },
+	{ 0, 'E', "ecef",                    "", "", "", "" },
+	{ 0, 'F', "projunit",
+	          "d,m,s,e,f,k,M,n,u,c,i,p", "deg,min,sec,meter,foot,km,smile,nmile,ussft,cm,inch,point",
+	          "",                        "" },
+	{ 0, 'G', "stride",
+	          "",                        "",
+	          "a,i,u,v",                 "accumulated,incremental,unit,variable" },
+	{ 0, 'I', "inverse",                 "", "", "", "" },
+	{ 0, 'L', "proximity",
+	          "",                        "",
+	          "p,u",                     "segmentpoint,unit" },
+	{ 0, 'N', "latconvert",
+	          "a,c,g,m",                 "authalic,conformal,geocentric,meridional",
+	          "",                        "" },
+	{ 0, 'Q', "listprojparams",
+	          "d,e",                     "datums,ellipsoids",
+	          "",                        "" },
+	{ 0, 'S', "suppress",                "", "", "", "" },
+	{ 0, 'Q', "transformdatum",
+	          "h",                       "height",
+	          "",                        "" },
+	{ 0, 'W', "mapinfo",
+	          "e,E,g,h,j,n,o,O,r,R,w,x", "encompass,encompasstext,plotcoords,height,justify,normalize,cornercoords,regiontext,width,xy",
+	          "n",                       "npoints" },
+	{ 0, 'Z', "traveltime",
+	          "",                        "",
+	          "a,i,f,t",                 "accumulated,incremental,isoformat,epochtime" },
+	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+};
+
 enum GMT_mp_Gcodes {	/* Support for -G parsing */
 	GMT_MP_VAR_POINT   = 1,	/* Compute distances from points given along a track */
 	GMT_MP_FIXED_POINT = 2,	/* Compute distances from data to fixed point given by -Gx0/y0[...] */
@@ -209,7 +252,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> %s %s [-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]] [-C[<dx></dy>][+m]] [-D%s] "
 		"[-E[<datum>]] [-F[<%s|%s>]] [-G[<lon0>/<lat0>][+a][+i][+u<unit>][+v]] [-I] [-L<table>[+p][+u<unit>]] "
-		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[e|E|g|h|j|n|o|O|r|R|w|x]][+n[<nx>[/<ny]]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
+		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[e|E|g|h|j|n|o|O|r|R|w|x]][+n[<nx>[/<ny>]]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_V_OPT,
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_p_OPT,
@@ -292,7 +335,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If <from> equals - we use WGS-84.  If /<to> is not given we assume WGS-84. "
 		"Note: -T can be used as pre- or post- (-I) processing for -J -R.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W[e|E|g|h|j|n|o|O|r|R|w|x][+n[<nx>[/<ny]]]");
+	GMT_Usage (API, 1, "\n-W[e|E|g|h|j|n|o|O|r|R|w|x][+n[<nx>[/<ny>]]]");
 	GMT_Usage (API, -2, "Print map width and/or height or a reference point. No input files are read. Select optional directive:");
 	GMT_Usage (API, 3, "e: Print oblique <llx>/<lly>/<urx>/<ury>+r coordinates for rectangular region encompassing the -R -J area.");
 	GMT_Usage (API, 3, "E: Same as e but prints -Rw/s/e/n+r string as trailing text instead.");
@@ -305,7 +348,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "R: Same as r but prints -Rw/e/s/n string as trailing text instead.");
 	GMT_Usage (API, 3, "w: Print map width (See -D for plot units).");
 	GMT_Usage (API, 3, "x: Print map coordinates of reference point given in plot coordinates <px/py>.");
-	GMT_Usage (API, -2, "Note: For -We|r you can use +n[<nx>[/<ny]] to output the enclosing polygon instead "
+	GMT_Usage (API, -2, "Note: For -We|r you can use +n[<nx>[/<ny>]] to output the enclosing polygon instead "
 		"by giving the number of nodes along the two sides [100]. Default (-W with no args) prints map width and map height.");
 	GMT_Usage (API, 1, "\n-Z[<speed>][+a][+i][+f][+t<epoch>]");
 	GMT_Usage (API, -2, "Compute travel times along track using specified speed. "
@@ -899,7 +942,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

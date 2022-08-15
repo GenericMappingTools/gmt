@@ -22,8 +22,8 @@ Description
 **docs** tells GMT to display the HTML version of a module's documentation using the default browser.
 Besides the modules names, some special targets
 *gmt*, *api*, *colors*, *cookbook*, *data*, *gallery*, *home*, *settings*, and *tutorial*
-are also accepted. You can also give *forum* (takes you to the GMT Discourse Forum) and
-*website* (or just *site*; takes you to the GMT main website).
+are also accepted. You can also give *forum* (takes you to the `GMT Discourse Forum <https://forum.generic-mapping-tools.org/>`_) and
+*website* (or just *site*; takes you to the `GMT main website <https://www.generic-mapping-tools.org/>`_).
 
 Required Arguments
 ------------------

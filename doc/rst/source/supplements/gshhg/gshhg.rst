@@ -238,7 +238,7 @@ References
 Bohlander, J. and T. Scambos. 2007, Antarctic coastlines and grounding line
 derived from MODIS Mosaic of Antarctica (MOA). Boulder, Colorado USA:
 National Snow and Ice Data Center. Digital media. Accessed 24 April 2008.
-Via Atlas of the Cryosphere: http://nsidc.org/data/atlas/.
+Via Atlas of the Cryosphere: https://nsidc.org/MMS/atlas/cryosphere_atlas_north.html.
 
 Douglas, D. H., and T. K. Peucker, 1973, Algorithms for the reduction of
 the number of points required to represent a digitized line of its

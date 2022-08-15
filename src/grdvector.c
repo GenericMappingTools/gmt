@@ -758,7 +758,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 			scaled_vec_length /= scale;	/* Now in inches suitable for reference vector in legend */
 		}
 		GMT->common.l.item.size = scaled_vec_length;
-		gmt_add_legend_item (API, &Ctrl->Q.S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+		gmt_add_legend_item (API, &Ctrl->Q.S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item), NULL);
 		Ctrl->Q.S.symbol = was;	/* Restore to original type */
 	}
 

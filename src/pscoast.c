@@ -60,6 +60,43 @@
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdptxy" GMT_OPT("Zc")
 
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
+	/* separator, short_option, long_option,
+	          short_directives,    long_directives,
+	          short_modifiers,     long_modifiers */
+	{ 0, 'A', "area",
+	          "",                  "",
+	          "a,l,r,p",           "antarctica,lakes,riverlakes,percentexcl" },
+	{ 0, 'C', "lakes",
+	          "",                  "",
+	          "l,r",               "lakes,riverlakes" },
+	{ 0, 'D', "resolution",
+	          "f,h,i,l,c,a",       "full,high,intermediate,low,crude,auto",
+	          "f",                 "lowfallback" },
+  	/* -E not usable because of = usage within parameters? */
+	{ 0, 'F', "frmpen",
+	          "l,t",               "scale,rose",
+	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,radius,shade" },
+	{ 0, 'G', "land",              "", "", "", "" },
+	{ 0, 'I', "rivers",            "", "", "", "" },
+	{ 0, 'J', "zaxis",
+	          "z,Z",               "scale,width",
+	          "",                  "" },
+	{ 0, 'L', "mapscale",
+	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
+	          "w,a,c,f,j,l,o,u,v", "length,align,loc,fancy,janchor,label,anchoroffset,units,vertical" },
+	{ 0, 'M', "list",              "", "", "", "" },
+	{ 0, 'N', "boundaries",        "", "", "", "" },
+	{ 0, 'Q', "markclipend",       "", "", "", "" },
+	{ 0, 'S', "water",             "", "", "", "" },
+  	/* -Td and -Tm not doable because they have inconsistent short modifiers? */
+	{ 0, 'W', "shorelines",        "", "", "", "" },
+  	/* -d (i) Synopsis usage, (ii) Optional Arguments usage, and
+  	   (iii) general -d usage all inconsistent; also, why does
+  	   -d in gmt_common_longopts.h not translate +c short modifier? */
+	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+};
+
 #define LAKE	0
 #define RIVER	1
 
@@ -775,7 +812,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) {

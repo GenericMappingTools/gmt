@@ -21,8 +21,7 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  *
- * Brief synopsis: Reads a grid file and writes a portion within it
- * to a new file.
+ * Brief synopsis: Reads a grid file and writes a portion within it to a new file.
  *
  * Note on KEYS: FD(= means -F takes an optional input Dataset as argument which may be followed by optional modifiers.
  */
@@ -73,7 +72,7 @@ struct GRDCUT_CTRL {
 	} S;
 	struct GRDCUT_Z {	/* -Z[min/max][+n|N|r] */
 		bool active;
-		unsigned int mode;	/* 0-2, see below */
+		unsigned int mode;	/* 0-2, see below for values */
 		double min, max;
 	} Z;
 };

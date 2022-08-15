@@ -15,6 +15,8 @@ Synopsis
 **gmt batch** *mainscript*
 |-N|\ *prefix*
 |-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
+[ |-D| ]
+[ |-F|\ *template* ]
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
@@ -81,6 +83,30 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-D:
+
+**-D**
+    Select this option if (1) the main script does not produce products named using the prefix **BATCH_NAME**,
+    so we should not attempt to move such files to the top directory, or (2) the main script will handle the
+    placement of any such product files directly.
+
+.. _-F:
+
+**-F**\ *template*
+    Rather than build product file names from the **BATCH_NAME** prefix based on a single running number,
+    use this `C-format <https://en.wikipedia.org/wiki/Printf_format_string>`_ *template* instead and create
+    unique names by formatting the data columns given by *timefile*.  Some limitations apply: (1) If *timefile*
+    has trailing text then it may be used with a single %s code as the *last* format statement in *template*.
+    If no %s is found then any trailing text present will not be used.  (2) The previous *N* format statements
+    will be used to convert the first *N* data columns in *timefile*; there is no option to skip a column or
+    to specify a specific order of columns in the template (but see |SYN_OPT-i| to rearrange the input order).
+    (3) Up to five numerical statements may be used (provided the *timefile* has enough columns),
+    including none.  E.g., **-F**\ my_data_%05.2lf_%07.0lf_%s will use the first two numerical columns in *timefile*
+    as well as the trailing text to create a unique product prefix. **Note**: Since a GMT data set internally
+    is using double precision variables you must use floating point format statements even if some or all
+    of your data columns are integers. Finally, if your choice of format statement and trailing text yield
+    tabs or spaces in the final prefix we will automatically replace those with underscores.
 
 .. _-I:
 
@@ -173,7 +199,8 @@ column in *timefile*.  If *timefile* has trailing text then that text can be acc
 **BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to |-T| then the trailing
 text is also split into individual word parameters **BATCH_WORD0**\ , **BATCH_WORD1**\ , etc. **Note**: Any
 product(s) made by the processing scripts should be named using **BATCH_NAME** as their name prefix as these
-will be automatically moved up to the starting directory upon completion.
+will be automatically moved up to the starting directory upon completion (unless |-D| is in effect). However,
+note that |-F| can be used to select more diverse product names based on the input parameters given via |-T|.
 
 Data Files
 ----------

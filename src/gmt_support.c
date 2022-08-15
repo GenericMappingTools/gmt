@@ -8610,9 +8610,15 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "All data points are NaNs so cannot do meaningful automatic CPT generation\n");
 			zmin = 0.0;	zmax = 1.0;	/* Does not matter since only NaN color will be used */
 		}
-		if (zmax <= zmin) {	/* Safety valve 2 */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Passing zmax <= zmin prevents automatic CPT generation!\n");
-			return (NULL);
+		if (zmax <= zmin) {	/* Safety valve 2 [min == max] */
+			/* Have a constant grid or a mask grid with NaNs and a constant [1] - adjust min or max so that we can do an automatic CPT */
+			if (zmin > 0.0)	/* Both are positive so just increase max */
+				zmax = 2.0 * zmin;
+			else if (zmin < 0.0)	/* Both are negative so just decrease min */
+				zmin = 2.0 * zmax;
+			else	/* All zeros, must set max to 1 */
+				zmax = 1.0;
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Found zmax == zmin, replaced with %lg and %lg to allow automatic CPT generation!\n", zmin, zmax);
 		}
 
 		if (file == NULL && (current_cpt = gmt_get_current_item (GMT, "cpt", false))) {	/* There is a current CPT in modern mode */
@@ -14157,7 +14163,7 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 					case 'o': case 's':	/* +o<offset>|a,  +s<scale>|a */
 						allow_a = true;	/* Argument "a" for auto is OK for these modifiers */
 						/* Fall through on purpose */
-					case 'h': case 'i': case 'n': 	/* +h[<hinge>], +i<inc>, +n<nodata> */
+					case 'd': case 'h': case 'i': case 'n': 	/* +d<div>, +h[<hinge>], +i<inc>, +n<nodata> */
 						k++;	/* Move to start of argument, next modifier, or NULL */
 						while (modifiers[k] && modifiers[k] != '+' && strchr ("-+.0123456789eE", modifiers[k])) k++;	/* Skip a numerical argument */
 						if (allow_a && modifiers[k] == 'a') k++;	/* Ok with a for this modifier */
@@ -14179,7 +14185,7 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 				error = true;
 		}
 		if (error) {
-			GMT_Report (API, GMT_MSG_WARNING, "Your filename %s have what appears as valid GMT modifiers (from list +%s) but are embedded rather than appended to the filename - modifiers ignored\n", filename, mods);
+			GMT_Report (API, GMT_MSG_WARNING, "Your filename %s has what appears as valid GMT modifiers (from list +%s) but they are embedded rather than appended to the filename - modifiers ignored\n", filename, mods);
 			modifiers = NULL;
 		}
 	}
@@ -18567,7 +18573,7 @@ int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int 
 			if (mode == GMT_BASH_MODE) {	/* Some bash-specific checks */
 				if (strchr (line, '`'))	/* sub-shell call using back-ticks */
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a deprecated sub-shell call `...`, please use $(...) instead: %s", start);
-				else if (strchr (line, ')') && (p = strchr (line, '('))) {	/* sub-shell call without leading $ */
+				else if (strchr (line, ')') && (p = strchr (line, '(')) && strstr (line, "((") == NULL) {	/* sub-shell call without leading $ and it is not a modern (( )) thing */
 					prev = p - 1;	/* Get previous character */
 					if (strchr (line, '\"') == NULL && (prev < start || prev[0] != '$'))	/* No double-quotes yet we have ( ...) and no leading $.Give this message: */
 						GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Main script appears to have a sub-shell call $(...) without the leading $: %s", start);

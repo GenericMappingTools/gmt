@@ -307,7 +307,7 @@ major axis of 1500 km with azimuth of 30 degree and a minor axis of 600 km, try
 
    ::
 
-    gmt project -C-30/70 -G10 -Z1500/600/30+e > ellipse.xyp
+    gmt project -C-30/70 -G10 -Z1500/600/30+e -Q > ellipse.xyp
 
 To project the shiptrack gravity, magnetics, and bathymetry in
 c2610.xygmb along a great circle through an origin at 30S, 30W, the
@@ -368,5 +368,4 @@ See Also
 :doc:`gmtvector`,
 :doc:`grdtrack`,
 :doc:`mapproject`,
-:doc:`grdproject`,
-:doc:`grdtrack`
+:doc:`grdproject`

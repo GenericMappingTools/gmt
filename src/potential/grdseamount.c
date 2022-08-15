@@ -246,7 +246,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>][+s<scale>]] [-C[c|d|g|o|p]] "
 		"[-D%s] [-E] [-F[<flattening>]] [-H<H>/<rho_l>/<rho_h>[+d<densify>][+p<power>]] "
 		"[-K<densmodel>] [-L[<hn>]] [-M[<list>]] [-N<norm>] [-Q<bmode>[/<fmode>][+d]] "
-		"[-S[+[a<az1/az2>]][+b[<beta>]][+d[<hc>]][+h<h1>/<h2>][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] "
+		"[-S[+a<az1/az2>]][+b[<beta>]][+d[<hc>]][+h<h1>/<h2>][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]] "
 		"[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [%s] [-W%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_OUTGRID, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
@@ -304,7 +304,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "<bmode>: Build either (c)umulative [Default] or (i)ncremental volume through time.");
 	GMT_Usage (API, 3, "<fmode>: Assume a (g)aussian [Default] or (c)onstant volume flux distribution.");
 	GMT_Usage (API, -2, "Append +d to build grids with increments as uniform discs [Default gives exact shapes].");
-	GMT_Usage (API, 1, "\n-S[+[a<az1/az2>]][+b[<beta>]][+d[<hc>]][+h<h1>/<h2>][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]]");
+	GMT_Usage (API, 1, "\n-S[+a<az1/az2>]][+b[<beta>]][+d[<hc>]][+h<h1>/<h2>][+p[<pow>]][+t[<t0/t1>]][+u[<u0>]][+v[<phi>]]");
 	GMT_Usage (API, -2, "Control how a sectoral landslide should look like.  Select optional modifiers; "
 		"If no argument is given to a modifier it means we will read that parameter from the input file (order is alphabetical):");
 	GMT_Usage (API, 3, "+a Set the local azimuthal sector range [0/360].");
@@ -359,12 +359,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 
 			case 'A':	/* Mask option */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				Ctrl->A.mask = true;
 				if ((c = strstr (opt->arg, "+s"))) {	/* Got a radial boost factor */
 					Ctrl->A.r_scale = atof (&c[2]);
 					c[0] = '\0';	/* Hide modifier */
 				}
 				if (opt->arg[0]) {	/* Want to build a mask grid instead of relief */
-					Ctrl->A.mask = true;
 					if ((n = sscanf (opt->arg, "%[^/]/%s", T1, T2)) == 2) {
 						Ctrl->A.value[GMT_OUT] = (T1[0] == 'N') ? GMT->session.f_NaN : (gmt_grdfloat)atof (T1);
 						Ctrl->A.value[GMT_IN]  = (T2[0] == 'N') ? GMT->session.f_NaN : (gmt_grdfloat)atof (T2);

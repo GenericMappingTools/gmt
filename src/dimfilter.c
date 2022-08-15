@@ -264,7 +264,7 @@ static char *dimtemplate =
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s -D0-4 -F<type><width>[+l|u] -G%s %s "
+	GMT_Usage (API, 0, "usage: %s -D<flag> -F<type><width>[+l|u] -G%s %s "
 		"-N<type><n_sectors>[+l|u] [%s] [-L] [-Q] [%s] [-T] [%s] [%s] [%s] [%s]\n", name,
 		GMT_INGRID, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
@@ -272,8 +272,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	gmt_ingrid_syntax (API, 0, "Name of grid to be filtered");
-	GMT_Usage (API, 1, "\n-D0-4");
-	GMT_Usage (API, -2, "Distance flag determines how grid (x,y) maps into distance units of filter width as follows:");
+	GMT_Usage (API, 1, "\n-D<flag>");
+	GMT_Usage (API, -2, "Distance <flag> determines how grid (x,y) maps into distance units of filter width as follows:");
 	GMT_Usage (API, 3, "0: grid x,y same units as <filter_width>, Cartesian distances.");
 	GMT_Usage (API, 3, "1: grid x,y in degrees, <filter_width> in km, Cartesian distances.");
 	GMT_Usage (API, 3, "2: grid x,y in degrees, <filter_width> in km, x scaled by cos(middle y), Cartesian distances.");

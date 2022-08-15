@@ -282,12 +282,6 @@ inch/x-unit, tickmarks every 5 units::
 
     gmt grdimage image.nc -Jx10i -Ccolors.cpt -Iintens.nc -B5 -pdf image
 
-To create an false color plot from the three grid files
-red.nc, green.nc, and blue.nc, with linear scaling at 10 inch/x-unit,
-tickmarks every 5 units::
-
-    gmt grdimage red.nc green.nc blue.nc -Jx10i -B5 -pdf rgbimage
-
 To create a sinusoidal projection of a remotely located Jessica Rabbit::
 
     gmt grdimage -JI15c -Rd http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -pdf jess
