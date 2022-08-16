@@ -56,7 +56,7 @@ struct GRDINTERPOLATE_CTRL {
 		double step;
 		char unit;
 	} E;
-	struct GRDINTERPOLATE_F {	/* -Fl|a|c[1|2] */
+	struct GRDINTERPOLATE_F {	/* -Fl|a|c[+d1|2] */
 		bool active;
 		unsigned int mode;
 		unsigned int type;
@@ -120,7 +120,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <cube> | <grd1> <grd2> <grd3> ... -G<outfile> [%s] "
 		"[-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np>][+o<az>][+p][+r<radius>][+x]] "
-		"[-Fl|a|c|n[+1|2]] [%s] [-S<x>/<y>|<table>[+h<header>]] [-T[<min>/<max>/]<inc>[+i|n]] [%s] "
+		"[-Fl|a|c|n[+d1|2]] [%s] [-S<x>/<y>|<table>[+h<header>]] [-T[<min>/<max>/]<inc>[+i|n]] [%s] "
 		"[-Z[<levels>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 			name,  GMT_GRDEDIT3D, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
 			GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -152,14 +152,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -3, "+x Follow a loxodrome (rhumbline) [great circle].");
 	GMT_Usage (API, -2, "Note:  A unit is optional.  Only ONE unit type from %s can be used throughout this option, so "
 		"mixing of units is not allowed [Default unit is km, if grid is geographic].");
-	GMT_Usage (API, 1, "\n-Fl|a|c|n][+1|2]");
+	GMT_Usage (API, 1, "\n-Fl|a|c|n[+d1|2]");
 	GMT_Usage (API, -2, "Set the grid interpolation mode.  Choose from:");
 	GMT_Usage (API, -3, "l: Linear interpolation.");
 	GMT_Usage (API, -3, "a: Akima spline interpolation.");
 	GMT_Usage (API, -3, "c: Cubic spline interpolation.");
 	GMT_Usage (API, -3, "n: No interpolation (nearest point).");
-	GMT_Usage (API, -2, "Optionally, append +1 for 1st derivative or +2 for 2nd derivative. [Default is -F%c].",
-		type[API->GMT->current.setting.interpolant]);
+	GMT_Usage (API, -2, "Optionally, request a spline derivative via a modifier:");
+	GMT_Usage (API, 3, "+d Append 1 for 1st derivative or 2 for 2nd derivative.");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S<x>/<y>|<table>[+h<header>]");
 	GMT_Usage (API, -2, "Give a fixed point for across-stack sampling [Default] or interpolation [with -T]. For "
@@ -233,7 +233,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 						n_errors++;
 						break;
 				}
-				if (opt->arg[1] == '+') Ctrl->F.type = (opt->arg[2] - '0');	/* Want first or second derivative */
+				if (strstr (&opt->arg[1], "+d1")) Ctrl->F.type = 1;	/* Want first derivative */
+				else if (strstr (&opt->arg[1], "+d2")) Ctrl->F.type = 2;	/* Want second derivative */
+				else if (strstr (&opt->arg[1], "+1")) Ctrl->F.type = 1;	/* Want first derivative (backwards compatibility) */
+				else if (strstr (&opt->arg[1], "+2")) Ctrl->F.type = 2;	/* Want second derivative (backwards compatibility) */
 				strncpy (Ctrl->F.spline, opt->arg, GMT_LEN8-1);	/* Keep track of what was given since it may need to be passed verbatim to other modules */
 				break;
 			case 'G':	/* Output file or name template */
