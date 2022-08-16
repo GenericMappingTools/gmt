@@ -143,7 +143,7 @@ Optional Arguments
     For details on array creation, see `Generate 1D Array`_.  **Note**: If |-Z| is set
     and no output times are set with |-T| we simply rewrite the grid-produced cube as
     a 3-D data cube file and exit. Also, for |-E| and |-S| you may also just give
-    a range via -T**\ *min/max* to limit the layers considered, with no interpolation
+    a range via |-T|\ *min/max* to limit the layers considered, with no interpolation
     between the selected layers.  If |-T| is not given and neither |-E| nor |-S| are
     set, then we simply extract all layers within the bounds set by |-R|.
 
