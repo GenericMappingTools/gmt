@@ -33,6 +33,41 @@
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS	"-:>BJKOPRUVXYabdefhilpqw"
 
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
+	/* separator, short_option, long_option,
+	          short_directives,  long_directives,
+	          short_modifiers,   long_modifiers */
+	{ 0, 'T', "time",            "", "", "", "" },
+	{ 0, 'A', "polylines",
+	          "r,s",             "trajectories,segments",
+	          "v",               "value" },
+	{ 0, 'C', "cpt",             "", "", "", "" },
+	{ 0, 'D', "offset",
+	          "j,J",             "justify,shortdiag",
+	          "v",               "line" },
+	{ 0, 'E', "knots",
+	          "s,t",             "symbol,text",
+	          "o,O,l,r,p,d,f",   "offset,startoffset,text,rise,plateau,decay,fade" },
+	{ 0, 'F', "labels",
+	          "",                "",
+	          "a,f,j,r,z",       "angle,font,justify,record,zvalue" },
+	{ 0, 'H', "boxes",
+	          "",                "",
+	          "c,g,p,r,s",       "clearance,fill,pen,rounded,shade" },
+	{ 0, 'L', "length",          "", "", "", "" },
+	{ 0, 'M', "symbols",
+	          "i,s,t,v",         "intensity,size,transparency,value",
+	          "c",               "coda" },
+	{ 0, 'N', "noclip",
+	          "c,r",             "clipnorepeat,repeatnoclip",
+	          "",                "" },
+	{ 0, 'Q', "save",            "", "", "", "" },
+	{ 0, 'S', "eventsymbol",     "", "", "", "" },
+	{ 0, 'W', "pen",             "", "", "", "" },
+	{ 0, 'Z', "symbolcommand",   "", "", "", "" },
+	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+};
+
 enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_SYMBOL = 0,
 	PSEVENTS_TEXT = 1,
@@ -149,6 +184,9 @@ struct PSEVENTS_CTRL {
 
 /* The names of the three external modules.  We skip first 2 letters if in modern mode */
 static char *coupe = "pscoupe", *meca = "psmeca", *velo = "psvelo";
+
+/* Long-option (--format) used in -Z argument string instead of -S? */
+static int ZSlongopt = 0;
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSEVENTS_CTRL *C;
@@ -542,7 +580,10 @@ maybe_set_two:
 
 			case 'Z':	/* Select advanced seismologic/geodetic symbols */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				if (opt->arg[0] && strstr (opt->arg, "-S")) {	/* Got the required -S option as part of the command */
+				ZSlongopt = 0;
+
+				/* Check for both short- and long-option flags within the -Z argument string */
+				if (opt->arg[0] && (strstr (opt->arg, "-S") || strstr (opt->arg, "--format="))) {	/* Got the required -S option as part of the command */
 					if ((c = strchr (opt->arg, ' '))) {	/* First space in the command ends the module name */
 						char *q;
 						c[0] = '\0';	/* Temporarily hide the rest of the command so we can isolate the module name */
@@ -550,11 +591,29 @@ maybe_set_two:
 						c[0] = ' ';	/* Restore space */
 						while (c[0] == ' ' || c[0] == '\t') c++;	/* Move to first word after the module (user may have more than one space...) */
 						strncpy (txt_a, c, GMT_LEN256);	/* Copy the remaining text into a temporary buffer */
-						q = strstr (txt_a, "-S") + 3;	/* Determine the start position of the required symbol size in the command */
-						if (!(isdigit (q[0]) || (q[0] == '.' && isdigit (q[1]))))	/* Got no size, must read from data file */
+
+						/* Determine the start position of the
+						   required symbol size in the command */
+						if ((q = strstr (txt_a, "-S")) != NULL) 
+							q += 3;
+						else if ((q = strstr (txt_a, "--format=")) != NULL) {
+							ZSlongopt = 1;
+							if ((q = strstr (q, ":=")) != NULL)
+								q += 2;
+						}
+						if (( q == NULL) || !(isdigit (q[0]) || (q[0] == '.' && isdigit (q[1]))))	/* Got no size, must read from data file */
 							Ctrl->S.mode = 1;
-						if (strstr (txt_a, "-C") || strstr (txt_a, "-G") || strstr (txt_a, "-H") || strstr (txt_a, "-I") || strstr (txt_a, "-J") || strstr (txt_a, "-N") || strstr (txt_a, "-R") \
-						  || strstr (txt_a, "-W") || strstr (txt_a, "-t")) {	/* Sanity check */
+
+						/* Check for inappropriate options */
+						if (strstr (txt_a, "-C") || strstr (txt_a, "--cpt") ||
+						  strstr (txt_a, "-G") ||
+						  strstr (txt_a, "-H") || strstr (txt_a, "--scale") ||
+						  strstr (txt_a, "-I") || strstr (txt_a, "--intensity") ||
+						  strstr (txt_a, "-J") || strstr (txt_a, "--projection") ||
+						  strstr (txt_a, "-N") || strstr (txt_a, "--noskip") ||
+						  strstr (txt_a, "-R") || strstr (txt_a, "--region") ||
+						  strstr (txt_a, "-W") || strstr (txt_a, "--pen") ||
+						  strstr (txt_a, "-t") || strstr (txt_a, "--transparency")) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Cannot include options -C, -G, -H, -I, -J, -N, -R, -W, or -t in the %s command\n", Ctrl->Z.module);
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: The -C, -G, -J, -N, -R, -W options may be given to %s instead, while -H, -I, -t are not allowed\n", &events[s]);
 							n_errors++;							
@@ -648,30 +707,74 @@ GMT_LOCAL void psevents_set_XY (struct GMT_CTRL *GMT, unsigned int x_type, unsig
 GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *module, char *cmd, unsigned int mode) {
 	/* Return how many data columns are needed for the selected seismo/geodetic symbol */
 	unsigned int n = 0;
-	char *S = strstr (cmd, "-S");	/* Pointer to start of symbol option */
+	char *S, *F;
+
+	/* Locate start of symbol option, then advance to format designation */
+	if (ZSlongopt) {
+		S = strstr (cmd, "--format=");
+		S += strlen ("--format=");
+	}
+	else {
+		S = strstr (cmd, "-S");
+		S += 2;
+	}
+
 	gmt_M_unused (GMT);
-	S += 2;	/* Now at format designation */
 
 	if (strstr (module, &coupe[2])) {	/* Using coupe/pscoupe */
-		switch (S[0]) {
-			case 'a': n = 7; break;
-			case 'c': n = 11; break;
-			case 'm': case 'd': case 'z': n = 10; break;
-			case 'p': n = 8; break;
-			case 'x': n = 13; break;
-			default: n = 0; break;
+		if (ZSlongopt) {
+			if (!strncmp (S, "akirichards", strlen ("akirichards"))) n = 7;
+			else if (!strncmp (S, "cmt", strlen ("cmt"))) n = 11;
+			else if (!strncmp (S, "smtfull", strlen ("smtfull"))) n = 10;
+			else if (!strncmp (S, "smtdouble", strlen ("smtdouble"))) n = 10;
+			else if (!strncmp (S, "smtdev", strlen ("smtdev"))) n = 10;
+			else if (!strncmp (S, "partial", strlen ("partial"))) n = 8;
+			else if (!strncmp (S, "axisfull", strlen ("axisfull"))) n = 13;
+			else if (!strncmp (S, "axisdouble", strlen ("axisdouble"))) n = 13;
+			else if (!strncmp (S, "axisdev", strlen ("axisdev"))) n = 13;
+			else n = 0;
+		}
+		else {
+			switch (S[0]) {
+				case 'a': n = 7; break;
+				case 'c': n = 11; break;
+				case 'm': case 'd': case 'z': n = 10; break;
+				case 'p': n = 8; break;
+				case 'x': case 'y': case 't': n = 13; break;
+				default: n = 0; break;
+			}
 		}
 	}
 	else if (strstr (module, &meca[2])) {	/* Using meca/psmeca */
-		switch (S[0]) {
-			case 'a': n = 7; break;
-			case 'c': n = 11; break;
-			case 'm': case 'd': case 'z': n = 10; break;
-			case 'p': n = 8; break;
-			case 'x': case 'y': case 't': n = 13; break;
-			default: n = 0; break;
+		if (ZSlongopt) {
+			if (!strncmp (S, "akirichards", strlen ("akirichards"))) n = 7;
+			else if (!strncmp (S, "cmt", strlen ("cmt"))) n = 11;
+			else if (!strncmp (S, "smtfull", strlen ("smtfull"))) n = 10;
+			else if (!strncmp (S, "smtdouble", strlen ("smtdouble"))) n = 10;
+			else if (!strncmp (S, "smtdev", strlen ("smtdev"))) n = 10;
+			else if (!strncmp (S, "partial", strlen ("partial"))) n = 8;
+			else if (!strncmp (S, "axisfull", strlen ("axisfull"))) n = 13;
+			else if (!strncmp (S, "axisdouble", strlen ("axisdouble"))) n = 13;
+			else if (!strncmp (S, "axisdev", strlen ("axisdev"))) n = 13;
+			else n = 0;
 		}
-		if (strstr (cmd, "-Fo")) n--;	/* No depth column in this deprecated format */
+		else {
+			switch (S[0]) {
+				case 'a': n = 7; break;
+				case 'c': n = 11; break;
+				case 'm': case 'd': case 'z': n = 10; break;
+				case 'p': n = 8; break;
+				case 'x': case 'y': case 't': n = 13; break;
+				default: n = 0; break;
+			}
+		}
+
+		/* No depth column in this deprecated format */
+		if ((F = strstr (cmd, "--mode=")) != NULL) {
+			F += strlen ("--mode=");
+			if (!strncmp (F, "nodepth", strlen ("nodepth"))) n--;
+		}
+		else if (strstr (cmd, "-Fo")) n--;
 	}
 	else if (strstr (module, &velo[2])) {	/* Using velo/psvelo */
 		switch (S[0]) {
@@ -802,7 +905,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
