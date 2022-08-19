@@ -1827,7 +1827,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	if (Ctrl->T.precision)	/* Precision was prescribed */
 		precision = Ctrl->T.precision;
 	else	/* Compute width from largest frame number */
-		precision = irint (ceil (log10 ((double)(Ctrl->T.start_frame+n_frames+Ctrl->E.duration+n_fade_frames))+0.1));	/* Width needed to hold largest frame number, guaranteed to give at least 1 */
+		precision = irint (ceil (log10 ((double)(Ctrl->T.start_frame+n_frames+Ctrl->E.duration+n_fade_frames-1))+0.1));	/* Width needed to hold largest frame number, guaranteed to give at least 1 */
 
 	if (Ctrl->S[MOVIE_POSTFLIGHT].active) {	/* Prepare the postflight script */
 		if (Ctrl->S[MOVIE_POSTFLIGHT].PS)	/* Just got a PS file, nothing to do */
