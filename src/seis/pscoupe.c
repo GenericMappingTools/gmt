@@ -44,6 +44,30 @@ PostScript code is written to stdout.
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYdehipqt" GMT_OPT("c")
 
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
+	/* separator, short_option, long_option,
+	          short_directives,    long_directives,
+	          short_modifiers,     long_modifiers */
+	{ 0, 'A', "crosssection",
+	          "a,b,c,d",           "geopoints,geostrikelen,xypoints,xystrikelen",
+	          "c,d,r,w,z,f",       "region,dip,domain,width,depth,frame" },
+	{ 0, 'S', "format",
+	          "a,c,m,d,z,p,x,y,t", "akirichards,cmt,smtfull,smtdouble,smtdev,partial,axisfull,axisdouble,axisdev",
+	          "a,f,j,l,m,o,s",     "angle,font,justify,moment,samesize,offset,mreference" },
+	{ 0, 'C', "cpt",               "", "", "", "" },
+	{ 0, 'F', "mode",
+	          "s,a,e,g,p,r,t",     "symbol,ptaxes,taxisfill,paxisfill,paxispen,box,taxispen",
+	          "",                  "" },
+	{ 0, 'H', "scale",             "", "", "", "" },
+	{ 0, 'I', "intensity",         "", "", "", "" },
+	{ 0, 'L', "bboutlinepen",      "", "", "", "" },
+	{ 0, 'N', "noskip",            "", "", "", "" },
+	{ 0, 'Q', "noinfofiles",       "", "", "", "" },
+	{ 0, 'T', "nodalplanes",       "", "", "", "" },
+	{ 0, 'W', "pen",               "", "", "", "" },
+	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+};
+
 #define DEFAULT_FONTSIZE		9.0	/* In points */
 #define DEFAULT_OFFSET			3.0	/* In points */
 #define DEFAULT_SYMBOL_SIZE		6.0	/* In points */
@@ -1087,7 +1111,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

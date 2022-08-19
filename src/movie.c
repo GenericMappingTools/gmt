@@ -105,6 +105,52 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"-Vf"
 
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
+	/* separator, short_option, long_option,
+	          short_directives,    long_directives,
+	          short_modifiers,     long_modifiers */
+	{ 0, 'C', "canvassize",            "", "", "", "" },
+	{ 0, 'N', "name",                  "", "", "", "" },
+	{ 0, 'T', "frames",
+	          "",                      "",
+	          "n,p,s,w,W",             "nframes,tagwidth,first,wordsepall,wordseptab" },
+	{ 0, 'D', "displayrate",           "", "", "", "" },
+	{ 0, 'E', "title",
+	          "",                      "",
+	          "d,f,g",                 "duration,fadetime,fadecolor" },
+	{ 0, 'F', "videoformat",
+	          "",                      "",
+	          "l,o,s,t",               "loop,encode,stride,transparent" },
+	{ 0, 'G', "fill",
+	          "",                      "",
+	          "p",                     "pen" },
+	{ 0, 'H', "tempscale",             "", "", "", "" },
+	{ 0, 'I', "include",               "", "", "", "" },
+	{ 0, 'K', "fade",
+	          "",                      "",
+	          "f,g,p",                 "length,color,preserve" },
+	{ 0, 'L', "label",
+	          "e,s,f,p,c,t",           "time,string,frame,percent,col,textcol",
+	          "c,f,g,h,j,o,p,r,t",     "clearance,font,fill,shade,refpoint,offset,pen,rounded,format" },
+	{ 0, 'M', "master",
+	          "f,m,l",                 "first,middle,last",
+	          "r",                     "altdpu" },
+	{ 0, 'P', "progress",
+	          "a,b,c,d,e,f",           "pie,wheel,arrow,line,gauge,axis",
+	          "a,f,g,G,j,o,p,P,s,t,w", "annotate,font,mfill,sfill,justify,offset,mpen,spen,scale,format,width" },
+	{ 0, 'Q', "debug",
+	          "s",                     "scripts",
+	          "",                      "" },
+	{ 0, 'S', "static",
+	          "b,f",                   "bg,fg",
+	          "",                      "" },
+	{ 0, 'W', "workdir",               "", "", "", "" },
+	{ 0, 'Z', "delete",
+	          "s",                     "scripts",
+	          "",                      "" },
+	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+};
+
 #define MOVIE_PREFLIGHT		0
 #define MOVIE_POSTFLIGHT	1
 
@@ -1344,7 +1390,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
