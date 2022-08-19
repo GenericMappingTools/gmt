@@ -174,6 +174,7 @@ struct PSEVENTS_CTRL {
 	} W;
 	struct PSEVENTS_Z {	/* 	-Z<cmd> */
 		bool active;
+		int Slongopt;		/* Long-option (--format) used in -Z argument string instead of -S? */
 		char *module;
 		char *cmd;
 	} Z;
@@ -185,8 +186,6 @@ struct PSEVENTS_CTRL {
 /* The names of the three external modules.  We skip first 2 letters if in modern mode */
 static char *coupe = "pscoupe", *meca = "psmeca", *velo = "psvelo";
 
-/* Long-option (--format) used in -Z argument string instead of -S? */
-static int ZSlongopt = 0;
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSEVENTS_CTRL *C;
@@ -199,6 +198,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* -Mi|s|t|v val1 defaults: 1, 1, 100, 1  val2 defaults: 0, 0, 100, 0 */
 	C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] = C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] = 100.0;	/* Rise from and fade to invisibility */
 	C->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1]   = C->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] = 1.0;	/* Default size scale for -Ms and dz amplitude for -Mv */
+	C->Z.Slongopt = 0;			/* Assume short-option format */
 	return (C);
 }
 
@@ -580,7 +580,6 @@ maybe_set_two:
 
 			case 'Z':	/* Select advanced seismologic/geodetic symbols */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
-				ZSlongopt = 0;
 
 				/* Check for both short- and long-option flags within the -Z argument string */
 				if (opt->arg[0] && (strstr (opt->arg, "-S") || strstr (opt->arg, "--format="))) {	/* Got the required -S option as part of the command */
@@ -597,7 +596,7 @@ maybe_set_two:
 						if ((q = strstr (txt_a, "-S")) != NULL) 
 							q += 3;
 						else if ((q = strstr (txt_a, "--format=")) != NULL) {
-							ZSlongopt = 1;
+							Ctrl->Z.Slongopt = 1;
 							if ((q = strstr (q, ":=")) != NULL)
 								q += 2;
 						}
@@ -704,7 +703,7 @@ GMT_LOCAL void psevents_set_XY (struct GMT_CTRL *GMT, unsigned int x_type, unsig
 		sprintf (Y, "%.16g", out[GMT_Y]);
 }
 
-GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *module, char *cmd, unsigned int mode) {
+GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *module, char *cmd, int ZSlongopt, unsigned int mode) {
 	/* Return how many data columns are needed for the selected seismo/geodetic symbol */
 	unsigned int n = 0;
 	char *S, *F;
@@ -1098,7 +1097,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	n_cols_needed = 3;	/* We always will need lon, lat and time */
 	if (Ctrl->Z.active) {	/* We read points for symbols */
-		unsigned int n_cols = psevents_determine_columns (GMT, Ctrl->Z.module, Ctrl->Z.cmd, Ctrl->S.mode);	/* Must allow for number of columns needed by the selected module */
+		unsigned int n_cols = psevents_determine_columns (GMT, Ctrl->Z.module, Ctrl->Z.cmd, Ctrl->Z.Slongopt, Ctrl->S.mode);	/* Must allow for number of columns needed by the selected module */
 		if (n_cols == 0) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to determine columns.  Bad module %s?\n", Ctrl->Z.module);
 			Return (GMT_RUNTIME_ERROR);
