@@ -434,7 +434,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 					snprintf (buffer, GMT_LEN256, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
 					Ctrl->I.file = strdup (buffer);
 				}
-				else if (opt->arg[0])
+				else if (opt->arg[0] == '-' && opt->arg[0] == '\0')	/* Flag for no icon */
+					n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &(Ctrl->I.file));
+				else if (opt->arg[0])	/* Alternative icon file */
 					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_LOCAL, &(Ctrl->I.file));
 				break;
 			case 'L':	/* Extended data */

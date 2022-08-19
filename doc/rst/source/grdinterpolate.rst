@@ -16,7 +16,7 @@ Synopsis
 |-G|\ *outfile*
 [ |SYN_OPT-D3| ]
 [ |-E|\ *table*\|\ *line* ]
-[ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**] ]
+[ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\ [**+d**\ 1\|\ 2] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *x/y*\|\ *pointfile*\ [**+h**\ *header*] ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
@@ -105,13 +105,13 @@ Optional Arguments
 
 .. _-F:
 
-**-Fl**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**]
+**-Fl**\|\ **a**\|\ **c**\|\ **n**\ [**+d**\ 1\|\ 2]
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see
     :term:`GMT_INTERPOLANT` in your :doc:`gmt.conf` file.
     You may optionally evaluate the first or second derivative of the spline
-    by appending **+1** or **+2**, respectively.
+    by appending **+d** and specify 1 or 2, respectively.
 
 .. |Add_-R| replace:: Using the |-R| option will select a subsection of the grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be output. |Add_-R_links|
@@ -143,7 +143,7 @@ Optional Arguments
     For details on array creation, see `Generate 1D Array`_.  **Note**: If |-Z| is set
     and no output times are set with |-T| we simply rewrite the grid-produced cube as
     a 3-D data cube file and exit. Also, for |-E| and |-S| you may also just give
-    a range via -T**\ *min/max* to limit the layers considered, with no interpolation
+    a range via |-T|\ *min/max* to limit the layers considered, with no interpolation
     between the selected layers.  If |-T| is not given and neither |-E| nor |-S| are
     set, then we simply extract all layers within the bounds set by |-R|.
 

@@ -160,7 +160,9 @@ Optional Arguments
     fall into ascending order [**+a**\ , which is Default].  Append **+d**
     to sort into descending order instead.  The |-N| option can be
     combined with any other ordering scheme except |-F| (segmentation)
-    and is applied at the end.
+    and is applied at the end. **Note**: If |-E| is used then be aware its effect
+    is applied *before* the sorting, not after.  For limiting the output
+    of records after sorting, see **qo**.
 
 .. _-Q:
 
