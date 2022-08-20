@@ -306,14 +306,18 @@
         examples to use as a template.  The language allows you to design symbols that
         take many parameters and can make decisions based on these parameters.
 
-    **-Sk**\ *name*\ /\ *size*
-        **k**\ ustom symbol. We will look for a symbol definition file called *name*\ .def in
+    **-S**\ [**k**\ *name*\ [/\ *size*]]
+        A **k**\ ustom symbol. We will look for a symbol definition file called *name*\ .def in
         (1) the current directory, (2) in ~/.gmt or (3) in **$GMT_SHAREDIR**/custom.
-        The symbol defined in the definition file is of normalized unit size by default;
+        The symbol declared in the definition file is of normalized unit size by default;
         the appended *size* will scale the symbol accordingly. Users may create their own
         custom \*.def files; see `Custom Symbols`_ below.
         Alternatively, you can supply an EPS file instead of a \*.def file and
-        we will scale and place that graphic as a symbol.
+        we will scale and place that graphic as a symbol.  If *size* is not given then we
+        expect in from the input file. **Note**: To also give the name of the custom
+        symbol via the input, the trailing text must start with the symbol name which must
+        include the leading **k**. The *size* must either be given as a numerical column
+        (as for all other symbols) or be added to the name with the required slash.
 
     The last group of symbols are all special *lines* with embellishments along them.
     The first symbol is called a *front* and has specific
