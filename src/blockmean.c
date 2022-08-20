@@ -42,13 +42,19 @@
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
 	/* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers */
-	{ 0, 'A', "fields", "", "", "", "" },
-	{ 0, 'C', "center", "", "", "", "" },
-	{ 0, 'E', "extend", "", "", "P,p", "prop-simple,prop-weighted" },
-	{ 0, 'G', "gridfile", "", "", "", "" },
+	{ 0, 'A', "fields",    "", "", "", "" },
+	{ 0, 'C', "center",    "", "", "", "" },
+	{ 0, 'E', "extend",
+                  "",          "",
+                  "p,P",       "weighted,simple" },
+	{ 0, 'G', "outgrid",   "", "", "", "" },
 	GMT_INCREMENT_KW,	/* Defined in gmt_constant.h since not a true GMT common option (but almost) */
-	{ 0, 'S', "select", "m,n,s,w", "mean,count,sum,weight", "", "" },
-	{ 0, 'W', "weights", "i,o", "in,out", "s", "sigma" },
+	{ 0, 'S', "statistic",
+                  "m,n,s,w",   "mean,count,sum,weight",
+                  "",          "" },
+	{ 0, 'W', "weights",
+                  "i,o",       "in,out",
+                  "s",         "sigma" },
 	{ 0, '\0', "", "", "", "", ""}	/* End of list marked with empty option and strings */
 };
 
