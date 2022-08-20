@@ -207,7 +207,7 @@
 
     **-Sb**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **q**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *ny*][**+s**\ [*gap*]]
         Vertical **b**\ ar extending from *base* to y. The *size* is bar width.
-        Append **q** if *size* is a quantity in x-units [Default is plot-distance units].
+        Append **q** if *size* is a quantity in x-units [Default is plot-distance units **c**\|\ **i**\|\ **p**].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
         data column.  Use **+B**\ [*base*] if the bar height is measured relative
@@ -224,8 +224,8 @@
         Thus, input records are either (*x y1 y2 ... yn*) or (*x dy1 dy2 ... dyn*).
 
     **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **q**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *nx*][**+s**\ [*gap*]]
-        Horizontal **b**\ ar extending from *base* to x. The *size* is bar width.
-        Append **q** if *size* is a quantity in y-units [Default is plot-distance units].
+        Horizontal **B**\ ar extending from *base* to x. The *size* is bar width.
+        Append **q** if *size* is a quantity in y-units [Default is plot-distance units **c**\|\ **i**\|\ **p**].
         By default, *base* = 0. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
         data column.  Use **+B**\ [*base*] if the bar length is measured relative
