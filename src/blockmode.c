@@ -41,16 +41,23 @@
 #include "block_subs.h"
 
 static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for all the block* modules */
-	/* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers */
-	{ 0, 'A', "fields", "", "", "", "" },
-	{ 0, 'C', "center", "", "", "", "" },
-	{ 0, 'D', "bin-width", "", "", "a,c,h,l", "average,center,high,low" },
-	{ 0, 'E', "extend", "r,s", "record,source", "l,h", "lower,higher" },
-	{ 0, 'G', "gridfile", "", "", "", "" },
+	/* separator, short_option, long_option,
+                                    short_directives, long_directives,
+                                    short_modifiers, long_modifiers */
+	{ 0, 'A', "fields",    "", "", "", "" },
+	{ 0, 'C', "center",    "", "", "", "" },
+	{ 0, 'D', "histogram",
+                  "",          "",
+                  "a,c,h,l",   "average,center,high,low" },
+	{ 0, 'E', "extend",
+                  "r,s",       "record,source",
+                  "l,h",       "lower,higher" },
+	{ 0, 'G', "outgrid",   "", "", "", "" },
 	GMT_INCREMENT_KW,	/* Defined in gmt_constant.h since not a true GMT common option (but almost) */
-	{ 0, 'Q', "quicker", "", "", "", "" },
-	{ 0, 'S', "select", "m,n,s,w", "mean,count,sum,weight", "", "" },
-	{ 0, 'W', "weights", "i,o", "in,out", "s", "sigma" },
+	{ 0, 'Q', "quick",     "", "", "", "" },
+	{ 0, 'W', "weights",
+                  "i,o",       "in,out",
+                  "s",         "sigma" },
 	{ 0, '\0', "", "", "", "", ""}	/* End of list marked with empty option and strings */
 };
 
