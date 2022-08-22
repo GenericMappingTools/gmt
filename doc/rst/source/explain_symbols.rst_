@@ -309,7 +309,7 @@
     **-S**\ [**k**\ *name*\ [/\ *size*]]
         A **k**\ ustom symbol. We will look for a symbol definition file called *name*\ .def in
         (1) the current directory, (2) in ~/.gmt or (3) in **$GMT_SHAREDIR**/custom.
-        The symbol declared in the definition file is of normalized unit size by default;
+        The symbol in the definition file is of normalized unit size by default;
         the appended *size* will scale the symbol accordingly. Users may create their own
         custom \*.def files; see `Custom Symbols`_ below.
         Alternatively, you can supply an EPS file instead of a \*.def file and
