@@ -48,7 +48,7 @@ Description
 -----------
 
 **triangulate** reads one or more ASCII [or binary] files (or standard
-input) containing x,y[,z] and performs Delaunay triangulation, i.e., it
+input) containing *x, y*\ [*, z*] and performs Delaunay triangulation, i.e., it
 finds how the points should be connected to give the most equilateral
 triangulation possible. If a map projection (give |-R| and |-J|) is
 chosen then it is applied before the triangulation is calculated. By
@@ -184,8 +184,8 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    Controls whether we read (x,y) or (x,y,z) data and if z should be
-    output when |-M| or |-S| are used [Read (x,y) only].
+    Controls whether we read (*x,y*) or (*x,y,z*) data and if *z* should be
+    output when |-M| or |-S| are used [Read (*x,y*) only].
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
