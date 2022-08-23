@@ -96,7 +96,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do NOT clip vectors at map boundaries [Default will clip].
+    Do **not** clip vectors at map boundaries [Default will clip].
 
 .. _-Q:
 

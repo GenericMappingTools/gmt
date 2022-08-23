@@ -216,7 +216,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Does **NOT** skip symbols that fall outside map border [Default plots points inside border only].
+    Does **not** skip symbols that fall outside map border [Default plots points inside border only].
 
 .. _-Q:
 

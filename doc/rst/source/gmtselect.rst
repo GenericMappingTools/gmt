@@ -126,14 +126,14 @@ Optional Arguments
 **-I**\ [**cflrsz**]
     Reverses the sense of the test for each of the criteria specified:
 
-    - **c** - select records NOT inside any point's circle of influence.
-    - **f** - select records NOT inside any of the polygons.
+    - **c** - select records **not** inside any point's circle of influence.
+    - **f** - select records **not** inside any of the polygons.
     - **g** - pass records inside the cells with z equal zero of the grid mask in |-G|.
-    - **l** - select records NOT within the specified distance of any line.
-    - **r** - select records NOT inside the specified rectangular region.
-    - **s** - select records NOT considered inside as specified by |-N|
+    - **l** - select records **not** within the specified distance of any line.
+    - **r** - select records **not** inside the specified rectangular region.
+    - **s** - select records **not** considered inside as specified by |-N|
       (and |-A|, |-D|).
-    - **z** - select records NOT within the range specified by |-Z|.
+    - **z** - select records **not** within the range specified by |-Z|.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -195,7 +195,7 @@ Optional Arguments
     is given then the **-Iz** option cannot be used.  In the case of multiple tests
     you may use these modifiers as well: **+a** passes any record that passes at least
     one of your *z* tests [Default is all tests must pass], and **+i** reverses the
-    tests to pass record with *z* value NOT in the given range.  Finally, if **+c** is
+    tests to pass record with *z* value **not** in the given range.  Finally, if **+c** is
     not used then it is automatically incremented for each new |-Z| option, starting
     with 2.
 

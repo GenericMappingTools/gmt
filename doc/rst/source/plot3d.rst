@@ -182,7 +182,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [**c**\|\ **r**]
-    Do NOT clip symbols that fall outside map border [Default plots points
+    Do **not** clip symbols that fall outside map border [Default plots points
     whose coordinates are strictly inside the map border only]. The option does not apply to lines and polygons
     which are always clipped to the map region. For periodic (360-longitude)
     maps we must plot all symbols twice in case they are clipped by the repeating
