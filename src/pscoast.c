@@ -74,7 +74,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	          "f,h,i,l,c,a",       "full,high,intermediate,low,crude,auto",
 	          "f",                 "lowfallback" },
   	/* -E not usable because of = usage within parameters? */
-	{ 0, 'F', "frmpen",
+	{ 0, 'F', "framepen",
 	          "l,t",               "scale,rose",
 	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,radius,shade" },
 	{ 0, 'G', "land",              "", "", "", "" },
@@ -85,8 +85,8 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	{ 0, 'L', "mapscale",
 	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
 	          "w,a,c,f,j,l,o,u,v", "length,align,loc,fancy,janchor,label,anchoroffset,units,vertical" },
-	{ 0, 'M', "list",              "", "", "", "" },
-	{ 0, 'N', "boundaries",        "", "", "", "" },
+	{ 0, 'M', "dump",              "", "", "", "" },
+	{ 0, 'N', "borders",           "", "", "", "" },
 	{ 0, 'Q', "markclipend",       "", "", "", "" },
 	{ 0, 'S', "water",             "", "", "", "" },
   	/* -Td and -Tm not doable because they have inconsistent short modifiers? */
