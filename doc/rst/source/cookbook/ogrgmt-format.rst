@@ -314,7 +314,7 @@ the outer perimeter, or an inner ring (hole). This is done using a
 The **@P** specifies a new feature boundary (perimeter), any following
 **@H** polygons are holes, and must be within the preceding **@P**
 polygon (as described in the shapefile specification). Any **@H**
-polygons will NOT have any **@D** values, as the aspatial attribute data
+polygons will **not** have any **@D** values, as the aspatial attribute data
 pertain to the entire feature, the **@H** polygons are not new polygons,
 but are merely a continuation of the definition of the same feature.
 **Note**: The perimeter and the hole(s) must have different handedness.

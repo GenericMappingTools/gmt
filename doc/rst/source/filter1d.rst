@@ -113,7 +113,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *increment*
-    *increment* is used when series is NOT equidistantly sampled. Then
+    *increment* is used when series is **not** equidistantly sampled. Then
     *increment* will be the abscissae resolution, i.e., all abscissae
     will be rounded off to a multiple of *increment*. Alternatively,
     resample data with :doc:`sample1d`.

@@ -151,7 +151,7 @@ Optional Arguments
 
 **-D**\ *abbrev1*,\ *abbrev2*,...)
     Give a comma-separated list of column abbreviations that you want to
-    delete from the MGD77+ files. Do NOT use this option to remove
+    delete from the MGD77+ files. Do **not** use this option to remove
     columns that you are replacing with new data (use **-A...+f** instead).
     Because we cannot remove variables from netCDF files we must create
     a new file without the columns to be deleted. Once the file is
