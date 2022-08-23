@@ -46,19 +46,19 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	          short_modifiers,     long_modifiers */
 	{ 0, 'A', "azimuth",           "", "", "", "" },
 	{ 0, 'C', "center",            "", "", "", "" },
-	{ 0, 'D', "mapscale",
+	{ 0, 'D', "scalebar",
 	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
 	          "w,j,a,o,l",         "length,janchor,side,anchoroffset,label" },
-	{ 0, 'F', "frmpen",
+	{ 0, 'F', "framepen",
 	          "",                  "",
 	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,radius,shade" },
 	{ 0, 'G', "fill",
                   "",                  "",
                   "n,p",               "negative,positive" },
-	{ 0, 'I', "fixedazimuth",      "", "", "", "" },
+	{ 0, 'I', "fixedazim",         "", "", "", "" },
 	{ 0, 'T', "trackpen",          "", "", "", "" },
 	{ 0, 'W', "outlinepen",        "", "", "", "" },
-	{ 0, 'Z', "anomalyscale",      "", "", "", "" },
+	{ 0, 'Z', "ampscale",          "", "", "", "" },
 	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
 };
 
