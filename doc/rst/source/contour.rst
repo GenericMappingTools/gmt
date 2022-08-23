@@ -180,7 +180,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do NOT clip contours or image at the boundaries [Default will clip
+    Do **not** clip contours or image at the boundaries [Default will clip
     to fit inside region |-R|].
 
 .. _-Q:

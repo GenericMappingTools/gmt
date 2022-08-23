@@ -245,7 +245,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do NOT clip text at map boundaries [Default will clip].
+    Do **not** clip text at map boundaries [Default will clip].
 
 .. _-Q:
 

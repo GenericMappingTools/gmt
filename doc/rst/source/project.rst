@@ -89,7 +89,7 @@ to the endpoint (|-E|).
 
 Flat Earth (Cartesian) coordinate transformations can also be made. Set
 |-N| and remember that *azimuth* is clockwise from North (the :math:`y`
-axis), NOT the usual cartesian theta, which is counterclockwise from the
+axis), **not** the usual cartesian theta, which is counterclockwise from the
 :math:`x` axis. (i.e., :math:`azimuth = 90 - theta`).
 
 No assumptions are made regarding the units for :math:`x, y, r, s, p, q`, *dist*,
