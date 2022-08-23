@@ -49,7 +49,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	{ 0, 'D', "scalebar",
 	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
 	          "w,j,a,o,l",         "length,janchor,side,anchoroffset,label" },
-	{ 0, 'F', "framepen",
+	{ 0, 'F', "panel",
 	          "",                  "",
 	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,radius,shade" },
 	{ 0, 'G', "fill",
