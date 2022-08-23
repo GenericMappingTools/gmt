@@ -63,7 +63,7 @@ Required Arguments
 
 *table*
     One or more ASCII [or binary, see **-bi**]
-    files containing *x, y, z*[, *w*] values in the first 3 [4] columns. If no
+    files containing *x, y, z*\ [, *w*] values in the first 3 [4] columns. If no
     files are specified, **trend2d** will read from standard input.
 
 .. _-F:
@@ -91,8 +91,8 @@ Optional Arguments
     Set the maximum allowed condition number for the matrix solution.
     **trend2d** fits a damped least squares model, retaining only that
     part of the eigenvalue spectrum such that the ratio of the largest
-    eigenvalue to the smallest eigenvalue is *condition_#*. [Default:
-    *condition_#* = 1.0e06. ].
+    eigenvalue to the smallest eigenvalue is *condition_number*. [Default:
+    *condition_number* = 1.0e06. ].
 
 .. _-I:
 
@@ -169,7 +169,7 @@ above is to allow the user to match |-N| with the order of the
 polynomial surface. For evaluating Chebyshev polynomials, see
 :doc:`grdmath`.
 
-The **-N**\ *n_model*\ **r** (robust) and |-I| (iterative) options
+The **-N**\ *n_model*\ **+r** (robust) and |-I| (iterative) options
 evaluate the significance of the improvement in model misfit Chi-Squared
 by an *F*-test. The default confidence limit is set at 0.51; it can be
 changed with the |-I| option. The user may be surprised to find that
@@ -188,7 +188,7 @@ when the model residuals have an outlier-free normal distribution. This
 means that the influence of outliers is reduced only slightly at each
 iteration; consequently the reduction in Chi-Squared is not very
 significant. If the procedure needs a few iterations to successfully
-attenuate their effect, the significance level of the F test must be
+attenuate their effect, the significance level of the *F*-test must be
 kept low.
 
 .. include:: explain_precision.rst_
