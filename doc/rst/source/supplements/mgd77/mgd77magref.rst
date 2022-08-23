@@ -63,7 +63,7 @@ Optional Arguments
     from:ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/DST/ (the
     *Dst* coefficients) and
     http://umbra.nascom.nasa.gov/sdb/yohkoh/ys_dbase/indices_flux_raw/Penticton_Absolute/monthly/MONTHPLT.ABS
-    (The *F10.7* index file is a MONTHPLT.ABS). NOTE: since the *Dst* files
+    (The *F10.7* index file is a MONTHPLT.ABS). **Note**: since the *Dst* files
     in the .../DST/ directory are still only up to 2006, for GMT4.5.3 and after
     we extended the *Dst* until August 2009 by reformatting the data in the
     preliminary file Est_Ist_index_0_mean.pli, which is at
@@ -149,7 +149,7 @@ Optional Arguments
     **7** means CM4 Toroidal field
 
     **9** means Core field from IGRF and other contributions from CM4.
-    DO NOT USE BOTH 0 AND 9.
+    Do **not** use both 0 and 9.
 
     Appending several numbers (1-7) will add up the different
     contributions. For example **-Ft**/**12** computes the total field

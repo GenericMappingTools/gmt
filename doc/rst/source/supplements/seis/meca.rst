@@ -167,7 +167,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Does **NOT** skip symbols that fall outside frame boundary specified
+    Does **not** skip symbols that fall outside frame boundary specified
     by |-R| [Default plots symbols inside frame only].
 
 .. _-T:

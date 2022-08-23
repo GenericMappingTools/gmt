@@ -118,7 +118,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do NOT clip symbols that fall outside map border [Default plots points
+    Do **not** clip symbols that fall outside map border [Default plots points
     whose coordinates are strictly inside the map border only].
 
 .. _-R:

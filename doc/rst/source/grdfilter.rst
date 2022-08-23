@@ -224,7 +224,7 @@ Limitations
 #. To use the **-D**\ 5 option the input Mercator grid must be created by
    img2mercgrd using the |-C| option so the origin of the y-values is the
    Equator (i.e., x = y = 0 correspond to lon = lat = 0).
-#. If the new *x\_inc*, *y\_inc* set with |-I| are NOT integer multiples
+#. If the new *x\_inc*, *y\_inc* set with |-I| are **not** integer multiples
    of the increments in the input data, filtering will be considerably slower.
    [Default increments: Same as input.]
 
