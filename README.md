@@ -14,7 +14,7 @@
 
 ## What is GMT?
 
-GMT is an open source collection of about 90 command-line tools for manipulating
+GMT is an open source collection of about 100 command-line tools for manipulating
 geographic and Cartesian data sets (including filtering, trend fitting, gridding,
 projecting, etc.) and producing high-quality illustrations ranging from simple x-y
 plots via contour maps to artificially illuminated surfaces, 3D perspective
