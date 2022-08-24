@@ -48,7 +48,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	          short_directives,    long_directives,
 	          short_modifiers,     long_modifiers */
 	{ 0, 'S', "format",
-	          "a,c,m,d,z,p,x,y,t", "akirichards,cmt,smtfull,smtdouble,smtdev,partial,axisfull,axisdouble,axisdev",
+	          "a,c,m,d,z,p,x,y,t", "aki,cmt,smtfull,smtdouble,smtdev,partial,axisfull,axisdouble,axisdev",
 	          "a,f,j,l,m,o,s",     "angle,font,justify,moment,samesize,offset,mreference" },
 	{ 0, 'A', "focaloffset",
 	          "",                  "",
@@ -60,9 +60,9 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	          "",                  "" },
 	{ 0, 'H', "scale",             "", "", "", "" },
 	{ 0, 'I', "intensity",         "", "", "", "" },
-	{ 0, 'L', "bboutlinepen",      "", "", "", "" },
-	{ 0, 'N', "noskip",            "", "", "", "" },
-	{ 0, 'T', "nodalplanes",       "", "", "", "" },
+	{ 0, 'L', "outlinepen",        "", "", "", "" },
+	{ 0, 'N', "noclip",            "", "", "", "" },
+	{ 0, 'T', "nodal",             "", "", "", "" },
 	{ 0, 'W', "pen",               "", "", "", "" },
 	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
 };

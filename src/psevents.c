@@ -609,7 +609,7 @@ maybe_set_two:
 						  strstr (txt_a, "-H") || strstr (txt_a, "--scale") ||
 						  strstr (txt_a, "-I") || strstr (txt_a, "--intensity") ||
 						  strstr (txt_a, "-J") || strstr (txt_a, "--projection") ||
-						  strstr (txt_a, "-N") || strstr (txt_a, "--noskip") ||
+						  strstr (txt_a, "-N") || strstr (txt_a, "--noclip") ||
 						  strstr (txt_a, "-R") || strstr (txt_a, "--region") ||
 						  strstr (txt_a, "-W") || strstr (txt_a, "--pen") ||
 						  strstr (txt_a, "-t") || strstr (txt_a, "--transparency")) {
@@ -722,7 +722,7 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 
 	if (strstr (module, &coupe[2])) {	/* Using coupe/pscoupe */
 		if (ZSlongopt) {
-			if (!strncmp (S, "akirichards", strlen ("akirichards"))) n = 7;
+			if (!strncmp (S, "aki", strlen ("aki"))) n = 7;
 			else if (!strncmp (S, "cmt", strlen ("cmt"))) n = 11;
 			else if (!strncmp (S, "smtfull", strlen ("smtfull"))) n = 10;
 			else if (!strncmp (S, "smtdouble", strlen ("smtdouble"))) n = 10;
@@ -746,7 +746,7 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 	}
 	else if (strstr (module, &meca[2])) {	/* Using meca/psmeca */
 		if (ZSlongopt) {
-			if (!strncmp (S, "akirichards", strlen ("akirichards"))) n = 7;
+			if (!strncmp (S, "aki", strlen ("aki"))) n = 7;
 			else if (!strncmp (S, "cmt", strlen ("cmt"))) n = 11;
 			else if (!strncmp (S, "smtfull", strlen ("smtfull"))) n = 10;
 			else if (!strncmp (S, "smtdouble", strlen ("smtdouble"))) n = 10;
