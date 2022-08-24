@@ -47,6 +47,28 @@
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehiqt" GMT_OPT("c")
 
+static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
+	/* separator, short_option, long_option,
+	          short_directives,    long_directives,
+	          short_modifiers,     long_modifiers */
+	{ 0, 'D', "center",            "", "", "", "" },
+	{ 0, 'M', "size",
+	          "",                  "",
+	          "m",                 "magnitude" },
+	{ 0, 'S', "symbol",
+	          "a,c,d,h,i,p,s,t,x", "star,circle,diamond,hexagon,invtriangle,point,square,triangle,cross",
+	          "",                  "" },
+	{ 0, 'N', "noclip",            "", "", "", "" },
+	{ 0, 'Q', "mode",
+	          "e,f,g,h,s,t",       "extensive,focal,compressional,hypo71,spolarity,station",
+	          "v",                 "vector" },
+	{ 0, 'T', "station",
+	          "",                  "",
+	          "a,f,j,o",           "angle,font,justify,offset" },
+	{ 0, 'W', "pen",               "", "", "", "" },
+	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
+};
+
 #define DEFAULT_FONTSIZE	12.0	/* In points */
 #define DEFAULT_OFFSET		3.0	/* In points */
 
@@ -538,7 +560,7 @@ EXTERN_MSC int GMT_pspolar (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
