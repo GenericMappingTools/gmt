@@ -74,7 +74,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	          "f,h,i,l,c,a",       "full,high,intermediate,low,crude,auto",
 	          "f",                 "lowfallback" },
   	/* -E not usable because of = usage within parameters? */
-	{ 0, 'F', "framepen",
+	{ 0, 'F', "panel",
 	          "l,t",               "scale,rose",
 	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,radius,shade" },
 	{ 0, 'G', "land",              "", "", "", "" },
