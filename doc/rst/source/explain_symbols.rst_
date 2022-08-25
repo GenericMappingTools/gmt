@@ -220,7 +220,7 @@
         Use **+s** to instead split the bar into *ny* side-by-side, individual and thinner bars. The
         optional *gap* is a percent (of fraction) of *size* for adding gaps between the bars [none],
         where *size* is the combined width of all the individual, thinner bars plus the gaps.
-        Multiband bars requires |-C| with one color per band (CPT z-values must be 0, 1, ..., *ny* - 1).
+        Multiband bars require |-C| with one color per band (CPT z-values must be 0, 1, ..., *ny* - 1).
         Thus, input records are either (*x y1 y2 ... yn*) or (*x dy1 dy2 ... dyn*).
 
     **-SB**\ [*size*\ [**c**\|\ **i**\|\ **p**\|\ **q**]][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *nx*][**+s**\ [*gap*]]
@@ -238,7 +238,7 @@
         Use **+s** to instead split the bar into *nx* side-by-side, individual and thinner bars. The
         optional *gap* is a percent (of fraction) of *size* for adding gaps between the bars [none],
         where *size* is the combined width of all the individual, thinner bars plus the gaps.
-        Multiband bars requires |-C| with one color per band (CPT z-values must be 0, 1, ..., *nx* - 1).
+        Multiband bars require |-C| with one color per band (CPT z-values must be 0, 1, ..., *nx* - 1).
         Thus, input records are either (*x1 y x2 ... xn*) or (*dx1 y dx2 ... dxn*).
 
     The next family of symbols are all different types of *vectors*. Apart from requiring parameters
