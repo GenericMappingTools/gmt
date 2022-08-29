@@ -19629,7 +19629,7 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			fprintf (fp, "S - %s - %s %s - %s\n", scode, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 		}
 		else if (symbol == '~') {	/* Decorated line [Experimental] */
-			char scode[GMT_LEN64] = {""};
+			char scode[GMT_LEN256] = {""};
 			sprintf (scode, "~n1:+s%s%s", S->D.symbol_code, S->D.size);
 			if (S->D.pen[0])  strcat (scode, "+p"), strcat (scode, S->D.pen);
 			if (S->D.fill[0]) strcat (scode, "+g"), strcat (scode, S->D.fill);
