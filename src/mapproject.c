@@ -688,7 +688,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 						if ((pch = strrchr(opt->arg, '/')) != NULL) {
 							isoldL = (*(++pch) == '+' || *pch == '-');
 							if (!isoldL)
-								isoldL = (*pch == 'd' || *pch == 'm' || *pch == 's' || *pch == 'e' || *pch == 'f' || *pch == 'k' || *pch == 'M' || *pch == 'n' || *pch == 'c' || *pch == 'C');
+								isoldL = ((strchr (GMT_LEN_UNITS, *pch) != NULL) || *pch == 'c' || *pch == 'C'); 
 						}
 					}
 				}
