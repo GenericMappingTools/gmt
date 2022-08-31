@@ -515,7 +515,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 
 	unsigned int n_slash, k, n_errors = 0, pos;
 	int n;
-	bool geodetic_calc = false, will_need_RJ = false;
+	bool geodetic_calc = false, will_need_RJ = false, isoldL;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, from[GMT_LEN256] = {""}, to[GMT_LEN256] = {""};
 	char c, *p = NULL, *q = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -680,7 +680,6 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				will_need_RJ = true;	/* Since -I means inverse projection */
 				break;
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] (Note: spherical only) */
-				bool isoldL;
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				if (!(gmt_found_modifier (GMT, opt->arg, "pu"))) {
 					isoldL = opt->arg[strlen(opt->arg)-1] == '+';
