@@ -680,8 +680,20 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				will_need_RJ = true;	/* Since -I means inverse projection */
 				break;
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] (Note: spherical only) */
+				bool isoldL;
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				if (!(gmt_found_modifier (GMT, opt->arg, "pu") || strchr (opt->arg, '/')))
+				if (!(gmt_found_modifier (GMT, opt->arg, "pu"))) {
+					isoldL = opt->arg[strlen(opt->arg)-1] == '+';
+					if (!isoldL) {
+						char *pch;
+						if ((pch = strrchr(opt->arg, '/')) != NULL) {
+							isoldL = (*(++pch) == '+' || *pch == '-');
+							if (!isoldL)
+								isoldL = (*pch == 'd' || *pch == 'm' || *pch == 's' || *pch == 'e' || *pch == 'f' || *pch == 'k' || *pch == 'M' || *pch == 'n' || *pch == 'c' || *pch == 'C');
+						}
+					}
+				}
+				if (isoldL)
 					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
 				else {
 					char *m = NULL;
