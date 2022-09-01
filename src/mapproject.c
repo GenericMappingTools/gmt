@@ -515,7 +515,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 
 	unsigned int n_slash, k, n_errors = 0, pos;
 	int n;
-	bool geodetic_calc = false, will_need_RJ = false;
+	bool geodetic_calc = false, will_need_RJ = false, isoldL;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, from[GMT_LEN256] = {""}, to[GMT_LEN256] = {""};
 	char c, *p = NULL, *q = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -681,7 +681,18 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] (Note: spherical only) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				if (!(gmt_found_modifier (GMT, opt->arg, "pu") || strchr (opt->arg, '/')))
+				if (!(gmt_found_modifier (GMT, opt->arg, "pu"))) {
+					isoldL = opt->arg[strlen(opt->arg)-1] == '+';
+					if (!isoldL) {
+						char *pch;
+						if ((pch = strrchr(opt->arg, '/')) != NULL) {
+							isoldL = (*(++pch) == '+' || *pch == '-');
+							if (!isoldL)
+								isoldL = (strchr (GMT_LEN_UNITS "cC", *pch) != NULL); 
+						}
+					}
+				}
+				if (isoldL)
 					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
 				else {
 					char *m = NULL;
