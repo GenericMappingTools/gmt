@@ -293,7 +293,7 @@ To use the GEBCO look-alike CPT with its default range for bathymetry, run
 
 or simply use -Cgebco directly in the application that needs the color table.
 To create a 24-level color table suitable for plotting the depths in
-the remote ata table v3206_06.txt (with lon, lat, depths), run
+the remote data table v3206_06.txt (with lon, lat, depths), run
 
    ::
 
@@ -330,17 +330,23 @@ we always get a color regardless of the *z* value, try
     gmt makecpt -Cjet -T0/500 -Ww > wrapped.cpt
 
 To build a categorical table with 3 categories and add specific category
-names to them, try::
+names to them, try
+
+   ::
 
     gmt makecpt -Ccubhelix -T0/2/1 -F+cClouds,Trees,Water > cat.cpt
 
-To instead add unique category labels A, B, C, ... to a 10-item categorical CPT, try::
+To instead add unique category labels A, B, C, ... to a 10-item categorical CPT, try
+
+   ::
 
     gmt makecpt -Cjet -T0/10/1 -F+cA
 
-To make a categorical CPT with string keys instead of numerical lookup values, try::
+To make a categorical CPT with string keys instead of numerical lookup values, try
 
-    gmt makecpt -Ccategorical -Twood,water,gold 
+   ::
+
+    gmt makecpt -Ccategorical -Twood,water,gold
 
 .. include:: cpt_notes.rst_
 
