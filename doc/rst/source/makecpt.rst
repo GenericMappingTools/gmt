@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*] ]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -110,10 +110,11 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**\|\ **x**][**+c**\ [*label*]][**+k**\ *keys*]
     Force output CPT to be written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
-    codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
+    codes (**h**), or c/m/y/k codes (**c**), or #rrggbb hex codes (**x**).
+    Optionally or alternatively,
     append **+c** to write discrete palettes in categorical format.
     If *label* is appended then we create labels for each category to be used
     when the CPT is plotted. The *label* may be a comma-separated list of

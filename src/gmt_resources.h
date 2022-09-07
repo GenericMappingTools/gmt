@@ -574,7 +574,8 @@ enum GMT_enum_color {
 	GMT_CMYK		= 1,
 	GMT_HSV			= 2,
 	GMT_COLORINT		= 4,
-	GMT_NO_COLORNAMES	= 8
+	GMT_NO_COLORNAMES	= 8,
+	GMT_HEX_COLOR	= 16
 };
 
 enum GMT_enum_bfn {

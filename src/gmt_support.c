@@ -9237,6 +9237,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 			}
 			else if (P->model & GMT_NO_COLORNAMES)
 				fprintf (fp, format, lo, gmt_putrgb (GMT, P->data[i].rgb_low), '\t');
+			else if (P->model & GMT_HEX_COLOR)
+				fprintf (fp, format, lo, gmt_puthex (GMT, P->data[i].rgb_low), '\t');
 			else
 				fprintf (fp, format, lo, gmt_putcolor (GMT, P->data[i].rgb_low), '\t');
 		}
@@ -9253,6 +9255,10 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		else if (P->model & GMT_NO_COLORNAMES) {
 			fprintf (fp, format, lo, gmt_putrgb (GMT, P->data[i].rgb_low), '\t');
 			fprintf (fp, format, hi, gmt_putrgb (GMT, P->data[i].rgb_high), '\t');
+		}
+		else if (P->model & GMT_HEX_COLOR) {
+			fprintf (fp, format, lo, gmt_puthex (GMT, P->data[i].rgb_low), '\t');
+			fprintf (fp, format, hi, gmt_puthex (GMT, P->data[i].rgb_high), '\t');
 		}
 		else {
 			fprintf (fp, format, lo, gmt_putcolor (GMT, P->data[i].rgb_low), '\t');
@@ -9284,6 +9290,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		}
 		else if (P->model & GMT_NO_COLORNAMES)
 			fprintf (fp, "%c\t%s\n", code[i], gmt_putrgb (GMT, P->bfn[i].rgb));
+		else if (P->model & GMT_HEX_COLOR)
+			fprintf (fp, "%c\t%s\n", code[i], gmt_puthex (GMT, P->bfn[i].rgb));
 		else
 			fprintf (fp, "%c\t%s\n", code[i], gmt_putcolor (GMT, P->bfn[i].rgb));
 	}
