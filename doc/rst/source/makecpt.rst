@@ -200,9 +200,9 @@ Optional Arguments
     Defines the range of the new CPT by giving the lowest and
     highest z-value (and optionally an interval).  If |-T| is
     not given, the existing range in the master CPT will be used intact.
-    The values produces defines the color slice boundaries.  If **+n** is
+    The values produced defines the color slice boundaries. If **+n** is
     used it refers to the number of such boundaries and not the number of slices.
-    For details on array creation, see `Generate 1D Array`_.  **Note**: To set
+    For details on array creation, see `Generate 1D Array`_. **Note**: To set
     up categorical CPTs with string keys you can also give a comma-separated
     list of your keys.
 
@@ -279,15 +279,11 @@ changes every 25, and using a polar blue-white-red colortable:
     gmt makecpt -Cpolar -T-200/200/25 > colors.cpt
 
 To make an equidistant CPT from z = -2 to 6 using the
-continuous default turbo rainbow of colors:
-
-   ::
+continuous default turbo rainbow of colors::
 
     gmt makecpt -T-2/6 > colors.cpt
 
-To use the GEBCO look-alike CPT with its default range for bathymetry, run
-
-   ::
+To use the GEBCO look-alike CPT with its default range for bathymetry, run::
 
     gmt makecpt -Cgebco > my_gebco.cpt
 
