@@ -28,7 +28,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 259
+#define GMT_N_API_ENUMS 260
 
 static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -120,6 +120,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_GRID_XY", 128},
 	{"GMT_HEADER_OFF", 0},
 	{"GMT_HEADER_ON", 1},
+	{"GMT_HEX_COLOR", 16},
 	{"GMT_HSV", 2},
 	{"GMT_IMAGE_ALPHA_LAYER", 8192},
 	{"GMT_IMAGE_NO_INDEX", 4096},
