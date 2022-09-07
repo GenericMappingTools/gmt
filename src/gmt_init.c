@@ -13576,6 +13576,20 @@ char *gmt_putrgb (struct GMT_CTRL *GMT, double *rgb) {
 	return (text);
 }
 
+/*! Creates t the string #rrrggbb corresponding to the RGB triplet */
+char *gmt_puthex (struct GMT_CTRL *GMT, double *rgb) {
+
+	static char text[GMT_LEN256] = {""};
+	gmt_M_unused(GMT);
+
+	if (rgb[0] < -0.5)
+		strcpy (text, "-");
+	else
+		snprintf (text, GMT_LEN256, "#%02x%02x%02x", urint (gmt_M_t255(rgb,0)), urint (gmt_M_t255(rgb,1)), urint (gmt_M_t255(rgb,2)));
+	gmtinit_append_trans (text, rgb[3]);
+	return (text);
+}
+
 /*! Creates the string c/m/y/k corresponding to the CMYK quadruplet */
 char *gmtlib_putcmyk (struct GMT_CTRL *GMT, double *cmyk) {
 
