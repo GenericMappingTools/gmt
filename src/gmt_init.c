@@ -13576,7 +13576,7 @@ char *gmt_putrgb (struct GMT_CTRL *GMT, double *rgb) {
 	return (text);
 }
 
-/*! Creates t the string #rrrggbb corresponding to the RGB triplet */
+/*! Creates t the string #rrggbb corresponding to the RGB triplet */
 char *gmt_puthex (struct GMT_CTRL *GMT, double *rgb) {
 
 	static char text[GMT_LEN256] = {""};
