@@ -57,6 +57,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/subplot_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"subplot"
 #define THIS_MODULE_MODERN_NAME	"subplot"
