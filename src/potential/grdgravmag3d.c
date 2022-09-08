@@ -30,6 +30,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdgravmag3d_inc.h"
 #include "newton.h"
 #include "okbfuns.h"
 #include "../mgd77/mgd77.h"

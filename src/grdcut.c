@@ -27,6 +27,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdcut_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdcut"
 #define THIS_MODULE_MODERN_NAME	"grdcut"

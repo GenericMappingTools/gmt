@@ -23,6 +23,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pssolar_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pssolar"
 #define THIS_MODULE_MODERN_NAME	"solar"

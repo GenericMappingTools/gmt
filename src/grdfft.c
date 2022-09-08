@@ -27,6 +27,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdfft_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdfft"
 #define THIS_MODULE_MODERN_NAME	"grdfft"

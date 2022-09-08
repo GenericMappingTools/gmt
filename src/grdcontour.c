@@ -28,6 +28,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdcontour_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdcontour"
 #define THIS_MODULE_MODERN_NAME	"grdcontour"

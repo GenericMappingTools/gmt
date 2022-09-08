@@ -37,6 +37,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdview_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdview"
 #define THIS_MODULE_MODERN_NAME	"grdview"

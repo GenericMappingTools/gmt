@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdgdal_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdgdal"
 #define THIS_MODULE_MODERN_NAME	"grdgdal"

@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdhisteq_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdhisteq"
 #define THIS_MODULE_MODERN_NAME	"grdhisteq"

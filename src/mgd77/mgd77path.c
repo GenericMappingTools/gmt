@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/mgd77path_inc.h"
 #include "mgd77.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"mgd77path"

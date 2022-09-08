@@ -34,6 +34,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/dimfilter_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"dimfilter"
 #define THIS_MODULE_MODERN_NAME	"dimfilter"

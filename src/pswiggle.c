@@ -31,6 +31,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pswiggle_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pswiggle"
 #define THIS_MODULE_MODERN_NAME	"wiggle"
@@ -39,28 +40,6 @@
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqtxyw" GMT_OPT("EHMmc")
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'A', "azimuth",           "", "", "", "" },
-	{ 0, 'C', "center",            "", "", "", "" },
-	{ 0, 'D', "scalebar",
-	          "g,j,J,n,x",         "mapcoords,inside,outside,boxcoords,plotcoords",
-	          "w,j,a,o,l",         "length,janchor,side,anchoroffset,label" },
-	{ 0, 'F', "panel",
-	          "",                  "",
-	          "c,g,i,p,r,s",       "clearance,fill,inner,pen,radius,shade" },
-	{ 0, 'G', "fill",
-                  "",                  "",
-                  "n,p",               "negative,positive" },
-	{ 0, 'I', "fixedazim",         "", "", "", "" },
-	{ 0, 'T', "trackpen",          "", "", "", "" },
-	{ 0, 'W', "outlinepen",        "", "", "", "" },
-	{ 0, 'Z', "ampscale",          "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
-};
 
 #define PSWIGGLE_POS	0
 #define PSWIGGLE_NEG	1

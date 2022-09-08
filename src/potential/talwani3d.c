@@ -42,6 +42,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/talwani3d_inc.h"
 #include "newton.h"
 #include "talwani.h"
 

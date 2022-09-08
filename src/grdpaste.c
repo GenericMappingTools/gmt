@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdpaste_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdpaste"
 #define THIS_MODULE_MODERN_NAME	"grdpaste"

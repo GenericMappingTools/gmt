@@ -32,6 +32,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/trend2d_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"trend2d"
 #define THIS_MODULE_MODERN_NAME	"trend2d"

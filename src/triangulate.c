@@ -32,6 +32,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/triangulate_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"triangulate"
 #define THIS_MODULE_MODERN_NAME	"triangulate"

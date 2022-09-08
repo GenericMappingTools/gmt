@@ -26,6 +26,7 @@
 
 set (SUPPL_NAME seis)
 set (SUPPL_HEADERS meca.h meca_symbol.h utilmeca.h sacio.h)
-set (SUPPL_PROGS_SRCS psmeca.c pspolar.c pscoupe.c pssac.c)
+AUX_SOURCE_DIRECTORY (longopt SUPPL_LONG_OPT_H) 
+set (SUPPL_PROGS_SRCS psmeca.c pspolar.c pscoupe.c pssac.c ${SUPPL_LONG_OPT_H})
 set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} utilmeca.c sacio.c)
 set (SUPPL_EXAMPLE_FILES README.seis)

@@ -27,6 +27,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psxyz_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psxyz"
 #define THIS_MODULE_MODERN_NAME	"plot3d"

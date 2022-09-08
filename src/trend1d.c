@@ -77,6 +77,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/trend1d_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"trend1d"
 #define THIS_MODULE_MODERN_NAME	"trend1d"

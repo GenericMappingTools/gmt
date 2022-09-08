@@ -34,6 +34,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grd2cpt_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grd2cpt"
 #define THIS_MODULE_MODERN_NAME	"grd2cpt"

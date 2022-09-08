@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/x2sys_report_inc.h"
 #include "mgd77/mgd77.h"
 #include "x2sys.h"
 

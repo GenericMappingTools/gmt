@@ -30,6 +30,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdinterpolate_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdinterpolate"
 #define THIS_MODULE_MODERN_NAME	"grdinterpolate"
@@ -38,32 +39,6 @@
 #define THIS_MODULE_KEYS	"<G{+,G?},ED(,SD("
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>RVbdefghinoqs"
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-	/* separator, short_option, long_option,
-	          short_directives,        long_directives,
-	          short_modifiers,         long_modifiers */
-	{ 0, 'G', "outgrid",               "", "", "", "" },
-	{ 0, 'D', "meta",
-	          "",                      "",
-	          "x,y,z,c,d,s,o,n,t,r,v", "xname,yname,zname,cpt,dname,scale,offset,invalid,title,remark,varname" },
-	{ 0, 'E', "profile",
-	          "",                      "",
-	          "a,g,i,l,n,o,p,r,x",     "azimuth,degrees,increment,length,npoints,origin,parallel,radius,rhumb" },
-	{ 0, 'F', "interptype",
-	          "l,a,c,n",               "linear,akima,cubic,none",
-	          "1,2",                   "fderiv,sderiv" },
-	{ 0, 'S', "pointseries",
-	          "",                      "",
-	          "h",                     "header" },
-	{ 0, 'T', "timeinc",
-	          "",                      "",
-	          "i,n",                   "inverse,numcoords" },
-	{ 0, 'Z', "levels",
-	          "",                      "",
-	          "i,n",                   "inverse,numcoords" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
-};
 
 struct GRDINTERPOLATE_CTRL {
 	struct GRDINTERPOLATE_In {

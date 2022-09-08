@@ -42,6 +42,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psrose_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psrose"
 #define THIS_MODULE_MODERN_NAME	"rose"

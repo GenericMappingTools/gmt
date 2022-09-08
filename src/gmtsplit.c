@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtsplit_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtsplit"
 #define THIS_MODULE_MODERN_NAME	"gmtsplit"

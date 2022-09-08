@@ -49,6 +49,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/surface_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"surface"
 #define THIS_MODULE_MODERN_NAME	"surface"
@@ -57,24 +58,6 @@
 #define THIS_MODULE_KEYS	"<D{,DD(=,LG(,GG}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVabdefhiqrw" GMT_ADD_x_OPT GMT_OPT("FH")
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-	/* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers */
-	GMT_INCREMENT_KW,       /* Defined in gmt_constants.h since not a true GMT common option (but almost) */
-	{ 0, 'A', "aspect",        "m",   "middle",            "", "" },
-	{ 0, 'C', "convergence",   "",    "",                  "", "" },
-	{ 0, 'D', "breakline",     "",    "",                  "z", "zvalue" },
-	{ 0, 'L', "limit",         "l,u", "lower,upper",       "", "" },
-	{ 0, 'M', "maskradius",    "",    "",                  "", "" },
-	{ 0, 'N', "maxiterations", "",    "",                  "", "" },
-	{ 0, 'Q', "quicksize",     "r",   "region",            "", "" },
-	{ 0, 'S', "searchradius",  "",    "",                  "", "" },
-	{ 0, 'T', "tension",       "b,i", "boundary,interior", "", "" },
-	{ 0, 'W', "logfile",       "",    "",                  "", "" },
-	{ 0, 'Z', "relax",         "",    "",                  "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
-};
-
 
 struct SURFACE_CTRL {
 	struct SURFACE_A {	/* -A<aspect_ratio> */

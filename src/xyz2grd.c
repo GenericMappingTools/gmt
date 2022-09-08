@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/xyz2grd_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"xyz2grd"
 #define THIS_MODULE_MODERN_NAME	"xyz2grd"

@@ -49,6 +49,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/greenspline_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"greenspline"
 #define THIS_MODULE_MODERN_NAME	"greenspline"

@@ -31,6 +31,7 @@
  * */
 
 #include "gmt_dev.h"
+#include "longopt/grdflexure_inc.h"
 #include "modeltime.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdflexure"

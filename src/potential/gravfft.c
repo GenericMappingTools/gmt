@@ -32,6 +32,7 @@
  * */
 
 #include "gmt_dev.h"
+#include "longopt/gravfft_inc.h"
 #include "newton.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gravfft"

@@ -46,6 +46,7 @@ Use option -x to set the number of threads. e.g. -x2, -x4, ... or -xa to use all
 */
 
 #include "gmt_dev.h"
+#include "longopt/grdfilter_inc.h"
 #include "gmt_glib.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdfilter"

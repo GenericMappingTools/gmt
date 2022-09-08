@@ -27,6 +27,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdtrack_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdtrack"
 #define THIS_MODULE_MODERN_NAME	"grdtrack"
@@ -35,37 +36,6 @@
 #define THIS_MODULE_KEYS	"<D{,DD),E-<,GG(,>D},SD)=s"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>RVabdefghijnoqsw" GMT_OPT("HMmQ")
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-	/* separator, short_option, long_option,
-	          short_directives,          long_directives,
-	          short_modifiers,           long_modifiers */
-	{ 0, 'A', "resample",
-	          "f,p,m,r,R",               "keeporig,pmfollow,mpfollow,equidistant,exactfit",
-	          "l",                       "rhumb" },
-	{ 0, 'C', "crossprofile",
-	          "",                        "",
-	          "a,v,d,f,l,r",             "alternate,wesn,deviant,fixed,left,right" },
-	{ 0, 'D', "linefile",                "", "", "", "" },
-	{ 0, 'E', "profile",
-	          "",                        "",
-	          "a,c,d,g,i,l,n,o,r",       "azimuth,connect,distance,degrees,incr,length,npoints,origin,radius" },
-	{ 0, 'F', "critical",
-	          "",                        "",
-	          "b,n,r,z",                 "balance,negative,rms,zvalue" },
-	{ 0, 'G', "grid",
-	          "",                        "",
-	          "l",                       "list" },
-	{ 0, 'N', "noskip",                  "", "", "", "" },
-	{ 0, 'S', "stack",
-	          "a,m,p,l,L,u,U",           "average,median,mode,lower,lowerpos,upper,upperneg",
-	          "a,d,r,s,c",               "values,deviations,residuals,save,envelope" },
-	{ 0, 'T', "radius",
-	          "",                        "",
-	          "e,p",                     "report,replace" },
-	{ 0, 'Z', "zonly",                   "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
-};
 
 #define MAX_GRIDS GMT_BUFSIZ	/* Change and recompile if we need to sample more than GMT_BUFSIZ grids */
 

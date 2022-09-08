@@ -39,6 +39,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/mapproject_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"mapproject"
 #define THIS_MODULE_MODERN_NAME	"mapproject"
@@ -47,49 +48,6 @@
 #define THIS_MODULE_KEYS	"<D{,LD(=,>D},W-("
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>JRVbdefghijopqs" GMT_OPT("HMm")
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-	/* separator, short_option, long_option,
-	          short_directives,          long_directives,
-	          short_modifiers,           long_modifiers */
-	{ 0, 'A', "azimuth",
-	          "b,B,f,F,o,O",             "back,backgeodetic,forward,forwardgeodetic,orient,orientgeodetic",
-	          "v",                       "variable" },
-	{ 0, 'C', "center",
-	          "",                        "",
-	          "m",                       "merclat" },
-	{ 0, 'D', "lengthunit",
-	          "c,i,p",                   "cm,inch,point",
-	          "",                        "" },
-	{ 0, 'E', "ecef",                    "", "", "", "" },
-	{ 0, 'F', "projunit",
-	          "d,m,s,e,f,k,M,n,u,c,i,p", "deg,min,sec,meter,foot,km,smile,nmile,ussft,cm,inch,point",
-	          "",                        "" },
-	{ 0, 'G', "stride",
-	          "",                        "",
-	          "a,i,u,v",                 "accumulated,incremental,unit,variable" },
-	{ 0, 'I', "inverse",                 "", "", "", "" },
-	{ 0, 'L', "proximity",
-	          "",                        "",
-	          "p,u",                     "segmentpoint,unit" },
-	{ 0, 'N', "latconvert",
-	          "a,c,g,m",                 "authalic,conformal,geocentric,meridional",
-	          "",                        "" },
-	{ 0, 'Q', "projinfo",
-	          "d,e",                     "datums,ellipsoids",
-	          "",                        "" },
-	{ 0, 'S', "suppress",                "", "", "", "" },
-	{ 0, 'T', "changedatum",
-	          "h",                       "height",
-	          "",                        "" },
-	{ 0, 'W', "mapinfo",
-	          "e,E,g,h,j,n,o,O,r,R,w,x", "encompass,encompasstext,plotcoords,height,justify,normalize,cornercoords,regiontext,width,xy",
-	          "n",                       "npoints" },
-	{ 0, 'Z', "traveltime",
-	          "",                        "",
-	          "a,i,f,t",                 "accumulated,incremental,isoformat,epochtime" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
-};
 
 enum GMT_mp_Gcodes {	/* Support for -G parsing */
 	GMT_MP_VAR_POINT   = 1,	/* Compute distances from points given along a track */

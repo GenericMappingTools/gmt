@@ -29,6 +29,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gpsgridder_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gpsgridder"
 #define THIS_MODULE_MODERN_NAME	"gpsgridder"

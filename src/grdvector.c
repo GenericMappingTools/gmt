@@ -31,6 +31,7 @@
 #define THIS_MODULE_NEEDS	"Jg"
 
 #include "gmt_dev.h"
+#include "longopt/grdvector_inc.h"
 
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYflptxy" GMT_OPT("c")
 

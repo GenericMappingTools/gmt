@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtget_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtget"
 #define THIS_MODULE_MODERN_NAME	"gmtget"

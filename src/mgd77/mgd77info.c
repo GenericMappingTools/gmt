@@ -32,6 +32,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/mgd77info_inc.h"
 #include "mgd77.h"
 #include "mgd77_codes.h"
 

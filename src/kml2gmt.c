@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/kml2gmt_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"kml2gmt"
 #define THIS_MODULE_MODERN_NAME	"kml2gmt"

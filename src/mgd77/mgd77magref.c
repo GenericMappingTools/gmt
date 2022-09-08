@@ -16,6 +16,7 @@
  *--------------------------------------------------------------------*/
 
 #include "gmt_dev.h"
+#include "longopt/mgd77magref_inc.h"
 #include "mgd77.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"mgd77magref"

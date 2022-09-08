@@ -28,6 +28,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdclip_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdclip"
 #define THIS_MODULE_MODERN_NAME	"grdclip"

@@ -35,6 +35,7 @@
  *	Contact info: www.generic-mapping-tools.org */
 
 #include "gmt_dev.h"
+#include "longopt/gshhg_inc.h"
 #include "gmt_gshhg.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gshhg"

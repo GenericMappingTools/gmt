@@ -22,6 +22,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/sph2grd_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"sph2grd"
 #define THIS_MODULE_MODERN_NAME	"sph2grd"

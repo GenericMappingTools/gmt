@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtbinstats_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtbinstats"
 #define THIS_MODULE_MODERN_NAME	"gmtbinstats"

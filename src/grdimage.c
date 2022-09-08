@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdimage_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdimage"
 #define THIS_MODULE_MODERN_NAME	"grdimage"
@@ -34,34 +35,6 @@
 #define THIS_MODULE_KEYS	"<G{+,CC(,IG(,>X},>IA,<ID"
 #define THIS_MODULE_NEEDS	"Jg"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc") GMT_ADD_x_OPT
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-/* ?? -A not possible because of = usage, e.g., -Aout_img=driver ? */
-	{ 0, 'C', "cpt",
-                  "",                  "",
-                  "h,i,u,U",           "hinge,zinc,fromunit,tounit" },
-	{ 0, 'D', "inimage",
-                  "r",                 "region",
-                  "",                  "" },
-	{ 0, 'E', "dpi",
-                  "i",                 "psdeviceres",
-                  "",                  "" },
-	{ 0, 'G', "bitcolor",
-                  "",                  "",
-                  "b,f",               "background,foreground" },
-	{ 0, 'I', "intensity",
-                  "",                  "",
-                  "a,d,m,n",           "azimuth,default,ambient,intensity" },
-	{ 0, 'M', "monochrome",        "", "", "", "" },
-	{ 0, 'N', "noclip",            "", "", "", "" },
-	{ 0, 'Q', "transvalue",
-                  "",                  "",
-                  "z",                 "gridvalue" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
-};
 
 /* These are images that GDAL knows how to read for us. */
 #define N_IMG_EXTENSIONS 6

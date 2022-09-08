@@ -36,6 +36,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/spectrum1d_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"spectrum1d"
 #define THIS_MODULE_MODERN_NAME	"spectrum1d"

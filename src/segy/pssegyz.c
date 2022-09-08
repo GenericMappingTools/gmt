@@ -33,6 +33,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pssegyz_inc.h"
 #include "segy_io.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pssegyz"

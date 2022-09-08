@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtvector_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtvector"
 #define THIS_MODULE_MODERN_NAME	"gmtvector"

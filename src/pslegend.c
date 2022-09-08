@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pslegend_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pslegend"
 #define THIS_MODULE_MODERN_NAME	"legend"

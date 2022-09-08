@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtpmodeler_inc.h"
 #include "spotter.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtpmodeler"

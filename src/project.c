@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/project_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"project"
 #define THIS_MODULE_MODERN_NAME	"project"

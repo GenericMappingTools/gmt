@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pstext_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pstext"
 #define THIS_MODULE_MODERN_NAME	"text"

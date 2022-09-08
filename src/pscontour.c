@@ -29,6 +29,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pscontour_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pscontour"
 #define THIS_MODULE_MODERN_NAME	"contour"

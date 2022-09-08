@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtgravmag3d_inc.h"
 #include "okbfuns.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtgravmag3d"

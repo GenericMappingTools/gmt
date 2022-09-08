@@ -16,6 +16,7 @@
  *--------------------------------------------------------------------*/
 
 #include "gmt_dev.h"
+#include "longopt/polespotter_inc.h"
 #include "spotter.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"polespotter"

@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtwhich_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtwhich"
 #define THIS_MODULE_MODERN_NAME	"gmtwhich"

@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdproject_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdproject"
 #define THIS_MODULE_MODERN_NAME	"grdproject"

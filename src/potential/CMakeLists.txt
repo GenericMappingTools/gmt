@@ -26,7 +26,8 @@
 
 set (SUPPL_NAME potential)
 set (SUPPL_HEADERS okbfuns.h newton.h modeltime.h talwani.h)
+AUX_SOURCE_DIRECTORY (longopt SUPPL_LONG_OPT_H) 
 set (SUPPL_PROGS_SRCS grdredpol.c gmtgravmag3d.c gmtflexure.c gravfft.c
-	gravprisms.c grdflexure.c grdgravmag3d.c grdseamount.c talwani2d.c talwani3d.c)
+	gravprisms.c grdflexure.c grdgravmag3d.c grdseamount.c talwani2d.c talwani3d.c ${SUPPL_LONG_OPT_H})
 set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} okbfuns.c)
 set (SUPPL_EXAMPLE_FILES README.potential)

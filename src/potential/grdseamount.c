@@ -37,6 +37,7 @@
  * */
 
 #include "gmt_dev.h"
+#include "longopt/grdseamount_inc.h"
 #include "modeltime.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdseamount"

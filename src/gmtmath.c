@@ -30,6 +30,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtmath_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtmath"
 #define THIS_MODULE_MODERN_NAME	"gmtmath"

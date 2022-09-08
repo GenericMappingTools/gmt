@@ -24,6 +24,7 @@
  * */
 
 #include "gmt_dev.h"
+#include "longopt/gmtflexure_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtflexure"
 #define THIS_MODULE_MODERN_NAME	"gmtflexure"

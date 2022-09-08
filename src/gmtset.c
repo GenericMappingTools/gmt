@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtset_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtset"
 #define THIS_MODULE_MODERN_NAME	"gmtset"

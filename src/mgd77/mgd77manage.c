@@ -23,6 +23,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/mgd77manage_inc.h"
 #include "mgd77.h"
 #include "mgd77_e77.h"	/* E77 Header Errata Codes */
 

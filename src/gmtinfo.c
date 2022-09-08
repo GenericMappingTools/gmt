@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtinfo_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtinfo"
 #define THIS_MODULE_MODERN_NAME	"gmtinfo"

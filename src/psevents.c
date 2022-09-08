@@ -24,6 +24,7 @@
  * Brief synopsis: psevents handles the plotting of events for one frame of a movie.
  */
 #include "gmt_dev.h"
+#include "longopt/psevents_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psevents"
 #define THIS_MODULE_MODERN_NAME	"events"
@@ -32,41 +33,6 @@
 #define THIS_MODULE_KEYS	"<D{,CC(,>?}"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS	"-:>BJKOPRUVXYabdefhilpqw"
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-	/* separator, short_option, long_option,
-	          short_directives,  long_directives,
-	          short_modifiers,   long_modifiers */
-	{ 0, 'T', "time",            "", "", "", "" },
-	{ 0, 'A', "polylines",
-	          "r,s",             "trajectories,segments",
-	          "v",               "value" },
-	{ 0, 'C', "cpt",             "", "", "", "" },
-	{ 0, 'D', "offset",
-	          "j,J",             "justify,shortdiag",
-	          "v",               "line" },
-	{ 0, 'E', "knots",
-	          "s,t",             "symbol,text",
-	          "o,O,l,r,p,d,f",   "offset,startoffset,text,rise,plateau,decay,fade" },
-	{ 0, 'F', "labels",
-	          "",                "",
-	          "a,f,j,r,z",       "angle,font,justify,record,zvalue" },
-	{ 0, 'H', "boxes",
-	          "",                "",
-	          "c,g,p,r,s",       "clearance,fill,pen,rounded,shade" },
-	{ 0, 'L', "length",          "", "", "", "" },
-	{ 0, 'M', "symbols",
-	          "i,s,t,v",         "intensity,size,transparency,value",
-	          "c",               "coda" },
-	{ 0, 'N', "noclip",
-	          "c,r",             "clipnorepeat,repeatnoclip",
-	          "",                "" },
-	{ 0, 'Q', "save",            "", "", "", "" },
-	{ 0, 'S', "eventsymbol",     "", "", "", "" },
-	{ 0, 'W', "pen",             "", "", "", "" },
-	{ 0, 'Z', "symbolcommand",   "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
-};
 
 enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_SYMBOL = 0,

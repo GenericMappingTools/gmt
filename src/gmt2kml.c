@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmt2kml_inc.h"
 #include <stdarg.h>
 
 #define THIS_MODULE_CLASSIC_NAME	"gmt2kml"

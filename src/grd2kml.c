@@ -27,6 +27,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grd2kml_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grd2kml"
 #define THIS_MODULE_MODERN_NAME	"grd2kml"

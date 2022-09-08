@@ -28,6 +28,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/sample1d_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"sample1d"
 #define THIS_MODULE_MODERN_NAME	"sample1d"

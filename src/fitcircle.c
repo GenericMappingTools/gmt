@@ -72,6 +72,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/fitcircle_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"fitcircle"
 #define THIS_MODULE_MODERN_NAME	"fitcircle"

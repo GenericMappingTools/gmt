@@ -31,6 +31,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psconvert_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psconvert"
 #define THIS_MODULE_MODERN_NAME	"psconvert"

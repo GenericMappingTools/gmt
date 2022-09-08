@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/earthtide_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"earthtide"
 #define THIS_MODULE_MODERN_NAME	"earthtide"

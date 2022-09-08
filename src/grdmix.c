@@ -30,6 +30,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdmix_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdmix"
 #define THIS_MODULE_MODERN_NAME	"grdmix"

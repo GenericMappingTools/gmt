@@ -22,6 +22,7 @@
 
 #include "mgd77.h"
 #include "gmt_dev.h"
+#include "longopt/mgd77sniffer_inc.h"
 #include "mgd77sniffer.h"
 #include "gmt_internals.h"
 static struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_EXTENDED] = {

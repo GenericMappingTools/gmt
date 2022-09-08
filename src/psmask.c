@@ -36,6 +36,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psmask_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psmask"
 #define THIS_MODULE_MODERN_NAME	"mask"

@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/segy2grd_inc.h"
 #include "segy_io.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"segy2grd"

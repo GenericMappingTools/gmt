@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/x2sys_merge_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"x2sys_merge"
 #define THIS_MODULE_MODERN_NAME	"x2sys_merge"

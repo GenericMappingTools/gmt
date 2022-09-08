@@ -63,6 +63,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/rotconverter_inc.h"
 #include "spotter.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"rotconverter"

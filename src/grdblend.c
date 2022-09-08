@@ -38,6 +38,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdblend_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdblend"
 #define THIS_MODULE_MODERN_NAME	"grdblend"

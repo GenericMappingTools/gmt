@@ -31,6 +31,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/batch_inc.h"
 #ifdef WIN32
 #include <windows.h>
 #endif

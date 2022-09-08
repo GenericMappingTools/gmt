@@ -81,6 +81,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdtrend_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdtrend"
 #define THIS_MODULE_MODERN_NAME	"grdtrend"

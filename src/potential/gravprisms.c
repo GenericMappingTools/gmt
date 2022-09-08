@@ -33,6 +33,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gravprisms_inc.h"
 #include "newton.h"
 #include "talwani.h"
 

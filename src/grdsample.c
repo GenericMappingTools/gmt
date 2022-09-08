@@ -29,6 +29,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdsample_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdsample"
 #define THIS_MODULE_MODERN_NAME	"grdsample"

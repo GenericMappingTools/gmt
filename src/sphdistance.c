@@ -35,6 +35,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/sphdistance_inc.h"
 #include "gmt_sph.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"sphdistance"

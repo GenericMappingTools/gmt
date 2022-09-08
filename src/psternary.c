@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psternary_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psternary"
 #define THIS_MODULE_MODERN_NAME	"ternary"

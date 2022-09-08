@@ -31,6 +31,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdredpol_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdredpol"
 #define THIS_MODULE_MODERN_NAME	"grdredpol"

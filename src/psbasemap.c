@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psbasemap_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psbasemap"
 #define THIS_MODULE_MODERN_NAME	"basemap"

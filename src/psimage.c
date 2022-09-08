@@ -23,6 +23,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psimage_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psimage"
 #define THIS_MODULE_MODERN_NAME	"image"

@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdfill_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdfill"
 #define THIS_MODULE_MODERN_NAME	"grdfill"

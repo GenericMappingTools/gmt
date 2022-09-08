@@ -38,6 +38,7 @@
 */
 
 #include "gmt_dev.h"
+#include "longopt/gmtsimplify_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtsimplify"
 #define THIS_MODULE_MODERN_NAME	"gmtsimplify"
