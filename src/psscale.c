@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psscale_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psscale"
 #define THIS_MODULE_MODERN_NAME	"colorbar"
@@ -1875,7 +1876,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
 	strcpy (GMT->current.setting.map_frame_axes, "WESN");
 	GMT->current.map.frame.draw = false;	/* No -B parsed explicitly yet */

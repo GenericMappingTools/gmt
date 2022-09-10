@@ -29,6 +29,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pscontour_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pscontour"
 #define THIS_MODULE_MODERN_NAME	"contour"
@@ -726,7 +727,7 @@ EXTERN_MSC int GMT_pscontour (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	/* Must intercept any old-style -Eaz/el here and change it to -p */
 	if ((opt = GMT_Find_Option (API, 'E', options)) && gmt_M_compat_check (GMT, 4)) {	/* Got -E, check if given a file */
 		if (gmt_access (GMT, opt->arg, F_OK)) {	/* Argument not a file we can open, so under compat mode we assume we got -Eaz/el */

@@ -32,6 +32,7 @@ PostScript code is written to stdout.
  */
 
 #include "gmt_dev.h"
+#include "longopt/psmeca_inc.h"
 #include "meca.h"
 #include "utilmeca.h"
 
@@ -42,30 +43,6 @@ PostScript code is written to stdout.
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYdehipqt" GMT_OPT("c")
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'S', "format",
-	          "a,c,m,d,z,p,x,y,t", "aki,cmt,smtfull,smtdouble,smtdev,partial,axisfull,axisdouble,axisdev",
-	          "a,f,j,l,m,o,s",     "angle,font,justify,moment,samesize,offset,mreference" },
-	{ 0, 'A', "focaloffset",
-	          "",                  "",
-	          "p,s",               "pen,size" },
-	{ 0, 'C', "cpt",               "", "", "", "" },
-	{ 0, 'D', "depth",             "", "", "", "" },
-	{ 0, 'F', "mode",
-	          "a,e,g,o,p,r,t,z",   "ptaxes,taxisfill,paxisfill,nodepth,paxispen,box,taxispen,overlaypen",
-	          "",                  "" },
-	{ 0, 'H', "scale",             "", "", "", "" },
-	{ 0, 'I', "intensity",         "", "", "", "" },
-	{ 0, 'L', "outlinepen",        "", "", "", "" },
-	{ 0, 'N', "noclip",            "", "", "", "" },
-	{ 0, 'T', "nodal",             "", "", "", "" },
-	{ 0, 'W', "pen",               "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
-};
 
 #define DEFAULT_FONTSIZE		9.0	/* In points */
 #define DEFAULT_OFFSET			3.0	/* In points */

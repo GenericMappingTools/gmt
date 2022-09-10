@@ -31,6 +31,7 @@ that copyright notice and this permission notice appear in supporting documentat
 */
 
 #include "gmt_dev.h"
+#include "longopt/pssac_inc.h"
 #include "sacio.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pssac"
@@ -40,31 +41,6 @@ that copyright notice and this permission notice appear in supporting documentat
 #define THIS_MODULE_KEYS	">X},RG-"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYhpt" GMT_OPT("c")
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this module */
-	/* separator, short_option, long_option,
-	          short_directives,    long_directives,
-	          short_modifiers,     long_modifiers */
-	{ 0, 'C', "timewindow",        "", "", "", "" },
-	{ 0, 'D', "offset",            "", "", "", "" },
-	{ 0, 'E', "profile",
-	          "a,b,k,d,n,u",       "azimuth,backazimuth,epicenterkm,epicenterdeg,tracenum,userdef",
-	          "",                  "" },
-	{ 0, 'F', "preprocess",        "", "", "", "" },
-	{ 0, 'G', "paint",
-	          "p,n",               "positive,negative",
-	          "g,t,z",             "fill,timewindow,zeroline" },
-	{ 0, 'M', "vertscale",         "", "", "", "" },
-	{ 0, 'Q', "vertical",          "", "", "", "" },
-	{ 0, 'S', "timescale",
-	          "i",                 "inverse",
-	          "",                  "" },
-	{ 0, 'T', "timeadjust",
-	          "",                  "",
-	          "t,r,s",             "align,reducevel,shift" },
-	{ 0, 'W', "pen",               "", "", "", "" },
-	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
-};
 
 /* Control structure for pssac */
 
