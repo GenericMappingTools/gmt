@@ -462,9 +462,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.minimum_given && Ctrl->L.maximum_given && Ctrl->L.min >= Ctrl->L.max,
 					"Option -L: min_limit must be less than max_limit.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.mode == 0 && (Ctrl->T.high <= Ctrl->T.low || Ctrl->T.inc <= 0.0),
-					"Option -S: Bad arguments\n");
+					"Option -T: Bad arguments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.mode == 1  && Ctrl->T.n_levels == 0,
-					"Option -S: Bad arguments\n");
+					"Option -T: Bad arguments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->S.active || Ctrl->E.active),
 					"Option -T: Cannot be combined with -E nor -S option.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.file && !Ctrl->E.cdf, "Option -E modifier +f is only valid if +c is used\n");
