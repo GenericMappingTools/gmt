@@ -216,7 +216,7 @@
         total number of bands in the bar (and hence the number of values required to follow
         the x,y coordinate pair in the input).  Here, **+i** means we must accumulate the
         bar values from the increments *dy*, while **+v** means we get the complete
-        values relative to *base*. Normally, the bands are plotted as sections of a final single bar.
+        values relative to *base* in increasing order. Normally, the bands are plotted as sections of a final single bar.
         Use **+s** to instead split the bar into *ny* side-by-side, individual and thinner bars. The
         optional *gap* is a percent (of fraction) of *size* for adding gaps between the bars [none],
         where *size* is the combined width of all the individual, thinner bars plus the gaps.
@@ -234,7 +234,7 @@
         total number of bands in the bar (and hence the number of values required to follow
         the x,y coordinate pair in the input).  Here, **+i** means we must accumulate the
         bar value from the increments *dx*, while **+v** means we get the complete
-        values relative to *base*. Normally, the bands are plotted as sections of a final single bar.
+        values relative to *base* in increasing order. Normally, the bands are plotted as sections of a final single bar.
         Use **+s** to instead split the bar into *nx* side-by-side, individual and thinner bars. The
         optional *gap* is a percent (of fraction) of *size* for adding gaps between the bars [none],
         where *size* is the combined width of all the individual, thinner bars plus the gaps.
