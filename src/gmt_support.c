@@ -6335,6 +6335,7 @@ int gmtlib_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, doub
 			sum_xy += xx*y[i];
 			m++;
 		}
+		*intercept = *slope = 0.0;
 		if (m == 0) {	/* No points passed the NaN test */
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "called with no valid points, return NaNs\n");
 			*intercept = (m) ? sum_y : GMT->session.d_NaN;	/* Value of single y-point or NaN */
