@@ -6324,9 +6324,9 @@ int gmtlib_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, doub
 
 	equidistant = (x == NULL);	/* If there are no x-values we assume dx is passed via intercept */
 	if (mode < 1) {	/* Must determine trend */
-		uint64_t m;
+		uint64_t m = 0;
 		double sum_x = 0.0, sum_xx = 0.0, sum_y = 0.0, sum_xy = 0.0;
-		for (i = m = 0; i < n; i++) {
+		for (i = 0; i < n; i++) {
 			if (gmt_M_is_dnan (y[i])) continue;
 			xx = (equidistant) ? increment*i : x[i];
 			sum_x  += xx;
@@ -6335,14 +6335,22 @@ int gmtlib_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, doub
 			sum_xy += xx*y[i];
 			m++;
 		}
-		if (m > 1) {	/* Got enough points to compute the trend */
-			*intercept = (sum_y*sum_xx - sum_x*sum_xy) / (m*sum_xx - sum_x*sum_x);
-			*slope = (m*sum_xy - sum_x*sum_y) / (m*sum_xx - sum_x*sum_x);
-		}
-		else {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "called with less than 2 points, return NaNs\n");
+		*intercept = *slope = 0.0;
+		if (m == 0) {	/* No points passed the NaN test */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "called with no valid points, return NaNs\n");
 			*intercept = (m) ? sum_y : GMT->session.d_NaN;	/* Value of single y-point or NaN */
 			*slope = GMT->session.d_NaN;
+
+		}
+		else if (m == 1) {	/* Ain't fitting a line to one point no more */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "called with 1 point, return NaNs\n");
+			*intercept = (m) ? sum_y : GMT->session.d_NaN;	/* Value of single y-point or NaN */
+			*slope = GMT->session.d_NaN;
+		}
+		else {	/* Got enough points to compute the trend */
+			double denom = m * sum_xx - sum_x * sum_x;
+			*intercept = (sum_y * sum_xx - sum_x * sum_xy) / denom;
+			*slope     = (m * sum_xy - sum_x * sum_y)      / denom;
 		}
 	}
 
