@@ -2670,6 +2670,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					if (Ctrl->L.anchor) {	/* Build a polygon in one of several ways */
 						if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_DEV) {	/* Build envelope around y(x) from delta y values in 1 or 2 extra columns */
 							uint64_t k, n, col = (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV) ? 3 : 2;
+							if (col >= L->n_columns) {
+								GMT_Report (API, GMT_MSG_ERROR, "Option -L: Data have %" PRIu64 " columns but %" PRIu64 " are needed\n", L->n_columns, col+1);
+								Return (GMT_RUNTIME_ERROR);
+							}
 							end = 2 * L->n_rows + 1;
 							gmt_prep_tmp_arrays (GMT, GMT_IN, end, 2);	/* Init or reallocate tmp vectors */
 							/* First go in positive x direction and build part of envelope */
@@ -2687,6 +2691,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 						else if (Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) {	/* Build envelope around y(x) from low and high 2 extra columns */
 							uint64_t k, n;
+							if (L->n_columns < 4) {
+								GMT_Report (API, GMT_MSG_ERROR, "Option -L: Data have %" PRIu64 " columns but 4 are needed\n", L->n_columns);
+								Return (GMT_RUNTIME_ERROR);
+							}
 							end = 2 * L->n_rows + 1;
 							gmt_prep_tmp_arrays (GMT, GMT_IN, end, 2);	/* Init or reallocate tmp vectors */
 							/* First go in positive x direction and build part of envelope */
