@@ -70,9 +70,9 @@ int main (int argc, char *argv[]) {
 #endif	/* !defined(NO_SIGHANDLER) */
 
 	/* Look for and process any -V[flag] so we may use GMT_Report_Error early on for debugging.
-	 * Note: Because first GMT_VERBOSE_SHIFT bits of mode may be used for other things we must left-shift by GMT_VERBOSE_SHIFT */
+	 * Note: Because first GMT_MSG_BITSHIFT bits of mode may be used for other things we must left-shift by GMT_MSG_BITSHIFT */
 	for (k = 1; k < argc; k++) if (!strncmp (argv[k], "-V", 2U)) v_mode = gmt_get_V (argv[k][2]);
-	if (v_mode) mode = (v_mode << GMT_VERBOSE_SHIFT);	/* Left-shift the mode by GMT_VERBOSE_SHIFT */
+	if (v_mode) mode = (v_mode << GMT_MSG_BITSHIFT);	/* Left-shift the mode by GMT_MSG_BITSHIFT */
 
 	progname = strdup (basename (argv[0])); /* Last component from the pathname */
 	/* Remove any filename extensions added for example by the MSYS shell when executing gmt via symlinks */
