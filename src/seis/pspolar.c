@@ -65,17 +65,17 @@ struct PSPOLAR_CTRL {
 		double lon, lat;
 	} D;
  	struct PSPOLAR_E {	/* -E<fill> */
-		bool active;
+		bool active[2];	/* [0] for fill, [1] for pen */
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} E;
 	struct PSPOLAR_F {	/* -F<fill> */
-		bool active;
+		bool active[2];	/* [0] for fill, [1] for pen */
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} F;
  	struct PSPOLAR_G {	/* -G<fill> */
-		bool active;
+		bool active[2];	/* [0] for fill, [1] for pen */
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} G;
@@ -342,21 +342,21 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->D.lat), txt_b);
 				break;
 			case 'E':	/* Set color for station in extensive part */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active[0]);
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
 					gmt_fill_syntax (GMT, 'E', NULL, " ");
 					n_errors++;
 				}
 				break;
 			case 'F':	/* Set background color of focal sphere */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active[0]);
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->F.fill)) {
 					gmt_fill_syntax (GMT, 'F', NULL, " ");
 					n_errors++;
 				}
 				break;
 			case 'G':	/* Set color for station in compressive part */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[0]);
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
@@ -366,21 +366,21 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
 					case 'e':	/* Outline station symbol in extensive part */
-						Ctrl->E.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active[1]);
 						if (strlen (&opt->arg[1]) && gmt_getpen (GMT, &opt->arg[1], &Ctrl->E.pen)) {
 							gmt_pen_syntax (GMT, ' ', "Qe", "Outline station symbol (extensive part) [Default current pen]", NULL, 0);
 							n_errors++;
 						}
 						break;
 					case 'f':	/* Outline focal sphere */
-						Ctrl->F.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active[1]);
 						if (strlen (&opt->arg[1]) && gmt_getpen (GMT, &opt->arg[1], &Ctrl->F.pen)) {
 							gmt_pen_syntax (GMT, ' ', "Qf", "Outline focal sphere [Default current pen]", NULL, 0);
 							n_errors++;
 						}
 						break;
 					case 'g':	/* Outline station symbol in compressive part */
-						Ctrl->G.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[1]);
 						if (strlen (&opt->arg[1]) && gmt_getpen (GMT, &opt->arg[1], &Ctrl->G.pen)) {
 							gmt_pen_syntax (GMT, ' ', "Qg", "Outline station symbol (compressive part) [Default current pen]", NULL, 0);
 							n_errors++;
@@ -580,7 +580,7 @@ EXTERN_MSC int GMT_pspolar (void *V_API, int mode, void *args) {
 	}
 
 	gmt_setpen (GMT, &Ctrl->F.pen);
-	gmt_setfill (GMT, &(Ctrl->F.fill), Ctrl->F.active);
+	gmt_setfill (GMT, &(Ctrl->F.fill), Ctrl->F.active[1]);
 	PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->M.ech), PSL_CIRCLE);
 
 	GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX);	/* Only text expected */
@@ -677,12 +677,12 @@ EXTERN_MSC int GMT_pspolar (void *V_API, int mode, void *args) {
 
 		if (pol == 'u' || pol == 'U' || pol == 'c' || pol == 'C' || pol == '+') {
 			gmt_setpen (GMT, &Ctrl->G.pen);
-			gmt_setfill (GMT, &(Ctrl->G.fill), Ctrl->G.active);
+			gmt_setfill (GMT, &(Ctrl->G.fill), Ctrl->G.active[1]);
 			PSL_plotsymbol (PSL, plot_x, plot_y, &symbol_size2, Ctrl->S.symbol);
 		}
 		else if (pol == 'r' || pol == 'R' || pol == 'd' || pol == 'D' || pol == '-') {
 			gmt_setpen (GMT, &Ctrl->E.pen);
-			gmt_setfill (GMT, &(Ctrl->E.fill), Ctrl->E.active);
+			gmt_setfill (GMT, &(Ctrl->E.fill), Ctrl->E.active[1]);
 			PSL_plotsymbol (PSL, plot_x, plot_y, &symbol_size2, Ctrl->S.symbol);
 		}
 		else {
