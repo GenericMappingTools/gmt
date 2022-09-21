@@ -320,6 +320,7 @@ enum GMT_enum_verbose {
 	GMT_MSG_INFORMATION	= 5,	/* Adds informational messages */
 	GMT_MSG_COMPAT		= 6,	/* Compatibility warnings */
 	GMT_MSG_DEBUG		= 7,	/* Debug messages for developers mostly */
+	GMT_MSG_BITSHIFT	= 16,	/* Left/right shift of MSG codes when packing into mode for GMT_Create_Session. Increase if GMT_MSG_* need more space */
 	/* For API backwards compatibility only */
 	GMT_MSG_NORMAL		= 2,	/* Now GMT_MSG_ERROR */
 	GMT_MSG_VERBOSE		= 5,	/* Now GMT_MSG_WARNING  */
