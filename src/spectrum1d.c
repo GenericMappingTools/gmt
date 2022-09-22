@@ -117,7 +117,7 @@ GMT_LOCAL void spectrum1d_alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_
 
 GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, enum Spectrum1d_Lmode mode) {
 	/* The mode setting can be one of 4 values:
-	 *	0: No trend removed
+	 *  0: No trend removed
 	 *  1: Linear LS trend removed [Default]
 	 *  2: Mid-value removed
 	 *  3: Mean-value removed
@@ -133,9 +133,9 @@ GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, enum S
 	h_period = M_PI / (double)C->window;	/* For Hanning window  */
 	h_scale = sqrt (8.0/3.0);		/* For Hanning window  */
 
-	if (mode != SPECTRUM1D_NO_TREND_REMOVE) {	/* Need to remove linear trend of constant */
+	if (mode != SPECTRUM1D_NO_TREND_REMOVE) {	/* Need to remove linear trend or constant */
 		if (C->y_given) {
-			for (i = 0, t = 0; i < C->window_2; i+=2, t++) {
+			for (i = 0, t = 0; i < C->window_2; i += 2, t++) {
 				tt = t * t_factor - 1.0;
 				sumt2 += (tt * tt);
 				sumx += C->datac[i];
@@ -151,7 +151,7 @@ GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, enum S
 			y_mean  = (mode == SPECTRUM1D_MIDVAL_REMOVE) ? 0.5 * (y_min + y_max) : sumy / C->window;
 		}
 		else {
-			for (i = 0, t = 0; i < C->window_2; i+=2, t++) {
+			for (i = 0, t = 0; i < C->window_2; i += 2, t++) {
 				tt = t * t_factor - 1.0;
 				sumt2 += (tt * tt);
 				sumx += C->datac[i];
@@ -164,7 +164,7 @@ GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, enum S
 		x_mean  = (mode == SPECTRUM1D_MIDVAL_REMOVE) ? 0.5 * (x_min + x_max) : sumx / C->window;
 	}
 	if (C->y_given) {
-		for (i = 0, t = 0; i < C->window_2; i+=2, t++) {
+		for (i = 0, t = 0; i < C->window_2; i += 2, t++) {
 			hc = cos(t * h_period);
 			hw = h_scale * (1.0 - hc * hc);
 			tt = t * t_factor - 1.0;
@@ -179,7 +179,7 @@ GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, enum S
 		C->y_variance /= C->window;
 	}
 	else {
-		for (i = 0, t = 0; i < C->window_2; i+=2, t++) {
+		for (i = 0, t = 0; i < C->window_2; i += 2, t++) {
 			hc = cos(t * h_period);
 			hw = h_scale * (1.0 - hc * hc);
 			tt = t * t_factor - 1.0;
@@ -652,7 +652,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				switch (opt->arg[0]) {
 					case 'm':  Ctrl->L.mode = SPECTRUM1D_MEANVAL_REMOVE;	break;
-					case 'h':  Ctrl->L.mode = SPECTRUM1D_MIDVAL_REMOVE;		break;
+					case 'h':  Ctrl->L.mode = SPECTRUM1D_MIDVAL_REMOVE;	break;
 					case '\0': Ctrl->L.mode = SPECTRUM1D_NO_TREND_REMOVE;	break;
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -L: Unrecognized directive %s\n", &(opt->arg[1]));
