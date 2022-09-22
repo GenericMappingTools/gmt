@@ -204,7 +204,7 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 			case 'E':
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -E is deprecated; use grdconvert instead.\n");
-					Ctrl->E.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 					if (opt->arg[0]) {
 						Ctrl->E.nodata = atof (opt->arg);
 						Ctrl->E.set = true;

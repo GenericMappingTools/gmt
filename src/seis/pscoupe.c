@@ -744,7 +744,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'a':	/* plot axis */
-						Ctrl->A2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->A2.active);
 						strncpy (txt_a, &opt->arg[1], GMT_LEN256-1);
 						if ((p = strchr (txt_a, '/')) != NULL) p[0] = '\0';
 						if (txt_a[0]) Ctrl->A2.size = gmt_M_to_inch (GMT, txt_a);
@@ -761,35 +761,35 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 						}
 						break;
 					case 'e':	/* Set color for T axis symbol */
-						Ctrl->E2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->E2.active);
 						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->E2.fill)) {
 							gmt_fill_syntax (GMT, ' ', "Fe", " ");
 							n_errors++;
 						}
 						break;
 					case 'g':	/* Set color for P axis symbol */
-						Ctrl->G2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->G2.active);
 						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->G2.fill)) {
 							gmt_fill_syntax (GMT, ' ', "Fg", " ");
 							n_errors++;
 						}
 						break;
 					case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
-						Ctrl->P2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->P2.active);
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
 							gmt_pen_syntax (GMT, ' ', "Fp", " ", NULL, 0);
 							n_errors++;
 						}
 						break;
 					case 'r':	/* draw box around text */
-						Ctrl->R2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->R2.active);
 						if (opt->arg[1] && gmt_getfill (GMT, &opt->arg[1], &Ctrl->R2.fill)) {
 							gmt_fill_syntax (GMT, ' ', "Fr", " ");
 							n_errors++;
 						}
 						break;
 					case 's':	/* Only points : get symbol [and size] */
-						Ctrl->S.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 						Ctrl->S.symbol = opt->arg[1];
 						if (gmt_found_modifier (GMT, opt->arg, "fjo")) {
 							/* New syntax: -Fs<symbol>[<size>]+f<font>+o<dx>/<dy>+j<justify> */
@@ -838,7 +838,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 						if (gmt_M_is_zero (Ctrl->S.scale)) Ctrl->S.read = true;	/* Must get size from input file */
 						break;
 					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
-						Ctrl->T2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->T2.active);
 						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
 							gmt_pen_syntax (GMT, ' ', "Ft", " ", NULL, 0);
 							n_errors++;

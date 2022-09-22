@@ -628,7 +628,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 				}
 				else if (gmt_M_compat_check (GMT, 4)) { /* Warn and pass through */
 					GMT_Report (API, GMT_MSG_COMPAT, "-S<pen> option is deprecated; use font pen setting instead.\n");
-					Ctrl->S_old.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S_old.active);
 					if (gmt_getpen (GMT, opt->arg, &Ctrl->S_old.pen)) {
 						gmt_pen_syntax (GMT, 'S', NULL, "draws outline of characters.  Append pen attributes [Default pen is %s]", NULL, 0);
 						n_errors++;

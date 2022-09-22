@@ -1153,8 +1153,8 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'x':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->x.active);
 				n_errors += movie_parse_x_option (GMT, Ctrl, opt->arg);
-				Ctrl->x.active = true;
 				break;
 
 			default:	/* Report bad options */

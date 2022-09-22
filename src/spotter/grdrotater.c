@@ -261,7 +261,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 				if (k == 3) {	/* Gave -Ttstart/tstop/tinc[+n] or possibly ancient -Tlon/lat/angle */
 					if (gmt_M_compat_check (GMT, 4) && !gave_e) {	/* No -E|e so likely ancient syntax */
 						GMT_Report (API, GMT_MSG_COMPAT, "-T<lon>/<lat>/<angle> is deprecated; use -E<lon>/<lat>/<angle> instead.\n");
-						Ctrl->E.rot.single = Ctrl->E.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+						Ctrl->E.rot.single = true;
 						Ctrl->T.active = false;
 						Ctrl->E.rot.w = atof (txt_c);
 						Ctrl->E.rot.age = GMT->session.d_NaN;

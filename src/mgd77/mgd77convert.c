@@ -211,7 +211,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struct G
 			case '4':	/* Selected high-resolution 4-byte integer MGD77+ format for mag, diur, faa, eot [2-byte integer] */
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-4 is deprecated; use -D instead next time.\n");
-					Ctrl->D.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				}
 				else
 					n_errors += gmt_default_option_error (GMT, opt);

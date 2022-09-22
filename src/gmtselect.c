@@ -440,7 +440,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				strncpy (buffer, opt->arg, GMT_BUFSIZ);
 				if (buffer[strlen(buffer)-1] == 'o' && gmt_M_compat_check (GMT, 4)) { /* Edge is considered outside */
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -N...o is deprecated; use -E instead\n");
-					Ctrl->E.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 					Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
 					buffer[strlen(buffer)-1] = 0;
 				}

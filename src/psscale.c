@@ -440,7 +440,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 						sprintf (p, "+c%gi/%gi/%gi/%gi", off[XLO], off[XHI], off[YLO], off[YHI]);
 						strcat (extra, p);
 					}
-					Ctrl->F.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 					if (gmt_getpanel (GMT, opt->option, extra, &(Ctrl->F.panel))) {
 						gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the scale", 3);
 						n_errors++;
