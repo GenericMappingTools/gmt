@@ -481,7 +481,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'R':	/* Region setting */
-				Ctrl->R2.active = GMT->common.R.active[RSET] = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->R2.active);
+				GMT->common.R.active[RSET] = true;
 				if (opt->arg[0] == 'e' || opt->arg[0] == 'a')	/* Get args from data domain (used to be -Ra but in modern mdoe -Re is what is meant) */
 					Ctrl->R2.automatic = true;
 				else if (opt->arg[0])

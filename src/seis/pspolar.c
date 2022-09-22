@@ -387,10 +387,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 						}
 						break;
 					case 'h':	/* Use HYPO71 format */
-						Ctrl->H2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->H2.active);
 						break;
 					case 's':	/* Get S polarity */
-						Ctrl->S2.active = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->S2.active);
 						p = strchr (opt->arg, '/');	/* Find the first slash */
 						if (p) p[0] = '\0';	/* Temporarily remove the slash */
 						Ctrl->S2.size = gmt_M_to_inch (GMT, opt->arg);

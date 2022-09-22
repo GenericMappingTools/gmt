@@ -380,7 +380,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 			case 'S':
 				if (gmt_M_compat_check (GMT, 5)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-S option is deprecated; use -D instead.\n");
-					Ctrl->S.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 					j = 0;
 					if (opt->arg[0] == 'x') Ctrl->S.cartesian = true, j = 1;
 					k = sscanf (&opt->arg[j], "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->S.length);

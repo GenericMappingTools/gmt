@@ -115,7 +115,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct GMT_
 			case 'P':
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-P is deprecated; use -A instead the next time.\n");
-					Ctrl->A.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 					/* Purposfully falling through to catch 'A' instead */
 				}
 				else {

@@ -182,9 +182,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 				else if (opt->arg[0] == 'i') Ctrl->C.mode = 2;
 				break;
 			case 'E':	/* Old ESRI option */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				if (gmt_M_compat_check (GMT, 4)) {
-					Ctrl->E.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -E is deprecated; use grdconvert instead.\n");
 					if (opt->arg[0] == 'f') Ctrl->E.floating = true;
 					if (opt->arg[Ctrl->E.floating]) Ctrl->E.nodata = atof (&opt->arg[Ctrl->E.floating]);

@@ -518,7 +518,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 						if (opt->arg[k] == '+' && opt->arg[k+1] == 'n') {
 							GMT_Report (API, GMT_MSG_COMPAT, "Option -D..+n<min> is deprecated; use -Q instead.\n");
 							Ctrl->Q.min = atoi (&opt->arg[k + 2]);
-							Ctrl->Q.active = true;
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 							n_plus = k;
 							break;
 						}
