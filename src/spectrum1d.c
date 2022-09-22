@@ -50,6 +50,13 @@
 #define SPECTRUM1D_SEPARATE_YES	0
 #define SPECTRUM1D_SEPARATE_NO	1
 
+enum Spectrum1d_Lmode {
+	SPECTRUM1D_NO_TREND_REMOVE = 0,
+	SPECTRUM1D_TREND_REMOVE    = 1,
+	SPECTRUM1D_MIDVAL_REMOVE   = 2,
+	SPECTRUM1D_MEANVAL_REMOVE  = 3
+};
+
 struct SPECTRUM1D_CTRL {
 	struct SPECTRUM1D_Out {	/* -><file> */
 		bool active;
@@ -66,7 +73,7 @@ struct SPECTRUM1D_CTRL {
 	struct SPECTRUM1D_L {	/* -L[m|h] */
 		bool active;
 		bool debug;
-		unsigned int mode;
+		enum Spectrum1d_Lmode mode;
 	} L;
 	struct SPECTRUM1D_N {	/* -N[+]<namestem> */
 		bool active;
@@ -108,9 +115,12 @@ GMT_LOCAL void spectrum1d_alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_
 	C->datac = gmt_M_memory (GMT, NULL, C->window_2, gmt_grdfloat);
 }
 
-GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, unsigned int mode) {
-	/* If leave_trend is true we do not remove best-fitting LS trend.  Otherwise
-	 * we do, modulated by mode: 0: remove trend, 1: remove mean, 2: remove mid-value.
+GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, enum Spectrum1d_Lmode mode) {
+	/* The mode setting can be one of 4 values:
+	 *  0: No trend removed
+	 *  1: Linear LS trend removed [Default]
+	 *  2: Mid-value removed
+	 *  3: Mean-value removed
 	 * In all cases we apply the Hanning windowing */
 	int i, t;
 	double sumx, sumtx, sumy, sumty, sumt2, x_slope, x_mean, y_slope, y_mean;
@@ -123,9 +133,9 @@ GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool l
 	h_period = M_PI / (double)C->window;	/* For Hanning window  */
 	h_scale = sqrt (8.0/3.0);		/* For Hanning window  */
 
-	if (!leave_trend) {
+	if (mode != SPECTRUM1D_NO_TREND_REMOVE) {	/* Need to remove linear trend or constant */
 		if (C->y_given) {
-			for (i = 0, t = 0; i < C->window_2; i+=2, t++) {
+			for (i = 0, t = 0; i < C->window_2; i += 2, t++) {
 				tt = t * t_factor - 1.0;
 				sumt2 += (tt * tt);
 				sumx += C->datac[i];
@@ -137,11 +147,11 @@ GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool l
 				if (C->datac[i+1] < y_min) y_min = C->datac[i+1];
 				if (C->datac[i+1] > y_max) y_max = C->datac[i+1];
 			}
-			y_slope = (mode) ? 0.0 : sumty / sumt2;
-			y_mean = (mode == 2) ? 0.5 * (y_min + y_max) : sumy / C->window;
+			y_slope = (mode == SPECTRUM1D_TREND_REMOVE) ? sumty / sumt2 : 0.0;
+			y_mean  = (mode == SPECTRUM1D_MIDVAL_REMOVE) ? 0.5 * (y_min + y_max) : sumy / C->window;
 		}
 		else {
-			for (i = 0, t = 0; i < C->window_2; i+=2, t++) {
+			for (i = 0, t = 0; i < C->window_2; i += 2, t++) {
 				tt = t * t_factor - 1.0;
 				sumt2 += (tt * tt);
 				sumx += C->datac[i];
@@ -150,11 +160,11 @@ GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool l
 				if (C->datac[i] > x_max) x_max = C->datac[i];
 			}
 		}
-		x_slope = (mode) ? 0.0 :sumtx / sumt2;
-		x_mean = (mode == 2) ? 0.5 * (x_min + x_max) : sumx / C->window;
+		x_slope = (mode == SPECTRUM1D_TREND_REMOVE) ? sumtx / sumt2 : 0.0;
+		x_mean  = (mode == SPECTRUM1D_MIDVAL_REMOVE) ? 0.5 * (x_min + x_max) : sumx / C->window;
 	}
 	if (C->y_given) {
-		for (i = 0, t = 0; i < C->window_2; i+=2, t++) {
+		for (i = 0, t = 0; i < C->window_2; i += 2, t++) {
 			hc = cos(t * h_period);
 			hw = h_scale * (1.0 - hc * hc);
 			tt = t * t_factor - 1.0;
@@ -169,7 +179,7 @@ GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool l
 		C->y_variance /= C->window;
 	}
 	else {
-		for (i = 0, t = 0; i < C->window_2; i+=2, t++) {
+		for (i = 0, t = 0; i < C->window_2; i += 2, t++) {
 			hc = cos(t * h_period);
 			hw = h_scale * (1.0 - hc * hc);
 			tt = t * t_factor - 1.0;
@@ -181,7 +191,7 @@ GMT_LOCAL void spectrum1d_detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool l
 	}
 }
 
-GMT_LOCAL int spectrum1d_compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data, bool leave_trend, unsigned int mode) {
+GMT_LOCAL int spectrum1d_compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data, enum Spectrum1d_Lmode mode) {
 	int n_windows, w, i, t_start, t_stop, t, f;
 	double dw, spec_scale, x_varp, y_varp = 1.0, one_on_nw, co_quad;
 	double xreal, ximag, yreal, yimag, xpower, ypower, co_spec, quad_spec;
@@ -217,7 +227,7 @@ GMT_LOCAL int spectrum1d_compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1
 			}
 		}
 
-		spectrum1d_detrend_and_hanning (C, leave_trend, mode);
+		spectrum1d_detrend_and_hanning (C, mode);
 
 		if (GMT_FFT_1D (GMT->parent, C->datac, C->window, GMT_FFT_FWD, GMT_FFT_COMPLEX))
 			return GMT_RUNTIME_ERROR;
@@ -532,6 +542,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->C.col[5] = 'a';
 	C->C.col[6] = 'g';
 	C->C.col[7] = 'o';
+	C->L.mode = SPECTRUM1D_TREND_REMOVE;	/* Default is to remove a linear LS trend */
 	C->N.name = strdup ("spectrum");
 	C->N.mode = SPECTRUM1D_SEPARATE_YES;
 	return (C);
@@ -637,12 +648,17 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->D.inc);
 				break;
-			case 'L':	/* Leave trend alone */
-				/* To use next line we need to use modes 1 2 3 instead of relying on L.active */
-				//n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				if (opt->arg[0] == 'm') Ctrl->L.mode = 1;
-				else if (opt->arg[0] == 'h') Ctrl->L.mode = 2;
-				else Ctrl->L.active = true;
+			case 'L':	/* Leave trend alone, or just remove a constant */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				switch (opt->arg[0]) {
+					case 'm':  Ctrl->L.mode = SPECTRUM1D_MEANVAL_REMOVE;	break;
+					case 'h':  Ctrl->L.mode = SPECTRUM1D_MIDVAL_REMOVE;	break;
+					case '\0': Ctrl->L.mode = SPECTRUM1D_NO_TREND_REMOVE;	break;
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -L: Unrecognized directive %s\n", &(opt->arg[1]));
+						n_errors++;
+						break;
+				}
 				break;
 			case 'N':	/* Set alternate file stem OR turn off multiple files */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
@@ -790,7 +806,7 @@ EXTERN_MSC int GMT_spectrum1d (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " data points.\n", S->n_rows);
 
 			y = (C.y_given) ? S->data[GMT_Y] : NULL;
-			if (spectrum1d_compute_spectra (GMT, &C, S->data[GMT_X], y, S->n_rows, Ctrl->L.active, Ctrl->L.mode)) {
+			if (spectrum1d_compute_spectra (GMT, &C, S->data[GMT_X], y, S->n_rows, Ctrl->L.mode)) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 
