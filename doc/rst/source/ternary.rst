@@ -104,8 +104,8 @@ Optional Arguments
 
 **-L**\ *a*\ /*b*\ /*c*
     Set the labels for the three diagram vertices where the component is 100% [none].
-    These are placed a distance of three times the :term:`MAP_LABEL_OFFSET`
-    setting from their respective corners.  To skip any one of then, specify that
+    These are placed at a distance of three times the :term:`MAP_LABEL_OFFSET`
+    setting from their respective corners.  To skip any one of them, specify that
     label as -.
 
 .. _-M:
