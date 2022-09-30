@@ -16485,10 +16485,24 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					}
 				}
 				break;
-			case 'z':	/* Input (angle,length) are vector components (dx,dy) instead */
+			case 'z':	/* Input (angle,length) are vector components (dx,dy) instead. Either the components are
+							   already in plot units (and scale is nondimensional) or we append unit q to scale from
+							   user units to plot units. */
 				S->v.status |= PSL_VEC_COMPONENTS;
 				S->v.status |= PSL_VEC_MAGNIFY;
-				if (p[1]) error += gmtinit_get_length (GMT, symbol, &p[1], false, is_grdvector, &(S->v.comp_scale), &(S->v.v_unit_d));
+				if (p[1]) {	/* Got an argument [Default is 1, i.e., do nothing] */
+					size_t last = strlen (p) - 1;	/* Position of last character in p */
+					if (p[last] == 'q') {	/* User data should be scaled by -J -R */
+						S->v.v_unit_d = true;
+						p[last] = '\0';	/* Hide the q for now */
+					}
+					else if (strchr (GMT_DIM_UNITS GMT_LEN_UNITS, p[last])) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot supply units to a non-dimensional scale set via +z\n");
+						error++;
+					}
+					S->v.comp_scale = atof (&p[1]);
+					if (S->v.v_unit_d) p[last] = 'q';	/* Restore q */
+				}
 				break;
 			case 'v':	/* Scale vector polar length component, or get inverse scale, or a fixed magnitude */
 				S->v.status |= PSL_VEC_MAGNIFY;
