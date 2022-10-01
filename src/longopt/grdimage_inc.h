@@ -25,7 +25,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	          short_directives,    long_directives,
 	          short_modifiers,     long_modifiers */
 /* ?? -A not possible because of = usage, e.g., -Aout_img=driver ? */
-	{ 0, 'C', "cpt",
+	{ 0, 'C', "cpt|cmap",
                   "",                  "",
                   "h,i,u,U",           "hinge,zinc,fromunit,tounit" },
 	{ 0, 'D', "inimage",
@@ -42,7 +42,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
                   "a,d,m,n",           "azimuth,default,ambient,intensity" },
 	{ 0, 'M', "monochrome",        "", "", "", "" },
 	{ 0, 'N', "noclip",            "", "", "", "" },
-	{ 0, 'Q', "transvalue",
+	{ 0, 'Q', "transvalue|alphacolor",
                   "",                  "",
                   "z",                 "gridvalue" },
 	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
