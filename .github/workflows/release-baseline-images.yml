@@ -19,7 +19,7 @@ jobs:
       uses: actions/checkout@v3.0.2
 
     - name: Setup data version control (DVC)
-      uses: iterative/setup-dvc@v1.0.4
+      uses: iterative/setup-dvc@v1.1.1
 
     - name: Pull baseline image data from dvc remote
       run: |
