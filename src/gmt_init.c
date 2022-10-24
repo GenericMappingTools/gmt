@@ -15885,16 +15885,25 @@ dry_run:		if (opt_R == NULL) {	/* In this context we imply -Rd unless grdcut -S 
 					if (!parsed_R) gmt_parse_R_option (GMT, opt_R->arg);
 					API->GMT->hidden.func_level = level;	/* Reset to what it should be */
 					if (GMT->common.R.oblique || GMT->current.proj.projection == GMT_OBLIQUE_MERC || GMT->current.proj.projection == GMT_GENPER) {
+						int s_error = GMT_NOERROR;	/* Error code for various calls */
+						const char *prev_name = GMT->init.module_name;	/* Remember calling module */
 						/* Must do gmt_map_setup here to get correct region for building tiles */
 						if (!opt_J) {
 							GMT_Report (API, GMT_MSG_ERROR, "Cannot select %s and an oblique region without -J!\n", opt->arg);
 							return NULL;
 						}
 						GMT->common.J.active = GMT->common.R.active[RSET] = true;	/* Since we have set those here */
-
-						if (gmt_map_setup (GMT, GMT->common.R.wesn))
+						/* Because GMT->init.module_name has not been set we must temporarily set it here for gmt_map_setup to work */
+						GMT->init.module_name = mod_name;	/* Actual module calling us */
+						s_error = gmt_map_setup (GMT, GMT->common.R.wesn);
+						if (s_error) {	/* Bail after resetting module name */
+							GMT->init.module_name = prev_name;
 							return NULL;
-						if (gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false))	/* Refine without 0.1 degree padding */
+						}
+						/* Do the perimeter search */
+						s_error = gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false);	/* Refine without 0.1 degree padding */
+						GMT->init.module_name = prev_name;	/* Reset module name */
+						if (s_error)	/* Refine without 0.1 degree padding failed */
 							return NULL;
 					}
 					GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
