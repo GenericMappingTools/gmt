@@ -39,7 +39,7 @@
 
 /* Control structure for psxy */
 
-#define PSXY_E_OPT "-E[x|y|X|Y][+a|A][+c[l|f]][+n][+p<pen>][+w<width>]"
+#define PSXY_E_OPT "-E[x|y|X|Y][+a|A][+c[l|f]][+n][+p<pen>][+w<width>[/<cap>]]"
 
 struct PSXY_CTRL {
 	bool no_RJ_needed;	/* Special case of -T and no -B when -R -J is not required */
@@ -56,12 +56,13 @@ struct PSXY_CTRL {
 		bool active;
 		double dx, dy;
 	} D;
-	struct PSXY_E {	/* -E[x[+]|X][y[+]|Y][cap][/[+|-]<pen>] */
+	struct PSXY_E {	/* -E[x|y|X|Y][+a|A][+c[l|f]][+n][+p<pen>][+w<width>[/<cap>]] */
 		bool active;
 		bool LU;	/* True if asymmetrical deviations are instead lower/upper values */
 		unsigned int xbar, ybar;	/* 0 = not used, 1 = error bar, 2 = asymmetrical error bar, 3 = box-whisker, 4 = notched box-whisker */
 		unsigned int mode;		/* 0 = normal, 1 = -C applies to error pen color, 2 = -C applies to symbol fill & error pen color */
-		double size;
+		double width;	/* Width of whisker symbol [7p] */
+		double cap;		/* Width of error bar cap or whisker [7p] */
 		struct GMT_PEN pen;
 	} E;
 	struct PSXY_F {	/* -F<mode> */
@@ -153,7 +154,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C->E.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
-	C->E.size = EBAR_CAP_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
+	C->E.width = C->E.cap = EBAR_CAP_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
 	C->N.mode = PSXY_CLIP_REPEAT;
 	return (C);
 }
@@ -216,10 +217,10 @@ GMT_LOCAL void psxy_plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 	if (tip2) PSL_plotsegment (PSL, x_2 - error_width2, y_2, x_2 + error_width2, y_2);
 }
 
-GMT_LOCAL void psxy_plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double hinge[], double error_width2, double rgb[], int line, int kind) {
+GMT_LOCAL void psxy_plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double hinge[], double whisk_width2, double error_width2, double rgb[], int line, int kind) {
 	unsigned int i;
 	static unsigned int q[4] = {0, 25, 75, 100};
-	double xx[4], yy[4];
+	double xx[4], yy[4], yL, yH;
 
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
 		gmt_geo_to_xy (GMT, hinge[i], y, &xx[i], &yy[i]);
@@ -228,7 +229,9 @@ GMT_LOCAL void psxy_plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PS
 			xx[i] = (i < 2) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[XHI];
 		}
 	}
-	yy[1] -= error_width2;
+	yL = yy[1] - whisk_width2;	/* B-W start */
+	yH = yy[2] + whisk_width2;	/* B-W end */
+	yy[1] -= error_width2;	/* Cap ends */
 	yy[2] += error_width2;
 
 	PSL_plotsegment (PSL, xx[0], yy[1], xx[0], yy[2]);		/* Left whisker */
@@ -246,23 +249,23 @@ GMT_LOCAL void psxy_plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PS
 		xp[2] = xp[7] = x;
 		xp[4] = xp[5] = xx[2];
 		xp[3] = xp[6] = ((p = (x + s)) > xp[4]) ? xp[4] : p;
-		yp[0] = yp[1] = yp[3] = yp[4] = yy[1];
-		yp[5] = yp[6] = yp[8] = yp[9] = yy[2];
+		yp[0] = yp[1] = yp[3] = yp[4] = yL;
+		yp[5] = yp[6] = yp[8] = yp[9] = yH;
 		yp[2] = yy[0] - 0.5 * error_width2;
 		yp[7] = yy[0] + 0.5 * error_width2;
 		PSL_plotpolygon (PSL, xp, yp, 10);
 		PSL_plotsegment (PSL, x, yp[7], x, yp[2]);		/* Median line */
 	}
 	else {
-		PSL_plotbox (PSL, xx[1], yy[1], xx[2], yy[2]);		/* Main box */
-		PSL_plotsegment (PSL, x, yy[1], x, yy[2]);		/* Median line */
+		PSL_plotbox (PSL, xx[1], yL, xx[2], yH);	/* Main box */
+		PSL_plotsegment (PSL, x, yL, x, yH);		/* Median line */
 	}
 }
 
-GMT_LOCAL void psxy_plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double hinge[], double error_width2, double rgb[], int line, int kind) {
+GMT_LOCAL void psxy_plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double hinge[], double whisk_width2, double error_width2, double rgb[], int line, int kind) {
 	unsigned int i;
 	static unsigned int q[4] = {0, 25, 75, 100};
-	double xx[4], yy[4];
+	double xx[4], yy[4], xL, xH;
 
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
 		gmt_geo_to_xy (GMT, x, hinge[i], &xx[i], &yy[i]);
@@ -271,7 +274,9 @@ GMT_LOCAL void psxy_plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PS
 			yy[i] = (i < 2) ? GMT->current.proj.rect[YLO] : GMT->current.proj.rect[YHI];
 		}
 	}
-	xx[1] -= error_width2;
+	xL = xx[1] - whisk_width2;	/* B-W start */
+	xH = xx[2] + whisk_width2;	/* B-W end */
+	xx[1] -= error_width2;	/* Cap ends */
 	xx[2] += error_width2;
 
 	PSL_plotsegment (PSL, xx[1], yy[0], xx[2], yy[0]);		/* bottom whisker */
@@ -284,8 +289,8 @@ GMT_LOCAL void psxy_plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PS
 	if (kind == EBAR_NOTCHED_WHISKER) {	/* Notched box-n-whisker plot */
 		double xp[10], yp[10], s, p;
 		s = 1.57 * (yy[2] - yy[1]) / sqrt(hinge[4]);		/* 5th term in hinge has n */
-		xp[0] = xp[1] = xp[3] = xp[4] = xx[2];
-		xp[5] = xp[6] = xp[8] = xp[9] = xx[1];
+		xp[0] = xp[1] = xp[3] = xp[4] = xH;
+		xp[5] = xp[6] = xp[8] = xp[9] = xL;
 		xp[2] = xx[0] + 0.5 * error_width2;
 		xp[7] = xx[0] - 0.5 * error_width2;
 		yp[0] = yp[9] = yy[1];
@@ -297,8 +302,8 @@ GMT_LOCAL void psxy_plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PS
 		PSL_plotsegment (PSL, xp[7], y, xp[2], y);		/* Median line */
 	}
 	else {
-		PSL_plotbox (PSL, xx[2], yy[2], xx[1], yy[1]);		/* Main box */
-		PSL_plotsegment (PSL, xx[1], y, xx[2], y);		/* Median line */
+		PSL_plotbox (PSL, xH, yy[2], xL, yy[1]);	/* Main box */
+		PSL_plotsegment (PSL, xL, y, xH, y);		/* Median line */
 	}
 }
 
@@ -543,7 +548,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+p Set the error bar <pen> attributes.");
 	GMT_Usage (API, 3, "+n Select notched box-and whisker (notch width represents uncertainty "
 		"in the median); a 5th extra column with the sample size is required via the input.");
-	GMT_Usage (API, 3, "+w Change error cap <width> [%gp].", EBAR_CAP_WIDTH);
+	GMT_Usage (API, 3, "+w Change error bar cap width or box-and-whisker body and whisker widths via <width> [%gp]. Use +w<width>/<cap> to set both separately.", EBAR_CAP_WIDTH);
 	GMT_Usage (API, -2, "The settings of -W, -G affect the appearance of the 25-75%% box. "
 		"Given -C, use +cl to apply CPT color to error pen and +cf for error fill [both].");
 	gmt_segmentize_syntax (API->GMT, 'F', 1);
@@ -751,7 +756,7 @@ GMT_LOCAL unsigned int psxy_old_E_parser (struct GMTAPI_CTRL *API, struct PSXY_C
 				j0 = 0;
 				while (txt_a[j0] && txt_a[j0] != '/') j0++;
 				txt_a[j0] = 0;
-				Ctrl->E.size = gmt_M_to_inch (API->GMT, txt_a);
+				Ctrl->E.width = Ctrl->E.cap = gmt_M_to_inch (API->GMT, txt_a);
 				while (text[j] && text[j] != '/') j++;
 				j--;
 				break;
@@ -825,16 +830,17 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 			case 'E':	/* Get info for error bars and box-whisker bars */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				if (gmt_found_modifier (GMT, opt->arg, "aAcnpw")) {
-					/* New parser for -E[x|y|X|Y][+a|A][+cl|f][+n][+p<pen>][+w<capwidth>] */
-					char p[GMT_LEN64] = {""};
+					/* New parser for -E[x|y|X|Y][+a|A][+cl|f][+n][+p<pen>][+w<width>[/<cap>] */
+					char p[GMT_LEN64] = {""}, *s = NULL;
 					unsigned int pos = 0;
+					bool whisker = false;
 					j = 0;
 					while (opt->arg[j] != '+' && j < 2) {	/* Process one or two selections */
 						switch (opt->arg[j]) {
 							case 'x':	Ctrl->E.xbar = EBAR_NORMAL;  break;	/* Error bar for x */
 							case 'y':	Ctrl->E.ybar = EBAR_NORMAL;  break;	/* Error bar for x */
-							case 'X':	Ctrl->E.xbar = EBAR_WHISKER; break;	/* Box-whisker for x */
-							case 'Y':	Ctrl->E.ybar = EBAR_WHISKER; break;	/* Box-whisker for y */
+							case 'X':	Ctrl->E.xbar = EBAR_WHISKER; whisker = true;	break;	/* Box-whisker for x */
+							case 'Y':	Ctrl->E.ybar = EBAR_WHISKER; whisker = true;	break;	/* Box-whisker for y */
 							default:
 								GMT_Report (API, GMT_MSG_ERROR, "Option -E: Unrecognized error bar selection %c\n", opt->arg[j]);
 								n_errors++;	break;
@@ -868,8 +874,20 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 									n_errors++;
 								}
 								break;
-							case 'w':	/* Error bar cap width */
-								Ctrl->E.size = gmt_M_to_inch (GMT, &p[1]);
+							case 'w':	/* Error bar cap width and or box-and-whisker body width */
+								if ((s = strchr (p, '/'))) {	/* Got separate arguments for whisker width and cap width */
+									if (whisker) {	/* OK, process the two arguments */
+										sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
+										Ctrl->E.width = gmt_M_to_inch (GMT, txt_a);
+										Ctrl->E.cap   = gmt_M_to_inch (GMT, txt_b);
+									}
+									else {	/* Cannot give two arguments for error bars */
+										GMT_Report (API, GMT_MSG_ERROR, "Option -E: Cannot give two values for error bar cap width\n");
+										n_errors++;
+									}
+								}
+								else/* Use same value for box-and-whisker width and cap width */
+									Ctrl->E.width = Ctrl->E.cap = gmt_M_to_inch (GMT, &p[1]);
 								break;
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
@@ -1188,7 +1206,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
 	if (S.symbol == PSL_DOT) penset_OK = false;	/* Dots have no outline */
 
-	Ctrl->E.size *= 0.5;	/* Since we draw half-way in either direction */
+	Ctrl->E.width *= 0.5;	/* Since we draw half-way in either direction */
+	Ctrl->E.cap   *= 0.5;	/* Since we draw half-way in either direction */
 
 	current_pen = default_pen = Ctrl->W.pen;
 	current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
@@ -1694,15 +1713,15 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				gmt_setpen (GMT, &Ctrl->E.pen);
 				if (error_x) {
 					if (error_type[GMT_X] < EBAR_WHISKER)
-						psxy_plot_x_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], &in[xy_errors[GMT_X]], Ctrl->E.size, n_total_read, error_type[GMT_X]);
+						psxy_plot_x_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], &in[xy_errors[GMT_X]], Ctrl->E.cap, n_total_read, error_type[GMT_X]);
 					else
-						psxy_plot_x_whiskerbar (GMT, PSL, plot_x, in[GMT_Y], &in[xy_errors[GMT_X]], Ctrl->E.size, current_fill.rgb, n_total_read, error_type[GMT_X]);
+						psxy_plot_x_whiskerbar (GMT, PSL, plot_x, in[GMT_Y], &in[xy_errors[GMT_X]], Ctrl->E.width, Ctrl->E.cap, current_fill.rgb, n_total_read, error_type[GMT_X]);
 				}
 				if (error_y) {
 					if (error_type[GMT_Y] < EBAR_WHISKER)
-						psxy_plot_y_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], &in[xy_errors[GMT_Y]], Ctrl->E.size, n_total_read, error_type[GMT_Y]);
+						psxy_plot_y_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], &in[xy_errors[GMT_Y]], Ctrl->E.cap, n_total_read, error_type[GMT_Y]);
 					else
-						psxy_plot_y_whiskerbar (GMT, PSL, in[GMT_X], plot_y, &in[xy_errors[GMT_Y]], Ctrl->E.size, current_fill.rgb, n_total_read, error_type[GMT_Y]);
+						psxy_plot_y_whiskerbar (GMT, PSL, in[GMT_X], plot_y, &in[xy_errors[GMT_Y]], Ctrl->E.width, Ctrl->E.cap, current_fill.rgb, n_total_read, error_type[GMT_Y]);
 				}
 			}
 
@@ -2259,15 +2278,15 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				gmt_setpen (GMT, &Ctrl->E.pen);
 				if (error_x) {
 					if (error_type[GMT_X] < EBAR_WHISKER)
-						psxy_plot_x_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], &in[xy_errors[GMT_X]], Ctrl->E.size, n_total_read, error_type[GMT_X]);
+						psxy_plot_x_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], &in[xy_errors[GMT_X]], Ctrl->E.cap, n_total_read, error_type[GMT_X]);
 					else
-						psxy_plot_x_whiskerbar (GMT, PSL, plot_x, in[GMT_Y], &in[xy_errors[GMT_X]], Ctrl->E.size, current_fill.rgb, n_total_read, error_type[GMT_X]);
+						psxy_plot_x_whiskerbar (GMT, PSL, plot_x, in[GMT_Y], &in[xy_errors[GMT_X]], Ctrl->E.width, Ctrl->E.cap, current_fill.rgb, n_total_read, error_type[GMT_X]);
 				}
 				if (error_y) {
 					if (error_type[GMT_Y] < EBAR_WHISKER)
-						psxy_plot_y_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], &in[xy_errors[GMT_Y]], Ctrl->E.size, n_total_read, error_type[GMT_Y]);
+						psxy_plot_y_errorbar (GMT, PSL, in[GMT_X], in[GMT_Y], &in[xy_errors[GMT_Y]], Ctrl->E.cap, n_total_read, error_type[GMT_Y]);
 					else
-						psxy_plot_y_whiskerbar (GMT, PSL, in[GMT_X], plot_y, &in[xy_errors[GMT_Y]], Ctrl->E.size, current_fill.rgb, n_total_read, error_type[GMT_Y]);
+						psxy_plot_y_whiskerbar (GMT, PSL, in[GMT_X], plot_y, &in[xy_errors[GMT_Y]], Ctrl->E.width, Ctrl->E.cap, current_fill.rgb, n_total_read, error_type[GMT_Y]);
 				}
 			}
 			if (S.read_symbol_cmd && (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC)) {	/* Reset status */
