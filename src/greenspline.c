@@ -1814,7 +1814,11 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				}
 				break;
 		}
-
+		/* Update the expected number of input columns */
+		if ((error = GMT_Set_Columns (API, GMT_IN, n_A_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to set input data columns to %u\n", n_A_cols);
+			Return (error);
+		}
 		if (GMT->common.b.active[GMT_IN]) GMT->common.b.ncol[GMT_IN]++;	/* Must assume it is just one extra column */
 		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -C,-F,-L files */
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
