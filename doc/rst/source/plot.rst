@@ -18,7 +18,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy* ]
-[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*] ]
+[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*] ]
 [ |-F|\ [**c**\|\ **n**\|\ **r**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
 [ |-G|\ *fill*\|\ **+z** ]
 [ |-H|\ [*scale*] ]
@@ -130,7 +130,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*]
+**-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*]
     Draw symmetrical error bars. Append **x** and/or **y** to indicate which bars you
     want to draw (Default is both x and y). The x and/or y errors must be
     stored in the columns after the (x,y) pair [or (x,y,z) triplet]. If
@@ -146,8 +146,10 @@ Optional Arguments
     "box-and-whisker" symbol where the notch width reflects the uncertainty
     in the median. This symbol requires a 5th extra data column to contain the
     number of points in the distribution.  The **+w** modifier sets the
-    *cap* width that indicates the length of the end-cap on the error bars
-    [7\ **p**]. Pen attributes for error bars may also be set via **+p**\ *pen*.
+    *width* that indicates the length of the end-cap on the error bars
+    [7\ **p**]. For box-and-whisker symbols it sets both the default box width and whisker cap length [7\ **p**].
+    Append both *width*\ /*cap* to set separate width and cap dimensions for such symbols.
+    Pen attributes for error bars may also be set via **+p**\ *pen*.
     [Defaults: width = default, color = black, style = solid]. When |-C| is
     used we can control how the look-up color is applied to our symbol.
     Append **+cf** to use it to fill the symbol, while **+cl** will just
