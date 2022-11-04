@@ -150,7 +150,7 @@ Optional Arguments
     [7\ **p**]. For box-and-whisker symbols it sets both the default box width and whisker cap length [7\ **p**].
     Append both *width*\ /*cap* to set separate width and cap dimensions for such symbols.
     Pen attributes for error bars may also be set via **+p**\ *pen*.
-    [Defaults: width = default, color = black, style = solid]. When |-C| is
+    [Defaults: width = 0.25p, color = black, style = solid]. When |-C| is
     used we can control how the look-up color is applied to our symbol.
     Append **+cf** to use it to fill the symbol, while **+cl** will just
     set the error pen color and turn off symbol fill.  Giving **+c** will
@@ -254,7 +254,7 @@ Optional Arguments
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
-    width = default, color = black, style = solid]. If the modifier **+cl**
+    width = 0.25p, color = black, style = solid]. If the modifier **+cl**
     is appended then the color of the line are taken from the CPT (see
     |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill.  Use just **+c** for both effects.
