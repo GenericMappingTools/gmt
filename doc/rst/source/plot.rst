@@ -131,10 +131,11 @@ Optional Arguments
 .. _-E:
 
 **-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*]
-    Draw symmetrical error bars. Append **x** and/or **y** to indicate which bars you
+    Draw error bars. Append **x** and/or **y** to indicate which bars you
     want to draw (Default is both x and y). The x and/or y errors must be
     stored in the columns after the (x,y) pair [or (x,y,z) triplet]. If
-    **+a** is appended then we will draw asymmetrical error bars; these requires
+    **+a** is appended then we will draw asymmetrical error bars [Default
+    is symmetrical error bars]; these requires
     two rather than one extra data column, with the two signed deviations.
     Use **+A** to read the low and high bounds rather than signed deviations.
     If upper case **X** and/or **Y** are used we will instead draw
