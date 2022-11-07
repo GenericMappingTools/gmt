@@ -112,7 +112,9 @@ Optional Arguments
     [Default extracts all records]. Optionally, append **f** or **l** to
     only extract the first or last record of each segment, respectively.
     Alternatively, append **m**\ *stride* to extract every *stride* records;
-    use **M** to also include the last record.
+    use **M** to also include the last record. **Note**: This option operates
+    on the input records and if combined with |-N| the latter only sorts 
+    the reduced data set. See **-qo** for limiting the output records after sorting.
 
 .. _-F:
 
