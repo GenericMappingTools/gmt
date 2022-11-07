@@ -15273,7 +15273,14 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 		nc = sscanf (S->text[row], "%s %[^\n]", type, txt);
 		found = ((item == 'a' && (strchr (type, 'a') || strchr (type, 'i'))) || (strchr (type, item) != NULL));
 		if (!found) continue;	/* Not the type we were requesting */
-		if (S->data[GMT_X][row] < limit[0] || S->data[GMT_X][row] > limit[1]) continue;
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Be careful with periodic data */
+			if (!gmt_M_360_range (limit[0], limit[1])) {	/* It is possible to be outside if not global */
+				S->data[GMT_X][row] -= 360.0;	/* Ensure we are far west */
+				while (S->data[GMT_X][row] < limit[0]) S->data[GMT_X][row] += 360.0;	/* Wind towards east */
+				if (S->data[GMT_X][row] > limit[1]) continue;	/* Outside given region */
+			}
+		}
+		else if (S->data[GMT_X][row] < limit[0] || S->data[GMT_X][row] > limit[1]) continue;	/* Cartesian check */
 		if (strchr (type, 'i')) n_int++;
 		if (strchr (type, 'a')) n_annot++;
 		x[k] = S->data[GMT_X][row];
