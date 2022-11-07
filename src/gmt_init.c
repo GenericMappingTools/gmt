@@ -17363,7 +17363,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			/* Intentionally fall through - to 'v' */
 		case 'v':
 			p->symbol = PSL_VECTOR;
-			if (!gmt_M_compat_check (GMT, 4) || (strchr (text, '+') || !p->v.parsed_v4)) {	/* Check if new syntax before decoding */
+			if (!p->v.parsed_v4 && (!gmt_M_compat_check (GMT, 4) || strchr (text, '+'))) {	/* Check if we have new syntax before decoding */
 				if (gmt_parse_vector (GMT, symbol_type, text, p)) {	/* Error decoding new vector syntax */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S%c parsing failure\n", symbol_type);
 					decode_error++;
