@@ -1155,12 +1155,20 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 			}
 		}
 		else {	/* Just a list with one or more comma-separated library paths */
-			unsigned int pos = 0;
+			unsigned int pos = 0, ok;
 			while (gmt_strtok (GMT->session.CUSTOM_LIBS, ",", &pos, text)) {
+				for (e = ok = 0; e < n_extensions; e++) {
+					if (strstr (text, extension[e])) ok++;
+				}
+				if (ok != 1) {	/* Maybe did not append proper shared library extension */
+					GMT_Report (API, GMT_MSG_ERROR, "Shared Library %s lacks proper extension\n", text);
+					GMT_Report (API, GMT_MSG_ERROR, "Check that your GMT_CUSTOM_LIBS (in %s, perhaps) is correct; if a directory it must end in /\n", GMT_SETTINGS_FILE);
+					continue;
+				}
 				libname = strdup (basename (text));		/* Last component from the pathname */
 				if (access (text, R_OK)) {
 					GMT_Report (API, GMT_MSG_ERROR, "Shared Library %s cannot be found or read!\n", text);
-					GMT_Report (API, GMT_MSG_ERROR, "Check that your GMT_CUSTOM_LIBS (in %s, perhaps) is correct\n", GMT_SETTINGS_FILE);
+					GMT_Report (API, GMT_MSG_ERROR, "Check that your GMT_CUSTOM_LIBS (in %s, perhaps) is correct; if a directory it must end in /\n", GMT_SETTINGS_FILE);
 				}
 				else if ((API->lib[n_custom_libs].name = gmtapi_lib_tag (libname))) {
 					API->lib[n_custom_libs].path = strdup (text);
