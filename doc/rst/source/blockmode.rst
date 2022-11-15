@@ -42,8 +42,8 @@ Synopsis
 Description
 -----------
 
-**blockmode** reads arbitrarily located (*x*,\ *y*,\ *z*) triples [or
-optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
+**blockmode** reads arbitrarily located (*x*,\ *y*,\ *z*) triplets [or
+optionally weighted quadruplets (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output mode estimates of
 position and value for every non-empty block in a grid region defined by
 the |-R| and |-I| arguments. See |-G| for writing gridded output directly.
