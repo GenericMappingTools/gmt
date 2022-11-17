@@ -938,14 +938,14 @@ GMT_LOCAL int surface_write_grid (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctr
 	gmt_grdfloat *u = C->Grid->data;
 
 	if (!Ctrl->Q.active) {	/* Probably need to shrink region to the desired one by increasing the pads */
-		unsigned int del_pad[4] = {0, 0, 0, 0}, k, n = 0;
+		int del_pad[4] = {0, 0, 0, 0}, k, n = 0;
 		struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (C->Grid->header);
 		/* Determine the shifts inwards for each side */
 		del_pad[XLO] = irint ((C->wesn_orig[XLO] - C->Grid->header->wesn[XLO]) * HH->r_inc[GMT_X]);
 		del_pad[XHI] = irint ((C->Grid->header->wesn[XHI] - C->wesn_orig[XHI]) * HH->r_inc[GMT_X]);
 		del_pad[YLO] = irint ((C->wesn_orig[YLO] - C->Grid->header->wesn[YLO]) * HH->r_inc[GMT_Y]);
 		del_pad[YHI] = irint ((C->Grid->header->wesn[YHI] - C->wesn_orig[YHI]) * HH->r_inc[GMT_Y]);
-		for (k = 0; k < 4; k++) n += del_pad[k];	/* See if any is needed */
+		for (k = 0; k < 4; k++) n += abs (del_pad[k]);	/* See if any is needed */
 		if (n) {	/* Yep, must update pad and all meta data for this grid first */
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Increase pad by %d %d %d %d\n", del_pad[XLO], del_pad[XHI], del_pad[YLO], del_pad[YHI]);
 			for (k = 0; k < 4; k++) C->Grid->header->pad[k] += del_pad[k];	/* Increase pad to shrink region */
