@@ -1564,6 +1564,14 @@ GMT_LOCAL int psconvert_make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) 
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL psconvert_gs_is_good (int major, int minor) {
+	/* Return true if the gs version works with transparency */
+	if (major > 9) return true;	/* 10 should work as of 10.0.0 unless there are future regressions */
+	if (major < 9) return false;	/* Before 9 we think transparency was questionable */
+	if (minor == 51 || minor == 52) return false;	/* These two minor versions had gs transparency bugs */
+	if (minor >= 21) return true;	/* Trouble before minor version 21 */
+	return false;	/* Not implemented (?) */
+}
 
 EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
@@ -1713,9 +1721,9 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Initial assignment of gs_params. Note: If we detect transparency then we must select the PDF settings since we must convert to PDF first */
 	if (Ctrl->T.device == GS_DEV_PDF)	/* For PDF (and PNG via PDF) we want a bunch of prepress and other settings to maximize quality */
-		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
+		gs_params = (psconvert_gs_is_good (gsVersion.major, gsVersion.minor)) ? gs_params_pdfnew : gs_params_pdfold;
 	else	/* For rasters */
-		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_rasnew : gs_params_rasold;
+		gs_params = (psconvert_gs_is_good (gsVersion.major, gsVersion.minor)) ? gs_params_rasnew : gs_params_rasold;
 
 	gs_BB = "-q -dNOSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox -DPSL_no_pagefill"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
 
@@ -2469,7 +2477,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (has_transparency && gsVersion.major == 9 && (gsVersion.minor == 51 || gsVersion.minor == 52))
 				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version %s has a bug preventing it - please upgrade to 9.53\n", GSstring);
 		if (transparency && Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
-				gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
+				gs_params = (psconvert_gs_is_good (gsVersion.major, gsVersion.minor)) ? gs_params_pdfnew : gs_params_pdfold;
 
 		/* Build the converting Ghostscript command and execute it */
 
