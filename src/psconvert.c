@@ -1566,7 +1566,7 @@ GMT_LOCAL int psconvert_make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) 
 
 GMT_LOCAL psconvert_gs_is_good (int major, int minor) {
 		/* Return true if the gs version works with transparency */
-	if (major > 9) return true;		/* 10 should work as of 10.0.0 unless there are future regressions */
+	if (major > 9) return true;	/* 10 should work as of 10.0.0 unless there are future regressions */
 	if (major < 9) return false;	/* Before 9 we think transparency was questionable */
 	if (minor == 51 || minor == 52) return false;	/* These two minor versions had gs transparency bugs */
 	if (minor >= 21) return true;	/* Trouble before minor version 21 */
