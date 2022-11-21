@@ -28,7 +28,10 @@
 #ifndef GMT_GSFORMATS_H
 #define GMT_GSFORMATS_H
 
+#define GMT_GRAPHIC_MAXLEN 4	/* Longest name of a format is jpeg and tiff for now */
+
 /* List ps at end since it causes a renaming of ps- to ps only.  Also allow alternative jpeg and tiff spellings */
+static char *gmt_session_codestr = "bejpPtv"; /* First letter of a valid graphics format in alphabetic order [UPDATE LIST IF ADDING MORE FORMATS IN FUTURE] */
 static char *gmt_session_format[] = {"pdf", "jpg", "jpeg", "png", "PNG", "ppm", "tiff", "tif", "bmp", "eps", "ps", NULL};
 static char gmt_session_code[] =    { 'f',   'j',    'j',   'g',   'G',   'm',   't',    't',   'b',   'e',  'p',    0};
 
