@@ -187,6 +187,7 @@
 #include "gmt_internals.h"
 #include "gmt_sharedlibs.h" 	/* Common shared libs structures */
 #include <stdarg.h>
+#include "gmt_gsformats.h"
 
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>
@@ -816,9 +817,9 @@ GMT_LOCAL void gmtapi_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 }
 #endif
 
-GMT_LOCAL bool gmtapi_modern_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION *head) {
+GMT_LOCAL int gmtapi_modern_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION *head) {
 	/* Must check if a one-liner with special graphics format settings were given, e.g., "gmt pscoast -Rg -JH0/15c -Gred -png map" */
-	bool modern = false;
+	int modern = 0;
 	unsigned pos;
 	size_t len;
 	char format[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
@@ -826,20 +827,24 @@ GMT_LOCAL bool gmtapi_modern_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTIO
 
 	for (opt = head; opt; opt = opt->next) {
 		if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
-		if (strchr ("bejpPtv", opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format [UPDATE LIST IF ADDING MORE FORMATS IN FUTURE] */
-		if ((len = strlen (opt->arg)) == 0 || len >= GMT_LEN128) continue;	/* No arg or very long args that are filenames can be skipped */
+		if (strchr (gmt_session_codestr, opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format */
+		if ((len = strlen (opt->arg)) == 0 || len >= GMT_GRAPHIC_MAXLEN) continue;	/* No arg or too long args that are filenames can be skipped */
 		snprintf (format, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
 		if ((c = strchr (format, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
 		if (gmt_get_graphics_id (API->GMT, format) != GMT_NOTSET) {	/* Found a valid graphics format option */
-			modern = true;	/* Seems like it is, but check the rest of the formats, if there are more */
+			modern = 1;	/* Seems like it is, but check the rest of the formats, if there are more */
 			if (c == NULL) continue;	/* Nothing else to check, go to next option */
 			/* Make sure any other formats are valid, too */
 			if (c) c[0] = ',';	/* Restore any comma we found */
 			pos = 0;
 			while (modern && gmt_strtok (format, ",", &pos, p)) {	/* Check each format to make sure each is OK */
 				if (gmt_get_graphics_id (API->GMT, p) == GMT_NOTSET)	/* Oh, something wrong was given, cannot be modern */
-					modern = false;
+					modern = 0;
 			}
+		}
+		else {  /* Most likely typo in graphics name */
+			modern = GMT_NOTSET;    /* Flag this type of error */
+			GMT_Report (API, GMT_MSG_ERROR, "Unrecognized graphics format %s for modern mode one-liner command\n", format);
 		}
 	}
 	return modern;
@@ -851,12 +856,16 @@ GMT_LOCAL int gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const c
 	 * Also, if a user wants to get the usage message for a modern mode module then it is also a type
 	 * of one-liner and thus we set to GMT_MODERN as well, but only for modern module names. */
 
-	bool usage = false, modern;
-	int error = GMT_NOERROR;
+	bool usage = false;
+	int error = GMT_NOERROR, modern;
 	struct GMT_OPTION *opt, *head = NULL;
 
 	head = GMT_Create_Options (API, mode, args);	/* Get option list */
 	modern = gmtapi_modern_oneliner (API, head);		/* Return true if one-liner syntax was detected */
+	if (modern == GMT_NOTSET) {
+		error = GMT_RUNTIME_ERROR;
+		goto free_and_return;
+	}
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to check if a classic name was given or if user tried a one-liner in modern mode */
 		if (modern) {	/* Yikes, someone is using one-liner within a GMT modern mode session */
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot run a one-liner modern command within an existing modern mode session\n");
