@@ -817,6 +817,25 @@ GMT_LOCAL void gmtapi_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 }
 #endif
 
+GMT_LOCAL bool gmtapi_modern_casename (char *arg) {
+    /* Return true if argument is all letters of same case, e.g., pny, PNN, tift, jxx, i.e.,
+     * the user did -pny map or -jxx map etc.  We will assume that is likely a typo and report that. */
+    unsigned int k = 1;	/* First position beyond the leading letter */
+	if (islower (arg[0])) {	/* Expect all to be lower case letters */
+		while (arg[k]) {
+			if (!islower (arg[k])) return false;    /* Failed the test */
+			else k++;
+		}
+	}
+	else {	/* Check for all upper case letters */
+		while (arg[k]) {
+			if (!isupper (arg[k])) return false;    /* Failed the test */
+			else k++;
+		}
+	}
+	return (true);	/* Passed the letter check */
+}
+
 GMT_LOCAL int gmtapi_modern_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION *head) {
 	/* Must check if a one-liner with special graphics format settings were given, e.g., "gmt pscoast -Rg -JH0/15c -Gred -png map" */
 	int modern = 0;
@@ -826,7 +845,8 @@ GMT_LOCAL int gmtapi_modern_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION
 	struct GMT_OPTION *opt;
 
 	for (opt = head; opt; opt = opt->next) {
-		if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
+        if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;  /* Skip file names */
+        if (opt->next && opt->next->option != GMT_OPT_INFILE) continue;  /* Skip arg not followed by file names (we expect -png map, for instance) */
 		if (strchr (gmt_session_codestr, opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format */
 		if ((len = strlen (opt->arg)) == 0 || len >= GMT_GRAPHIC_MAXLEN) continue;	/* No arg or too long args that are filenames can be skipped */
 		snprintf (format, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
@@ -842,7 +862,7 @@ GMT_LOCAL int gmtapi_modern_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION
 					modern = 0;
 			}
 		}
-		else {  /* Most likely typo in graphics name */
+		else if (gmtapi_modern_casename (format)) {  /* Most likely typo in graphics name */
 			modern = GMT_NOTSET;    /* Flag this type of error */
 			GMT_Report (API, GMT_MSG_ERROR, "Unrecognized graphics format %s for modern mode one-liner command\n", format);
 		}
