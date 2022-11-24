@@ -2179,7 +2179,7 @@ GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 						break;
 					case 'o':	/* Maybe +o if next letter could be part of a number */
 						if (strchr ("-+.0123456789", word[1])) {	/* Seems to be a number */
-							if ((k = gmt_get_pair (GMT, &word[1], GMT_PAIR_DIM_DUP, GMT->current.setting.map_logo_pos)) < 2) error++;
+							if ((k = gmt_get_pair (GMT, &word[1], GMT_PAIR_DIM_DUP, GMT->current.setting.map_logo_pos)) < 1) error++;
 						}
 						break;
 					default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
