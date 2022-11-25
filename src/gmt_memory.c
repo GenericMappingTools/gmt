@@ -98,13 +98,14 @@ GMT_LOCAL void gmtmemory_die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, siz
  * of all memory allocated by gmt_M_memory and subsequently freed with gmt_M_free.  If
  * upon exit there are unreleased memory we issue a report of how many items were
  * not freed and where they were first allocated.  This is only used by the developers
- * and if -DMEMDEBUG is not set then all of this is left out.
+ * and if -DMEMDEBUG is not set then all of this code is left out of the compilation.
+ *
  * The environmental variable GMT_TRACK_MEMORY controls the memory tracking:
- * a. Unset GMT_TRACK_MEMORY or set to "OFF" to deactivate the memory tracking.
- * b. Set GMT_TRACK_MEMORY to ON (or anything but OFF) to activate the memory tracking.
- * c. Set GMT_TRACK_MEMORY to LOG to activate the memory tracking and to write a
+ * a. Unset GMT_TRACK_MEMORY or set it to "OFF" to deactivate memory tracking.
+ * b. Set GMT_TRACK_MEMORY to ON (or anything but OFF) to activate memory tracking.
+ * c. Set GMT_TRACK_MEMORY to LOG to activate memory tracking and to write a
  *    detailed log of all transactions taking place during a session to the file
- *    gmt_memtrack_<pid>.log
+ *    gmt_memtrack_<pid>.log where <pid> is the process ID of the command.
  * d. Set GMT_TRACK_MEMORY to an integer >= 0 to track the allocation reported by this ID
  *    You will need to set a break point in gmtmemory_memtrack_add so the debugger stops.
  *
@@ -134,8 +135,8 @@ int gmt_memtrack_init (struct GMT_CTRL *GMT) {
 	if (M->active && isdigit (env[0]))	/* Got a specific ID to track; see gmtmemory_memtrack_add */
 		 M->find = atoi (env);
 	M->search = true;
+	if (M->active) M->fp = stderr;
 	if (!M->do_log) /* Logging not requested */ {
-		if (M->active) M->fp = stderr;
 		return GMT_OK;
 	}
 	else
@@ -364,7 +365,7 @@ static inline void gmtmemory_treereport (struct GMT_CTRL *GMT, struct MEMORY_ITE
 	double size = gmtmemory_memtrack_mem (x->size, &u);
 	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
 	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Memory not freed first allocated in %s (ID = %" PRIuS "): %.3f %s [%" PRIuS " bytes]\n", x->name, x->ID, size, unit[u], x->size);
-	if (M->do_log)
+	if (M->active)
 		fprintf (M->fp, "# Memory not freed first allocated in %s (ID = %" PRIuS "): %.3f %s [%"
 						 PRIuS " bytes]\n", x->name, x->ID, size, unit[u], x->size);
 }
@@ -395,19 +396,19 @@ void gmt_memtrack_report (struct GMT_CTRL *GMT) {
 	size = gmtmemory_memtrack_mem (M->maximum, &u);
 	GMT_Report (GMT->parent, level, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n",
 							size, unit[u], M->maximum);
-		if (M->do_log)
-			fprintf (M->fp, "# Max total memory allocated was %.3f %s [%"
+	if (M->do_log)
+		fprintf (M->fp, "# Max total memory allocated was %.3f %s [%"
 							 PRIuS " bytes]\n", size, unit[u], M->maximum);
 	size = gmtmemory_memtrack_mem (M->largest, &u);
 	GMT_Report (GMT->parent, level, "Single largest allocation was %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->largest);
-		if (M->do_log)
-			fprintf (M->fp, "# Single largest allocation was %.3f %s [%"
+	if (M->do_log)
+		fprintf (M->fp, "# Single largest allocation was %.3f %s [%"
 							 PRIuS " bytes]\n", size, unit[u], M->largest);
 	if (M->current) {
 		size = gmtmemory_memtrack_mem (M->current, &u);
 		GMT_Report (GMT->parent, level, "MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n",
 								size, unit[u], M->current);
-		if (M->do_log)
+		if (M->active)
 			fprintf (M->fp, "# MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n",
 							 size, unit[u], M->current);
 	}
@@ -418,12 +419,12 @@ void gmt_memtrack_report (struct GMT_CTRL *GMT) {
 	if (M->n_freed > M->n_allocated) {
 		uint64_t n_multi_frees = M->n_freed - M->n_allocated;
 		GMT_Report (GMT->parent, level, "Items FREED MULTIPLE TIMES: %" PRIu64 "\n", n_multi_frees);
-		if (M->do_log)
+		if (M->active)
 			fprintf (M->fp, "# Items FREED MULTIPLE TIMES: %" PRIu64 "\n", n_multi_frees);
 	}
 	if (excess) {
 		GMT_Report (GMT->parent, level, "Items NOT PROPERLY FREED: %" PRIu64 "\n", excess);
-		if (M->do_log)
+		if (M->active)
 			fprintf (M->fp, "# Items NOT PROPERLY FREED: %" PRIu64 "\n", excess);
 	}
 	gmtmemory_treeprint (GMT, M->root);
