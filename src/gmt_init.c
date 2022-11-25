@@ -13178,6 +13178,7 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			/* Deprecated as of 6.2: we only use GMT_DATA_UPDATE_INTERVAL to control this feature now, so just break here */
 			break;
 		case GMTCASE_GMT_COMPATIBILITY:
+			if (GMT->current.setting.run_mode == GMT_MODERN) GMT->current.setting.compatibility = MAX (GMT->current.setting.compatibility, 6);
 			snprintf (value, GMT_LEN256, "%u", GMT->current.setting.compatibility);
 			break;
 
