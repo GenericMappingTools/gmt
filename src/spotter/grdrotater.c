@@ -413,7 +413,7 @@ GMT_LOCAL bool grdrotater_skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATA
 EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 	int scol, srow, error = 0;	/* Signed row, col */
 	int n_stages;
-	bool not_global, global = false;
+	bool not_global, global = false, got_region;
 	openmp_int col, row, col_o, row_o, start_row, stop_row, start_col, stop_col;
 	char gfile[PATH_MAX] = {""};
 
@@ -456,12 +456,26 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 	/* Check limits and get data file */
 
+	got_region = GMT->common.R.active[RSET];	/* Remember if -R was used to set the grid region or not */
+	if (Ctrl->F.active) {	/* Read the user's polygon file */
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
+			Return (API->error);
+		}
+		if (!got_region) {	/* Did not give -R so we pick the BB of the polygon instead */
+			GMT->common.R.wesn[XLO] = D->table[0]->min[GMT_X];
+			GMT->common.R.wesn[XHI] = D->table[0]->max[GMT_X];
+			GMT->common.R.wesn[YLO] = D->table[0]->min[GMT_Y];
+			GMT->common.R.wesn[YHI] = D->table[0]->max[GMT_Y];
+			got_region = true;	/* Now "-R" is in effect set for the input grid */
+		}
+	}
+
 	if (Ctrl->In.file) {	/* Provided an input grid */
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		HH = gmt_get_H_hidden (G->header);
-		if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
+		if (!got_region) gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set (via -R or -F) so we use the grid domain */
 
 		/* Determine the wesn to be used to read the Ctrl->In.file; or exit if file is outside -R */
 
@@ -471,7 +485,7 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 		}
 		global = (doubleAlmostEqual (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO], 360.0)
 							&& doubleAlmostEqual (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO], 180.0));
-		if (!GMT->common.R.active[RSET]) global = gmt_grd_is_global (GMT, G->header);
+		if (!got_region) global = gmt_grd_is_global (GMT, G->header);
 	}
 	not_global = !global;
 
@@ -482,12 +496,8 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->F.active) {	/* Read the user's polygon file */
-		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
-			Return (API->error);
-		}
+	if (Ctrl->F.active)	/* Read the user's polygon file */
 		pol = D->table[0];	/* Since we know it is a single file */
-	}
 	else if (not_global) {	/* Make a single grid-outline polygon */
 		if (!G) {
 			GMT_Report (API, GMT_MSG_ERROR, "No grid give so cannot determine grid outline path\n");
