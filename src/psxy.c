@@ -2582,7 +2582,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						current_fill = Ctrl->G.fill;
 				}
 				else if (z_for_cpt == NULL) {
-					if (change & 1) polygon = true;
+					if (change & 1 && Ctrl->L.anchor == 0) polygon = true;
 					if (change & 2 && !Ctrl->L.polygon) {
 						polygon = false;
 						PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
