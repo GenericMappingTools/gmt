@@ -91,6 +91,7 @@ Optional Arguments
 **-F**\ *polygonfile*
     Specify a multisegment closed polygon file that describes the inside
     area of the grid that should be projected [Default projects entire grid].
+    **Note**: If both |-F| and |-R| are given then |-R| takes precedence.
 
 .. _-N:
 
