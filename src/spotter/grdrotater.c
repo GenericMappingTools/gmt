@@ -678,6 +678,7 @@ EXTERN_MSC int GMT_grdrotater (void *V_API, int mode, void *args) {
 						gmt_matrix_vect_mult (GMT, 3U, R, P_rotated, P_original);	/* Rotate the vector */
 						gmt_cart_to_geo (GMT, &xx, &yy, P_original, true);	/* Recover degree lon lat representation */
 						yy = gmt_lat_swap (GMT, yy, GMT_LATSWAP_O2G);		/* Convert back to geodetic */
+						if (not_global && grdrotater_skip_if_outside (GMT, polr, xx, yy)) continue;	/* Outside rotated polygon */
 						scol = (int)gmt_M_grd_x_to_col (GMT, xx, G->header);
 						if (scol < 0) continue;
 						col_o = scol;	if (col_o >= (openmp_int)G->header->n_columns) continue;
