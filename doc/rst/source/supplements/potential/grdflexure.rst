@@ -50,11 +50,11 @@ for five different types of rheological foundations, all involving *constant thi
 These conditions will require the *elastic* [1; :math:`\Phi_e(\mathbf{k})`],
 *firmoviscous* [2,3; :math:`\Phi_{fv}(\mathbf{k},t)`],
 *viscoelastic* [4; :math:`\Phi_{ve}(\mathbf{k},t)`],
-and *general linear* (viscoelastic) response functions [5; :math:`\Phi_{gl}(\mathbf{k},t)`]
+and *general linear* (viscoelastic) response functions [5; :math:`\Phi_{gl}(\mathbf{k},t)`].
 If the (visco)elastic plate vanishes (zero thickness) then we obtain Airy isostasy
 (1,4) or a purely *viscous* response (2,3).  Temporal evolution can
 also be modeled by providing incremental load grids for select times and specifying a
-range of model output times.  A wide range of options allow specifying the desired
+range of model output times.  A wide range of options allows for specifying the desired
 rheology and related constants, including in-plate forces.
 
 
@@ -134,7 +134,7 @@ Optional Arguments
 .. _-C:
 
 **-C**\ **p**\|\ **y**\ *value*
-    Append **p** or **y** to change the current value of Poisson's ratio [0.25]
+    Append directives **p** or **y** to change the current value of Poisson's ratio [0.25]
     or Young's modulus [7.0e10 N/m^2], respectively.
 
 .. _-F:
