@@ -114,7 +114,7 @@ this diagram:
 The box represents the text or image. E.g., to plot a text string with
 its center at (*x*, *y*), you must use *justify* == 6. *justify* == 0
 means "no justification", which generally means (*x*, *y*) is at the
-bottom left. Convenience values PSL_NONE, PSL_BL, PSL_BC, PSL_BL,
+bottom left. Convenience values PSL_NONE, PSL_BL, PSL_BC, PSL_BR,
 PSL_ML, PSL_MC, PSL_MR, PSL_TL, PSL_TC and PSL_TR are available.
 
 Initialization
