@@ -5,7 +5,7 @@ The **-U** option
 
 .. _-U:
 
-**-U**\ [*label*\|\ **+c**][**+j**\ *just*][**+o**\ *dx*\ [/*dy*]]
+**-U**\ [*label*\|\ **+c**][**+j**\ *just*][**+o**\ *dx*\ [/*dy*]][**+t**\ *text*]
     Draw GMT time stamp logo on plot. |Add_-U|
 
 **Description**
@@ -19,6 +19,8 @@ The **-U** option draws the GMT system time stamp on the plot. The following mod
   **R**\ (ight)) and a vertical (**T**\ (op), **M**\ (iddle), or **B**\ (ottom)) code [default is **BL**].
 - **+o**\ *dx*\ [/*dy*] to offset the :ref:`anchor point <Anchor_Point_o>` for the time stamp by *dx* and optionally
   *dy* (if different than *dx*).
+- **+t** can be used to replace the UNIX time stamp with a custom *text* instead. Place multi-word *text* in quotes
+  and let **+t** be the last modifier used.
 
 The GMT parameters :term:`MAP_LOGO`, :term:`MAP_LOGO_POS`, :term:`FONT_LOGO` and :term:`FORMAT_TIME_STAMP` can affect
 the appearance; see the :doc:`/gmt.conf` man page for details. The time string will be in the locale set by the
