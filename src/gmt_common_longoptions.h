@@ -60,7 +60,7 @@
                 "r,u",                   "rectangular,unit" },
     {   0, 'U', "timestamp",
                 "",                      "",
-                "c,j,o",                 "command,justify,offset" },
+                "c,j,o,t",               "command,justify,offset,text" },
     {   0, 'V', "verbosity",
                 "q,e,w,t,i,c,d",         "quiet,error,warning,timing,info,compat,debug",
                 "",                      "" },
