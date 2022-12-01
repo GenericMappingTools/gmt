@@ -121,6 +121,7 @@ struct GMT_COMMON {
 		bool active;
 		unsigned int just;
 		double x, y;
+		char string[GMT_LEN64];	/* User override for timestamp */
 		char *label;		/* Content not counted by sizeof (struct) */
 	} U;
 	struct V {	/* -V */

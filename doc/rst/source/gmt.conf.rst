@@ -167,9 +167,10 @@ FONT Parameters
         size <auto-scaling>`.
 
     **FONT_LOGO**
-        Font to use for text plotted as part of the GMT time logo [:doc:`theme
-        dependent <theme-settings>`]. Choose **auto** for :ref:`automatic scaling
-        with plot size <auto-scaling>`.
+        Font to use for text plotted as part of the GMT time logo. **Note**: Since the
+        time logo has a fixed height the font size for the time stamp is 8p and for the
+        optional label it is 7p. Hence, changing this font only affects the font style
+        and color but not its size.
 
     **FONT_SUBTITLE**
         Font to use when plotting titles over graphs that involve a subtitle

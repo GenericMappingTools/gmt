@@ -2145,29 +2145,31 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 #define is_plus(item,k)  (item[k-1] == '+')	/* Previous char is a plus, so maybe start of modifier */
 #define is_label(item,k) (item[k] == 'c' && (item[k+1] == '+' || item[k+1] == '\0'))	/* Modifier c followed by another modifier or end of string */
 #define is_just(item,k)  (item[k] == 'j' && (strchr ("LCRBMT", item[k+1]) && strchr ("LCRBMT", item[k+2])))	/* Is +j<just> */
-#define is_off(item,k)   (item[k] == 'o' && strchr ("-+.0123456789", item[k+1]))	/* Looks like +onumber> */
+#define is_off(item,k)   (item[k] == 'o' && strchr ("-+.0123456789", item[k+1]))	/* Looks like +o<number> */
+#define is_text(item,k)  (item[k] == 't' && item[k+1])	/* Modifier t followed by random text */
 
-/*! Parse the -U option.  Full syntax: -U[<label>][+c][+j<just>][+o]<dx>[/<dy>]]  Old syntax was -U[[<just>]/<dx>/<dy>/][c|<label>] */
+/*! Parse the -U option.  Full syntax: -U[<label>][+c][+j<just>][+o<dx>[/<dy>]][+t<string>]  Old syntax was -U[[<just>]/<dx>/<dy>/][c|<label>] */
 GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 	int just = 1, error = 0;
 
 	GMT->current.setting.map_logo = true;
+	gmt_M_memset (GMT->common.U.string, GMT_LEN64, char);	/* Initialize to nothing */
 	if (!item || !item[0]) return (GMT_NOERROR);	/* Just basic -U with no args */
 
-	if (gmt_found_modifier (GMT, item, "cjo")) {	/* New syntax */
+	if (gmt_found_modifier (GMT, item, "cjot")) {	/* New syntax */
 		unsigned int pos = 0, uerr = 0;
 		int k = 1, len = (int)strlen (item);
 		char word[GMT_LEN256] = {""}, *c = NULL;
-		/* Find the first +c|j|o that looks like it may be a modifier and not random text */
-		while (k < len && !(is_plus(item,k) && (is_label(item,k) || is_just(item,k) || is_off(item,k)))) k++;
-		if (k == len)	/* MOdifiers were just random text */
+		/* Find the first +c|j|o|t that looks like it may be a modifier and not random text */
+		while (k < len && !(is_plus(item,k) && (is_label(item,k) || is_just(item,k) || is_off(item,k) || is_text(item,k)))) k++;
+		if (k == len)	/* Modifiers were just random text */
 			strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);	/* Got a label */
 		else {	/* Appears to have gotten a valid modifier or more */
 			c = &item[k-1];	/* Start of the modifier */
 			c[0] = '\0';	/* Chop off the + so we can parse the label, if any */
 			if (item[0]) strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);	/* Got a label */
 			c[0] = '+';	/* Restore modifiers */
-			while (gmt_getmodopt (GMT, 'U', c, "cjo", &pos, word, &uerr) && uerr == 0) {
+			while (gmt_getmodopt (GMT, 'U', c, "cjot", &pos, word, &uerr) && uerr == 0) {
 				switch (word[0]) {
 					case 'c':	/* Maybe +c but only if at end of followed by another modifier */
 						if (word[1] == '+' || word[1] == '\0')	/* Use command string */
@@ -2181,6 +2183,9 @@ GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 						if (strchr ("-+.0123456789", word[1])) {	/* Seems to be a number */
 							if ((k = gmt_get_pair (GMT, &word[1], GMT_PAIR_DIM_DUP, GMT->current.setting.map_logo_pos)) < 1) error++;
 						}
+						break;
+					case 't':	/* Short text to replace dateclock string */
+						strncpy (GMT->common.U.string, &word[1], GMT_LEN64);
 						break;
 					default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 				}
@@ -6754,7 +6759,7 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	if (!strncmp (GMT_DEF_UNITS, "US", 2U))
 		gmtinit_conf_classic_US (GMT);	/* Override with US settings */
 
-	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Means we switch to classic in a modern mode setssion */
+	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Means we switch to classic in a modern mode session */
 		GMT_keyword_updated[GMTCASE_FONT_ANNOT_PRIMARY] = true;
 		GMT_keyword_updated[GMTCASE_FONT_ANNOT_SECONDARY] = true;
 		GMT_keyword_updated[GMTCASE_FONT_LABEL] = true;
@@ -6820,7 +6825,7 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_tag);
 	GMT->current.setting.given_unit[GMTCASE_FONT_TAG] = 'p';
 	/* FONT_LOGO */
-	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_logo);
+	error += gmt_getfont (GMT, "8p,Helvetica,black", &GMT->current.setting.font_logo);
 	GMT->current.setting.given_unit[GMTCASE_FONT_LOGO] = 'p';
 
 	/* FORMAT_GEO_MAP */
@@ -7697,6 +7702,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 3, "+c Use the command line as the label [%s].", GMT_choice[GMT->current.setting.map_logo]);
 			GMT_Usage (API, 3, "+j Set frame justification point [BL].");
 			GMT_Usage (API, 3, "+o Offset stamp by <dx>[/<dy>] [-54p/-54p].");
+			GMT_Usage (API, 3, "+t Override the UNIX time stamp using appended text.");
 			break;
 
 		case 'V':	/* Verbose */
@@ -10324,11 +10330,6 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 		GMT->current.setting.font_subtitle.size = scale * 18.0;	/* Modern 18p vs 10p */
 		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_FONT_SUBTITLE] = true;
-	}
-	if (gmt_M_is_dnan (GMT->current.setting.font_logo.size)) {
-		GMT->current.setting.font_logo.size = scale * 8.0;		/* Classic 8p vs 10p */
-		auto_scale = true;
-		if (conf_update) GMT_keyword_updated[GMTCASE_FONT_LOGO] = true;
 	}
 
 	/* Offsets */

@@ -93,7 +93,13 @@ void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 /* Get bitmapped 600 dpi GMT glyph for timestamp.  The glyph is a 90 x 220 pixel 1-bit image
 	and it is here represented as ceil (220 / 8) * 90 = 2520 bytes */
 
-static unsigned char GMT_glyph[2520] = {
+
+#define GMT_TIMESTAMP_DATESIZE	8.0	/* Fixed font size for date-clock timestamp portion */
+#define GMT_TIMESTAMP_LABELSIZE	7.0	/* Fixed font size for optional user label timestamp portion */
+#define GMT_TIMESTAMP_GLYPH_WIDTH	220	/* Fixed pixel width of glyph image */
+#define GMT_TIMESTAMP_GLYPH_HEIGHT	90	/* Fixed pixel height of glyph image */
+
+static unsigned char GMT_glyph[2520] = {	/* The GMT glyph bitmap */
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -3161,16 +3167,20 @@ GMT_LOCAL void gmtplot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	 *   1         2        3
 	 */
 
-	time_t right_now;
-	char label[GMT_LEN512] = {""}, text[GMT_LEN256] = {""};
+	char label[GMT_LEN512] = {""};
 	double dim[3] = {0.365, 0.15, 0.032};	/* Predefined dimensions in inches */
 	double unset_rgb[4] = {-1.0, -1.0, -1.0, 0.0};
 
 	/* Plot time string in format defined by format_time_stamp */
 
-	right_now = time ((time_t *)0);
-	strftime (text, sizeof(text), GMT->current.setting.format_time_stamp, localtime (&right_now));
-	snprintf (label, GMT_LEN256, "  %s  ", text);
+	if (GMT->common.U.string[0])	/* Override UNIX time stamp with custom short string */
+		snprintf (label, GMT_LEN256, "  %s  ", GMT->common.U.string);
+	else {	/* Build UNIX time stamp based on current time */
+		time_t right_now = time ((time_t *)0);
+		char text[GMT_LEN256] = {""};
+		strftime (text, sizeof(text), GMT->current.setting.format_time_stamp, localtime (&right_now));
+		snprintf (label, GMT_LEN256, "  %s  ", text);
+	}
 
 	PSL_command (PSL, "%% Begin GMT time-stamp\nV\n");
 	PSL_setorigin (PSL, x, y, 0.0, PSL_FWD);
@@ -3178,7 +3188,7 @@ GMT_LOCAL void gmtplot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	PSL_setfont (PSL, GMT->current.setting.font_logo.id);
 	PSL_defunits (PSL, "PSL_g_w", dim[0]);	/* Size of the black [GMT] box */
 	PSL_defunits (PSL, "PSL_g_h", dim[1]);
-	PSL_deftextdim (PSL, "PSL_b", 8.0, label);	/* Size of the white [timestamp] box (use only length) */
+	PSL_deftextdim (PSL, "PSL_b", GMT_TIMESTAMP_DATESIZE, label);	/* Size of the white [timestamp] box (use only length) */
 
 	/* When justification is not BL (justify == 1), add some PostScript code to move to the
 		location where the lower left corner of the time stamp box is to be drawn */
@@ -3200,16 +3210,18 @@ GMT_LOCAL void gmtplot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 
 	PSL_setfill (PSL, GMT->current.setting.map_default_pen.rgb, 1);
 	PSL_plotsymbol (PSL, 0.5*dim[0], 0.5*dim[1], dim, PSL_RECT);
-	PSL_plotcolorimage (PSL, 0.0, 0.0, dim[0], dim[1], PSL_BL, GMT_glyph, 220, 90, 1);
+	PSL_plotcolorimage (PSL, 0.0, 0.0, dim[0], dim[1], PSL_BL, GMT_glyph, GMT_TIMESTAMP_GLYPH_WIDTH, GMT_TIMESTAMP_GLYPH_HEIGHT, 1);
 	PSL_setfill (PSL, GMT->PSL->init.page_rgb, 1);
 	PSL_command (PSL, "PSL_g_h PSL_b_w PSL_g_w 0 Sb\n");
-	PSL_plottext (PSL, dim[0], dim[2], 8.0, label, 0.0, PSL_BL, 0);
+	(void)gmt_setfont (GMT, &GMT->current.setting.font_logo);
+	/* Place timestamp label at 8p */
+	PSL_plottext (PSL, dim[0], dim[2], GMT_TIMESTAMP_DATESIZE, label, 0.0, PSL_BL, 0);
 
 	/* Optionally, add additional label to the right of the box */
 
-	if (U_label && U_label[0]) {
+	if (U_label && U_label[0]) {	/* Place user label at 7p with 3 leading spaces */
 		snprintf (label, GMT_LEN512, "   %s", U_label);
-		PSL_plottext (PSL, 0.0, 0.0, -7.0, label, 0.0, PSL_BL, 0);
+		PSL_plottext (PSL, 0.0, 0.0, -GMT_TIMESTAMP_LABELSIZE, label, 0.0, PSL_BL, 0);
 	}
 
 	PSL_command (PSL, "U\n%% End GMT time-stamp\n");

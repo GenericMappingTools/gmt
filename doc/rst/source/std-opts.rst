@@ -14,7 +14,7 @@ Common Options
      - :ref:`Select map projection <-J_full>`
    * - **-R**\ *west/east/south/north*\ [*/zmin/zmax*][**+r**][**+u**\ *unit*]
      - :ref:`Specify region of interest <-R_full>`
-   * - **-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]
+   * - **-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*][**+t**\ *text*]
      - :ref:`Plot time-stamp on plot <-U_full>`
    * - **-V**\ [*verbosity*]
      - :ref:`Run in verbose mode <-V_full>`

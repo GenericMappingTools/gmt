@@ -310,7 +310,6 @@ are known. The **auto** flag is supported for the following parameters:
 :term:`FONT_ANNOT_SECONDARY`       Secondary annotation font [13.20p]
 :term:`FONT_HEADING`               Subplot heading font [30.80p]
 :term:`FONT_LABEL`                 Axis label font [15.40p]
-:term:`FONT_LOGO`                  Logo font [8.80p]
 :term:`FONT_SUBTITLE`              Plot subtitle font [19.80p]
 :term:`FONT_TAG`                   Tag/labeling font [17.60p]
 :term:`FONT_TITLE`                 Plot title font [24.20p]
