@@ -6759,7 +6759,7 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	if (!strncmp (GMT_DEF_UNITS, "US", 2U))
 		gmtinit_conf_classic_US (GMT);	/* Override with US settings */
 
-	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Means we switch to classic in a modern mode setssion */
+	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Means we switch to classic in a modern mode session */
 		GMT_keyword_updated[GMTCASE_FONT_ANNOT_PRIMARY] = true;
 		GMT_keyword_updated[GMTCASE_FONT_ANNOT_SECONDARY] = true;
 		GMT_keyword_updated[GMTCASE_FONT_LABEL] = true;
@@ -6825,7 +6825,7 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_tag);
 	GMT->current.setting.given_unit[GMTCASE_FONT_TAG] = 'p';
 	/* FONT_LOGO */
-	error += gmt_getfont (GMT, "auto,Helvetica,black", &GMT->current.setting.font_logo);
+	error += gmt_getfont (GMT, "8p,Helvetica,black", &GMT->current.setting.font_logo);
 	GMT->current.setting.given_unit[GMTCASE_FONT_LOGO] = 'p';
 
 	/* FORMAT_GEO_MAP */
