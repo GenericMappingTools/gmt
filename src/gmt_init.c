@@ -10331,11 +10331,6 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_FONT_SUBTITLE] = true;
 	}
-	if (gmt_M_is_dnan (GMT->current.setting.font_logo.size)) {
-		GMT->current.setting.font_logo.size = scale * 8.0;		/* Classic 8p vs 10p */
-		auto_scale = true;
-		if (conf_update) GMT_keyword_updated[GMTCASE_FONT_LOGO] = true;
-	}
 
 	/* Offsets */
 
