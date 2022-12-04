@@ -2241,7 +2241,9 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 	}
 
+#ifdef DEBUG
 	if (Ctrl->debug.active) greenspline_dump_system (A, obs, nm, "A Matrix row || obs");	/* Dump the A | b system under debug */
+#endif
 	if (Ctrl->E.active && Ctrl->C.history == GMT_SVD_NO_HISTORY) {	/* Needed A to evaluate misfit later as predict = A_orig * x */
 		A_orig = gmt_M_memory (GMT, NULL, nm * nm, double);
 		gmt_M_memcpy (A_orig, A, nm * nm, double);
@@ -2289,7 +2291,9 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		/* Now free A, AtS and obs and let "A" be N and "obs" be r; these are the weighted normal equations */
 		gmt_M_free (GMT, A);	gmt_M_free (GMT, AtS);	gmt_M_free (GMT, obs);
 		A = At;	obs = S;
+#ifdef DEBUG
 		if (Ctrl->debug.active) greenspline_dump_system (A, obs, nm, "Normal equation N row || r");
+#endif
 	}
 
 	if (Ctrl->C.active) {		/* Solve using SVD */
