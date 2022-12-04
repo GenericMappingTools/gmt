@@ -97,6 +97,9 @@ struct GREENSPLINE_CTRL {
 	} I;
 	struct GREENSPLINE_L {	/* -L */
 		bool active;
+#ifdef DEBUG
+		bool no_normalization;	/* Debugging only, if -L/ is set */
+#endif
 	} L;
 	struct GREENSPLINE_M {	/* -M<gfuncfile> */
 		bool active;
@@ -139,9 +142,11 @@ struct GREENSPLINE_CTRL {
 		bool active;
 		int mode;	/* Can be negative */
 	} Z;
-	struct GREENSPLINE_DEBUG {	/* -0 undocumented debugging option */
+#ifdef DEBUG
+	struct GREENSPLINE_DEBUG {	/* -/ undocumented debugging option to dump A | b matrix */
 		bool active;
 	} debug;
+#endif
 };
 
 enum Greenspline_modes {	/* Various integer mode flags */
@@ -581,6 +586,11 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				break;
 			case 'L':	/* Leave trend alone */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+#ifdef DEBUG
+				if (opt->arg[0] == '/')
+					Ctrl->L.no_normalization = true;
+				else
+#endif
 				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'M':	/* Read or write list of Green's function forces [NOT IMPLEMENTED YET] */
@@ -1334,6 +1344,9 @@ GMT_LOCAL double greenspline_grad_spline3d_Mitasova_Mitas (struct GMT_CTRL *GMT,
  */
 
 GMT_LOCAL double greenspline_undo_normalization (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim) {
+#ifdef DEBUG
+	if (mode == 0) return (w_norm);	/* No normalization was done during specific debug session */
+#endif
 	if (mode & GREENSPLINE_NORM) w_norm *= coeff[GSP_RANGE];	/* Scale back up by residual data range (if we normalized) */
 	w_norm += coeff[GSP_MEAN_Z];					/* Add in mean data value plus minimum residual value (if we normalized by range) */
 	if (mode & GREENSPLINE_TREND) {					/* Restore residual trend */
@@ -1352,7 +1365,6 @@ GMT_LOCAL void greenspline_do_normalization_1d (struct GMTAPI_CTRL *API, double 
 	uint64_t i;
 	double d, min = DBL_MAX, max = -DBL_MAX;
 
-	gmt_M_memset (coeff, GSP_LENGTH, double);
 	for (i = 0; i < n; i++) {	/* Find mean w-value */
 		coeff[GSP_MEAN_Z] += obs[i];
 		if ((mode & GREENSPLINE_TREND) == 0) continue;	/* No linear trend to model */
@@ -1400,6 +1412,10 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 	uint64_t i;
 	double d, min = DBL_MAX, max = -DBL_MAX;
 	char *type[4] = {"Remove mean\n", "Normalization mode: Remove %d-D linear trend\n", "Remove mean and normalize data\n", "Normalization mode: Remove %d-D linear trend and normalize data\n"};
+#ifdef DEBUG
+	if (mode == 0) return;	/* Do nothing under specific debug situation */
+#endif
+	gmt_M_memset (coeff, GSP_LENGTH, double);
 	if (mode % 2)
 		GMT_Report (API, GMT_MSG_INFORMATION, type[mode], dim);
 	else
@@ -1408,7 +1424,6 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 		greenspline_do_normalization_1d (API, X, obs, n, mode, coeff);
 		return;
 	}
-	gmt_M_memset (coeff, GSP_LENGTH, double);
 	for (i = 0; i < n; i++) {	/* Find mean z-value */
 		coeff[GSP_MEAN_Z] += obs[i];
 		if ((mode & GREENSPLINE_TREND) == 0) continue;	/* Else we also sum up x and y to get their means */
@@ -1490,7 +1505,7 @@ GMT_LOCAL double greenspline_get_dircosine (struct GMT_CTRL *GMT, double *D, dou
 
 	switch (dim) {
 		case 1:	/* 1-D */
-			C = X0[GMT_X] - X1[GMT_X];
+			C = -3.0 * (X1[GMT_X] - X0[GMT_X]);
 			break;
 		case 2:	/* 2-D */
 			az = gmt_az_backaz (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y], baz);
@@ -1656,6 +1671,13 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		normalize = GREENSPLINE_NORM;	/* Do not de-plane, just remove mean and normalize */
 	else if (Ctrl->Z.mode > 1 && Ctrl->L.active)
 		GMT_Report (API, GMT_MSG_ERROR, "-L ignored for -Z modes 3-5\n");
+
+#ifdef DEBUG
+	if (Ctrl->L.no_normalization) {
+		normalize = 0;	/* Turn off all normalization */
+		GMT_Report (API, GMT_MSG_NOTICE, "Normalization is turned off for debugging\n");
+	}
+#endif
 
 	if (Ctrl->Q.active && dimension == 2) sincosd (Ctrl->Q.az, &Ctrl->Q.dir[GMT_X], &Ctrl->Q.dir[GMT_Y]);
 
@@ -1952,7 +1974,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (m > 0 && (normalize & GREENSPLINE_TREND)) {
+	if (m > 0 && normalize && (normalize & GREENSPLINE_TREND)) {
 		normalize = GREENSPLINE_NORM;	/* Only allow taking out data mean for mixed z/slope data */
 		GMT_Report (API, GMT_MSG_WARNING, "Can only remove/restore mean z in mixed {z, grad(z)} data sets\n");
 	}
@@ -2219,7 +2241,9 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 	}
 
+#ifdef DEBUG
 	if (Ctrl->debug.active) greenspline_dump_system (A, obs, nm, "A Matrix row || obs");	/* Dump the A | b system under debug */
+#endif
 	if (Ctrl->E.active && Ctrl->C.history == GMT_SVD_NO_HISTORY) {	/* Needed A to evaluate misfit later as predict = A_orig * x */
 		A_orig = gmt_M_memory (GMT, NULL, nm * nm, double);
 		gmt_M_memcpy (A_orig, A, nm * nm, double);
@@ -2267,7 +2291,9 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		/* Now free A, AtS and obs and let "A" be N and "obs" be r; these are the weighted normal equations */
 		gmt_M_free (GMT, A);	gmt_M_free (GMT, AtS);	gmt_M_free (GMT, obs);
 		A = At;	obs = S;
+#ifdef DEBUG
 		if (Ctrl->debug.active) greenspline_dump_system (A, obs, nm, "Normal equation N row || r");
+#endif
 	}
 
 	if (Ctrl->C.active) {		/* Solve using SVD */
