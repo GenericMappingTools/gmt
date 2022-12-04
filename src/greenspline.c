@@ -712,7 +712,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				Ctrl->Z.mode = atoi (opt->arg);	/* Since I added 0 to be 1-D later so now this is mode -1 */
 				break;
 #ifdef DEBUG
-			case '0':	/* Dump matrices */
+			case '/':	/* Dump matrices */
 				Ctrl->debug.active = true;
 				break;
 			case '+':	/* Turn on TEST mode */
@@ -1334,8 +1334,8 @@ GMT_LOCAL double greenspline_grad_spline3d_Mitasova_Mitas (struct GMT_CTRL *GMT,
  */
 
 GMT_LOCAL double greenspline_undo_normalization (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim) {
-	if (mode & GREENSPLINE_NORM) w_norm *= coeff[GSP_RANGE];	/* Scale back up by residual data range (ir we normalized) */
-	w_norm += coeff[GSP_MEAN_Z];					/* Add in mean data value plus minimum residual value (ir we normalized by range) */
+	if (mode & GREENSPLINE_NORM) w_norm *= coeff[GSP_RANGE];	/* Scale back up by residual data range (if we normalized) */
+	w_norm += coeff[GSP_MEAN_Z];					/* Add in mean data value plus minimum residual value (if we normalized by range) */
 	if (mode & GREENSPLINE_TREND) {					/* Restore residual trend */
 		w_norm += coeff[GSP_SLP_X] * (X[GMT_X] - coeff[GSP_MEAN_X]);
 		if (dim == 2) w_norm += coeff[GSP_SLP_Y] * (X[GMT_Y] - coeff[GSP_MEAN_Y]);
@@ -1489,8 +1489,8 @@ GMT_LOCAL double greenspline_get_dircosine (struct GMT_CTRL *GMT, double *D, dou
 	double az, C = 0.0, N[3];
 
 	switch (dim) {
-		case 1:	/* 1-D, always 1 */
-			C = 1.0;
+		case 1:	/* 1-D */
+			C = X0[GMT_X] - X1[GMT_X];
 			break;
 		case 2:	/* 2-D */
 			az = gmt_az_backaz (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y], baz);
