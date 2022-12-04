@@ -1505,7 +1505,7 @@ GMT_LOCAL double greenspline_get_dircosine (struct GMT_CTRL *GMT, double *D, dou
 
 	switch (dim) {
 		case 1:	/* 1-D */
-			C = -3.0 * (X2[GMT_X] - X0[GMT_X]);
+			C = -3.0 * (X1[GMT_X] - X0[GMT_X]);
 			break;
 		case 2:	/* 2-D */
 			az = gmt_az_backaz (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y], baz);
