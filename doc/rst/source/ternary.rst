@@ -194,8 +194,8 @@ specified labeling, try::
 
     gmt begin map
     gmt makecpt -Cturbo -T0/80/10
-    gmt ternary @ternary.txt -R0/100/0/100/0/100 -JX6i -Sc0.1c -C -LWater/Air/Limestone \
-        -Baafg+l"Water component"+u" %" -Bbafg+l"Air component"+u" %" -Bcagf+l"Limestone component"+u" %" \
+    gmt ternary @ternary.txt -R0/100/0/100/0/100 -JX6i -Sc0.1c -C -LLimestone/Water/Air \
+        -Baafg+l"Limestone component"+u" %" -Bbafg+l"Water component"+u" %" -Bcagf+l"Air component"+u" %" \
         -B+givory+t"Example data from MATLAB Central"
     gmt end show
 
