@@ -164,6 +164,7 @@ enum Greenspline_modes {	/* Various integer mode flags */
 	LINEAR_2D			= 11,
 	N_METHODS			= 12,
 	N_PARAMS			= 11,
+	GREENSPLINE_MEAN		= 0,		/* Remove/Restore mean value only */
 	GREENSPLINE_TREND		= 1,		/* Remove/Restore linear trend */
 	GREENSPLINE_NORM		= 2,		/* Normalize residual data to 0-1 range */
 	SQ_N_NODES 			= 10001,	/* Default number of nodes in the precalculated -Sq spline */
@@ -1356,7 +1357,7 @@ GMT_LOCAL double greenspline_undo_normalization (double *X, double w_norm, unsig
 	return (w_norm);
 }
 
-GMT_LOCAL void greenspline_do_normalization_1d (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, unsigned int mode, double *coeff) {
+GMT_LOCAL void greenspline_do_normalization_1d (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, uint64_t m, unsigned int mode, double *coeff) {
 	/* We always remove/restore the mean observation value.  mode is a combination of bitflags that affects what we do:
 	 * Bit GREENSPLINE_TREND will also remove linear trend
 	 * Bit GREENSPLINE_NORM will normalize residuals by range
@@ -1373,7 +1374,7 @@ GMT_LOCAL void greenspline_do_normalization_1d (struct GMTAPI_CTRL *API, double 
 	coeff[GSP_MEAN_Z] /= n;
 
 	if (mode & GREENSPLINE_TREND) {	/* Solve for LS linear trend using deviations from (0, 0, 0) */
-		double	xx, zz, sxx, sxz;
+		double xx, zz, sxx, sxz;
 		sxx = sxz = 0.0;
 		coeff[GSP_MEAN_X] /= n;
 		for (i = 0; i < n; i++) {
@@ -1396,14 +1397,14 @@ GMT_LOCAL void greenspline_do_normalization_1d (struct GMTAPI_CTRL *API, double 
 	if (mode & GREENSPLINE_NORM) {	/* Normalize by range */
 		coeff[GSP_RANGE] = MAX (fabs(min), fabs(max));	/* Determine range */
 		d = (coeff[GSP_RANGE] == 0.0) ? 1.0 : 1.0 / coeff[GSP_RANGE];
-		for (i = 0; i < n; i++) obs[i] *= d;	/* Normalize 0-1 */
+		for (i = 0; i < (n+m); i++) obs[i] *= d;	/* Normalize 0-1 plus scale any slopes */
 	}
 
 	/* Recover obs(x) = w_norm(x) * coeff[GSP_RANGE] + coeff[GSP_MEAN_Z] + coeff[GSP_SLP_X]*(x-coeff[GSP_MEAN_X]) */
 	GMT_Report (API, GMT_MSG_INFORMATION, "1-D Normalization coefficients: zoff = %g slope = %g xmean = %g range = %g\n", coeff[GSP_MEAN_Z], coeff[GSP_SLP_X], coeff[GSP_MEAN_X], coeff[GSP_RANGE]);
 }
 
-GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, unsigned int mode, unsigned int dim, double *coeff) {
+GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, uint64_t m, unsigned int mode, unsigned int dim, double *coeff) {
 	/* We always remove/restore the mean observation value.  mode is a combination of bitflags that affects what we do:
 	 * Bit GREENSPLINE_TREND will also remove linear trend
 	 * Bit GREENSPLINE_NORM will normalize residuals by range
@@ -1421,7 +1422,7 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 	else
 		GMT_Report (API, GMT_MSG_INFORMATION, "Normalization mode: %s\n", type[mode]);
 	if (dim == 1) {	/* 1-D trend or mean only */
-		greenspline_do_normalization_1d (API, X, obs, n, mode, coeff);
+		greenspline_do_normalization_1d (API, X, obs, n, m, mode, coeff);
 		return;
 	}
 	for (i = 0; i < n; i++) {	/* Find mean z-value */
@@ -1468,7 +1469,7 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 	if (mode & GREENSPLINE_NORM) {	/* Normalize by range */
 		coeff[GSP_RANGE] = MAX (fabs(min), fabs(max));	/* Determine range */
 		d = (coeff[GSP_RANGE] == 0.0) ? 1.0 : 1.0 / coeff[GSP_RANGE];
-		for (i = 0; i < n; i++) obs[i] *= d;	/* Normalize 0-1 */
+		for (i = 0; i < (n+m); i++) obs[i] *= d;	/* Normalize 0-1 plus scale any slopes */
 	}
 
 	/* Recover obs(x,y) = w_norm(x,y) * coeff[GSP_RANGE] + coeff[GSP_MEAN_Z] + coeff[GSP_SLP_X]*(x-coeff[GSP_MEAN_X]) + coeff[GSP_SLP_Y]*(y-coeff[GSP_MEAN_Y]) */
@@ -1551,7 +1552,7 @@ GMT_LOCAL void greenspline_set_filename (char *name, unsigned int k, unsigned in
 EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	openmp_int col, row;
 	uint64_t n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
-	unsigned int dimension = 0, normalize = 0, n_cols, n_layers = 1, w_col, L_Max = 0;
+	unsigned int dimension = 0, normalize = GREENSPLINE_MEAN, n_cols, n_layers = 1, w_col, L_Max = 0;
 	size_t n_alloc;
 	int error = GMT_NOERROR, out_ID, way, n_columns, n_use;
 	bool delete_grid = false, check_longitude, skip, write_3D_records = false;
@@ -1674,8 +1675,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 #ifdef DEBUG
 	if (Ctrl->L.no_normalization) {
-		normalize = 0;	/* Turn off all normalization */
-		GMT_Report (API, GMT_MSG_NOTICE, "Normalization is turned off for debugging\n");
+		normalize = GREENSPLINE_MEAN;	/* Turn off all normalization */
+		GMT_Report (API, GMT_MSG_NOTICE, "Normalization is turned off for debugging - only mean value removed/restored\n");
 	}
 #endif
 
@@ -1975,8 +1976,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 
 	if (m > 0 && normalize && (normalize & GREENSPLINE_TREND)) {
-		normalize = GREENSPLINE_NORM;	/* Only allow taking out data mean for mixed z/slope data */
-		GMT_Report (API, GMT_MSG_WARNING, "Can only remove/restore mean z in mixed {z, grad(z)} data sets\n");
+		normalize = GREENSPLINE_NORM;	/* Only allow taking out data mean and scale residuals for mixed z/slope data */
+		GMT_Report (API, GMT_MSG_WARNING, "Can only remove/restore mean z and scale residuals in mixed {z, grad(z)} data sets\n");
 	}
 
 	if (m == 0)
@@ -2191,7 +2192,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (orig_obs, obs, nm, double);
 	}
 
-	greenspline_do_normalization (API, X, obs, n, normalize, dimension, norm);
+	greenspline_do_normalization (API, X, obs, n, m, normalize, dimension, norm);
 
 	/* Set up linear system Ax = obs. To clarify, the matrix A will be
 	 * of size nm by nm, where nm = n + m. Again, n is the number of

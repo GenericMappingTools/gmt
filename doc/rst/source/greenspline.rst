@@ -139,6 +139,8 @@ Optional Arguments
     (*direction(s)* in degrees are measured counter-clockwise from the
     horizontal (and for 3-D the vertical axis)). **4**: records contain
     **x**, :math:`\mathbf{v}`. **5**: records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v`.
+    **Note**: The slope constraints must not be at the same locations as the
+    data constraints.  That scenario has not yet been implemented.
 
 .. _-C:
 
