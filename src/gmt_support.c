@@ -15007,7 +15007,7 @@ unsigned int gmtlib_linear_array (struct GMT_CTRL *GMT, double min, double max, 
 	   Result: 1, 3, 5, 7, 9
 	*/
 
-	int first, last, i, n;
+	int64_t first, last, i, n;
 	double *val = NULL;
 
 	if (delta <= 0.0) return (0);
@@ -15017,11 +15017,11 @@ unsigned int gmtlib_linear_array (struct GMT_CTRL *GMT, double min, double max, 
 	max = (max - phase) / delta;
 
 	/* Look for first value */
-	first = irint (floor (min));
+	first = lrint (floor (min));
 	while (min - first > GMT_CONV4_LIMIT) first++;
 
 	/* Look for last value */
-	last = irint (ceil (max));
+	last = lrint (ceil (max));
 	while (last - max > GMT_CONV4_LIMIT) last--;
 
 	n = last - first + 1;
@@ -15033,12 +15033,12 @@ unsigned int gmtlib_linear_array (struct GMT_CTRL *GMT, double min, double max, 
 
 	*array = val;
 
-	return (n);
+	return ((unsigned int)n);
 }
 
 /*! . */
 unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array) {
-	int first, last, i, n, nticks;
+	int64_t first, last, i, n, nticks;
 	double *val = NULL, tvals[10];
 
 	/* Because min and max may be tiny values (e.g., 10^-20) we must do all calculations on the log10 (value) */
@@ -15047,13 +15047,13 @@ unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, dou
 		return (0);
 	min = d_log10 (GMT, min);
 	max = d_log10 (GMT, max);
-	first = irint (floor (min));
-	last = irint (ceil (max));
+	first = lrint (floor (min));
+	last = lrint (ceil (max));
 
 	if (delta < 0) {	/* Coarser than every magnitude */
 		n = gmtlib_linear_array (GMT, min, max, fabs (delta), 0.0, array);
 		for (i = 0; i < n; i++) (*array)[i] = pow (10.0, (*array)[i]);
-		return (n);
+		return ((unsigned int)n);
 	}
 
 	tvals[0] = 0.0;	/* Common to all */
@@ -15104,7 +15104,7 @@ unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, dou
 
 	*array = val;
 
-	return (n);
+	return ((unsigned int)n);
 }
 
 /*! . */
@@ -15113,7 +15113,7 @@ unsigned int gmtlib_log2_array (struct GMT_CTRL *GMT, double min, double max, do
 	   However, take log2 first then use the delta as increment in log2 space
 	*/
 
-	int first, last, i, n;
+	int64_t first, last, i, n;
 	double *val = NULL;
 
 	if (delta <= 0.0) return (0);
@@ -15122,11 +15122,11 @@ unsigned int gmtlib_log2_array (struct GMT_CTRL *GMT, double min, double max, do
 	max = d_log2 (GMT, max) / delta;
 
 	/* Look for first value */
-	first = irint (floor (min));
+	first = lrint (floor (min));
 	while (min - first > GMT_CONV4_LIMIT) first++;
 
 	/* Look for last value */
-	last = irint (ceil (max));
+	last = lrint (ceil (max));
 	while (last - max > GMT_CONV4_LIMIT) last--;
 
 	n = last - first + 1;
@@ -15140,7 +15140,7 @@ unsigned int gmtlib_log2_array (struct GMT_CTRL *GMT, double min, double max, do
 	for (i = 0; i < n; i++) val[i] = pow (2.0, val[i]);
 	*array = val;
 
-	return (n);
+	return ((unsigned int)n);
 }
 
 /*! . */
