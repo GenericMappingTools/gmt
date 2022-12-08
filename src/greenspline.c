@@ -1982,7 +1982,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	if (m == 0)
 		GMT_Report (API, GMT_MSG_INFORMATION, "Found %" PRIu64 " data points, yielding a %" PRIu64 " by %" PRIu64 " set of linear equations\n",
-			n, nm, nm);
+		            n, nm, nm);
 	else
 		GMT_Report (API, GMT_MSG_INFORMATION, "Found %" PRIu64 " data points and %" PRIu64 " gradients, yielding a %" PRIu64 " by %"
 		            PRIu64 " set of linear equations\n", n, m, nm, nm);
