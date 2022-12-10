@@ -871,7 +871,7 @@ GMT_LOCAL double greenspline_spline1d_sandwell (struct GMT_CTRL *GMT, double r, 
 
 GMT_LOCAL double greenspline_grad_spline1d_sandwell (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
 	gmt_M_unused(GMT); gmt_M_unused(par); gmt_M_unused(unused);
-	return (3.0 * fabs (r) * r);	/* Just regular spline; par not used */
+	return (-3.0 * fabs (r) * r);	/* Just regular spline; par not used */
 }
 
 GMT_LOCAL double greenspline_spline1d_Wessel_Bercovici (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
@@ -896,7 +896,7 @@ GMT_LOCAL double greenspline_grad_spline1d_Wessel_Bercovici (struct GMT_CTRL *GM
 	if (r == 0.0) return (0.0);
 
 	cx = par[0] * r;
-	return (1.0 - exp (-cx));
+	return ((1.0 - exp (-cx)) * par[2]);	/* Dividing by p, basically */
 }
 
 /*----------------------  TWO DIMENSIONS ---------------------- */
@@ -2095,6 +2095,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			if (Ctrl->S.value[1] == 0.0) Ctrl->S.value[1] = 1.0;
 			par[0] = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0])) / Ctrl->S.value[1];
 			par[1] = 2.0 / par[0];
+			par[2] = 1.0 / par[0];	/* Used in grad function */
 			G = &greenspline_spline1d_Wessel_Bercovici;
 			dGdr = &greenspline_grad_spline1d_Wessel_Bercovici;
 			break;
