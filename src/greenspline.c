@@ -1510,8 +1510,8 @@ GMT_LOCAL double greenspline_get_dircosine (struct GMT_CTRL *GMT, double *D, dou
 	double az, C = 0.0, N[3];
 
 	switch (dim) {
-		case 1:	/* 1-D */
-			C = -3.0 * (X1[GMT_X] - X0[GMT_X]);
+		case 1:	/* 1-D: As 3*r*x we place the 3x here */
+			C = 3.0 * (X1[GMT_X] - X0[GMT_X]);
 			break;
 		case 2:	/* 2-D */
 			az = gmt_az_backaz (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y], baz);
@@ -2216,33 +2216,30 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Build square linear system Ax = b using %s\n", method[Ctrl->S.mode]);
 
-	for (row = 0; row < (openmp_int)nm; row++) {	/* For each value or slope constraint */
-		for (col = row; col < (openmp_int)nm; col++) {
-			ij = row * nm + col;
-			ji = col * nm + row;
+	/* First do data constraint rows */
+
+	for (row = 0; row < (openmp_int)n; row++) {	/* For each value constraint */
+		for (col = row; col < (openmp_int)nm; col++) {	/* For all points and gradient locations at and beyond */
+			ij = row * nm + col;	/* Entry in this row of A */
+			ji = col * nm + row;	/* Entry in row = col of A for symmetrical ji = ij point */
 			r = greenspline_get_radius (GMT, X[col], X[row], dimension);
-			if (row < (openmp_int)n) {	/* Value constraint (so entire row uses G) */
-				A[ij] = G (GMT, r, par, Lz);
-				if (ij == ji)	/* Do the diagonal terms only once */
-					continue;
-				if (col < (openmp_int)n)
-					A[ji] = A[ij];
-				else {
-					/* Get D, the directional cosine between the two points */
-					/* Then get C = gmt_dot3v (GMT, D, dataD); */
-					/* A[ji] = dGdr (r, par, Lg) * C; */
-					C = greenspline_get_dircosine (GMT, D[col-n], X[col], X[row], dimension, false);
-					grad = dGdr (GMT, r, par, Lg);
-					A[ji] = grad * C;
-				}
-			}
-			else if (col > (openmp_int)n) {	/* Remaining gradient constraints (entire row uses dGdr) */
-				if (ij == ji) continue;	/* Diagonal gradient term from a point to itself is zero */
-				C = greenspline_get_dircosine (GMT, D[row-n], X[col], X[row], dimension, true);
+			/* Value constraint since entire row uses G */
+			A[ij] = G (GMT, r, par, Lz);
+			if (ij == ji)	/* Do the diagonal terms only once */
+				continue;
+			if (col < (openmp_int)n)	/* Place symmetrical data entry in reciprocal row */
+				A[ji] = A[ij];
+		}
+	}
+
+	if (m) {	/* Have to build slope constraint rows as well. Truly only tested in 1-D */
+		for (row = n; row < (openmp_int)nm; row++) {	/* For each slope constraint [in rows n:nm-1] */
+			for (col = 0; col < (openmp_int)nm; col++) {	/* We do all columns here since most are not symmetrical */
+				ij = row * nm + col;
+				r = greenspline_get_radius (GMT, X[col], X[row], dimension);
 				grad = dGdr (GMT, r, par, Lg);
+				C = greenspline_get_dircosine (GMT, D[row-n], X[col], X[row], dimension, true);
 				A[ij] = grad * C;
-				C = greenspline_get_dircosine (GMT, D[col-n], X[col], X[row], dimension, false);
-				A[ji] = grad * C;
 			}
 		}
 	}
