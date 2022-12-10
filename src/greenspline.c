@@ -849,7 +849,7 @@ GMT_LOCAL void greenspline_dump_green (struct GMT_CTRL *GMT, double (*G) (struct
 GMT_LOCAL double greenspline_spline1d_linear (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
 	/* Dumb linear spline */
 	gmt_M_unused(GMT); gmt_M_unused(par); gmt_M_unused(unused);
-	return (r);	/* Just regular spline; par not used */
+	return (fabs (r));	/* Just regular spline; par not used */
 }
 
 GMT_LOCAL double greenspline_grad_spline1d_linear (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
@@ -866,12 +866,12 @@ GMT_LOCAL double greenspline_spline1d_sandwell (struct GMT_CTRL *GMT, double r, 
 	gmt_M_unused(GMT); gmt_M_unused(par); gmt_M_unused(unused);
 	if (r == 0.0) return (0.0);
 
-	return (pow (r, 3.0));	/* Just regular spline; par not used */
+	return (pow (fabs (r), 3.0));	/* Just regular spline; par not used */
 }
 
 GMT_LOCAL double greenspline_grad_spline1d_sandwell (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
 	gmt_M_unused(GMT); gmt_M_unused(par); gmt_M_unused(unused);
-	return (r);	/* Just regular spline; par not used */
+	return (3.0 * fabs (r) * r);	/* Just regular spline; par not used */
 }
 
 GMT_LOCAL double greenspline_spline1d_Wessel_Bercovici (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
@@ -885,7 +885,7 @@ GMT_LOCAL double greenspline_spline1d_Wessel_Bercovici (struct GMT_CTRL *GMT, do
 
 	if (r == 0.0) return (0.0);
 
-	cx = par[0] * r;
+	cx = par[0] * fabs (r);
 	return (exp (-cx) + cx - 1.0);
 }
 
@@ -1487,7 +1487,7 @@ GMT_LOCAL double greenspline_get_radius (struct GMT_CTRL *GMT, double *X0, doubl
 	/* Get distance between the two points */
 	switch (dim) {
 		case 1:	/* 1-D, just get x difference */
-			r = fabs (X0[GMT_X] - X1[GMT_X]);
+			r = (X0[GMT_X] - X1[GMT_X]);
 			break;
 		case 2:	/* 2-D Cartesian or spherical surface in meters */
 			r = gmt_distance (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y]);
@@ -1510,8 +1510,8 @@ GMT_LOCAL double greenspline_get_dircosine (struct GMT_CTRL *GMT, double *D, dou
 	double az, C = 0.0, N[3];
 
 	switch (dim) {
-		case 1:	/* 1-D: As 3*r*x we place the 3x here */
-			C = 3.0 * (X1[GMT_X] - X0[GMT_X]);
+		case 1:	/* 1-D */
+			C = 1.0;
 			break;
 		case 2:	/* 2-D */
 			az = gmt_az_backaz (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y], baz);
