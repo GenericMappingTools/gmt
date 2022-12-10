@@ -1510,7 +1510,7 @@ GMT_LOCAL double greenspline_get_dircosine (struct GMT_CTRL *GMT, double *D, dou
 	double az, C = 0.0, N[3];
 
 	switch (dim) {
-		case 1:	/* 1-D */
+		case 1:	/* 1-D (no directional cosine) */
 			C = 1.0;
 			break;
 		case 2:	/* 2-D */
