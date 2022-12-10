@@ -1486,8 +1486,8 @@ GMT_LOCAL double greenspline_get_radius (struct GMT_CTRL *GMT, double *X0, doubl
 	double r = 0.0;
 	/* Get distance between the two points */
 	switch (dim) {
-		case 1:	/* 1-D, just get x difference */
-			r = (X0[GMT_X] - X1[GMT_X]);
+		case 1:	/* 1-D, just get signed x difference */
+			r = X0[GMT_X] - X1[GMT_X];
 			break;
 		case 2:	/* 2-D Cartesian or spherical surface in meters */
 			r = gmt_distance (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y]);
