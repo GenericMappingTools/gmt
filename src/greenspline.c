@@ -110,10 +110,10 @@ struct GREENSPLINE_CTRL {
 		bool active;
 		char *file;
 	} N;
-	struct GREENSPLINE_Q {	/* -Qdaz */
+	struct GREENSPLINE_Q {	/* -Q[<az>|x/y/z] */
 		bool active;
-		double az;
-		double dir[3];
+		double az;		/* 2-D azimuth for directional derivative */
+		double dir[3];	/* 3-D vector for directional derivative */
 	} Q;
 	struct GREENSPLINE_R3 {	/* -Rxmin/xmax[/ymin/ymax[/zmin/zmaz]] | -Ggridfile */
 		bool active;
@@ -214,6 +214,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.mode = GMT_SVD_EIGEN_RATIO_CUTOFF;
+	C->Q.az = GMT->session.d_NaN;	/* To tell if -Q was not given an argument later for dim > 1 */
 	C->S.mode = SANDWELL_1987_2D;
 	C->S.rval[0] = -1.0;	C->S.rval[1] = 1.0;
 	C->S.value[3] = (double)SQ_N_NODES;	/* Default number of spline nodes */
@@ -236,7 +237,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]] "
-		"[-D<information>] [-E[<misfitfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L] [-N<nodefile>] [-Q<az>] "
+		"[-D<information>] [-E[<misfitfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L] [-N<nodefile>] [-Q[<az>|<x/y/z>]] "
 		"[-R<xmin>/<xmax>[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] "
 		"[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n",
 		name, GMT_V_OPT,GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
@@ -292,8 +293,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "ASCII file with desired output locations. "
 		"The resulting ASCII coordinates and interpolation are written to file given in -G "
 		"or standard output if no file specified (see -bo for binary output).");
-	GMT_Usage (API, 1, "\n-Q<az>");
-	GMT_Usage (API, -2, "Calculate the directional derivative in the <az> direction and return it instead of surface elevation.");
+	GMT_Usage (API, 1, "\n-Q[<az>|<x/y/z>]");
+	GMT_Usage (API, -2, "Calculate the directional derivative and return it instead of curve or surface elevation w:");
+	GMT_Usage (API, 3, "%s 1-D: We compute first-derivative dw/dx.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s 2-D: Append <az> direction for gradient of w(x,y) in that direction.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s 3-D: Append vector direction <x/y/z> for gradient of w(x,y,z) in that direction.", GMT_LINE_BULLET);
 	GMT_Option (API, "R");
 	if (gmt_M_showusage (API)) {
 		GMT_Usage (API, -2, "-R Specify a regular set of output locations.  Give min and max coordinates for each dimension. "
@@ -608,16 +612,17 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				if (strchr (opt->arg, '/')) {	/* Got 3-D vector components */
 					n_items = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Q.dir[0], &Ctrl->Q.dir[1], &Ctrl->Q.dir[2]);
 					if (n_items != 3) {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Append azimuth (2-D) or x/y/z components (3-D)\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Append x/y/z components (3-D)\n");
 						n_errors++;
 					}
 					gmt_normalize3v (GMT, Ctrl->Q.dir);	/* Normalize to unit vector */
 				}
-				else if (opt->arg[0])	/* 2-D azimuth */
+				else if (opt->arg[0]) {	/* 2-D azimuth */
 					Ctrl->Q.az = atof(opt->arg);
-				else {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Append azimuth (2-D) or x/y/z components (3-D)\n");
-					n_errors++;
+					if (Ctrl->Q.az < -360.0 || Ctrl->Q.az > 360.0) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Azimuth %lg is outside valid range -180 t0 +360\n", Ctrl->Q.az);
+						n_errors++;						
+					}
 				}
 				break;
 			case 'S':	/* Spline selection */
@@ -792,6 +797,8 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && Ctrl->R3.dimension != dimension, "The -R and -Z options disagree on the dimension\n");
 #endif
 	n_errors += gmt_check_binary_io (GMT, dimension + 1);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && dimension == 1 && !gmt_M_is_dnan (Ctrl->Q.az), "Option -Q: No argument expected for 1-D derivative\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && dimension > 1 && gmt_M_is_dnan (Ctrl->Q.az), "Option -Q: Must append azimuth (2-D) or x/y/z components (3-D)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.value[0] < 0.0 || Ctrl->S.value[0] >= 1.0, "Option -S: Tension must be in range 0 <= t < 1\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->S.mode == PARKER_1994 || Ctrl->S.mode == WESSEL_BECKER_2008) && Ctrl->Z.mode == 3, "Option -Sc|t|r: Cannot select -Z3\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == LINEAR_1D && Ctrl->Z.mode > 3, "Option -Sl: Cannot select -Z4 or higher\n");
@@ -1345,14 +1352,23 @@ GMT_LOCAL double greenspline_grad_spline3d_Mitasova_Mitas (struct GMT_CTRL *GMT,
  */
 
 GMT_LOCAL double greenspline_undo_normalization (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim) {
-#ifdef DEBUG
-	if (mode == 0) return (w_norm);	/* No normalization was done during specific debug session */
-#endif
+	/* To undo normalizations, trends and offset of solution prediction */
 	if (mode & GREENSPLINE_NORM) w_norm *= coeff[GSP_RANGE];	/* Scale back up by residual data range (if we normalized) */
 	w_norm += coeff[GSP_MEAN_Z];					/* Add in mean data value plus minimum residual value (if we normalized by range) */
 	if (mode & GREENSPLINE_TREND) {					/* Restore residual trend */
 		w_norm += coeff[GSP_SLP_X] * (X[GMT_X] - coeff[GSP_MEAN_X]);
 		if (dim == 2) w_norm += coeff[GSP_SLP_Y] * (X[GMT_Y] - coeff[GSP_MEAN_Y]);
+	}
+	return (w_norm);
+}
+
+GMT_LOCAL double greenspline_undo_normalization_grad (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim) {
+	/* To undo normalizations and trends solution gradient */
+	gmt_M_unused (X);
+	if (mode & GREENSPLINE_NORM) w_norm *= coeff[GSP_RANGE];	/* Scale back up by residual range (if we normalized) */
+	if (mode & GREENSPLINE_TREND) {					/* Restore residual trend */
+		if (dim == 1) w_norm += coeff[GSP_SLP_X];
+		/* Higher dimensions not implemented yet */
 	}
 	return (w_norm);
 }
@@ -1395,6 +1411,7 @@ GMT_LOCAL void greenspline_do_normalization_1d (struct GMTAPI_CTRL *API, double 
 		if (obs[i] > max) max = obs[i];
 	}
 	if (m && mode & GREENSPLINE_TREND) {	/* remove trend slope from slope observations */
+		GMT_Report (API, GMT_MSG_INFORMATION, "1-D Normalization correction %g for slope constraints\n", coeff[GSP_SLP_X]);
 		for (i = n; i < (n+m); i++)
 			obs[i] -= coeff[GSP_SLP_X];
 	}
@@ -1402,6 +1419,7 @@ GMT_LOCAL void greenspline_do_normalization_1d (struct GMTAPI_CTRL *API, double 
 	if (mode & GREENSPLINE_NORM) {	/* Normalize by range */
 		coeff[GSP_RANGE] = MAX (fabs(min), fabs(max));	/* Determine range */
 		d = (coeff[GSP_RANGE] == 0.0) ? 1.0 : 1.0 / coeff[GSP_RANGE];
+		GMT_Report (API, GMT_MSG_INFORMATION, "1-D Normalization factor %g for data and slope constraints\n", d);
 		for (i = 0; i < (n+m); i++) obs[i] *= d;	/* Normalize 0-1 plus scale any slopes */
 	}
 
@@ -1510,8 +1528,8 @@ GMT_LOCAL double greenspline_get_dircosine (struct GMT_CTRL *GMT, double *D, dou
 	double az, C = 0.0, N[3];
 
 	switch (dim) {
-		case 1:	/* 1-D (no directional cosine) */
-			C = 1.0;
+		case 1:	/* 1-D (no directional cosine, just sign) */
+			C = (baz) ? 1.0 : -1.0;
 			break;
 		case 2:	/* 2-D */
 			az = gmt_az_backaz (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y], baz);
@@ -1589,6 +1607,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	double (*G) (struct GMT_CTRL *, double, double *, struct GREENSPLINE_LOOKUP *) = NULL;		/* Pointer to chosen Green's function */
 	double (*dGdr) (struct GMT_CTRL *, double, double *, struct GREENSPLINE_LOOKUP *) = NULL;	/* Pointer to chosen gradient of Green's function */
+	double (*finalize) (double *, double, unsigned int, double *, unsigned int);	/* Which undo norm function */
 
 	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct GMT_GRID_HEADER *header = NULL;
@@ -2408,6 +2427,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.history == GMT_SVD_NO_HISTORY) gmt_M_free (GMT, A);
 
+	finalize = (Ctrl->Q.active) ? greenspline_undo_normalization_grad : greenspline_undo_normalization;
+
 	if (Ctrl->E.active && Ctrl->C.history == GMT_SVD_NO_HISTORY) {
 		double value, mean = 0.0, std = 0.0, rms = 0.0, dev, chi2, chi2_sum = 0, pvar_sum = 0.0, *predicted = NULL;
 		uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, nm, dimension+3+Ctrl->W.active};
@@ -2425,7 +2446,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		predicted = gmt_M_memory (GMT, NULL, nm, double);	/* To hold predictions */
 		gmt_matrix_matrix_mult (GMT, A_orig, alpha, nm, nm, 1U, predicted);	/* predicted = A * alpha are normalized predictions at data points */
 		for (j = 0; j < nm; j++) {	/* For each data constraint */
-			predicted[j] = greenspline_undo_normalization (X[j], predicted[j], normalize, norm, dimension);	/* undo normalization first */
+			predicted[j] = finalize (X[j], predicted[j], normalize, norm, dimension);	/* undo normalization first */
 			pvar_sum += predicted[j] * predicted[j];	/* Sum of predicted variance */
 			dev = value = orig_obs[j] - predicted[j];	/* Deviation between observed and predicted */
 			rms += dev * dev;	/* Accumulate rms sum */
@@ -2518,7 +2539,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						part = G (GMT, r, par, Lz);
 					out[dimension] += alpha[p] * part;
 				}
-				out[dimension] = greenspline_undo_normalization (out, out[dimension], normalize, norm, dimension);
+				out[dimension] = finalize (out, out[dimension], normalize, norm, dimension);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Rec);
 			}
 		}
@@ -2615,7 +2636,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 								part = dGdr (GMT, r, par, Lz) * C;
 								wp += alpha[p] * part;
 							}
-							V[GMT_Z] = greenspline_undo_normalization (V, wp, normalize, norm, 2U);
+							V[GMT_Z] = finalize (V, wp, normalize, norm, 2U);
 							Out->data[ij] = (gmt_grdfloat)V[GMT_Z];
 						}
 					}
@@ -2629,7 +2650,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 								part = G (GMT, r, par, Lz);
 								wp += alpha[p] * part;	/* Just add this scaled Green's function */
 							}
-							predicted = greenspline_undo_normalization (X[j], wp, normalize, norm, dimension);	/* Undo normalization first */
+							predicted = finalize (X[j], wp, normalize, norm, dimension);	/* Undo normalization first */
 							dev = orig_obs[j] - predicted;	/* Deviation between observed and predicted */
 							dev *= dev;	/* Squared misfit */
 							rms += dev;	/* Accumulate rms sum */
@@ -2665,7 +2686,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 								part = G (GMT, r, par, Lz);
 								wp += alpha[p] * part;
 							}
-							Out->data[ij] = (gmt_grdfloat)greenspline_undo_normalization (V, wp, normalize, norm, 2U);
+							Out->data[ij] = (gmt_grdfloat)finalize (V, wp, normalize, norm, 2U);
 						}
 					}	/* End of row-loop [OpenMP] */
 				}
@@ -2745,7 +2766,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 								part = dGdr (GMT, r, par, Lz) * C;
 								wp += alpha[p] * part;
 							}
-							data[ij] = (gmt_grdfloat)greenspline_undo_normalization (V, wp, normalize, norm, dimension);
+							data[ij] = (gmt_grdfloat)finalize (V, wp, normalize, norm, dimension);
 						}
 					}	/* End of row-loop [OpenMP] */
 				}
@@ -2766,7 +2787,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 								part = G (GMT, r, par, Lz);
 								wp += alpha[p] * part;
 							}
-							data[ij] = (gmt_grdfloat)greenspline_undo_normalization (V, wp, normalize, norm, dimension);
+							data[ij] = (gmt_grdfloat)finalize (V, wp, normalize, norm, dimension);
 						}
 					}	/* End of row-loop [OpenMP] */
 				}
