@@ -56,7 +56,7 @@ Cartesian coordinates or spherical surface coordinates. Mathematically, the solu
 
 .. math::
 
-    w(\mathbf{x}) = T(\mathbf{x}) + \sum_{j=1}^{n} \alpha_j g(\mathbf{x}; \mathbf{x}'),
+    w(\mathbf{x}) = T(\mathbf{x}) + \sum_{j=1}^{n} \alpha_j g(\mathbf{x}; \mathbf{x}_j),
 
 where :math:`\mathbf{x}` is the output location, :math:`n` is the number of points,
 :math:`T(\mathbf{x})` is a trend function, and :math:`\alpha_j` are the *n*
