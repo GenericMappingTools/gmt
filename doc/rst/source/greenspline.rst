@@ -21,7 +21,7 @@ Synopsis
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
 [ |-L| ]
 [ |-N|\ *nodefile* ]
-[ |-Q|\ *az*\|\ *x/y/z* ]
+[ |-Q|\ [*az*\|\ *x/y/z*] ]
 [ |-R|\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*]] ]
 [ |-S|\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
@@ -210,10 +210,11 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *az*\|\ *x/y/z*
-    Rather than evaluate the surface, take the directional derivative in
+**-Q**\ [*az*\|\ *x/y/z*]
+    Rather than evaluate the solution *w*\ (**x**), take the first derivative of
+    a 1-D solution.  For 2-D, select directional derivative in
     the *az* azimuth and return the magnitude of this derivative
-    instead. For 3-D interpolation, specify the three components of the
+    instead. For a 3-D interpolation, specify the three components of the
     desired vector direction (the vector will be normalized before use).
 
 .. _-R:
