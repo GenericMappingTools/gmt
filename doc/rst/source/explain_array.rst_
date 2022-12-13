@@ -1,5 +1,5 @@
-Generate 1D Array
------------------
+Generate 1-D Array
+------------------
 
 We will demonstrate the use of options for creating 1-D arrays via :doc:`/gmtmath`.
 Make an evenly spaced coordinate array from *min* to *max* in steps of *inc*, e.g.,::

@@ -154,7 +154,7 @@ Optional Arguments
 
 **-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+e**\|\ **i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
-    For details on array creation, see `Generate 1D Array`_.
+    For details on array creation, see `Generate 1-D Array`_.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

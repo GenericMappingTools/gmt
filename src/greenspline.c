@@ -301,7 +301,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	if (gmt_M_showusage (API)) {
 		GMT_Usage (API, -2, "-R Specify a regular set of output locations.  Give min and max coordinates for each dimension. "
-			"Requires -I for specifying equidistant increments.  For 2D-gridding a gridfile may be given; "
+			"Requires -I for specifying equidistant increments.  For 2-D gridding a gridfile may be given; "
 			"this then also sets -I (and perhaps -r); use those options to override the grid settings.");
 	}
 	GMT_Usage (API, 1, "\n-Sc|l|t|r|p|q[<pars>]");
@@ -2756,7 +2756,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						if (dimension > 1)  V[GMT_Y] = yp[row];
 						if (dimension == 3) V[GMT_Z] = z_layer;
 						ij = (dimension > 1) ? gmt_M_ijp (header, row, 0) + nz_off : 0;
-						for (col = 0; col < (openmp_int)header->n_columns; col++, ij++) {	/* This loop is always active for 1,2,3D */
+						for (col = 0; col < (openmp_int)header->n_columns; col++, ij++) {	/* This loop is always active for 1-,2-,3-D */
 							if (dimension == 2 && gmt_M_is_fnan (data[ij])) continue;	/* Only do solution where mask is not NaN */
 							V[GMT_X] = xp[col];
 							/* Here, V holds the current output coordinates */
@@ -2778,7 +2778,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						if (dimension > 1)  V[GMT_Y] = yp[row];
 						if (dimension == 3) V[GMT_Z] = z_layer;
 						ij = (dimension > 1) ? gmt_M_ijp (header, row, 0) + nz_off : 0;
-						for (col = 0; col < (openmp_int)header->n_columns; col++, ij++) {	/* This loop is always active for 1,2,3D */
+						for (col = 0; col < (openmp_int)header->n_columns; col++, ij++) {	/* This loop is always active for 1-,2-,3-D */
 							if (dimension == 2 && gmt_M_is_fnan (data[ij])) continue;	/* Only do solution where mask is not NaN */
 							V[GMT_X] = xp[col];
 							/* Here, V holds the current output coordinates */

@@ -150,7 +150,7 @@ Optional Arguments
     the "time" column (see |-N|). If there is no time column
     (i.e., your input has only data columns), give |-T| with
     no arguments; this also implies **-Ca**.
-    For details on array creation, see `Generate 1D Array`_.
+    For details on array creation, see `Generate 1-D Array`_.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

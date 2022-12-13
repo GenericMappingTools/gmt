@@ -337,7 +337,7 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
-1-d Examples
+1-D Examples
 ------------
 
 To resample the *x*,\ *y* Gaussian random data created by :doc:`gmtmath`
@@ -357,7 +357,7 @@ To apply a spline in tension instead, using a tension of 0.7, try::
       gmt greenspline 1D.txt -R0/10 -I0.1 -St0.7 | gmt plot -Wthin
     gmt end show
 
-2-d Examples
+2-D Examples
 ------------
 
 To make a uniform grid using the minimum curvature spline for the same
@@ -392,7 +392,7 @@ remaining constraints specify only the surface slope and direction
 
     gmt greenspline pt.txt -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -Z1 -Aslopes.txt+f1 -Gslopes.nc
 
-3-d Examples
+3-D Examples
 ------------
 
 To create a uniform 3-D Cartesian grid table based on the data in
@@ -409,7 +409,7 @@ Finally, to write the result to a 3-D netCDF grid, try::
 
     gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -Z5 -G3D_UO2.nc
 
-2-d Spherical Surface Examples
+2-D Spherical Surface Examples
 ------------------------------
 
 To recreate Parker's [1994] example on a global 1x1 degree grid,
