@@ -132,7 +132,7 @@ Optional Arguments
     per data unit.  Alternatively, use **-Sl**\ *length* to set a fixed plot length for all
     vectors. To report the minimum, maximum, and mean data and plot vector lengths
     of all vectors plotted, use |-V|. If an automatic legend entry is desired via **-l**,
-    or or two modifiers will be required:
+    one or two modifiers will be required:
 
     - **+c**\ [[*slon*/]\ *slat*] controls where on a geographic map a geovector's *refsize*
       length applies. The modifier is neither needed nor available when plotting Cartesian vectors.
