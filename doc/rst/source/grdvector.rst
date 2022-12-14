@@ -178,7 +178,9 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    The :math:`\theta` grid provided contains azimuths rather than directions (implies |-A|).
+    The :math:`\theta` grid provided contains azimuth (in degrees east of north)
+    rather than direction (in degrees counter-clockwise from horizontal).
+    Implies |-A|.
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
