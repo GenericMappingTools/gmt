@@ -73,6 +73,17 @@ are determined by requiring the solution to fit the observed residual data exact
 
 
 yielding a :math:`n \times n` linear system to be solved for the coefficients.
+
+If there are also *m* observed constraints on the gradient *s* of the curve or surface (|-A|) then we must
+add additional *m* unknown coefficients and use the gradient of the Green's functions to satisfy
+the *m* extra constraints:
+
+.. math::
+
+    s(\mathbf{x}_k) = \nabla w(\mathbf{x}_k) = \sum_{j=1}^{n} \alpha_j \nabla g(\mathbf{x}_k; \mathbf{x}_j) \mathbf{n}_k, \quad k = 1,m
+
+where the gradient of the Green's functions is dotted with the unit vector of the observed gradient.
+
 Finally, away from the data constraints the Green's function must satisfy
 
 .. math::
