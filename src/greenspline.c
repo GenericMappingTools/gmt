@@ -317,7 +317,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Optionally, append +e<error> to change maximum error in series truncation [%g] and "
 		"+n<n> to change the (odd) number of precalculated nodes for spline interpolation [%d].", SQ_TRUNC_ERROR, SQ_N_NODES);
 	GMT_Usage (API, 1, "\n-T<maskgrid>");
-	GMT_Usage (API, -2, "Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).");
+	GMT_Usage (API, -2, "Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r) and thus -T only applies to 2-D gridding.");
 	GMT_Usage (API, 1, "\n-W[w]");
 	GMT_Usage (API, -2, "Expect one extra input column with data errors sigma_i. "
 		"Append w to indicate this column carries weights instead "

@@ -291,7 +291,7 @@ Optional Arguments
     Sets the distance mode that determines how we calculate distances
     between data points. Select *mode* 0 for Cartesian 1-D spline
     interpolation: **-Z**\ 0 means (*x*) in user units, Cartesian
-    distances, Select *mode* 1-3 for Cartesian 2-D surface spline
+    distances. Select *mode* 1-3 for Cartesian 2-D surface spline
     interpolation: **-Z**\ 1 means (*x*,\ *y*) in user units, Cartesian
     distances, **-Z**\ 2 for (*x*,\ *y*) in degrees, Flat Earth
     distances, and **-Z**\ 3 for (*x*,\ *y*) in degrees, Spherical
