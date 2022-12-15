@@ -58,7 +58,8 @@ Required Arguments
 
 Order is important.
 For :math:`(x,y)`, *grid1* is expected to be the *x*\ -component, and *grid2* to be the *y*\ -component.
-For :math:`(r,\theta)`, *grid1* is expected to be the magnitude (:math:`r`), and *grid2* to be the azimuth (see |-Z|) or direction, (:math:`\theta`).
+For :math:`(r,\theta)`, *grid1* is expected to be the magnitude (:math:`r`),
+and *grid2* (:math:`\theta`), to be the azimuth (|-Z|) or direction (|-A|).
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -71,8 +72,9 @@ Optional Arguments
 .. _-A:
 
 **-A**
-    The grid files contain polar :math:`(r,\theta)` components instead of
-    Cartesian :math:`(x,y)` [Default is Cartesian components].
+    The grid files contain polar :math:`(r,\theta)` components (magnitude and direction)
+    instead of Cartesian :math:`(x,y)` [Default is Cartesian components].
+    If :math:`\theta` contains azimuth, see |-Z|.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
