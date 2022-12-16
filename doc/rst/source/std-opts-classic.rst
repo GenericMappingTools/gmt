@@ -22,7 +22,7 @@ Common Options (Classic Mode)
      - :ref:`Select Portrait orientation <-P_full>`
    * - **-R**\ *west/east/south/north*\ [*/zmin/zmax*][**+r**][**+u**\ *unit*]
      - :ref:`Specify region of interest <-R_full>`
-   * - **-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]
+   * - **-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*][**+t**\ *text*]
      - :ref:`Plot time-stamp on plot <-U_full>`
    * - **-V**\ [*verbosity*]
      - :ref:`Run in verbose mode <-V_full>`
@@ -56,13 +56,13 @@ Common Options (Classic Mode)
      - :ref:`Selection of output columns <-ocols_full>`
    * - **-p**\ [**x**\|\ **y**\|\ **z**]\ *azim*\ [/*elev*\ [/*zlevel*]][**+w**\ *lon0*/*lat0*\ [/*z0*]][**+v**\ *x0*/*y0*]
      - :ref:`Control 3-D perspective view <perspective_full>`
-   * - **-q**\ [**i**\|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
+   * - **-q**\ [**i**\|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **t**\|\ **s**]
      - :ref:`Selection of input or output rows <-q_full>`
    * - **-r**\ [**g**\|\ **p**]
      - :ref:`Sets grid registration <nodereg_full>`
    * - **-s**\ [*cols*][**+a**\|\ **r**]
      - :ref:`Control treatment of NaN records <-s_full>`
-   * - **-t**\ *transparency*
+   * - **-t**\ [*transp*\ [/*transp2*]][**+f**][**+s**]
      - :ref:`Set layer transparency <-t_full>`
    * - **-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\ *period*\ [/*phase*][**+c**\ *col*]
      - :ref:`Convert selected coordinate to repeating cycles <-w_full>`

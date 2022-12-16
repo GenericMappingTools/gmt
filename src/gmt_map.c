@@ -2716,8 +2716,8 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 	/* If either is zero, adjust width or height to the other */
 
 	if (GMT->current.proj.scale[GMT_X] == 0) {	/* Must redo x-scaling by using y-scale */
-		GMT->current.proj.scale[GMT_X] = GMT->current.proj.autoscl[GMT_X] * GMT->current.proj.scale[GMT_Y];
-		if (GMT->current.proj.autoscl[GMT_X] == -1) GMT->current.proj.xyz_pos[GMT_X] = !GMT->current.proj.xyz_pos[GMT_Y];
+		GMT->current.proj.scale[GMT_X] = GMT->current.proj.autoscl[GMT_X] * fabs (GMT->current.proj.scale[GMT_Y]);
+		GMT->current.proj.xyz_pos[GMT_X] = (GMT->current.proj.autoscl[GMT_X] == +1);
 		switch ( (GMT->current.proj.xyz_projection[GMT_X]%3)) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 			case GMT_LINEAR:	/* Regular scaling */
 				if (GMT->current.proj.xyz_pos[GMT_X]) {
@@ -2742,8 +2742,8 @@ GMT_LOCAL int gmtmap_init_linear (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.proj.pars[0] = GMT->current.proj.scale[GMT_X] * fabs (xmin - xmax);
 	}
 	else if (GMT->current.proj.scale[GMT_Y] == 0) {	/* Must redo y-scaling by using x-scale */
-		GMT->current.proj.scale[GMT_Y] = GMT->current.proj.autoscl[GMT_Y] * GMT->current.proj.scale[GMT_X];
-		if (GMT->current.proj.autoscl[GMT_Y] == -1) GMT->current.proj.xyz_pos[GMT_Y] = !GMT->current.proj.xyz_pos[GMT_X];
+		GMT->current.proj.scale[GMT_Y] = GMT->current.proj.autoscl[GMT_Y] * fabs (GMT->current.proj.scale[GMT_X]);
+		GMT->current.proj.xyz_pos[GMT_Y] = (GMT->current.proj.autoscl[GMT_Y] == +1);
 		switch (GMT->current.proj.xyz_projection[GMT_Y]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 			case GMT_LINEAR:	/* Regular scaling */
 				if (GMT->current.proj.xyz_pos[GMT_Y]) {
@@ -5162,17 +5162,22 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
 /*! . */
 void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north, bool add_pad) {
 	double dx, dy, w, e, s, n, x, y, lat, *lon = NULL;
-	unsigned int i, j, k;
+	unsigned int i, j, k, np;
 
 	/* Search for extreme lon/lat coordinates by matching along the rectangular boundary */
 
 	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = urint (GMT->current.map.width / GMT->current.setting.map_line_step);
 	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
 
+	if (GMT->current.map.width > 400.0 && gmt_M_is_grdmapproject (GMT)) {	/* ***project calling with true scale, probably. Reset to sane values */
+		GMT->current.map.n_lon_nodes = MIN (GMT->current.map.n_lon_nodes, 360);
+		GMT->current.map.n_lat_nodes = MIN (GMT->current.map.n_lat_nodes, 180);
+	}
 	dx = (xmax - xmin) / GMT->current.map.n_lon_nodes;
 	dy = (ymax - ymin) / GMT->current.map.n_lat_nodes;
 	/* Need temp array to hold all the longitudes we compute */
-	if ((lon = gmt_M_memory (GMT, NULL, 2 * (GMT->current.map.n_lon_nodes + GMT->current.map.n_lat_nodes + 2), double)) == NULL) return;
+	np = 2 * (GMT->current.map.n_lon_nodes + GMT->current.map.n_lat_nodes + 2);
+	if ((lon = gmt_M_memory (GMT, NULL, np, double)) == NULL) return;
 	w = s = DBL_MAX;	e = n = -DBL_MAX;
 	for (i = k = 0; i <= GMT->current.map.n_lon_nodes; i++) {
 		x = (i == GMT->current.map.n_lon_nodes) ? xmax : xmin + i * dx;
@@ -9079,7 +9084,7 @@ int gmt_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D) {
 	return 0;
 }
 
-/*! Compute the Abridged Molodensky transformation (3 parametrs). */
+/*! Compute the Abridged Molodensky transformation (3 parameters). */
 void gmt_conv_datum (struct GMT_CTRL *GMT, double in[], double out[]) {
 	/* Evaluate J^-1 and B on from ellipsoid */
 	/* Based on Standard Molodensky Datum Conversion, implemented from

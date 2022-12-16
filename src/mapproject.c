@@ -39,6 +39,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/mapproject_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"mapproject"
 #define THIS_MODULE_MODERN_NAME	"mapproject"
@@ -209,7 +210,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> %s %s [-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]] [-C[<dx></dy>][+m]] [-D%s] "
 		"[-E[<datum>]] [-F[<%s|%s>]] [-G[<lon0>/<lat0>][+a][+i][+u<unit>][+v]] [-I] [-L<table>[+p][+u<unit>]] "
-		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[e|E|g|h|j|n|o|O|r|R|w|x]][+n[<nx>[/<ny]]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
+		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[e|E|g|h|j|n|o|O|r|R|w|x]][+n[<nx>[/<ny>]]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_V_OPT,
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_p_OPT,
@@ -292,7 +293,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If <from> equals - we use WGS-84.  If /<to> is not given we assume WGS-84. "
 		"Note: -T can be used as pre- or post- (-I) processing for -J -R.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W[e|E|g|h|j|n|o|O|r|R|w|x][+n[<nx>[/<ny]]]");
+	GMT_Usage (API, 1, "\n-W[e|E|g|h|j|n|o|O|r|R|w|x][+n[<nx>[/<ny>]]]");
 	GMT_Usage (API, -2, "Print map width and/or height or a reference point. No input files are read. Select optional directive:");
 	GMT_Usage (API, 3, "e: Print oblique <llx>/<lly>/<urx>/<ury>+r coordinates for rectangular region encompassing the -R -J area.");
 	GMT_Usage (API, 3, "E: Same as e but prints -Rw/s/e/n+r string as trailing text instead.");
@@ -305,7 +306,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "R: Same as r but prints -Rw/e/s/n string as trailing text instead.");
 	GMT_Usage (API, 3, "w: Print map width (See -D for plot units).");
 	GMT_Usage (API, 3, "x: Print map coordinates of reference point given in plot coordinates <px/py>.");
-	GMT_Usage (API, -2, "Note: For -We|r you can use +n[<nx>[/<ny]] to output the enclosing polygon instead "
+	GMT_Usage (API, -2, "Note: For -We|r you can use +n[<nx>[/<ny>]] to output the enclosing polygon instead "
 		"by giving the number of nodes along the two sides [100]. Default (-W with no args) prints map width and map height.");
 	GMT_Usage (API, 1, "\n-Z[<speed>][+a][+i][+f][+t<epoch>]");
 	GMT_Usage (API, -2, "Compute travel times along track using specified speed. "
@@ -472,7 +473,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 
 	unsigned int n_slash, k, n_errors = 0, pos;
 	int n;
-	bool geodetic_calc = false, will_need_RJ = false;
+	bool geodetic_calc = false, will_need_RJ = false, isoldL;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, from[GMT_LEN256] = {""}, to[GMT_LEN256] = {""};
 	char c, *p = NULL, *q = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -638,7 +639,18 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] (Note: spherical only) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				if (!(gmt_found_modifier (GMT, opt->arg, "pu") || strchr (opt->arg, '/')))
+				if (!(gmt_found_modifier (GMT, opt->arg, "pu"))) {
+					isoldL = opt->arg[strlen(opt->arg)-1] == '+';
+					if (!isoldL) {
+						char *pch;
+						if ((pch = strrchr(opt->arg, '/')) != NULL) {
+							isoldL = (*(++pch) == '+' || *pch == '-');
+							if (!isoldL)
+								isoldL = (strchr (GMT_LEN_UNITS "cC", *pch) != NULL); 
+						}
+					}
+				}
+				if (isoldL)
 					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
 				else {
 					char *m = NULL;
@@ -899,7 +911,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

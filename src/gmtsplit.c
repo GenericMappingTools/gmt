@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtsplit_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtsplit"
 #define THIS_MODULE_MODERN_NAME	"gmtsplit"
@@ -33,41 +34,41 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>Vbdefghiqs" GMT_OPT("H")
 
-#define SPLITXYZ_F_RES			1000	/* Number of points in filter halfwidth  */
-#define SPLITXYZ_N_OUTPUT_CHOICES	5
+#define GMTSPLIT_F_RES			1000	/* Number of points in filter halfwidth  */
+#define GMTSPLIT_N_OUTPUT_CHOICES	5
 
-struct SPLITXYZ_CTRL {
-	struct SPLITXYZ_Out {	/* -> */
+struct GMTSPLIT_CTRL {
+	struct GMTSPLIT_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct SPLITXYZ_A {	/* -A<azimuth>/<tolerance> */
+	struct GMTSPLIT_A {	/* -A<azimuth>/<tolerance> */
 		bool active;
 		double azimuth, tolerance;
 	} A;
-	struct SPLITXYZ_C {	/* -C<course_change> */
+	struct GMTSPLIT_C {	/* -C<course_change> */
 		bool active;
 		double value;
 	} C;
-	struct SPLITXYZ_D {	/* -D<mindist> */
+	struct GMTSPLIT_D {	/* -D<mindist> */
 		bool active;
 		double value;
 	} D;
-	struct SPLITXYZ_F {	/* -F<xy_filter>/<z_filter> */
+	struct GMTSPLIT_F {	/* -F<xy_filter>/<z_filter> */
 		bool active;
 		double xy_filter, z_filter;
 	} F;
-	struct SPLITXYZ_N {	/* -N<namestem> */
+	struct GMTSPLIT_N {	/* -N<namestem> */
 		bool active;
 		unsigned int n_formats;
 		char *name;
 	} N;
-	struct SPLITXYZ_Q {	/* -Q[<xyzdg>] */
+	struct GMTSPLIT_Q {	/* -Q[<xyzdg>] */
 		bool active;
 		bool z_selected;
-		char col[SPLITXYZ_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
+		char col[GMTSPLIT_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} Q;
-	struct SPLITXYZ_S {	/* -S */
+	struct GMTSPLIT_S {	/* -S */
 		bool active;
 	} S;
 };
@@ -76,13 +77,13 @@ GMT_LOCAL double *gmtsplit_filterxy_setup (struct GMT_CTRL *GMT) {
 	unsigned int i;
 	double tmp, sum = 0.0, *fwork = NULL;
 
-	fwork = gmt_M_memory (GMT, NULL, SPLITXYZ_F_RES, double);	/* Initialized to zeros */
-	tmp = M_PI / SPLITXYZ_F_RES;
-	for (i = 0; i < SPLITXYZ_F_RES; i++) {
+	fwork = gmt_M_memory (GMT, NULL, GMTSPLIT_F_RES, double);	/* Initialized to zeros */
+	tmp = M_PI / GMTSPLIT_F_RES;
+	for (i = 0; i < GMTSPLIT_F_RES; i++) {
 		fwork[i] = 1.0 + cos (i * tmp);
 		sum += fwork[i];
 	}
-	for (i = 1; i < SPLITXYZ_F_RES; i++) fwork[i] /= sum;
+	for (i = 1; i < GMTSPLIT_F_RES; i++) fwork[i] /= sum;
 	return (fwork);
 }
 
@@ -95,7 +96,7 @@ GMT_LOCAL void gmtsplit_filter_cols (struct GMT_CTRL *GMT, double *data[], uint6
 	if (filter_width == 0.0) return;	/* No filtering */
 	hilow = (filter_width < 0.0);
 	half_width = 0.5 * fabs (filter_width);
-	dt = SPLITXYZ_F_RES / half_width;
+	dt = GMTSPLIT_F_RES / half_width;
 	ndata = end - begin;
 	w = gmt_M_memory (GMT, NULL, n_cols, double *);
 	for (k = 0; k < n_cols; k++) w[k] = gmt_M_memory (GMT, NULL, ndata, double);	/* Initialized to zeros */
@@ -105,7 +106,7 @@ GMT_LOCAL void gmtsplit_filter_cols (struct GMT_CTRL *GMT, double *data[], uint6
 		while (istop  < end && data[d_col][istop]  - data[d_col][j] <   half_width) istop++;
 		for (i = istart, sum = 0.0; i < istop; i++) {
 			kk = lrint (floor (dt * fabs (data[d_col][i] - data[d_col][j])));
-			if (kk < 0 || kk >= SPLITXYZ_F_RES) continue;	/* Safety valve */
+			if (kk < 0 || kk >= GMTSPLIT_F_RES) continue;	/* Safety valve */
 			k = kk;
 			sum += fwork[k];
 			for (p = 0; p < n_cols; p++) w[p][j] += (data[cols[p]][i] * fwork[k]);
@@ -124,9 +125,9 @@ GMT_LOCAL void gmtsplit_filter_cols (struct GMT_CTRL *GMT, double *data[], uint6
 }
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	struct SPLITXYZ_CTRL *C = NULL;
+	struct GMTSPLIT_CTRL *C = NULL;
 
-	C = gmt_M_memory (GMT, NULL, 1, struct SPLITXYZ_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GMTSPLIT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.azimuth = 90.0;
@@ -135,7 +136,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	return (C);
 }
 
-static void Free_Ctrl (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSPLIT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->N.name);
@@ -190,7 +191,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-static int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GMT_OPTION *options) {
+static int parse (struct GMT_CTRL *GMT, struct GMTSPLIT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtsplit and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -273,7 +274,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GMT_O
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				for (j = 0; opt->arg[j]; j++) {
-					if (j < SPLITXYZ_N_OUTPUT_CHOICES) {
+					if (j < GMTSPLIT_N_OUTPUT_CHOICES) {
 						Ctrl->Q.col[j] = opt->arg[j];
 						if (!strchr ("xyzdh", Ctrl->Q.col[j])) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Unrecognized output choice %c\n", Ctrl->Q.col[j]);
@@ -326,7 +327,7 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 	bool ok, first = true, no_z_column;
 
 	unsigned int i, j, d_col, h_col, z_cols, xy_cols[2] = {0, 1}, io_mode = 0;
-	unsigned int output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0, n_in;
+	unsigned int output_choice[GMTSPLIT_N_OUTPUT_CHOICES], n_outputs = 0, n_in;
 
 	int error = 0;
 
@@ -343,7 +344,7 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASEGMENT *S = NULL, *S_out = NULL;
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
-	struct SPLITXYZ_CTRL *Ctrl = NULL;
+	struct GMTSPLIT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -358,7 +359,7 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != GMT_NOERROR) Return (error);
@@ -381,7 +382,7 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 		Return (GMT_DIM_TOO_SMALL);
 	}
 
-	gmt_M_memset (output_choice, SPLITXYZ_N_OUTPUT_CHOICES, int);
+	gmt_M_memset (output_choice, GMTSPLIT_N_OUTPUT_CHOICES, int);
 	no_z_column = (D[GMT_IN]->n_columns == 2);
 
 	if (no_z_column && Ctrl->S.active) {
@@ -398,7 +399,7 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 	}
 
 	/* Determine output choices and order */
-	for (k = n_outputs = 0; k < SPLITXYZ_N_OUTPUT_CHOICES && Ctrl->Q.col[k]; k++) {
+	for (k = n_outputs = 0; k < GMTSPLIT_N_OUTPUT_CHOICES && Ctrl->Q.col[k]; k++) {
 		switch (Ctrl->Q.col[k]) {
 			case 'x':
 				output_choice[k] = GMT_X;

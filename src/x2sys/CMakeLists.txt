@@ -26,9 +26,10 @@
 
 set (SUPPL_NAME x2sys)
 set (SUPPL_HEADERS x2sys.h)
+AUX_SOURCE_DIRECTORY (longopt SUPPL_LONG_OPT_H) 
 set (SUPPL_PROGS_SRCS x2sys_init.c x2sys_put.c x2sys_get.c x2sys_binlist.c
 	x2sys_datalist.c x2sys_cross.c x2sys_list.c x2sys_report.c x2sys_solve.c
-	x2sys_merge.c)
+	x2sys_merge.c ${SUPPL_LONG_OPT_H})
 set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} x2sys.c)
 set (SUPPL_EXAMPLE_FILES README.x2sys)
 set (SUPPL_EXAMPLE_PROGS test_x2sys.sh)

@@ -144,7 +144,7 @@ Optional Arguments
     Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If only
     **-T**\ *inc* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment.
     To skip the model evaluation entirely, simply provide **-T**\ 0.
-    For details on array creation, see `Generate 1D Array`_.
+    For details on array creation, see `Generate 1-D Array`_.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

@@ -11,7 +11,7 @@
 # downloaded directory.  It will create a gmt subdirectory with all the CPTs.
 # You also need to edit gmt_cpt_masters.h after adding the CPTs to share/cpt
 #
-# Last setup and run for ScientificColourMaps7 on 20/09/2021 for GMT 6.3 (master)
+# Last setup and run for ScientificColourMaps7 on 02.11.2022 for GMT 6.5 (master)
 # Gave 51 CPTS: The same as prior release with minor changes for categorical cpts.
 #
 
@@ -92,7 +92,7 @@ EOF
 here=`pwd`
 cd $DIR
 # Make formatted list of lines suitable for copying into gmt_cpt_masters.h
-awk -F'|' '{printf "\"crameri/%-10s : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
+awk -F'|' '{printf "\"SCM/%-10s : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
 # Make list of CPTs with a hinge of some soft since these need to insert a true z = 0 slice
 grep "\[H," /tmp/cpt.info | awk -F'|' '{print $1}' > /tmp/hinge.lis
 grep "\[S," /tmp/cpt.info | awk -F'|' '{print $1}' >> /tmp/hinge.lis
@@ -109,7 +109,7 @@ while read line; do
 	cat <<- EOF > gmt_cpts/$cpt.cpt
 	#
 	EOF
-	echo $line | awk -F'|' '{printf "# crameri/%s : %s\n", $1, $2}' >> gmt_cpts/$cpt.cpt
+	echo $line | awk -F'|' '{printf "# SCM/%s : %s\n", $1, $2}' >> gmt_cpts/$cpt.cpt
 	last_char=$(echo $cpt | awk '{print substr($1,length($1),1)}')
 	if [ "X${last_char}" = "XS" ]; then
 		tmp=$(echo $cpt | awk '{print substr($1,1, length($1)-1)}')
@@ -136,7 +136,7 @@ while read line; do
 	if [ "X${last_char}" = "XS" ]; then
 		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
-		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR+1, $6, $7, $8}}' > /tmp/tmp.cpt
+		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR, $6, $7, $8}}' > /tmp/tmp.cpt
 	elif [ "X$hinge" = "X" ]; then
 		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		if [ "X${last_char}" = "XO" ]; then

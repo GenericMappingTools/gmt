@@ -49,6 +49,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/surface_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"surface"
 #define THIS_MODULE_MODERN_NAME	"surface"
@@ -113,7 +114,7 @@ struct SURFACE_CTRL {
 		char unit;
 	} S;
 	struct SURFACE_T {	/* -T<tension>[i][b] */
-		bool active;
+		bool active[2];
 		double b_tension, i_tension;
 	} T;
 	struct SURFACE_W {	/* -W[<logfile>] */
@@ -190,6 +191,8 @@ enum surface_limit { NONE = 0, DATA = 1, VALUE = 2, SURFACE = 3 };
 enum surface_conv { BY_VALUE = 0, BY_PERCENT = 1 };
 
 enum surface_iter { GRID_NODES = 0, GRID_DATA = 1 };
+
+enum surface_tension { BOUNDARY = 0, INTERIOR = 1 };
 
 struct SURFACE_DATA {	/* Data point and index to node it currently constrains  */
 	gmt_grdfloat x, y, z;
@@ -731,7 +734,7 @@ GMT_LOCAL void surface_initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INF
 }
 
 GMT_LOCAL int surface_read_data (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options) {
-	/* Procdss input data into data structure */
+	/* Process input data into data structure */
 	int col, row, error;
 	uint64_t k = 0, kmax = 0, kmin = 0, n_dup = 0;
 	double *in, half_dx, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
@@ -935,14 +938,14 @@ GMT_LOCAL int surface_write_grid (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctr
 	gmt_grdfloat *u = C->Grid->data;
 
 	if (!Ctrl->Q.active) {	/* Probably need to shrink region to the desired one by increasing the pads */
-		unsigned int del_pad[4] = {0, 0, 0, 0}, k, n = 0;
+		int del_pad[4] = {0, 0, 0, 0}, k, n = 0;
 		struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (C->Grid->header);
 		/* Determine the shifts inwards for each side */
 		del_pad[XLO] = irint ((C->wesn_orig[XLO] - C->Grid->header->wesn[XLO]) * HH->r_inc[GMT_X]);
 		del_pad[XHI] = irint ((C->Grid->header->wesn[XHI] - C->wesn_orig[XHI]) * HH->r_inc[GMT_X]);
 		del_pad[YLO] = irint ((C->wesn_orig[YLO] - C->Grid->header->wesn[YLO]) * HH->r_inc[GMT_Y]);
 		del_pad[YHI] = irint ((C->Grid->header->wesn[YHI] - C->wesn_orig[YHI]) * HH->r_inc[GMT_Y]);
-		for (k = 0; k < 4; k++) n += del_pad[k];	/* See if any is needed */
+		for (k = 0; k < 4; k++) n += abs (del_pad[k]);	/* See if any is needed */
 		if (n) {	/* Yep, must update pad and all meta data for this grid first */
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Increase pad by %d %d %d %d\n", del_pad[XLO], del_pad[XHI], del_pad[YLO], del_pad[YHI]);
 			for (k = 0; k < 4; k++) C->Grid->header->pad[k] += del_pad[k];	/* Increase pad to shrink region */
@@ -1294,7 +1297,7 @@ GMT_LOCAL void surface_throw_away_unusables (struct GMT_CTRL *GMT, struct SURFAC
 	   We sort, mark redundant data as SURFACE_OUTSIDE, and sort again, chopping off the excess.
 	*/
 
-	uint64_t last_index = UINTMAX_MAX, n_outside = 0, k;
+	uint64_t last_index = UINTMAX_MAX, n_outside = 0, k, last_k;
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Eliminate data points that are not nearest a node.\n");
 
@@ -1309,9 +1312,12 @@ GMT_LOCAL void surface_throw_away_unusables (struct GMT_CTRL *GMT, struct SURFAC
 		if (C->data[k].index == last_index) {	/* Same node but further away than our guy */
 			C->data[k].index = SURFACE_OUTSIDE;
 			n_outside++;
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Skipping unusable point at (%.16lg %.16lg %.16lg) as (%.16lg %.16lg %.16lg) is closer to node %" PRIu64 "\n",
+					C->data[k].x, C->data[k].y, C->data[k].z, C->data[last_k].x, C->data[last_k].y, C->data[last_k].z, last_index);
 		}
 		else {	/* New index, just update last_index */
 			last_index = C->data[k].index;
+			last_k = k;
 		}
 	}
 
@@ -1710,7 +1716,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A<aspect_ratio>|m] [-C<convergence_limit>] "
 		"[-D<breakline>[+z[<zlevel>]]] [%s] [-Ll|u<limit>] [-M<radius>] [-N<n_iterations>] [-Q[r]] "
 		"[-S<search_radius>[m|s]] [-T[b|i]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation>] "
-		"[%s] [%s] [%s] [%s] [%s] [%s] [%s [%s] [%s] [%s] %s[%s] [%s]\n",
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] %s[%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT,
 		GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -1895,7 +1901,6 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'T':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				k = 0;
 				if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 syntax allowed for upper case */
 					modifier = opt->arg[strlen(opt->arg)-1];
@@ -1909,12 +1914,19 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 					k = 1;
 				}
 				if (modifier == 'b') {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[BOUNDARY]);
 					Ctrl->T.b_tension = atof (&opt->arg[k]);
 				}
 				else if (modifier == 'i') {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[INTERIOR]);
 					Ctrl->T.i_tension = atof (&opt->arg[k]);
 				}
 				else if (modifier == '.' || (modifier >= '0' && modifier <= '9')) {
+					/* specification of a numeric string with no b or i directive will
+					   set both tension values, meaning that we must test that neither
+					   has already been set via some preceding -T specification */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[BOUNDARY]);
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[INTERIOR]);
 					Ctrl->T.i_tension = Ctrl->T.b_tension = atof (opt->arg);
 				}
 				else {
@@ -1981,7 +1993,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

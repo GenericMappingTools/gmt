@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/earthtide_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"earthtide"
 #define THIS_MODULE_MODERN_NAME	"earthtide"
@@ -1219,7 +1220,7 @@ GMT_LOCAL void earthtide_solid_ts (struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, d
 		if (T.unit == 'm')
 		tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
 		else if (T.unit == 's')
-			tdel2 = 1.0 / (24 * 3600);	/* 1 secons steps (????) */
+			tdel2 = 1.0 / (24 * 3600);	/* 1 second steps (????) */
 		else if (T.unit == 'h')
 			tdel2 = 1.0 / 24;			/* 1 hour steps */
 		else if (T.unit == 'd')
@@ -1462,7 +1463,7 @@ EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ( (GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ( (GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ( (error = parse (GMT, Ctrl, options)) != 0) Return (error);

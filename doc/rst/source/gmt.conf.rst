@@ -167,9 +167,10 @@ FONT Parameters
         size <auto-scaling>`.
 
     **FONT_LOGO**
-        Font to use for text plotted as part of the GMT time logo [:doc:`theme
-        dependent <theme-settings>`]. Choose **auto** for :ref:`automatic scaling
-        with plot size <auto-scaling>`.
+        Font to use for text plotted as part of the GMT time logo. **Note**: Since the
+        time logo has a fixed height the font size for the time stamp is 8p and for the
+        optional label it is 7p. Hence, changing this font only affects the font style
+        and color but not its size.
 
     **FONT_SUBTITLE**
         Font to use when plotting titles over graphs that involve a subtitle
@@ -318,8 +319,8 @@ FORMAT Parameters
         ======   =============
         %.12g    3.14159265359
         %.2f     3.14
-        %8.4f      3.1416
-        %08.2f   003.1416
+        %8.4f    __3.1416
+        %08.2f   00003.14
         %.5f     3.14159
         ======   =============
 
@@ -389,7 +390,7 @@ GMT Miscellaneous Parameters
         return NaN for any element of x that is outside range. Second case lets
         the selected algorithm compute the extrapolation values. Third case sets
         the extrapolation values to the constant value passed in *value* (this
-        value must off course be numeric) [default is **NaN**].
+        value must of course be numeric) [default is **NaN**].
 
     **GMT_CUSTOM_LIBS**
         Comma-separated list of GMT-compliant shared libraries that extend
@@ -653,18 +654,20 @@ MAP Parameters
     **MAP_ANNOT_OBLIQUE**
         This setting applies to "oblique" projections, which in this context
         means maps whose boundary is a rectangle not specified by meridians
-        and parallels.  We expect a comma-separated list of up to seven keywords:
-        **separate** means longitudes will be annotated on the lower and upper
-        boundaries only, and latitudes will be annotated on the left and right
-        boundaries only; **anywhere** means annotations will occur wherever an
-        imaginary gridline crosses the map boundaries; **lon_horizontal** means
-        longitude annotations will be plotted horizontally; **lat_horizontal**
-        means latitude annotations will be plotted horizontally; **tick_extend**
-        means tick-marks are extended so the distance from the tip of the oblique
-        tick to the map frame equals the specified tick length; **tick_normal**
-        means tick-marks will be drawn normal to the border regardless of
-        gridline angle; **lat_parallel** means latitude annotations will be
-        plotted parallel to the border [default is **anywhere**].
+        and parallels.  We expect a comma-separated list of up to seven
+        keywords [default is **anywhere**]:
+
+        ============== ============================================================================================================
+        Keyword        Meaning
+        ============== ============================================================================================================
+        separate       Annotate longitudes on lower and upper boundaries only, and latitudes on the left and right boundaries only
+        anywhere       Annotations will occur wherever an imaginary gridline crosses the map boundaries
+        lon_horizontal Longitude annotations will be plotted horizontally
+        lat_horizontal Latitude annotations will be plotted horizontally
+        tick_extend    Extend tick-marks so distance from tip of the oblique tick to map frame equals specified tick length
+        tick_normal    Draw tick-marks normal to the border regardless of gridline angle
+        lat_parallel   Latitude annotations will be plotted parallel to the border
+        ============== ============================================================================================================
 
     **MAP_ANNOT_OFFSET**
         Sets both :term:`MAP_ANNOT_OFFSET_PRIMARY` and
@@ -747,6 +750,14 @@ MAP Parameters
         instead).  The vector stem is set to match :term:`MAP_FRAME_WIDTH`, while
         the vector head length and width are 10 and 5 times this width,
         respectively.  You may control its shape via :term:`MAP_VECTOR_SHAPE`.
+        The graph vectors are plotted as normal boundary axes.  Use **graph-origin**
+        to shift the **W** and **S** axes so they intersect at the user data
+        (0, 0) origin instead.  In this mode, only the **W** and **S** axes can be 
+        selected (or **w**, **s**, **l**, and **b** too); the **E** and **N** (and
+        **e**, **n**, **r** and **t**) will be ignored.  **Note**: Annotations
+        at any axes intersections will be suppressed.  To select another intersection point
+        than the data origin you may append **+o**\ *xorig*/*yorig* or the short-cut
+        **+oc** to center the axes on the current data domain [0/0].
 
         .. toggle::
 

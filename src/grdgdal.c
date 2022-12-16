@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdgdal_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdgdal"
 #define THIS_MODULE_MODERN_NAME	"grdgdal"
@@ -83,7 +84,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <infile> -A<prog>[+m<method>[+c<cpt>]] [-F<gd opts>] [-G%s] [%s] [-M[+r|w]] "
+	GMT_Usage (API, 0, "usage: %s <infile> -A<prog>[+m<method>[+c<cpt>]] [-F<gdal_opts>] [-G%s] [%s] [-M[+r|w]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, GMT_Rx_OPT, GMT_V_OPT,
 		GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
@@ -97,7 +98,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"for color-relief, +c<cpt_name>.");
 	gmt_outgrid_syntax (API, 'G', "Set output grid or image file name");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-F List of GDAL options for the selected program in -A wrapped in double quotes.");
+	GMT_Usage (API, 1, "\n-F<gdal_opts>");
+	GMT_Usage (API, -2, "List of GDAL options for the selected program in -A wrapped in double quotes.");
 	GMT_Option  (API, "I");
 	GMT_Usage (API, 1, "\n-M[+r|w]");
 	GMT_Usage (API, -2, "Read and write with GDAL. Use +r to only read or +w to write.");
@@ -215,7 +217,7 @@ EXTERN_MSC int GMT_grdgdal (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

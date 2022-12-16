@@ -31,6 +31,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pswiggle_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pswiggle"
 #define THIS_MODULE_MODERN_NAME	"wiggle"
@@ -379,7 +380,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 			case 'S':
 				if (gmt_M_compat_check (GMT, 5)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-S option is deprecated; use -D instead.\n");
-					Ctrl->S.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 					j = 0;
 					if (opt->arg[0] == 'x') Ctrl->S.cartesian = true, j = 1;
 					k = sscanf (&opt->arg[j], "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->S.length);
@@ -481,7 +482,7 @@ EXTERN_MSC int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

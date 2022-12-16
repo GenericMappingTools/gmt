@@ -182,7 +182,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [**c**\|\ **r**]
-    Do NOT clip symbols that fall outside map border [Default plots points
+    Do **not** clip symbols that fall outside map border [Default plots points
     whose coordinates are strictly inside the map border only]. The option does not apply to lines and polygons
     which are always clipped to the map region. For periodic (360-longitude)
     maps we must plot all symbols twice in case they are clipped by the repeating
@@ -217,7 +217,7 @@ Optional Arguments
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
-    width = default, color = black, style = solid]. If the modifier **+cl**
+    width = 0.25p, color = black, style = solid]. If the modifier **+cl**
     is appended then the color of the line are taken from the CPT (see
     |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill.  Use just **+c** for both effects.

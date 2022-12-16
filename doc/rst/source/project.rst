@@ -53,7 +53,7 @@ and *z* is all remaining columns in the input (beyond the required :math:`x`
 and :math:`y` columns).
 
 Alternatively, **project** may be used to generate (:math:`r,s,p`)
-triples at equal increments *dist* along a profile using |-G|. In this case, no input is read.
+triplets at equal increments *dist* along a profile using |-G|. In this case, no input is read.
 
 Projections are defined in one of three ways:
 
@@ -89,7 +89,7 @@ to the endpoint (|-E|).
 
 Flat Earth (Cartesian) coordinate transformations can also be made. Set
 |-N| and remember that *azimuth* is clockwise from North (the :math:`y`
-axis), NOT the usual cartesian theta, which is counterclockwise from the
+axis), **not** the usual cartesian theta, which is counterclockwise from the
 :math:`x` axis. (i.e., :math:`azimuth = 90 - theta`).
 
 No assumptions are made regarding the units for :math:`x, y, r, s, p, q`, *dist*,
@@ -307,7 +307,7 @@ major axis of 1500 km with azimuth of 30 degree and a minor axis of 600 km, try
 
    ::
 
-    gmt project -C-30/70 -G10 -Z1500/600/30+e > ellipse.xyp
+    gmt project -C-30/70 -G10 -Z1500/600/30+e -Q > ellipse.xyp
 
 To project the shiptrack gravity, magnetics, and bathymetry in
 c2610.xygmb along a great circle through an origin at 30S, 30W, the
@@ -368,5 +368,4 @@ See Also
 :doc:`gmtvector`,
 :doc:`grdtrack`,
 :doc:`mapproject`,
-:doc:`grdproject`,
-:doc:`grdtrack`
+:doc:`grdproject`

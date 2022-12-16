@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grd2xyz_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grd2xyz"
 #define THIS_MODULE_MODERN_NAME	"grd2xyz"
@@ -181,9 +182,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 				else if (opt->arg[0] == 'i') Ctrl->C.mode = 2;
 				break;
 			case 'E':	/* Old ESRI option */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				if (gmt_M_compat_check (GMT, 4)) {
-					Ctrl->E.active = true;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -E is deprecated; use grdconvert instead.\n");
 					if (opt->arg[0] == 'f') Ctrl->E.floating = true;
 					if (opt->arg[Ctrl->E.floating]) Ctrl->E.nodata = atof (&opt->arg[Ctrl->E.floating]);
@@ -443,7 +443,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, &io, options)) != 0) Return (error);

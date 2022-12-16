@@ -112,7 +112,9 @@ Optional Arguments
     [Default extracts all records]. Optionally, append **f** or **l** to
     only extract the first or last record of each segment, respectively.
     Alternatively, append **m**\ *stride* to extract every *stride* records;
-    use **M** to also include the last record.
+    use **M** to also include the last record. **Note**: This option operates
+    on the input records and if combined with |-N| the latter only sorts 
+    the reduced data set. See **-qo** for limiting the output records after sorting.
 
 .. _-F:
 
@@ -160,7 +162,9 @@ Optional Arguments
     fall into ascending order [**+a**\ , which is Default].  Append **+d**
     to sort into descending order instead.  The |-N| option can be
     combined with any other ordering scheme except |-F| (segmentation)
-    and is applied at the end.
+    and is applied at the end. **Note**: If |-E| is used then be aware its effect
+    is applied *before* the sorting, not after.  For limiting the output
+    of records after sorting, see **qo**.
 
 .. _-Q:
 

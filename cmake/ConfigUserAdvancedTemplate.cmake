@@ -239,7 +239,7 @@
 #endif()
 # Uncomment these two statements if you are a developer debugging GMT:
 #add_definitions(-DDEBUG)
-#add_definitions(-DMEMDEBUG) # Turn on memory tracking see gmt_support.c for extra info
+#add_definitions(-DMEMDEBUG) # Turn on memory tracking; see gmt_memory .c on MEMDEBUG for information
 #add_definitions(-DUSE_COMMON_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for common GMT options
 #add_definitions(-DUSE_MODULE_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for module options
 #add_definitions(-DEXPORT_GMTLIB)				# Turn on to access normally un-exported or static gmtlib functions from external tools

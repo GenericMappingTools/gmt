@@ -585,8 +585,6 @@ Miscellaneous
 +-----------------------+-----------------------+
 | :doc:`gmtwhich`       | |gmtwhich_purpose|    |
 +-----------------------+-----------------------+
-| :doc:`gmtwhich`       | |gmtwhich_purpose|    |
-+-----------------------+-----------------------+
 | :doc:`kml2gmt`        | |kml2gmt_purpose|     |
 +-----------------------+-----------------------+
 | :doc:`psconvert`      | |psconvert_purpose|   |

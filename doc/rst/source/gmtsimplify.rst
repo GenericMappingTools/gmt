@@ -37,7 +37,8 @@ polygon until a run of points can be replaced by a straight line
 segment, with no point in that run deviating from the straight line by
 more than the tolerance. Have a look at this site to get a visual
 insight on how the algorithm works
-(https://en.wikipedia.org/wiki/Ramer–Douglas–Peucker_algorithm)
+(`https://en.wikipedia.org/wiki/Ramer–Douglas–Peucker_algorithm`)
+
 
 Required Arguments
 ------------------

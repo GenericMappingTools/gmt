@@ -247,7 +247,7 @@ Optional Arguments
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines, wiggles or polygon outlines. Append pen
-    attributes to use [Defaults: width = default, color = black, style =
+    attributes to use [Defaults: width = 0.25p, color = black, style =
     solid]. If the modifier **+cl** is appended then the color of the line
     are taken from the CPT (see |-C|). If instead modifier **+cf** is
     appended then the color from the cpt file is applied to symbol fill.

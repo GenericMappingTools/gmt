@@ -29,6 +29,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gpsgridder_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gpsgridder"
 #define THIS_MODULE_MODERN_NAME	"gpsgridder"
@@ -161,9 +162,9 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]] [-E<misfitfile>] [-Fd|f<val>] [-I<dx>[/<dy>] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]] [-E<misfitfile>] [-Fd|f<val>] [%s] "
 		"[-L] [-N<nodefile>] [%s] [-S<nu>] [-T<maskgrid>] [%s] [-W[+s|w]] [%s] [%s] [%s] [%s] "
-		"[%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT,
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -631,7 +632,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

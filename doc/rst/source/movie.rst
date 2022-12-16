@@ -112,7 +112,7 @@ Required Arguments
     number of records equals the number of frames. Note that the *background* script is allowed to create
     *timefile*, hence we check for its existence both before *and* after the background script has completed.
     **Note**: If just *nframes* is given then only **MOVIE_FRAME** is available as no data file is available.
-    For details on array creation, see `Generate 1D Array`_.  Several modifiers are also available:
+    For details on array creation, see `Generate 1-D Array`_.  Several modifiers are also available:
 
     - **+n** indicates that *inc* is the desired *number* of frames from *min* to *max* instead of an increment.
     - **+p** can be used to set the tag *width* of the frame number format used in naming frames.  For
@@ -232,7 +232,7 @@ Optional Arguments
 
     - **+c**\ *dx*\ [/*dy*] sets the clearance between label and bounding box; only used if **+g** or **+p** are set.
       Append units **c**\|\ **i**\|\ **p** or % of the font size [15%].
-    - **+f** seelcts a specific *font* [:term:`FONT_TAG`].
+    - **+f** selects a specific *font* [:term:`FONT_TAG`].
     - **+g** will fill the label bounding box with *fill* color [no fill].
     - **+h**\ [*dx*/*dy*/][*shade*] will place drop-down shade behind the label bounding box. You can
       adjust the offset with *dx*/*dy* [4p/-4p] and shade color [gray50]; requires **+g** [no shade].
@@ -273,6 +273,8 @@ Optional Arguments
     - **+o**\ *dx*\ [/*dy*] offsets the indicator in direction implied by *justify*.
     - **+p**\ *pen* sets the moving item *pen*.
     - **+P**\ *pen* sets the static item *pen*.
+    - **+s**\ *scale* means we compute elapsed time as frame number times *scale*.
+    - **+t**\ *format* sets a C-format statement to be used with the item selected [none].
     - **+w**\ *width* sets the dimension of the indicator [5% of max canvas dimension for circular indicators and
       60% of relevant canvas dimension (height or width depending on **+j**) for the linear indicators].
 

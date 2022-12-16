@@ -39,7 +39,7 @@ Synopsis
 Description
 -----------
 
-**nearneighbor** reads arbitrarily located (*x,y,z*\ [,\ *w*]) triples
+**nearneighbor** reads arbitrarily located (*x,y,z*\ [,\ *w*]) triplets
 [quadruplets] from standard input [or *table*] and uses a nearest
 neighbor algorithm to assign a weighted average value to each node that
 has one or more data points within a search radius (*R*) centered on the

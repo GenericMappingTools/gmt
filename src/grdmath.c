@@ -37,6 +37,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdmath_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdmath"
 #define THIS_MODULE_MODERN_NAME	"grdmath"
@@ -111,6 +112,10 @@ struct GRDMATH_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
+	struct GRDMATH_C {	/* -C[<cpt>] */
+		bool active;
+		char *cpt;
+	} C;
 	struct GRDMATH_D {	/* -D<resolution>[+f] */
 		bool active;
 		bool force;	/* if true, select next highest level if current set is not available */
@@ -173,7 +178,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [%s] [%s] [-D<resolution>[+f]] [%s] [-M] [-N] [-S] [%s] [%s] [%s] [%s] [%s] [%s] [%s] "
-		"[%s] [%s] [%s] [%s] [%s] %s A B op C op D op ... = %s\n", name, GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT,
+		"[%s] [%s] [%s] [%s]%s[%s] A B op C op D op ... = %s\n", name, GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT,
 		GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT, GMT_OUTGRID);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -514,6 +519,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OP
 			case 'A':	/* Restrict GSHHS features */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
+				break;
+			case 'C':	/* Control default CPT */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				if (opt->arg[0]) Ctrl->C.cpt = opt->arg;	/* Just pass pointer if given an argument */
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
@@ -3289,8 +3298,10 @@ GMT_LOCAL struct GMT_DATASET *grdmath_ASCII_read (struct GMT_CTRL *GMT, struct G
 	int error;
 	if (gmt_M_is_geographic (GMT, GMT_IN))
 		error = gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
-	else
-		error = gmt_init_distaz (GMT, 'R', 0, GMT_MAP_DIST);	/* Cartesian squared distances */
+	else {
+		char code = strcmp (op, "PDIST") ? 'R' : 'X';
+		error = gmt_init_distaz (GMT, code, 0, GMT_MAP_DIST);	/* Cartesian distances of some flavor */
+	}
 	if (error == GMT_NOT_A_VALID_TYPE) return NULL;
 	if (GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX_NO_TEXT) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in operator %s setting number of input columns\n", op);
@@ -6684,7 +6695,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if ((list = gmt_substitute_macros (GMT, options, "grdmath.macros")) == NULL) Return1 (GMT_RUNTIME_ERROR);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return1 (API->error);
@@ -6860,7 +6871,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 
 		/* First check if we should skip optional arguments */
 
-		if (strchr ("ADIMNRVbfnr-" GMT_OPT("F") GMT_ADD_x_OPT, opt->option)) continue;
+		if (strchr ("ACDIMNRVbfnr-" GMT_OPT("F") GMT_ADD_x_OPT, opt->option)) continue;
 		if (opt->option == 'S' && nstack > 1) {	/* Turn on reducing stack behavior */
 			opt = opt->next;	/* Skip to actual operator */
 			if (grdmath_collapse_stack (GMT, &info, stack, nstack, opt->arg)) continue;	/* Failed, just ignore */
@@ -6872,6 +6883,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		if (op == GRDMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible way to go... */
 
 		if (op == GRDMATH_ARG_IS_SAVE) {	/* Time to save the current stack to output and pop the stack */
+			struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 			if (nstack <= 0) {
 				GMT_Report (API, GMT_MSG_ERROR, "No items on stack are available for output!\n");
 				Return (GMT_RUNTIME_ERROR);
@@ -6893,6 +6905,21 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 			gmt_grd_init (GMT, stack[this_stack]->G->header, options, true);	/* Update command history only */
 
 			gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
+
+			HH = gmt_get_H_hidden (stack[this_stack]->G->header);
+			if (Ctrl->C.active) {	/* Keep or replace the grid's default CPT */
+				if (Ctrl->C.cpt) {	/* Setting another default CPT */
+					if (HH->cpt) gmt_M_str_free (HH->cpt);	/* Must wipe any CPT inherited from input grid */
+					HH->cpt = strdup (Ctrl->C.cpt);
+					API->meta.ignore_remote_cpt = true;	/* Since we just specified something else */
+				}
+				else	/* Want to keep what we have or assign the remote CPT if this is a remote grid */
+					API->meta.ignore_remote_cpt = false;	/* Just in case it had been set elsewhere */
+			}
+			else {	/* Default is to get rid of the grid's default CPT since we cannot know if it is valid anymore */
+				gmt_M_str_free (HH->cpt);	/* Must wipe any CPT inherited from input grid */
+				API->meta.ignore_remote_cpt = true;	/* Since we cannot keep track of what grdmath did to this grid */
+			}
 
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, stack[this_stack]->G)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, opt->arg, stack[this_stack]->G) != GMT_NOERROR) {

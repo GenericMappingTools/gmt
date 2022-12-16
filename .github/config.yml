@@ -4,13 +4,13 @@
 newIssueWelcomeComment: |
   👋 Thanks for opening your first issue here! Please make sure you filled out the template with as much detail as possible. We appreciate that you took the time to contribute!
 
-  Please make sure you read our [Contributing Guide](https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md) and abide by our [Code of Conduct](https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md).
+  Please make sure you read our [Contributing Guide](https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md) and abide by our [Code of Conduct](https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md).
 
 # Comment to be posted to on PRs from first time contributors in your repository
 newPRWelcomeComment: |
   💖 Thanks for opening this pull request! 💖
 
-  Please make sure you read our [Contributing Guide](https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md) and abide by our [Code of Conduct](https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md).
+  Please make sure you read our [Contributing Guide](https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md) and abide by our [Code of Conduct](https://github.com/GenericMappingTools/.github/blob/main/CODE_OF_CONDUCT.md).
 
   A few things to keep in mind:
 

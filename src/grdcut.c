@@ -21,13 +21,13 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  *
- * Brief synopsis: Reads a grid file and writes a portion within it
- * to a new file.
+ * Brief synopsis: Reads a grid file and writes a portion within it to a new file.
  *
  * Note on KEYS: FD(= means -F takes an optional input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdcut_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdcut"
 #define THIS_MODULE_MODERN_NAME	"grdcut"
@@ -36,6 +36,12 @@
 #define THIS_MODULE_KEYS	"<G{,FD(=,>DD,G?}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-JRVf"
+
+#ifdef WIN32	/* Special for Windows */
+	static char quote = '\"';
+#else
+	static char quote = '\'';
+#endif
 
 /* Control structure for grdcut */
 
@@ -73,7 +79,7 @@ struct GRDCUT_CTRL {
 	} S;
 	struct GRDCUT_Z {	/* -Z[min/max][+n|N|r] */
 		bool active;
-		unsigned int mode;	/* 0-2, see below */
+		unsigned int mode;	/* 0-2, see below for values */
 		double min, max;
 	} Z;
 };
@@ -267,6 +273,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, zb, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.max), zb);
 				}
 				if (c) c[0] = '+';	/* Restore modifier */
+				if (Ctrl->Z.min >= Ctrl->Z.max) {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -Z: zmax not strictly greater than zmin\n");
+					n_errors++;
+				}
 				break;
 
 			default:	/* Report bad options */
@@ -442,7 +452,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1035,7 +1045,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 				sprintf (driver, "-of GTiff -co COMPRESS=DEFLATE");
 			else
 				sprintf (driver, "-of netCDF -co COMPRESS=DEFLATE -co FORMAT=NC4 -co ZLEVEL=%d -a_nodata NaN", GMT->current.setting.io_nc4_deflation_level);
-			sprintf (cmd, "gdal_translate -projwin %.10lg %.10lg %.10lg %.10lg %s %s %s", wesn_new[XLO], wesn_new[YHI], wesn_new[XHI], wesn_new[YLO], driver, Ctrl->In.file, Ctrl->G.file);
+			sprintf (cmd, "gdal_translate -projwin %.10lg %.10lg %.10lg %.10lg %s %c%s%c %c%s%c", wesn_new[XLO], wesn_new[YHI], wesn_new[XHI], wesn_new[YLO], driver,
+					quote, Ctrl->In.file, quote, quote, Ctrl->G.file, quote);
 			if (c) c[0] = '=';	/* Restore full file name */
 			if (b) b[0] = '+';	/* Restore band requests */
 			if (b) {	/* Parse and add specific band request(s) to gdal_translate */

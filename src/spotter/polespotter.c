@@ -16,6 +16,7 @@
  *--------------------------------------------------------------------*/
 
 #include "gmt_dev.h"
+#include "longopt/polespotter_inc.h"
 #include "spotter.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"polespotter"
@@ -98,7 +99,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [-A<abyssalhills>] [-D<step>] [-Ea|f<sigma>] [-F<FZfile>] [-G%s] "
 		"[%s] [-N] [%s] [-Ss|p|l[<modifiers>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_OUTGRID, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT,
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_r_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -114,8 +115,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Give multisegment file with fracture zone lineaments [none].");
 	gmt_outgrid_syntax (API, 'G', "Specify file name for output pole-density grid [no grid].  Requires -R -I [-r]. "
 		"Accumulates weighted great-circle length density on the grid");
-	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
-	GMT_Usage (API, -2, "Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].");
+	GMT_Option (API, "I");
 	GMT_Usage (API, 1, "\n-N Normalize grid so maximum is 1 [no normalization].");
 	GMT_Option (API, "Rg");
 	GMT_Usage (API, 1, "\n-Ss|p|l[<modifiers>]");
@@ -318,7 +318,7 @@ EXTERN_MSC int GMT_polespotter (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */

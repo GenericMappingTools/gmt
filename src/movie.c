@@ -92,6 +92,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/movie_inc.h"
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -444,6 +445,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+o Offset indicator by <dx>[/<dy>] in direction implied by <justify> [%d%% of font size].", GMT_TEXT_OFFSET);
 	GMT_Usage (API, 3, "+P Set background (static) pen for indicator [Depends in indicator selected].");
 	GMT_Usage (API, 3, "+p Set foreground (moving) pen for indicator [Depends in indicator selected].");
+	GMT_Usage (API, 3, "+s Compute elapsed time as frame counter times appended <scale> [no scaling].");
 	GMT_Usage (API, 3, "+t Provide a C-format statement to be used with the item selected [none].");
 	GMT_Usage (API, 3, "+w Specify indicator size [5%% of max canvas dimension for circles, 60%% for axes].");
 	GMT_Usage (API, 1, "\n-Q[s]");
@@ -1151,8 +1153,8 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'x':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->x.active);
 				n_errors += movie_parse_x_option (GMT, Ctrl, opt->arg);
-				Ctrl->x.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -1317,7 +1319,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN128] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
-	char string[GMT_LEN128] = {""}, extra[GMT_BUFSIZ] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
+	char string[GMT_LEN128] = {""}, extra[GMT_BUFSIZ] = {""}, cmd[PATH_MAX] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
 	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {""};
 	char intro_file[PATH_MAX] = {""}, conf_file[PATH_MAX], tmpwpath[PATH_MAX] = {""}, *script_file =  NULL, which[2] = {"LP"}, spacer, dir_sep;
 
@@ -1343,7 +1345,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1780,7 +1782,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	if (Ctrl->T.precision)	/* Precision was prescribed */
 		precision = Ctrl->T.precision;
 	else	/* Compute width from largest frame number */
-		precision = irint (ceil (log10 ((double)(Ctrl->T.start_frame+n_frames+Ctrl->E.duration+n_fade_frames))+0.1));	/* Width needed to hold largest frame number, guaranteed to give at least 1 */
+		precision = irint (ceil (log10 ((double)(Ctrl->T.start_frame+n_frames+Ctrl->E.duration+n_fade_frames-1))+0.1));	/* Width needed to hold largest frame number, guaranteed to give at least 1 */
 
 	if (Ctrl->S[MOVIE_POSTFLIGHT].active) {	/* Prepare the postflight script */
 		if (Ctrl->S[MOVIE_POSTFLIGHT].PS)	/* Just got a PS file, nothing to do */
@@ -2062,7 +2064,6 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		else
 			gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_BACKGROUND", "");		/* Nothing */
 		if (Ctrl->F.transparent && Ctrl->F.active[MOVIE_GIF]) place_background = false;	/* Only place background once if transparent images */
-		gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_ITEM", state_tag);		/* Current frame tag (formatted frame number) */
 		for (col = 0; col < n_values; col++) {	/* Derive frame variables from <timefile> in each parameter file */
 			sprintf (string, "MOVIE_COL%u", col);
 			gmt_set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][data_frame]);

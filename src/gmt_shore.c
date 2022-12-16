@@ -856,7 +856,11 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 			ID = c->GSHHS_node[node];	/* GSHHS Id of the polygon that determined the level of the current node */
 			while (ID >= 0 && c->node_level[k] && c->GSHHS_area[ID] < c->min_area) {	/* Polygon must be skipped and node level reset */
 				ID = c->GSHHS_parent[ID];	/* Pick the parent polygon since that is the next polygon up */
-				if (c->node_level[k] != c->node_level_g[k])
+				if (c->lat_sw < -60.0) {	/* Special check for Antarctica due to the two versions of the continent */
+					if (c->node_level[k] != c->node_level_g[k])
+						c->node_level[k]--;		/* ...and drop down one level to that of the parent polygon */
+				}
+				else	/* Not in Antarctica and we need to drop the level as we lost that polygon that covered this node */
 					c->node_level[k]--;		/* ...and drop down one level to that of the parent polygon */
 			}	/* Keep doing this until the polygon containing the node is "too big to fail" or we are in the ocean */
 		}

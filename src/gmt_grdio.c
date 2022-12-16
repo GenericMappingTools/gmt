@@ -3892,3 +3892,27 @@ unsigned int gmt_grid_perimeter (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	*x = xx;	*y = yy;
 	return (n);
 }
+
+bool gmt_grd_domains_match (struct GMT_CTRL *GMT, struct GMT_GRID *A, struct GMT_GRID *B, char *comment) {
+	/* Return true if both grids A and B have exactly the same domain, registration, intervals.
+	 * Otherwise we print an error message and return false.
+	 */
+	char *msg = (comment == NULL) ? "two" : comment;
+	if (A->header->registration != B->header->registration) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "The %s grids have different registrations!\n", msg);
+		return (false);
+	}
+	if (!gmt_M_grd_same_shape (GMT, A, B)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "The %s grids have different dimensions\n", msg);
+		return (false);
+	}
+	if (!gmt_M_grd_same_region (GMT, A, B)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "The %s grids have different regions\n", msg);
+		return (false);
+	}
+	if (!gmt_M_grd_same_inc (GMT, A, B)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "The %s grids have different intervals\n", msg);
+		return (false);
+	}
+	return (true);
+}

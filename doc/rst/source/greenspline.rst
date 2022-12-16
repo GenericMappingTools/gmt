@@ -21,7 +21,7 @@ Synopsis
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
 [ |-L| ]
 [ |-N|\ *nodefile* ]
-[ |-Q|\ *az*\|\ *x/y/z* ]
+[ |-Q|\ [*az*\|\ *x/y/z*] ]
 [ |-R|\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*]] ]
 [ |-S|\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
@@ -56,7 +56,7 @@ Cartesian coordinates or spherical surface coordinates. Mathematically, the solu
 
 .. math::
 
-    w(\mathbf{x}) = T(\mathbf{x}) + \sum_{j=1}^{n} \alpha_j g(\mathbf{x}; \mathbf{x}'),
+    w(\mathbf{x}) = T(\mathbf{x}) + \sum_{j=1}^{n} \alpha_j g(\mathbf{x}; \mathbf{x}_j),
 
 where :math:`\mathbf{x}` is the output location, :math:`n` is the number of points,
 :math:`T(\mathbf{x})` is a trend function, and :math:`\alpha_j` are the *n*
@@ -73,6 +73,17 @@ are determined by requiring the solution to fit the observed residual data exact
 
 
 yielding a :math:`n \times n` linear system to be solved for the coefficients.
+
+If there are also *m* observed constraints on the gradient *s* of the curve or surface (|-A|) then we must
+add additional *m* unknown coefficients and use the gradient of the Green's functions to satisfy
+the *m* extra constraints:
+
+.. math::
+
+    s(\mathbf{x}_k) = \nabla w(\mathbf{x}_k) = \sum_{j=1}^{n} \alpha_j \nabla g(\mathbf{x}_k; \mathbf{x}_j) \mathbf{n}_k, \quad k = 1,m
+
+where the gradient of the Green's functions is dotted with the unit vector of the observed gradient.
+
 Finally, away from the data constraints the Green's function must satisfy
 
 .. math::
@@ -139,6 +150,8 @@ Optional Arguments
     (*direction(s)* in degrees are measured counter-clockwise from the
     horizontal (and for 3-D the vertical axis)). **4**: records contain
     **x**, :math:`\mathbf{v}`. **5**: records contain **x**, :math:`\hat{\mathbf{n}}`, :math:`v`.
+    **Note**: The slope constraints must not be at the same locations as the
+    data constraints.  That scenario has not yet been implemented.
 
 .. _-C:
 
@@ -208,10 +221,11 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *az*\|\ *x/y/z*
-    Rather than evaluate the surface, take the directional derivative in
+**-Q**\ [*az*\|\ *x/y/z*]
+    Rather than evaluate the solution *w*\ (**x**), take the first derivative of
+    a 1-D solution.  For 2-D, select directional derivative in
     the *az* azimuth and return the magnitude of this derivative
-    instead. For 3-D interpolation, specify the three components of the
+    instead. For a 3-D interpolation, specify the three components of the
     desired vector direction (the vector will be normalized before use).
 
 .. _-R:
@@ -288,7 +302,7 @@ Optional Arguments
     Sets the distance mode that determines how we calculate distances
     between data points. Select *mode* 0 for Cartesian 1-D spline
     interpolation: **-Z**\ 0 means (*x*) in user units, Cartesian
-    distances, Select *mode* 1-3 for Cartesian 2-D surface spline
+    distances. Select *mode* 1-3 for Cartesian 2-D surface spline
     interpolation: **-Z**\ 1 means (*x*,\ *y*) in user units, Cartesian
     distances, **-Z**\ 2 for (*x*,\ *y*) in degrees, Flat Earth
     distances, and **-Z**\ 3 for (*x*,\ *y*) in degrees, Spherical
@@ -334,7 +348,7 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
-1-d Examples
+1-D Examples
 ------------
 
 To resample the *x*,\ *y* Gaussian random data created by :doc:`gmtmath`
@@ -354,7 +368,7 @@ To apply a spline in tension instead, using a tension of 0.7, try::
       gmt greenspline 1D.txt -R0/10 -I0.1 -St0.7 | gmt plot -Wthin
     gmt end show
 
-2-d Examples
+2-D Examples
 ------------
 
 To make a uniform grid using the minimum curvature spline for the same
@@ -389,7 +403,7 @@ remaining constraints specify only the surface slope and direction
 
     gmt greenspline pt.txt -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -Z1 -Aslopes.txt+f1 -Gslopes.nc
 
-3-d Examples
+3-D Examples
 ------------
 
 To create a uniform 3-D Cartesian grid table based on the data in
@@ -406,7 +420,7 @@ Finally, to write the result to a 3-D netCDF grid, try::
 
     gmt greenspline @Table_5_23.txt -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -Z5 -G3D_UO2.nc
 
-2-d Spherical Surface Examples
+2-D Spherical Surface Examples
 ------------------------------
 
 To recreate Parker's [1994] example on a global 1x1 degree grid,

@@ -6324,9 +6324,9 @@ int gmtlib_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, doub
 
 	equidistant = (x == NULL);	/* If there are no x-values we assume dx is passed via intercept */
 	if (mode < 1) {	/* Must determine trend */
-		uint64_t m;
+		uint64_t m = 0;
 		double sum_x = 0.0, sum_xx = 0.0, sum_y = 0.0, sum_xy = 0.0;
-		for (i = m = 0; i < n; i++) {
+		for (i = 0; i < n; i++) {
 			if (gmt_M_is_dnan (y[i])) continue;
 			xx = (equidistant) ? increment*i : x[i];
 			sum_x  += xx;
@@ -6335,14 +6335,22 @@ int gmtlib_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, doub
 			sum_xy += xx*y[i];
 			m++;
 		}
-		if (m > 1) {	/* Got enough points to compute the trend */
-			*intercept = (sum_y*sum_xx - sum_x*sum_xy) / (m*sum_xx - sum_x*sum_x);
-			*slope = (m*sum_xy - sum_x*sum_y) / (m*sum_xx - sum_x*sum_x);
-		}
-		else {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "called with less than 2 points, return NaNs\n");
+		*intercept = *slope = 0.0;
+		if (m == 0) {	/* No points passed the NaN test */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "called with no valid points, return NaNs\n");
 			*intercept = (m) ? sum_y : GMT->session.d_NaN;	/* Value of single y-point or NaN */
 			*slope = GMT->session.d_NaN;
+
+		}
+		else if (m == 1) {	/* Ain't fitting a line to one point no more */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "called with 1 point, return NaNs\n");
+			*intercept = (m) ? sum_y : GMT->session.d_NaN;	/* Value of single y-point or NaN */
+			*slope = GMT->session.d_NaN;
+		}
+		else {	/* Got enough points to compute the trend */
+			double denom = m * sum_xx - sum_x * sum_x;
+			*intercept = (sum_y * sum_xx - sum_x * sum_xy) / denom;
+			*slope     = (m * sum_xy - sum_x * sum_y)      / denom;
 		}
 	}
 
@@ -8610,9 +8618,15 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "All data points are NaNs so cannot do meaningful automatic CPT generation\n");
 			zmin = 0.0;	zmax = 1.0;	/* Does not matter since only NaN color will be used */
 		}
-		if (zmax <= zmin) {	/* Safety valve 2 */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Passing zmax <= zmin prevents automatic CPT generation!\n");
-			return (NULL);
+		if (zmax <= zmin) {	/* Safety valve 2 [min == max] */
+			/* Have a constant grid or a mask grid with NaNs and a constant [1] - adjust min or max so that we can do an automatic CPT */
+			if (zmin > 0.0)	/* Both are positive so just increase max */
+				zmax = 2.0 * zmin;
+			else if (zmin < 0.0)	/* Both are negative so just decrease min */
+				zmin = 2.0 * zmax;
+			else	/* All zeros, must set max to 1 */
+				zmax = 1.0;
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Found zmax == zmin, replaced with %lg and %lg to allow automatic CPT generation!\n", zmin, zmax);
 		}
 
 		if (file == NULL && (current_cpt = gmt_get_current_item (GMT, "cpt", false))) {	/* There is a current CPT in modern mode */
@@ -9231,6 +9245,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 			}
 			else if (P->model & GMT_NO_COLORNAMES)
 				fprintf (fp, format, lo, gmt_putrgb (GMT, P->data[i].rgb_low), '\t');
+			else if (P->model & GMT_HEX_COLOR)
+				fprintf (fp, format, lo, gmt_puthex (GMT, P->data[i].rgb_low), '\t');
 			else
 				fprintf (fp, format, lo, gmt_putcolor (GMT, P->data[i].rgb_low), '\t');
 		}
@@ -9247,6 +9263,10 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		else if (P->model & GMT_NO_COLORNAMES) {
 			fprintf (fp, format, lo, gmt_putrgb (GMT, P->data[i].rgb_low), '\t');
 			fprintf (fp, format, hi, gmt_putrgb (GMT, P->data[i].rgb_high), '\t');
+		}
+		else if (P->model & GMT_HEX_COLOR) {
+			fprintf (fp, format, lo, gmt_puthex (GMT, P->data[i].rgb_low), '\t');
+			fprintf (fp, format, hi, gmt_puthex (GMT, P->data[i].rgb_high), '\t');
 		}
 		else {
 			fprintf (fp, format, lo, gmt_putcolor (GMT, P->data[i].rgb_low), '\t');
@@ -9278,6 +9298,8 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		}
 		else if (P->model & GMT_NO_COLORNAMES)
 			fprintf (fp, "%c\t%s\n", code[i], gmt_putrgb (GMT, P->bfn[i].rgb));
+		else if (P->model & GMT_HEX_COLOR)
+			fprintf (fp, "%c\t%s\n", code[i], gmt_puthex (GMT, P->bfn[i].rgb));
 		else
 			fprintf (fp, "%c\t%s\n", code[i], gmt_putcolor (GMT, P->bfn[i].rgb));
 	}
@@ -10571,7 +10593,7 @@ int gmtlib_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE 
 							}
 							else {	/* Size seems OK */
 								s[0] = '\0';	/* Truncate size */
-								strncpy (G->symbol_code, &p[1], GMT_LEN64-1);
+								strncpy (G->symbol_code, &p[1], GMT_LEN256-1);
 								s[0] = '/';	/* Restore size */
 								if (gmtlib_invalid_symbolname (GMT, G->symbol_code))
 									bad++;
@@ -14157,7 +14179,7 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 					case 'o': case 's':	/* +o<offset>|a,  +s<scale>|a */
 						allow_a = true;	/* Argument "a" for auto is OK for these modifiers */
 						/* Fall through on purpose */
-					case 'h': case 'i': case 'n': 	/* +h[<hinge>], +i<inc>, +n<nodata> */
+					case 'd': case 'h': case 'i': case 'n': 	/* +d<div>, +h[<hinge>], +i<inc>, +n<nodata> */
 						k++;	/* Move to start of argument, next modifier, or NULL */
 						while (modifiers[k] && modifiers[k] != '+' && strchr ("-+.0123456789eE", modifiers[k])) k++;	/* Skip a numerical argument */
 						if (allow_a && modifiers[k] == 'a') k++;	/* Ok with a for this modifier */
@@ -14179,7 +14201,7 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 				error = true;
 		}
 		if (error) {
-			GMT_Report (API, GMT_MSG_WARNING, "Your filename %s have what appears as valid GMT modifiers (from list +%s) but are embedded rather than appended to the filename - modifiers ignored\n", filename, mods);
+			GMT_Report (API, GMT_MSG_WARNING, "Your filename %s has what appears as valid GMT modifiers (from list +%s) but they are embedded rather than appended to the filename - modifiers ignored\n", filename, mods);
 			modifiers = NULL;
 		}
 	}
@@ -14985,7 +15007,7 @@ unsigned int gmtlib_linear_array (struct GMT_CTRL *GMT, double min, double max, 
 	   Result: 1, 3, 5, 7, 9
 	*/
 
-	int first, last, i, n;
+	int64_t first, last, i, n;
 	double *val = NULL;
 
 	if (delta <= 0.0) return (0);
@@ -14995,11 +15017,11 @@ unsigned int gmtlib_linear_array (struct GMT_CTRL *GMT, double min, double max, 
 	max = (max - phase) / delta;
 
 	/* Look for first value */
-	first = irint (floor (min));
+	first = lrint (floor (min));
 	while (min - first > GMT_CONV4_LIMIT) first++;
 
 	/* Look for last value */
-	last = irint (ceil (max));
+	last = lrint (ceil (max));
 	while (last - max > GMT_CONV4_LIMIT) last--;
 
 	n = last - first + 1;
@@ -15011,12 +15033,12 @@ unsigned int gmtlib_linear_array (struct GMT_CTRL *GMT, double min, double max, 
 
 	*array = val;
 
-	return (n);
+	return ((unsigned int)n);
 }
 
 /*! . */
 unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array) {
-	int first, last, i, n, nticks;
+	int64_t first, last, i, n, nticks;
 	double *val = NULL, tvals[10];
 
 	/* Because min and max may be tiny values (e.g., 10^-20) we must do all calculations on the log10 (value) */
@@ -15025,13 +15047,13 @@ unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, dou
 		return (0);
 	min = d_log10 (GMT, min);
 	max = d_log10 (GMT, max);
-	first = irint (floor (min));
-	last = irint (ceil (max));
+	first = lrint (floor (min));
+	last = lrint (ceil (max));
 
 	if (delta < 0) {	/* Coarser than every magnitude */
 		n = gmtlib_linear_array (GMT, min, max, fabs (delta), 0.0, array);
 		for (i = 0; i < n; i++) (*array)[i] = pow (10.0, (*array)[i]);
-		return (n);
+		return ((unsigned int)n);
 	}
 
 	tvals[0] = 0.0;	/* Common to all */
@@ -15082,7 +15104,7 @@ unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, dou
 
 	*array = val;
 
-	return (n);
+	return ((unsigned int)n);
 }
 
 /*! . */
@@ -15091,7 +15113,7 @@ unsigned int gmtlib_log2_array (struct GMT_CTRL *GMT, double min, double max, do
 	   However, take log2 first then use the delta as increment in log2 space
 	*/
 
-	int first, last, i, n;
+	int64_t first, last, i, n;
 	double *val = NULL;
 
 	if (delta <= 0.0) return (0);
@@ -15100,11 +15122,11 @@ unsigned int gmtlib_log2_array (struct GMT_CTRL *GMT, double min, double max, do
 	max = d_log2 (GMT, max) / delta;
 
 	/* Look for first value */
-	first = irint (floor (min));
+	first = lrint (floor (min));
 	while (min - first > GMT_CONV4_LIMIT) first++;
 
 	/* Look for last value */
-	last = irint (ceil (max));
+	last = lrint (ceil (max));
 	while (last - max > GMT_CONV4_LIMIT) last--;
 
 	n = last - first + 1;
@@ -15118,7 +15140,7 @@ unsigned int gmtlib_log2_array (struct GMT_CTRL *GMT, double min, double max, do
 	for (i = 0; i < n; i++) val[i] = pow (2.0, val[i]);
 	*array = val;
 
-	return (n);
+	return ((unsigned int)n);
 }
 
 /*! . */
@@ -15251,7 +15273,14 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 		nc = sscanf (S->text[row], "%s %[^\n]", type, txt);
 		found = ((item == 'a' && (strchr (type, 'a') || strchr (type, 'i'))) || (strchr (type, item) != NULL));
 		if (!found) continue;	/* Not the type we were requesting */
-		if (S->data[GMT_X][row] < limit[0] || S->data[GMT_X][row] > limit[1]) continue;
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Be careful with periodic data */
+			if (!gmt_M_360_range (limit[0], limit[1])) {	/* It is possible to be outside if not global */
+				S->data[GMT_X][row] -= 360.0;	/* Ensure we are far west */
+				while (S->data[GMT_X][row] < limit[0]) S->data[GMT_X][row] += 360.0;	/* Wind towards east */
+				if (S->data[GMT_X][row] > limit[1]) continue;	/* Outside given region */
+			}
+		}
+		else if (S->data[GMT_X][row] < limit[0] || S->data[GMT_X][row] > limit[1]) continue;	/* Cartesian check */
 		if (strchr (type, 'i')) n_int++;
 		if (strchr (type, 'a')) n_annot++;
 		x[k] = S->data[GMT_X][row];
@@ -18567,7 +18596,7 @@ int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int 
 			if (mode == GMT_BASH_MODE) {	/* Some bash-specific checks */
 				if (strchr (line, '`'))	/* sub-shell call using back-ticks */
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a deprecated sub-shell call `...`, please use $(...) instead: %s", start);
-				else if (strchr (line, ')') && (p = strchr (line, '('))) {	/* sub-shell call without leading $ */
+				else if (strchr (line, ')') && (p = strchr (line, '(')) && strstr (line, "((") == NULL) {	/* sub-shell call without leading $ and it is not a modern (( )) thing */
 					prev = p - 1;	/* Get previous character */
 					if (strchr (line, '\"') == NULL && (prev < start || prev[0] != '$'))	/* No double-quotes yet we have ( ...) and no leading $.Give this message: */
 						GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Main script appears to have a sub-shell call $(...) without the leading $: %s", start);

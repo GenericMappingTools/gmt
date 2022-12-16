@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt dimfilter** *ingrid*
-|-D|\ *0-4*
+|-D|\ *flag*
 |-F|\ **x**\ *width*\ [*modifier*]
 |-G|\ *outgrid*
 |-N|\ **x**\ *sectors*\ [*modifier*]
@@ -127,7 +127,7 @@ Optional Arguments
 **-I**
     *x_inc* [and optionally *y_inc*] is the output Increment. Append
     **m** to indicate minutes, or **c** to indicate seconds. If the new
-    *x_inc*, *y_inc* are NOT integer multiples of the old ones (in the
+    *x_inc*, *y_inc* are **not** integer multiples of the old ones (in the
     input data), filtering will be considerably slower. [Default: Same
     as input.]
 

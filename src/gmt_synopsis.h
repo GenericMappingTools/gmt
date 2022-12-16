@@ -38,7 +38,6 @@
 #define GMT_OUTGRID  "<outgrid>[=<ID>][+d<divisor>][+n<invalid>][+o<offset>|a][+s<scale>|a][:<driver>[/<dataType>][+c<options>]]"
 
 #define GMT_inc_OPT	"<xinc>[+e|n][/<yinc>[+e|n]]"
-#define GMT_Id_OPT	"-I<xinc>[m|s][/<yinc>[m|s]]"
 #define GMT_Jx_OPT	"-Jx|X<args>"
 #define GMT_Jz_OPT	"-Jz|Z<args>"
 #define GMT_Rgeo_OPT	"-R<west>/<east>/<south>/<north>[+r]"
@@ -114,7 +113,7 @@
 #define GMT_J_OPT	"-J<args>"
 #define GMT_R2_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[+u<unit>][+r]"
 #define GMT_R3_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][+u<unit>][+r]"
-#define GMT_U_OPT	"-U[<label>][+c][+j<just>][+o<dx>[/<dy>]]"
+#define GMT_U_OPT	"-U[<label>][+c][+j<just>][+o<dx>[/<dy>]][+t<text>]"
 #define GMT_V_OPT	"-V[q|e|w|t|i|c|d]"
 #define GMT_X_OPT	"-X[a|c|f|r]<xshift>"
 #define GMT_Y_OPT	"-Y[a|c|f|r]<yshift>"

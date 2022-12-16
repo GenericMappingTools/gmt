@@ -264,7 +264,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do **NOT** skip symbols that fall outside the frame boundary
+    Do **not** skip symbols that fall outside the frame boundary
     specified by |-R|. [Default plots symbols inside frame only].
 
 .. |Add_-U| replace:: |Add_-U_links|

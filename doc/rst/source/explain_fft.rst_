@@ -16,9 +16,9 @@
         dimensions >= data which optimize speed and accuracy of FFT. If FFT
         dimensions > grid file dimensions, data are extended and tapered to zero.
 
-    Control detrending of data: Append modifiers for removing a linear trend:
+    Control detrending of data: Append modifiers for removing a linear trend. Consult module documentation for the default action:
 
-        **+d**: Detrend data, i.e. remove best-fitting linear trend [Default].
+        **+d**: Detrend data, i.e. remove best-fitting linear trend.
 
         **+a**: Only remove mean value.
 
@@ -29,9 +29,9 @@
     Control extension and tapering of data:
     Use modifiers to control how the extension and tapering are to be performed:
 
-        **+e** extends the grid by imposing edge-point symmetry [Default],
+        **+e** extends the grid by imposing edge-point symmetry [Default].
 
-        **+m** extends the grid by imposing edge mirror symmetry
+        **+m** extends the grid by imposing edge mirror symmetry.
 
         **+n** turns off data extension.
 

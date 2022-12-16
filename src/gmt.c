@@ -70,9 +70,9 @@ int main (int argc, char *argv[]) {
 #endif	/* !defined(NO_SIGHANDLER) */
 
 	/* Look for and process any -V[flag] so we may use GMT_Report_Error early on for debugging.
-	 * Note: Because first 16 bits of mode may be used for other things we must left-shift by 16 */
+	 * Note: Because first GMT_MSG_BITSHIFT bits of mode may be used for other things we must left-shift by GMT_MSG_BITSHIFT */
 	for (k = 1; k < argc; k++) if (!strncmp (argv[k], "-V", 2U)) v_mode = gmt_get_V (argv[k][2]);
-	if (v_mode) mode = (v_mode << 16);	/* Left-shift the mode by 16 */
+	if (v_mode) mode = (v_mode << GMT_MSG_BITSHIFT);	/* Left-shift the mode by GMT_MSG_BITSHIFT */
 
 	progname = strdup (basename (argv[0])); /* Last component from the pathname */
 	/* Remove any filename extensions added for example by the MSYS shell when executing gmt via symlinks */
@@ -274,14 +274,16 @@ int main (int argc, char *argv[]) {
 					type = 1;	/* Select csh */
 				if (type < 2) {	/* Start the shell via env and pass -e to exit script upon error */
 					printf ("#!/usr/bin/env -S %s -e\n", shell[type]);
-#ifdef __APPLE__
-					if (type == 0) printf ("set -e\n");	/* Explicitly needed for bash under macOS */
-#endif
 					printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
 				}
 				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], name, comment[type]);
 				switch (type) {
-					case 0: printf ("export GMT_SESSION_NAME=$$	# Set a unique session name\n"); break;
+					case 0:
+#ifdef __APPLE__
+						printf ("set -e\n");	/* Explicitly needed for bash under macOS */
+#endif
+						printf ("export GMT_SESSION_NAME=$$	# Set a unique session name\n");
+						break;
 					case 1: printf ("setenv GMT_SESSION_NAME $$	# Set a unique session name\n"); break;
 					case 2: printf ("REM Set a unique session name:\n");	/* Can't use $$ so output the PPID of this process */
 						printf ("set GMT_SESSION_NAME=%s\n", api_ctrl->session_name);

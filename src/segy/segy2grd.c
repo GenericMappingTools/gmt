@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/segy2grd_inc.h"
 #include "segy_io.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"segy2grd"
@@ -114,16 +115,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <segyfile> -G%s %s %s [-A[n|z]] [%s] [-L<nsamp>] "
 		"[-M<ntraces>] [-Q<mode><value>] [-S<header>] [%s] [%s] [%s] [%s]\n",
-		name, GMT_OUTGRID, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_GRDEDIT2D, GMT_V_OPT, GMT_di_OPT, GMT_r_OPT, GMT_PAR_OPT);
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_GRDEDIT2D, GMT_V_OPT, GMT_di_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<segyfile> is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.");
 	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
-	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
-	GMT_Usage (API, -2, "Specify grid size(s).");
-	GMT_Option (API, "R");
+	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A[n|z]");
 	GMT_Usage (API, -2, "Add multiple entries at the same node according to directive:");
@@ -300,7 +299,7 @@ EXTERN_MSC int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

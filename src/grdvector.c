@@ -31,6 +31,7 @@
 #define THIS_MODULE_NEEDS	"Jg"
 
 #include "gmt_dev.h"
+#include "longopt/grdvector_inc.h"
 
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYflptxy" GMT_OPT("c")
 
@@ -456,7 +457,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -483,8 +484,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 		gmt_grd_init (GMT, Grid[k]->header, options, true);
 	}
 
-	if (!(gmt_M_grd_same_shape (GMT, Grid[0], Grid[1]) && gmt_M_grd_same_region (GMT, Grid[0], Grid[1]) && gmt_M_grd_same_inc (GMT, Grid[0], Grid[1]))) {
-		GMT_Report (API, GMT_MSG_ERROR, "files %s and %s does not match!\n", Ctrl->In.file[0], Ctrl->In.file[1]);
+	if (!gmt_grd_domains_match (GMT, Grid[0], Grid[1], "input component")) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -759,7 +759,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 			scaled_vec_length /= scale;	/* Now in inches suitable for reference vector in legend */
 		}
 		GMT->common.l.item.size = scaled_vec_length;
-		gmt_add_legend_item (API, &Ctrl->Q.S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+		gmt_add_legend_item (API, &Ctrl->Q.S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item), NULL);
 		Ctrl->Q.S.symbol = was;	/* Restore to original type */
 	}
 

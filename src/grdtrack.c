@@ -27,6 +27,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdtrack_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdtrack"
 #define THIS_MODULE_MODERN_NAME	"grdtrack"
@@ -92,7 +93,7 @@ struct GRDTRACK_CTRL {
 		bool active;
 		char *file;
 	} D;
-	struct GRDTRACK_E {	/* -E<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>] */
+	struct GRDTRACK_E {	/* -E<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np>][+o<az>][+r<radius>] */
 		bool active;
 		unsigned int mode;
 		char *lines;
@@ -167,10 +168,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s -G%s -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+d|f<value>][+l|r]] "
-		"[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]] "
-		"[-F[+b][+n][+r][+z<z0>]] [-N] [%s] [-S[a|l|L|m|p|u|U][+a][+c][+d][+r][+s[<file>]]] [-T<radius>>[+e|p]] [%s] [-Z] [%s] [%s] [%s] "
-		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] %s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		"[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np>][+o<az>][+r<radius>]] "
+		"[-F[+b][+n][+r][+z<z0>]] [-N] [%s] [-S[a|l|L|m|p|u|U][+a][+c][+d][+r][+s[<file>]]] [-T<radius>[+e|p]] [%s] [-Z] [%s] [%s] [%s] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT,
+		GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -210,7 +212,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D<dfile>");
 	GMT_Usage (API, -2, "Save [resampled] input lines to a separate file <dfile>.  Requires -C. "
 		"Output columns are lon, lat, dist, az, z1, z2, ..., zn.");
-	GMT_Usage (API, 1, "\n-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]");
+	GMT_Usage (API, 1, "\n-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np>][+o<az>][+r<radius>]");
 	GMT_Usage (API, -2, "Create quick paths based on <line1>[,<line2>,...].  Each <line> is given by <start>/<stop>, where <start> or <stop> "
 		"are <lon/lat> or a 2-character key that uses the \"pstext\"-style justification format "
 		"to specify a point on the map as [LCR][BMT].  In addition, you can use Z-, Z+ to mean "
@@ -252,7 +254,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+r Append data residuals (data - stack) to all cross-profiles.");
 	GMT_Usage (API, 3, "+s Save stacked profile to <file> [stacked_profile.txt].");
 	GMT_Usage (API, -2, "Note: Deviations depend on method and are L1 scale (m), st.dev (a), LMS scale (p), or half-range (u-l)/2.");
-	GMT_Usage (API, 1, "\n-T<radius>>[+e|p]");
+	GMT_Usage (API, 1, "\n-T<radius>[+e|p]");
 	GMT_Usage (API, -2, "If nearest node is NaN, search outwards up to given <radius> distance to find the nearest non-NaN node, "
 		"then return it instead. Optionally append either +e|p:");
 	GMT_Usage (API, 3, "+e Append 3 extra columns: lon, lat of nearest node and its distance from original node.");
@@ -748,7 +750,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

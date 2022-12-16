@@ -59,7 +59,7 @@ struct GMT_DCW_COUNTRY {	/* Information per country */
 
 struct GMT_DCW_STATE {		/* Information per state */
 	char country[4];	/* 2-char country code ISO 3166-1 (e.g., BR, US) */
-	char code[4];		/* 2/3-char state codes for US, Canada, China, Argentina, Australia, Brazil, Russia (e.g., TX) */
+	char code[4];		/* 2/3-char state codes for Argentina, Australia, Brazil, Canada, China, India, Norway, Russia and the US (e.g., TX) */
 	char name[80];		/* Full name of the state */
 };
 
@@ -426,7 +426,7 @@ int gmt_DCW_version (struct GMTAPI_CTRL *API, char *version) {
 	int cdfid, err;
 	char path[PATH_MAX] = {""};
 	struct GMT_CTRL *GMT = API->GMT;
-	
+
 	if (version == NULL)
 		return (GMT_PTR_IS_NULL);
 
@@ -1048,7 +1048,7 @@ void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 		GMT_Usage (API, 3, "+g Fill polygons using given <fill> to fill [none].");
 	}
 	GMT_Usage (API, 3, "+l Just list the countries and their codes [no %s takes place].", action2[plot]);
-	GMT_Usage (API, 3, "+L List states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US. "
+	GMT_Usage (API, 3, "+L List states/territories for Argentina, Australia, Brazil, Canada, China, India, Norway, Russia and the US. "
 		"Select =<continent>+l|L to only list countries from that continent or <code>+L for that country(repeatable).");
 	GMT_Usage (API, 3, "+n List collections and named regions, their codes and list of items (or region) [no %s takes place].", action2[plot]);
 	if (plot == 1)

@@ -57,6 +57,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/subplot_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"subplot"
 #define THIS_MODULE_MODERN_NAME	"subplot"
@@ -852,7 +853,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -869,9 +870,9 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		double gmean_dim, x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
 		double *cx = NULL, *cy = NULL, *px = NULL, *py = NULL, y_heading, fluff[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, GMT_LETTER_HEIGHT = 0.736;
 		double master_scale = (GMT->current.setting.map_frame_type == GMT_IS_INSIDE) ? 0.0 : 1.0;	/* THe 0 helps wipe any dimensions outside the panel to zero */
-		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, Bopt[GMT_LEN256] = {""};
+		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, Bopt[GMT_LEN256] = {""}, origin_shift[GMT_LEN128] = {" "};
 		char vfile[GMT_VF_LEN] = {""}, xymode = 'r';
-		bool add_annot, no_frame = false;
+		bool add_annot, no_frame = false, gave_X_or_Y;
 		FILE *fp = NULL;
 
 		/* Need geometric mean dimension of subplot to calculate the undefined quantities */
@@ -923,6 +924,13 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		else {	/* Start of new plot.  See if we gave absolute or relative coordinates in -X -Y */
 			if (GMT->common.X.mode == 'a' && GMT->common.Y.mode == 'a')
 				xymode = 'a';
+		}
+		gave_X_or_Y = (GMT->common.X.active || GMT->common.Y.active);	/* Did user actually use -X or -Y */
+		if (gave_X_or_Y || !(gmt_M_is_zero (Ctrl->F.clearance[GMT_X]) && gmt_M_is_zero (Ctrl->F.clearance[GMT_Y]))) {	/* Must issue -X -Y arg to first plotting module */
+			double dx, dy;
+			dx = GMT->current.setting.map_origin[GMT_X] - Ctrl->F.clearance[GMT_X];
+			dy = GMT->current.setting.map_origin[GMT_Y] - Ctrl->F.clearance[GMT_Y];
+			sprintf (origin_shift, " -X%c%gi -Y%c%gi", xymode, dx, xymode, dy);
 		}
 
 		if (xymode == 'a') gmt_M_memcpy (off, GMT->current.setting.map_origin, 2, double);
@@ -1368,8 +1376,8 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN|GMT_IS_REFERENCE, T, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			sprintf (command, "-R0/%g/0/%g -Jx1i -N -F+jBC+f%s %s -X%c%gi -Y%c%gi --GMT_HISTORY=readonly",
-				width, height, gmt_putfont (GMT, &GMT->current.setting.font_heading), vfile, xymode, GMT->current.setting.map_origin[GMT_X]-Ctrl->F.clearance[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]-Ctrl->F.clearance[GMT_Y]);
+			sprintf (command, "-R0/%g/0/%g -Jx1i -N -F+jBC+f%s %s%s --GMT_HISTORY=readonly",
+				width, height, gmt_putfont (GMT, &GMT->current.setting.font_heading), vfile, origin_shift);
 			if (Bopt[0] == ' ') strcat (command, Bopt);	/* The -B was set above, so include it in the command */
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for text: %s\n", command);
 			if (GMT_Call_Module (API, "text", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */
@@ -1378,7 +1386,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 				Return (API->error);
 		}
 		else {	/* plot is required, since nothing is plotted (except for possibly the canvas fill/outline) */
-			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=readonly", width, height, xymode, GMT->current.setting.map_origin[GMT_X]-Ctrl->F.clearance[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]-Ctrl->F.clearance[GMT_Y]);
+			sprintf (command, "-R0/%g/0/%g -Jx1i -T%s --GMT_HISTORY=readonly", width, height, origin_shift);
 			if (Bopt[0]) strcat (command, Bopt);	/* The -B was set above, so include it in the command */
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot command for : %s\n", command);
 			if (GMT_Call_Module (API, "plot", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the canvas with heading */

@@ -113,7 +113,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *increment*
-    *increment* is used when series is NOT equidistantly sampled. Then
+    *increment* is used when series is **not** equidistantly sampled. Then
     *increment* will be the abscissae resolution, i.e., all abscissae
     will be rounded off to a multiple of *increment*. Alternatively,
     resample data with :doc:`sample1d`.
@@ -154,7 +154,7 @@ Optional Arguments
 
 **-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+e**\|\ **i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
-    For details on array creation, see `Generate 1D Array`_.
+    For details on array creation, see `Generate 1-D Array`_.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

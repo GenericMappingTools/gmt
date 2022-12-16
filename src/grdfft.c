@@ -27,6 +27,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdfft_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdfft"
 #define THIS_MODULE_MODERN_NAME	"grdfft"
@@ -854,7 +855,7 @@ EXTERN_MSC int GMT_grdfft (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, &f_info, options)) != 0) Return (error);
@@ -868,20 +869,7 @@ EXTERN_MSC int GMT_grdfft (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->In.n_grids == 2) {	/* If given 2 grids, make sure they are co-registered and has same size, registration, etc. */
-		if(Orig[0]->header->registration != Orig[1]->header->registration) {
-			GMT_Report (API, GMT_MSG_ERROR, "The two grids have different registrations!\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (!gmt_M_grd_same_shape (GMT, Orig[0], Orig[1])) {
-			GMT_Report (API, GMT_MSG_ERROR, "The two grids have different dimensions\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (!gmt_M_grd_same_region (GMT, Orig[0], Orig[1])) {
-			GMT_Report (API, GMT_MSG_ERROR, "The two grids have different regions\n");
-			Return (GMT_RUNTIME_ERROR);
-		}
-		if (!gmt_M_grd_same_inc (GMT, Orig[0], Orig[1])) {
-			GMT_Report (API, GMT_MSG_ERROR, "The two grids have different intervals\n");
+		if (!gmt_grd_domains_match (GMT, Orig[0], Orig[1], NULL)) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}

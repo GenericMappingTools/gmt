@@ -36,6 +36,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psmask_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psmask"
 #define THIS_MODULE_MODERN_NAME	"mask"
@@ -436,7 +437,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> %s %s %s [%s] [-C] [-D<template>] [-F[l|r]] [-G<fill>] %s[-L<grdfile>[+i|o]] [-N] "
-		"%s%s[-Q<min>] [-S%s] [-T] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"%s%s[-Q<min>] [-S%s] [-T] [%s] [%s] [%s] [%s] %s [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_I_OPT, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_RADIUS_OPT, GMT_U_OPT,
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT, API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT,
 		GMT_qi_OPT, GMT_r_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -517,7 +518,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 						if (opt->arg[k] == '+' && opt->arg[k+1] == 'n') {
 							GMT_Report (API, GMT_MSG_COMPAT, "Option -D..+n<min> is deprecated; use -Q instead.\n");
 							Ctrl->Q.min = atoi (&opt->arg[k + 2]);
-							Ctrl->Q.active = true;
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 							n_plus = k;
 							break;
 						}
@@ -656,7 +657,7 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

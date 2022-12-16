@@ -31,6 +31,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psconvert_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psconvert"
 #define THIS_MODULE_MODERN_NAME	"psconvert"
@@ -618,8 +619,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <psfiles> [-A[+r][+u]] [-C<gs_option>] [-D<dir>] [-E<resolution>] "
 		"[-F<out_name>] [-G<gs_path>] [-H<scale>] [-I[+m<margins>][+s[m]<width>[/<height>]][+S<scale>]] [-L<list>] [-Mb|f<psfile>] "
-		"[-N[+f<fade>][+g<fill>][+i][+p[<pen>]] [-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
-		"[-W[+a<mode>[<alt]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
+		"[-N[+f<fade>][+g<fill>][+i][+p[<pen>]]] [-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
+		"[-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
 		"[%s]\n", name, GMT_V_OPT, Z, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -722,7 +723,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Usage (API, -2, "Note: Shows the gdal_translate command, in case you want to use this program "
 		"to create a geoTIFF file.");
-	GMT_Usage (API, 1, "\n-W[+a<mode>[<alt]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]");
+	GMT_Usage (API, 1, "\n-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]");
 	GMT_Usage (API, -2, "Write an ESRI type world file suitable to make .tif files "
 		"recognized as geotiff by software that know how to do it. Be aware, "
 		"however, that different results are obtained depending on the image "
@@ -1563,6 +1564,14 @@ GMT_LOCAL int psconvert_make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) 
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL psconvert_gs_is_good (int major, int minor) {
+	/* Return true if the gs version works with transparency */
+	if (major > 9) return true;	/* 10 should work as of 10.0.0 unless there are future regressions */
+	if (major < 9) return false;	/* Before 9 we think transparency was questionable */
+	if (minor == 51 || minor == 52) return false;	/* These two minor versions had gs transparency bugs */
+	if (minor >= 21) return true;	/* Trouble before minor version 21 */
+	return false;	/* Not implemented (?) */
+}
 
 EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
@@ -1641,7 +1650,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1712,9 +1721,9 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Initial assignment of gs_params. Note: If we detect transparency then we must select the PDF settings since we must convert to PDF first */
 	if (Ctrl->T.device == GS_DEV_PDF)	/* For PDF (and PNG via PDF) we want a bunch of prepress and other settings to maximize quality */
-		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
+		gs_params = (psconvert_gs_is_good (gsVersion.major, gsVersion.minor)) ? gs_params_pdfnew : gs_params_pdfold;
 	else	/* For rasters */
-		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_rasnew : gs_params_rasold;
+		gs_params = (psconvert_gs_is_good (gsVersion.major, gsVersion.minor)) ? gs_params_rasnew : gs_params_rasold;
 
 	gs_BB = "-q -dNOSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox -DPSL_no_pagefill"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
 
@@ -2468,7 +2477,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (has_transparency && gsVersion.major == 9 && (gsVersion.minor == 51 || gsVersion.minor == 52))
 				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version %s has a bug preventing it - please upgrade to 9.53\n", GSstring);
 		if (transparency && Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
-				gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
+				gs_params = (psconvert_gs_is_good (gsVersion.major, gsVersion.minor)) ? gs_params_pdfnew : gs_params_pdfold;
 
 		/* Build the converting Ghostscript command and execute it */
 

@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/gmtbinstats_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"gmtbinstats"
 #define THIS_MODULE_MODERN_NAME	"gmtbinstats"
@@ -478,7 +479,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -496,7 +497,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 			nx = gmt_M_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.inc[GMT_X], 0.0);
 			xmax = GMT->common.R.wesn[XLO] + (nx - 1) * GMT->common.R.inc[GMT_X];
 			if (!doubleAlmostEqualZero (GMT->common.R.wesn[XHI], xmax)) {
-				GMT_Report (API, GMT_MSG_WARNING, "Hexagonal geometry requires xmax to be adjusted from %g to %g\n", GMT->common.R.wesn[XHI], xmax);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Hexagonal geometry requires xmax to be adjusted from %g to %g\n", GMT->common.R.wesn[XHI], xmax);
 				GMT->common.R.wesn[XHI] = xmax;
 			}
 			/* Divide grid spacings by two for the pseudo-grid parameters. We do this to ensure every hexagonal center

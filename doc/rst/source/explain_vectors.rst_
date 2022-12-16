@@ -20,7 +20,7 @@ end point (**e**) of a line segment:
     **+a**\ *angle* sets the angle :math:`\theta` of the vector head apex [30].
 
     **+b** places a vector head at the **b**\ eginning of the vector path [none].
-    Optionally, append **t** for a terminal line, **c** for a circle,
+    Optionally, append **t** for a terminal line, **c** for a circle, **s** for a square,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
     and **I** for plain open tail. **Note**: For geovectors only **a** and **A** are available.
     Further append **l**\|\ **r** to only draw the left or right
@@ -31,7 +31,7 @@ end point (**e**) of a line segment:
     quantity scaling (with unit **q** via **+v** or **+z**) and a CPT have been selected.
 
     **+e** places a vector head at the **e**\ nd of the vector path [none].
-    Optionally, append **t** for a terminal line, **c** for a circle,
+    Optionally, append **t** for a terminal line, **c** for a circle, **s** for a square,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
     and **I** for plain open tail. **Note**: For geovectors only **a** and **A** are available.
     Further append **l**\|\ **r** to only draw the left or right

@@ -1,6 +1,6 @@
 - **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*, or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\
   *tgap* and *gap* gives a uniform :ref:`clearance <plt-units>`, *xgap*\ /\ *ygap* gives separate
-  :ref:`clearances <plt-units>` in the x- and y- directions, and *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* gives
+  :ref:`clearances <plt-units>` in the *x*- and *y*- directions, and *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* gives
   individual :ref:`clearances <plt-units>` between the map embellishment and the border for each side.
 - **+g**\ *fill* to fill the box with a color specified by :doc:`fill <gmtcolors>` [default is no fill].
 - **+i**\ [[*gap*/]\ *pen*] to draw a secondary, inner border as well. Optionally, specify the

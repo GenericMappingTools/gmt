@@ -187,6 +187,7 @@
 #include "gmt_internals.h"
 #include "gmt_sharedlibs.h" 	/* Common shared libs structures */
 #include <stdarg.h>
+#include "gmt_gsformats.h"
 
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>
@@ -816,30 +817,55 @@ GMT_LOCAL void gmtapi_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 }
 #endif
 
-GMT_LOCAL bool gmtapi_modern_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION *head) {
+GMT_LOCAL bool gmtapi_modern_casename (char *arg) {
+    /* Return true if argument is all letters of same case, e.g., pny, PNN, tift, jxx, i.e.,
+     * the user did -pny map or -jxx map etc.  We will assume that is likely a typo and report that. */
+    unsigned int k = 1;	/* First position beyond the leading letter */
+	if (islower (arg[0])) {	/* Expect all to be lower case letters */
+		while (arg[k]) {
+			if (!islower (arg[k])) return false;    /* Failed the test */
+			else k++;
+		}
+	}
+	else {	/* Check for all upper case letters */
+		while (arg[k]) {
+			if (!isupper (arg[k])) return false;    /* Failed the test */
+			else k++;
+		}
+	}
+	return (true);	/* Passed the letter check */
+}
+
+GMT_LOCAL int gmtapi_modern_oneliner (struct GMTAPI_CTRL *API, struct GMT_OPTION *head) {
 	/* Must check if a one-liner with special graphics format settings were given, e.g., "gmt pscoast -Rg -JH0/15c -Gred -png map" */
-	bool modern = false;
+	int modern = 0;
 	unsigned pos;
 	size_t len;
 	char format[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
 	struct GMT_OPTION *opt;
 
 	for (opt = head; opt; opt = opt->next) {
-		if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
-		if (strchr ("bejpPtv", opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format [UPDATE LIST IF ADDING MORE FORMATS IN FUTURE] */
-		if ((len = strlen (opt->arg)) == 0 || len >= GMT_LEN128) continue;	/* No arg or very long args that are filenames can be skipped */
+        if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;  /* Skip file names */
+        if (opt->next == NULL || opt->next->option != GMT_OPT_INFILE) continue;  /* Skip arg not followed by file names (we expect -png map, for instance) */
+		if (strchr (gmt_session_codestr, opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format */
+		if ((len = strlen (opt->arg)) == 0 || len >= GMT_GRAPHIC_MAXLEN) continue;	/* No arg or too long args that are filenames can be skipped */
+		if (strchr ("bdhq", opt->option) && strchr ("io", opt->arg[0]) && (opt->arg[1] == '\0' || isdigit (opt->arg[1]))) continue;   /* Ignore -[bdhq][io][<n>]] */
 		snprintf (format, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
 		if ((c = strchr (format, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
 		if (gmt_get_graphics_id (API->GMT, format) != GMT_NOTSET) {	/* Found a valid graphics format option */
-			modern = true;	/* Seems like it is, but check the rest of the formats, if there are more */
+			modern = 1;	/* Seems like it is, but check the rest of the formats, if there are more */
 			if (c == NULL) continue;	/* Nothing else to check, go to next option */
 			/* Make sure any other formats are valid, too */
 			if (c) c[0] = ',';	/* Restore any comma we found */
 			pos = 0;
 			while (modern && gmt_strtok (format, ",", &pos, p)) {	/* Check each format to make sure each is OK */
 				if (gmt_get_graphics_id (API->GMT, p) == GMT_NOTSET)	/* Oh, something wrong was given, cannot be modern */
-					modern = false;
+					modern = 0;
 			}
+		}
+		else if (gmtapi_modern_casename (format)) {  /* Most likely typo in graphics name */
+			modern = GMT_NOTSET;    /* Flag this type of error */
+			GMT_Report (API, GMT_MSG_ERROR, "Unrecognized graphics format %s for modern mode one-liner command\n", format);
 		}
 	}
 	return modern;
@@ -851,12 +877,16 @@ GMT_LOCAL int gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const c
 	 * Also, if a user wants to get the usage message for a modern mode module then it is also a type
 	 * of one-liner and thus we set to GMT_MODERN as well, but only for modern module names. */
 
-	bool usage = false, modern;
-	int error = GMT_NOERROR;
+	bool usage = false;
+	int error = GMT_NOERROR, modern;
 	struct GMT_OPTION *opt, *head = NULL;
 
 	head = GMT_Create_Options (API, mode, args);	/* Get option list */
 	modern = gmtapi_modern_oneliner (API, head);		/* Return true if one-liner syntax was detected */
+	if (modern == GMT_NOTSET) {
+		error = GMT_RUNTIME_ERROR;
+		goto free_and_return;
+	}
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to check if a classic name was given or if user tried a one-liner in modern mode */
 		if (modern) {	/* Yikes, someone is using one-liner within a GMT modern mode session */
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot run a one-liner modern command within an existing modern mode session\n");
@@ -1155,12 +1185,20 @@ GMT_LOCAL int gmtapi_init_sharedlibs (struct GMTAPI_CTRL *API) {
 			}
 		}
 		else {	/* Just a list with one or more comma-separated library paths */
-			unsigned int pos = 0;
+			unsigned int pos = 0, ok;
 			while (gmt_strtok (GMT->session.CUSTOM_LIBS, ",", &pos, text)) {
+				for (e = ok = 0; e < n_extensions; e++) {
+					if (strstr (text, extension[e])) ok++;
+				}
+				if (ok != 1) {	/* Maybe did not append proper shared library extension */
+					GMT_Report (API, GMT_MSG_ERROR, "Shared Library %s lacks proper extension\n", text);
+					GMT_Report (API, GMT_MSG_ERROR, "Check that your GMT_CUSTOM_LIBS (in %s, perhaps) is correct; if a directory it must end in /\n", GMT_SETTINGS_FILE);
+					continue;
+				}
 				libname = strdup (basename (text));		/* Last component from the pathname */
 				if (access (text, R_OK)) {
 					GMT_Report (API, GMT_MSG_ERROR, "Shared Library %s cannot be found or read!\n", text);
-					GMT_Report (API, GMT_MSG_ERROR, "Check that your GMT_CUSTOM_LIBS (in %s, perhaps) is correct\n", GMT_SETTINGS_FILE);
+					GMT_Report (API, GMT_MSG_ERROR, "Check that your GMT_CUSTOM_LIBS (in %s, perhaps) is correct; if a directory it must end in /\n", GMT_SETTINGS_FILE);
 				}
 				else if ((API->lib[n_custom_libs].name = gmtapi_lib_tag (libname))) {
 					API->lib[n_custom_libs].path = strdup (text);
@@ -2419,19 +2457,19 @@ GMT_LOCAL void gmtapi_update_grd_item (struct GMTAPI_CTRL *API, unsigned int mod
 		if (mode & GMT_COMMENT_IS_TITLE) {    /* Place title */
 			if (HH->title) gmt_M_str_free (HH->title);  /* Free previous string */
 			HH->title = strdup (buffer);
-			GMT_Report (API, GMT_MSG_WARNING,
+			GMT_Report (API, GMT_MSG_INFORMATION,
 				"Title string exceeds upper length of %d characters (will be truncated in non-netCDF grid files)\n", length);
 		}
 		if (mode & GMT_COMMENT_IS_COMMAND) {   /* Place command string */
 			if (HH->command) gmt_M_str_free (HH->command);  /* Free previous string */
 			HH->command = strdup (buffer);
-			GMT_Report (API, GMT_MSG_WARNING,
+			GMT_Report (API, GMT_MSG_INFORMATION,
 				"Command string exceeds upper length of %d characters (will be truncated in non-netCDF grid files)\n", length);
 		}
 		if (mode & GMT_COMMENT_IS_REMARK) {   /* Place remark */
 			if (HH->remark) gmt_M_str_free (HH->remark);  /* Free previous string */
 			HH->remark = strdup (buffer);
-			GMT_Report (API, GMT_MSG_WARNING,
+			GMT_Report (API, GMT_MSG_INFORMATION,
 				"Remark string exceeds upper length of %d characters (will be truncated in non-netCDF grid files)\n", length);
 		}
 	}
@@ -8247,7 +8285,7 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 #endif
 
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
-	API->verbose = (mode >> 16);	/* Pick up any -V settings from gmt.c */
+	API->verbose = (mode >> GMT_MSG_BITSHIFT);	/* Pick up any -V settings from gmt.c */
 	API->remote_id = GMT_NOTSET;     /* Not read a remote grid yet */
 	API->pad = pad;     /* Preserve the default pad value for this session */
 	API->print_func = (print_func == NULL) ? gmtapi_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
@@ -11745,12 +11783,20 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, const c
 	/* For programs that needs to do either 1-D or 2-D FFT work */
 	unsigned int d1 = dim - 1;	/* Index into the info text strings below for 1-D (0) and 2-D (1) case */
 	char *data_type[2] = {"table", "grid"}, *dim_name[2] = {"<n_columns>", "<n_columns>/<n_rows>"}, *trend_type[2] = {"line", "plane"};
-	char *dim_ref[2] = {"dimension", "dimensions"}, *linear_type[2] = {"linear", "planar"};
-    struct GMTAPI_CTRL *API = NULL;
+	char *dim_ref[2] = {"dimension", "dimensions"}, *linear_type[2] = {"linear", "planar"}, *d_msg, *h_msg;
+	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (dim > 2) return_error (V_API, GMT_DIM_TOO_LARGE);
 	if (dim == 0) return_error (V_API, GMT_DIM_TOO_SMALL);
-    API = gmtapi_get_api_ptr (V_API);
+	API = gmtapi_get_api_ptr (V_API);
+	if (API->parker_fft_default) {	/* +h is default here as a special case */
+		d_msg = "";
+		h_msg = " [Default]";
+	}
+	else {	/* +d is default */
+		d_msg = " [Default]";
+		h_msg = "";
+	}
 	if (string && string[0] == ' ') GMT_Report (V_API, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
 	GMT_Usage (API, 1, "\n-%c%s", option, GMT_FFT_OPT);
 	GMT_Usage (API, -2, "Choose or inquire about suitable %s %s for %u-D FFT, and set modifiers.", data_type[d1], dim_ref[d1], dim);
@@ -11763,9 +11809,9 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, const c
 	GMT_Usage (API, -2, "Alternatively, append %s to do FFT on array size %s (Must be >= %s size) "
 	   "[Default chooses %s >= %s %s to optimize speed and accuracy of the FFT.]", dim_name[d1], dim_name[d1], data_type[d1], dim_ref[d1], data_type[d1], dim_ref[d1]);
 	GMT_Usage (API, -2, "%s Append modifiers for removing a %s trend:", GMT_LINE_BULLET, linear_type[d1]);
-	GMT_Usage (API, 3, "+d Detrend data, i.e., remove best-fitting %s [Default].", trend_type[d1]);
+	GMT_Usage (API, 3, "+d Detrend data, i.e., remove best-fitting %s%s.", trend_type[d1], d_msg);
 	GMT_Usage (API, 3, "+a Only remove mean value.");
-	GMT_Usage (API, 3, "+h Only remove mid value, i.e., 0.5 * (max + min).");
+	GMT_Usage (API, 3, "+h Only remove mid value, i.e., 0.5 * (max + min)%s.", h_msg);
 	GMT_Usage (API, 3, "+l Leave data alone.");
 	GMT_Usage (API, -2, "%s If FFT %s > %s %s, data are extended via edge point symmetry "
 	   "and tapered to zero.  Several modifiers can be set to change this behavior:", GMT_LINE_BULLET, dim_ref[d1], data_type[d1], dim_ref[d1]);
@@ -13981,13 +14027,22 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *f
 	struct GMT_WORD *W = gmtapi_split_words (in_line);	/* Create array of words */
 	char message[GMT_MSGSIZ] = {""};
 
+#ifdef DEBUG_USAGE_OPTIONS
+	{	/* Breaks usage string into one word per line.  See gmt_usage_messages.sh in the sandbox/guru repo for what to do next */
+		strcpy (message, in_line);
+		gmt_strrepc (message, ' ', '\n');
+		API->print_func (fp, message);  /* Do the printing */
+		return;
+	}
+ #endif
+
 	/* Start with any fixed indent */
 	level = abs (level);	/* In case it was negative */
-    if (level > 6) {    /* Place custom level in last entry.  This is to help g**math issue wrapped operator messages */
-        gmtapi_indent[7] = level;
-        level = 7;
-        go = false;   /* Already indented and ready to go */
-    }
+	if (level > 6) {    /* Place custom level in last entry.  This is to help g**math issue wrapped operator messages */
+		gmtapi_indent[7] = level;
+		level = 7;
+		go = false;   /* Already indented and ready to go */
+	}
 	next_level = (keep_same_indent) ? level : level + 1;	/* Do we indent when we wrap or not */
 	for (j = 0; go && j < gmtapi_indent[level]; j++) strcat (message, " ");	/* Starting spaces */
 	current_width = gmtapi_indent[level];
@@ -14001,7 +14056,7 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *f
 			free (W[k].word);	/* Free the word we are done with */
 			if (W[k+1].word == NULL)	/* Finalize the last line */
 				strcat (message, "\n");
-            force = false;  /* In case it was set */
+			force = false;  /* In case it was set */
 		}
 		else {	/* Must split at the current break point and continue on next line */
 			if (W[k].space) { /* No break character needed since space separation is expected */
@@ -14018,9 +14073,9 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *f
 			}
 			W[k].space = 0;	/* Can be no leading space if starting a the line */
 			k--;	/* Since k will be incremented by loop and we did not write this word yet */
-            try++;
-            if (try == 2) /* Word is longer than effective terminal width - must force output (even if too long) to get past this stalemate */
-                force = true, try = 0;
+			try++;
+			if (try == 2) /* Word is longer than effective terminal width - must force output (even if too long) to get past this stalemate */
+				force = true, try = 0;
 		}
 	}
 	free (W);	/* Free the structure array */
