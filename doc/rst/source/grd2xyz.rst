@@ -93,7 +93,7 @@ Optional Arguments
    :align: center
 
    3-D print of Vailulu’u crater multibeam data (2006, R/V Kilo Moana off Samoa) via a GMT STL file.  Original
-   multibeam data processed with `MB-System <https://www.mbari.org/products/research-software/mb-system>`_ seen
+   multibeam data processed with `MB-System <https://www.mbari.org/technology/mb-system/>`_ seen
    on the right. Photos courtesy of Jasper Konter, U of Hawaii at Manoa.
 
 .. |Add_-V| replace:: |Add_-V_links|
