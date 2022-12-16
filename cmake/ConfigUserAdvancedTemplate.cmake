@@ -1,6 +1,5 @@
 #
-#
-# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -34,6 +33,8 @@
 # are true.  Thus it does not matter whether you use TRUE and FALSE, ON and
 # OFF, or YES and NO for your booleans.
 
+# set (CMAKE_OSX_DEPLOYMENT_TARGET "12.3")
+
 ##
 ## Section 1: Installation paths
 ##
@@ -47,8 +48,7 @@
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
 
-# Exclude optional GDAL, GEOS ,PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
-#set (GMT_EXCLUDE_GDAL TRUE)
+# Exclude optional GEOS, PCRE, PCRE2, FFTW3, LAPACK, BLAS, ZLIB dependencies even if you have them installed [FALSE]
 #set (GMT_EXCLUDE_GEOS TRUE)
 #set (GMT_EXCLUDE_PCRE TRUE)
 #set (GMT_EXCLUDE_PCRE2 TRUE)
@@ -185,7 +185,6 @@
 #enable_testing()
 #set (DO_EXAMPLES TRUE)
 #set (DO_TESTS TRUE)
-#set (DO_ANIMATIONS TRUE)
 # Number of parallel test jobs with "make check":
 #set (N_TEST_JOBS 4)
 
@@ -200,6 +199,14 @@
 
 # Uncomment the following line to enable running low-level C tests of the API
 #set (DO_API_TESTS ON)
+
+# Uncomment the following line to enable running tests of the GMT supplements
+#set (DO_SUPPLEMENT_TESTS ON)
+
+# Uncomment the following line if you need to run the full tests suite using
+# the gmtserver "test" distribution instead of the default server.
+# You may wish to rename existing cache and server dirs so you can restore afterwards
+# set (GMT_DATA_SERVER "test")
 
 # List extra sub-dirs of 'src' with a CMakeLists.txt to build custom modules
 # that link against the full gmt libs. (For building codes that only need the GMT API,
@@ -232,11 +239,13 @@
 #endif()
 # Uncomment these two statements if you are a developer debugging GMT:
 #add_definitions(-DDEBUG)
-#add_definitions(-DMEMDEBUG) # Turn on memory tracking see gmt_support.c for extra info
+#add_definitions(-DMEMDEBUG) # Turn on memory tracking; see gmt_memory .c on MEMDEBUG for information
 #add_definitions(-DUSE_COMMON_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for common GMT options
 #add_definitions(-DUSE_MODULE_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for module options
 #add_definitions(-DEXPORT_GMTLIB)				# Turn on to access normally un-exported or static gmtlib functions from external tools
 #add_definitions(-DNO_THEMES) 	                # Turn off implementation of GMT_THEME for debugging
+# Uncomment this statement if you are a developer debugging PSL and want exact line coordinates:
+#add_definitions(-DPSL_EXACT_LINE)
 
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}") # recommended even for release build
 #set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")            # extra warnings

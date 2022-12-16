@@ -3,25 +3,24 @@ The **-g** option
 
 **Syntax**
 
-**-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\ **z**\ *gap*\ [**+n**\|\ **p**]
+**-g**\ **x**\|\ **y**\|\ **z**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\ *gap*\ [**u**][**+a**][**+c**\ *col*][**+n**\|\ **p**]
     Examine the spacing between consecutive data points in order to impose breaks in the line.
 
 **Description**
 
-The **-g** option is used to detect gaps based on one or more criteria. Repeat the option to specify multiple criteria
-and prepend **a** to subsequent modifiers to specify that *all* the criteria must be met [default imposes breaks if any
-one criteria is met]. The criteria is specified using the **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\
-**z** modifiers. The upper-case options specify that the criteria should be applied to the projected coordinates for
+The **-g** option is used to detect gaps based on one or more criteria. Repeat the option to specify multiple criteria.
+A criterion is specified using one of the **x**\|\ **y**\|\ **z**\|\ **d**\|\ **X**\|\ **Y**\|\ **D** directives. The
+upper-case directives specify that the criterion should be applied to the projected coordinates for
 modules that map data to map coordinates.
 
 - **x**\|\ **X** - define a gap when there is a large enough change in the x coordinates (upper case to use
   projected coordinates).
 - **y**\|\ **Y** - define a gap when there is a large enough change in the y coordinates (upper case to use
   projected coordinates).
+- **z** - define a gap when there is a large enough change in the z data. Use **+c**\ *col* to change
+  the z data column [Default *col* is 2 (i.e., 3rd column)].
 - **d**\|\ **D** - define a gap when there is a large enough distance between coordinates (upper case to use
   projected coordinates).
-- [*col*]\ **z** - define a gap when there is a large enough change in the data in column *col* [default *col* is 2
-  (i.e., 3rd column)].
 
 A unit **u** may be appended to the specified *gap*:
 
@@ -31,12 +30,14 @@ A unit **u** may be appended to the specified *gap*:
 - For projected data (**X**\|\ **Y**\|\ **D**), the unit may be **i**\ (nch), **c**\ (entimeter), or **p**\ (oint)
   [Default unit is set by :term:`PROJ_LENGTH_UNIT`].
 
-One of the following modifiers can be appended to *gap* [default imposes breaks based on the absolute value of the
-difference between the current and previous value]:
+Append modifier **+a** to specify that *all* the criteria must be met [default imposes breaks if any one criterion is met].
+
+One of the following modifiers can be appended:
 
 - **+n** - specify that the previous value minus the current column value must exceed *gap* for a break to be imposed.
 - **+p** - specify that the current value minus the previous value must exceed *gap* for a break to be imposed.
 
+Default imposes breaks based on the absolute value of the difference between the current and previous value.
 **Note**: For **x**\|\ **y**\|\ **z** with time data the unit is instead controlled by :term:`TIME_UNIT`. **Note**: GMT
 has other mechanisms that can determine line segmentation, including segments defined by multiple segment header
 records (see the cookbook chapter :doc:`/cookbook/file-formats`) or segments defined by NaN values when

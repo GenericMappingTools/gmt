@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -112,6 +112,12 @@ struct GMT_RANGE {
 	double center;	/* Forced to be 0-360 */
 };
 
+/*! For accessing singular values in sorted order */
+struct GMT_SINGULAR_VALUE {
+	double value;
+	unsigned int order;
+};
+
 /*! For information on 1-D array */
 
 struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays */
@@ -176,12 +182,14 @@ struct GMT_SUBPLOT {
 	double dim[2];			/* Dimension of entire subplot */
 	double origin[2];		/* Location of lower left figure origin set via -X -Y */
 	double off[2];			/* Offset from justification point of panel tag */
-	double clearance[4];		/* Space around text for surrounding textbox */
+	double soff[2];			/* Shade offset from justification point of panel tag */
+	double clearance[4];	/* Space around text for surrounding textbox */
 	double gap[4];			/* Shrink plottable region to make space for enhancements */
 	char refpoint[3];		/* Reference point for panel tag */
 	char justify[3];		/* Justification relative to refpoint */
 	char tag[GMT_LEN128];		/* Panel tag, e.g., a) */
 	char fill[GMT_LEN64];		/* Panel fill color */
+	char shade[GMT_LEN64];		/* Panel tag shade color */
 	char pen[GMT_LEN64];		/* Panel tag pen outline */
 	char Baxes[GMT_LEN128];		/* The -B setting for selected axes, including +color, tec */
 	char Btitle[GMT_LEN128];	/* The -B setting for any title */
@@ -252,6 +260,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	unsigned int n_lon_nodes;		/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
 	unsigned int n_lat_nodes;		/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
 	unsigned int path_mode;		/* 0 if we should call gmt_fix_up_path to resample across gaps > path_step, 1 to leave alone */
+	unsigned int last_dim;		/* 2 for 2-D or 3 for 3-D as previous plot */
 	double last_width;			/* Full width in inches of previous plot */
 	double last_height;			/* Full height in inches of previous plot */
 	double width;				/* Full width in inches of this world map */
@@ -375,11 +384,9 @@ struct GMT_CURRENT {
 	struct GMT_PSL ps;		/* Hold parameters related to PSL setup */
 	struct GMT_OPTION *options;	/* Pointer to current program's options */
 	struct GMT_FFT_HIDDEN fft;	/* Structure with info that must survive between FFT calls */
-#ifdef HAVE_GDAL
 	struct GMT_GDALREAD_IN_CTRL  gdal_read_in;  /* Hold parameters related to options transmitted to gdalread */
 	struct GMT_GDALREAD_OUT_CTRL gdal_read_out; /* Hold parameters related to options transmitted from gdalread */
 	struct GMT_GDALWRITE_CTRL    gdal_write;    /* Hold parameters related to options transmitted to gdalwrite */
-#endif
 };
 
 struct GMT_INTERNAL {
@@ -388,6 +395,7 @@ struct GMT_INTERNAL {
 	 * modified directly by user interaction. */
 	unsigned int func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  GMT_CONTROLLER (0) is initiating process (e.g. gmt.c) */
 	bool mem_set;			/* true when we have initialized the tmp memory already */
+	bool sample_along_arc;		/* true when sample1d need exact sampling along the arc */
 	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */
 	size_t mem_txt_alloc;

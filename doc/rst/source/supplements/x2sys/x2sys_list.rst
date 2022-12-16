@@ -17,7 +17,7 @@ Synopsis
 [ |-E| ]
 [ |-F|\ *flags* ]
 [ |-I|\ [*list*] ]
-[ |-L|\ [*corrtable*] ]
+[ |-L|\ [*corrections*] ]
 [ |-N|\ *nx_min*\ [**+p**] ]
 [ |-Q|\ **e**\|\ **i** ]
 [ |SYN_OPT-R| ]
@@ -33,7 +33,7 @@ Description
 -----------
 
 **x2sys_list** will read the crossover ASCII data base *coedbase.txt*
-(or *stdin*) and extract a subset of the crossovers based on the other
+(or standard input) and extract a subset of the crossovers based on the other
 arguments. The output may be ASCII or binary.
 
 Required Arguments
@@ -81,7 +81,7 @@ Optional Arguments
     be ASCII (or binary, **-bo**) columns of
     values. Description of codes: **a** is the angle (< 90) defined by
     the crossing tracks, **c** is crossover value of chosen observation
-    (see **-C**), **d** is distance along track, **h** is heading along
+    (see |-C|), **d** is distance along track, **h** is heading along
     track, **i** is the signed time interval between the visit at the
     crossover of the two tracks involved, **I** is same as **i** but is
     unsigned, **n** is the names of the two tracks, **N** is the id
@@ -91,7 +91,7 @@ Optional Arguments
     available), **v** is speed along track, **w** is the composite
     weight, **x** is *x*-coordinate (or longitude), **y** is
     *y*-coordinate (or latitude), and **z** is observed value (see
-    **-C**) along track. If **-S** is not specified then
+    |-C|) along track. If |-S| is not specified then
     **d**,\ **h**,\ **n**,\ **N**,\ **t**,\ **T**,\ **v** results in two
     output columns each: first for track one and next for track two (in
     lexical order of track names); otherwise, they refer to the
@@ -111,7 +111,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [*corrtable*]
+**-L**\ [*corrections*]
     Apply optimal corrections to the chosen observable. Append the
     correction table to use [Default uses the correction table
     *TAG*\ \_corrections.txt which is expected to reside in the
@@ -178,19 +178,17 @@ Examples
 
 To find all the magnetic crossovers associated with the tag MGD77 from
 the file COE_data.txt, restricted to occupy a certain region in the
-south Pacific, and return location, time, and crossover value, try
-
-   ::
+south Pacific, and return location, time, and crossover value, try::
 
     gmt x2sys_list COE_data.txt -V -TMGD77 -R180/240/-60/-30 -Cmag -Fxytz > mag_coe.txt
 
 To find all the faa crossovers globally that involves track 12345678 and
 output time since start of the year, using a binary double precision
-format, try
-
-   ::
+format, try::
 
     gmt x2sys_list COE_data.txt -V -TMGD77 -Cfaa -S12345678 -FTz -bod > faa_coe.b
+
+.. include:: x2sys_refs.rst_
 
 See Also
 --------

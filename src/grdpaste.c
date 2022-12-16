@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdpaste_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdpaste"
 #define THIS_MODULE_MODERN_NAME	"grdpaste"
@@ -65,18 +66,19 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid1> <grid2> -G<outgrid> [%s] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <grid1> <grid2> -G%s [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\twhere grids <grid1> and <grid2> are to be combined into <outgrid>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<grid1> and <grid2> must have same dx,dy and one edge in common.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tIf in doubt, run grdinfo first and check your files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tUse grdpaste and/or grdsample to adjust files as necessary.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tIf grids are geographic and adds to full 360-degree range then grid1\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tdetermines west.  Use grdedit -S to rotate grid to another -Rw/e/s/n.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output grid file.\n");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<grid1> and <grid2> are to be combined into <outgrid>. "
+		"They must have same increments and registration and one edge in common. "
+		"If in doubt, run grdinfo first and check your files. "
+		"Use grdpaste and/or grdsample to adjust files as necessary. "
+		"If grids are geographic and adds to full 360-degree range then <grid1> "
+		"determines west.  Use grdedit -S to rotate grid to another -Rw/e/s/n.");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "V,f,.");
 
 	return (GMT_MODULE_USAGE);
@@ -91,6 +93,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GMT_O
 
 	unsigned int n_errors = 0, n_in = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -98,11 +101,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GMT_O
 			case '<':	/* Input files */
 				if (n_in == 2) {
 					n_errors++;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only two files may be pasted\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Only two files may be pasted\n");
 				}
 				else {
-					Ctrl->In.file[n_in] = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[n_in]))) n_errors++;
+					n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[n_in]));
 					n_in++;
 				}
 				break;
@@ -110,13 +112,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GMT_O
 			/* Processes program-specific parameters */
 
  			case 'G':
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -166,7 +167,7 @@ EXTERN_MSC int GMT_grdpaste (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -187,10 +188,6 @@ EXTERN_MSC int GMT_grdpaste (void *V_API, int mode, void *args) {
 
 	if (A->header->registration != B->header->registration)
 		error++;
-	if ((A->header->z_scale_factor != B->header->z_scale_factor) || (A->header->z_add_offset != B->header->z_add_offset)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Scale/offset not compatible!\n");
-		Return (GMT_RUNTIME_ERROR);
-	}
 
 	if (! (fabs (A->header->inc[GMT_X] - B->header->inc[GMT_X]) < 1.0e-6 && fabs (A->header->inc[GMT_Y] - B->header->inc[GMT_Y]) < 1.0e-6)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Grid intervals do not match!\n");

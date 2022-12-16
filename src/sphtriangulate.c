@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2008-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2008-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/sphtriangulate_inc.h"
 #include "gmt_sph.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"sphtriangulate"
@@ -425,30 +426,33 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *C) {	/*
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "\t==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A] [-C] [-D] [-L<unit>] [-N<table>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Qd|v] [-T] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_j_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 1, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n");
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C] [-D] [-L<unit>] [-N<table>] [-Qd|v] [-T] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT,
+		GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Compute and print triangle or polygon areas in header records (see -L for units).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -T is selected we print arc lengths instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with the binary output option.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete any duplicate points [Default assumes there are no duplicates].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)oot, (k)m, (M)ile, (n)autical mile, or s(u)rvey foot [e].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Output filename for Delaunay or Voronoi polygon information [Store in output segment headers].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Delaunay: output is the node triplets and area (i, j, k, area).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Voronoi: output is the node coordinates and polygon area (lon, lat, area).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -T.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append d for Delaunay triangles or v for Voronoi polygons [Delaunay].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -bo is used then -N may be used to specify a separate file where the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   polygon information normally is written.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Write arcs [Default writes polygons].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Compute and print triangle or polygon areas in header records (see -L for units). "
+		"If -T is selected we print arc lengths instead. "
+		"Cannot be used with the binary output option.");
+	GMT_Usage (API, 1, "\n-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory].");
+	GMT_Usage (API, 1, "\n-D Delete any duplicate points [Default assumes there are no duplicates].");
+	GMT_Usage (API, 1, "\n-L<unit>");
+	GMT_Usage (API, -2, "Set distance unit arc (d)egree, m(e)ter, (f)oot, (k)m, (M)ile, (n)autical mile, or s(u)rvey foot [e].");
+	GMT_Usage (API, 1, "\n-N<table>");
+	GMT_Usage (API, -2, "Output filename for Delaunay or Voronoi polygon information [Store in output segment headers]. "
+		"Delaunay: output is the node triplets and area (i, j, k, area). "
+		"Voronoi: output is the node coordinates and polygon area (lon, lat, area). "
+		"Note: Cannot be used with -T.");
+	GMT_Usage (API, 1, "\n-Qd|v");
+	GMT_Usage (API, -2, "Append d for Delaunay triangles or v for Voronoi polygons [Delaunay]. "
+		"If -bo is used then -N may be used to specify a separate file where the "
+		"polygon information normally is written.");
+	GMT_Usage (API, 1, "\n-T Write arcs [Default writes polygons].");
 	GMT_Option (API, "V,bi2,bo,di,e,h,i,j,qi,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -461,7 +465,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -469,28 +473,29 @@ static int parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->Out.active = true;
-				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Out.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
-				Ctrl->A.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'C':
-				Ctrl->C.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'D':
-				Ctrl->D.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'L':
-				Ctrl->L.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				if (!(opt->arg && strchr (GMT_LEN_UNITS, opt->arg[0]))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
 					n_errors++;
@@ -499,18 +504,19 @@ static int parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *Ctrl, struct
 					Ctrl->L.unit = opt->arg[0];
 				break;
 			case 'N':
-				Ctrl->N.active = true;
-				Ctrl->N.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->N.file));
 				break;
 			case 'Q':
-				Ctrl->Q.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.mode = (opt->arg[0] == 'v') ? VORONOI : DELAUNAY;
 				break;
 			case 'T':
-				Ctrl->T.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -522,7 +528,6 @@ static int parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *Ctrl, struct
 	                                 "Binary output does not support storing areas unless -N is used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->T.active, "Option -N: Cannot be used with -T.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Option -N: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -559,7 +564,7 @@ EXTERN_MSC int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	gmt_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */

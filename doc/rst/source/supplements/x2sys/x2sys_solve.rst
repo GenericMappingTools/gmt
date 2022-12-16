@@ -40,7 +40,7 @@ Required Arguments
     :doc:`x2sys_list`. NOTE: If **-bi** is used
     then the first two columns are expected to hold the integer track
     IDs; otherwise we expect the trailing text to hold the text string names
-    of the two tracks. If no file is given we will read from *stdin*.
+    of the two tracks. If no file is given we will read from standard input.
 
 .. include:: explain_tag.rst_
 
@@ -138,34 +138,28 @@ crossover tables produced by an earlier GMT version without reformatting.
 Examples
 --------
 
-To fit a simple bias offset to faa for all tracks under the MGD77 tag, try
-
-   ::
+To fit a simple bias offset to faa for all tracks under the MGD77 tag, try::
 
     gmt x2sys_list COE_data.txt -V -TMGD77 -Cfaa -Fnc > faa_coe.txt
     gmt x2sys_solve faa_coe.txt -V -TMGD77 -Cfaa -Ec > coe_table.txt
 
-To fit a faa linear drift with time instead, try
-
-   ::
+To fit a faa linear drift with time instead, try::
 
     gmt x2sys_list COE_data.txt -V -TMGD77 -Cfaa -FnTc > faa_coe.txt
     gmt x2sys_solve faa_coe.txt -V -TMGD77 -Cfaa -Et > coe_table.txt
 
 To estimate heading corrections based on magnetic crossovers associated
-with the tag MGD77 from the file COE_data.txt, try
-
-   ::
+with the tag MGD77 from the file COE_data.txt, try::
 
     gmt x2sys_list COE_data.txt -V -TMGD77 -Cmag -Fnhc > mag_coe.txt
     gmt x2sys_solve mag_coe.txt -V -TMGD77 -Cmag -Eh > coe_table.txt
 
-To estimate unit scale corrections based on bathymetry crossovers, try
-
-   ::
+To estimate unit scale corrections based on bathymetry crossovers, try::
 
     gmt x2sys_list COE_data.txt -V -TMGD77 -Cdepth -Fnz > depth_coe.txt
     gmt x2sys_solve depth_coe.txt -V -TMGD77 -Cdepth -Es > coe_table.txt
+
+.. include:: x2sys_refs.rst_
 
 See Also
 --------

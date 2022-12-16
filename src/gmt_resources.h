@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2012-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2012-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,8 @@ enum GMT_enum_session {
 	GMT_SESSION_COLMAJOR  = 4,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
 	GMT_SESSION_LOGERRORS = 8,	/* External API uses column-major formats (e.g., MATLAB, FORTRAN). [Row-major format] */
 	GMT_SESSION_RUNMODE   = 16,	/* If set enable GMT's modern runmode. [Classic] */
-	GMT_SESSION_NOHISTORY = 32	/* Do not use gmt.history at all [Let modules decide] */
+	GMT_SESSION_NOHISTORY = 32,	/* Do not use gmt.history at all [Let modules decide] */
+	GMT_SESSION_NOGDALCLOSE = 64	/* Do not call GDALDestroyDriverManager when using GDAL functions */
 };
 
 /*! Logging settings */
@@ -281,7 +282,8 @@ enum GMT_enum_alloc {
 	GMT_ALLOC_INTERNALLY = 1,	/* Allocated by GMT: We may reallocate as needed and free when no longer needed */
 	GMT_ALLOC_NORMAL = 0,		/* Normal allocation of new dataset based on shape of input dataset */
 	GMT_ALLOC_VERTICAL = 4,		/* Allocate a single table for data set to hold all input tables by vertical concatenation */
-	GMT_ALLOC_HORIZONTAL = 8	/* Allocate a single table for data set to hold all input tables by horizontal (paste) concatenations */
+	GMT_ALLOC_HORIZONTAL = 8,	/* Allocate a single table for data set to hold all input tables by horizontal (paste) concatenations */
+	GMT_ALLOC_VIA_ICOLS = 16	/* Follow -i settings when doing the duplication */
 };
 
 enum GMT_enum_duplicate {
@@ -293,10 +295,11 @@ enum GMT_enum_duplicate {
 
 /* Various directions and modes to call the FFT */
 enum GMT_enum_FFT {
-	GMT_FFT_FWD     = 0U,	/* forward Fourier transform */
-	GMT_FFT_INV     = 1U,	/* inverse Fourier transform */
-	GMT_FFT_REAL    = 0U,	/* real-input FT (currently unsupported) */
-	GMT_FFT_COMPLEX = 1U	/* complex-input Fourier transform */
+	GMT_FFT_FWD      = 0U,	/* forward Fourier transform */
+	GMT_FFT_INV      = 1U,	/* inverse Fourier transform */
+	GMT_FFT_REAL     = 0U,	/* real-input FT (currently unsupported) */
+	GMT_FFT_COMPLEX  = 1U,	/* complex-input Fourier transform */
+	GMT_FFT_NO_DEMUX = 8U	/* Do NOT demux the complex grid to only save the real after GMT_FFT_INV */
 };
 
 /* Various modes to select time in GMT_Message */
@@ -317,6 +320,7 @@ enum GMT_enum_verbose {
 	GMT_MSG_INFORMATION	= 5,	/* Adds informational messages */
 	GMT_MSG_COMPAT		= 6,	/* Compatibility warnings */
 	GMT_MSG_DEBUG		= 7,	/* Debug messages for developers mostly */
+	GMT_MSG_BITSHIFT	= 16,	/* Left/right shift of MSG codes when packing into mode for GMT_Create_Session. Increase if GMT_MSG_* need more space */
 	/* For API backwards compatibility only */
 	GMT_MSG_NORMAL		= 2,	/* Now GMT_MSG_ERROR */
 	GMT_MSG_VERBOSE		= 5,	/* Now GMT_MSG_WARNING  */
@@ -369,7 +373,9 @@ enum GMT_enum_gridio {
 	GMT_GRID_IS_GEO		   = 256U,  /* Grid is a geographic grid, not Cartesian [Deprecated, use GMT_DATA_IS_GEO instead] */
 	GMT_GRID_IS_IMAGE	   = 512U,   /* Grid may be an image, only allowed with GMT_CONTAINER_ONLY */
 	GMT_IMAGE_NO_INDEX	   = 4096,	/* If reading an indexed grid, convert to rgb so we can interpolate */
-	GMT_IMAGE_ALPHA_LAYER  = 8192	/* Place any alpha layer in the image band, not alpha array */
+	GMT_IMAGE_ALPHA_LAYER  = 8192,	/* Place any alpha layer in the image band, not alpha array */
+	GMT_GRID_NEEDS_PAD1	   = 65536,	/* This module requires grids or images to have at least 1 boundary pad all around */
+	GMT_GRID_NEEDS_PAD2	   = 131072	/* This module requires grids or images to have at least 2 boundary pad all around */
 };
 
 #define GMT_GRID_ALL		0U   /* Backwards compatibility for < 5.3.3; See GMT_CONTAINER_AND_DATA */
@@ -569,7 +575,8 @@ enum GMT_enum_color {
 	GMT_CMYK		= 1,
 	GMT_HSV			= 2,
 	GMT_COLORINT		= 4,
-	GMT_NO_COLORNAMES	= 8
+	GMT_NO_COLORNAMES	= 8,
+	GMT_HEX_COLOR	= 16
 };
 
 enum GMT_enum_bfn {

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -107,6 +107,8 @@ struct GMT_COMMON {
 	struct R {	/* -Rw/e/s/n[/z_min/z_max][r] or -Rgridfile */
 		bool active[4];	/* RSET = 0: -R, ISET = 1: inc, GSET = 2: -r, FSET = 3: read grid */
 		bool oblique;	/* true when -R...r was given (oblique map, probably), else false (map borders are meridians/parallels) */
+		bool via_polygon;	/* Got -R<countrycode> so w/e/s/n may not perfectly fit a grid spacing, for instance */
+		int aspect;	/* -1/+1 when we get -R from a grid whose x and y coordinates are the same units, else 0 */
 		uint32_t registration;	/* Registration mode of a grid given via -r or -Rgrid */
 		int row_order;	/* Order of rows in NetCDF output: 0 (not set) or k_nc_start_north or k_nc_start_south */
 		unsigned int mode;	/* For modern mode only: 0 = get exact region from data, 1 = rounded region from data */
@@ -119,6 +121,7 @@ struct GMT_COMMON {
 		bool active;
 		unsigned int just;
 		double x, y;
+		char string[GMT_LEN64];	/* User override for timestamp */
 		char *label;		/* Content not counted by sizeof (struct) */
 	} U;
 	struct V {	/* -V */
@@ -161,6 +164,7 @@ struct GMT_COMMON {
 	struct d {	/* -d[i][o]<nan_proxy> */
 		bool active[2];
 		bool is_zero[2];
+		unsigned int first_col[2];	/* Only apply from this column onward */
 		double nan_proxy[2];
 		char string[GMT_LEN64];
 	} d;
@@ -171,6 +175,8 @@ struct GMT_COMMON {
 	} e;
 	struct f {	/* -f[i|o]<col>|<colrange>[t|T|g],.. */
 		bool active[2];	/* For GMT_IN|OUT */
+		bool is_geo[2];	/* true if -f[i|o]g was set to force a Cartesian grid to be seen as geographic */
+		bool is_cart[2];	/* true if -f[i|o]c was set to force a geographic grid to be seen as Cartesian */
 		char string[GMT_LEN64];
 	} f;
 	struct g {	/* -g[+]x|x|y|Y|d|Y<gap>[unit]  */
@@ -234,7 +240,7 @@ struct GMT_COMMON {
 		bool do_z_rotation;	/* true if rotating plot about a vertical axis */
 		double z_rotation;	/* Rotation of <angle> about vertical axis */
 	} p;
-	struct q {	/* -q[i|o]<rows>,...[+c<col>][+a|f|s] */
+	struct q {	/* -q[i|o]<rows>,...[+c<col>][+a|t|s] */
 		bool active[2];
 		bool inverse[2];
 		char string[2][GMT_LEN64];

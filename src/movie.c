@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -92,9 +92,11 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/movie_inc.h"
 #ifdef WIN32
 #include <windows.h>
 #endif
+#include "gmt_gsformats.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"movie"
 #define THIS_MODULE_MODERN_NAME	"movie"
@@ -113,7 +115,10 @@
 #define MOVIE_RASTER_EXTENSION	"png"	/* Fixed raster format extension */
 #define MOVIE_DEBUG_FORMAT	",ps"	/* Comma is intentional since we append to a list of formats */
 
-enum enum_video {MOVIE_MP4,	/* Create a H.264 MP4 video */
+enum enum_video {
+	MOVIE_PNG,	/* Create PNGs */
+	MOVIE_GIF,	/* Create an animated GIF*/
+	MOVIE_MP4,	/* Create a H.264 MP4 video */
 	MOVIE_WEBM,		/* Create a WebM video */
 	MOVIE_N_FORMATS};	/* Number of video formats above */
 
@@ -157,13 +162,6 @@ struct MOVIE_CTRL {
 		char *file;	/* Name of main script */
 		FILE *fp;	/* Open file pointer to main script */
 	} In;
-	struct MOVIE_A {	/* -A[+l[<nloops>]][+s<stride>]  */
-		bool active;
-		bool loop;
-		bool skip;
-		unsigned int loops;
-		unsigned int stride;
-	} A;
 	struct MOVIE_C {	/* -C<namedcanvas>|<canvas_and_dpu> */
 		bool active;
 		double dim[3];
@@ -174,7 +172,7 @@ struct MOVIE_CTRL {
 		bool active;
 		double framerate;
 	} D;
-	struct MOVIE_E {	/* -E<title>[+d<duration>[s]][+f[i|o]<fade>[s]][+g<fill>] */
+	struct MOVIE_E {	/* -E<title>[+d<duration>[s]][+f[i|o][<fade>[s]]][+g<fill>] */
 		bool active;
 		bool PS;		/* true if we got a plot instead of a script */
 		char *file;		/* Name of title script */
@@ -183,9 +181,13 @@ struct MOVIE_CTRL {
 		unsigned int fade[2];	/* Duration of fade title in, fade title out [none]*/
 		FILE *fp;			/* Open file pointer to title script */
 	} E;
-	struct MOVIE_F {	/* -F<videoformat>[+o<options>][+t] */
+	struct MOVIE_F {	/* -F<videoformat>[+l<n>][+o<options>][+s<stride>][+t] - repeatable */
 		bool active[MOVIE_N_FORMATS];
 		bool transparent;
+		bool loop;
+		bool skip;
+		unsigned int loops;
+		unsigned int stride;
 		char *format[MOVIE_N_FORMATS];
 		char *options[MOVIE_N_FORMATS];
 	} F;
@@ -195,7 +197,7 @@ struct MOVIE_CTRL {
 		char *fill;		/* Canvas constant fill */
 		char pen[GMT_LEN64];	/* Canvas outline pen */
 	} G;
-	struct MOVIE_H {	/* -H<factor> */
+	struct MOVIE_H {	/* -H<scale> */
 		bool active;
 		int factor;	/* Amount of subpixel rendering */
 	} H;
@@ -204,7 +206,7 @@ struct MOVIE_CTRL {
 		char *file;	/* Name of include script */
 		FILE *fp;	/* Open file pointer to include script */
 	} I;
-	struct MOVIE_K {	/* -K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]] */
+	struct MOVIE_K {	/* -K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]] */
 		bool active;
 		bool preserve[2];	/* Preserve first and last frames */
 		char *fill;		/* Fade color [black] */
@@ -213,18 +215,20 @@ struct MOVIE_CTRL {
 	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#|s<string>][+c<clearance>][+f<font>][+g<fill>][+h[<dx>/<dy>/][<shade>]][+j<justify>][+o<offset>][+p<pen>][+r][+t<fmt>][+s<scl>] */
 		bool active;
 	} L;
-	struct MOVIE_M {	/* -M[<frame>|f|l|m][,format] */
+	struct MOVIE_M {	/* -M[<frame>|f|l|m][,format][+r<dpu>] */
 		bool active;
 		bool exit;
+		bool dpu_set;
 		unsigned int update;	/* 1 = set middle, 2 = set last frame */
 		unsigned int frame;	/* Frame selected as master frame */
+		double dpu;
 		char *format;	/* Plot format for master frame */
 	} M;
 	struct MOVIE_N {	/* -N<movieprefix> */
 		bool active;
 		char *prefix;	/* Movie prefix and also name of working directory (but see -W) */
 	} N;
-	struct MOVIE_P {	/* Repeatable: -P[kind][+wwidth][+ppen1][+Ppen2][+gfill1][+Gfill2][+ooffset][+j<justify>][+a[e|f|c#|t#|s<string>][+t<fmt>][+s<scl>] */
+	struct MOVIE_P {	/* Repeatable: -P[<kind>][+w<width>][+p<pen1>][+P<pen2>][+g<fill1>][+G<fill2>][+o<offset>][+j<justify>][+a[e|f|c#|t#|s<string>][+t<fmt>][+s<scl>] */
 		bool active;
 	} P;
 	struct MOVIE_Q {	/* -Q[s] */
@@ -270,11 +274,11 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	struct MOVIE_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct MOVIE_CTRL);
-	C->A.loops = 1;		/* No loop, just play once */
 	C->C.unit = 'c';	/* c for SI units */
 	C->D.framerate = 24.0;	/* 24 frames/sec */
+	C->F.loops = 1;		/* No loop, just play once */
 	C->F.options[MOVIE_WEBM] = strdup ("-crf 10 -b:v 1.2M");	/* Default WebM options for now */
-	strcpy (C->T.sep, " \t");	/* White space */
+	strcpy (C->T.sep, "\t ");	/* Any white space */
 	C->x.n_threads = GMT->parent->n_cores;	/* Use all cores available unless -x is set */
 	return (C);
 }
@@ -317,130 +321,157 @@ GMT_LOCAL int movie_parse_x_option (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctr
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w|W]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-E<titlepage>[+d<duration>[s]][+f[i|o]<fade>[s]][+g<fill>]] [-F<format>[+o<opts>][+t]] [-G[<fill>][+p<pen>]] [-H<factor>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>]] [-P<progress>] [-Q[s]] [-Sb<background>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<foreground>] [%s] [-W[<workdir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <mainscript> -C<canvas>|<width>x<height>x<dpu> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W] "
+		"[-D<rate>] [-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]] [-Fgif|mp4|webm|png[+l[<n>]][+o<opts>][+s<stride>][+t]] [-G[<fill>][+p<pen>]] [-H<scale>] "
+		"[-I<includefile>] [-K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>][+r<dpu>]] [-P<progressinfo>] [-Q[s]] [-Sb<background>] "
+		"[-Sf<foreground>] [%s] [-W[<dir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<mainscript> is the main GMT modern script that builds a single frame image.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify canvas size. Choose a known named canvas or set custom dimensions:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Recognized 16:9-ratio formats:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      name:  pixel size:  canvas size (SI):  dpc:    canvas size (US):    dpi:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     4320p:  7680 x 4320    24 x 13.5 cm   320.0000    9.6 x 5.4 inch   800.0000\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     2160p:  3840 x 2160    24 x 13.5 cm   160.0000    9.6 x 5.4 inch   400.0000\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     1080p:  1920 x 1080    24 x 13.5 cm    80.0000    9.6 x 5.4 inch   200.0000\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      720p:  1280 x  720    24 x 13.5 cm    53.3333    9.6 x 5.4 inch   133.3333\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      540p:   960 x  540    24 x 13.5 cm    40.0000    9.6 x 5.4 inch   100.0000\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      480p:   854 x  480    24 x 13.5 cm    35.5833    9.6 x 5.4 inch    88.9583\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      360p:   640 x  360    24 x 13.5 cm    26.6667    9.6 x 5.4 inch    66.6667\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      240p:   426 x  240    24 x 13.5 cm    17.7500    9.6 x 5.4 inch    44.3750\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: UHD-2 and 8k can be used for 4320p, UHD and 4k for 2160p, and HD for 1080p.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Recognized 4:3-ratio formats:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      name:  pixel size:  canvas size (SI):  dpc:	  canvas size (US):   dpi:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      UXGA:  1600 x 1200    24 x 18 cm      66.6667    9.6 x 7.2 inch   166.6667\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     SXGA+:  1400 x 1050    24 x 18 cm      58.3333    9.6 x 7.2 inch   145.8333\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       XGA:  1024 x  768    24 x 18 cm      42.6667    9.6 x 7.2 inch   106.6667\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      SVGA:   800 x  600    24 x 18 cm      33.3333    9.6 x 7.2 inch    83.3333\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       DVD:   640 x  480    24 x 18 cm      26.6667    9.6 x 7.2 inch    66.6667\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Current PROJ_LENGTH_UNIT determines if you get SI or US canvas dimensions and dpu.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set a custom canvas with dimensions and dots-per-unit manually by\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     providing <width>x<height>x<dpu> (e.g., 15cx10cx50, 6ix6ix100, etc.).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set the <prefix> used for movie files and directory names.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The directory cannot already exist; see -Z to remove such directories at the end.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set number of frames, create times from <min>/<max>/<inc>[+n] or give file with frame-specific information.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <min>/<max>/<inc> is used then +n is used to indicate that <inc> is in fact number of frames instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <timefile> does not exist it must be created by the foreground script given via -Sf.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<width> to set number of digits used in creating the frame tags [automatic].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s<first> to change the value of the first frame [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to <timefile> to have trailing text be split into individual word variables.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   We use any white-space as separators; use +W to strictly use TABs only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Animated GIF: Append +l for looping [no loop]; optionally append number of loops [infinite loop].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -F is used you may restrict the GIF animation to use every <stride> frame only [all];\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <stride> must be taken from the list 2, 5, 10, 20, 50, 100, 200, or 500.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set movie display frame rate in frames/second [24].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Give name of optional <titlepage> script to build title page displayed before the animation [no title page].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give PostScript file of correct canvas size that will be the title page.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d<duration> to set length of the title in frames (append s for seconds) [4s].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to fade in and out over the title via black [1s].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use +fi and/or +fo to set unequal fade lengths or to just select one of them.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to select another terminal fade fill than black.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the final video format(s) from among these choices. Repeatable:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     mp4:    Convert PNG frames into an MP4 movie.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     webm:   Convert PNG frames into an WebM movie.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     none:   Make no PNG frames - requires -M.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     By default we build opaque png images; append +t for transparent images.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append +o<options> to add custom encoding options for mp4 or webm.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is no video products; just create the PNG frames].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the canvas background color [none].  Append +p<pen> to draw canvas outline [none]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Temporarily increase <dpu> by <factor>, rasterize, then downsample [no downsampling].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Stabilizes sub-pixel changes between frames, such as moving text and lines.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Include a script file to be inserted into the movie_init.sh script [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all movie scripts.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-K Fade in and out over the main animation via black [no fading].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to set duration of fading in frames (append s for seconds) [1s].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use +fi and/or +fo to set unequal fade times or to just select one of them.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Fading will darken frames at start and end of movie.  Append +p to preserve all frames\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     and instead use the first and last frames repeatedly during the fading sequence.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append i or o to only have the in- or out-fade repeat a single frame [both ends].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to select another terminal fade fill than black.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Automatic labeling of frames; repeatable (max 32).  Places chosen label at the frame perimeter:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     e selects elapsed time as the label. Use +s<scl> to set time in sec per frame [1/<framerate>].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f selects the running frame number as the label.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     p selects the percent of completion as the label.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     s<string> selects the fixed text <string> as the label.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c<col> uses the value in column <col> of <timefile> (first column is 0).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     t<col> uses word number <col> from the trailing text in <timefile> (first word is 0).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between label and surrounding box.  Only\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     used if +g or +p are set.  Append units {%s} or %% of fontsize [%d%%].\n", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f[<fontinfo>] to set the size, font, and optionally the label color [%s].\n",
-		gmt_putfont (API->GMT, &API->GMT->current.setting.font_tag));
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the label textbox with <fill> color [no fill].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h to set offset label textbox shade color fill (requires +g also).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append <dx>/<dy> to change offset [%gp/%gp] and/or <shade> to change the shade [gray50].\n", GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<refpoint> to specify where the label should be plotted [TL].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset label in direction implied by <justify> [%d%% of font size].\n", GMT_TEXT_OFFSET);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to select a rounded rectangular textbox (requires +g or +p) [rectangular].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the textbox using selected pen [no outline].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +t to provide a C-format statement to be used with the item selected [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Create a master frame plot as well; append comma-separated frame number [0] and format [pdf].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Master plot will be named <prefix>.<format> and placed in the current directory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Instead of frame number you can specify f(irst), m(iddle), or l(last) frame.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-P Automatic plotting of progress indicator(s); repeatable (max 32).  Places chosen indicator at frame perimeter.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append desired indicator (a-f) [a] and consult the movie documentation for which attributes are needed:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<refpoint> to specify where the indicator should be plotted [TR for circles, BC for axes].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +w<width> to specify size [5%% of max canvas dimension for circles, 60%% for axes].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[e|f|p|c<col>] to add annotations (see -L for details):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f[<fontinfo>] to set the size, font, and optionally the label color [%s].\n",
-		gmt_putfont (API->GMT, &API->GMT->current.setting.font_annot[GMT_SECONDARY]));
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +G to set background (static) color fill for indicator [Depends in indicator selected].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to set foreground (moving) color fill for indicator [Depends in indicator selected].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +P to set background (static) pen for indicator [Depends in indicator selected].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to set foreground (moving) pen for indicator [Depends in indicator selected].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset label in direction implied by <justify> [%d%% of font size].\n", GMT_TEXT_OFFSET);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +t to provide a C-format statement to be used with the item selected [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Debugging: Leave all intermediate files and directories behind for inspection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed (except for background script).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Given names for the optional background and foreground GMT scripts or PostScript layers [none]:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sb Append name of background GMT modern script that may pre-compute\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       files needed by <mainscript> and/or build a static background plot layer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       If a plot is generated then the script must be in GMT modern mode.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       Alternatively, give PostScript file of correct canvas size that will be the background.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of foreground GMT modern mode script which will\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       build a static foreground plot overlay appended to all frames.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       Alternatively, give PostScript file of correct canvas size that will be the foreground.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+
+	GMT_Usage (API, 1, "\n<mainscript>");
+	GMT_Usage (API, -2, "<mainscript> is the main GMT modern script that builds a single frame image.");
+	GMT_Usage (API, 1, "\n-C<canvas>|<width>x<height>x<dpu>");
+	GMT_Usage (API, -2, "Specify canvas. Choose either a known named canvas or set custom dimensions.");
+	GMT_Usage (API, -2, "%s Recognized 16:9-ratio names and associated dimensions:", GMT_LINE_BULLET);
+	/* Using GMT_Message here for verbatim text and alignment since GMT_Usage will eat repeated spaces */
+	GMT_Message (API, GMT_TIME_NONE, "        name:  pixel size:    canvas (SI):       dpc:      canvas (US):       dpi:\n");
+	GMT_Message (API, GMT_TIME_NONE, "       ---------------------------------------------------------------------------\n");
+	GMT_Message (API, GMT_TIME_NONE, "       4320p:  7680 x 4320    24 x 13.5 cm   320.0000    9.6 x 5.4 inch   800.0000\n");
+	GMT_Message (API, GMT_TIME_NONE, "       2160p:  3840 x 2160    24 x 13.5 cm   160.0000    9.6 x 5.4 inch   400.0000\n");
+	GMT_Message (API, GMT_TIME_NONE, "       1080p:  1920 x 1080    24 x 13.5 cm    80.0000    9.6 x 5.4 inch   200.0000\n");
+	GMT_Message (API, GMT_TIME_NONE, "        720p:  1280 x  720    24 x 13.5 cm    53.3333    9.6 x 5.4 inch   133.3333\n");
+	GMT_Message (API, GMT_TIME_NONE, "        540p:   960 x  540    24 x 13.5 cm    40.0000    9.6 x 5.4 inch   100.0000\n");
+	GMT_Message (API, GMT_TIME_NONE, "        480p:   854 x  480    24 x 13.5 cm    35.5833    9.6 x 5.4 inch    88.9583\n");
+	GMT_Message (API, GMT_TIME_NONE, "        360p:   640 x  360    24 x 13.5 cm    26.6667    9.6 x 5.4 inch    66.6667\n");
+	GMT_Message (API, GMT_TIME_NONE, "        240p:   426 x  240    24 x 13.5 cm    17.7500    9.6 x 5.4 inch    44.3750\n");
+	GMT_Usage (API, -2, "%s Recognized 4:3-ratio names and associated dimensions:", GMT_LINE_BULLET);
+	GMT_Message (API, GMT_TIME_NONE, "        name:  pixel size:    canvas (SI):       dpc:      canvas (US):       dpi:\n");
+	GMT_Message (API, GMT_TIME_NONE, "       ---------------------------------------------------------------------------\n");
+	GMT_Message (API, GMT_TIME_NONE, "        uxga:  1600 x 1200    24 x 18 cm      66.6667    9.6 x 7.2 inch   166.6667\n");
+	GMT_Message (API, GMT_TIME_NONE, "       sxga+:  1400 x 1050    24 x 18 cm      58.3333    9.6 x 7.2 inch   145.8333\n");
+	GMT_Message (API, GMT_TIME_NONE, "         xga:  1024 x  768    24 x 18 cm      42.6667    9.6 x 7.2 inch   106.6667\n");
+	GMT_Message (API, GMT_TIME_NONE, "        svga:   800 x  600    24 x 18 cm      33.3333    9.6 x 7.2 inch    83.3333\n");
+	GMT_Message (API, GMT_TIME_NONE, "         dvd:   640 x  480    24 x 18 cm      26.6667    9.6 x 7.2 inch    66.6667\n");
+	GMT_Usage (API, -2, "Note: uhd-2 and 8k can be used for 4320p, uhd and 4k for 2160p, and hd for 1080p. "
+		"Current PROJ_LENGTH_UNIT determines if you get SI or US canvas dimensions and dpu. "
+		"Alternatively, set a custom canvas with dimensions and dots-per-unit manually by "
+		"providing <width>x<height>x<dpu> (e.g., 15cx10cx50, 6ix6ix100, etc.).");
+	GMT_Usage (API, 1, "\n-N<prefix>");
+	GMT_Usage (API, -2, "Set the <prefix> used for movie files and directory names. "
+		"The directory cannot already exist; see -Z to remove such directories at the end.");
+	GMT_Usage (API, 1, "\n-T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W]");
+	GMT_Usage (API, -2, "Set number of frames, create times from <min>/<max>/<inc>[+n] or give file with frame-specific information. "
+		"If <min>/<max>/<inc> is used then +n is used to indicate that <inc> is in fact number of frames instead. "
+		"If <timefile> does not exist it must be created by the background script given via -Sb.");
+	GMT_Usage (API, 3, "+p Append number of digits used in creating the frame tags [automatic].");
+	GMT_Usage (API, 3, "+s Append <first> to change the value of the first frame [0].");
+	GMT_Usage (API, 3, "+w Let trailing text in <timefile> be split into individual word variables. "
+		"We use space or TAB as separators; append <str> to set custom characters as separators instead.");
+	GMT_Usage (API, 3, "+W Same as +w but only use TAB as separator.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D<rate>");
+	GMT_Usage (API, -2, "Set movie display frame rate in frames/second [24].");
+	GMT_Usage (API, 1, "\n-E<titlepage>[+d[<duration>[s]]][+f[i|o][<fade>[s]]][+g<fill>]");
+	GMT_Usage (API, -2, "Give name of optional <titlepage> script to build title page displayed before the animation [no title page]. "
+		"Alternatively, give PostScript file of correct canvas size that will be the title page.");
+	GMT_Usage (API, 3, "+d Set duration of the title frames (append s for seconds) [4s].");
+	GMT_Usage (API, 3, "+f Fade in and out over the title via black [1s]. "
+		"Use +fi and/or +fo to set unequal fade lengths or to just select one of them.");
+	GMT_Usage (API, 3, "+g Select another terminal fade fill than black.");
+	GMT_Usage (API, 1, "\n-Fgif|mp4|webm|png[+l[<n>]][+o<opts>][+s<stride>][+t]");
+	GMT_Usage (API, -2, "Select the desired video format(s) from available choices. Repeatable:");
+	GMT_Usage (API, 3, "%s gif: Make and convert PNG frames into an animated GIF.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s mp4: Make and convert PNG frames into an MP4 movie.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s webm: Make and convert PNG frames into an WebM movie.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s png: Just make the PNG frames.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Note: gif|mp4|webm all imply png. Two modifiers are available for mp4 or webm:");
+	GMT_Usage (API, 3, "+o Append custom FFmpeg encoding options (in quotes) [none].");
+	GMT_Usage (API, 3, "+t Build transparent images [opaque].");
+	GMT_Usage (API, -2, "Two modifiers are available for gif:");
+	GMT_Usage (API, 3, "+l Enable looping [no loop]; optionally append number of loops [infinite loop].");
+	GMT_Usage (API, 3, "+s Set stride: If -Fmp4|webm is also used you may restrict the GIF animation to use every <stride> frame only [all]. "
+		"<stride> must be taken from the list 2, 5, 10, 20, 50, 100, 200, or 500.");
+	GMT_Usage (API, -2, "Default is no video products; this requires -M.");
+	GMT_Usage (API, 1, "\n-G[<fill>][+p<pen>]");
+	GMT_Usage (API, -2, "Set the canvas background color [none].  Append +p<pen> to draw canvas outline [none].");
+	GMT_Usage (API, 1, "\n-H<scale>");
+	GMT_Usage (API, -2, "Temporarily increase <dpu> by <scale>, rasterize, then downsample [no downsampling]. "
+		"Stabilizes sub-pixel changes between frames, such as moving text and lines.");
+	GMT_Usage (API, 1, "\n-I<includefile>");
+	GMT_Usage (API, -2, "Include a script file to be inserted into the movie_init.sh script [none]. "
+		"Used to add constant variables needed by all movie scripts.");
+	GMT_Usage (API, 1, "\n-K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]]");
+	GMT_Usage (API, -2, "Fade in and out over the main animation via black [no fading]:");
+	GMT_Usage (API, 3, "+f Set duration of fading in frames (append s for seconds) [1s]. "
+		"Use +fi and/or +fo to set unequal fade times or to just select one of them.");
+	GMT_Usage (API, 3, "+p Preserve all frames by repeated use of first and last frames during fade sequence [Fade all frames at start and end of movie]. "
+		"Append i or o to only have the in- or out-fade repeat a single frame [both ends].");
+	GMT_Usage (API, 3, "+g Select terminal fade fill [black].");
+	GMT_Usage (API, 1, "\n-L<labelinfo>");
+	GMT_Usage (API, -2, "Automatic labeling of frames; repeatable (max 32).  Places chosen label at the frame perimeter:");
+	GMT_Usage (API, 3, "e: Select elapsed time as label. Append +s<scl> to set time in sec per frame [1/<framerate>].");
+	GMT_Usage (API, 3, "f: Select running frame numbers as label.");
+	GMT_Usage (API, 3, "p: Select percent of completion as label.");
+	GMT_Usage (API, 3, "s: Select fixed text <string> as label.");
+	GMT_Usage (API, 3, "c: Use the value in appended column <col> of <timefile> (first column is 0).");
+	GMT_Usage (API, 3, "t: Use word number <col> from the trailing text in <timefile> (first word is 0).");
+	GMT_Usage (API, -2, "Several modifiers control label appearance:");
+	GMT_Usage (API, 3, "+c Set clearance <dx>[/<dy>] between label and surrounding box.  Only "
+		"used if +g or +p are set.  Append units {%s} or %% of fontsize [%d%%].", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
+	GMT_Usage (API, 3, "+f Set the font used for the label [%s].", gmt_putfont (API->GMT, &API->GMT->current.setting.font_tag));
+	GMT_Usage (API, 3, "+g Fill the label textbox with specified <fill> [no fill].");
+	GMT_Usage (API, 3, "+h Set offset label textbox shade color fill (requires +g also). "
+		"Append <dx>/<dy> to change offset [%gp/%gp] and/or <shade> to change the shade [gray50].", GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
+	GMT_Usage (API, 3, "+j Specify where the label should be plotted [TL].");
+	GMT_Usage (API, 3, "+o Offset label by <dx>[/<dy>] in direction implied by <justify> [%d%% of font size].", GMT_TEXT_OFFSET);
+	GMT_Usage (API, 3, "+p Draw the outline of the textbox using selected pen [no outline].");
+	GMT_Usage (API, 3, "+r Select a rounded rectangular textbox (requires +g or +p) [rectangular].");
+	GMT_Usage (API, 3, "+t Provide a C-format statement to be used with the item selected [none].");
+	GMT_Usage (API, 1, "\n-M[<frame>|f|m|l,][<format>][+r<dpu>]");
+	GMT_Usage (API, -2, "Create a master frame plot as well; append comma-separated frame number [0] and format [pdf]. "
+		"Master plot will be named <prefix>.<format> and placed in the current directory. "
+		"Instead of frame number you can specify f(irst), m(iddle), or l(last) frame. "
+		"For a raster master frame you may optionally select another <dpu> via +r [same as movie].");
+	GMT_Usage (API, 1, "\n-P<progressinfo>");
+	GMT_Usage (API, -2, "Automatic plotting of progress indicator(s); repeatable (max 32).  Places chosen indicator at frame perimeter. "
+		"Append desired indicator (a-f) [a] and consult the movie documentation for which attributes are needed:");
+	GMT_Usage (API, 3, "+a Add annotations via e|f|p|c<col> (see -L for details).");
+	GMT_Usage (API, 3, "+f Set font attributes for the label [%s].", gmt_putfont (API->GMT, &API->GMT->current.setting.font_annot[GMT_SECONDARY]));
+	GMT_Usage (API, 3, "+G Set background (static) color fill for indicator [Depends in indicator selected].");
+	GMT_Usage (API, 3, "+g Set foreground (moving) color fill for indicator [Depends in indicator selected].");
+	GMT_Usage (API, 3, "+j Specify where the indicator should be plotted [TR for circles, BC for axes].");
+	GMT_Usage (API, 3, "+o Offset indicator by <dx>[/<dy>] in direction implied by <justify> [%d%% of font size].", GMT_TEXT_OFFSET);
+	GMT_Usage (API, 3, "+P Set background (static) pen for indicator [Depends in indicator selected].");
+	GMT_Usage (API, 3, "+p Set foreground (moving) pen for indicator [Depends in indicator selected].");
+	GMT_Usage (API, 3, "+s Compute elapsed time as frame counter times appended <scale> [no scaling].");
+	GMT_Usage (API, 3, "+t Provide a C-format statement to be used with the item selected [none].");
+	GMT_Usage (API, 3, "+w Specify indicator size [5%% of max canvas dimension for circles, 60%% for axes].");
+	GMT_Usage (API, 1, "\n-Q[s]");
+	GMT_Usage (API, -2, "Debugging: Leave all intermediate files and directories behind for inspection. "
+		"Append s to only create the work scripts but none will be executed (except for background script).");
+	GMT_Usage (API, 1, "\n-Sb<background>");
+	GMT_Usage (API, -2, "Append name of background GMT modern script that may compute "
+		"files needed by <mainscript> and/or build a static background plot layer. "
+		"If a plot is generated then the script must be in GMT modern mode. "
+		"Alternatively, give PostScript file of correct canvas size that will be the background.");
+	GMT_Usage (API, 1, "\n-Sf<foreground>");
+	GMT_Usage (API, -2, "Append name of foreground GMT modern mode script which will "
+		"build a static foreground plot overlay appended to all frames. "
+		"Alternatively, give PostScript file of correct canvas size that will be the foreground.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Give <workdir> where temporary files will be built [<workdir> = <prefix> set by -N].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <workdir> is not given we create one in the system temp directory named <prefix> (from -N).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase directory <prefix> after converting to movie [leave directory with PNGs alone].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to also delete all input scripts (mainscript and any files via -E, -I, -S)\n");
+	GMT_Usage (API, 1, "\n-W[<dir>]");
+	GMT_Usage (API, -2, "Give <dir> where temporary files will be built [Default <dir> = <prefix> set by -N]. "
+		"If <dir> is not given we create one in the system temp directory named <prefix> (from -N).");
+	GMT_Usage (API, 1, "\n-Z[s]");
+	GMT_Usage (API, -2, "Erase directory <prefix> after converting to movie [leave directory with PNGs alone]. "
+		"Append s to also delete all input scripts (mainscript and any files via -E, -I, -S).");
 	GMT_Option (API, "f");
 	/* Number of threads (re-purposed from -x in GMT_Option since this local option is always available and we are not using OpenMP) */
-	GMT_Message (API, GMT_TIME_NONE, "\t-x Limit the number of cores used in frame generation [Default uses all cores = %d].\n", API->n_cores);
-	GMT_Message (API, GMT_TIME_NONE, "\t   -x<n>  Select <n> cores (up to all available).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -x-<n> Select (all - <n>) cores (or at least 1).\n");
+	GMT_Usage (API, 1, "\n-x[[-]<n>]");
+	GMT_Usage (API, -2, "Limit the number of cores used in frame generation [Default uses all %d cores]. "
+		"If <n> is negative then we select (%d - <n>) cores (or at least 1). Note: 1 core is used by movie itself.", API->n_cores, API->n_cores);
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
@@ -656,6 +687,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
 	struct MOVIE_ITEM *I = NULL;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Switch from SI to US dimensions in inches given format names */
 		width = 9.6;	height16x9 = 5.4;	height4x3 = 7.2;	dpu = 400.0;
@@ -674,44 +706,48 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case '<':	/* Input file */
 				if (n_files++ > 0) break;
-				Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
-			case 'A':	/* Animated GIF */
-				Ctrl->A.active = Ctrl->animate = true;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "ls"))) {	/* Process any modifiers */
-					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'A', c, "ls", &pos, p, &n_errors) && n_errors == 0) {
-						switch (p[0]) {
-							case 'l':	/* Specify loops */
-								Ctrl->A.loop = true;
-								Ctrl->A.loops = (p[1]) ? atoi (&p[1]) : 0;
-								break;
-							case 's':	/* Specify GIF stride, 2,5,10,20,50,100,200,500 etc. */
-								Ctrl->A.skip = true;
-								Ctrl->A.stride = atoi (&p[1]);
-								mag = urint (pow (10.0, floor (log10 ((double)Ctrl->A.stride))));
-								k = Ctrl->A.stride / mag;
-								if (!(k == 1 || k == 2 || k == 5)) {
-									GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A+s: Allowable strides are 2,5,10,20,50,100,200,500,...\n");
-									n_errors++;
-								}
-								break;
-							default:
-								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+			case 'A':	/* Animated GIF [Deprecated] */
+				if (gmt_M_compat_check (GMT, 6)) {	/* GMT6 compatibility allows -A */
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -A is deprecated - use -F instead\n");
+					Ctrl->F.active[MOVIE_GIF] = Ctrl->F.active[MOVIE_PNG] = Ctrl->animate = true;	/* old -A implies -Fpng */
+					if ((c = gmt_first_modifier (GMT, opt->arg, "ls"))) {	/* Process any modifiers */
+						pos = 0;	/* Reset to start of new word */
+						while (gmt_getmodopt (GMT, 'A', c, "ls", &pos, p, &n_errors) && n_errors == 0) {
+							switch (p[0]) {
+								case 'l':	/* Specify loops */
+									Ctrl->F.loop = true;
+									Ctrl->F.loops = (p[1]) ? atoi (&p[1]) : 0;
+									break;
+								case 's':	/* Specify GIF stride, 2,5,10,20,50,100,200,500 etc. */
+									Ctrl->F.skip = true;
+									Ctrl->F.stride = atoi (&p[1]);
+									mag = urint (pow (10.0, floor (log10 ((double)Ctrl->F.stride))));
+									k = Ctrl->F.stride / mag;
+									if (!(k == 1 || k == 2 || k == 5)) {
+										GMT_Report (API, GMT_MSG_ERROR, "Option -A+s: Allowable strides are 2,5,10,20,50,100,200,500,...\n");
+										n_errors++;
+									}
+									break;
+								default:
+									break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+							}
 						}
+						c[0] = '\0';
 					}
-					c[0] = '\0';
 				}
+				else
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 
 			case 'C':	/* Known frame dimension or set a custom canvas size */
-				Ctrl->C.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				strncpy (arg, opt->arg, GMT_LEN64-1);	/* Get a copy... */
 				gmt_str_tolower (arg);		/* ..so we can make it lower case */
 				/* 16x9 formats */
-				if (!strcmp (arg, "8k") || !strcmp (arg, "uhd-2") || !strcmp (arg, "4320p")) {	/* 4320x7680 */
+				if (!strcmp (arg, "8k") || !strcmp (arg, "uhd-2") || !strcmp (arg, "uhd2") || !strcmp (arg, "4320p")) {	/* 4320x7680 */
 					Ctrl->C.dim[GMT_X] = width;	Ctrl->C.dim[GMT_Y] = height16x9;	Ctrl->C.dim[GMT_Z] = 2.0 * dpu;
 				}
 				else if (!strcmp (arg, "4k") || !strcmp (arg, "uhd") || !strcmp (arg, "2160p")) {	/* 2160x3840 */
@@ -752,7 +788,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				}
 				else {	/* Custom canvas dimensions */
 					if ((n = sscanf (arg, "%[^x]x%[^x]x%lg", txt_a, txt_b, &Ctrl->C.dim[GMT_Z])) != 3) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -C: Requires name of a known format or give width x height x dpu string\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Requires name of a known format or give width x height x dpu string\n");
 						n_errors++;
 					}
 					else {	/* Got three items; let's check */
@@ -768,11 +804,11 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				}
 				break;
 
-			case 'D':	/* ALready processed but need to have a case so we can skip */
+			case 'D':	/* Already processed but need to have a case so we can skip */
 				break;
 
 			case 'E':	/* Title/fade sequence  */
-				Ctrl->E.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				if ((c = gmt_first_modifier (GMT, opt->arg, "dfg"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'E', c, "dfg", &pos, p, &n_errors) && n_errors == 0) {
@@ -803,22 +839,31 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					c[0] = '\0';	/* Chop off modifiers */
 				}
 				if (Ctrl->E.duration == 0) Ctrl->E.duration = movie_get_n_frames (GMT, NULL, Ctrl->D.framerate, "4s");
-				if (opt->arg[0])
-					Ctrl->E.file = strdup (opt->arg);
-				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: No title script or PostScript file given\n");
-					n_errors++;					
-				}
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->E.file));
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 
 			case 'F':	/* Set movie format and optional FFmpeg options */
-				if ((c = gmt_first_modifier (GMT, opt->arg, "ot"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "lost"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'F', c, "ot", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'F', c, "lost", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
-							case 'o':	/* Duration of entire title/fade sequence */
+							case 'l':	/* Specify loops for GIF */
+								Ctrl->F.loop = true;
+								Ctrl->F.loops = (p[1]) ? atoi (&p[1]) : 0;
+								break;
+							case 'o':	/* FFmpeg option to pass along */
 								s = strdup (&p[1]);	/* Retain start of encoding options for later */
+								break;
+							case 's':	/* Specify GIF stride, 2,5,10,20,50,100,200,500 etc. */
+								Ctrl->F.skip = true;
+								Ctrl->F.stride = atoi (&p[1]);
+								mag = urint (pow (10.0, floor (log10 ((double)Ctrl->F.stride))));
+								k = Ctrl->F.stride / mag;
+								if (!(k == 1 || k == 2 || k == 5)) {
+									GMT_Report (API, GMT_MSG_ERROR, "Option -F+s: Allowable strides are 2,5,10,20,50,100,200,500,...\n");
+									n_errors++;
+								}
 								break;
 							case 't':	/* Transparent images */
 								Ctrl->F.transparent = true;
@@ -830,28 +875,40 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					c[0] = '\0';	/* Chop off modifiers */
 				}
 				strncpy (arg, opt->arg, GMT_LEN64-1);	/* Get a copy of the args (minus encoding options)... */
-				gmt_str_tolower (arg);	/* ..so we can convert it to lower case for comparisons */
+				gmt_str_tolower (arg);	/* ...so we can convert it to lower case for comparisons */
 				if (!strcmp (opt->arg, "none")) {	/* Do not make those PNGs at all, just a master plot */
-					Ctrl->M.exit = true;
+					if (gmt_M_compat_check (GMT, 6)) {	/* GMT6 compatibility allows -Fnone */
+						GMT_Report (API, GMT_MSG_COMPAT, "Option -Fnone is deprecated, it is the default action\n");
+						Ctrl->M.exit = true;
+					}
+					else {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Unrecognized format %s\n", opt->arg);
+						n_errors++;
+					}
 					break;
 				}
+				if (!strcmp (opt->arg, "png"))	/* Just make those PNGs */
+					k = MOVIE_PNG;
+				else if (!strcmp (opt->arg, "gif"))	/* Make animated GIF */
+					k = MOVIE_GIF;
 				else if (!strcmp (opt->arg, "mp4"))	/* Make a MP4 movie */
 					k = MOVIE_MP4;
 				else if (!strcmp (opt->arg, "webm"))	/* Make a WebM movie */
 					k = MOVIE_WEBM;
 				else if (opt->arg[0]) {	/* Gave another argument which is invalid */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Unrecognized format %s\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -F: Unrecognized format %s\n", opt->arg);
 					n_errors++;
 					break;
 				}
 				if (opt->arg[0]) {	/* Gave a valid argument */
 					if (Ctrl->F.active[k]) {	/* Can only select a format once */
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Format %s already selected\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Format %s already selected\n", opt->arg);
 						n_errors++;
 						break;
 					}
 					/* Here we have a new video format selected */
-					Ctrl->F.active[k] = Ctrl->animate = true;
+					Ctrl->F.active[k] = true;
+					if (k != MOVIE_PNG) Ctrl->animate = true;
 					if (s) {	/* Gave specific encoding options */
 						if (Ctrl->F.options[k]) gmt_M_str_free (Ctrl->F.options[k]);	/* Free old setting first */
 						Ctrl->F.options[k] = s;
@@ -861,10 +918,10 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'G':	/* Canvas fill */
-				Ctrl->G.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				if ((c = strstr (opt->arg, "+p"))) {	/* Gave outline modifier */
 					if (c[2] && gmt_getpen (GMT, &c[2], &pen)) {	/* Bad pen */
-						gmt_pen_syntax (GMT, 'G', NULL, "+p<pen> sets pen attributes [no outline]", 0);
+						gmt_pen_syntax (GMT, 'G', NULL, "+p<pen> sets pen attributes [no outline]", NULL, 0);
 						n_errors++;
 					}
 					else	/* Pen is valid, just copy verbatim */
@@ -884,17 +941,17 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'H':	/* RIP at a higher dpu, then downsample in gs to improve sub-pixeling */
-				Ctrl->H.active = true;
-				Ctrl->H.factor = atoi (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
+				n_errors += gmt_get_required_sint (GMT, opt->arg, opt->option, 0, &Ctrl->H.factor);
 				break;
 
 			case 'I':	/* Include file with settings used by all scripts */
-				Ctrl->I.active = true;
-				Ctrl->I.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file));
 				break;
 
-			case 'K':	/* Fade from/to a black background -K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]] */
-				Ctrl->K.active = true;
+			case 'K':	/* Fade from/to a black background -K[+f[i|o][<fade>[s]]][+g<fill>][+p[i|o]] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->K.active);
 				frames = 0;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "fgp"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
@@ -935,10 +992,10 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 
-			case 'L':	/* Label frame and get attributes */
+			case 'L':	/* Label frame and get attributes (repeatable) */
 				Ctrl->L.active = Ctrl->item_active[MOVIE_ITEM_IS_LABEL] = true;
 				if ((T = Ctrl->n_items[MOVIE_ITEM_IS_LABEL]) == GMT_LEN32) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -L: Cannot handle more than %d tags\n", GMT_LEN32);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -L: Cannot handle more than %d tags\n", GMT_LEN32);
 					n_errors++;
 					break;
 				}
@@ -949,9 +1006,17 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'M':	/* Create a single frame plot as well as movie (unless -Q is active) */
-				Ctrl->M.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
+				if ((s = strstr (opt->arg, "+r")) ) {	/* Gave specific resolution for master frame */
+					Ctrl->M.dpu = atof (&s[2]);
+					Ctrl->M.dpu_set = true;
+					s[0] = '\0';	/* Truncate for now */
+				}
 				if ((c = strchr (opt->arg, ',')) ) {	/* Gave frame and format */
-					Ctrl->M.format = strdup (&c[1]);
+					if (!strncmp (&c[1], "view", 4U))  /* Check for using 'view' to set with GMT_GRAPHICS_FORMAT */
+						Ctrl->M.format = strdup (gmt_session_format[API->GMT->current.setting.graphics_format]);
+					else
+						Ctrl->M.format = strdup (&c[1]);
 					c[0] = '\0';	/* Chop off format */
 					switch (opt->arg[0]) {
 						case 'f':	Ctrl->M.frame  = 0; break;
@@ -971,20 +1036,24 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					}
 				}
 				else if (opt->arg[0])	/* Must be format, with frame = 0 implicit */
-					Ctrl->M.format = strdup (opt->arg);
+					if (strchr ("v", opt->arg[0])) /* Check for using 'view' to set with GMT_GRAPHICS_FORMAT */
+						Ctrl->M.format = strdup (gmt_session_format[API->GMT->current.setting.graphics_format]);
+					else
+						Ctrl->M.format = strdup (opt->arg);
 				else /* Default is PDF of frame 0 */
 					Ctrl->M.format = strdup ("pdf");
+				if (s) s[0] = '+';	/* Restore */
 				break;
 
 			case 'N':	/* Movie prefix and directory name */
-				Ctrl->N.active = true;
-				Ctrl->N.prefix = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->N.prefix);
 				break;
 
-			case 'P':	/* Movie progress bar(s) */
+			case 'P':	/* Movie progress bar(s) (repeatable) */
 				Ctrl->P.active = Ctrl->item_active[MOVIE_ITEM_IS_PROG_INDICATOR] = true;
 				if ((T = Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR]) == GMT_LEN32) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -P: Cannot handle more than %d progress indicators\n", GMT_LEN32);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -P: Cannot handle more than %d progress indicators\n", GMT_LEN32);
 					n_errors++;
 					break;
 				}
@@ -1008,7 +1077,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					default: n_errors += movie_get_item_default (GMT, Ctrl, opt->arg, I);  break;	/* Default pie progression circle (a)*/
 				}
 				if (I->kind == 'F' && I->mode == MOVIE_LABEL_IS_ELAPSED) {
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cannot handle elapsed time with progress indicator (f) yet - skipped\n");
+					GMT_Report (API, GMT_MSG_WARNING, "Cannot handle elapsed time with progress indicator (f) yet - skipped\n");
 					if (Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR] == 0) Ctrl->P.active = Ctrl->item_active[MOVIE_ITEM_IS_PROG_INDICATOR] = false;
 					continue;
 				}
@@ -1016,7 +1085,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'Q':	/* Debug - leave temp files and directories behind; Use -Qs to only write scripts */
-				Ctrl->Q.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				if (opt->arg[0] == 's') Ctrl->Q.scripts = true;
 				break;
 
@@ -1027,23 +1096,23 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					k = MOVIE_POSTFLIGHT;	/* foreground */
 				else {	/* Bad option */
 					n_errors++;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Select -Sb or -Sf\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Select -Sb or -Sf\n");
 					break;
 				}
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S[k].active);
 				/* Got a valid f or b */
-				Ctrl->S[k].active = true;
-				Ctrl->S[k].file = strdup (&opt->arg[1]);
-				if ((Ctrl->S[k].fp = fopen (Ctrl->S[k].file, "r")) == NULL) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S%c: Unable to open file %s\n", opt->arg[0], Ctrl->S[k].file);
+				n_errors += gmt_get_required_file (GMT, &opt->arg[1], opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->S[k].file));
+				if (n_errors == 0 && (Ctrl->S[k].fp = fopen (Ctrl->S[k].file, "r")) == NULL) {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S%c: Unable to open file %s\n", opt->arg[0], Ctrl->S[k].file);
 					n_errors++;
 				}
 				break;
 
 			case 'T':	/* Number of frames or the name of file with frame information (note: file may not exist yet) */
-				Ctrl->T.active = true;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "psw"))) {	/* Process any modifiers */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				if ((c = gmt_first_modifier (GMT, opt->arg, "pswW"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'T', c, "psw", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'T', c, "pswW", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'p':	/* Set a fixed precision in frame naming ###### */
 								Ctrl->T.precision = atoi (&p[1]);
@@ -1059,6 +1128,10 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 									gmt_M_str_free (W);
 								}
 								break;
+							case 'W':	/* Split trailing text into words using only TABs. */
+								Ctrl->T.split = true;
+								Ctrl->T.sep[1] = '\0';	/* Truncate the space character in the list to only have TAB */
+								break;
 							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
@@ -1070,30 +1143,33 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'W':	/* Work dir where data files may be found. If not given we make one up later */
-				Ctrl->W.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				if (opt->arg[0]) Ctrl->W.dir = strdup (opt->arg);
 				break;
 
 			case 'Z':	/* Erase frames after movie has been made */
-				Ctrl->Z.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				if (opt->arg[0] == 's') Ctrl->Z.delete = true;	/* Also delete input scripts */
 				break;
 
 			case 'x':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->x.active);
 				n_errors += movie_parse_x_option (GMT, Ctrl, opt->arg);
-				Ctrl->x.active = true;
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
+	if (Ctrl->F.active[MOVIE_GIF] || Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]) Ctrl->F.active[MOVIE_PNG] = true;	/* All animations require PNGs */
+	if (Ctrl->M.active && !Ctrl->F.active[MOVIE_PNG]) Ctrl->M.exit = true;	/* Only make the master frame */
+
 	n_errors += gmt_M_check_condition (GMT, n_files != 1 || Ctrl->In.file == NULL, "Must specify a main script file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active, "Option -C: Must specify a canvas dimension\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.exit && Ctrl->animate, "Option -F: Cannot use none with other selections\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->animate, "Must select at least one output product (-A, -F, -M)\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->F.active[MOVIE_PNG], "Must select at least one output product (-F, -M)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active, "Cannot use -Z if -Q is also set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor < 2, "Option -H: factor must be and integer > 1\n");
 	if (!Ctrl->T.split) {	/* Make sure we split text if we request word columns in the labeling */
@@ -1115,10 +1191,10 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					"Option -T: Must specify number of frames or a time file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.split && Ctrl->T.sep[0] == '\0',
 					"Option -T: Must specify a string of characters if using +w<str>\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(Ctrl->Q.active || Ctrl->animate || Ctrl->M.active),
-					"Option -Z: Cannot be used without specifying a GIF (-A), master (-M) or movie (-F) product\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.skip && !(Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]),
-					"Option -A: Cannot specify a GIF stride > 1 without selecting a movie product (-F)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(Ctrl->Q.active || Ctrl->F.active[MOVIE_PNG] || Ctrl->M.active),
+					"Option -Z: Cannot be used without specifying a master (-M) or animation (-F) product\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.skip && !(Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]),
+					"Option -Fgif: Cannot specify a GIF stride > 1 without selecting a movie product (-Fmp4|webm)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->M.update && Ctrl->M.frame < Ctrl->T.start_frame,
 					"Option -M: Cannot specify a frame before the first frame number set via -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->W.active && Ctrl->W.dir && !strcmp (Ctrl->W.dir, "/tmp"),
@@ -1138,8 +1214,8 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 		else if (strstr (Ctrl->In.file, ".bat"))
 			Ctrl->In.mode = GMT_DOS_MODE;
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to determine script language from the extension of your script %s\n", Ctrl->In.file);
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Allowable extensions are: *.sh, *.bash, *.csh, and *.bat\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to determine script language from the extension of your script %s\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Allowable extensions are: *.sh, *.bash, *.csh, and *.bat\n");
 			n_errors++;
 		}
 		/* Armed with script language we check that any back/fore-ground scripts are of the same kind */
@@ -1150,24 +1226,24 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 		if (!n_errors && Ctrl->E.active) {	/* Must also check the include file, and open it for reading */
 			n_errors += gmt_check_language (GMT, Ctrl->In.mode, Ctrl->E.file, 2, &Ctrl->E.PS);
 			if (n_errors == 0 && ((Ctrl->E.fp = fopen (Ctrl->E.file, "r")) == NULL)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open title script file %s\n", Ctrl->E.file);
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to open title script file %s\n", Ctrl->E.file);
 				n_errors++;
 			}
 		}
 		if (!n_errors && Ctrl->I.active) {	/* Must also check the include file, and open it for reading */
 			n_errors += gmt_check_language (GMT, Ctrl->In.mode, Ctrl->I.file, 3, NULL);
 			if (n_errors == 0 && ((Ctrl->I.fp = fopen (Ctrl->I.file, "r")) == NULL)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open include script file %s\n", Ctrl->I.file);
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to open include script file %s\n", Ctrl->I.file);
 				n_errors++;
 			}
 		}
 		/* Open the main script for reading here */
 		if (n_errors == 0 && ((Ctrl->In.fp = fopen (Ctrl->In.file, "r")) == NULL)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open main script file %s\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to open main script file %s\n", Ctrl->In.file);
 			n_errors++;
 		}
 		if (n_errors == 0 && gmt_script_is_classic (GMT, Ctrl->In.fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your main script file %s is not in GMT modern mode\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Your main script file %s is not in GMT modern mode\n", Ctrl->In.file);
 			n_errors++;
 		}
 		/* Make sure all MOVIE_* variables are used with leading token ($, %) */
@@ -1210,6 +1286,17 @@ GMT_LOCAL int movie_delete_scripts (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctr
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL bool movie_valid_format (char *format, char code) {
+	/* Return true if the format has a format statement for code, e.g., %5.5d or %d if code = d */
+	char *c = strchr (format, '%');
+	if (c == NULL) return false;	/* No format whatsoever */
+	c++;	/* Skip past the percentage marker */
+	while (isdigit (c[0]) || c[0] == '.') c++;	/* Skip past the optional width.precision items */
+	/* Here we are looking at [l]d|f|g|e|x etc */
+	if (c[0] == 'l') c++;	/* Skip past any l for long */
+	return (c[0] == code);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -1218,11 +1305,11 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	int (*run_script)(const char *);	/* pointer to system function or a dummy */
 
 	unsigned int n_values = 0, n_frames = 0, n_data_frames, first_fade_out_frame = 0, frame, i_frame, col, p_width, p_height, k, T;
-	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_frame = 0, data_frame, n_cores_unused, n_fade_frames = 0;
+	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_i_frame = 0, data_frame, n_cores_unused, n_fade_frames = 0;
 	unsigned int dd, hh, mm, ss, start, flavor[2] = {0, 0};
 
 	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false}, has_conf = false;
-	bool n_written = false, has_text = false, is_classic = false, place_background = false;
+	bool n_written = false, has_text = false, is_classic = false, place_background = false, issue_col0_par = false;
 
 	static char *movie_raster_format[2] = {"png", "PNG"}, *img_type[2] = {"opaque", "transparent"}, var_token[4] = "$$%";
 	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
@@ -1230,9 +1317,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	static char *mvfile[3] = {"mv -f", "mv -f", "move"}, *cpconf[3] = {"\tcp -f %s .\n", "\tcp -f %s .\n", "\tcopy %s .\n"};
 	static char *sys_cmd_nowait[3] = {"bash", "csh", "start /B"}, *sys_cmd_wait[3] = {"bash", "csh", "cmd /C"};
 
-	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
+	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN128] = {""}, param_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
-	char string[GMT_LEN128] = {""}, extra[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
+	char string[GMT_LEN128] = {""}, extra[GMT_BUFSIZ] = {""}, cmd[PATH_MAX] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
 	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {""};
 	char intro_file[PATH_MAX] = {""}, conf_file[PATH_MAX], tmpwpath[PATH_MAX] = {""}, *script_file =  NULL, which[2] = {"LP"}, spacer, dir_sep;
 
@@ -1258,7 +1345,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1290,13 +1377,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			I->x += sx * I->off[GMT_X];
 			I->y += sy * I->off[GMT_Y];
 			if (I->mode == MOVIE_LABEL_IS_COL_T) {
-				if (!strchr (I->format, 's')) {
+				if (!movie_valid_format (I->format, 's')) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -%c: Using +f<format> with word variables requires a \'%%s\'-style format.\n", which[k]);
 					movie_close_files (Ctrl);
 					Return (GMT_PARSE_ERROR);
 				}
 			}
-			else if (I->mode != MOVIE_LABEL_IS_STRING && I->format[0] && !(strchr (I->format, 'd') || strchr (I->format, 'e') || strchr (I->format, 'f') || strchr (I->format, 'g'))) {
+			else if (I->mode != MOVIE_LABEL_IS_STRING && I->format[0] && !(movie_valid_format (I->format, 'd') || movie_valid_format (I->format, 'e') || movie_valid_format (I->format, 'f') || movie_valid_format (I->format, 'g'))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Option -%c: Using +f<format> with frame or data variables requires a \'%%d\', \'%%e\', \'%%f\', or \'%%g\'-style format.\n", which[k]);
 				movie_close_files (Ctrl);
 				Return (GMT_PARSE_ERROR);
@@ -1319,7 +1406,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	else {	/* Will run scripts and may even need to make a movie */
 		run_script = system;	/* The standard system function will be used */
 
-		if (Ctrl->A.active) {	/* Ensure we have the GraphicsMagick executable "gm" installed in the path */
+		if (Ctrl->F.active[MOVIE_GIF]) {	/* Ensure we have the GraphicsMagick executable "gm" installed in the path */
 			if (gmt_check_executable (GMT, "gm", "version", "www.GraphicsMagick.org", line)) {
 				sscanf (line, "%*s %s %*s", version);
 				GMT_Report (API, GMT_MSG_INFORMATION, "GraphicsMagick %s found.\n", version);
@@ -1391,15 +1478,6 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	n_data_frames = n_frames;
 
-	if (Ctrl->W.active) {	/* Create the working directory under /tmp or a specified directory */
-		if (Ctrl->W.dir)	/* Make a subdirectory under this directory based on N.prefix */
-			strcpy (workdir, Ctrl->W.dir);
-		else	/* Make a subdirectory in the tempdir based on N.prefix */
-			sprintf (workdir, "%s/%s", API->tmp_dir, Ctrl->N.prefix);
-	}
-	else	/* Create N.prefix locally in the current directory */
-		strcpy (workdir, Ctrl->N.prefix);
-
 	/* Get full path to the current working directory */
 	if (getcwd (topdir, PATH_MAX) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to determine current working directory - exiting.\n");
@@ -1407,6 +1485,23 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	gmt_replace_backslash_in_path (topdir);
+
+	if (Ctrl->W.active) {	/* Do all the work in a temporary directory elsewhere */
+		if (Ctrl->W.dir) {	/* Specified the path to either a relative or absolute temp directory */
+#ifdef WIN32
+			if (Ctrl->W.dir[0] == '/' || Ctrl->W.dir[1] == ':')	/* Absolute path under Windows */
+#else
+			if (Ctrl->W.dir[0] == '/')	/* Absolute path under *nix|macOS */
+#endif
+				strcpy (workdir, Ctrl->W.dir);	/* Use exactly as given */
+			else	/* Gave a relative path */
+				sprintf (workdir, "%s/%s", topdir, Ctrl->W.dir);
+		}
+		else 	/* Make one in the official temp directory based on N.prefix */
+			sprintf (workdir, "%s/%s", API->tmp_dir, Ctrl->N.prefix);
+	}
+	else	/* Use a subdirectory of the current directory */
+		sprintf (workdir, "%s/%s", topdir, Ctrl->N.prefix);
 
 	{	/* Block to check for existing workdir */
 		struct stat S;
@@ -1417,9 +1512,18 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		else if (err == 0 && S_ISDIR (S.st_mode)) {	/* Directory already exists */
-			GMT_Report (API, GMT_MSG_ERROR, "Working directory %s already exist and -Z was not specified - exiting\n", workdir);
-			movie_close_files (Ctrl);
-			Return (GMT_RUNTIME_ERROR);
+			if (Ctrl->Z.active) {	/* Zap it */
+				if (gmt_remove_dir (API, workdir, false)) {
+					movie_close_files (Ctrl);
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to remove old directory %s - exiting\n", workdir);
+					Return (GMT_RUNTIME_ERROR);
+				}
+			}
+			else {	/* No can do */
+				GMT_Report (API, GMT_MSG_ERROR, "Working directory %s already exist and -Z was not specified - exiting\n", workdir);
+				movie_close_files (Ctrl);
+				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 	}
 
@@ -1497,6 +1601,15 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	fclose (fp);	/* Done writing the init script */
 
+	/* Because when a movie is plotted we do not want gmt_plot_init to contemplate orientation changes
+	 * we help that decision by setting this environmental parameter.  We unset it at the end. */
+#ifdef WIN32
+	if (_putenv ("GMT_MOVIE=YES"))
+#else
+	if (setenv ("GMT_MOVIE", "YES", 1))
+#endif
+		GMT_Report (API, GMT_MSG_WARNING, "Unable to set GMT_MOVIE=YES to inform GMT that movie scripts will be building a movie\n");
+
 	if (Ctrl->S[MOVIE_PREFLIGHT].active) {	/* Create the preflight script from the user's background script */
 		/* The background script must be modern mode */
 		unsigned int rec = 0;
@@ -1508,13 +1621,15 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if (is_classic) {
 				GMT_Report (API, GMT_MSG_ERROR, "Your preflight file %s is not in GMT modern node - exiting\n", pre_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Create preflight script %s and execute it\n", pre_file);
 			if ((fp = fopen (pre_file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create preflight script %s - exiting\n", pre_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_ERROR_ON_FOPEN);
+				error = GMT_ERROR_ON_FOPEN;
+				goto out_of_here;
 			}
 			gmt_set_script (fp, Ctrl->In.mode);			/* Write 1st line of a script */
 			gmt_set_comment (fp, Ctrl->In.mode, "Preflight script");
@@ -1548,7 +1663,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if (chmod (pre_file, S_IRWXU)) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to make preflight script %s executable - exiting.\n", pre_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
 			}
 #endif
 			/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as a background plot */
@@ -1556,7 +1672,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if ((error = system (cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Running preflight script %s returned error %d - exiting.\n", pre_file, error);
 				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
 			}
 		}
 		place_background = (!access ("movie_background.ps", R_OK));	/* Need to place a background layer in the main frames */
@@ -1569,12 +1686,14 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to read time file: %s - exiting\n", Ctrl->T.file);
 				fclose (Ctrl->In.fp);
-				Return (API->error);
+				error = API->error;
+				goto out_of_here;
 			}
 			if (D->n_segments > 1) {	/* We insist on a simple file structure with a single segment */
 				GMT_Report (API, GMT_MSG_ERROR, "Your time file %s has more than one segment - reformat first\n", Ctrl->T.file);
 				fclose (Ctrl->In.fp);
-				Return (API->error);
+				error = API->error;
+				goto out_of_here;
 			}
 			n_frames = n_data_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
 			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
@@ -1585,7 +1704,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			char output[GMT_VF_LEN] = {""}, cmd[GMT_LEN128] = {""};
 			unsigned int V = GMT->current.setting.verbose;
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT|GMT_IS_REFERENCE, NULL, output) == GMT_NOTSET) {
-				Return (API->error);
+				error = API->error;
+				goto out_of_here;
 			}
 			if (GMT->common.f.active[GMT_IN])
 				sprintf (cmd, "-T%s -o1 -f%s --GMT_HISTORY=readonly T = %s", Ctrl->T.file, GMT->common.f.string, output);
@@ -1593,12 +1713,14 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				sprintf (cmd, "-T%s -o1 --GMT_HISTORY=readonly T = %s", Ctrl->T.file, output);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Calling gmtmath with args %s\n", cmd);
 			GMT->current.setting.verbose = GMT_MSG_ERROR;	/* So we don't get unwanted verbosity from gmtmath */
-  			if (GMT_Call_Module (API, "gmtmath", GMT_MODULE_CMD, cmd)) {
-				Return (API->error);	/* Some sort of failure */
+  			if (GMT_Call_Module (API, "gmtmath", GMT_MODULE_CMD, cmd)) {	/* Some sort of failure */
+				error = API->error;
+				goto out_of_here;
 			}
 			GMT->current.setting.verbose = V;	/* Restore */
 			if ((D = GMT_Read_VirtualFile (API, output)) == NULL) {	/* Load in the data array */
-				Return (API->error);	/* Some sort of failure */
+				error = API->error;
+				goto out_of_here;
 			}
 			n_frames = n_data_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
 			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
@@ -1607,13 +1729,16 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_ABSTIME);	/* Set first input column type as absolute time */
 
 		}
-		else	/* Just gave the number of frames (we hope, or we got a bad filename and atoi should return 0) */
+		else {	/* Just gave the number of frames (we hope, or we got a bad filename and atoi should return 0) */
 			n_frames = n_data_frames = atoi (Ctrl->T.file);
+			issue_col0_par = true;
+		}
 	}
 	if (n_frames == 0) {	/* So not good... */
 		GMT_Report (API, GMT_MSG_ERROR, "No frames specified! - exiting.\n");
 		fclose (Ctrl->In.fp);
-		Return (GMT_RUNTIME_ERROR);
+		error = GMT_RUNTIME_ERROR;
+		goto out_of_here;
 	}
 
 	if (Ctrl->M.update)	/* Now we can determine and update last or middle frame number */
@@ -1623,7 +1748,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if (!(Ctrl->K.preserve[GMT_IN] || Ctrl->K.preserve[GMT_OUT]) && n_fade_frames > n_data_frames) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -K: Combined fading duration cannot exceed animation duration\n");
 			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;
+			goto out_of_here;
 		}
 		n_fade_frames = 0;	/* If clobbering */
 		if (Ctrl->K.preserve[GMT_IN])  n_fade_frames += Ctrl->K.fade[GMT_IN];	/* We are preserving, not clobbering */
@@ -1636,15 +1762,18 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			I = &Ctrl->item[k][T];	/* Shorthand for this item */
 			if ((I->mode == MOVIE_LABEL_IS_COL_C || I->mode == MOVIE_LABEL_IS_COL_T) && D == NULL) {    /* Need a floating point number */
 				GMT_Report (API, GMT_MSG_ERROR, "No table given via -T for data-based labels in %c - exiting\n", which[k]);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
 			}
 			if (I->mode == MOVIE_LABEL_IS_COL_C && I->col >= D->n_columns) {
 				GMT_Report (API, GMT_MSG_ERROR, "Data table does not have enough columns for your -%c c%d request - exiting\n", which[k], I->col);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
 			}
 			if (I->mode == MOVIE_LABEL_IS_COL_T && D->table[0]->segment[0]->text == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Data table does not have trailing text for your -%c t%d request - exit\n", which[k], I->col);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
 			}
 		}
 	}
@@ -1653,7 +1782,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	if (Ctrl->T.precision)	/* Precision was prescribed */
 		precision = Ctrl->T.precision;
 	else	/* Compute width from largest frame number */
-		precision = irint (ceil (log10 ((double)(Ctrl->T.start_frame+n_frames+Ctrl->E.duration+n_fade_frames))+0.1));	/* Width needed to hold largest frame number, guaranteed to give at least 1 */
+		precision = irint (ceil (log10 ((double)(Ctrl->T.start_frame+n_frames+Ctrl->E.duration+n_fade_frames-1))+0.1));	/* Width needed to hold largest frame number, guaranteed to give at least 1 */
 
 	if (Ctrl->S[MOVIE_POSTFLIGHT].active) {	/* Prepare the postflight script */
 		if (Ctrl->S[MOVIE_POSTFLIGHT].PS)	/* Just got a PS file, nothing to do */
@@ -1664,13 +1793,15 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if (is_classic) {
 				GMT_Report (API, GMT_MSG_ERROR, "Your postflight file %s is not in GMT modern node - exiting\n", post_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Create postflight script %s\n", post_file);
 			if ((fp = fopen (post_file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create postflight file %s - exiting\n", post_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_ERROR_ON_FOPEN);
+				error = GMT_ERROR_ON_FOPEN;
+				goto out_of_here;
 			}
 			gmt_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 			gmt_set_comment (fp, Ctrl->In.mode, "Postflight script");
@@ -1703,7 +1834,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				if (chmod (post_file, S_IRWXU)) {
 					GMT_Report (API, GMT_MSG_ERROR, "Unable to make postflight script %s executable - exiting\n", post_file);
 					fclose (Ctrl->In.fp);
-					Return (GMT_RUNTIME_ERROR);
+					error = GMT_RUNTIME_ERROR;
+					goto out_of_here;
 				}
 #endif
 			/* Run post-flight now before dealing with the loop so the overlay exists */
@@ -1711,7 +1843,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if ((error = run_script (cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
 				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
 			}
 		}
 	}
@@ -1780,7 +1913,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if ((fp = fopen (param_file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create frame parameter file %s - exiting\n", param_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_ERROR_ON_FOPEN);
+				error = GMT_ERROR_ON_FOPEN;
+				goto out_of_here;
 			}
 			sprintf (state_prefix, "Parameter file for pre-frame %s", state_tag);
 			gmt_set_comment (fp, Ctrl->In.mode, state_prefix);
@@ -1801,9 +1935,10 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if ((fp = fopen (intro_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create movie intro script file %s - exiting\n", intro_file);
 			fclose (Ctrl->E.fp);
-			Return (GMT_ERROR_ON_FOPEN);
+			error = GMT_ERROR_ON_FOPEN;
+			goto out_of_here;
 		}
-		sprintf (extra, "A+n+r+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, possibly fading */
+		sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, possibly fading */
 		if (Ctrl->E.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->E.fill);}	/* Chose another fade color than black */
 		if (Ctrl->E.PS) {	/* Need to place a background title first (which will be in parent dir when loop script is run) */
 			strcat (extra, ",Mb../../");
@@ -1869,7 +2004,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 #ifndef WIN32	/* Set executable bit if not Windows cmd */
 		if (chmod (intro_file, S_IRWXU)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", intro_file);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;
+			goto out_of_here;
 		}
 #endif
 	}
@@ -1896,7 +2032,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if ((fp = fopen (param_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create frame parameter file %s - exiting\n", param_file);
 			fclose (Ctrl->In.fp);
-			Return (GMT_ERROR_ON_FOPEN);
+			error = GMT_ERROR_ON_FOPEN;
+			goto out_of_here;
 		}
 		sprintf (state_prefix, "Parameter file for frame %s", state_tag);
 		gmt_set_comment (fp, Ctrl->In.mode, state_prefix);
@@ -1926,12 +2063,12 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_BACKGROUND", ",Mb../movie_background.ps");		/* Current frame tag (formatted frame number) */
 		else
 			gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_BACKGROUND", "");		/* Nothing */
-		if (Ctrl->F.transparent && Ctrl->A.active) place_background = false;	/* Only place background once if transparent images */
-		gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_ITEM", state_tag);		/* Current frame tag (formatted frame number) */
+		if (Ctrl->F.transparent && Ctrl->F.active[MOVIE_GIF]) place_background = false;	/* Only place background once if transparent images */
 		for (col = 0; col < n_values; col++) {	/* Derive frame variables from <timefile> in each parameter file */
 			sprintf (string, "MOVIE_COL%u", col);
 			gmt_set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][data_frame]);
 		}
+		if (issue_col0_par) gmt_set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_COL0", data_frame);	/* Same as current frame number */
 		if (has_text) {	/* Also place any string parameter as a single string variable */
 			gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_TEXT", D->table[0]->segment[0]->text[data_frame]);
 			if (Ctrl->T.split) {	/* Also split the string into individual words MOVIE_WORD1, MOVIE_WORD2, etc. */
@@ -1958,7 +2095,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				/* Note: All dimensions are written in inches and read as inches in gmt_plotinit */
 
 				for (T = 0; T < Ctrl->n_items[k]; T++) {
-					t = (frame + 1.0) / n_frames;
+					t = frame / (n_frames - 1.0);	/* Relative time 0-1 for selected frame */
 					I = &Ctrl->item[k][T];	/* Shorthand for this item */
 					/* Set selected font: Prepend + if user specified a font, else just give current default font */
 					if (I->font.size > 0.0)	/* Users selected font */
@@ -1975,9 +2112,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 						else	/* Current frame only */
 							use_frame = data_frame;
 						if (I->kind == 'F' && p == 0) strcat (label, "-R");	/* We will write a functioning -R option to plot the time-axis */
-						t = (use_frame + 1.0) / n_frames;	/* Relative time 0-1 for selected frame */
+						t = use_frame / (n_frames - 1.0);	/* Relative time 0-1 for selected frame */
 						if (I->mode == MOVIE_LABEL_IS_FRAME) {	/* Place a frame counter */
-							if (I->format[0] && strchr (I->format, 'd'))	/* Set as integer */
+							if (I->format[0] && movie_valid_format (I->format, 'd'))	/* Set as integer */
 								sprintf (string, I->format, (int)use_frame);
 							else if (I->format[0])	/* Set as floating point */
 								sprintf (string, I->format, (double)use_frame);
@@ -1985,7 +2122,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 								sprintf (string, "%*.*d", precision, precision, use_frame);
 						}
 						else if (I->mode == MOVIE_LABEL_IS_PERCENT) {	/* Place a percent counter */
-							if (I->format[0] && strchr (I->format, 'd'))	/* Set as integer */
+							if (I->format[0] && movie_valid_format (I->format, 'd'))	/* Set as integer */
 								sprintf (string, I->format, (int)irint (100.0 * t));
 							else if (I->format[0])	/* Set as floating point */
 								sprintf (string, I->format, (100.0 * t));
@@ -2022,7 +2159,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 									sprintf (string, "%s%c%s", date, spacer, clock);
 							}
 							else {	/* Regular floating point (or latitude, etc.) */
-								if (I->format[0] && strchr (I->format, 'd'))	/* Set as an integer */
+								if (I->format[0] && movie_valid_format (I->format, 'd'))	/* Set as an integer */
 									sprintf (string, I->format, (int)irint (L_col));
 								else if (I->format[0])	/* Set as floating point */
 									sprintf (string, I->format, L_col);
@@ -2073,7 +2210,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if ((fp = fopen (master_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create loop frame script file %s - exiting\n", master_file);
 			fclose (Ctrl->In.fp);
-			Return (GMT_ERROR_ON_FOPEN);
+			error = GMT_ERROR_ON_FOPEN;
+			goto out_of_here;
 		}
 		if (is_title) {	/* Master frame is from the title sequence */
 			if (Ctrl->M.frame < Ctrl->E.fade[GMT_IN])	/* During title fade-in */
@@ -2085,12 +2223,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			gmt_set_dvalue (fp, Ctrl->In.mode, "MOVIE_FADE", fade_level, 0);
 		}
 		else if (Ctrl->K.active) {
-			sprintf (extra, "A+n+r+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
+			sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
 			if (Ctrl->K.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
 		}
 		else
-			sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
-		if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -A option */
+			sprintf (extra, "A+M+r");	/* No cropping, image size is fixed */
+		if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -N option */
+			if (!Ctrl->K.active) strcat (extra, ",N");	/* Need to switch to the -N option first */
 			if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
 			if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
 		}
@@ -2116,7 +2255,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->H.active) {	/* Must pass the DownScaleFactor option to psconvert */
 			sprintf (line, ",H%d", Ctrl->H.factor);
-			strncat (extra, line, GMT_LEN128);
+			strcat (extra, line);
 		}
 		gmt_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 		gmt_set_comment (fp, Ctrl->In.mode, "Master frame loop script");
@@ -2139,6 +2278,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				fprintf (fp, " %s", extra);
 				if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
 					{}	/* No dpu needed */
+				else if (Ctrl->M.dpu_set)
+					fprintf (fp, ",E%g", Ctrl->M.dpu);
 				else
 					fprintf (fp, ",E%s", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
 				fprintf (fp, " -I../movie_params_%c1.%s\n", var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Pass the frame parameter file to figure via undocumented option -I */
@@ -2156,6 +2297,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 						fprintf (fp, " %s", extra);
 						if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
 							{}	/* No dpu needed */
+						else if (Ctrl->M.dpu_set)
+							fprintf (fp, ",E%g", Ctrl->M.dpu);
 						else
 							fprintf (fp, ",E%s", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
 						fprintf (fp, " -I../movie_params_%c1.%s\n", var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Pass the frame parameter file to figure via undocumented option -I */
@@ -2179,6 +2322,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 					fprintf (fp, " %s", extra);
 					if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
 						{}	/* No dpu needed */
+					else if (Ctrl->M.dpu_set)
+						fprintf (fp, ",E%g", Ctrl->M.dpu);
 					else
 						fprintf (fp, ",E%s", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
 					fprintf (fp, " -I../movie_params_%c1.%s\n", var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Pass the frame parameter file to figure via undocumented option -I */
@@ -2208,14 +2353,16 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if (chmod (master_file, S_IRWXU)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", master_file);
 			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;
+			goto out_of_here;
 		}
 #endif
 		sprintf (cmd, "%s %s %*.*d", sys_cmd_nowait[Ctrl->In.mode], master_file, precision, precision, Ctrl->M.frame);
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running script %s returned error %d - exiting.\n", cmd, error);
 			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;
+			goto out_of_here;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Single master plot (frame %d) built: %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
 		if (!Ctrl->Q.active) {
@@ -2223,7 +2370,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if (gmt_remove_file (GMT, master_file)) {	/* Delete the master_file script */
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the master file script %s.\n", master_file);
 				fclose (Ctrl->In.fp);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
 			}
 		}
 		if (Ctrl->M.exit) {	/* Well, we are done */
@@ -2232,21 +2380,24 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			if (chdir (topdir)) {	/* Should never happen but we do check */
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to change directory to starting directory - exiting.\n");
 				perror (topdir);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
 			}
 			if (!Ctrl->Q.active) {	/* Delete the entire directory */
 				/* Delete the entire working directory with batch jobs and tmp files */
 				sprintf (line, "%s %s\n", rmdir[Ctrl->In.mode], tmpwpath);
 				if ((error = system (line))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Deleting the working directory %s returned error %d.\n", workdir, error);
-					Return (GMT_RUNTIME_ERROR);
+					error = GMT_RUNTIME_ERROR;
+					goto out_of_here;
 				}
 			}
 			if (Ctrl->Z.delete) {	/* Delete input scripts */
 				if ((error = movie_delete_scripts (GMT, Ctrl)))
-					Return (error);
+					goto out_of_here;
 			}
-			Return (GMT_NOERROR);
+			error = GMT_NOERROR;
+			goto out_of_here;
 		}
 	}
 
@@ -2257,15 +2408,17 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	if ((fp = fopen (main_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create loop frame script file %s - exiting\n", main_file);
 		fclose (Ctrl->In.fp);
-		Return (GMT_ERROR_ON_FOPEN);
+		error = GMT_ERROR_ON_FOPEN;
+		goto out_of_here;
 	}
 	if (Ctrl->K.active) {
-		sprintf (extra, "A+n+r+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
+		sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
 		if (Ctrl->K.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
 	}
 	else
-		sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
-	if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -A option */
+		sprintf (extra, "A+M+r");	/* No cropping, image size is fixed */
+	if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -N option */
+		if (!Ctrl->K.active) strcat (extra, ",N");	/* Need to switch to the -N option first */
 		if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
 		if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
 	}
@@ -2334,7 +2487,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 #ifndef WIN32	/* Set executable bit if not Windows cmd */
 	if (chmod (main_file, S_IRWXU)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", main_file);
-		Return (GMT_RUNTIME_ERROR);
+		error = GMT_RUNTIME_ERROR;
+		goto out_of_here;
 	}
 #endif
 
@@ -2342,12 +2496,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Total frames to process: %u\n", n_frames);
 
 	if (Ctrl->Q.scripts) {	/* No animation sequence generated */
-		Return (GMT_NOERROR);	/* We are done */
+		error = GMT_NOERROR;	/* We are done */
+		goto out_of_here;
 	}
 
 	/* Finally, we can run all the frames in a controlled loop, launching new parallel jobs as cores become available */
 
-	i_frame = first_frame = 0; n_frames_not_started = n_frames;
+	i_frame = first_i_frame = 0; n_frames_not_started = n_frames;
 	frame = Ctrl->T.start_frame;
 	n_cores_unused = MAX (1, Ctrl->x.n_threads - 1);			/* Remove one for the main movie module thread */
 	status = gmt_M_memory (GMT, NULL, n_frames, struct MOVIE_STATUS);	/* Used to keep track of frame status */
@@ -2369,9 +2524,10 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for frame %*.*d\n", precision, precision, frame);
 			if ((error = system (cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Running script %s returned error %d - aborting.\n", cmd, error);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;
+				goto out_of_here;
 			}
-			status[frame].started = true;	/* We have now launched this frame job */
+			status[i_frame].started = true;	/* We have now launched this frame job */
 			frame++;			/* Advance to next frame for next launch */
 			i_frame++;			/* Advance to next frame for next launch */
 			n_frames_not_started--;		/* One less frame remaining */
@@ -2380,7 +2536,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				script_file = main_file;
 		}
 		gmt_sleep (MOVIE_WAIT_TO_CHECK);	/* Wait 0.01 second - then check for completion of the PNG images */
-		for (k = first_frame; k < i_frame; k++) {	/* Only loop over the range of frames that we know are currently in play */
+		for (k = first_i_frame; k < i_frame; k++) {	/* Only loop over the range of frames that we know are currently in play */
 			if (status[k].completed) continue;	/* Already finished with this frame */
 			if (!status[k].started) continue;	/* Not started this frame yet */
 			/* Here we can check if the frame job has completed by looking for the PNG product */
@@ -2392,8 +2548,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			percent = 100.0 * n_frames_completed / n_frames;
 			GMT_Report (API, GMT_MSG_INFORMATION, "Frame %*.*d of %d completed [%5.1f %%]\n", precision, precision, k, n_frames, percent);
 		}
-		/* Adjust first_frame, if needed */
-		while (first_frame < n_frames && status[first_frame].completed) first_frame++;
+		/* Adjust first_i_frame, if needed */
+		while (first_i_frame < n_frames && status[first_i_frame].completed) first_i_frame++;
 		if (n_frames_completed == n_frames) done = true;	/* All frames completed! */
 	}
 	/* END PARALLEL EXECUTION OF FRAME SCRIPTS */
@@ -2404,37 +2560,39 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	if (chdir (topdir)) {	/* Should never happen but we should check */
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to change directory to starting directory - exiting.\n");
 		perror (topdir);
-		Return (GMT_RUNTIME_ERROR);
+		error = GMT_RUNTIME_ERROR;
+		goto out_of_here;
 	}
 
-	if (Ctrl->A.active) {	/* Want an animated GIF */
+	if (Ctrl->F.active[MOVIE_GIF]) {	/* Want an animated GIF */
 		/* Set up system call to gm (which we know exists) */
 		unsigned int delay = urint (100.0 / Ctrl->D.framerate);	/* Delay to nearest ~1/100 s */
 		char files[GMT_LEN32] = {""};
 		files[0] = '*';
-		if (Ctrl->A.skip) {	/* Only use every stride file */
-			if (Ctrl->A.stride == 2 || Ctrl->A.stride == 20 || Ctrl->A.stride == 200 || Ctrl->A.stride == 2000)
+		if (Ctrl->F.skip) {	/* Only use every stride file */
+			if (Ctrl->F.stride == 2 || Ctrl->F.stride == 20 || Ctrl->F.stride == 200 || Ctrl->F.stride == 2000)
 				strcat (files, "[02468]");
-			else if (Ctrl->A.stride == 5 || Ctrl->A.stride == 50 || Ctrl->A.stride == 500 || Ctrl->A.stride == 5000)
+			else if (Ctrl->F.stride == 5 || Ctrl->F.stride == 50 || Ctrl->F.stride == 500 || Ctrl->F.stride == 5000)
 				strcat (files, "[05]");
 			else	/* 10, 100, 1000, etc */
 				strcat (files, "[0]");
-			if (Ctrl->A.stride > 1000)
+			if (Ctrl->F.stride > 1000)
 				strcat (files, "000");
-			else if (Ctrl->A.stride > 100)
+			else if (Ctrl->F.stride > 100)
 				strcat (files, "00");
-			else if (Ctrl->A.stride > 10)
+			else if (Ctrl->F.stride > 10)
 				strcat (files, "0");
 		}
-		sprintf (cmd, "gm convert -delay %u -loop %u +dither %s%c%s_%s.%s %s.gif", delay, Ctrl->A.loops, tmpwpath, dir_sep, Ctrl->N.prefix, files, MOVIE_RASTER_EXTENSION, Ctrl->N.prefix);
+		sprintf (cmd, "gm convert -delay %u -loop %u +dither \"%s%c%s_%s.%s\" \"%s.gif\"", delay, Ctrl->F.loops, tmpwpath, dir_sep, Ctrl->N.prefix, files, MOVIE_RASTER_EXTENSION, Ctrl->N.prefix);
 		gmt_sleep (MOVIE_PAUSE_A_SEC);	/* Wait 1 second to ensure all files are synced before building the movie */
 		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running GIF conversion returned error %d - exiting.\n", error);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;
+			goto out_of_here;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation built: %s.gif\n", Ctrl->N.prefix);
-		if (Ctrl->A.skip) GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation reflects every %d frame only\n", Ctrl->A.stride);
+		if (Ctrl->F.skip) GMT_Report (API, GMT_MSG_INFORMATION, "GIF animation reflects every %d frame only\n", Ctrl->F.stride);
 	}
 	if (Ctrl->F.active[MOVIE_MP4]) {
 		/* Set up system call to FFmpeg (which we know exists) */
@@ -2453,7 +2611,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to MP4 returned error %d - exiting.\n", error);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;
+			goto out_of_here;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "MP4 movie built: %s.mp4\n", Ctrl->N.prefix);
 	}
@@ -2476,7 +2635,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NOTICE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running FFmpeg conversion to webM returned error %d - exiting.\n", error);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;
+			goto out_of_here;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "WebM movie built: %s.webm\n", Ctrl->N.prefix);
 	}
@@ -2485,7 +2645,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	sprintf (cleanup_file, "movie_cleanup.%s", extension[Ctrl->In.mode]);
 	if ((fp = fopen (cleanup_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create cleanup file %s - exiting\n", cleanup_file);
-		Return (GMT_ERROR_ON_FOPEN);
+		error = GMT_ERROR_ON_FOPEN;
+		goto out_of_here;
 	}
 	gmt_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
 	if (Ctrl->Z.active) {	/* Want to delete the entire frame directory */
@@ -2508,7 +2669,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 #ifndef WIN32	/* Set executable bit if not Windows cmd */
 	if (chmod (cleanup_file, S_IRWXU)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to make cleanup script %s executable - exiting\n", cleanup_file);
-		Return (GMT_RUNTIME_ERROR);
+		error = GMT_RUNTIME_ERROR;
+		goto out_of_here;
 	}
 #endif
 	if (!Ctrl->Q.active) {
@@ -2521,20 +2683,31 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		if (error) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running cleanup script %s returned error %d - exiting.\n", cleanup_file, error);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;
+			goto out_of_here;
 		}
 	}
 
 	if (Ctrl->Z.delete) {	/* Delete input scripts */
 		if ((error = movie_delete_scripts (GMT, Ctrl)))
-			Return (error);
+			goto out_of_here;
 	}
 
 	/* Finally, delete the clean-up script separately since under DOS we got complaints when we had it delete itself (which works under *nix) */
 	if (!Ctrl->Q.active && gmt_remove_file (GMT, cleanup_file)) {	/* Delete the cleanup script itself */
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the cleanup script %s.\n", cleanup_file);
-		Return (GMT_RUNTIME_ERROR);
+		error = GMT_RUNTIME_ERROR;
+		goto out_of_here;
 	}
 
-	Return (GMT_NOERROR);
+out_of_here:
+	/* Remove the environmental reminder we are building a movie */
+#ifdef WIN32
+	if (_putenv ("GMT_MOVIE="))
+#else
+	if (unsetenv ("GMT_MOVIE"))
+#endif
+		GMT_Report (API, GMT_MSG_WARNING, "Unable to unset GMT_MOVIE which was used to inform GMT that movie scripts will be building a movie\n");
+
+	Return (error);
 }

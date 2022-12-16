@@ -35,11 +35,15 @@ Synopsis
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
-.. include:: grdimage_common.rst_
+.. include:: grdimage.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
-.. include:: grdimage_notes.rst_
+.. include:: grdimage.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 Examples
 --------
@@ -78,8 +82,7 @@ tickmarks every 5 units:
 
     gmt grdimage red.nc green.nc blue.nc -Jx10i -B5 -P > rgbimage.ps
 
-When GDAL support is built in: To create a sinusoidal projection of a
-remotely located Jessica Rabbit
+To create a sinusoidal projection of a remotely located Jessica Rabbit
 
    ::
 

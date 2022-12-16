@@ -30,6 +30,8 @@ Optional Arguments
 
 **show**
     Open all graphics produced by the session in the default viewer.
+    **Note**: In the event you have selected more than one output format
+    we only open the first one listed.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -45,13 +47,22 @@ We first create a modern mode session using **begin**, do plotting, and
 close the current modern session and finalize any plots requested::
 
     gmt begin
-    gmt basemap -R0/10/0/10 -JX10c -Baf
+      gmt basemap -R0/10/0/10 -JX10c -Baf
     gmt end
+
+Here is the same example, but this time we want to name the map,
+create both PDF and PNG versions of it, and automatically open
+the PDF file in the relevant viewer::
+
+    gmt begin map pdf,png
+      gmt basemap -R0/10/0/10 -JX10c -Baf
+    gmt end show
 
 Disable display
 ---------------
 
-If you wish to run scripts that end with **gmt end show** but sometimes prefer to not display the results,
+If you wish to run scripts that end with **gmt end show** but sometimes
+prefer to not display the results without having to edit all the scripts,
 you can set the environmental parameter **GMT_END_SHOW** to off.
 
 See Also

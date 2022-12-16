@@ -3,7 +3,7 @@ The **-d** option
 
 **Syntax**
 
-**-di**\|\ **o**\ *nodata*
+**-di**\|\ **o**\ *nodata*\ [**+c**\ *col*]
     Substitute specific values with NaN.
 
 **Description**
@@ -14,8 +14,10 @@ an unlikely value (e.g., -99999). Since GMT cannot guess this special missing da
 option to have such values replaced with NaNs. Similarly, the **-d** option can replace all NaNs with the chosed
 *nodata* value should the GMT output need to conform to such a requirement.
 
-For input only, use **-di**\ *nodata* to examine all input columns. If any item equals *nodata*, the value is
-interpreted as a missing data item and is substituted with the value NaN.
+For input only, use **-di**\ *nodata* to examine all input columns after the first two. If any item equals *nodata*,
+the value is interpreted as a missing data item and is substituted with the value NaN.
 
 For output only, use **-do**\ *nodata* to examine all output columns. If any item equals NaN, the NaN value is
 substituted with the chosen missing data value *nodata*.
+
+Use the **+c** modifier to override the starting column used for the examinations [2 for input, 0 for output].

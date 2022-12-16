@@ -27,6 +27,7 @@ EDITOR=subl		# Program that can open and display text files
 #--------------------------------------------------------------
 
 # These are needed to run admin/build-gmt-release.sh
+export GMT_REPO_DIR=${REPO_DIR}
 export GMT_GSHHG_SOURCE=${DATA_DIR}/gshhg-gmt-2.3.7
 export GMT_DCW_SOURCE=${DATA_DIR}/dcw-gmt-2.0.0
 

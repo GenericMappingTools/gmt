@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,8 +31,9 @@
 #define THIS_MODULE_NEEDS	"Jg"
 
 #include "gmt_dev.h"
+#include "longopt/grdvector_inc.h"
 
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYfptxy" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYflptxy" GMT_OPT("c")
 
 struct GRDVECTOR_CTRL {
 	struct GRDVECTOR_In {
@@ -62,12 +63,18 @@ struct GRDVECTOR_CTRL {
 		bool active;
 		struct GMT_SYMBOL S;
 	} Q;
-	struct GRDVECTOR_S {	/* -S[l|i]<length|scale>[<unit>] */
+	struct GRDVECTOR_S {	/* -S[l|i]<length|scale>[<unit>][+c[[slon/]slat][+s<scaleval>] */
 		bool active;
 		bool constant;
 		bool invert;
+		bool reference;
+		bool origin;
 		char unit;
+		char symbol;
+		unsigned int smode;	/* 0 means got slon, slat, 1 means got just slat, 2 means got neither */
+		double slon, slat;	/* Map point where a geovector scale is computed for legend */
 		double factor;
+		double scale_value;
 	} S;
 	struct GRDVECTOR_T {	/* -T */
 		bool active;
@@ -108,50 +115,61 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <gridx> <gridy> %s %s [-A] [%s]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<cpt>]] [-G<fill>] [-I[x]<dx>/<dy>] %s[-N] %s%s[-Q<params>] [-S[i|l]<length|scale>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T] [%s] [%s] [-W<pen>] [%s]\n\t[%s] [-Z] %s[%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <gridx> <gridy> %s [-A] [%s] [-C[<cpt>]] [-G<fill>] [-I[x]<dx>/<dy>] "
+		"%s[-N] %s%s[-Q<params>] [%s] [-S[i|l]<length>|<scale>[+c[<slon>/]<slat>][+s<refsize>]] [-T] [%s] [%s] [-W<pen>] [%s] [%s] [-Z] "
+		"%s [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT,
+		GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_l_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<gridx> <gridy> are grid files with the two vector components.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<gridx> <gridy> are grid files with the two vector components.");
 	GMT_Option (API, "J-");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Grids have polar (r, theta) components [Default is Cartesian (x, y) components].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Grids have polar (r, theta) components [Default is Cartesian (x, y) components].");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert vector length to colors. Optionally, name a master cpt\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", API->GMT->current.setting.cpt);
-	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -Ccolor1,color2[,color3,...] to build a linear\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   continuous cpt from those colors automatically.\n");
+	GMT_Usage (API, 1, "\n-C[<cpt>]");
+	GMT_Usage (API, -2, "Color palette file to convert vector length to colors. Optionally, name a master cpt "
+		"to automatically assign continuous colors over the data range [%s]; if so, "
+		"optionally append +i<dz> to quantize the range [the exact grid range]. "
+		"Another option is to specify -Ccolor1,color2[,color3,...] to build a linear "
+		"continuous cpt from those colors automatically.", API->GMT->current.setting.cpt);
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Select vector fill [Default is outlines only].");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Plot only those nodes that are <dx>/<dy> apart [Default is all nodes].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, use -Ix<fact>[/<yfact>] to give multiples of grid spacing.\n");
+	GMT_Usage (API, 1, "\n-I[x]<dx>/<dy>");
+	GMT_Usage (API, -2, "Plot only those nodes that are <dx>/<dy> apart [Default is all nodes]. "
+		"Optionally, use -Ix<fact>[/<yfact>] to give multiples of grid spacing.");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip vectors that exceed the map boundaries [Default will clip].\n");
+	GMT_Usage (API, 1, "\n-N Do Not clip vectors that exceed the map boundaries [Default will clip].");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Modify vector attributes [Default gives stick-plot].\n");
-	gmt_vector_syntax (API->GMT, 15);
+	GMT_Usage (API, 1, "\n-Q<params>");
+	GMT_Usage (API, -2, "Modify vector attributes [Default gives stick-plot].");
+	gmt_vector_syntax (API->GMT, 15, 3);
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Set lengths for vectors in <data-units> per length unit (e.g., 10 nTesla/yr per cm).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append %s to indicate cm, inch, or point as the desired plot length unit [%s].\n",
-		GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   These Cartesian vectors are straight and plot lengths are independent of projection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For Geographic vectors you may alternatively give <data-units> per map distance unit\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   by appending any of the distance units in %s to the length.\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   These geovectors may curve and plot lengths may depend on the projection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale> to give the reciprocal scale, e.g., in %s or km per <data-unit>.\n",
-	             API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend l to instead set a fixed length (in given unit) for all vectors.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -V to see the min, max, and mean vector length of plotted vectors.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Transform angles for Cartesian grids when x- and y-scales differ [Leave alone].\n");
+	GMT_Usage (API, 1, "\n-S[i|l]<length>|<scale>[+c[<slon>/]<slat>][+s<refsize>]");
+	GMT_Usage (API, -2, "Set lengths for vectors in <data-units> per length unit (e.g., 10 nTesla/yr per cm).");
+	GMT_Usage (API, 2, "%s Cartesian vectors: Append %s to indicate cm, inch, or point as the desired plot length unit [%s]. "
+		"These vectors are straight and plot lengths are independent of projection.",
+		GMT_LINE_BULLET, GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Usage (API, 2, "%s Geographic vectors: Alternatively give <data-units> per map distance unit "
+		"by appending any of the distance units in %s to the length. "
+		"These vectors may curve and plot lengths may depend on the projection.",
+		GMT_LINE_BULLET, GMT_LEN_UNITS_DISPLAY);
+	GMT_Usage (API, -2, "Optional directives:");
+	GMT_Usage (API, 3, "i: The given <scale> is the reciprocal scale, e.g., in %s or km per <data-unit>.",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Usage (API, 3, "l: Fixed length (in given unit) for all vectors (also sets <refsiz>).");
+	GMT_Usage (API, -2, "Optional modifiers:");
+	GMT_Usage (API, 3, "+c Set point where geovector <refsize> should apply.  If no arguments we select the center of the map. "
+		"Alternatively, give +c<slat> (with central longitude) or +c<slon>/<slat> for a specific point.");
+	GMT_Usage (API, 3, "+s The given <refsiz> is the value used for the optional legend entry (via -l) [<length>].");
+	GMT_Usage (API, -2, "Note: Use -V to see the min, max, and mean vector length of plotted vectors.");
+	GMT_Usage (API, 1, "\n-T Transform angles for Cartesian grids when x- and y-scales differ [Leave alone].");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes.", 0);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default pen attributes [%s].\n", gmt_putpen(API->GMT, &API->GMT->current.setting.map_default_pen));
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes.", NULL, 0);
+	GMT_Usage (API, -2, "Default pen attributes [%s].", gmt_putpen(API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z The theta grid provided has azimuths rather than directions (implies -A).\n");
-	GMT_Option (API, "c,f,p,t,.");
+	GMT_Usage (API, 1, "\n-Z The theta grid provided has azimuths rather than directions (implies -A).");
+	GMT_Option (API, "c,f,l,p,t,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -167,30 +185,43 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 	unsigned int n_errors = 0, n_files = 0;
 	int j;
 	size_t len;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
-	symbol = (gmt_M_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
+	/* First determine what type of vector to plot */
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option != 'S') continue;	/* Skip until we find -S */
+		j = (strchr ("li", opt->arg[0])) ? 1 : 0;	/* Possibly skip leading -Si or -Sl */
+		while (opt->arg[j] && strchr (GMT_LEN_UNITS GMT_DIM_UNITS, opt->arg[j]) == NULL) j++;	/* Skip digits etc until we hit first unit or end of string */
+		if (opt->arg[j] && strchr (GMT_LEN_UNITS, opt->arg[j]) && gmt_M_is_geographic (GMT, GMT_IN))
+			Ctrl->S.symbol = '=';	/* Selected a geo-vector */
+		else if (opt->arg[j] && strchr (GMT_DIM_UNITS, opt->arg[j]))
+			Ctrl->S.symbol = 'v';	/* Selected a Cartesian vector */
+		else {	/* No useful info, select Cartesian with a warning */
+			GMT_Report (API, GMT_MSG_WARNING, "No units specified in -S. Selecting Cartesian vector symbol\n");
+			Ctrl->S.symbol = 'v';	/* Selected a Cartesian vector */
+		}
+	}
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
-			case '<':	/* Input file (only one is accepted) */
+			case '<':	/* Input file (only two are accepted) */
 				Ctrl->In.active = true;
 				if (n_files >= 2) {n_errors++; continue; }
-				if (opt->arg[0]) Ctrl->In.file[n_files] = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[n_files]))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[n_files]));
 				n_files++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Polar data grids */
-				Ctrl->A.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'C':	/* Vary symbol color with z */
-				Ctrl->C.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
@@ -201,25 +232,26 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 					Ctrl->Q.S.v.status |= PSL_VEC_JUST_C;
 				}
 				else
-					n_errors += gmt_default_error (GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'G':	/* Set fill for vectors */
-				Ctrl->G.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
 					n_errors++;
 				}
 				break;
 			case 'I':	/* Only use gridnodes GMT->common.R.inc[GMT_X],GMT->common.R.inc[GMT_Y] apart */
-				Ctrl->I.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				if (opt->arg[0] == 'x') Ctrl->I.mode = 1;
 				n_errors += gmt_parse_inc_option (GMT, 'I', &opt->arg[Ctrl->I.mode]);
 				break;
 			case 'N':	/* Do not clip at border */
-				Ctrl->N.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':	/* Vector plots, with parameters */
-				Ctrl->Q.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					if (gmt_M_is_geographic (GMT, GMT_IN))
 						GMT_Report (API, GMT_MSG_COMPAT, "Vector arrowwidth/headlength/headwidth is deprecated for geo-vectors; see -Q documentation.\n");
@@ -251,25 +283,78 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 					Ctrl->Q.S.symbol = GMT_SYMBOL_VECTOR_V4;
 				}
 				else {
+					Ctrl->Q.S.symbol = Ctrl->S.symbol;
 					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
 						Ctrl->Q.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
-						n_errors += gmt_parse_vector (GMT, symbol, opt->arg, &Ctrl->Q.S);
+						n_errors += gmt_parse_vector (GMT, Ctrl->S.symbol, opt->arg, &Ctrl->Q.S);
 					}
 					else {	/* Size, plus possible attributes */
 						j = sscanf (opt->arg, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
 						if (j == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
 						Ctrl->Q.S.size_x = gmt_M_to_inch (GMT, txt_a);	/* Length of vector */
-						n_errors += gmt_parse_vector (GMT, symbol, txt_b, &Ctrl->Q.S);
+						n_errors += gmt_parse_vector (GMT, Ctrl->S.symbol, txt_b, &Ctrl->Q.S);
 					}
 					/* Must possibly change v_norm to inches if given in another Cartesian unit */
 					if (Ctrl->Q.S.u_set && Ctrl->Q.S.u != GMT_INCH) {
 						Ctrl->Q.S.v.v_norm *= GMT->session.u2u[Ctrl->Q.S.u][GMT_INCH];	/* Since we are not reading this again we change to inches */
 						Ctrl->Q.S.u = GMT_INCH;
 					}
+					if (Ctrl->Q.S.v.status & PSL_VEC_COMPONENTS) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Q: Cannot use modifier +z; see -A for Cartesian [Default] versus polar component grids\n");
+						n_errors++;
+					}
 				}
 				break;
-			case 'S':	/* Scale -S[l|i]<length|scale>[<unit>] */
-				Ctrl->S.active = true;
+			case 'S':	/* Scale -S[l|i]<length|scale>[<unit>][+c[<slon>/]<slat>][+s<ref_value>] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
+				if ((c = gmt_first_modifier (GMT, opt->arg, "cs"))) {
+					unsigned int pos = 0;
+					txt_a[0] = 0;
+					while (gmt_getmodopt (GMT, 'S', c, "cs", &pos, txt_a, &n_errors) && n_errors == 0) {
+						switch (txt_a[0]) {
+							case 'c':	/* Set point for geovector legende reference size */
+								if (Ctrl->S.symbol == 'v') {
+									GMT_Report (API, GMT_MSG_ERROR, "Option -S : No vector scale point is allowed for Cartesian vector\n");
+									n_errors++;
+								}
+								else {	/* Selected geovector */
+									int n = (txt_a[1]) ? sscanf (&txt_a[1], "%[^/]/%s", txt_b, txt_c) : 0;
+									switch (n) {
+										case 0:	/* Pick map middle, compute later */
+											Ctrl->S.smode = 2;
+											break;
+										case 1:	/* Pick central meridian plus given latitude */
+											Ctrl->S.smode = 1;
+											if (gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &(Ctrl->S.slat)), txt_b)) {
+												GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to parse latitude for +c modifier\n", opt->option);
+												n_errors++;
+											}
+											break;
+										default:	/* Got both lon and lat of scale point */
+											if (gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_b, GMT_IS_LON, &(Ctrl->S.slon)), txt_b)) {
+												GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to parse longitude for +c modifier\n", opt->option);
+												n_errors++;
+											}
+											if (gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_c, GMT_IS_LAT, &(Ctrl->S.slat)), txt_c)) {
+												GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Failed to parse latitude for +c modifier\n", opt->option);
+												n_errors++;
+											}
+											break;
+									}
+									Ctrl->S.origin = true;
+								}
+								break;
+							case 's':		/* Gave reference scale value for legend */
+								Ctrl->S.scale_value = atof (&txt_a[1]);
+								if (Ctrl->S.scale_value > 0.0) Ctrl->S.reference = true;
+							break;
+							default:
+								n_errors++;
+								break;
+						}
+					}
+					c[0] = '\0';	/* Chop off all modifiers so range can be determined */
+				}
 				len = strlen (opt->arg) - 1;	/* Location of expected unit */
 				j = (opt->arg[0] == 'i') ? 1 : 0;	/* j = 1 if -Si was selected */
 				if (strchr (GMT_DIM_UNITS GMT_LEN_UNITS, (int)opt->arg[len]))	/* Recognized plot length or map distance unit character */
@@ -281,38 +366,52 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 				if (opt->arg[0] == 'l') {	/* Want a fixed length for all vectors (ignore magnitudes) */
 					Ctrl->S.constant = true;
 					Ctrl->S.factor = atof (&opt->arg[1]);
+					if (c == NULL) Ctrl->S.scale_value = Ctrl->S.factor;	/* Also sets the ref scale unless already set */
 				}
 				else	/* Get the length or scale */
 					Ctrl->S.factor = atof (&opt->arg[j]);
-				if (j == 1) Ctrl->S.invert = true;
+				if (j == 1) Ctrl->S.invert = true;	/* True for both l and i */
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'T':	/* Rescale Cartesian angles */
-				Ctrl->T.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'W':	/* Set line attributes */
-				Ctrl->W.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 				if (Ctrl->W.pen.cptmode) Ctrl->W.cpt_effect = true;
 				break;
 			case 'Z':	/* Azimuths given */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				Ctrl->A.active = true;
-				Ctrl->Z.active = true;
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
+ 	if (!Ctrl->W.active) {	/* Accept -W default pen for stem */
+		GMT_Report (API, GMT_MSG_DEBUG, "Option -W: Not given so we accept default pen\n");
+		Ctrl->W.active = true;
+	}
+	if (!Ctrl->G.active && (Ctrl->Q.S.v.status & PSL_VEC_FILL2)) {	/* Gave fill via +g instead */
+		GMT_Report (API, GMT_MSG_DEBUG, "Option -G: Not given but -Q+g was set so we use it to fill head\n");
+		gmt_M_rgb_copy (Ctrl->G.fill.rgb, Ctrl->Q.S.v.fill.rgb);
+		Ctrl->G.active = true;
+	}
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0),
 	                                 "Option -I: Must specify positive increments\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.reference && Ctrl->S.symbol == '=' && !Ctrl->S.origin, "Option -S: For geovector reference length you must specify location or latitude via +c\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.factor == 0.0 && !Ctrl->S.constant, "Option -S: Scale must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "Option -Sl: Length must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.constant && Ctrl->Q.S.v.v_norm > 0.0,
@@ -329,7 +428,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
-	unsigned int justify, row, col, col_0, row_0, d_col, d_row, k, n_warn[3] = {0, 0, 0}, warn;
+	openmp_int row, col, col_0, row_0, d_col, d_row;
+	unsigned int justify, k, n_warn[3] = {0, 0, 0}, warn;
 	int error = 0;
 	bool Geographic;
 
@@ -357,7 +457,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -384,8 +484,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 		gmt_grd_init (GMT, Grid[k]->header, options, true);
 	}
 
-	if (!(gmt_M_grd_same_shape (GMT, Grid[0], Grid[1]) && gmt_M_grd_same_region (GMT, Grid[0], Grid[1]) && gmt_M_grd_same_inc (GMT, Grid[0], Grid[1]))) {
-		GMT_Report (API, GMT_MSG_ERROR, "files %s and %s does not match!\n", Ctrl->In.file[0], Ctrl->In.file[1]);
+	if (!gmt_grd_domains_match (GMT, Grid[0], Grid[1], "input component")) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -446,6 +545,15 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 		double was = Ctrl->S.factor;
 		Ctrl->S.factor = 1.0 / Ctrl->S.factor;	/* Turn length into a scale */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Vector scale of %g <data-unit>/%c converts to %g %c/<data-unit>.\n", was, Ctrl->S.unit, Ctrl->S.factor, Ctrl->S.unit);
+	}
+	if (!Ctrl->S.reference) Ctrl->S.scale_value = 1.0 / Ctrl->S.factor;	/* Default reference if not set */
+
+	if (Ctrl->S.smode) {	/* Need to set final slon, slat */
+		if (Ctrl->S.smode == 2)
+			gmt_xy_to_geo (GMT, &Ctrl->S.slon, &Ctrl->S.slat, 0.5 * GMT->current.map.width, 0.5 * GMT->current.map.height);
+		else
+			Ctrl->S.slon = GMT->current.proj.central_meridian;
+		GMT_Report (API, GMT_MSG_INFORMATION, "Geovector reference length true at the middle of the map, at lon = %g and lat = %g\n", Ctrl->S.slon, Ctrl->S.slat);
 	}
 
 	switch (Ctrl->S.unit) {	/* Adjust for possible unit selection */
@@ -509,7 +617,7 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->Q.active) {	/* Prepare vector parameters */
-		if (Ctrl->Q.S.symbol == PSL_VECTOR) Ctrl->Q.S.v.v_width = (float)(Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+		if (Ctrl->Q.S.symbol != GMT_SYMBOL_VECTOR_V4) Ctrl->Q.S.v.v_width = (float)(Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 		gmt_init_vector_param (GMT, &Ctrl->Q.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 	}
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
@@ -552,9 +660,10 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 		col_0 = urint ((tmp - Grid[0]->header->wesn[XLO]) * HH->r_inc[GMT_X]);
 	}
 
-	dim[5] = Ctrl->Q.S.v.v_shape;	/* dim[5-8] do not change inside the loop */
-	dim[6] = (double)Ctrl->Q.S.v.status;
-	dim[7] = (double)Ctrl->Q.S.v.v_kind[0];	dim[8] = (double)Ctrl->Q.S.v.v_kind[1];
+	dim[PSL_VEC_HEAD_SHAPE]      = Ctrl->Q.S.v.v_shape;	/* head shape, type, and status do not change inside the loop */
+	dim[PSL_VEC_STATUS]          = (double)Ctrl->Q.S.v.status;
+	dim[PSL_VEC_HEAD_TYPE_BEGIN] = (double)Ctrl->Q.S.v.v_kind[0];
+	dim[PSL_VEC_HEAD_TYPE_END]   = (double)Ctrl->Q.S.v.v_kind[1];
 
 	if (Ctrl->Q.S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head outline pen specified separately */
 		PSL_defpen (PSL, "PSL_vecheadpen", Ctrl->Q.S.v.pen.width, Ctrl->Q.S.v.pen.style, Ctrl->Q.S.v.pen.offset, Ctrl->Q.S.v.pen.rgb);
@@ -571,15 +680,15 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 			gmt_M_rgb_copy (Ctrl->G.fill.rgb, GMT->session.no_rgb);
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Report min/max/mean scaled vector length */
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION) || (GMT->common.l.active && !Ctrl->S.reference)) {	/* Report or find min/max/mean scaled vector length */
 		double v_scaled_min = DBL_MAX, v_scaled_max = -DBL_MAX, v_scaled_mean = 0.0;
 		double v_data_min = DBL_MAX, v_data_max = -DBL_MAX, v_data_mean = 0.0;
 		uint64_t v_n = 0;
 		char v_unit[GMT_LEN8] = {""};
 
-		for (row = row_0; row < Grid[1]->header->n_rows; row += d_row) {
+		for (row = row_0; row < (openmp_int)Grid[1]->header->n_rows; row += d_row) {
 			y = gmt_M_grd_row_to_y (GMT, row, Grid[0]->header);	/* Latitude OR y OR radius */
-			for (col = col_0; col < Grid[1]->header->n_columns; col += d_col) {
+			for (col = col_0; col < (openmp_int)Grid[1]->header->n_columns; col += d_col) {
 
 				ij = gmt_M_ijp (Grid[0]->header, row, col);
 				if (gmt_M_is_fnan (Grid[0]->data[ij]) || gmt_M_is_fnan (Grid[1]->data[ij])) continue;	/* Cannot plot NaN-vectors */
@@ -635,9 +744,28 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 	}
 
 	PSL_command (GMT->PSL, "V\n");
-	for (row = row_0; row < Grid[1]->header->n_rows; row += d_row) {
+
+	if (GMT->common.l.active) {	/* Do auto-legend */
+		char was = Ctrl->Q.S.symbol;
+		Ctrl->Q.S.symbol = 'v';	/* Even geovectors are drawn as Cartesian in the legend */
+		if (Ctrl->S.symbol == 'v')	/* This gives vector length in inches */
+			scaled_vec_length = Ctrl->S.scale_value * Ctrl->S.factor;
+		else {	/* Here we get geovector km length which will need to be converted to plot length in inches */
+			double scale1 = gmt_inch_to_degree_scale (GMT, Ctrl->S.slon, Ctrl->S.slat, 0.0);	/* Get scale in two orthogonal directions */
+			double scale2 = gmt_inch_to_degree_scale (GMT, Ctrl->S.slon, Ctrl->S.slat, 90.0);
+			double scale = 0.5 * (scale1 + scale2);	/* Use the mean scale */
+			scaled_vec_length = Ctrl->S.scale_value * Ctrl->S.factor;	/* This is now in km */
+			scaled_vec_length /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Convert km to degrees */
+			scaled_vec_length /= scale;	/* Now in inches suitable for reference vector in legend */
+		}
+		GMT->common.l.item.size = scaled_vec_length;
+		gmt_add_legend_item (API, &Ctrl->Q.S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item), NULL);
+		Ctrl->Q.S.symbol = was;	/* Restore to original type */
+	}
+
+	for (row = row_0; row < (openmp_int)Grid[1]->header->n_rows; row += d_row) {
 		y = gmt_M_grd_row_to_y (GMT, row, Grid[0]->header);	/* Latitude OR y OR radius */
-		for (col = col_0; col < Grid[1]->header->n_columns; col += d_col) {
+		for (col = col_0; col < (openmp_int)Grid[1]->header->n_columns; col += d_col) {
 
 			ij = gmt_M_ijp (Grid[0]->header, row, col);
 			if (gmt_M_is_fnan (Grid[0]->data[ij]) || gmt_M_is_fnan (Grid[1]->data[ij])) continue;	/* Cannot plot NaN-vectors */
@@ -690,11 +818,14 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 			/* scaled_vec_length is now in inches (Cartesian) or km (Geographic) */
 
 			if (Geographic) {	/* Draw great-circle geo-vectors */
+				Ctrl->Q.S.v.value = vec_data_length;
 				warn = gmt_geo_vector (GMT, x, y, vec_azim, scaled_vec_length, &Ctrl->W.pen, &Ctrl->Q.S);
 				n_warn[warn]++;
 			}
 			else {	/* Draw straight Cartesian vectors */
 				gmt_geo_to_xy (GMT, x, y, &plot_x, &plot_y);
+				if (gmt_M_is_geographic (GMT, GMT_IN))	/* Must align azimuth with local north */
+					vec_azim = 90.0 - gmt_azim_to_angle (GMT, x, y, 0.1, vec_azim);
 				if (Ctrl->T.active)	/* Deal with negative scales in x and/or y which affect the azimuths */
 					gmt_flip_azim_d (GMT, &vec_azim);
 				vec_azim = 90.0 - vec_azim;	/* Transform azimuths to plot angle */
@@ -720,13 +851,16 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 					continue;
 				}
 				/* Must plot a vector head */
-				dim[0] = x2; dim[1] = y2;
-				dim[2] = Ctrl->Q.S.v.v_width;	dim[3] = Ctrl->Q.S.v.h_length;	dim[4] = Ctrl->Q.S.v.h_width;
-				dim[11] = headpen_width;	/* Possibly shrunk head pen width */
-				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
-					f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
+				dim[PSL_VEC_XTIP]          = x2;
+				dim[PSL_VEC_YTIP]          = y2;
+				dim[PSL_VEC_TAIL_WIDTH]    = Ctrl->Q.S.v.v_width;
+				dim[PSL_VEC_HEAD_LENGTH]   = Ctrl->Q.S.v.h_length;
+				dim[PSL_VEC_HEAD_WIDTH]    = Ctrl->Q.S.v.h_width;
+				dim[PSL_VEC_HEAD_PENWIDTH] = headpen_width;	/* Possibly shrunk head pen width */
+				f = gmt_get_vector_shrinking (GMT, &(Ctrl->Q.S.v), vec_data_length, scaled_vec_length);	/* Vector attribute shrinking factor or 1 */
+				if (f < 1.0) {	/* Scale arrow attributes down with length */
 					for (k = 2; k <= 4; k++) dim[k] *= f;
-					dim[11] *= f;
+					dim[PSL_VEC_HEAD_PENWIDTH] *= f;
 				}
 				if (Ctrl->Q.S.symbol == GMT_SYMBOL_VECTOR_V4) {	/* Do the deprecated GMT4 vector polygon instead */
 					int v4_outline = Ctrl->W.active;

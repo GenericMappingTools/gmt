@@ -26,7 +26,7 @@
 
 .. |gmt2kml_purpose| replace:: Convert GMT data table to Google Earth KML file
 
-.. |gmtbinstats_purpose| replace:: Bin data and determine statistics per bin
+.. |gmtbinstats_purpose| replace:: Bin spatial data and determine statistics per bin
 
 .. |gmtconnect_purpose| replace:: Connect individual lines whose end points match within tolerance
 
@@ -76,7 +76,7 @@
 
 .. |grdconvert_purpose| replace:: Convert between different grid formats
 
-.. |grdcut_purpose| replace:: Extract subregion from a grid
+.. |grdcut_purpose| replace:: Extract subregion from a grid or image
 
 .. |grdedit_purpose| replace:: Modify header or content of a grid
 
@@ -111,6 +111,8 @@
 .. |grdproject_purpose| replace:: Forward and inverse map transformation of grids
 
 .. |grdsample_purpose| replace:: Resample a grid onto a new lattice
+
+.. |grdselect_purpose| replace:: Make selections or determine common regions from 2-D grids, images or 3-D cubes
 
 .. |grdtrack_purpose| replace:: Sample grids at specified (x,y) locations
 
@@ -156,9 +158,9 @@
 
 .. |psconvert_purpose| replace:: Convert [E]PS file(s) to other formats using Ghostscript
 
-.. |events_purpose| replace:: Plot event symbols, lines, polygons and labels for a moment in time
+.. |events_purpose| replace:: Plot event symbols, lines, polygons and labels for one moment in time
 
-.. |psevents_purpose| replace:: Plot event symbols, lines, polygons and labels for a moment in time
+.. |psevents_purpose| replace:: Plot event symbols, lines, polygons and labels for one moment in time
 
 .. |histogram_purpose| replace:: Calculate and plot histograms
 

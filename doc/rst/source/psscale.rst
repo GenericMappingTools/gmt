@@ -33,12 +33,14 @@ Synopsis
 [ |-W|\ *scale* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ *zfile* ]
+[ |-Z|\ *widthfile* ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: colorbar_common.rst_
+.. include:: colorbar.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
@@ -72,7 +74,9 @@ Mercator map produced by a previous call, ensuring a 2 cm offset from the map fr
 
     gmt psscale -DjCT+w4i+o0/2c+h -O -Ccolors.cpt -Baf -R -J >> map.ps
 
-.. include:: colorbar_notes.rst_
+.. include:: colorbar.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------

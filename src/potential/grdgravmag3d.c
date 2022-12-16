@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,8 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdgravmag3d_inc.h"
+#include "newton.h"
 #include "okbfuns.h"
 #include "../mgd77/mgd77.h"
 #ifdef HAVE_GLIB_GTHREAD
@@ -40,7 +42,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdgravmag3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Computes the gravity effect of one (or two) grids by the method of Okabe"
-#define THIS_MODULE_KEYS	"<G{+,FD(,GG}"
+#define THIS_MODULE_KEYS	"<G{+,FD(,CG(,MG(,GG}"
 #define THIS_MODULE_NEEDS	"g"
 #define THIS_MODULE_OPTIONS "-:RVfx"
 
@@ -56,6 +58,7 @@ struct GRDGRAVMAG3D_CTRL {
 
 	struct GRDGRAVMAG3D_C {	/* -C */
 		bool active;
+		bool got_gravgrid;
 		double rho;
 	} C;
 	struct GRDGRAVMAG3D_D {	/* -D */
@@ -84,10 +87,11 @@ struct GRDGRAVMAG3D_CTRL {
 		bool pirtt;
 		bool x_comp, y_comp, z_comp, f_tot, h_comp;
 		bool got_incgrid, got_decgrid, got_maggrid, do_igrf;
-		char *incfile, *decfile, *magfile;
+		char *incfile, *decfile;
 		double	t_dec, t_dip, m_int, m_dec, m_dip, koningsberg;
 	} H;
 	struct GRDGRAVMAG3D_L {	/* -L */
+		bool active;
 		double zobs;
 	} L;
 	struct GRDGRAVMAG3D_Q {	/* -Q */
@@ -104,12 +108,14 @@ struct GRDGRAVMAG3D_CTRL {
 		double	year;
 	} T;
 	struct GRDGRAVMAG3D_Z {	/* -Z */
+		bool active;
 		bool top, bot;
 		double z0;
 	} Z;
 	struct GRDGRAVMAG3D_box {	/* No option, just a container */
 		bool is_geog;
 		double	d_to_m, *mag_int, lon_0, lat_0;
+		char *srcfile;
 	} box;
 };
 
@@ -182,7 +188,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *C) {	/* D
 	gmt_M_str_free (C->In.file[1]);
 	gmt_M_str_free (C->F.file);
 	gmt_M_str_free (C->G.file);
-	gmt_M_str_free (C->H.magfile);
+	gmt_M_str_free (C->box.srcfile);
 	gmt_M_str_free (C->H.decfile);
 	gmt_M_str_free (C->H.incfile);
 	gmt_M_free (GMT, C);
@@ -191,54 +197,65 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *C) {	/* D
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s grdfile_top [grdfile_bot] [-C<density>] [-D] [-E<thick>] [-F<xy_file>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<outfile>] [-H<...>] [%s] [-L<z_obs>]\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg] %s[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <grdfile_top> [<grdfile_bot>] [-C<density>] [-D] [-E<thickness>] [-F<xy_file>] "
+		"[-G%s] [-H<params>] [%s] [-L<z_obs>] [-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]] "
+		"[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg] %s[%s]\n",
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tgrdfile_top is the grdfile whose gravity effect is to be computed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If two grids are provided then the gravity/magnetic effect of the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   volume between them is computed\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Sets body density in SI.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Passes file with locations where anomaly is going to be computed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets name of the output grdfile.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Specifies that z is positive down [Default positive up].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Gives layer thickness in m [Default = 500 m].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Sets parameters for computation of magnetic anomaly (Can be used multiple times)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <f_dec>/<f_dip> -> geomagnetic declination/inclination.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <m_int>/<m_dec>/<m_dip> -> body magnetic intensity/declination/inclination.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  OR for a grid mode \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +m<magfile> where 'magfile' is the name of the magnetic intensity file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To compute a component, specify any of:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     x|X|e|E  to compute the E-W component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     y|Y|n|N  to compute the N-S component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     z|Z      to compute the Vertical component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     h|H      to compute the Horizontal component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     t|T|f|F  to compute the total field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     For a variable inclination and declination use IGRF. Set any of -H+i|g|r|f|n to do that.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<grdfile_top> is the grdfile whose gravity effect is to be computed. "
+		"If <grdfile_bot> is also provided then the gravity/magnetic effect of the "
+		"volume between them is computed.");
+	GMT_Usage (API, 1, "\n-C<density>");
+	GMT_Usage (API, -2, "Set body density in SI. "
+		"Append either a constant or the name of a grid file with variable densities.");
+	GMT_Usage (API, 1, "\n-F<xy_file>");
+	GMT_Usage (API, -2, "Pass file with locations where anomaly is going to be computed.");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D Specifies that z is positive down [Default positive up].");
+	GMT_Usage (API, 1, "\n-E<thickness>");
+	GMT_Usage (API, -2, "Give layer thickness in m [Default = 500 m].");
+	GMT_Usage (API, 1, "\n-H<params>|<maggrid>");
+	GMT_Usage (API, -2, "Set parameters for computation of magnetic anomaly (Can be repeated):");
+	GMT_Usage (API, 3, "%s <f_dec>/<f_dip> -> geomagnetic declination/inclination.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <m_int></m_dec>/<m_dip> -> body magnetic intensity/declination/inclination.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Alternatively, for a grid mode, append a file name with magnetic intensity file.");
+	GMT_Usage (API, -2, "To compute a component, specify any of:");
+	GMT_Usage (API, 3, "x: Compute the E-W component (or e).");
+	GMT_Usage (API, 3, "y: Compute the N-S component (or n).");
+	GMT_Usage (API, 3, "z: Compute the Vertical component.");
+	GMT_Usage (API, 3, "h: Compute the Horizontal component.");
+	GMT_Usage (API, 3, "t: Compute the total field.");
+	GMT_Usage (API, -2, "If we want to compute the magnetic anomalies over a large region where the ambient "
+		"magnetic field can no longer be assumed to be constant we can set variable inclinations and declinations "
+		"via IGRF. Set any of -H+i|g|r|f|n to do that.");
 	GMT_Option (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Sets level of observation [Default = 0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units true; x,y in degrees, dist units in m [Default dist unit = x,y unit].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Extends the domain of computation with respect to output -R region.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qn<N> artificially extends the width of the outer rim of cells to have a fake\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   width of N * dx[/dy].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Q<pad_dist> extend the region by west-pad, east+pad, etc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Q<region> Same syntax as -R.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the same region as the input grid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets search radius in km (but only in the two grids mode) [Default = 30 km].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Sets z level of reference plane [Default = 0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set -Zt or Zb to close the body at its top (bottom) plane.\n");
+	GMT_Usage (API, -2, "Note: The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).");
+	GMT_Usage (API, 1, "\n-L<z_obs>");
+	GMT_Usage (API, -2, "Set level of observation [Default = 0].");
+	GMT_Usage (API, 1, "\n-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]");
+	GMT_Usage (API, -2, "Extend the domain of computation with respect to output -R region; append:");
+	GMT_Usage (API, 3, "%s n<N> will artificially extends the width of the outer rim of cells to have a fake "
+		"width of N * dx[/dy].", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <pad_dist> extend the region by west-pad, east+pad, etc.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <region> set the extended region; same syntax as -R.", GMT_LINE_BULLET);
+	GMT_Usage (API, 1, "\n%s", GMT_Rgeo_OPT);
+	GMT_Usage (API, -2, "Set new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes "
+		"[Default uses the same region as the input grid].");
+	GMT_Usage (API, 1, "\n-S<radius>");
+	GMT_Usage (API, -2, "Set search radius in km (but only in the two grids mode) [Default = 30 km].");
+	GMT_Usage (API, 1, "\n-Z[<level>]|[t|p]");
+	GMT_Usage (API, -2, "Set z level of reference plane [Default = 0]. "
+		"Alternatively, set -Zt or Zb to close the body at its top (bottom) plane.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Converts geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_Usage (API, 1, "\n-fg Converts geographic grids to meters using a \"Flat Earth\" approximation.");
 #ifdef HAVE_GLIB_GTHREAD
 	GMT_Option (API, "x");
 #else
-	GMT_Message (API, GMT_TIME_NONE, "\t-x Not available since this binary was not build with multi-threading support.\n");
+	GMT_Usage (API, 1, "\n-x Not available since this binary was not build with multi-threading support.");
 #endif
 	GMT_Option (API, ":,.");
 
@@ -262,7 +279,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Input file */
+			case '<':	/* Input file (one or two) */
 				Ctrl->In.active = true;
 				if (n_files == 0)
 					Ctrl->In.file[n_files++] = strdup(opt->arg);
@@ -277,29 +294,40 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 			/* Processes program-specific parameters */
 
 			case 'C':
-				Ctrl->C.rho = atof(opt->arg) * 6.674e-6;
-				Ctrl->C.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				if (opt->arg[0] && !gmt_access (GMT, opt->arg, F_OK)) {	/* File with density exists */
+					Ctrl->box.srcfile = strdup(opt->arg);           /* Source (density) grid */
+					Ctrl->C.got_gravgrid = true;
+				}
+				else
+					Ctrl->C.rho = 1.0e5 * atof(opt->arg) * NEWTON_G;
 				break;
 			case 'D':
-				Ctrl->D.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				Ctrl->D.z_dir = 1;
 				break;
 			case 'E':
-				Ctrl->E.active = true;
-				Ctrl->E.thickness = fabs(atof(opt->arg));
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->E.thickness);
 				break;
 			case 'F':
-				Ctrl->F.active = true;
-				Ctrl->F.file = strdup(opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file));
 				break;
  			case 'G':
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup(opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'H':
-				Ctrl->H.active = true;
-				if (opt->arg[0] == '+' && opt->arg[1] == 'm') {
-					Ctrl->H.magfile = strdup(&opt->arg[2]);        /* Source (magnetization) grid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
+				if (opt->arg[0] && !gmt_access (GMT, opt->arg, F_OK)) {	/* File with density exists */
+					Ctrl->box.srcfile = strdup(opt->arg);           /* Source (magnetization) grid */
+					Ctrl->H.got_maggrid = true;
+					break;
+				}
+				else if (opt->arg[0] == '+' && opt->arg[1] == 'm') {    /* Old syntax kepr for backward compatibility */
+					Ctrl->box.srcfile = strdup(&opt->arg[2]);
 					Ctrl->H.got_maggrid = true;
 					break;
 				}
@@ -356,14 +384,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'I':
-				Ctrl->I.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				if (gmt_getinc(GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
 	 		case 'L':
-				Ctrl->L.zobs = atof (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->L.zobs);
 				break;
 			case 'M':
 				if (gmt_M_compat_check(GMT, 4)) {
@@ -372,10 +401,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 						gmt_parse_common_options(GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
-					n_errors += gmt_default_error(GMT, opt->option);
+					n_errors += gmt_default_option_error (GMT, opt);
 				break;
 			case 'Q':
-				Ctrl->Q.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				if (opt->arg[0] == 'n') {
 					Ctrl->Q.n_pad = atoi(&opt->arg[1]);
 				}
@@ -397,12 +426,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				}
 				break;
 	 		case 'S':
-				Ctrl->S.radius = atof(opt->arg) * 1000;
-				Ctrl->S.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->S.radius);
+				Ctrl->S.radius *= 1000;	/* Input is km, need meters */
 				break;
  			case 'T':
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				if (opt->arg[0] == 't')      Ctrl->Z.top = true;
 				else if (opt->arg[0] == 'b') Ctrl->Z.bot = true;
 				else
@@ -412,28 +443,24 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				Ctrl->H.bhatta = true;
 				break;
 			default:
-				n_errors += gmt_default_error(GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 
-	n_errors += gmt_M_check_condition(GMT, !Ctrl->In.file[0], "Option -S: Must specify input file\n");
+	n_errors += gmt_M_check_condition(GMT, !Ctrl->In.file[0], "Must specify input file\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || gmt_M_is_dnan(Ctrl->S.radius)),
 	                                "Option -S: Radius is NaN or negative\n");
 	n_errors += gmt_M_check_condition(GMT, !Ctrl->G.active && !Ctrl->F.active,
 	                                "Error: Must specify either -G or -F options\n");
 	n_errors += gmt_M_check_condition(GMT, !GMT->common.R.active[RSET] && Ctrl->Q.active && !Ctrl->Q.n_pad,
 	                                "Error: Cannot specify -Q<pad>|<region> without -R option\n");
-	n_errors += gmt_M_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active,
+	n_errors += gmt_M_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->C.got_gravgrid && !Ctrl->H.active,
 	                                "Error: Must specify either -Cdensity or -H<stuff>\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.active && Ctrl->H.active,
 	                                "Cannot specify both -C and -H options\n");
-	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file,
-	                                "Option -G: Must specify output file\n");
-	n_errors += gmt_M_check_condition(GMT, Ctrl->H.got_maggrid && !Ctrl->H.magfile,
-	                                "Option -H+m: Must specify source file\n");
-	n_errors += gmt_M_check_condition(GMT, Ctrl->F.active && gmt_access(GMT, Ctrl->F.file, R_OK),
-	                                "Option -F: Cannot read file %s!\n", Ctrl->F.file);
+	n_errors += gmt_M_check_condition(GMT, (Ctrl->H.got_maggrid || Ctrl->C.got_gravgrid) && !Ctrl->box.srcfile,
+	                                "Option -H+m or -C+d: Must specify source file\n");
 	i += gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -481,7 +508,7 @@ EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	GMT->common.x.n_threads = 1;        /* Default to use only one core (we may change this to max cores) */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -616,7 +643,8 @@ EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->D.z_dir != 1) {
-		Ctrl->Z.z0 *= Ctrl->D.z_dir;
+		Ctrl->Z.z0   *= Ctrl->D.z_dir;
+		Ctrl->L.zobs *= Ctrl->D.z_dir;
 		for (j = 0; j < GridA->header->size; j++)
 			GridA->data[j] *= Ctrl->D.z_dir;
 	}
@@ -646,25 +674,18 @@ EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	/* -------------- In case we have  a source (magnetization) grid -------------------- */
-	if (Ctrl->H.got_maggrid) {
+	if (Ctrl->H.got_maggrid || Ctrl->C.got_gravgrid) {
 		if ((GridS = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL,
-		                           Ctrl->H.magfile, NULL)) == NULL) {	/* Get header only */
+		                           Ctrl->box.srcfile, NULL)) == NULL) {	/* Get header only */
 			Return(API->error);
 		}
 
-		if(GridA->header->registration != GridS->header->registration) {
-			GMT_Report(API, GMT_MSG_ERROR, "Up surface and source grids have different registrations!\n");
+		if (!gmt_grd_domains_match (GMT, GridA, GridS, "up surface and source")) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 
-		if (fabs (GridA->header->inc[GMT_X] - GridS->header->inc[GMT_X]) > 1.0e-6 ||
-		          fabs(GridA->header->inc[GMT_Y] - GridS->header->inc[GMT_Y]) > 1.0e-6) {
-			GMT_Report(API, GMT_MSG_ERROR, "Up surface and source grid increments do not match!\n");
-			Return(GMT_RUNTIME_ERROR);
-		}
-
 		if (GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_padded,
-		                   Ctrl->H.magfile, GridS) == NULL) {			/* Get subset, or all */
+		                   Ctrl->box.srcfile, GridS) == NULL) {			/* Get subset, or all */
 			Return(API->error);
 		}
 	}
@@ -875,33 +896,41 @@ EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	/* --------------------------------> Now start computing <------------------------------------- */
 
 	if (Ctrl->G.active) {               /* grid output */
-		grdgravmag3d_calc_surf(GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
-		                       okabe_mag_param, okabe_mag_var, loc_or, &body_desc, body_verts);
+		grdgravmag3d_calc_surf(GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs,
+		                       cos_vec, okabe_mag_param, okabe_mag_var, loc_or, &body_desc, body_verts);
 
-		if (Ctrl->H.pirtt) goto L1;                            /* Ugly, I know but the 2-grids case is not Bhattacharya implemented */
+		if (Ctrl->H.pirtt) goto L1;                /* Ugly, I know but the 2-grids case is not Bhattacharya implemented */
 
-		if (!two_grids) {                                       /* That is, one grid and a flat base Do the BASE now */
+		if (!two_grids) {                          /* That is, one grid and a flat base Do the BASE now */
 			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of BOT triangles */
 
-			if (!Ctrl->E.active) {                              /* NOT constant thickness. That is, a surface and a BASE plane */
-				grdgravmag3d_body_set_tri(GMT, Ctrl, GridA, &body_desc, body_verts, x_grd, y_grd, cos_vec, 0, 0,
-				                          GridA->header->n_rows-1, GridA->header->n_columns-1);
+			if (!Ctrl->E.active) {                 /* NOT constant thickness. That is, a surface and a BASE plane */
+				if (Ctrl->C.got_gravgrid) {        /* If we have a variable density we need also a second surface */
+					for (ij = 0; ij < GridA->header->size; ij++)
+						GridA->data[ij] = Ctrl->Z.z0;	/* Base elevation.*/
+					grdgravmag3d_calc_surf(GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs,
+					                       y_obs, cos_vec, okabe_mag_param, okabe_mag_var, loc_or, &body_desc, body_verts);
+				}
+				else {
+					grdgravmag3d_body_set_tri(GMT, Ctrl, GridA, &body_desc, body_verts, x_grd, y_grd, cos_vec, 0, 0,
+					                          GridA->header->n_rows-1, GridA->header->n_columns-1);
 
-				for (k = 0; k < Gout->header->n_rows; k++) {        /* Loop over input grid rows */
-					y_o = (Ctrl->box.is_geog) ? (y_obs[k] + Ctrl->box.lat_0) * Ctrl->box.d_to_m : y_obs[k];	 /* +lat_0 because y was already *= -1 */
+					for (k = 0; k < Gout->header->n_rows; k++) {        /* Loop over input grid rows */
+						y_o = (Ctrl->box.is_geog) ? (y_obs[k] + Ctrl->box.lat_0) * Ctrl->box.d_to_m : y_obs[k];	 /* +lat_0 because y was already *= -1 */
 
-					for (i = 0; i < Gout->header->n_columns; i++) {    /* Loop over input grid cols */
-						x_o = (Ctrl->box.is_geog) ? (x_obs[i] - Ctrl->box.lon_0) * Ctrl->box.d_to_m * cos(y_obs[k]*D2R) : x_obs[i];
-						a = okabe(GMT, x_o, y_o, Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, 0, loc_or, okabe_mag_param, okabe_mag_var);
-						Gout->data[gmt_M_ijp(Gout->header, k, i)] += (gmt_grdfloat)a;
+						for (i = 0; i < Gout->header->n_columns; i++) {    /* Loop over input grid cols */
+							x_o = (Ctrl->box.is_geog) ? (x_obs[i] - Ctrl->box.lon_0) * Ctrl->box.d_to_m * cos(y_obs[k]*D2R) : x_obs[i];
+							a = okabe(GMT, x_o, y_o, Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, 0, loc_or, okabe_mag_param, okabe_mag_var);
+							Gout->data[gmt_M_ijp(Gout->header, k, i)] += (gmt_grdfloat)a;
+						}
 					}
 				}
 			}
 			else {      /* A Constant thickness layer */
-				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] += (gmt_grdfloat)Ctrl->E.thickness;	/* Shift by thickness */
-				grdgravmag3d_calc_surf(GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
-				                       okabe_mag_param, okabe_mag_var, loc_or, &body_desc, body_verts);
-				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] -= (gmt_grdfloat)Ctrl->E.thickness;	/* Remove because grid may be used outside GMT */
+				for (ij = 0; ij < Gout->header->size; ij++)
+					GridA->data[ij] += (gmt_grdfloat)Ctrl->E.thickness;	/* Shift by thickness */
+				grdgravmag3d_calc_surf(GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs,
+				                       y_obs, cos_vec, okabe_mag_param, okabe_mag_var, loc_or, &body_desc, body_verts);
 			}
 		}
 		else {          /* "two_grids". One at the top and the other at the base */
@@ -911,8 +940,8 @@ EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		}
 	}
 	else {              /* polyline output */
-		grdgravmag3d_calc_surf(GMT, Ctrl, GridA, GridS, NULL, g, ndata, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
-		                       okabe_mag_param, okabe_mag_var, loc_or, &body_desc, body_verts);
+		grdgravmag3d_calc_surf(GMT, Ctrl, GridA, GridS, NULL, g, ndata, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs,
+		                       cos_vec, okabe_mag_param, okabe_mag_var, loc_or, &body_desc, body_verts);
 
 		if (Ctrl->H.pirtt) goto L1;     /* Ugly,I know but the 2-grids case is not Bhattacharya implemented */
 
@@ -920,8 +949,15 @@ EXTERN_MSC int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of BOT triangles */
 
 			if (!Ctrl->E.active) {      /* NOT constant thickness. That is, a surface and a BASE plane */
-				grdgravmag3d_body_set_tri(GMT, Ctrl, GridA, &body_desc, body_verts, x_grd, y_grd, cos_vec, 0, 0,
-				                          GridA->header->n_rows-1, GridA->header->n_columns-1);
+				if (Ctrl->C.got_gravgrid) {        /* If we have a variable density we need also a second surface */
+					for (ij = 0; ij < GridA->header->size; ij++)
+						GridA->data[ij] = Ctrl->Z.z0;	/* Base elevation.*/
+					grdgravmag3d_calc_surf(GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs,
+					                       y_obs, cos_vec, okabe_mag_param, okabe_mag_var, loc_or, &body_desc, body_verts);
+				}
+				else
+					grdgravmag3d_body_set_tri(GMT, Ctrl, GridA, &body_desc, body_verts, x_grd, y_grd, cos_vec, 0, 0,
+					                          GridA->header->n_rows-1, GridA->header->n_columns-1);
 			}
 			else {                      /* A Constant thickness layer */
 				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] += (gmt_grdfloat)Ctrl->E.thickness;	/* Shift by thickness */
@@ -1227,7 +1263,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 
 	for (row = r_start; row < r_stop; row++) {                     /* Loop over input grid rows */
 
-		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING))
+		if (gmt_M_is_verbose (GMT, GMT_MSG_WARNING) && row %5 == 0)
 			GMT_Message (GMT->parent, GMT_TIME_NONE, frmt, t->thread_num + 1, row + 1, r_stop);
 
 		if (Ctrl->H.do_igrf) {                                     /* Compute a row of IGRF dec & dip */
@@ -1243,8 +1279,11 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 			v_func[indf](GMT, Ctrl, Grid, body_desc, body_verts, x_grd, y_grd, cos_vec, row, col, 1, 1);	/* Call the body_set function */
 			if (Ctrl->H.pirtt && fabs(body_verts[1].z - body_verts[0].z) < 1e-2) continue;
 
-			if (Gsource)                                            /* If we have a variable source grid */
+			if (Gsource) {                                           /* If we have a variable source grid */
 				rho_or_mag = Gsource->data[gmt_M_ijp(Gsource->header, row, col)];
+				if (isnan(rho_or_mag)) continue;
+				if (Ctrl->C.got_gravgrid) rho_or_mag *= (1.0e5 * NEWTON_G);
+			}
 
 			if (Ctrl->H.do_igrf) {                                  /* Here we have a constantly varying dec and dip */
 				loc_or[0].x = cos(igrf_dip[col]) * sin(-igrf_dec[col]);
@@ -1293,10 +1332,10 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 }
 
 /* -----------------------------------------------------------------------------------*/
-GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GMT_GRID *Grid, struct GMT_GRID *Gout,
-		struct GMT_GRID *Gsource, double *g, unsigned int n_pts, double *x_grd, double *y_grd, double *x_grd_geo, double *y_grd_geo,
-		double *x_obs, double *y_obs, double *cos_vec, struct MAG_PARAM *okabe_mag_param, struct MAG_VAR *okabe_mag_var, struct LOC_OR *loc_or,
-		struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts) {
+GMT_LOCAL void grdgravmag3d_calc_surf(struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct GMT_GRID *Grid,
+	struct GMT_GRID *Gout, struct GMT_GRID *Gsource, double *g, unsigned int n_pts, double *x_grd, double *y_grd,
+	double *x_grd_geo, double *y_grd_geo, double *x_obs, double *y_obs, double *cos_vec, struct MAG_PARAM *okabe_mag_param,
+	struct MAG_VAR *okabe_mag_var, struct LOC_OR *loc_or, struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts) {
 
 	/* Send g = NULL for grid computations (e.g. -G) or Gout = NULL otherwise (-F).
 	   In case of polyline output (-F) n_pts is the number of output locations (irrelevant otherwise) */
@@ -1347,7 +1386,8 @@ GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D
 	}
 #else
    		threadArg[i].r_stop = (i + 1) * irint((Grid->header->n_rows - 1 - indf) / GMT->common.x.n_threads);
-   		if (i == GMT->common.x.n_threads - 1) threadArg[i].r_stop = Grid->header->n_rows - 1 + indf;	/* Make sure last row is not left behind */
+   		if (i == GMT->common.x.n_threads - 1)
+			threadArg[i].r_stop = Grid->header->n_rows - 1 + indf;	/* Make sure last row is not left behind */
 		threads[i] = g_thread_new(NULL, grdgravmag3d_thread_function, (void*)&(threadArg[i]));
 	}
 
@@ -1778,4 +1818,3 @@ c    a,b,c:  the three direction cosines.
 	*b = cos(xincl) * sin(xdecl-xazim);
 	*c = sin(xincl);
 }
-

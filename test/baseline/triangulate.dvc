@@ -1,0 +1,5 @@
+outs:
+- md5: a78dc2d01d33ec4140a4a884d8088a72.dir
+  size: 53346
+  nfiles: 2
+  path: triangulate

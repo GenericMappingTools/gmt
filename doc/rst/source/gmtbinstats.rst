@@ -22,6 +22,7 @@ Synopsis
 [ |-T|\ [**h**\|\ **r**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+s**] ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -29,7 +30,6 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
-[ |SYN_OPT-n| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-w| ]
@@ -55,7 +55,7 @@ Required Arguments
 
 *table*
     A 2-4 column ASCII file(s) [or binary, see
-    **-bi**] holding (x,y[,z][,w]) data values. You must use **-W**
+    **-bi**] holding (x,y[,z][,w]) data values. You must use |-W|
     to indicate that you have weights.  Only **-Cn** will accept 2 columns only.
     If no file is specified, **gmtbinstats** will read from standard input.
 
@@ -75,8 +75,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Give the name of the output grid file.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -105,18 +107,18 @@ Optional Arguments
 **-S**\ *search_radius*
     Sets the *search_radius* that determines which data points are
     considered close to a node. Append the distance unit (see `Units`_).
-    Not compatible with **-T**.
+    Not compatible with |-T|.
 
 .. _-T:
 
 **-T**\ [**h**\|\ **r**]
     Instead of circular, possibly overlapping areas, select non-overlapping tiling.  Choose between
-    **r**\ ectangular **h**\ exagonal binning. For **-Tr**, set bin sizes via **-I** and we write
-    the computed statistics to the grid file named in **-G**).  For **-Th**, we write a table with
+    **r**\ ectangular **h**\ exagonal binning. For **-Tr**, set bin sizes via |-I| and we write
+    the computed statistics to the grid file named in |-G|.  For **-Th**, we write a table with
     the centers of the hexagons and the computed statistics to standard output (or to the file named
-    in **-G**).  Here, the **-I** setting is expected to set the *y* increment only and we compute
+    in |-G|).  Here, the |-I| setting is expected to set the *y* increment only and we compute
     the *x*-increment given the geometry. Because the horizontal spacing between hexagon centers in
-    *x* and *y* have a ratio of :math:`\sqrt{3}`, we will automatically adjust *xmax* in **-R** to
+    *x* and *y* have a ratio of :math:`\sqrt{3}`, we will automatically adjust *xmax* in |-R| to
     fit a whole number of hexagons. **Note**: Hexagonal tiling requires Cartesian data.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -133,7 +135,9 @@ Optional Arguments
    If your weights are actually uncertainties (one sigma) then append **+s**
    and we compute weight = 1/sigma.
 
-.. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns].
+.. include:: explain_-aspatial.rst_
+
+.. |Add_-bi| replace:: [Default is 3 (or 4 if |-W| is set) columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -145,20 +149,13 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| replace:: 0x20 .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
-
-**-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*][**+t**\ *threshold*]
-   Append **+b**\ *BC* to set any boundary conditions to be used,
-   adding **g** for geographic, **p** for periodic, or **n** for
-   natural boundary conditions. For the latter two you may append **x**
-   or **y** to specify just one direction, otherwise both are assumed.
-   [Default is geographic if grid is geographic].
 
 .. include:: explain_-qi.rst_
 
@@ -180,7 +177,7 @@ Examples
 
 .. include:: explain_example.rst_
 
-To examine the population inside a circle of 1000km radius for all nodes in a 5x5 arc degree grid,
+To examine the population inside a circle of 1000 km radius for all nodes in a 5x5 arc degree grid,
 using the remote file @capitals.gmt, and plot the resulting grid using default projection and colors, try::
 
     gmt begin map
@@ -191,7 +188,7 @@ using the remote file @capitals.gmt, and plot the resulting grid using default p
 To do hexagonal binning of the data in the file mydata.txt and counting the number of points inside
 each hexagon, try::
 
-    gmt count mydata.txt -R0/5/0/3 -I1 -Th -Cn > counts.txt
+    gmt gmtbinstats mydata.txt -R0/5/0/3 -I1 -Th -Cn > counts.txt
 
 See Also
 --------

@@ -19,6 +19,7 @@ Synopsis
 [ |-Z| ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -33,8 +34,8 @@ This is a bare-bones operation that aims to extract coordinates and
 possibly the name and description tags of each feature. The main use
 intended is to capture coordinates modified in Google Earth and then
 reinsert the modified data into the original GMT data file. For a more
-complete reformatting, consider using **ogr2ogr -f** "GMT" somefile.gmt
-somefile.kml.
+complete reformatting, consider using
+``ogr2ogr -f "GMT" somefile.gmt somefile.kml``.
 
 Required Arguments
 ------------------
@@ -51,7 +52,7 @@ Optional Arguments
 **-E**
     Get the altitude from the *ExtendData* property; *z* coordinates are then ignored. KML provides
     more than one mechanism to store information via *ExtendData* but here we only implemented the
-    *<SimpleData name="string">* variation. Implicitly sets **-Z**
+    *<SimpleData name="string">* variation. Implicitly sets |-Z|
 
 .. _-F:
 
@@ -75,6 +76,9 @@ Optional Arguments
 
 .. |Add_-do| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-do.rst_
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
 
 .. include:: explain_colon.rst_
 

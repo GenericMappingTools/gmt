@@ -3,36 +3,19 @@
 #	Makes the insets for Appendix M(cpt)
 #	[skip srtm which is just a special version of dem2]
 #
-# We have four sets of CPT figures to make:
+# We have five sets of CPT figures to make:
 # 1a) Our regular, traditional GMT CPTs [44]
 # 1b) The regular Scientific Color Maps* [30]
-# 1c) Categorical CPTs (ours and SCM*)  [18]
-# 1d) Cyclic CPTs from SCM* [5]
+# 1c) Categorical CPTs [18]
+# 1d) Cyclic CPTs [7]
+# 1e) Colormaps from cmocean [22]
 #
 # *from Fabio [www.fabiocrameri.ch/visualisation]
 
 GMT_SHAREDIR=$(gmt --show-sharedir)
 
-cat << EOF > tt.lis
-actonS
-bamakoS
-batlowS
-bilbaoS
-budaS
-categorical
-davosS
-devonS
-grayCS
-hawaiiS
-imolaS
-lajollaS
-lapazS
-nuukS
-osloS
-paired
-tokyoS
-turkuS
-EOF
+# Here we list all the categorical cpts (Leaving out c|C in Categorical since cases vary):
+sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | egrep ategorical | awk '{print $1}' | sort -r > tt.lis
 
 n=$(cat tt.lis | wc -l)
 let n2=n/2
@@ -51,9 +34,10 @@ y=0.375
 y2=0.25
 while [ $i -le $n2 ]
 do
-	j=$(expr $i + 1)
-	left=$(sed -n ${j}p tt.lis)
-	right=$(sed -n ${i}p tt.lis)
+	j1=$(expr $n2 - $i)
+	j2=$(expr $n2 - $i + 1)
+	left=$(sed -n ${j1}p tt.lis)
+	right=$(sed -n ${j2}p tt.lis)
 	gmt makecpt -H -C$left > tt.left.cpt
 	gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
 	gmt makecpt -H -C$right > tt.right.cpt

@@ -31,24 +31,28 @@ when you want all of a continent or an ocean to fall
 into one color or gray shade in image processing, when clipping of the
 range of data values is required, or for reclassification of data values.
 *above*, *below*, *between*, *old* and *new* can be any number or even NaN
-(Not a Number). You must choose at least one of the **-S** options. Use
+(Not a Number). You must choose at least one of the |-S| options. Use
 **-R** to only extract a subset of the *ingrid* file.
 
 Required Arguments
 ------------------
 
-*ingrid*
-    The input 2-D binary grid file. (See :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: The input 2-D binary grid file.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 
-**-G**\ *outgrid*
-    *outgrid* is the modified output grid file. (See :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
 
-.. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
+.. |Add_-R| replace:: Using the |-R| option will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**

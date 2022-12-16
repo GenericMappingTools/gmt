@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *course_change*]
 [ |-D|\ *minimum_distance* ]
 [ |-F|\ *xy\_filter*/*z\_filter* ]
-[ |-N|\ *template* ]
+[ |-N|\ [*template*] ]
 [ |-Q|\ *flags* ]
 [ |-S| ]
 [ |SYN_OPT-V| ]
@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -38,7 +39,7 @@ Description
 -----------
 
 **gmtsplit** reads a series of (x,y[,z]) records [or optionally
-(x,y[,z],d,h); see **-S** option] from standard input [or *xy[z][dh]file*]
+(x,y[,z],d,h); see |-S| option] from standard input [or *xy[z][dh]file*]
 and splits this into separate lists of (x,y[,z]) series, such that each
 series has a nearly constant azimuth through the x,y plane. There are
 options to choose only those series which have a certain orientation, to
@@ -54,7 +55,7 @@ Required Arguments
     One or more ASCII [or binary, see **-bi**]
     files with 2, 3, or 5 columns holding (x,y,[z[,d,h]])
     data values. To use (x,y,z,d,h) input, sorted so that d is
-    non-decreasing, specify the **-S** option; default expects (x,y,z)
+    non-decreasing, specify the |-S| option; default expects (x,y,z)
     only. If no files are specified, **gmtsplit** will read from
     standard input.
 
@@ -79,7 +80,7 @@ Optional Arguments
 
 **-D**\ *minimum\_distance*
     Do not write a segment out unless it is at least *minimum\_distance*
-    units long [0]
+    units long [0].
 
 .. _-F:
 
@@ -102,9 +103,9 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *template*
+**-N**\ [*template*]
     Write each segment to a separate output file [Default writes a
-    multiple segment file to stdout]. Append a format template for the
+    multiple segment file to standard output]. Optionally append a format template for the
     individual file names; this template **must** contain a C format
     specifier that can format an integer argument (the running segment
     number across all tables); this is usually %d but could be %08d
@@ -139,10 +140,10 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. |Add_-bi| replace:: [Default is 2, 3, or 5 input columns as set by **-S**].
+.. |Add_-bi| replace:: [Default is 2, 3, or 5 input columns as set by |-S|].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 1-5 output columns as set by **-Q**].
+.. |Add_-bo| replace:: [Default is 1-5 output columns as set by |-Q|].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -163,6 +164,8 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-q.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
 

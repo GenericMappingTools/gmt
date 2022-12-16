@@ -29,7 +29,7 @@ cat << EOF > p.txt
 4 5
 EOF
 gmt begin autocolorpols ps
-	gmt subplot begin 2x1 -Fs10c -R-1/6/-1/6 -SC -SR -Blrbt
+	gmt subplot begin 2x1 -Fs10c -R-1/6/-1/6 -Sc -Sr -Blrbt
 		gmt plot p.txt -Gauto -c
 		gmt plot p.txt -Gauto@50 -c --COLOR_SET=red,green,blue
 	gmt subplot end

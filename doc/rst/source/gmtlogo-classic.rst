@@ -26,7 +26,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: gmtlogo_common.rst_
+.. include:: gmtlogo.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
@@ -45,7 +47,7 @@ scaled up to be 6 cm wide and offset by 0.25 cm from the border, try::
 Notes
 -----
 
-To instead plot the GMT QR code that links to www.generic-mapping-tools.org, just plot the
+To instead plot the GMT QR code that links to https://www.generic-mapping-tools.org/, just plot the
 custom symbols **QR** or **QR_transparent** in :doc:`psxy`.
 
 See Also

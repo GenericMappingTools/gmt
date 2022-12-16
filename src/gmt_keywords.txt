@@ -68,6 +68,7 @@ GMT_DATA_UPDATE_INTERVAL	# Frequency for refreshing local data catalog
 GMT_EXPORT_TYPE			# Default type when GMT exports data to external interfaces
 GMT_EXTRAPOLATE_VAL		# How to deal with 1D extrapolated values
 GMT_FFT				# Which FFT algorithm to use
+GMT_GRAPHICS_DPU		# Default image dpu target for grid plots
 GMT_GRAPHICS_FORMAT		# Default graphics format in modern mode
 GMT_HISTORY			# Should we update the command history?
 GMT_INTERPOLANT			# Spline interpolant
@@ -104,6 +105,7 @@ MAP_ANNOT_MIN_ANGLE		# Cut-off angle to eliminate very oblique annotations
 MAP_ANNOT_MIN_SPACING		# Cut-off distance to eliminate crowding of annotations
 MAP_DEFAULT_PEN			# Default for all pens
 MAP_DEGREE_SYMBOL		# Symbol for "degree" to use on maps
+MAP_EMBELLISHMENT_MODE	# Whether map roses and scales shall be manually or automatically scaled
 MAP_FRAME_AXES			# Which axes should be plotted [WESNZ]
 MAP_FRAME_PEN			# Pen used to draw plain map frame
 MAP_FRAME_TYPE			# Type of map frame (plain or fancy)
@@ -116,6 +118,7 @@ MAP_GRID_PEN			# Pen for any grid-lines/crosses [does not go in gmt.conf]
 MAP_GRID_PEN_PRIMARY		# Pen for primary grid-lines/crosses
 MAP_GRID_PEN_SECONDARY		# Pen for secondary grid-lines/crosses
 MAP_HEADING_OFFSET		# Distance between a panel title and subplot heading
+MAP_LABEL_MODE			# Measure label distance from the annotation or axis
 MAP_LABEL_OFFSET		# Distance between an axis label and the annotations
 MAP_LINE_STEP			# Max step length when approximating curves on maps
 MAP_LOGO			# Plot the time stamp?

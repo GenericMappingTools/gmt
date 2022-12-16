@@ -1,8 +1,9 @@
+:orphan:
+
 Modules
 =======
 
 .. note::
-
    Looking for the *classic mode* modules like ``psxy`` and ``pscoast``? See the
    :doc:`equivalent page for classic mode <modules-classic>`.
 
@@ -49,7 +50,6 @@ All modules are requested via a call to the :doc:`gmt` program.
    gmtconnect
    gmtconvert
    gmtdefaults
-   grdgdal
    gmtget
    gmtinfo
    gmtlogo
@@ -74,6 +74,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    grdfft
    grdfill
    grdfilter
+   grdgdal
    grdgradient
    grdhisteq
    grdimage
@@ -86,6 +87,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    grdpaste
    grdproject
    grdsample
+   grdselect
    grdtrack
    grdtrend
    grdvector
@@ -144,6 +146,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    supplements/potential/gmtflexure
    supplements/potential/gmtgravmag3d
    supplements/potential/gravfft
+   supplements/potential/gravprisms
    supplements/potential/grdflexure
    supplements/potential/grdgravmag3d
    supplements/potential/grdredpol
@@ -212,7 +215,6 @@ Core Modules
     - :doc:`gmtconnect`
     - :doc:`gmtconvert`
     - :doc:`gmtdefaults`
-    - :doc:`grdgdal`
     - :doc:`gmtget`
     - :doc:`gmtinfo`
     - :doc:`gmtlogo`
@@ -237,6 +239,7 @@ Core Modules
     - :doc:`grdfft`
     - :doc:`grdfill`
     - :doc:`grdfilter`
+    - :doc:`grdgdal`
     - :doc:`grdgradient`
     - :doc:`grdhisteq`
     - :doc:`grdimage`
@@ -249,6 +252,7 @@ Core Modules
     - :doc:`grdpaste`
     - :doc:`grdproject`
     - :doc:`grdsample`
+    - :doc:`grdselect`
     - :doc:`grdtrack`
     - :doc:`grdtrend`
     - :doc:`grdvector`
@@ -310,6 +314,7 @@ Supplemental Modules
     - :doc:`/supplements/potential/gmtflexure`
     - :doc:`/supplements/potential/gmtgravmag3d`
     - :doc:`/supplements/potential/gravfft`
+    - :doc:`/supplements/potential/gravprisms`
     - :doc:`/supplements/potential/grdflexure`
     - :doc:`/supplements/potential/grdgravmag3d`
     - :doc:`/supplements/potential/grdredpol`
@@ -500,6 +505,8 @@ Information retrieval
 +-----------------------+-----------------------+
 | :doc:`grdinfo`        | |grdinfo_purpose|     |
 +-----------------------+-----------------------+
+| :doc:`grdselect`      | |grdselect_purpose|   |
++-----------------------+-----------------------+
 
 Mathematical operations on tables or grids
 ------------------------------------------
@@ -671,6 +678,8 @@ potential
 | :doc:`/supplements/potential/gmtgravmag3d` | |gmtgravmag3d_purpose|   |
 +--------------------------------------------+--------------------------+
 | :doc:`/supplements/potential/gravfft`      | |gravfft_purpose|        |
++--------------------------------------------+--------------------------+
+| :doc:`/supplements/potential/gravprisms`   | |gravprisms_purpose|     |
 +--------------------------------------------+--------------------------+
 | :doc:`/supplements/potential/grdflexure`   | |grdflexure_purpose|     |
 +--------------------------------------------+--------------------------+

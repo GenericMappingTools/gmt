@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -426,7 +426,7 @@ struct GMT_PROJ {
 	double g_ymin, g_ymax;
 
 	unsigned int g_debug;
-	int g_box, g_outside, g_longlat_set, g_sphere, g_radius, g_auto_twist;
+	bool g_box, g_outside, g_longlat_set, g_sphere, g_radius, g_geosync, g_earth_radius;
 	bool windowed;
 
 	/* Polar (cylindrical) projection */
@@ -434,6 +434,7 @@ struct GMT_PROJ {
 	double p_base_angle, flip_radius, radial_offset, z_radius;
 	bool got_azimuths, got_elevations, flip;
 	enum GMT_enum_zdown z_down;
+	unsigned int angle_kind;	/* 0 = angle, 4 = longitude, 2 = latitude (for annotation purposes) */
 
 	/* PROJ4 variables */
 	double proj4_x0, proj4_y0, proj4_scl;
@@ -498,6 +499,7 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	unsigned int label_mode;	/* 0 = parallel to all axes, 1 = always horizontal on map */
 	bool substitute_pi;		/* True if we need to plot fractions of pi on this axis */
 	bool use_angle;			/* True if we got +a<angle>|n|p for this axis */
+	bool skip[2];			/* Determines if we skip annotations at the lower or upper bounds of an axis [false/false] */
 	struct GMT_PLOT_AXIS_ITEM item[8];	/* see above defines for which is which */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	double angle;			/* Annotations angle set by user */

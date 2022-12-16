@@ -14,10 +14,11 @@ Synopsis
 
 **gmt sphinterpolate** [ *table* ]
 |-G|\ *grdfile*
+|SYN_OPT-I|
+|SYN_OPT-R|
 [ |-D|\ [*east*] ]
-[ |SYN_OPT-I| ]
 [ |-Q|\ *mode*\ [*options*] ]
-[ |SYN_OPT-R| ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
 [ |SYN_OPT-bi| ]
@@ -27,6 +28,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -51,8 +53,19 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *grdfile*
-    Name of the output grid to hold the interpolation.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
+
+.. _-I:
+
+.. include:: explain_-I.rst_
+
+.. _-R:
+
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-Rgeo.rst_
 
 Optional Arguments
 ------------------
@@ -64,10 +77,6 @@ Optional Arguments
     [Default assumes there are no duplicates, except possibly at the poles].
     Append a repeating longitude (*east*) to skip records with that longitude instead
     of the full (slow) search for duplicates.
-
-.. _-I:
-
-.. include:: explain_-I.rst_
 
 .. _-Q:
 
@@ -83,7 +92,7 @@ Optional Arguments
     Smooth interpolation with **g**\ lobal gradient estimates. You may
     optionally append *N*/*M*/*U*, where *N* is the number of
     iterations used to converge at solutions for gradients when variable
-    tensions are selected (e.g., **-T** only) [3], *M* is the number of
+    tensions are selected (e.g., |-T| only) [3], *M* is the number of
     Gauss-Seidel iterations used when determining the global gradients
     [10], and *U* is the maximum change in a gradient at the last
     iteration [0.01].
@@ -92,12 +101,7 @@ Optional Arguments
     squared error in a typical (scaled) data value, and *U* is Upper
     bound on weighted sum of squares of deviations from data. Here, *N* is the number of
     iterations used to converge at solutions for gradients when variable
-    tensions are selected (e.g., **-T** only) [3]
-
-.. _-R:
-
-.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-Rgeo.rst_
+    tensions are selected (e.g., |-T| only) [3]
 
 .. _-T:
 
@@ -127,12 +131,16 @@ Optional Arguments
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
-.. include:: explain_-qi.rst_
+.. include:: explain_-icols.rst_
 
-.. include:: explain_colon.rst_
+.. include:: explain_-qi.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-s.rst_
+
+.. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
 
@@ -162,7 +170,7 @@ Notes
 The STRIPACK algorithm and implementation expect that there are no duplicate points
 in the input.  It is best that the user ensures that this is the case.  GMT has tools,
 such as :doc:`blockmean` and others, to combine close points into single entries.
-Also, **sphinterpolate** has a **-D** option to determine and exclude duplicates, but
+Also, **sphinterpolate** has a |-D| option to determine and exclude duplicates, but
 it is a very brute-force yet exact comparison that is very slow for large data sets.
 A much quicker check involves appending a specific repeating longitude value.
 Detection of duplicates in the STRIPACK library will exit the module.

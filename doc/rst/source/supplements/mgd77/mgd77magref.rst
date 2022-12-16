@@ -51,8 +51,8 @@ Optional Arguments
     longitude instead). Normally, the third and fourth columns must
     contain altitude (in km) and time, respectively, but if one or both
     of these are constant for all records they can be supplied via the
-    **-A** option instead and are thus not expected in the input file.
-    If no input file is given we read *stdin*. |br|
+    |-A| option instead and are thus not expected in the input file.
+    If no input file is given we read standard input. |br|
     A note about the CM4
     validity domain. The core field of CM4 is valid from 1960-2002.5 but
     the ionospheric and magnetospheric fields are computed after the
@@ -63,7 +63,7 @@ Optional Arguments
     from:ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/DST/ (the
     *Dst* coefficients) and
     http://umbra.nascom.nasa.gov/sdb/yohkoh/ys_dbase/indices_flux_raw/Penticton_Absolute/monthly/MONTHPLT.ABS
-    (The *F10.7* index file is a MONTHPLT.ABS). NOTE: since the *Dst* files
+    (The *F10.7* index file is a MONTHPLT.ABS). **Note**: since the *Dst* files
     in the .../DST/ directory are still only up to 2006, for GMT4.5.3 and after
     we extended the *Dst* until August 2009 by reformatting the data in the
     preliminary file Est_Ist_index_0_mean.pli, which is at
@@ -149,7 +149,7 @@ Optional Arguments
     **7** means CM4 Toroidal field
 
     **9** means Core field from IGRF and other contributions from CM4.
-    DO NOT USE BOTH 0 AND 9.
+    Do **not** use both 0 and 9.
 
     Appending several numbers (1-7) will add up the different
     contributions. For example **-Ft**/**12** computes the total field
@@ -206,10 +206,10 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. |Add_-bi| replace:: [Default is 4 input columns unless **-A** is used].
+.. |Add_-bi| replace:: [Default is 4 input columns unless |-A| is used].
 .. include:: ../../explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is reflected by **-F**].
+.. |Add_-bo| replace:: [Default is reflected by |-F|].
 .. include:: ../../explain_-bo.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
@@ -259,7 +259,7 @@ References
 ----------
 
 Comprehensive Modeling of the Geomagnetic Field, see
-`<https://onlinelibrary.wiley.com/doi/10.1111/j.1365-246X.2004.02421.x>`_
+`<https://doi.org/10.1111/j.1365-246X.2004.02421.x>`_.
 
 The International Geomagnetic Reference Field (IGRF), see
-`<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
+`<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_.

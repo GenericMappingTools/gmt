@@ -12,8 +12,8 @@ gmt begin ex52
   # Make a global grid with a smooth 2-degree transition across day/night boundary.
   gmt grdmath -Rd -I${res} -r $(gmt solar -C -o0:1 -I+d2000-06-22T24:00+z-10) 2 DAYNIGHT = w.grd
 
-  # We will create an intensity grid based on a DEM so that we can see structures in the oceans
-  gmt grdgradient @earth_relief_${res} -Nt0.5 -A45 -Gintens.grd
+  # We will create an intensity grid based on a pixel-registered DEM so that we can see structures in the oceans
+  gmt grdgradient @earth_relief_${res}_p -Nt0.5 -A45 -Gintens.grd
   
   # Blend the earth_day and earth_night geotiffs using the weights, so that when w is 1
   # we get the earth_day, and then adjust colors based on the intensity.

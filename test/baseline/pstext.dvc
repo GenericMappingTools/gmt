@@ -1,0 +1,5 @@
+outs:
+- md5: cc3f79d0b3d11ebdcfe61ee6096d060c.dir
+  size: 726418
+  nfiles: 16
+  path: pstext

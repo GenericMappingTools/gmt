@@ -4,7 +4,7 @@
 # bug reported in https://forum.generic-mapping-tools.org/t/legends-in-subplots/535
 
 gmt begin panel_legend ps
-	gmt subplot begin 2x2 -Fs8c -M5p -A -SCb -SRl -Bwstr -R0/90/0/10
+	gmt subplot begin 2x2 -Fs8c -M5p -A -Scb -Srl -Bwstr -R0/90/0/10
 	gmt basemap -c0
 	gmt legend -Dx1c/1c+w3c -F+gblue <<- EOF
 	L 10 C Legend

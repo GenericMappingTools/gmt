@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt mgd77path** *GEODAS-ids* [ |-A|\ [**c**] ] [ |-D| ]
-[ |-I|\ *ignore* ]
+[ |-I|\ **a\|c\|m\|t** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 
@@ -48,7 +48,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ *ignore*
+**-I**\ **a\|c\|m\|t**
     Ignore certain data file formats from consideration. Append
     **a\|c\|m\|t** to ignore MGD77 ASCII, MGD77+ netCDF, MGD77T ASCII, or plain
     tab-separated ASCII table files, respectively. The option may be
@@ -96,3 +96,6 @@ References
 
 The Marine Geophysical Data Exchange Format - MGD77, see
 `http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt. <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_
+
+Wessel, P., and Chandler, M. T., 2007, The mgd77 supplement to the Generic Mapping Tools,
+*Comp. Geosci.*, **33**\ (1), 62-75, https://doi.org/10.1023/A:1021744224009.

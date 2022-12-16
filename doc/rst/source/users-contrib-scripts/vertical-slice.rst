@@ -19,7 +19,7 @@ Due to my slice is f(lat, height) I must dump it, add the column for the fixed
 longitude, and project the coordinates using mappproject and then re-grid it.
 
 The biggest problem that I found, and it took longer to me was how to locate
-the slice. In a 2D map it is easy to do, transforming (lat, lon) to (x, y) with
+the slice. In a 2-D map it is easy to do, transforming (lat, lon) to (x, y) with
 mapproject, and then using J[xX] but in this case it was trial and error for me.
 Maybe someone has the recipe to do it analytically.
 

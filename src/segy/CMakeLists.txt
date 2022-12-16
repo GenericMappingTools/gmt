@@ -1,6 +1,5 @@
 #
-#
-# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -27,6 +26,7 @@
 
 set (SUPPL_NAME segy)
 set (SUPPL_HEADERS segy.h segy_io.h segyreel.h)
-set (SUPPL_PROGS_SRCS segy2grd.c pssegy.c pssegyz.c)
+AUX_SOURCE_DIRECTORY (longopt SUPPL_LONG_OPT_H) 
+set (SUPPL_PROGS_SRCS segy2grd.c pssegy.c pssegyz.c ${SUPPL_LONG_OPT_H})
 set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} segy_io.c)
 set (SUPPL_EXAMPLE_FILES README.segy)

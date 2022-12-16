@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -103,7 +103,6 @@
  */
 
 #include "gmt_dev.h"
-#include "gmt_common_byteswap.h"
 #include "gmt_internals.h"
 #include "mgd77/mgd77.h"
 #include "x2sys.h"
@@ -111,7 +110,6 @@
 /* Global variables used by X2SYS functions */
 
 char *X2SYS_HOME;
-static char *X2SYS_program;
 
 struct MGD77_CONTROL M;
 
@@ -226,9 +224,9 @@ GMT_LOCAL int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file) {
 	if (err == X2SYS_NOERROR) return (err);
 	/* When error code is non-zero: print error message and pass error code on */
 	if (file && file[0])
-		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, " %s [%s]\n", x2sys_strerror(GMT, err), file);
 	else
-		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s\n", x2sys_strerror(GMT, err));
 	return (err);
 }
 
@@ -328,7 +326,7 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 	X->TAG = strdup (TAG);
 	X->info = gmt_M_memory (GMT, NULL, n_alloc, struct X2SYS_DATA_INFO);
 	X->file_type = X2SYS_ASCII;
-	X->x_col = X->y_col = X->t_col = -1;
+	X->x_col = X->y_col = X->t_col = GMT_NOTSET;
 	X->ms_flag = '>';	/* Default multisegment header flag */
 	sprintf (line, "%s/%s.%s", TAG, fname, X2SYS_FMT_EXT);
 	X->dist_flag = 0;	/* Cartesian distances */
@@ -1095,6 +1093,7 @@ int x2sys_read_weights (struct GMT_CTRL *GMT, char *file, char ***list, double *
 void x2sys_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
 	/* Properly free memory allocated by x2sys_read_list */
 	uint64_t i;
+	if (n == 0) return;	/* Nothing to do */
 	for (i = 0; i < n; i++) gmt_M_str_free (list[i]);
 	gmt_M_free (GMT, list);
 }
@@ -1277,11 +1276,11 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 			c_given = true;
 		}
 		if (geodetic == GMT_IS_0_TO_P360_RANGE && (B->wesn[XLO] < 0 || B->wesn[XHI] < 0)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your -R and -G settings are contradicting each other!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your -R values are contradicting the -G setting from x2sys_init!\n");
 			n_errors++;
 		}
 		else if (geodetic == GMT_IS_M180_TO_P180_RANGE && (B->wesn[XLO] > 0 && B->wesn[XHI] > 0)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your -R and -G settings are contradicting each other!\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your -R values are contradicting the -G setting from x2sys_init!\n");
 			n_errors++;
 		}
 		if (c_given && dist_flag == 0) {
@@ -1662,9 +1661,9 @@ int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file) {
 	if (err == X2SYS_NOERROR) return X2SYS_NOERROR;
 	/* When error code is non-zero: print error message and exit */
 	if (file && file[0])
-		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s [%s]\n", x2sys_strerror(GMT, err), file);
 	else
-		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s\n", x2sys_strerror(GMT, err));
 	return GMT_RUNTIME_ERROR;
 }
 
@@ -1969,7 +1968,7 @@ int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char
 	char **file = NULL, *p = NULL;
 	struct GMT_OPTION *opt = NULL, *list = NULL;
 
-	/* Backwards checking for :list in addition to the new 9as in mgd77) =list mechanism */
+	/* Backwards checking for :list in addition to the new (as in mgd77) =list mechanism */
 	for (opt = options; !list && opt; opt = opt->next)
 		if (opt->option == GMT_OPT_INFILE && (opt->arg[0] == ':' || opt->arg[0] == '=')) list = opt;
 
@@ -2031,8 +2030,14 @@ GMT_LOCAL unsigned int x2sys_separate_aux_columns2 (struct GMT_CTRL *GMT, unsign
 }
 
 int x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctable, uint64_t ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR) {
-	/* Load an ephemeral correction table */
-	/* Pass aux as NULL if the auxiliary columns do not matter (only used by x2sys_datalist) */
+	/* Load an ephemeral correction table.
+	 * Pass aux as NULL if the auxiliary columns do not matter (only used by x2sys_datalist).
+	 * Note: One complication relates to the name "time".  It may appear in the info file as
+	 * atime, rtime, or ytime, possibly.  However, the correction table will use the word
+	 * "time" in all these cases. Hence, when we find "time" in the correction table we must
+	 * be careful when we use MGD77_Match_List since it checks absolutely, hence "time" != "rtime".
+	 * The solution here is to consult S->info to ensure the col_name entry uses "time" instead.
+	 */
 	unsigned int i, n_items, n_aux = 0, n_cols, missing;
 	int ks;
 	char path[PATH_MAX] = {""}, **item_names = NULL, **col_name = NULL, **aux_name = NULL;
@@ -2045,6 +2050,7 @@ int x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctabl
 		}
 		ctable = path;
 	}
+
 	if (column) {	/* Must build list of the 7 standard COE database column names */
 		n_cols = 7;
 		col_name = gmt_M_memory (GMT, NULL, n_cols, char *);
@@ -2059,7 +2065,12 @@ int x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctabl
 	else {	/* Use what is available in the data files */
 		n_cols = S->n_out_columns;
 		col_name = gmt_M_memory (GMT, NULL, n_cols, char *);
-		for (i = 0; i < n_cols; i++) col_name[i] = strdup (S->info[S->out_order[i]].name);
+		for (i = 0; i < n_cols; i++) {	/* Watch out for [a|r|y]time and replace with time */
+			if (strstr (S->info[S->out_order[i]].name, "time"))
+				col_name[i] = strdup ("time");
+			else
+				col_name[i] = strdup (S->info[S->out_order[i]].name);
+		}
 	}
 	n_items = MGD77_Scan_Corrtable (GMT, ctable, trk_name, (unsigned int)ntracks, n_cols, col_name, &item_names, 0);
 	if (aux && (n_aux = x2sys_separate_aux_columns2 (GMT, n_items, item_names, aux, auxlist)) != 0) {	/* Determine which auxiliary columns are requested (if any) */

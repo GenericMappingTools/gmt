@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdredpol_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdredpol"
 #define THIS_MODULE_MODERN_NAME	"grdredpol"
@@ -46,6 +47,7 @@ struct GRDREDPOL_CTRL {
 		char *file;
 	} In;
 	struct GRDREDPOL_C {	/* -C */
+		bool active;
 		bool use_igrf;
 		bool const_f;
 		double	dec;
@@ -70,6 +72,7 @@ struct GRDREDPOL_CTRL {
 		char	*file;
 	} G;
 	struct GRDREDPOL_M {	/* -M */
+		bool active;
 		bool pad_zero;
 		bool mirror;
 	} M;
@@ -77,14 +80,17 @@ struct GRDREDPOL_CTRL {
 		bool active;
 	} N;
 	struct GRDREDPOL_S {	/* -S, size of working grid */
+		bool active;
 		unsigned int	n_columns;
 		unsigned int	n_rows;
 	} S;
 	struct GRDREDPOL_T {	/* -T */
+		bool active;
 		double	year;
 	} T;
 	struct GRDREDPOL_W {	/* -W */
 		double	wid;
+		bool active;
 	} W;
 	struct GRDREDPOL_Z {	/* -Z */
 		bool active;
@@ -104,7 +110,6 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.use_igrf = true;
 	C->M.pad_zero = true;
-	C->N.active = true;
 	C->F.ncoef_row = 25;
 	C->F.ncoef_col = 25;
 	C->T.year = 2000;
@@ -146,7 +151,7 @@ GMT_LOCAL void grdgravmag3d_rtp_filt_colinear (int i, int j, int n21, double *gx
 	gxr[ij] = rnr * t2;
 	gxi[ij] = rni * t2;
 
-	if (Ctrl->N.active) {		/* Use the Taylor expansion */
+	if (!Ctrl->N.active) {		/* Use the Taylor expansion */
 		gxar[ij] = -2*alfa_u_beta_v*u*ro2 * t2 - 4*(gama_ro_2-alfa_u_beta_v_2)*ro2*alfa_u_beta_v*u * t3;
 		gxai[ij] = 2*gama*ro3*u * t2 - 8*gama*ro3*alfa_u_beta_v_2*u * t3;
 		gxbr[ij] = -2*alfa_u_beta_v*v*ro2 * t2 - 4*(gama_ro_2-alfa_u_beta_v_2)*ro2*alfa_u_beta_v*v * t3;
@@ -195,7 +200,7 @@ GMT_LOCAL void grdgravmag3d_rtp_filt_not_colinear (int i, int j, int n21, double
 	gxr[ij] = rnr / den_r;
 	gxi[ij] = rni / den_r;
 
-	if (Ctrl->N.active) {		/* Use the Taylor expansion */
+	if (!Ctrl->N.active) {		/* Use the Taylor expansion */
 		gxar[ij] = -u*tau_u_mu_v*ro2/den_r -2*(-alfa_u_beta_v_tau_u_mu_v+gama*ro2*nu)*ro2*alfa_u_beta_v*u/den_i1;
 		gxai[ij] = u*nu*ro3/den_r -2*(alfa_u_beta_v_nu+tau_u_mu_v_gama)*ro3*alfa_u_beta_v*u/den_i1;
 		gxbr[ij] = -v*tau_u_mu_v*ro2/den_r -2*(-alfa_u_beta_v_tau_u_mu_v+gama*ro2*nu)*ro2*alfa_u_beta_v*v/den_i1;
@@ -1026,26 +1031,39 @@ GMT_LOCAL int grdgravmag3d_igrf10syn (struct GMT_CTRL *C, int isv, double date, 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>] [-Ei<dip_grd>] [-Ee<dec_grd>] [-F<m>/<n>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M<m|r>] [-N] [-W<win_width>] [%s] [-T<year>] [-Z<filterfile>]\n\t[%s] [%s]\n\n",
-				GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s -G<rtp_grdfile> [-C<dec>/<dip>] [-Ei|d<grid>] [-F<m>/<n>] "
+		"[-Mm|r] [-N] [-T<year>] [%s] [%s] [-W<win_width>] [-Z<filterfile>] [%s] [%s]\n",
+				name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<anomgrid> is the input grdfile with the magnetic anomaly.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets filename for output grid with the RTP solution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Sets<dec>/<dip> and uses this constant values in the RTP procedure.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Ei grid with the magnetization inclination [default: use IGRF].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Ed grid with the magnetization declination [default: use IGRF].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets <m>/<n> filter widths [25x25].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Sets boundary conditions. m|r stands for mirror or replicate edges (Default is zero padding).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT use Taylor expansion.\n");
-	GMT_Option  (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Sets year used by the IGRF routine to compute the various DECs & DIPs [default: 2000].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Sets window width in degrees [5].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Write filter file <filterfile> to disk.\n");
-	GMT_Option  (API, "V,n,.");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of grid with the magnetic anomaly");
+	GMT_Usage (API, 1, "\n-G<rtp_grdfile>");
+	GMT_Usage (API, -2, "Set filename for output grid with the RTP solution.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C<dec>/<dip>");
+	GMT_Usage (API, -2, "Set <dec>/<dip> and uses this constant values in the RTP procedure.");
+	GMT_Usage (API, 1, "\n-Ei|d<grid>");
+	GMT_Usage (API, -2, "Specify input grids for inclination and/or declination:");
+	GMT_Usage (API, 3, "i: Append file name for magnetization inclination [default uses IGRF].");
+	GMT_Usage (API, 3, "d: Append file name for the magnetization declination [default uses IGRF].");
+	GMT_Usage (API, 1, "\n-F<m>/<n>");
+	GMT_Usage (API, -2, "Set <m>/<n> filter widths [25/25].");
+	GMT_Usage (API, 1, "\n-Mm|r");
+	GMT_Usage (API, -2, "Specify optional boundary conditions [Default is zero padding]:");
+	GMT_Usage (API, 3, "m: mirror boundary condition.");
+	GMT_Usage (API, 3, "r: Replicate edges.");
+	GMT_Usage (API, 1, "\n-N Do NOT use Taylor expansion.");
+	GMT_Option (API, "R");
+	GMT_Usage (API, 1, "\n-T<year>");
+	GMT_Usage (API, -2, "Set year used by the IGRF routine to compute the various DECs & DIPs [default is 2000].");
+	GMT_Option  (API, "V");
+	GMT_Usage (API, 1, "\n-W<win_width>");
+	GMT_Usage (API, -2, "Set window width in degrees [5].");
+	GMT_Usage (API, 1, "\n-Z<filterfile>");
+	GMT_Usage (API, -2, "Write filter file <filterfile> to disk.");
+	GMT_Option  (API, "n,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -1058,7 +1076,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, pos = 0;
+	unsigned int n_errors = 0, pos = 0;
 	int    j;
 	char   p[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -1068,13 +1086,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = true;
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->C.dec, &Ctrl->C.dip);
 				Ctrl->C.dec *= D2R;
 				Ctrl->C.dip *= D2R;
@@ -1082,7 +1101,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				Ctrl->C.use_igrf = false;
 				break;
 			case 'E':		/* -Ei<dip_grid> -Ee<dec_grid> */
-				Ctrl->E.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->C.use_igrf = false;
 				Ctrl->E.dip_grd_only = true;
 
@@ -1115,6 +1134,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				j = sscanf (opt->arg, "%d/%d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
 				if (j == 1) Ctrl->F.compute_n = true;	/* Case of only one filter dimension was given */
 				if (Ctrl->F.ncoef_row %2 != 1 || Ctrl->F.ncoef_col %2 != 1) {
@@ -1127,11 +1147,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'G':
-				Ctrl->G.active = true;
-				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.pad_zero = false;
 				for (j = 0; opt->arg[j]; j++) {
 					if (opt->arg[j] == 'm')
@@ -1145,20 +1165,23 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'N':
-				Ctrl->N.active = false;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'T':
-				sscanf (opt->arg, "%lf", &Ctrl->T.year);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->T.year);
 				break;
 			case 'W':
-				sscanf (opt->arg, "%lf", &Ctrl->W.wid);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->W.wid);
 				break;
 			case 'Z':
-				Ctrl->Z.active = true;
-				Ctrl->Z.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Z.file));
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -1180,7 +1203,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 EXTERN_MSC int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	bool wrote_one = false;
-	unsigned int i, j, row, col, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
+	openmp_int row, col;
+	unsigned int i, j, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
 	unsigned int k, l, i3, n_jlon, n_jlat, n_coef;
 	int error = 0;
 	uint64_t ij, jj;
@@ -1212,7 +1236,7 @@ EXTERN_MSC int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1314,8 +1338,8 @@ EXTERN_MSC int GMT_grdredpol (void *V_API, int mode, void *args) {
 	}
 
 	/* Generate vectors of lon & lats */
-	for (col = 0; col < Gin->header->n_columns; col++) ftlon[col] = gmt_M_grd_col_to_x (GMT, col, Gin->header);
-	for (row = 0; row < Gin->header->n_rows; row++) ftlat[row] = gmt_M_grd_row_to_y (GMT, row, Gin->header);
+	for (col = 0; col < (openmp_int)Gin->header->n_columns; col++) ftlon[col] = gmt_M_grd_col_to_x (GMT, col, Gin->header);
+	for (row = 0; row < (openmp_int)Gin->header->n_rows; row++) ftlat[row] = gmt_M_grd_row_to_y (GMT, row, Gin->header);
 
 	n_jlon = urint ((Gin->header->wesn[XHI] - Gin->header->wesn[XLO]) / Ctrl->W.wid) + 1;
 	n_jlat = urint ((Gin->header->wesn[YHI] - Gin->header->wesn[YLO]) / Ctrl->W.wid) + 1;
@@ -1457,7 +1481,7 @@ EXTERN_MSC int GMT_grdredpol (void *V_API, int mode, void *args) {
 						gama1 = -sin(Ctrl->C.dip);
 						da = alfa1 - alfa;	db = beta1 - beta;	dg = gama1 - gama;
 					}
-					if (!Ctrl->N.active)		/* Do not use the Taylor expansion (What's the interest?) */
+					if (Ctrl->N.active)		/* Do not use the Taylor expansion (What's the interest?) */
 						da = db = dg = dt = dm = dn = 0;
 
 					/* Rebuild the filter */
@@ -1518,7 +1542,7 @@ EXTERN_MSC int GMT_grdredpol (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, fxnr);
 	}
 
-	strcpy (Gout->header->title, "Anomaly reducted to the pole");
+	strcpy (Gout->header->title, "Anomaly reduced to the pole");
 	strcpy (Gout->header->z_units, "nT");
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);

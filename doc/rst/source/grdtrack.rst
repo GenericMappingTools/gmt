@@ -13,8 +13,8 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdtrack** [ *table* ] |-G|\ *grd1* |-G|\ *grd2* ...
-[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
-[ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **+v**][**l**\|\ **r**] ]
+[ |-A|\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+l**] ]
+[ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\|\ **f**\ *value*][**l**\|\ **r**] ]
 [ |-D|\ *dfile* ]
 [ |-E|\ *line* ]
 [ |-F|\ [**+b**][**+n**][**+r**][**+z**\ *z0*] ]
@@ -24,6 +24,7 @@ Synopsis
 [ |-T|\ [*radius*][**+e**\|\ **p**]]
 [ |-V|\ [*level*] ]
 [ |-Z| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -46,11 +47,11 @@ Description
 -----------
 
 **grdtrack** reads one or more grid files (or a Sandwell/Smith IMG
-files) and a table (from file or standard input; but see **-E** for
+files) and a table (from file or standard input; but see |-E| for
 exception) with (x,y) [or (lon,lat)] positions in the first two columns
 (more columns may be present). It interpolates the grid(s) at the
 positions in the table and writes out the table with the interpolated
-values added as (one or more) new columns. Alternatively (**-C**), the
+values added as (one or more) new columns. Alternatively (|-C|), the
 input is considered to be line-segments and we create orthogonal
 cross-profiles at each data point or with an equidistant separation and
 sample the grid(s) along these profiles. A bicubic [Default], bilinear,
@@ -63,9 +64,9 @@ Required Arguments
 ------------------
 
 *table*
-    This is an ASCII (or binary, see **-bi**)
-    file where the first 2 columns hold the (x,y) positions where the
-    user wants to sample the 2-D data set.
+    This is an ASCII (or binary, see **-bi**) file where the first 2 columns
+    hold the (x,y) positions where the user wants to sample the 2-D data set.
+    If no tables are given then we read from standard input, unless |-E| is set.
 
 .. _-G:
 
@@ -80,18 +81,22 @@ Required Arguments
     constrained points and NaN elsewhere, and (3) Img file
     with constraints coded, return 1 at constraints and 0 elsewhere, and
     optionally the max latitude in the IMG file [80.738]. You may repeat
-    **-G** as many times as you have grids you wish to sample.
-    Alternatively, use **-G+l**\ *list* to pass a list of file names.
+    |-G| as many times as you have grids you wish to sample.
+    Alternatively, use **-G+l**\ *list* to pass a file whose first word
+    in the trailing text record will be extracted as the file names.
     The grids are sampled and results are output in the order given.
-    (See :ref:`Grid File Formats <grd_inout_full>`).
+    (See :ref:`Grid File Formats <grd_inout_full>`). **Note**: If *gridfile*
+    is a remote global grid and no registration is specified then **grdtrack**
+    will default to gridline registration (instead of the default pixel registration)
+    to ensure all input points are inside the grid.
 
 Optional Arguments
 ------------------
 
 .. _-A:
 
-**-Af**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**]
-    For track resampling (if **-C** or **-E** are set) we can select how this is to
+**-A**\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+l**]
+    For track resampling (if |-C| or |-E| are set) we can select how this is to
     be performed. Append **f** to keep original points, but add
     intermediate points if needed [Default], **m** as **f**, but first
     follow meridian (along y) then parallel (along x), **p** as **f**,
@@ -100,11 +105,11 @@ Optional Arguments
     necessarily included in the output, and **R** as **r**, but adjust
     given spacing to fit the track length exactly. Finally, append
     **+l** if geographic distances should be measured along rhumb lines
-    (loxodromes) instead of great circles. Ignored unless **-C** is used.
+    (loxodromes) instead of great circles. Ignored unless |-C| is used.
 
 .. _-C:
 
-**-C**\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **+v**][**l**\|\ **r**]
+**-C**\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\|\ **f**\ *value*][**l**\|\ **r**]
     Use input line segments to create an equidistant and (optionally)
     equally-spaced set of crossing profiles along which we sample the
     grid(s) [Default simply samples the grid(s) at the input locations].
@@ -112,7 +117,7 @@ Optional Arguments
     *length* sets the full length of each cross-profile, while *ds* is
     the sampling spacing along each cross-profile. Optionally, append
     **/**\ *spacing* for an equidistant spacing between cross-profiles
-    [Default erects cross-profiles at the input coordinates]; see **-A**
+    [Default erects cross-profiles at the input coordinates]; see |-A|
     for how resampling the input track is controlled. By
     default, all cross-profiles have the same direction (left to right
     as we look in the direction of the input line segment). Append **+a**
@@ -124,12 +129,17 @@ Optional Arguments
     `Units`_ below). The default unit for geographic grids is meter while
     Cartesian grids implies the user unit.  The output columns will be
     *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ..., *zn* (The *zi* are
-    the sampled values for each of the *n* grids)
+    the sampled values for each of the *n* grids). Use **+d** to
+    change the profiles from being orthogonal to the line by the given
+    *deviation* [0]. Looking in the direction of the line, a positive *deviation*
+    will rotate the crosslines clockwise and a negative one will rotate them
+    counter-clockwise.  Finally, you can use **+f** to set a fixed azimuth
+    for all profiles.
 
 .. _-D:
 
 **-D**\ *dfile*
-    In concert with **-C** we can save the (possibly resampled) original
+    In concert with |-C| we can save the (possibly resampled) original
     lines to the file *dfile* [Default only saves the cross-profiles].
     The columns will be *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ...
     (sampled value for each grid)
@@ -146,7 +156,7 @@ Optional Arguments
     which will connect segments with shared joints into a single segment.
     In addition to line coordinates, you can use Z-, Z+ to mean the global
     minimum and maximum locations in the grid (only available if a
-    single grid is given via **-G**). You may append
+    single grid is given via |-G|). You may append
     **+i**\ *inc* to set the sampling interval; if not given then
     we default to half the minimum grid interval.  For a *line* along parallels
     or meridians you can add **+g** to report degrees of longitude or latitude
@@ -164,14 +174,14 @@ Optional Arguments
     will result in an error.  If no units are specified we default to
     great circle distances in km (if geographic).  If working with geographic
     data you can use **-j** to control distance calculation mode [Great Circle].
-    **Note**: If **-C** is set and *spacing* is given the that sampling scheme
-    overrules any modifier set in **-E**.
+    **Note**: If |-C| is set and *spacing* is given the that sampling scheme
+    overrules any modifier set in |-E|.
 
 .. _-F:
 
 **-F**\ [**+b**][**+n**][**+r**][**+z**\ *z0*]
     Find critical points along each cross-profile as a function of along-track distance.
-    Requires **-C** and a single input grid (*z*). We examine each cross-profile generated
+    Requires |-C| and a single input grid (*z*). We examine each cross-profile generated
     and report (*dist*, *lonc*, *latc*, *distc*, *azimuthc*, *zc*) at the center peak of
     maximum *z* value, (*lonl*, *latl*, *distl*) and (*lonr*, *latr*, *distr*)
     at the first and last non-NaN point whose *z*-value exceeds *z0*, respectively,
@@ -202,7 +212,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *method*/*modifiers*
-    In conjunction with **-C**, compute a single stacked profile from
+    In conjunction with |-C|, compute a single stacked profile from
     all profiles across each segment. Append how stacking should be
     computed: **a** = mean (average), **m** = median, **p** = mode
     (maximum likelihood), **l** = lower, **L** = lower but only consider
@@ -250,10 +260,11 @@ Optional Arguments
 
 **-Z**
     Only write out the sampled z-values [Default writes all columns].
+    **Note**: If used in conjunction with **-s** then the default
+    column becomes 0 instead of 2.  If specifying specific columns
+    in **-s** then start numbering the z-columns from 0 instead of 2.
 
-**-:**
-    Toggles between (longitude,latitude) and (latitude,longitude)
-    input/output. [Default is (longitude,latitude)].
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -289,6 +300,10 @@ Optional Arguments
 .. include:: explain_-s.rst_
 
 .. include:: explain_-w.rst_
+
+**-:**
+    Toggles between (longitude,latitude) and (latitude,longitude)
+    input/output. [Default is (longitude,latitude)].
 
 .. include:: explain_help.rst_
 

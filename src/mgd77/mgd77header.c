@@ -1,7 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 2004-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and Michael Chandler
- *    See README file for copying and redistribution conditions.
+ *	Copyright (c) 2004-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
  * mgd77header.c reads an NGDC A77 file, determines temporal and spatial extents,
@@ -13,13 +24,14 @@
  * Note: Program expects first row to be a header as (no header row will trigger error):
  * #rec	TZ	year	month	day	hour	min	lat		lon		ptc	twt	depth	bcc	btc	mtf1	mtf2	mag	msens	diur	msd	gobs	eot	faa	nqc	id	sln	sspn
  *
- * Author:	Michael Chandler, ported to GMT5 by P. Wessel
+ * Author:	Michael Hamilton (nee Chandler), ported to GMT5 by P. Wessel
  * Date:	23-MAY-2012
  * Prted to GMT5 on 13-DEC-2016 by P. Wessel
  *
  */
 
 #include "gmt_dev.h"
+#include "longopt/mgd77header_inc.h"
 #include "mgd77.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"mgd77header"
@@ -73,23 +85,28 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)>  [-H<headinfo>] [-Mf[<item>]|r|e|h] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <cruise(s)>  [-H<headertable>] [-Mf[<item>]|r|t] [%s] [%s]\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	MGD77_Init (API->GMT, &M);		/* Initialize MGD77 Machinery */
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	MGD77_Cruise_Explain (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Read and assign header values from a file. Each input file row gives an exact\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   header_field_name, space or tab, and header value. Values are read according to\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   NGDC's MGD77 header format specification.\n\t\te.g.,\n\t\tSource_Institution Univ. of Hawaii\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\tPort_of_Arrival Honolulu, HAWAII\n\t\t...\n	   See mgd77info -Mf output for recognized header field names.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Print header items.  Append type of presentation:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f: Print header items individually, one per line.  Append name of a particular\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        item (e.g., Port_of_Departure), all [Default], or - to see a list of items.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        You can also use the number of the item.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     r: Display raw original MGD77 header records [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     t: Display raw original M77T header records.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-H<headertable>");
+	GMT_Usage (API, -2, "Read and assign header values from the given file. Each input file row gives an exact "
+		"header_field_name, space or tab, and header value. Values are read according to "
+		"NGDC's MGD77 header format specification. Two examples are given:");
+	GMT_Usage (API, 3, "Source_Institution Univ. of Hawaii.");
+	GMT_Usage (API, 3, "Port_of_Arrival Honolulu, HAWAII");
+	GMT_Usage (API, -2, "Note: See mgd77info -Mf output for recognized header field names.");
+	GMT_Usage (API, 1, "\n-Mf[<item>]|r|t");
+	GMT_Usage (API, -2, "Print header items.  Append type of presentation:");
+	GMT_Usage (API, 3, "f: Print header items individually, one per line.  Append name of a particular "
+		"item (e.g., Port_of_Departure), all [Default], or - to see a list of items."
+		"You can also use the number of the item.");
+	GMT_Usage (API, 3, "r: Display raw original MGD77 header records [Default].");
+	GMT_Usage (API, 3, "t: Display raw original M77T header records.");
 	GMT_Option (API, "V,.");
 
 	MGD77_end (API->GMT, &M);	/* Close machinery */
@@ -119,12 +136,12 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77HEADER_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'H':
-				Ctrl->H.active = true;
-				Ctrl->H.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->H.file));
 				break;
 
 			case 'M':
-				Ctrl->M.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				if (opt->arg[0] == 'f') {
 					Ctrl->M.mode = FORMATTED_HEADER;
 					sval = MGD77_Select_Header_Item (GMT, M, &opt->arg[1]);
@@ -142,7 +159,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77HEADER_CTRL *Ctrl, struct GM
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -168,7 +185,7 @@ EXTERN_MSC int GMT_mgd77header (void *V_API, int mode, void *args) {
 	bool error = false;
 	bool quad[4] = {false, false, false, false};
 
-	double this_dist, this_lon, this_lat, last_lon, last_lat, dx, dy, dlon, ds, lon_w;
+	double this_lon, this_lat, last_lon, last_lat, dx, dy, dlon, ds, lon_w;
 	double xmin, xmax, xmin1, xmin2, xmax1, xmax2, ymin, ymax, this_time, tmin, tmax;
 	double *dvalue[MGD77_MAX_COLS];
 
@@ -198,7 +215,7 @@ EXTERN_MSC int GMT_mgd77header (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);		/* Initialize input MGD77 Machinery */
@@ -263,7 +280,7 @@ EXTERN_MSC int GMT_mgd77header (void *V_API, int mode, void *args) {
 		id_col = MGD77_Get_Column	(GMT, "id", &M);
 
 		tmin = tmax = GMT->session.d_NaN;
-		this_dist = this_lon = this_lat = ds = this_time = 0.0;
+		this_lon = this_lat = ds = this_time = 0.0;
 		xmin1 = xmin2 = 360.0;
 		xmax1 = xmax2 = -360.0;
 		ymin = 180.0;
@@ -315,7 +332,6 @@ EXTERN_MSC int GMT_mgd77header (void *V_API, int mode, void *args) {
 				dx = dlon * cosd (0.5 * (this_lat + last_lat));
 				dy = this_lat - last_lat;
 				ds = GMT->current.proj.DIST_KM_PR_DEG * hypot (dx, dy);
-				this_dist += ds;
 			}
 			ymin = MIN (this_lat, ymin);
 			ymax = MAX (this_lat, ymax);

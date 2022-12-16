@@ -12,20 +12,22 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdspotter** [*grdfile*] |-E|\ *rotfile* |-G|\ *CVAgrid*
+**gmt grdspotter** *ingrid*
+|-E|\ *rot_file*\|\ *lon*/*lat*/*angle*\ [**+i**]
+|-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ *agegrid* ]
-[ |-D|\ *DIgrid* ]
+[ |-D|\ **i**\|\ **p**\ *grid* ]
 [ |-L|\ *IDgrid* ]
 [ |-M| ]
 [ |-N|\ *upper_age* ]
-[ |-P|\ *PAgrid* ]
 [ |-Q|\ *IDinfo* ]
 [ |-S| ]
 [ |-T|\ **t**\|\ **u**\ *fixed_val* ] [
 [ |SYN_OPT-V| ]
-[ |-W|\ *n\_try* ]] [ **-Z**\ *z_min*\ [/*z_max*\ [/*z_inc*]] ]
+[ |-W|\ *n\_try* ]]
+[ **-Z**\ *z_min*\ [/*z_max*\ [/*z_inc*]] ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
 
@@ -43,15 +45,20 @@ give a Cumulative Volcano Amplitude grid (CVA).
 Required Arguments
 ------------------
 
-*grdfile*
-    Data grid to be processed, typically residual bathymetry or free-air anomalies.
+.. |Add_ingrid| replace:: Data grid to be processed, typically residual
+    bathymetry or free-air anomalies.
+.. include:: /explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. include:: explain_rots.rst_
 
 .. _-G:
 
-**-G**
-    Specify name for output CVA grid file.
+.. |Add_outgrid| replace::  Specify name for output CVA grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -75,10 +82,12 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *DIgrid*
-    Use flowlines to determine the maximum CVA encountered along each
+**-Di**\|\ **p**\ *grid*
+    For **-Di**, we use flowlines to determine the maximum CVA encountered along each
     flowline and create a Data Importance (DI) grid with these values at
-    the originating nodes.
+    the originating nodes.  For **-Dp** we will instead use flowlines to determine
+    the flowline age at the CVA maximum for each node and create a Predicted Age (PA)
+    grid with these values at the originating nodes.  Repeatable.
 
 .. _-L:
 
@@ -89,24 +98,17 @@ Optional Arguments
 .. _-M:
 
 **-M**
-    Do not attempt to keep all flowlines in memory when using **-D**
-    and/or **-P**. Should you run out of memory you can use this option
+    Do not attempt to keep all flowlines in memory when using |-D|
+    and/or |-P|. Should you run out of memory you can use this option
     to compute flowlines on-the-fly. It will be slower as we no longer
     can reuse the flowlines calculated for the CVA step. Cannot be used
-    with **-W** or the multi-slice mode in **-Z**.
+    with |-W| or the multi-slice mode in |-Z|.
 
 .. _-N:
 
 **-N**\ *upper_age*
     Set the upper age to assign to nodes whose crustal age is unknown
     (i.e., NaN) [no upper age]. Also see |-A|.
-
-.. _-P:
-
-**-P**\ *PAgrid*
-    Use flowlines to determine the flowline age at the CVA maximum for
-    each node and create a Predicted Age (PA) grid with these values at
-    the originating nodes.
 
 .. _-Q:
 
@@ -116,7 +118,7 @@ Optional Arguments
     [Default uses all IDs]. Each line would be TAG ID [w e s n]. The
     *w/e/s/n* zoom box is optional; if specified it means we only trace
     the flowline if inside this region [Default uses region set by
-    **-R**]. Requires **-L**.
+    |-R|]. Requires |-L|.
 
 .. _-S:
 
@@ -143,8 +145,8 @@ Optional Arguments
 
 **-W**\ *n\_try*
     Get *n\_try* bootstrap estimates of the maximum CVA location; the
-    longitude and latitude results are written to stdout [Default is no
-    bootstrapping]. Cannot be used with **-M**.
+    longitude and latitude results are written to standard output [Default is no
+    bootstrapping]. Cannot be used with |-M|.
 
 .. _-Z:
 
@@ -152,7 +154,7 @@ Optional Arguments
     Ignore nodes with z-values lower than *z_min* [0] and optionally
     larger than *z_max* [Inf]. Give *z_min/z_max/z_inc* to make
     separate CVA grids for each *z*-slice [Default makes one CVA grid].
-    Multi-slicing cannot be used with **-M**.
+    Multi-slicing cannot be used with |-M|.
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_
@@ -202,4 +204,4 @@ Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 
 Wessel, P., 2008, Hotspotting: Principles and properties of a plate
 tectonic Hough transform, Geochem. Geophys. Geosyst. 9(Q08004):
-doi:10.1029/2008GC002058.
+https://doi.org/10.1029/2008GC002058.

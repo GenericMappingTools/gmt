@@ -12,10 +12,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt vector** [ *tables* ] [ |-A|\ **m**\ [*conf*]\|\ *vector* ]
+**gmt vector** [ *table* ]
+[ |-A|\ **m**\ [*conf*]\|\ *vector* ]
 [ |-C|\ [**i**\|\ **o**] ]
-[ |-E| ] [ |-N| ] [ |-S|\ *vector* ]
-[ |-T|\ **a**\|\ **d**\|\ **D**\|\ **p**\ *az*\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x** ]
+[ |-E| ]
+[ |-N| ]
+[ |-S|\ *vector* ]
+[ |-T|\ **a**\|\ **d**\|\ **D**\|\ **p**\ *azim*\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -27,6 +30,7 @@ Synopsis
 [ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -37,16 +41,16 @@ Description
 
 **vector** reads either (x, y), (x, y, z), (r, theta) or (lon, lat)
 [or (lat,lon); see **-:**] coordinates from the first 2-3 columns on
-standard input [or one or more *tables*]. If **-fg** is selected and only two items
+standard input [or one or more tables]. If **-fg** is selected and only two items
 are read (i.e., lon, lat) then these coordinates are converted to
 Cartesian three-vectors on the unit sphere. Otherwise we expect (r,
 theta) unless **-Ci** is in effect. If no file is found we expect a
 single vector to be given as argument to **-A**; this argument will also
 be interpreted as an x/y[/z], lon/lat, or r/theta vector. The input
-vectors (or the one provided via **-A**) are denoted the prime
+vectors (or the one provided via |-A|) are denoted the prime
 vector(s). Several standard vector operations (angle between vectors,
 cross products, vector sums, and vector rotations) can be selected; most
-require a single second vector, provided via **-S**. The output vectors
+require a single second vector, provided via |-S|. The output vectors
 will be converted back to (lon, lat) or (r, theta) unless **-Co** is set
 which requests (x, y[, z]) Cartesian coordinates.
 
@@ -66,9 +70,9 @@ Optional Arguments
 .. _-A:
 
 **-A**\ **m**\ [*conf*]\|\ *vector*
-    Specify a single, primary vector instead of reading *tables*; see
-    *tables* for possible vector formats. Alternatively, append **m**
-    to read *tables* and set the single, primary vector to be the mean
+    Specify a single, primary vector instead of reading data table(s); see
+    *table* for possible vector formats. Alternatively, append **m**
+    to read *table* and set the single, primary vector to be the mean
     resultant vector first. We also compute the confidence ellipse for
     the mean vector (azimuth of major axis, major axis, and minor axis;
     for geographic data the axes will be reported in km). You may
@@ -88,7 +92,7 @@ Optional Arguments
 **-E**
     Convert input geographic coordinates from geodetic to geocentric and
     output geographic coordinates from geocentric to geodetic. Ignored
-    unless **-fg** is in effect, and is bypassed if **-C** is selected.
+    unless **-fg** is in effect, and is bypassed if |-C| is selected.
 
 .. _-N:
 
@@ -100,17 +104,17 @@ Optional Arguments
 
 **-S**\ [*vector*]
     Specify a single, secondary vector in the same format as the first
-    vector. Required by operations in **-T** that need two vectors
+    vector. Required by operations in |-T| that need two vectors
     (average, bisector, dot product, cross product, and sum).
 
 .. _-T:
 
-**-T**\ **a**\|\ **d**\|\ **D**\|\ **p**\ *az*\|\ **s**\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x**
+**-T**\ **a**\|\ **d**\|\ **D**\|\ **p**\ *azim*\|\ **s**\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x**
     Specify the vector transformation of interest. Append **a** for
     average, **b** for the pole of the two points bisector, **d** for
     dot product (use **D** to get angle in degrees between the two
-    vectors), **p**\ *az* for the pole to the great circle specified by
-    input vector and the circle's *az* (no second vector used), **s** for vector sum,
+    vectors), **p**\ *azim* for the pole to the great circle specified by
+    input vector and the circle's *azim* (no second vector used), **s** for vector sum,
     **r**\ *par* for vector rotation (here, *par* is a single
     angle for 2-D Cartesian data and *lon/lat/angle* for a 3-D rotation
     pole and angle), **R** will instead rotate the fixed secondary vector
@@ -119,9 +123,9 @@ Optional Arguments
     for the same translation for all input points, or just append
     *unit* to read *azimuth* and *distance* (in specified *unit* [**e**])
     from the third and fourth data column in the file, and **x** for cross-product.
-    If **-T** is not given then no transformation takes place; the
-    output is determined by other options such as **-A**, **-C**,
-    **-E**, and **-N**. **Note**: For **-Tt** and geographic coordinates we will
+    If |-T| is not given then no transformation takes place; the
+    output is determined by other options such as |-A|, |-C|,
+    |-E|, and |-N|. **Note**: For **-Tt** and geographic coordinates we will
     perform a great circle calculation unless **-je** is selected.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -131,6 +135,9 @@ Optional Arguments
 
 .. |Add_-bi| replace:: [Default is 2 or 3 input columns].
 .. include:: explain_-bi.rst_
+
+.. |Add_-bo| replace:: [Default is same as input].
+.. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-d.rst_

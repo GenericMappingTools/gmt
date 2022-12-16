@@ -13,17 +13,20 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt triangulate** [ *table* ]
+[ |-A| ]
 [ |-C|\ *slpfile* ]
 [ |-D|\ **x**\|\ **y** ]
 [ |-E|\ *empty* ]
-[ |-G|\ *grdfile* ]
+[ |-G|\ *outgrid* ]
 [ |SYN_OPT-I| ]
 [ |-J|\ *parameters* ]
+[ |-L|\ *indexfile*\ [**+b**] ]
 [ |-M| ]
 [ |-N| ]
 [ |-Q|\ [**n**] ]
 [ |SYN_OPT-R| ]
 [ |-S| ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
 [ |SYN_OPT-b| ]
@@ -34,6 +37,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -44,23 +48,26 @@ Description
 -----------
 
 **triangulate** reads one or more ASCII [or binary] files (or standard
-input) containing x,y[,z] and performs Delaunay triangulation, i.e., it
-find how the points should be connected to give the most equilateral
-triangulation possible. If a map projection (give **-R** and **-J**) is
+input) containing *x, y*\ [*, z*] and performs Delaunay triangulation, i.e., it
+finds how the points should be connected to give the most equilateral
+triangulation possible. If a map projection (give |-R| and |-J|) is
 chosen then it is applied before the triangulation is calculated. By
 default, the output is triplets of point id numbers that make up each
 triangle and is written to standard output. The id numbers refer to the
 points position (line number, starting at 0 for the first line) in the
 input file. As an option, you may choose to create a multiple segment
 file that can be piped through :doc:`plot` to draw the triangulation
-network. If **-G** **-I** are set a grid will be calculated based on the
+network. If |-G| |-I| are set a grid will be calculated based on the
 surface defined by the planar triangles. The actual algorithm used in
-the triangulations is either that of Watson [1982] [Default] or Shewchuk
-[1996] (if installed; type **triangulate -** to see which method is
+the triangulations is either that of Watson [1982] or Shewchuk [1996] [Default]
+(if installed; type **gmt get GMT_TRIANGULATE** to see which method is
 selected). This choice is made during the GMT installation.  Furthermore,
 if the Shewchuk algorithm is installed then you can also perform the
 calculation of Voronoi polygons and optionally grid your data via the
-natural nearest neighbor algorithm.
+natural nearest neighbor algorithm.  **Note**: For geographic data with
+global or very large extent you should consider :doc:`sphtriangulate`
+instead since **triangulate** is a Cartesian or small-geographic area operator
+and is unaware of periodic or polar boundary conditions.
 
 Required Arguments
 ------------------
@@ -71,37 +78,46 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
+**-A**
+    Compute the area of the Cartesian triangles and append the areas in the
+    output segment headers [no areas calculated].  Requires |-S| and is not
+    compatible with |-Q|.
+
 .. _-C:
 
 **-C**\ *slpfile*
     Read a slope grid (in degrees) and compute the propagated uncertainty in the
-    bathymetry using the CURVE algorithm [Zambo et al, 2016].  Requires the **-G**
+    bathymetry using the CURVE algorithm [Zambo et al, 2016].  Requires the |-G|
     option to specify the output grid.  Note that the *slpgrid* sets the domain
-    for the output grid so **-R**, **-I**, [|SYN_OPT-r|\ ] are not required.
-    Cannot be used in conjunction with **-D**, **-F**, **-M**, **-N**, **-Q**,
-    **-S** and **-T**.
+    for the output grid so |-R|, |-I|, [|SYN_OPT-r|\ ] are not required.
+    Cannot be used in conjunction with |-D|, |-F|, |-M|, |-N|, |-Q|,
+    |-S| and |-T|.
 
 .. _-D:
 
 **-Dx**\|\ **y**
     Take either the *x*- or *y*-derivatives of surface represented by
-    the planar facets (only used when **-G** is set).
+    the planar facets (only used when |-G| is set).
 
 .. _-E:
 
 **-E**\ *empty*
-    Set the value assigned to empty nodes when **-G** is set [NaN].
+    Set the value assigned to empty nodes when |-G| is set [NaN].
 
 .. _-G:
 
-**-G**\ *grdfile*
-    Use triangulation to grid the data onto an even grid (specified with
-    **-R** **-I**). Append the name of the output grid file. The
+.. |Add_outgrid| replace:: Use triangulation to grid the data onto an even grid (specified with
+    |-R| and |-I|). Append the name of the output grid file. The
     interpolation is performed in the original coordinates, so if your
     triangles are close to the poles you are better off projecting all
     data to a local coordinate system before using **triangulate** (this
     is true of all gridding routines) or instead select **sphtriangulate**.
     For natural nearest neighbor gridding you must add **-Qn**.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -112,6 +128,15 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+.. _-L:
+
+**-L**\ *indexfile*\ [**+b**]
+    Give name of file with previously computed Delaunay information. Each record must contain
+    triplets of node numbers for a triangle in the input *table* [Default computes these
+    using Delaunay triangulation]. If the *indexfile* is binary and can be read the same way
+    as the binary input *table* then you can append **+b** to spead up the reading
+    [Default reads nodes as ASCII].
+
 .. _-M:
 
 **-M**
@@ -121,15 +146,15 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Used in conjunction with **-G** to also write the triplets of the
+    Used in conjunction with |-G| to also write the triplets of the
     ids of all the Delaunay vertices [Default only writes the grid].
 
 .. _-Q:
 
 **-Q**\ [**n**]
     Output the edges of the Voronoi cells instead [Default is Delaunay
-    triangle edges]. Requires **-R** and is only available if linked
-    with the Shewchuk [1996] library. Note that **-Z** is ignored on
+    triangle edges]. Requires |-R| and is only available if linked
+    with the Shewchuk [1996] library. Note that |-Z| is ignored on
     output. Optionally, append **n** for combining the edges into
     closed Voronoi polygons.
 
@@ -148,7 +173,7 @@ Optional Arguments
 
 **-T**
     Output edges or polygons even if gridding has been selected with
-    the **-G** option [Default will not output the triangulation or
+    the |-G| option [Default will not output the triangulation or
     Voronoi polygons is gridding is selected].
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -159,8 +184,8 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    Controls whether we read (x,y) or (x,y,z) data and if z should be
-    output when **-M** or **-S** are used [Read (x,y) only].
+    Controls whether we read (*x,y*) or (*x,y,z*) data and if *z* should be
+    output when |-M| or |-S| are used [Read (*x,y*) only].
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -184,8 +209,10 @@ Optional Arguments
 
 .. include:: explain_-qi.rst_
 
-.. |Add_nodereg| replace:: (Only valid with **-G**).
+.. |Add_nodereg| replace:: (Only valid with |-G|).
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_-w.rst_
 
@@ -230,7 +257,7 @@ according to their ID, try
    ::
 
     gmt triangulate samples.xyz -M -Qn -R-100/-90/30/34 -JM15c | \
-        gmt plot -R-100/-90/30/34 -JM15c -W0.5p+cf -L -B1 -Ccolors.cpt -L -pdf polygons
+        gmt plot -R-100/-90/30/34 -JM15c -W0.5p+cf -B1 -Ccolors.cpt -pdf polygons
 
 To grid the data using the natural nearest neighbor algorithm, try
 

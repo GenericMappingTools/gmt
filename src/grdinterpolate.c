@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,11 +15,11 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: grdinterpolate reads a 3D netcdf spatial data cube with
+ * Brief synopsis: grdinterpolate reads a 3-D netcdf spatial data cube with
  * the 3rd dimension either depth/height or time.  It then interpolates
  * the cube at arbitrary depth z (or time) values and writes either a single
  * slice 2-D grid or another multi-level 3-D data cube.  Alternatively,
- * we can read a stack of input 2-D grids instead of the 3D cube.  Finally,
+ * we can read a stack of input 2-D grids instead of the 3-D cube.  Finally,
  * we may sample time-series (-S) or extract a vertical slice (-E) rather
  * than write gridded horizontal output slice(s).
  *
@@ -30,14 +30,15 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdinterpolate_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdinterpolate"
 #define THIS_MODULE_MODERN_NAME	"grdinterpolate"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Interpolate a 3-D cube, 2-D grids or 1-D series from a 3-D data cube or stack of 2-D grids"
-#define THIS_MODULE_KEYS	"<G{+,>?}"
+#define THIS_MODULE_KEYS	"<G{+,G?},ED(,SD("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"->RVfn"
+#define THIS_MODULE_OPTIONS "-:>RVbdefghinoqs"
 
 struct GRDINTERPOLATE_CTRL {
 	struct GRDINTERPOLATE_In {
@@ -49,14 +50,14 @@ struct GRDINTERPOLATE_CTRL {
 		bool active;
 		char *information;
 	} D;
-	struct GRDINTERPOLATE_E {	/* -E<file>|<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x] */
+	struct GRDINTERPOLATE_E {	/* -E<file>|<line1>[,<line2>,...][+a<az>][+c][+g][+i<step>][+l<length>][+n<np>][+o<az>][+p][+r<radius>][+x] */
 		bool active;
 		unsigned int mode;
 		char *lines;
 		double step;
 		char unit;
 	} E;
-	struct GRDINTERPOLATE_F {	/* -Fl|a|c[1|2] */
+	struct GRDINTERPOLATE_F {	/* -Fl|a|c[+d1|2] */
 		bool active;
 		unsigned int mode;
 		unsigned int type;
@@ -118,60 +119,70 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	static char type[3] = {'l', 'a', 'c'};
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cube> | <grd1> <grd2> <grd3> ... -G<outfile>\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_GRDEDIT3D);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Fl|a|c|n][+1|2] [-S<x>/<y>|<table>[+h<header>]] [-T[<min>/<max>/]<inc>[+i|n]] [%s]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Z[<levels>]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <cube> | <grd1> <grd2> <grd3> ... -G<outfile> [%s] "
+		"[-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np>][+o<az>][+p][+r<radius>][+x]] "
+		"[-Fl|a|c|n[+d1|2]] [%s] [-S<x>/<y>|<table>[+h<header>]] [-T[<min>/<max>/]<inc>[+i|n]] [%s] "
+		"[-Z[<levels>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+			name,  GMT_GRDEDIT3D, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
+			GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<cube> is the name of the input 3D netCDF data cube.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   However, with -Z we instead expect a series of 2-D grids.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify a single output file name (or a filename format template; also see -S).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To write a series of 2-D grids instead of a cube, include a floating-point C-format\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   statement in <outfile> set via -G for embedding the level in the file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+
+	GMT_Usage (API, 1, "\n<cube> is the name of the input 3-D netCDF data cube. However, with -Z we instead expect a "
+		"series of 2-D grids.");
+	GMT_Usage (API, 1, "\n-G<outfile>");
+	GMT_Usage (API, -2, "Specify a single output file name (or a filename format template; also see -S) To write a "
+		"series of 2-D grids instead of a cube, include a floating-point C-format statement in <outfile> set via "
+		"-G for embedding the level in the file name.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_cube_info_syntax (API->GMT, 'D');
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set up a single crossection based on <file> or on the given <line1>[,<line2>,...]. Give start and stop\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   coordinates for each line segment.  The format of each <line> is <start>/<stop>, where <start> or <stop>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   are coordinate pairs, e.g., <lon1/lat1>/<lon2>/<lat2>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i<inc> to set the sampling increment [Default is 0.5 x min of grid's (x_inc, y_inc)]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Instead of <start/stop>, give <origin> and append +a|o|l|n|r as required:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +a<az> defines a profiles from <origin> in <az> direction. Add +l<length>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +g uses gridline coordinates (degree longitude or latitude) if <line> is so aligned [great circle].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +o<az> is like +a but centers profile on <origin>. Add +l<length>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +p means sample along the parallel if <line> has constant latitude.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +r<radius> defines a circle about <origin>. Add +i<inc> or +n<np>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +n<np> sets the number of output points and computes <inc> from <length>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +x follows a loxodrome (rhumbline) [great circle].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Note:  A unit is optional.  Only ONE unit type from %s can be used throughout this option,\n", GMT_LEN_UNITS2_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t     so mixing of units is not allowed [Default unit is km, if grid is geographic].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the grid interpolation mode.  Choose from:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   l Linear interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a Akima spline interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c Cubic spline interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n No interpolation (nearest point).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +1 for 1st derivative or +2 for 2nd derivative.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -F%c].\n", type[API->GMT->current.setting.interpolant]);
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Give a fixed point for across-stack sampling [Default] or interpolation [with -T].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For multiple points, give a <table> of points instead (one point per record).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Output is a multi-segment table written to stdout unless -G is used to set a file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To write each series to separate files, let -G<outfile> contain a C-format\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   integer specifier (e.g, %%d) for embedding the running point number.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append a fixed header via +h<header> [trailing text per record in <table>].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Interpolate the 3-D grid at given levels across the 3rd dimension\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Make evenly spaced output level steps from <min> to <max> by <inc>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of levels to produce over the range instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output levels in the first column, or a comma-separated list.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: If -Z and no -T, -E, -S then we simply write the stack as a 3-D data cube.\n");
-	GMT_Option (API, "R,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Read or write 2-D grids that make up a virtual 3-D data cube.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To read a series of 2-D grids, give -Z<levels>, where <levels>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   for each grid is set via <min>/<max>/<inc>, <zfile>, or a comma-separated list.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   No argument means let levels be 0, 1, 2, ...\n");
+	GMT_Usage (API, 1, "\n-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np>][+o<az>][+p][+r<radius>][+x]");
+	GMT_Usage (API, -2, "Set up a single cross-section based on <file> or on the given <line1>[,<line2>,...]. Give "
+		"start and stop coordinates for each line segment.  The format of each <line> is <start>/<stop>, where "
+		"<start> or <stop> are coordinate pairs, e.g., <lon1/lat1>/<lon2>/<lat2>. Append +i<inc> to set the "
+		"sampling increment [Default is 0.5 x min of grid's (x_inc, y_inc)] Instead of <start/stop>, give <origin> "
+		"and append +a|o|l|n|r as required:");
+	GMT_Usage (API, -3, "+a Define a profiles from <origin> in <az> direction. Add +l<length>.");
+	GMT_Usage (API, -3, "+g Use gridline coordinates (degree longitude or latitude) if <line> is so aligned [great circle].");
+	GMT_Usage (API, -3, "+o Define a profile centered on <origin> in <az> direction. Add +l<length>.");
+	GMT_Usage (API, -3, "+p Sample along the parallel if <line> has constant latitude.");
+	GMT_Usage (API, -3, "+r Define a circle about <origin> with given <radius>. Add +i<inc> or +n<np>.");
+	GMT_Usage (API, -3, "+n Set the number of output points as <np> and computes <inc> from <length>.");
+	GMT_Usage (API, -3, "+x Follow a loxodrome (rhumbline) [great circle].");
+	GMT_Usage (API, -2, "Note:  A unit is optional.  Only ONE unit type from %s can be used throughout this option, so "
+		"mixing of units is not allowed [Default unit is km, if grid is geographic].");
+	GMT_Usage (API, 1, "\n-Fl|a|c|n[+d1|2]");
+	GMT_Usage (API, -2, "Set the grid interpolation mode.  Choose from:");
+	GMT_Usage (API, -3, "l: Linear interpolation.");
+	GMT_Usage (API, -3, "a: Akima spline interpolation.");
+	GMT_Usage (API, -3, "c: Cubic spline interpolation.");
+	GMT_Usage (API, -3, "n: No interpolation (nearest point).");
+	GMT_Usage (API, -2, "Optionally, request a spline derivative via a modifier:");
+	GMT_Usage (API, 3, "+d Append 1 for 1st derivative or 2 for 2nd derivative.");
+	GMT_Option (API, "R");
+	GMT_Usage (API, 1, "\n-S<x>/<y>|<table>[+h<header>]");
+	GMT_Usage (API, -2, "Give a fixed point for across-stack sampling [Default] or interpolation [with -T]. For "
+		"multiple points, give a <table> of points instead (one point per record). Output is a multi-segment table "
+		"written to standard output unless -G is used to set a file name. To write each series to separate files, let "
+		"-G<outfile> contain a C-format integer specifier (e.g, %%d) for embedding the running point number. "
+		"Append a fixed header via +h<header> [trailing text per record in <table>].");
+	GMT_Usage (API, 1, "\n-T[<file>|<list>|<min>/<max>/<inc>[+b|i|l|n]]");
+		GMT_Usage (API, -2, "Interpolate the 3-D grid at given levels across the 3rd dimension. Make evenly spaced output "
+		"level steps from <min> to <max> by <inc>. Control setup via modifiers:");
+	GMT_Usage (API, 3, "+b Select log2 spacing in <inc>");
+	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
+	GMT_Usage (API, 3, "+l Select log10 spacing via <inc> = 1,2,3.");
+	GMT_Usage (API, 3, "+n Let <inc> mean the number of points instead. of increment");
+	GMT_Usage (API, -2, "Alternatively, give a <file> with output times in the first column, or a comma-separated <list>.");
+	GMT_Usage (API, -2, "Note: If -T is not given then we select all the input layers.");
+	GMT_Option (API, "V");
+	GMT_Usage (API, 1, "\n-Z[<levels>]");
+	GMT_Usage (API, -2, "Read or write 2-D grids that make up a virtual 3-D data cube. To read a series of 2-D grids, "
+		"give -Z<levels>, where <levels> for each grid is set via <min>/<max>/<inc>, <zfile>, or a comma-separated "
+		"list. No argument means let levels be 0, 1, 2, ...");
+	GMT_Usage (API, -2, "Note: If -Z and no -T, -E, -S then we simply write the stack as a 3-D data cube.");
 	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,n,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -197,23 +208,22 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 					n_alloc += GMT_SMALL_CHUNK;
 					Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc, char *);
 				}
-				Ctrl->In.file[Ctrl->In.n_files] = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_files]))) n_errors++;
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_files]));
 				Ctrl->In.n_files++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'D':	/* Give grid information */
-				Ctrl->D.active = true;
-				Ctrl->D.information = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->D.information);
 				break;
 			case 'E':	/* Create or read an equidistant profile for slicing */
-				Ctrl->E.active = true;
-				Ctrl->E.lines = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->E.lines);
 				break;
 			case 'F':	/* Set the spline type */
-				Ctrl->F.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				switch (opt->arg[0]) {
 					case 'l':	Ctrl->F.mode = GMT_SPLINE_LINEAR;	break;
 					case 'a':	Ctrl->F.mode = GMT_SPLINE_AKIMA;	break;
@@ -224,24 +234,25 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 						n_errors++;
 						break;
 				}
-				if (opt->arg[1] == '+') Ctrl->F.type = (opt->arg[2] - '0');	/* Want first or second derivative */
+				if (strstr (&opt->arg[1], "+d1")) Ctrl->F.type = 1;	/* Want first derivative */
+				else if (strstr (&opt->arg[1], "+d2")) Ctrl->F.type = 2;	/* Want second derivative */
+				else if (strstr (&opt->arg[1], "+1")) Ctrl->F.type = 1;	/* Want first derivative (backwards compatibility) */
+				else if (strstr (&opt->arg[1], "+2")) Ctrl->F.type = 2;	/* Want second derivative (backwards compatibility) */
 				strncpy (Ctrl->F.spline, opt->arg, GMT_LEN8-1);	/* Keep track of what was given since it may need to be passed verbatim to other modules */
 				break;
 			case 'G':	/* Output file or name template */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				if (n_files++ > 0) { n_errors++; continue; }
-				Ctrl->G.file = strdup (opt->arg);
-				if (strchr (Ctrl->G.file, '%') == NULL) {	/* Gave a fixed output file, can check */
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
-				}
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file));
 				break;
 			case 'T':	/* Set level sampling spacing */
-				Ctrl->T.active = true;
-				Ctrl->T.string = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				n_errors += gmt_get_required_string (GMT, opt->arg, opt->option, 0, &Ctrl->T.string);
 				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR | GMT_ARRAY_RANGE | GMT_ARRAY_UNIQUE, GMT_Z);
 				break;
 
 			case 'S':	/* Sample vertically across the grid stack at one or more points */
-				Ctrl->S.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				if ((c = strstr (opt->arg, "+h"))) {	/* Got a fixed header string for output segment headers */
 					if (c[2])
 						Ctrl->S.header = strdup (&c[2]);
@@ -266,13 +277,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 				}
 				else {
 					Ctrl->S.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->S.file))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->S.file))) n_errors++;
 				}
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 
 			case 'Z':	/* Control input/output grid management */
-				Ctrl->Z.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				if (opt->arg[0] == 'i') k = 1;	/* Skip the now deprecated 'i' in -Zi */
 				if (opt->arg[k])
 					n_errors += gmt_parse_array (GMT, 'Z', &opt->arg[k], &(Ctrl->Z.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR | GMT_ARRAY_RANGE | GMT_ARRAY_UNIQUE, GMT_Z);
@@ -281,14 +292,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
 	if (Ctrl->In.n_files) Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, Ctrl->In.n_files + 1, char *);	/* One extra so we have a NULL-terminated array */
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files < 1, "Error: No input grid(s) specified.\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->Z.active && Ctrl->In.n_files != 1, "Must specify a single input 3D grid cube file unless -Z is set\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->Z.active && Ctrl->In.n_files != 1, "Must specify a single input 3-D grid cube file unless -Z is set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Option -F: Only 1st or 2nd derivatives may be requested\n");
 	if (!(Ctrl->S.active || Ctrl->E.active)) {	/* Under -S and -E, the -T and -G are optional */
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output grid file\n");
@@ -307,16 +318,21 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 GMT_LOCAL bool grdinterpolate_equidistant_levels (struct GMT_CTRL *GMT, double *z, unsigned int nz) {
 	/* Return true if spacing between layers is constant */
 	unsigned int k;
-	double dz;
+	double dz_first, dz_next, noise;
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Report levels */
+	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {	/* Report z-levels */
 		for (k = 0; k < nz; k++)
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: %g\n", k, z[k]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Level %d: %lg\n", k, z[k]);
 	}
-	if (nz < 3) return true;	/* Special case of a single layer */
-	dz = z[1] - z[0];	/* Get first increment, then compare to the rest */
-	for (k = 2; k < nz; k++)
-		if (!doubleAlmostEqual (dz, z[k]-z[k-1])) return false;
+	if (nz < 3) return true;	/* Special case of just one increment between two layers is by definition equidistant */
+	dz_first = z[1] - z[0];	/* Get first increment, then use it as truth and compare to the other increments */
+	if (dz_first == 0.0) return false;	/* Safety valve, plus cannot be equidistant if increment is zero */
+	for (k = 2; k < nz; k++) {	/* We start at layer 3 and get dz back from 2, etc */
+		dz_next = z[k] - z[k-1];	/* Next level increment */
+		if (dz_next == 0.0) return false;	/* Safety valve, plus cannot be equidistant if increment is zero */
+		noise = fabs (remainder (dz_next, dz_first));	/* Get a positive remainder or zero */
+		if (noise > GMT_CONV12_LIMIT) return false;	/* Sorry buddy, you are off */
+	}
 	return true;
 }
 
@@ -350,7 +366,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -393,13 +409,13 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else {	/* See if we got a 3D netCDF data cube; if so return number of layers and and the levels array */
+	else {	/* See if we got a 3-D netCDF data cube; if so return number of layers and and the levels array */
 		nc_z_named = strchr (Ctrl->In.file[0], '?');	/* Maybe given a specific variable? */
 		if (nc_z_named) {	/* Gave a specific variable. Keep variable name and remove from filename */
 			strcpy (cube_layer, &nc_z_named[1]);
 			nc_z_named[0] = '\0';	/* Chop off layer name for now */
 		}
-		if ((error = gmt_nc_read_cube_info (GMT, Ctrl->In.file[0], w_range, &n_layers, &level))) {
+		if ((error = gmt_nc_read_cube_info (GMT, Ctrl->In.file[0], w_range, &n_layers, &level, NULL))) {
 			Return (error);
 		}
 		got_cube = true;
@@ -410,12 +426,11 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	if (got_cube && !(Ctrl->E.active || Ctrl->S.active || Ctrl->T.active)) {	/* If given a cube we requires other options */
-		GMT_Report (API, GMT_MSG_ERROR, "Data cube read but none of -E, -S -T were given\n");
-		Return (GMT_RUNTIME_ERROR);
+	if (got_cube && !(Ctrl->E.active || Ctrl->S.active || Ctrl->T.active)) {	/* No other options - do a 3-D grdcut */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Data cube read but none of -E, -S -T were given means we return all layers within -R\n");
 	}
 	/* Create output level array, if selected */
-	if (Ctrl->T.active && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) {
+	if (Ctrl->T.active && Ctrl->T.T.set != 2 && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -T: Unable to set up output level array\n");
 		Return (API->error);
 	}
@@ -426,18 +441,18 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	start_k = 0; stop_k = n_layers - 1;	/* We first assume all layers are needed */
 	if (Ctrl->T.active) {
-		if (Ctrl->T.T.array[0] > level[stop_k] || Ctrl->T.T.array[Ctrl->T.T.n-1] < level[start_k]) {
+		if (Ctrl->T.T.min > level[stop_k] || Ctrl->T.T.max < level[start_k]) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -T: Specified range outside that of the data cube\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		while (start_k < n_layers && Ctrl->T.T.array[0] > level[start_k])	/* Find the first layer that is inside the output time range */
+		while (start_k < n_layers && Ctrl->T.T.min > level[start_k])	/* Find the first layer that is inside the output time range */
 			start_k++;
-		if (start_k && Ctrl->T.T.array[0] < level[start_k]) start_k--;		/* Go back one if start time is less than first layer */
+		if (start_k && Ctrl->T.T.min < level[start_k]) start_k--;		/* Go back one if start time is less than first layer */
 		if (start_k && (Ctrl->F.mode == GMT_SPLINE_AKIMA || Ctrl->F.mode == GMT_SPLINE_CUBIC))
 			start_k--;	/* One more to define the spline coefficients */
-		while (stop_k && Ctrl->T.T.array[Ctrl->T.T.n-1] < level[stop_k])	/* Find the last layer that is inside the output time range */
+		while (stop_k && Ctrl->T.T.max < level[stop_k])	/* Find the last layer that is inside the output time range */
 			stop_k--;
-		if (stop_k < n_layers && Ctrl->T.T.array[Ctrl->T.T.n-1] > level[stop_k]) stop_k++;	/* Go forward one if stop time is larger than last layer */
+		if (stop_k < n_layers && Ctrl->T.T.max> level[stop_k]) stop_k++;	/* Go forward one if stop time is larger than last layer */
 		if (stop_k < (n_layers-1) && (Ctrl->F.mode == GMT_SPLINE_AKIMA || Ctrl->F.mode == GMT_SPLINE_CUBIC))
 			stop_k++;	/* One more to define the spline coefficients */
 	}
@@ -490,7 +505,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			/* Need to get dx,dy from one grid */
 			if (Ctrl->Z.active)	/* Get the first file */
 				sprintf (file, "%s", Ctrl->In.file[0]);
-			else	/* Get the first layer from 3D cube possibly via a selected variable */
+			else	/* Get the first layer from 3-D cube possibly via a selected variable */
 				sprintf (file, "%s?%s[0]", Ctrl->In.file[0], cube_layer);
 			if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to read header from file %s.\n", file);
@@ -553,7 +568,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			Si = In->table[0]->segment[0];	/* Short hand to the first and only segment */
 			Si->data[GMT_X][0] = Ctrl->S.x;
 			Si->data[GMT_Y][0] = Ctrl->S.y;
-			if (Ctrl->S.header) Si->header = strdup (Ctrl->S.header);	/* Set the fixed header here */
+			if (Ctrl->S.header)	/* Set the fixed header here via training text */
+				Si->text[0] = strdup (Ctrl->S.header);
 			Si->n_rows = 1;
 			gmt_set_dataset_minmax (GMT, In);
 		}
@@ -561,9 +577,9 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.active || Ctrl->S.active) {	/* Vertical profiles or slice */
 		unsigned int io_mode = GMT_WRITE_NORMAL;
-		uint64_t seg, row, rec, col;
+		uint64_t seg, row, rec, col, row_o;
 		uint64_t dim[4] = {1, 1, 1, 2};	/* Dataset dimension for one point */
-		char i_file[GMT_VF_LEN] = {""}, o_file[GMT_VF_LEN] = {""}, grid[GMT_LEN128] = {""}, header[GMT_LEN256] = {""}, cmd[GMT_LEN128] = {""};
+		char i_file[GMT_VF_LEN] = {""}, o_file[GMT_VF_LEN] = {""}, grid[GMT_LEN128] = {""}, header[GMT_LEN256] = {""}, cmd[2*PATH_MAX+GMT_LEN32] = {""};
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *Si = NULL, *So = NULL;
 
@@ -579,18 +595,20 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		for (k = start_k; k <= stop_k; k++) {	/* For all selected input levels k */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the workings of grdtrack calls  */
+
+		for (k = start_k, row_o = 0; k <= stop_k; k++, row_o++) {	/* For all selected input levels k */
 			GMT_Init_VirtualFile (API, 0, i_file);	/* Reset so it can be read again */
 			if (Ctrl->Z.active)	/* Get the k'th file */
 				sprintf (grid, "%s", Ctrl->In.file[k]);
-			else	/* Get the k'th layer from 3D cube */
+			else	/* Get the k'th layer from 3-D cube */
 				sprintf (grid, "%s?%s[%" PRIu64 "]", Ctrl->In.file[0], cube_layer, k);
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT|GMT_IS_REFERENCE, NULL, o_file) == GMT_NOTSET) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for time-series\n");
 				Return (API->error);
 			}
 
-			sprintf (cmd, "%s -G%s ->%s", i_file, grid, o_file);
+			sprintf (cmd, "%s -G%s -N ->%s", i_file, grid, o_file);	/* Pass -N since points may be outside and we want NaNs returned then */
 			if (GMT->common.R.active[RSET]) {	/* Gave a subregion, so pass -R along */
 				strcat (cmd, " -R");
 				strcat (cmd, GMT->common.R.string);
@@ -611,7 +629,6 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			for (seg = rec = 0; seg < D->table[0]->n_segments; seg++) {	/* For each point we sampled at */
 				Si = D->table[0]->segment[seg];	/* Short hand to this segment */
 
-
 				for (row = 0; row < Si->n_rows; row++, rec++) {	/* For each selected point which matches each output segment */
 					So = Out->table[0]->segment[rec];	/* Short hand to this output segment */
 					if (k == start_k) {	/* Set the segment header just once */
@@ -621,9 +638,20 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 							sprintf (header, "Location %g,%g", Si->data[GMT_X][row], Si->data[GMT_Y][row]);
 						So->header = strdup (header);
 					}
-					for (col = 0; col < Si->n_columns; col++)	/* Copy over the various columns */
-						So->data[col][k] = Si->data[col][row];
-					So->data[col][k] = level[k];	/* Add level as the last data column */
+					if (Ctrl->S.active) {	/* Want x,y,z[,.....],value output */
+						for (col = 0; col < GMT_Z; col++)	/* Copy over x,y */
+							So->data[col][row_o] = Si->data[col][row];
+						So->data[GMT_Z][row_o] = level[k];	/* Add level as the z column */
+						while (col < Si->n_columns) {	/* Copy over the rest */
+							So->data[col+1][row_o] = Si->data[col][row];
+							col++;
+						}
+					}
+					else {	/* Format for -E is x,y[,....],value */
+						for (col = 0; col < Si->n_columns; col++)	/* Copy over the various columns */
+							So->data[col][row_o] = Si->data[col][row];
+						So->data[col][row_o] = level[k];	/* Add level as the last data column */
+					}
 				}
 			}
 			for (col = GMT_Z; col < Si->n_columns; col++)
@@ -643,7 +671,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		}
 		gmt_set_column_type (GMT, GMT_OUT, col, level_type);	/* This is the grid-level data type which on output is in this column */
 
-		if (Ctrl->T.active) {	/* Want to interpolate through the sampled points using the specified spline */
+		if (Ctrl->T.active && Ctrl->T.T.array) {	/* Want to interpolate through the sampled points using the specified spline */
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, Out, i_file) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for sampled time-series\n");
 				Return (API->error);
@@ -666,6 +694,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			}
 			dim[GMT_ROW] = Out->table[0]->segment[0]->n_rows;	/* Update new row dim */
 		}
+
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 
 		if (Ctrl->S.active) {	/* Write the table(s) */
 			if (Ctrl->G.file && strchr (Ctrl->G.file, '%')) {	/* Want separate files per series, so change mode and build file names per segment */
@@ -715,7 +745,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < Out->n_segments; seg++) {	/* Each segment represents one x-coordinate */
 				So = Out->table[0]->segment[seg];	/* Short hand to this output segment */
 				for (row = 0; row < So->n_rows; row++) {
-					ij = gmt_M_ijp (Grid->header, row, seg);
+					ij = gmt_M_ijp (Grid->header, So->n_rows-row-1, seg);	/* Must flip order since rows in grid goes down */
 					Grid->data[ij] = (float)So->data[3][row];
 				}
 			}
@@ -758,6 +788,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (inc, G[0]->header->inc, 2U, double);
 		if ((C[GMT_IN] = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, dims, wesn, inc, G[0]->header->registration, GMT_NOTSET, NULL)) == NULL)
 			Return (GMT_MEMORY_ERROR);
+		if (G[0]->header->x_units[0]) strncpy (C[GMT_IN]->header->x_units, G[0]->header->x_units, GMT_GRID_UNIT_LEN80);
+		if (G[0]->header->y_units[0]) strncpy (C[GMT_IN]->header->y_units, G[0]->header->y_units, GMT_GRID_UNIT_LEN80);
 		for (k = 0; k < n_layers; k++, here += G[0]->header->size)
 			gmt_M_memcpy (&(C[GMT_IN]->data[here]), G[k]->data, G[0]->header->size, gmt_grdfloat);
 		if (GMT_Destroy_Group (API, &G, n_layers))
@@ -771,10 +803,17 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			gmt_set_cartesian (GMT, GMT_OUT);
 		if (z_is_abstime) gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ABSTIME);
 	}
-	else if (C[GMT_IN] == NULL && (C[GMT_IN] = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, wesn, Ctrl->In.file[0], NULL)) == NULL)
-		Return (GMT_DATA_READ_ERROR);
+	else if (C[GMT_IN] == NULL) {	/* Read the cube */
+		gmt_M_free (GMT, level);	/* Free this one now since it will be re-read by GMT_Read_Data */
+		if ((C[GMT_IN] = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, wesn, Ctrl->In.file[0], NULL)) == NULL)
+			Return (GMT_DATA_READ_ERROR);
+	}
 
 	if (convert_to_cube) {	/* Just want to build cube from input stack */
+		if (Ctrl->D.active && gmt_decode_cube_h_info (GMT, Ctrl->D.information, C[GMT_IN])) {
+			GMT_Destroy_Data (API, &C[GMT_IN]);
+			Return (GMT_PARSE_ERROR);
+		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Convert %" PRIu64 " grid layers to a single data cube %s.\n", n_layers, Ctrl->G.file);
 		if (GMT_Set_Comment (API, GMT_IS_CUBE, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C[GMT_IN]))
 			Return (EXIT_FAILURE);
@@ -783,7 +822,10 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	GMT_Report (API, GMT_MSG_INFORMATION, "Interpolate %" PRIu64 " new layers (%g to %g in steps of %g).\n", Ctrl->T.T.n, Ctrl->T.T.array[0], Ctrl->T.T.array[Ctrl->T.T.n-1]);
+	if (Ctrl->T.active)
+		GMT_Report (API, GMT_MSG_INFORMATION, "Interpolate %" PRIu64 " new layers (%g to %g in steps of %g).\n", Ctrl->T.T.n, Ctrl->T.T.array[0], Ctrl->T.T.array[Ctrl->T.T.n-1]);
+	else
+		GMT_Report (API, GMT_MSG_INFORMATION, "Extract %" PRIu64 " layers (%g to %g).\n", C[GMT_IN]->header->n_bands, C[GMT_IN]->z[0], C[GMT_IN]->z[C[GMT_IN]->header->n_bands-1]);
 
 	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);	/* The 3rd dimension is not time in the grids, but we may have read time via -Z with -f2T */
 
@@ -791,32 +833,52 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	gmt_M_memcpy (wesn, C[GMT_IN]->header->wesn, 4, double);	/* This is the output common x/y region now */
 	inc[GMT_X] = C[GMT_IN]->header->inc[GMT_X];	inc[GMT_Y] = C[GMT_IN]->header->inc[GMT_Y];	/* And common x/y increments */
-	if (Ctrl->T.T.var_inc || Ctrl->T.T.n == 1) {	/* Not equidistant output levels selected via -T so must pass the number of output levels instead of increment */
-		dims[GMT_Z] = Ctrl->T.T.n;	/* Number of output levels */
-		this_dim = dims;	/* Pointer to the dims instead of NULL */
-		inc[GMT_Z] = 0.0;
+
+	if (Ctrl->T.active) {	/* Selected levels via -T for output */
+		n_layers = Ctrl->T.T.n;
+		level = Ctrl->T.T.array;
+		if (Ctrl->T.T.var_inc || Ctrl->T.T.n == 1) {	/* Not equidistant output levels selected via -T so must pass the number of output levels instead of increment */
+			dims[GMT_Z] = Ctrl->T.T.n;	/* Number of output levels */
+			this_dim = dims;	/* Pointer to the dims instead of NULL */
+			inc[GMT_Z] = 0.0;
+		}
+		else {	/* Normal equidistant output levels lets us pass z-inc */
+			inc[GMT_Z] = Ctrl->T.T.inc;
+			wesn[ZLO] = Ctrl->T.T.min;
+			wesn[ZHI] = Ctrl->T.T.max;
+		}
 	}
-	else {	/* Normal equidistant output levels lets us pass z-inc */
-		inc[GMT_Z] = Ctrl->T.T.inc;
-		wesn[ZLO] = Ctrl->T.T.min;
-		wesn[ZHI] = Ctrl->T.T.max;
+	else {	/* Implicitly selected all levels */
+		n_layers = C[GMT_IN]->header->n_bands;
+		level = C[GMT_IN]->z;
+		if (!equi_levels) {	/* Must pass dimension */
+			dims[GMT_Z] = n_layers;	/* Number of output levels */
+			this_dim = dims;	/* Pointer to the dims instead of NULL */
+			inc[GMT_Z] = 0.0;
+		}
+		else {	/* Normal equidistant output levels lets us pass z-inc */
+			inc[GMT_Z] = (n_layers) ? level[1] - level[0] : 0.0;
+			wesn[ZLO] = level[0];
+			wesn[ZHI] = level[n_layers-1];
+		}
 	}
 
 	if ((C[GMT_OUT] = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, this_dim, wesn, inc, C[GMT_IN]->header->registration, GMT_NOTSET, NULL)) == NULL)
 		Return (GMT_MEMORY_ERROR);
 
 	if (Ctrl->D.active && gmt_decode_cube_h_info (GMT, Ctrl->D.information, C[GMT_OUT])) {
-		GMT_Destroy_Data (API, &C[GMT_OUT]);	/* Done with the output cube */
+		GMT_Destroy_Data (API, &C[GMT_OUT]);
 		Return (GMT_PARSE_ERROR);
 	}
 
 	/* If not equidistant we must add in the level array manually */
-	if (C[GMT_OUT]->z == NULL && GMT_Put_Levels (API, C[GMT_OUT], Ctrl->T.T.array, Ctrl->T.T.n))
+	if (C[GMT_OUT]->z == NULL && GMT_Put_Levels (API, C[GMT_OUT], level, n_layers)) {
 		Return (API->error);
+	}
 
 	/* Allocate input and output arrays for the 1-D spline */
 	if ((i_value = gmt_M_memory (GMT, NULL, C[GMT_IN]->header->n_bands, double)) == NULL) Return (GMT_MEMORY_ERROR);
-	if ((o_value = gmt_M_memory (GMT, NULL, Ctrl->T.T.n, double)) == NULL) Return (GMT_MEMORY_ERROR);
+	if ((o_value = gmt_M_memory (GMT, NULL, n_layers, double)) == NULL) Return (GMT_MEMORY_ERROR);
 
 	/* Loop over all coregistered x/y nodes then drill through the cube to resample at new layer values */
 	for (row = 0; row < C[GMT_IN]->header->n_rows; row++) {
@@ -824,8 +886,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		for (col = 0; col < C[GMT_IN]->header->n_columns; col++, node++) {
 			for (k = 0; k < C[GMT_IN]->header->n_bands; k++)	/* For all available input levels, extract data[x,y,z(k)] */
 				i_value[k] = C[GMT_IN]->data[node+k*C[GMT_IN]->header->size];
-			gmt_intpol (GMT, C[GMT_IN]->z, i_value, NULL, C[GMT_IN]->header->n_bands, Ctrl->T.T.n, Ctrl->T.T.array, o_value, 0.0, int_mode);	/* Resample at requested output levels */
-			for (k = 0; k < Ctrl->T.T.n; k++)	/* For all output levels, place the interpolated values at this (x,y) across all levels */
+			gmt_intpol (GMT, C[GMT_IN]->z, i_value, NULL, C[GMT_IN]->header->n_bands, n_layers, level, o_value, 0.0, int_mode);	/* Resample at requested output levels */
+			for (k = 0; k < n_layers; k++)	/* For all output levels, place the interpolated values at this (x,y) across all levels */
 				C[GMT_OUT]->data[node+k*C[GMT_OUT]->header->size] = (float)o_value[k];
 		}
 	}

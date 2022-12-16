@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdfft** *ingrid* [ *ingrid2* ]
-[ |-G|\ *outfile*\|\ *table* ]
+|-G|\ *outfile*\|\ *table*
 [ |-A|\ *azimuth* ]
 [ |-C|\ *zlevel* ]
 [ |-D|\ [*scale*\|\ **g**] ]
@@ -22,7 +22,7 @@ Synopsis
 [ |-I|\ [*scale*\|\ **g**] ]
 [ |-N|\ *params* ]
 [ |-Q|\ ]
-[ |-S|\ *scale* ]
+[ |-S|\ *scale*\|\ **d** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -44,13 +44,15 @@ to meters using :doc:`grdedit` or scale the output with :doc:`grdmath`.
 Required Arguments
 ------------------
 
-*ingrid*
-    2-D binary grid file to be operated on (see :ref:`Grid File Formats <grd_inout_full>`).
-    For cross-spectral operations, also give the second grid file *ingrid2*.
+.. |Add_ingrid| replace:: 2-D binary grid file to be operated on. For
+    cross-spectral operations, also give the second grid file *ingrid2*.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 **-G**\ *outfile*
     Specify the name of the output grid file (see :ref:`Grid File Formats
-    <grd_inout_full>`) or the 1-D spectrum table (see **-E**).
+    <grd_inout_full>`) or the 1-D spectrum table (see |-E|).
 
 Optional Arguments
 ------------------
@@ -81,11 +83,11 @@ Optional Arguments
 
 **-E**\ [**r**\|\ **x**\|\ **y**][**+w**\ [**k**]][**+n**]
     Estimate power spectrum in the radial direction [**r**]. Place
-    **x** or **y** immediately after **-E** to compute the spectrum in
+    **x** or **y** immediately after |-E| to compute the spectrum in
     the x or y direction instead. No grid file is created. If one grid
     is given then f (i.e., frequency or wave number), power[f],
     and 1 standard deviation in power[f] are written to the file set by
-    **-G** [stdout]. If two grids are given we write f and 8 quantities:
+    |-G| [standard output]. If two grids are given we write f and 8 quantities:
     Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f],
     admittance[f], gain[f], coherency[f].  Each quantity is followed by
     its own 1-std dev error estimate, hence the output is 17 columns wide.
@@ -98,7 +100,7 @@ Optional Arguments
 .. _-F:
 
 **-F**\ [**r**\|\ **x**\|\ **y**]\ *params*
-    Filter the data. Place **x** or **y** immediately after **-F** to
+    Filter the data. Place **x** or **y** immediately after |-F| to
     filter *x* or *y* direction only; default is isotropic [**r**].
     Choose between a cosine-tapered band-pass, a Gaussian band-pass
     filter, or a Butterworth band-pass filter.
@@ -134,11 +136,14 @@ Optional Arguments
         using a 2nd-order Butterworth filter, with half-weight at 30, while
         **-F**\ 400/-/2 will highpass the data.
 
+    **Note**: For filtering in the time (or space) domain instead, see
+    :doc:`grdfilter`.
+
 .. _-G:
 
 **-G**\ *outfile*\|\ *table*
-    Filename for output netCDF grid file OR 1-D data table (see **-E**).
-    This is optional for -E (spectrum written to stdout) but mandatory for
+    Filename for output netCDF grid file OR 1-D data table (see |-E|).
+    This is optional for -E (spectrum written to standard output) but mandatory for
     all other options that require a grid output.
 
 .. _-I:
@@ -158,15 +163,16 @@ Optional Arguments
 .. _-Q:
 
 **-Q**
-    Selects no wavenumber operations. Useful in conjunction with **-N** modifiers
+    Selects no wavenumber operations. Useful in conjunction with |-N| modifiers
     when you wish to write out the 2-D spectrum (or other intermediate grid products)
     only.
 
 .. _-S:
 
-**-S**\ *scale*
+**-S**\ *scale*\|\ **d**
     Multiply each element by *scale* in the space domain (after the
-    frequency domain operations). [Default is 1.0].
+    frequency domain operations). [Default is 1.0].  Alternatively,
+    append **d** to convert deflection of vertical to micro-radians.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -194,10 +200,16 @@ meters, select |SYN_OPT-f|. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using :doc:`grdproject`
 
+Data Detrending
+---------------
+
+The default detrending mode is to remove a best-fitting linear plane (**+d**).
+Consult and use |-N| to select other modes.
+
 Normalization of Spectrum
 -------------------------
 
-By default, the power spectrum returned by **-E** simply sums the contributions
+By default, the power spectrum returned by |-E| simply sums the contributions
 from frequencies that are part of the output frequency.  For *x*- or *y*-spectra
 this means summing the power across the other frequency dimension, while for the
 radial spectrum it means summing up power within each annulus of width *delta_q*,

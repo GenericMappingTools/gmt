@@ -22,6 +22,12 @@ GMT will do the following when you request a remote file in a GMT command:
 #. When the catalog is refreshed, we determine the publication date for each dataset on the server,
    and if any local copies you may have are now obsolete we will remove them to force a re-download from the server.
 
+Currently Available Remote Data Sets
+-------------------------------------
+
+Documentation for the individual remote datasets available through the GMT server and its
+mirrors can be found at `Remote Datasets <https://www.generic-mapping-tools.org/remote-datasets/>`_.
+
 Usage
 -----
 
@@ -32,25 +38,38 @@ and standardized their file names.  In GMT, you may access such data
    @remote_name_\ *rr*\ *u*\ [_\ *reg*\ ]
 
 where the leading @ symbol identifies the file as a remote data set, the *remote_name_* is specific
-to the dataset and the *rr* code is a 2-digit integer specifying the grid/image
-resolution in the unit *u*, where *u* is either **d**, **m** or **s** for arc degree, arc minute or
-arc second, respectively. Optionally, you can append _\ **g** or _\ **p** to specifically get the
-gridline-registered or pixel-registered version (if they both exist).  If *reg* is not specified we
-will return the pixel-registered version unless only the gridline-registered file is available.  If you
-do specify a specific registration and that version is not available you will get an error message.
+to the dataset and the *rr* code is a 2-digit integer specifying the grid/image resolution in the
+unit *u*, where *u* is either **d**, **m** or **s** for arc degree, arc minute or arc second, respectively.
 The codes for *rr*\ *u* and the optional *reg* that are supported will be listed in the sections
 below describing each of the available data sets.
 
+When used in plots (i.e., both when a region and map projection is selected to make an image) the data
+resolution is optional. If it is not given then we determine a data set resolution that will result
+in a final plot image dots-per-unit resolution that is the closest to the :term:`GMT_GRAPHICS_DPU` default
+setting. This eliminates the need for the user to determine what grid resolution will give a nice-looking
+image and not create a bloated file that exceeds what the eye (or printers) can discern. Use
+:doc:`/grdcut` with the **-D** option to inquire about the automatic resolution. **Note**: Grid
+processing tools require the data resolution to be specified since no plot is being generated.
 
-Currently, GMT provides the following datasets (with their special names in parentheses)
-
-- `Global Earth Relief Grids`_ (``earth_relief``)
-- `Global Earth Seafloor Crustal Age Grids`_ (``earth_age``)
-- `Global Earth Day/Night Images`_ (``earth_day`` and ``earth_night``)
-- `Global Earth Mask Grids`_ (``earth_mask``)
+Details about the remote datasets currently provided by GMT can be found at
+`Remote Datasets <https://www.generic-mapping-tools.org/remote-datasets/>`_.
 
 Many of the remote datasets have a preferred, default color table that will be used unless you
 override that default by giving your desired CPT information.
+
+Data Registration
+-----------------
+
+Optionally, you can append _\ **g** or _\ **p** to specifically get the gridline-registered or
+pixel-registered version (if they both exist).  If *reg* is not specified then the behavior
+depends on whether you are making a plot or processing/extracting a subset of the data:
+
+    - For plots we will return the pixel-registered version unless only the gridline-registered file is available.
+    - For grid processing modules we will return the gridline-registered version unless only the pixel-registered
+      file is available.  We will also issue a warning since for calculations you should ideally know and
+      specify exactly what you want.
+
+If you do specify a specific registration and that version is not available you will get an error message.
 
 Controlling the Process
 -----------------------
@@ -94,14 +113,16 @@ resolution in the original grid or image. To improve responsiveness, the larger 
 for node spacings 05m and smaller) have been split into smaller tiles.  When the 06m or lower resolution
 files are accessed the first time we download the entire file, regardless of your selected region (**-R**).
 However, for the tiled data sets we only download the tiles that intersect your selected region
-the first time they are referenced.
+the first time they are referenced. **Note**: The mask grids are not tiled as they are very small even
+for 15s resolution (due to byte format and effective compression), and neither are images (at least for
+as long as GMT does not have the capability of blending image tiles - this may change in the future).
 
 Single grids are provided as netCDF-4 maximum-lossless compressed short int grids, making the files
 much smaller than their original source files without any loss of precision.  To minimize download
 speed, the dataset tiles are all stored as JPEG2000 images on the GMT server due to superior compression,
 but once downloaded to your server directory they are converted to the same short int compressed netCDF4
-format for easier access. This step uses our GDAL bridge and thus requires that you have built GMT with
-GDAL support *and* that your GDAL distribution was built with *openjpeg* support.
+format for easier access. This step uses our GDAL bridge and requires that your GDAL distribution was
+built with *openjpeg* support.
 
 
 .. _jp2_compression:
@@ -132,18 +153,11 @@ eight tiles that make up the 2m x 2m gridline-registered data, try::
 
     gmt grdcut @earth_relief_02m_g -Gearth_at_2m.grd -Rg
 
-----
+Finally, if you wish to determine the most suitable grid resolution that is adequate for making a map
+given a region and projection, you can inquire about this information by passing -D, e.g.::
 
-.. include:: earth-relief.rst_
+    gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -D -V > info.txt
 
-----
+or obtain the required subset grid directly via::
 
-.. include:: earth-age.rst_
-
-----
-
-.. include:: earth-daynight.rst_
-
-----
-
-.. include:: earth-masks.rst_
+    gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -Gsubset.grd -V

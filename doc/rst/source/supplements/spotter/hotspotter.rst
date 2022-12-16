@@ -12,7 +12,9 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt hotspotter** [*table*] |-E|\ *rotfile* |-G|\ *CVAgrid*
+**gmt hotspotter** [*table*]
+|-E|\ *rot_file*\|\ *ID1-ID2*\|\ *lon*/*lat*/*angle*\ [**+i**]
+|-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-N|\ *upper_age* ]
@@ -21,10 +23,12 @@ Synopsis
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
+[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-qi| ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -51,8 +55,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *CVAgrid*
-    Specify name for output grid file.
+.. |Add_outgrid| replace::  Specify name for output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -87,7 +93,7 @@ Optional Arguments
 .. _-T:
 
 **-T**
-    Truncate seamount ages exceeding the upper age set with **-N** [no
+    Truncate seamount ages exceeding the upper age set with |-N| [no
     truncation].
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -159,4 +165,4 @@ Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 
 Wessel, P., 2008, Hotspotting: Principles and properties of a plate
 tectonic Hough transform, Geochem. Geophys. Geosyst. 9(Q08004):
-doi:10.1029/2008GC002058.
+https://doi.org/10.1029/2008GC002058.

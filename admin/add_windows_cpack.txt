@@ -25,7 +25,6 @@ install (PROGRAMS
 	${PATO_GDAL_BIN}/gdalinfo.exe
 	${PATO_GDAL_BIN}/gdallocationinfo.exe
 	${PATO_GDAL_BIN}/gdalmanage.exe
-	${PATO_GDAL_BIN}/gdalserver.exe
 	${PATO_GDAL_BIN}/gdalsrsinfo.exe
 	${PATO_GDAL_BIN}/gdaltindex.exe
 	${PATO_GDAL_BIN}/gdaltransform.exe
@@ -41,7 +40,6 @@ install (PROGRAMS
 	${PATO_GDAL_BIN}/ogrinfo.exe
 	${PATO_GDAL_BIN}/ogrlineref.exe
 	${PATO_GDAL_BIN}/ogrtindex.exe
-	${PATO_GDAL_BIN}/testepsg.exe
 	DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 

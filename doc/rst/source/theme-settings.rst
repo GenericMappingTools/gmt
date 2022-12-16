@@ -2,13 +2,13 @@
 GMT Themes
 ##########
 
-GMT offers 3 build-in themes (classic, modern, and minimal). Classic theme is the default for classic mode and modern
+GMT offers 3 built-in themes (classic, modern, and minimal). Classic theme is the default for classic mode and modern
 theme is the default for modern mode. You can also create and use your own themes by compiling files of desired settings
 and placing them in your GMT user themes directory (usually ~/.gmt/themes) and naming them *theme*.conf, where *theme*
 is any valid string. The :term:`GMT_THEME` parameter  is used to set the current theme. The table below lists the
 default settings for the classic, modern, and minimal themes.
 
-Default settings for build-in themes
+Default settings for built-in themes
 ------------------------------------
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
 | Parameter                         | Classic                         | Modern                          | Minimal                         |
@@ -20,8 +20,6 @@ Default settings for build-in themes
 | :term:`FONT_HEADING`              | 32p,Helvetica,black             | auto,Helvetica-Bold,black       | auto,AvantGarde-Book,black      |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
 | :term:`FONT_LABEL`                | 16p,Helvetica,black             | auto,Helvetica,black            | auto,AvantGarde-Book,black      |
-+-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
-| :term:`FONT_LOGO`                 | 8p,Helvetica,black              | auto,Helvetica,black            | auto,Helvetica,black            |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
 | :term:`FONT_SUBTITLE`             | 18p,Helvetica,black             | auto,Helvetica-Bold,black       | auto,AvantGarde-Book,black      |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
@@ -36,6 +34,8 @@ Default settings for build-in themes
 | :term:`MAP_ANNOT_OFFSET_PRIMARY`  | 5p                              | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
 | :term:`MAP_ANNOT_OFFSET_SECONDARY`| 5p                              | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
++-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
+| :term:`MAP_EMBELLISHMENT_MODE`    | manual                          | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
 | :term:`MAP_FRAME_AXES`            | WESNZ                           | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+

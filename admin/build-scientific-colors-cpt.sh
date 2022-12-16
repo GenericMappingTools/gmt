@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
 # This script takes the downloaded zip content from
-# Crameri, Fabio. (2021, February 2). Scientific colour maps
-# (Version 7.0.0). Zenodo. http://doi.org/10.5281/zenodo.4491293
+# Crameri, Fabio. (2021, September 12). Scientific colour maps
+# (Version 7.0.1). Zenodo. https://doi.org/10.5281/zenodo.5501399
 # and converts the *.cpt files into proper GMT master
 # CPT files with correct attribution and hinge info
 # Run from the ScientificColourMapsV directory (V is version) after the
@@ -11,8 +11,8 @@
 # downloaded directory.  It will create a gmt subdirectory with all the CPTs.
 # You also need to edit gmt_cpt_masters.h after adding the CPTs to share/cpt
 #
-# Last setup and run for ScientificColourMaps7 on 21/02/2021 for GMT 6.2 (master)
-# Gave 51 CPTS: The original 30 plus 5 cyclical versions and 16 categorical versions
+# Last setup and run for ScientificColourMaps7 on 02.11.2022 for GMT 6.5 (master)
+# Gave 51 CPTS: The same as prior release with minor changes for categorical cpts.
 #
 
 if [ $# -eq 0 ]; then
@@ -35,7 +35,7 @@ if [ $# -eq 0 ]; then
 fi
 
 DIR=$1
-VERSION=7.0.0
+VERSION=7.0.1
 cat << EOF > /tmp/cpt.info
 acton|Perceptually uniform sequential colormap, by Fabio Crameri [C=RGB]
 actonS|Perceptually uniform sequential categorical colormap, by Fabio Crameri [C=RGB]
@@ -92,7 +92,7 @@ EOF
 here=`pwd`
 cd $DIR
 # Make formatted list of lines suitable for copying into gmt_cpt_masters.h
-awk -F'|' '{printf "\"%-10s  : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
+awk -F'|' '{printf "\"SCM/%-10s : %s\",\n", $1, $2}' /tmp/cpt.info > /tmp/cpt_strings.txt
 # Make list of CPTs with a hinge of some soft since these need to insert a true z = 0 slice
 grep "\[H," /tmp/cpt.info | awk -F'|' '{print $1}' > /tmp/hinge.lis
 grep "\[S," /tmp/cpt.info | awk -F'|' '{print $1}' >> /tmp/hinge.lis
@@ -109,7 +109,7 @@ while read line; do
 	cat <<- EOF > gmt_cpts/$cpt.cpt
 	#
 	EOF
-	echo $line | awk -F'|' '{printf "# %s\n", $2}' >> gmt_cpts/$cpt.cpt
+	echo $line | awk -F'|' '{printf "# SCM/%s : %s\n", $1, $2}' >> gmt_cpts/$cpt.cpt
 	last_char=$(echo $cpt | awk '{print substr($1,length($1),1)}')
 	if [ "X${last_char}" = "XS" ]; then
 		tmp=$(echo $cpt | awk '{print substr($1,1, length($1)-1)}')
@@ -123,22 +123,20 @@ while read line; do
 	#
 	# License: MIT License
 	# Copyright (c) 2021, Fabio Crameri.
-	# Crameri, F., (2021). Scientific colour maps. Zenodo. https://zenodo.org/record/4491293
+	# Crameri, F., (2021). Scientific colour maps. Zenodo. https://zenodo.org/record/5501399
 	# This is Scientific Colour Maps version $VERSION
 	# Note: Original file converted to GMT version >= 5 CPT format.
 	EOF
 	#if [ "$cpt" = "broc" ] || [ "$cpt" = "cork" ] || [ "$cpt" = "vik" ] || [ "$cpt" = "lisbon" ] || [ "$cpt" = "tofino" ] || [ "$cpt" = "berlin" ] || [ "$cpt" = "oleron" ] ; then
-	if [ $(echo $line | grep -c "\[H") -eq 1 ]; then
-		hinge="HARD_HINGE"
-	elif [ $(echo $line | grep -c "\[S") -eq 1 ]; then
-		hinge="SOFT_HINGE"
-	else
-		hinge=""
-	fi
+	case $line in
+	*\[H*) hinge="HARD_HINGE" ;;
+	*\[S*) hinge="SOFT_HINGE" ;;
+	    *) hinge="" ;;
+	esac
 	if [ "X${last_char}" = "XS" ]; then
 		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		echo "#----------------------------------------------------------" >> gmt_cpts/$cpt.cpt
-		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR+1, $6, $7, $8}}' > /tmp/tmp.cpt
+		egrep -v '^#|^F|^B|^N' $cptdir/$cpt.cpt | awk '{if (NR == 1) { printf "%d\t%s/%s/%s\n%d\t%s/%s/%s\n", 0, $2, $3, $4, 1, $6, $7, $8} else {printf "%d\t%s/%s/%s\n", NR, $6, $7, $8}}' > /tmp/tmp.cpt
 	elif [ "X$hinge" = "X" ]; then
 		cat /tmp/front >> gmt_cpts/$cpt.cpt
 		if [ "X${last_char}" = "XO" ]; then

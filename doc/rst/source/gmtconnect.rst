@@ -16,6 +16,7 @@ Synopsis
 [ |-D|\ [*template*] ] [ |-L|\ [*linkfile*] ]
 [ |-Q|\ [*template*] ] [ |-T|\ [*cutoff*\ [**+s**\ *sdist*]] ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -25,6 +26,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -41,7 +43,7 @@ segments are joined into a single segment. The process repeats until all
 the remaining endpoints no longer pass the tolerance test; the resulting
 segments are then written out to standard output or specified output
 file. If it is not clear what the separation tolerance should be then
-use **-L** to get a list of all separation distances and analyze them to
+use |-L| to get a list of all separation distances and analyze them to
 determine a suitable cutoff.
 
 Required Arguments
@@ -57,7 +59,7 @@ Optional Arguments
 
 **-C**\ [*closed*]
     Write all the already-closed polygons to file *closed* [gmtconnect_closed.txt]
-    and all open segments to *stdout*. No connection will take
+    and all open segments to standard output. No connection will take
     place. Use **-T**\ *cutoff* to set a minimum separation [0], and then
     any existing polygon whose first and last point are separated by less
     that *cutoff* will be considered to be closed.  Note that if
@@ -88,12 +90,12 @@ Optional Arguments
     segment id, and for the beginning and end point of the segment we
     report the id of the nearest segment, whether it is the beginning
     (B) or end (E) point that is closest, and the distance between those
-    points in units determined by **-T**.
+    points in units determined by |-T|.
 
 .. _-Q:
 
 **-Q**\ [*template*]
-    Used with **-D** to write a list file with the names of the individual
+    Used with |-D| to write a list file with the names of the individual
     output files. Optionally, append a filename template for the
     individual file names; this template **may** contain a C format
     specifier that can format an character (C or O for closed or open,
@@ -107,7 +109,7 @@ Optional Arguments
     are closer than *cutoff* they will be joined. Optionally, append
     **+s**\ *sdist* which adds the extra requirement that a link will only be made
     if the *second* closest connection exceeds the *sdist* distance. The latter
-    distance must be given in the same units as *cutoff*.  However, if **-T** is
+    distance must be given in the same units as *cutoff*.  However, if |-T| is
     no arguments then we close every line segment or polygon *regardless* of
     the gap distance between the first and last point in the segment.
 
@@ -115,6 +117,8 @@ Optional Arguments
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -142,6 +146,8 @@ Optional Arguments
 .. include:: explain_-ocols.rst_
 
 .. include:: explain_-q.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
 
@@ -176,7 +182,7 @@ Bugs
 The line connection does not work if a line only has a single point.
 However, **connect** will correctly add the point to the nearest segment.
 Running **connect** again on the new set of lines will eventually connect
-all lines that satisfy the criteria given in **-T**.
+all lines that satisfy the criteria given in |-T|.
 
 See Also
 --------

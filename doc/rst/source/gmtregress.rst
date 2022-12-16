@@ -26,11 +26,13 @@ Synopsis
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT--| ]
 
@@ -39,7 +41,7 @@ Synopsis
 Description
 -----------
 
-**regress** reads one or more data tables [or *stdin*]
+**regress** reads one or more data tables [or standard input]
 and determines the best linear [weighted] regression model :math:`y(x) = a + b x` for each segment using the chosen parameters.
 The user may specify which data and model components should be reported.  By default, the model will be evaluated at the
 input points, but alternatively you can specify an equidistant range over which to evaluate
@@ -55,8 +57,8 @@ Required Arguments
 ------------------
 
 .. |Add_intables| replace:: The first two columns are expected to contain the required *x* and *y* data.  Depending on
-   your **-W** and **-E** settings we may expect an additional 1-3 columns with error estimates
-   of one of both of the data coordinates, and even their correlation (see **-W** for details).
+   your |-W| and |-E| settings we may expect an additional 1-3 columns with error estimates
+   of one of both of the data coordinates, and even their correlation (see |-W| for details).
 .. include:: explain_intables.rst_
 
 Optional Arguments
@@ -68,8 +70,8 @@ Optional Arguments
     There are two uses for this setting: (1) Instead of determining a best-fit regression
     we explore the full range of regressions. Examine all possible regression lines with slope
     angles between *min* and *max*, using steps of *inc* degrees [-90/+90/1].  For each slope,
-    the optimum intercept is determined based on your regression type (**-E**) and misfit norm
-    (**-N**) settings. For each data segment we report the four columns *angle*, *E*, *slope*,
+    the optimum intercept is determined based on your regression type (|-E|) and misfit norm
+    (|-N|) settings. For each data segment we report the four columns *angle*, *E*, *slope*,
     *intercept*, for the range of specified angles. The best model parameters within this range
     are written into the segment header and reported in verbose information mode (**-Vi**).
     (2) Except for **-N2**, append **+f** to force the best regression to
@@ -80,7 +82,7 @@ Optional Arguments
    :width: 500 px
    :align: center
 
-   Scanning slopes (**-A**) to see how the misfit for an fully orthogonal regression using the LMS (**-Nr**) criterion
+   Scanning slopes (|-A|) to see how the misfit for an fully orthogonal regression using the LMS (**-Nr**) criterion
    varies with the line angle.  Here we see the best solution gives a line angle of -78.3 degrees
    but there is another local minimum for an angle of 78.6 degrees that is almost as good.
 
@@ -88,7 +90,7 @@ Optional Arguments
 
 **-C**\ *level*
     Set the confidence level (in %) to use for the optional calculation of confidence bands
-    on the regression [95].  This is only used if **-F** includes the output column **c**.
+    on the regression [95].  This is only used if |-F| includes the output column **c**.
 
 .. _-E:
 
@@ -103,7 +105,7 @@ Optional Arguments
    :width: 600 px
    :align: center
 
-   The four types of misfit.  The sum of the squared lengths of :math:`e_k` is minimized, for k = e, y, or o.
+   The four types of misfit.  The sum of the squared lengths of :math:`e_k` is minimized, for k = x, y, or o.
    For **-Er** the sum of the green areas is minimized instead.
 
 .. _-F:
@@ -111,11 +113,12 @@ Optional Arguments
 **-F**\ *flags*
     Append a combination of the columns you wish returned; the output order will match the order specified.  Choose from
     **x** (observed *x*), **y** (observed *y*), **m** (model prediction), **r** (residual = data minus model),
-    **c** (symmetrical confidence interval on the regression; see **-C**
+    **c** (symmetrical confidence interval on the regression; see |-C|
     for specifying the level), **z** (standardized residuals or so-called *z-scores*) and **w** (outlier weights 0 or 1; for
     **-Nw** these are the Reweighted Least Squares weights) [**xymrczw**].
-    As an alternative to evaluating the model, just give **-Fp** and we instead write a single record with the model
-    parameters *npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept*.
+    As an alternative to evaluating the model, just give **-Fp** and we instead write a single record with the 12 model
+    parameters *npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept r R n_effective*. **Note**:
+    *R* is only set when **-Ey** is selected.
 
 .. _-N:
 
@@ -132,7 +135,7 @@ Optional Arguments
 
 **-S**\ [**r**]
     Restricts which records will be output.  By default all data records will be output in the format specified
-    by **-F**.  Use **-S** to exclude data points identified as outliers by the regression.  Alternatively,
+    by |-F|.  Use |-S| to exclude data points identified as outliers by the regression.  Alternatively,
     use **-Sr** to reverse this and only output the outlier records.
 
 .. _-T:
@@ -141,7 +144,7 @@ Optional Arguments
     Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If only
     **-T**\ *inc* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment.
     To skip the model evaluation entirely, simply provide **-T**\ 0.
-    For details on array creation, see `Generate 1D Array`_.
+    For details on array creation, see `Generate 1-D Array`_.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -182,6 +185,9 @@ Optional Arguments
 .. |Add_-e| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-e.rst_
 
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
+
 .. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
@@ -193,6 +199,8 @@ Optional Arguments
 .. include:: explain_-ocols.rst_
 
 .. include:: explain_-q.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_-w.rst_
 

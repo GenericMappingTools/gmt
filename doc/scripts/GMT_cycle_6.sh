@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Exploring NY traffic across V-N bridge, 2018-2020
 # First just show data, with gaps > 6 hours not connected
 # Notice May 2018 spikes, data gaps in the summer of 2018, Covid drop.

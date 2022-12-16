@@ -1,18 +1,18 @@
 /*--------------------------------------------------------------------
  *
- *      Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
- *      See LICENSE.TXT file for copying and redistribution conditions.
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- *      This program is free software; you can redistribute it and/or modify
- *      it under the terms of the GNU Lesser General Public License as published by
- *      the Free Software Foundation; version 3 or any later version.
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
  *
- *      This program is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *      GNU Lesser General Public License for more details.
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
- *      Contact info: www.generic-mapping-tools.org
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 
 /*
@@ -28,7 +28,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 254
+#define GMT_N_API_ENUMS 261
 
 static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -42,6 +42,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ALLOC_INTERNALLY", 1},
 	{"GMT_ALLOC_NORMAL", 0},
 	{"GMT_ALLOC_VERTICAL", 4},
+	{"GMT_ALLOC_VIA_ICOLS", 16},
 	{"GMT_BGD", 0},
 	{"GMT_CHAR", 0},
 	{"GMT_CMYK", 1},
@@ -87,6 +88,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_FFT_COMPLEX", 1},
 	{"GMT_FFT_FWD", 0},
 	{"GMT_FFT_INV", 1},
+	{"GMT_FFT_NO_DEMUX", 8},
 	{"GMT_FFT_REAL", 0},
 	{"GMT_FGD", 1},
 	{"GMT_FILE_CHECK", 2},
@@ -104,6 +106,8 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_GRID_IS_IMAGE", 512},
 	{"GMT_GRID_IS_REAL", 0},
 	{"GMT_GRID_NAME_LEN256", 256},
+	{"GMT_GRID_NEEDS_PAD1", 65536},
+	{"GMT_GRID_NEEDS_PAD2", 131072},
 	{"GMT_GRID_NODE_REG", 0},
 	{"GMT_GRID_NO_HEADER", 16},
 	{"GMT_GRID_PIXEL_REG", 1},
@@ -116,6 +120,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_GRID_XY", 128},
 	{"GMT_HEADER_OFF", 0},
 	{"GMT_HEADER_ON", 1},
+	{"GMT_HEX_COLOR", 16},
 	{"GMT_HSV", 2},
 	{"GMT_IMAGE_ALPHA_LAYER", 8192},
 	{"GMT_IMAGE_NO_INDEX", 4096},
@@ -187,6 +192,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_MODULE_SHOW_MODERN", 1},
 	{"GMT_MODULE_SYNOPSIS", -8},
 	{"GMT_MODULE_USAGE", -9},
+	{"GMT_MSG_BITSHIFT", 16},
 	{"GMT_MSG_COMPAT", 6},
 	{"GMT_MSG_DEBUG", 7},
 	{"GMT_MSG_ERROR", 2},
@@ -228,6 +234,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_SESSION_EXTERNAL", 2},
 	{"GMT_SESSION_LOGERRORS", 8},
 	{"GMT_SESSION_NOEXIT", 1},
+	{"GMT_SESSION_NOGDALCLOSE", 64},
 	{"GMT_SESSION_NOHISTORY", 32},
 	{"GMT_SESSION_NORMAL", 0},
 	{"GMT_SESSION_RUNMODE", 16},

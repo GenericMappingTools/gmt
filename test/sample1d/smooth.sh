@@ -3,7 +3,7 @@
 # Testing the smoothing spline option
 
 gmt begin smooth ps
-	gmt subplot begin 2x1 -Fs6.5i/4.5i -SCb -SRl -A -Y0.75i
+	gmt subplot begin 2x1 -Fs6.5i/4.5i -Scb -Srl -A -Y0.75i
 	gmt subplot set 0 -A"No weights"
 	gmt plot @topo_crossection.txt -R300/500/-4500/-3000 -Sc0.1c -Gred -N -lData
 	gmt sample1d @topo_crossection.txt -T300/500/0.1 -Fs1 > new.txt

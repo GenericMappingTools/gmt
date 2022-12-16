@@ -39,13 +39,16 @@ Synopsis
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: rose_common.rst_
+.. include:: rose.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
@@ -71,7 +74,7 @@ azimuth, and shown in Portrait orientation, use:
 To plot a full circle wind rose diagram of the data in the file
 lines.r_az, on a circle of diameter = 10 cm, grid going out to radius =
 500 units in steps of 100 with a 45 degree sector interval, using a
-solid pen (width = 0.5 point, and shown in landscape [Default]
+solid pen (width = 0.5 point), and shown in landscape [Default]
 orientation with UNIX timestamp and command line plotted, use:
 
    ::
@@ -85,7 +88,9 @@ Redo the same plot but this time add orange vector heads to each direction (with
 
     gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -U+c > rose.ps
 
-.. include:: rose_notes.rst_
+.. include:: rose.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------

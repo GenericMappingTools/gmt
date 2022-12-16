@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Testing gmt grdfilter if openmp is used.
-
 ps=openmp.ps # same as test: openmp.sh
 
 if [[ ${HAVE_GLIB_GTHREAD} =~ TRUE|ON ]]; then
@@ -10,7 +9,7 @@ fi
 FILT=g			# Gaussian filter
 INC=1			# 1x1 degree output
 D=1000			# 1000 km filter width
-DATA=@earth_relief_10m	# Test on ETOP10 data
+DATA=@earth_relief_10m_p	# Test on ETOP10 data
 
 # Run gmt grdfilter as specified
 gmt grdfilter -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg ${_thread_opt}

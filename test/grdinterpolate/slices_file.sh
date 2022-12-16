@@ -10,7 +10,7 @@ gmt begin slices_file ps
 	gmt grdinterpolate S362ANI_kmps.nc?vs -Eline.txt -T30/2890/10 -Gvs.nc
 	gmt makecpt -Cseis -T4.25/7.35
 	gmt subplot begin 3x1 -Fs12c/7c -Bafg -R0/180/0/2900  -A
-		gmt grdimage vs.nc -JP?+fp -c  -BWESn
+		gmt grdimage vs.nc -JP?+fp+kx -c  -BWESn
 		gmt grdimage vs.nc -JP?+fp+a+t90 -c -BWESn
 		gmt grdimage vs.nc -JP?+fp+zp+a+t90 -c -BWESn
 	gmt subplot end

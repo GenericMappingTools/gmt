@@ -1,0 +1,5 @@
+outs:
+- md5: 5f6411346cc8cee880e72b5ae5eb1577.dir
+  size: 4080945
+  nfiles: 20
+  path: genper

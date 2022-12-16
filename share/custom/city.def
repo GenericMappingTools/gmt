@@ -1,0 +1,5 @@
+#
+#	Definition file for a city symbol
+#
+0	0	1	c -Gwhite
+0	0	0.5	c -W-

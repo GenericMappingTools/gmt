@@ -12,11 +12,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt trend2d** [ *table* ] |-F|\ **xyzmrw**\|\ **p** |-N|\ *n_model*\ [**+r**]
+**gmt trend2d** [ *table* ]
+|-F|\ **xyzmrw**\|\ **p**
+|-N|\ *n_model*\ [**+r**]
 [ |-C|\ *condition\_number* ]
 [ |-I|\ [*confidence\_level*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**+s**] ]
+[ |-W|\ [**+s**\|\ **w**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -24,6 +26,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -33,19 +36,21 @@ Synopsis
 Description
 -----------
 
-**trend2d** reads x,y,z [and w] values from the first three [four]
+**trend2d** reads *x, y, z* [and *w*] values from the first three [four]
 columns on standard input [or *xyz[w]file*] and fits a regression model
-z = f(x,y) + e by [weighted] least squares. The fit may be made robust
+*z = f(x,y) + e* by [weighted] least squares. The fit may be made robust
 by iterative reweighting of the data. The user may also search for the
-number of terms in f(x,y) which significantly reduce the variance in z.
-n\_model may be in [1,10] to fit a model of the following form (similar
+number of terms in *f(x,y)* which significantly reduce the variance in *z*.
+*n_model* may be in [1,10] to fit a model of the following form (similar
 to grdtrend):
 
-  m1 + m2\*x + m3\*y + m4\*x\*y + m5\*x\*x + m6\*y\*y + m7\*x\*x\*x +
-  m8\*x\*x\*y + m9\*x\*y\*y + m10\*y\*y\*y.
+.. math::
 
-The user must specify **-N**\ *n\_model*, the number of model parameters
-to use; thus, **-N**\ *4* fits a bilinear trend, **-N**\ *6* a quadratic
+  z(x,y) = m_1 + m_{2}x + m_{3}y + m_{4}xy + m_{5}x^2 + m_{6}y^2 + m_{7}x^3 +
+  m_{8}x^{2}y + m_{9}xy^2 + m_{10}y^3.
+
+The user must specify **-N**\ *n_model*, the number of model parameters
+to use; thus, **-N**\ 4 fits a bilinear trend, **-N**\ 6 a quadratic
 surface, and so on. Optionally, append **+r** to perform a robust fit. In
 this case, the program will iteratively reweight the data based on a
 robust scale estimate, in order to converge to a solution insensitive to
@@ -58,22 +63,22 @@ Required Arguments
 
 *table*
     One or more ASCII [or binary, see **-bi**]
-    files containing x,y,z [w] values in the first 3 [4] columns. If no
+    files containing *x, y, z*\ [, *w*] values in the first 3 [4] columns. If no
     files are specified, **trend2d** will read from standard input.
 
 .. _-F:
 
 **-F**\ **xyzmrw**\|\ **p**
     Specify up to six letters from the set {**x y z m r w**\ } in any
-    order to create columns of ASCII [or binary] output. **x** = x,
-    **y** = y, **z** = z, **m** = model f(x,y), **r** = residual z -
+    order to create columns of ASCII [or binary] output. **x** = *x*,
+    **y** = *y*, **z** = *z*, **m** = model *f(x,y)*, **r** = residual *z* -
     **m**, **w** = weight used in fitting.  Alternatively, to just
     report the model parameters, specify **-Fp**.
 
 .. _-N:
 
-**-N**\ *n\_model*\ [**+r**]
-    Specify the number of terms in the model, *n\_model*, and append
+**-N**\ *n_model*\ [**+r**]
+    Specify the number of terms in the model, *n_model*, and append
     **+r** to do a robust fit. E.g., a robust bilinear model is
     **-N**\ *4*\ **+r**.
 
@@ -82,20 +87,20 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *condition\_number*
+**-C**\ *condition_number*
     Set the maximum allowed condition number for the matrix solution.
     **trend2d** fits a damped least squares model, retaining only that
     part of the eigenvalue spectrum such that the ratio of the largest
-    eigenvalue to the smallest eigenvalue is *condition\_#*. [Default:
-    *condition\_#* = 1.0e06. ].
+    eigenvalue to the smallest eigenvalue is *condition_number*. [Default:
+    *condition_number* = 1.0e06. ].
 
 .. _-I:
 
-**-I**\ [*confidence\_level*]
+**-I**\ [*confidence_level*]
     Iteratively increase the number of model parameters, starting at
-    one, until *n\_model* is reached or the reduction in variance of the
-    model is not significant at the *confidence\_level* level. You may
-    set **-I** only, without an attached number; in this case the fit
+    one, until *n_model* is reached or the reduction in variance of the
+    model is not significant at the *confidence_level* level. You may
+    set |-I| only, without an attached number; in this case the fit
     will be iterative with a default confidence level of 0.51. Or choose
     your own level between 0 and 1. See remarks section.
 
@@ -106,16 +111,17 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**+s**]
+**-W**\ [**+s**\|\ **w**]
     Weights are supplied in input column 4. Do a weighted least squares
     fit [or start with these weights when doing the iterative robust
     fit]. Append **+s** to instead read data uncertainties (one sigma)
-    and create weights as 1/sigma^2 [Default reads only the first 3 columns.]
+    and create weights as 1/*sigma*\ ^2, or use the weights as read (**+w**)
+    [Default reads only the first 2 columns].
 
-.. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) input columns].
+.. |Add_-bi| replace:: [Default is 3 (or 4 if |-W| is set) input columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is 1-6 columns as set by **-F**].
+.. |Add_-bo| replace:: [Default is 1-6 columns as set by |-F|].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -134,6 +140,8 @@ Optional Arguments
 
 .. include:: explain_-q.rst_
 
+.. include:: explain_-s.rst_
+
 .. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
@@ -143,28 +151,28 @@ Optional Arguments
 Remarks
 -------
 
-The domain of x and y will be shifted and scaled to [-1, 1] and the
+The domain of *x* and *y* will be shifted and scaled to [-1, 1] and the
 basis functions are built from Chebyshev polynomials. These have a
 numerical advantage in the form of the matrix which must be inverted and
 allow more accurate solutions. In many applications of **trend2d** the
 user has data located approximately along a line in the x,y plane which
-makes an angle with the x axis (such as data collected along a road or
+makes an angle with the *x*-axis (such as data collected along a road or
 ship track). In this case the accuracy could be improved by a rotation
-of the x,y axes. **trend2d** does not search for such a rotation;
+of the *x,y* axes. **trend2d** does not search for such a rotation;
 instead, it may find that the matrix problem has deficient rank.
 However, the solution is computed using the generalized inverse and
 should still work out OK. The user should check the results graphically
-if **trend2d** shows deficient rank. NOTE: The model parameters listed
-with **-V** are Chebyshev coefficients; they are not numerically
-equivalent to the m#s in the equation described above. The description
-above is to allow the user to match **-N** with the order of the
+if **trend2d** shows deficient rank. **Note**: The model parameters listed
+with |-V| are Chebyshev coefficients; they are not numerically
+equivalent to the *m* coefficients in the equation described above. The description
+above is to allow the user to match |-N| with the order of the
 polynomial surface. For evaluating Chebyshev polynomials, see
 :doc:`grdmath`.
 
-The **-N**\ *n\_model*\ **r** (robust) and **-I** (iterative) options
+The **-N**\ *n_model*\ **+r** (robust) and |-I| (iterative) options
 evaluate the significance of the improvement in model misfit Chi-Squared
-by an F test. The default confidence limit is set at 0.51; it can be
-changed with the **-I** option. The user may be surprised to find that
+by an *F*-test. The default confidence limit is set at 0.51; it can be
+changed with the |-I| option. The user may be surprised to find that
 in most cases the reduction in variance achieved by increasing the
 number of terms in a model is not significant at a very high degree of
 confidence. For example, with 120 degrees of freedom, Chi-Squared must
@@ -180,7 +188,7 @@ when the model residuals have an outlier-free normal distribution. This
 means that the influence of outliers is reduced only slightly at each
 iteration; consequently the reduction in Chi-Squared is not very
 significant. If the procedure needs a few iterations to successfully
-attenuate their effect, the significance level of the F test must be
+attenuate their effect, the significance level of the *F*-test must be
 kept low.
 
 .. include:: explain_precision.rst_

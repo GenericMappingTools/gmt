@@ -12,20 +12,21 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2kml** *grid*
+**gmt grd2kml** *ingrid*
+|-N|\ *prefix*
 [ |-A|\ **a**\|\ **g**\|\ **s**\ [*altitude*] ]
 [ |-C|\ *cpt* ]
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
-[ |-H|\ *factor* ]
+[ |-H|\ *scale* ]
 [ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
 [ |-L|\ *tilesize* ]
-[ |-N|\ *prefix* ]
 [ |-S|\ [*extra*] ]
 [ |-T|\ *title* ]
 [ |-W|\ *cfile*\|\ *pen*\ [**+s**\ *scale*/*limit*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-n| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -40,7 +41,7 @@ viewing level in the quadtree using a Gaussian filter, but other
 filters can be selected as well.
 Optionally, illumination may be added by providing a grid file with
 intensities in the (-1,+1) range or by giving instructions to derive intensities
-from the input data grid automatically (see **-I**). Values outside the (-1,+1) intensity range will be
+from the input data grid automatically (see |-I|). Values outside the (-1,+1) intensity range will be
 clipped. Map colors are specified via a color palette lookup table. Contour overlays are optional.
 If plain tiles are selected (i.e., no contours specified) then the PNG tiles are written directly from
 :doc:`grdimage`. Otherwise, we must first make a PostScript plot that is then converted to raster image via
@@ -50,8 +51,16 @@ If plain tiles are selected (i.e., no contours specified) then the PNG tiles are
 Required Arguments
 ------------------
 
-*grid*
-    A 2-D gridded data set (see :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: 2-D gridded data set.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
+
+.. _-N:
+
+**-N**\ *prefix*
+    Sets a unique name prefixed used for the top-level KML filename *and* the
+    directory where all referenced KML files and raster images will be written [GMT_Quadtree].
 
 Optional Arguments
 ------------------
@@ -93,10 +102,10 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *factor*
-    Improve the quality of rasterization by passing the sub-pixel smoothing factor
-    to psconvert (same as **-H** option in psconvert) [no sub-pixel smoothing].
-    Ignored when **-W** is not used.
+**-H**\ *scale*
+    Improve the quality of rasterization by passing the sub-pixel smoothing scale
+    to psconvert (same as |-H| option in :doc:`psconvert`) [no sub-pixel smoothing].
+    Ignored when |-W| is not used.
 
 .. _-I:
 
@@ -117,13 +126,7 @@ Optional Arguments
     Sets the fixed size of the image building blocks.  Must be an integer that
     is radix 2.  Typical values are 256 or 512 [256].  **Note**: For global
     grids (here meaning 360-degree longitude range), we will select a
-    *tilesize* of 360 if **-L** is not specified.
-
-.. _-N:
-
-**-N**\ *prefix*
-    Sets a unique name prefixed used for the top-level KML filename *and* the
-    directory where all referenced KML files and raster images will be written [GMT_Quadtree].
+    *tilesize* of 360 if |-L| is not specified.
 
 .. _-S:
 
@@ -148,9 +151,9 @@ Optional Arguments
 **-W**\ *cfile*\|\ *pen*\ [**+s**\ *scale*/*limit*]
     Supply a file with records each holding a contour value and a contour pen.
     We then overlay the selected contour lines on top of the image [no contours].
-    Consequently, **-W** triggers the tile creation via PostScript and thus is slower.
+    Consequently, |-W| triggers the tile creation via PostScript and thus is slower.
     If *cfile* is not a valid file we assume you instead gave a *pen* and want
-    to draw all the contours implied by the *cpt* specified in **-C**.  The contours
+    to draw all the contours implied by the *cpt* specified in |-C|.  The contours
     are overlain via calls to :doc:`grdcontour`.  **Note**: The contour pen width(s)
     refer to the highest tile level and are reduced by a factor of *scale* [sqrt(2)] for each
     lower level.  Contours with scaled pen widths < *limit* [0.1] points are skipped (except
@@ -158,6 +161,8 @@ Optional Arguments
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+.. include:: explain_-n.rst_
 
 Quadtree building
 -----------------
@@ -184,7 +189,7 @@ Because each tile is a fixed size image (e.g., 512x512 pixels) but the amount of
 changes by factors of 4 for each new level, we cannot use a constant thickness contour pen for all
 levels.  Thus, the pen you supply must be considered the final pen applied to the highest resolution
 map overlays.  Furthermore, because the *dpi* here is very small compared to regular GMT plots, it is
-important to improve the appearance of the contours by using sub-pixel smoothing (**-H**). Both
+important to improve the appearance of the contours by using sub-pixel smoothing (|-H|). Both
 generating PostScript tiles and using sub-pixel smoothing adds considerable processing time over
 plain tiles.
 

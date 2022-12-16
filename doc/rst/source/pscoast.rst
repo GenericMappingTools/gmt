@@ -41,7 +41,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: coast_common.rst_
+.. include:: coast.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
@@ -80,6 +82,11 @@ in your analysis, try::
 
     gmt pscoast -RIS -Dh -W -M > iceland.txt
 
+To lay down a clip path around France that will clip your later plotting
+until you end the clipping with psclip -C, try::
+
+    gmt pscoast -R-10/10/40/52 -JM15c -E+c -P -K > clipped_FR.ps
+
 **pscoast** will first look for coastline files in directory
 **$GMT_SHAREDIR**/coast If the desired file is not found, it will look
 for the file **$GMT_SHAREDIR**/coastline.conf. This file may contain
@@ -89,7 +96,9 @@ The desired file is then sought for in the alternate directories.
 
 .. include:: explain_gshhg.rst_
 
-.. include:: coast_notes.rst_
+.. include:: coast.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------

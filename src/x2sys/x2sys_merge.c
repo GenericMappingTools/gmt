@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2021 by J. Luis
+ *      Copyright (c) 1999-2022 by J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/x2sys_merge_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"x2sys_merge"
 #define THIS_MODULE_MODERN_NAME	"x2sys_merge"
@@ -68,15 +69,18 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -A<main_COEdbase> -M<new_COEdbase> [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s -A<main_COEdbase> -M<new_COEdbase> [%s] [%s]\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Give file with the main crossover error data base.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Give file with the new crossover error data base.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The new COEs will replace the old ones present in <main_COEdbase>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Result is printed to stdout.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<main_COEdbase>");
+	GMT_Usage (API, -2, "Give file with the main crossover error data base.");
+	GMT_Usage (API, 1, "\n-M<new_COEdbase>");
+	GMT_Usage (API, -2, "Give file with the new crossover error data base. "
+		"Note: The new COEs will replace the old ones present in <main_COEdbase>. "
+		"Result is printed to standard output.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
@@ -92,6 +96,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct GM
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -105,13 +110,15 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'A':
-				Ctrl->A.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file));
 				break;
 			case 'M':
-				Ctrl->M.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->M.file));
 				break;
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
@@ -151,7 +158,7 @@ EXTERN_MSC int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 1999-2021 by T. Henstock
+ *    Copyright (c) 1999-2022 by T. Henstock
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /* pssegy program to plot segy files in postscript with variable trace spacing option
@@ -30,6 +30,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pssegy_inc.h"
 #include "segy_io.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pssegy"
@@ -132,43 +133,54 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<segyfile>] -D<dev> -F<color> | -W %s\n", name, GMT_Jx_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A] [-C<clip>] [-E<slop>] [-I] %s[-L<nsamp>]\n", GMT_Rx_OPT, API->K_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M<ntraces>] [-N] %s%s[-Q<mode><value>] [-S<header>] [-T<tracefile>]\n", API->O_OPT, API->P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W] [%s]\n\t[%s] [-Z]\n\t%s[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<segyfile>] -D<dev> -F<color> | -W %s %s [-A] [-C<clip>] [-E<slop>] "
+		"[-I] %s[-L<nsamp>] [-M<ntraces>] [-N] %s%s[-Q<mode><value>] [-S<header>] [-T<tracefile>] "
+		"[%s] [%s] [-W] [%s] [%s] [-Z] %s[%s] [%s] [%s]\n", name, GMT_Jx_OPT, GMT_Rx_OPT, API->K_OPT,
+		API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<segyfile> is an IEEE SEGY file [or standard input].\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set <dev> to give deviation in X units of plot for 1.0 on scaled trace.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Set <color> to fill variable area with a single color for the bitmap.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\nNote: Must specify either -W or -F.");
+	GMT_Usage (API, 1, "\n<segyfile> is an IEEE SEGY file [or standard input].");
+	GMT_Usage (API, 1, "\n-D<dev>");
+	GMT_Usage (API, -2, "Set <dev> to give deviation in X units of plot for 1.0 on scaled trace.");
+	GMT_Usage (API, 1, "\n-F<color>");
+	GMT_Usage (API, -2, "Set <color> to fill variable area with a single color for the bitmap.");
+	GMT_Usage (API, 1, "\n-W Plot wiggle trace.");
 	GMT_Option (API, "JX,R");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\tNB units for y are s or km.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A flips the default byte-swap state (default assumes data have a bigendian byte-order).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Clip scaled trace excursions at <clip>, applied after bias.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set <error> slop to allow for -T. Recommended in case of arithmetic errors!\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Fill negative rather than positive excursions.\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Note: Units for y are s or km.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Flip the default byte-swap state (default assumes data have a bigendian byte-order).");
+	GMT_Usage (API, 1, "\n-C<clip>");
+	GMT_Usage (API, -2, "Clip scaled trace excursions at <clip>, applied after bias.");
+	GMT_Usage (API, 1, "\n-E<slop>");
+	GMT_Usage (API, -2, "Set <error> slop to allow for -T. Recommended in case of arithmetic errors!");
+	GMT_Usage (API, 1, "\n-I Fill negative rather than positive excursions.");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Specify <nsamp> to override number of samples.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Fix the number of traces. Default reads all traces.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -M0 will read number in binary header, -M<ntraces> will attempt to read only <ntraces> traces.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Trace normalize the plot, with order of operations: [normalize][bias][clip](deviation).\n");
+	GMT_Usage (API, 1, "\n-L<nsamp>");
+	GMT_Usage (API, -2, "Specify <nsamp> to override number of samples.");
+	GMT_Usage (API, 1, "\n-M<ntraces>");
+	GMT_Usage (API, -2, "Fix the number of traces. -M0 will read number in binary header, while "
+		"-M<ntraces> will attempt to read only <ntraces> traces [Default reads all traces].");
+	GMT_Usage (API, 1, "\n-N Trace normalize the plot, with order of operations: [normalize][bias][clip](deviation).");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append <mode><value> to change any of 5 different settings:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Qb<bias> to bias scaled traces (-B-0.1 subtracts 0.1 from values).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Qi<dpi> to change image dots-per-inch [300].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Qu<redvel> to apply reduction velocity (-ve removes reduction already present).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Qx<mult> to multiply trace locations by <mult>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Qy<dy> to override sample interval.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Append <header> to set variable spacing.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <header> is c for cdp or o for offset.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Look in <filename> for a list of locations to select traces\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (same units as header * X, i.e., values printed by previous -V run).\n");
+	GMT_Usage (API, 1, "\n-Q<mode><value>");
+	GMT_Usage (API, -2, "Append <mode><value> to change any of 5 different modes:");
+	GMT_Usage (API, 3, "b: Append <bias> to bias scaled traces (-Bb-0.1 subtracts 0.1 from values) [0].");
+	GMT_Usage (API, 3, "i: Append <dpi> to change image dots-per-inch [300].");
+	GMT_Usage (API, 3, "u: Append <redvel> to apply reduction velocity (-ve removes reduction already present) [0].");
+	GMT_Usage (API, 3, "x: Append <mult> to multiply trace locations by <mult> [1].");
+	GMT_Usage (API, 3, "y: Append <dy> to override sample interval.");
+	GMT_Usage (API, 1, "\n-S<header>");
+	GMT_Usage (API, -2, "Append <header> to set variable spacing. "
+		"<header> is c for cdp or o for offset.");
+	GMT_Usage (API, 1, "\n-T<tracefile>");
+	GMT_Usage (API, -2, "Look in <filename> for a list of locations to select traces "
+		"(same units as header * X, i.e., values printed by previous -V run).");
 	GMT_Option (API, "U,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Plot wiggle trace (must specify either -W or -F).\n");
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Suppress plotting traces whose rms amplitude is 0.\n");
+	GMT_Usage (API, 1, "\n-Z Suppress plotting traces whose rms amplitude is 0.");
 	GMT_Option (API, "c,p,t,.");
 
 	return (GMT_MODULE_USAGE);
@@ -182,84 +194,87 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ > 0) break;
-				Ctrl->In.active = true;
-				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->In.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file));
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Swap data */
-				Ctrl->A.active = !Ctrl->A.active;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				break;
 			case 'C':	/* trace clip */
-				Ctrl->C.active = true;
-				Ctrl->C.value = (float) atof (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->C.value);
 				break;
 			case 'D':	/* trace scaling */
-				Ctrl->D.active = true;
-				Ctrl->D.value = atof (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->D.value);
 				break;
 			case 'E':
-				Ctrl->E.active = true;
-				Ctrl->E.value = atof (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				n_errors += gmt_get_required_double (GMT, opt->arg, opt->option, 0, &Ctrl->E.value);
 				break;
 			case 'F':
-				Ctrl->F.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				if (gmt_getrgb (GMT, opt->arg, Ctrl->F.rgb)) {
 					n_errors++;
 					gmt_rgb_syntax (GMT, 'F', " ");
 				}
 				break;
 			case 'I':
-				Ctrl->I.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'L':
-				Ctrl->L.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->L.value);
 				Ctrl->L.value = atoi (opt->arg);
 				break;
 			case 'M':
-				Ctrl->M.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
+				n_errors += gmt_get_required_uint (GMT, opt->arg, opt->option, 0, &Ctrl->M.value);
 				Ctrl->M.value = atoi (opt->arg);
 				break;
 			case 'N':	/* trace norm. */
-				Ctrl->N.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Q':
 				switch (opt->arg[0]) {
 					case 'b':	/* Trace bias */
-						Ctrl->Q.active[B_ID] = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[B_ID]);
 						Ctrl->Q.value[B_ID] = atof (&opt->arg[1]);
 						break;
 					case 'i':	/* Image dpi */
-						Ctrl->Q.active[I_ID] = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[I_ID]);
 						Ctrl->Q.value[I_ID] = atof (&opt->arg[1]);
 						break;
 					case 'u':	/* reduction velocity application */
-						Ctrl->Q.active[U_ID] = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[U_ID]);
 						Ctrl->Q.value[U_ID] = atof (&opt->arg[1]);
 						break;
 					case 'x': /* over-rides of header info */
-						Ctrl->Q.active[X_ID] = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[X_ID]);
 						Ctrl->Q.value[X_ID] = atof (&opt->arg[1]);
 						break;
 					case 'y': /* over-rides of header info */
-						Ctrl->Q.active[Y_ID] = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Y_ID]);
 						Ctrl->Q.value[Y_ID] = atof (&opt->arg[1]);
 						break;
 				}
 				break;
 			case 'S':
-				Ctrl->S.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				switch (opt->arg[0]) {
 					case 'o':
 						Ctrl->S.mode = PLOT_OFFSET;
@@ -273,24 +288,23 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'T':	/* plot traces only at listed locations */
-				Ctrl->T.active = true;
-				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				n_errors += gmt_get_required_file (GMT, opt->arg, opt->option, 0, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->T.file));
 				break;
 			case 'W':
-				Ctrl->W.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 			case 'Z':
-				Ctrl->Z.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
 				break;
 
 			default:	/* Report bad options */
-				n_errors += gmt_default_error (GMT, opt->option);
+				n_errors += gmt_default_option_error (GMT, opt);
 				break;
 		}
 	}
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Option -T requires a file name\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && access (Ctrl->T.file, R_OK),
-	                                 "Cannot find file %s\n", Ctrl->T.file);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.value < 0.0, "Option -E: Slop cannot be negative\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "Must specify -F with -I\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active && !Ctrl->W.active, "Must specify -F or -W\n");
@@ -482,7 +496,7 @@ EXTERN_MSC int GMT_pssegy (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

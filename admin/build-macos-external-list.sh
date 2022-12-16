@@ -6,21 +6,28 @@
 # List of executables whose shared libraries must also be included
 #
 # Exceptions:
-# For now (6.2.0), need to do a few things manually first, like
+# For now (6.3.0), need to do a few things manually first, like
 #   1. Separate install command to avoid version number in GraphicsMagick directory name
+#   2. Separate install command to avoid version number in GhostScript directory name
 #
 # Notes:
 #   1. This is tested on macports where gs is a symbolic link to gsc.
 
-if [ $(which cmake) = "/opt/local/bin/cmake" ]; then
-	distro=MacPorts
+GSVERSION=$1	# Get the version of gs from build-release.sh
+DISTRO=$2
+
+if [ ${DISTRO} = "MacPorts" ]; then
 	top=/opt/local
-elif [ $(which cmake) = "/usr/local/bin/cmake" ]; then
-	distro=HomeBrew
+	omp="libomp/"
+	proj="${top}/lib/proj8/share/proj"
+	gm="${top}/lib/GraphicsMagick-\${GMT_CONFIG_GM_VERSION}"
+elif [ ${DISTRO} = "HomeBrew" ]; then
 	top=/usr/local
-else
-	distro=Fink
-	/sw
+	omp=""
+	proj="${top}/opt/proj/share/proj"
+	gm="${top}/lib/GraphicsMagick"
+else	# Requires either MacPorts of HomeBrew
+	exit 1
 fi
 
 # Set temporary directory
@@ -28,22 +35,25 @@ TMPDIR=${TMPDIR:-/tmp}
 
 # 1a. List of executables needed and whose shared libraries also are needed.
 #     Use full path if you need something not in your path
-EXEPLUSLIBS="/opt/local/bin/gsc /opt/local/bin/gm /opt/local/bin/ffmpeg /opt/local/bin/ogr2ogr /opt/local/bin/gdal_translate /opt/local/lib/libfftw3f_threads.dylib"
+EXEPLUSLIBS="${top}/bin/gsc ${top}/bin/gm ${top}/bin/ffmpeg ${top}/bin/ogr2ogr \
+ ${top}/bin/gdal_translate ${top}/lib/libfftw3f_threads.dylib ${top}/lib/${omp}libomp.dylib"
 # 1b. List of any symbolic links needed
 #     Use full path if you need something not in your path
-EXELINKS=/opt/local/bin/gs
+EXELINKS=${top}/bin/gs
 # 1c. List of executables whose shared libraries have already been included via other shared libraries
 #     Use full path if you need something not in your path
 EXEONLY=
-# 1d. Shared directories to be added
+# 1d. Shared directories to be added (except ghostscript which we do separately)
 #     Use full path if you need something not in your path
-EXESHARED="gdal /opt/local/share/ghostscript /opt/local/lib/proj7/share/proj"
+EXESHARED="gdal ${proj}"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f ${TMPDIR}/raw.lis
 for P in ${EXEONLY} ${EXEPLUSLIBS}; do
 	path=$(which $P)
-	if [ -L $path ]; then # A symlink
+	if [ "X${path}" = "X" ]; then
+		echo "build-macos-external-list.sh: Warning: Executable $P not found." >&2
+	elif [ -L $path ]; then # A symlink
 		grealpath $path >> ${TMPDIR}/raw.lis
 	else
 		echo $path >> ${TMPDIR}/raw.lis
@@ -63,7 +73,7 @@ grep -v dylib ${TMPDIR}/final.lis > ${TMPDIR}/programs.lis
 # 5. Build the include file for cpack
 cat << EOF
 # List of extra executables and shared libraries to include in the macOS installer
-# This file was prepared under $distro and used the installation paths of ${USER}.
+# This file was prepared under ${DISTRO} and used the installation paths of ${USER}.
 
 install (PROGRAMS
 EOF
@@ -98,6 +108,16 @@ if [ ! "X$EXESHARED" = "X" ]; then
 fi
 cat << EOF
 
+# Place the ghostscript support files while skipping the version directory
+install (DIRECTORY
+	${top}/share/ghostscript/${GSVERSION}/Resource
+	${top}/share/ghostscript/${GSVERSION}/lib
+	${top}/share/ghostscript/${GSVERSION}/iccprofiles
+	${top}/share/ghostscript/fonts
+	DESTINATION share/ghostscript
+	COMPONENT Runtime)
+
+#
 # Place the licenses for runtime dependencies
 install (DIRECTORY
 	../../admin/Licenses
@@ -106,12 +126,17 @@ install (DIRECTORY
 
 # Place the GraphicsMagick config files
 install (DIRECTORY
-	/opt/local/lib/GraphicsMagick-\${GMT_CONFIG_GM_VERSION}/config
+	${gm}/config
 	DESTINATION \${GMT_LIBDIR}/GraphicsMagick
 	COMPONENT Runtime)
+EOF
 
+if [ ${DISTRO} = "MacPorts" ]; then
+cat << EOF
 install (FILES
 	/opt/local/share/GraphicsMagick-\${GMT_CONFIG_GM_VERSION}/config/log.mgk
 	DESTINATION \${GMT_LIBDIR}/GraphicsMagick/config
 	COMPONENT Runtime)
 EOF
+fi
+exit 0

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -98,13 +98,16 @@ GMT_LOCAL void gmtmemory_die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, siz
  * of all memory allocated by gmt_M_memory and subsequently freed with gmt_M_free.  If
  * upon exit there are unreleased memory we issue a report of how many items were
  * not freed and where they were first allocated.  This is only used by the developers
- * and if -DMEMDEBUG is not set then all of this is left out.
+ * and if -DMEMDEBUG is not set then all of this code is left out of the compilation.
+ *
  * The environmental variable GMT_TRACK_MEMORY controls the memory tracking:
- * a. Unset GMT_TRACK_MEMORY or set to '0' to deactivate the memory tracking.
- * b. Set GMT_TRACK_MEMORY to 1 (or any but 0) to activate the memory tracking.
- * c. Set GMT_TRACK_MEMORY to 2 to activate the memory tracking and to write a
+ * a. Unset GMT_TRACK_MEMORY or set it to "OFF" to deactivate memory tracking.
+ * b. Set GMT_TRACK_MEMORY to ON (or anything but OFF) to activate memory tracking.
+ * c. Set GMT_TRACK_MEMORY to LOG to activate memory tracking and to write a
  *    detailed log of all transactions taking place during a session to the file
- *    gmt_memtrack_<pid>.log
+ *    gmt_memtrack_<pid>.log where <pid> is the process ID of the command.
+ * d. Set GMT_TRACK_MEMORY to an integer >= 0 to track the allocation reported by this ID
+ *    You will need to set a break point in gmtmemory_memtrack_add so the debugger stops.
  *
  * Paul Wessel, Latest revision June 2012.
  * Florian Wobbe, Latest revision August 2013.
@@ -127,20 +130,17 @@ int gmt_memtrack_init (struct GMT_CTRL *GMT) {
 	char *env = getenv ("GMT_TRACK_MEMORY"); /* 0: off; any: track; 2: log to file */
 	struct MEMORY_TRACKER *M = calloc (1, sizeof (struct MEMORY_TRACKER));
 	GMT->hidden.mem_keeper = M;
-	M->active = ( env && strncmp (env, "0", 1) != 0 ); /* track if GMT_TRACK_MEMORY != 0 */
-	M->do_log = ( env && strncmp (env, "2", 1) == 0 ); /* log if GMT_TRACK_MEMORY == 2 */
-	if (M->active) {
-		size_t ID;
-		ID = atoi (env);
-		if (ID > 2) M->find = ID;
-	}
+	M->active = ( env && strcasecmp (env, "off") != 0 ); /* Track if GMT_TRACK_MEMORY is set and is not OFF */
+	M->do_log = ( env && strcasecmp (env, "log") == 0 ); /* Write a log if GMT_TRACK_MEMORY is LOG */
+	if (M->active && isdigit (env[0]))	/* Got a specific ID to track; see gmtmemory_memtrack_add */
+		 M->find = atoi (env);
 	M->search = true;
+	if (M->active) M->fp = stderr;
 	if (!M->do_log) /* Logging not requested */ {
-		if (M->active) M->fp = stderr;
 		return GMT_OK;
 	}
 	else
-	{
+	{	/* Set up memory tracking log file */
 		int pid = getpid();
 		char logfile[GMT_LEN32];
 		snprintf (logfile, GMT_LEN32, "gmt_memtrack_%d.log", pid);
@@ -261,7 +261,7 @@ static inline struct MEMORY_ITEM *gmtmemory_treedelete (struct MEMORY_ITEM *t, v
 }
 
 static inline void gmtmemory_treedestroy (struct MEMORY_ITEM **t) {
-	/* Remves all items from the tree rooted at t. */
+	/* Removes all items from the tree rooted at t. */
 	struct MEMORY_ITEM *x = *t;
 	if (x != NULL) {
 		gmtmemory_treedestroy (&x->l);
@@ -365,7 +365,7 @@ static inline void gmtmemory_treereport (struct GMT_CTRL *GMT, struct MEMORY_ITE
 	double size = gmtmemory_memtrack_mem (x->size, &u);
 	struct MEMORY_TRACKER *M = GMT->hidden.mem_keeper;
 	GMT_Report (GMT->parent, GMT_MSG_WARNING, "Memory not freed first allocated in %s (ID = %" PRIuS "): %.3f %s [%" PRIuS " bytes]\n", x->name, x->ID, size, unit[u], x->size);
-	if (M->do_log)
+	if (M->active)
 		fprintf (M->fp, "# Memory not freed first allocated in %s (ID = %" PRIuS "): %.3f %s [%"
 						 PRIuS " bytes]\n", x->name, x->ID, size, unit[u], x->size);
 }
@@ -396,19 +396,19 @@ void gmt_memtrack_report (struct GMT_CTRL *GMT) {
 	size = gmtmemory_memtrack_mem (M->maximum, &u);
 	GMT_Report (GMT->parent, level, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n",
 							size, unit[u], M->maximum);
-		if (M->do_log)
-			fprintf (M->fp, "# Max total memory allocated was %.3f %s [%"
+	if (M->do_log)
+		fprintf (M->fp, "# Max total memory allocated was %.3f %s [%"
 							 PRIuS " bytes]\n", size, unit[u], M->maximum);
 	size = gmtmemory_memtrack_mem (M->largest, &u);
 	GMT_Report (GMT->parent, level, "Single largest allocation was %.3f %s [%" PRIuS " bytes]\n", size, unit[u], M->largest);
-		if (M->do_log)
-			fprintf (M->fp, "# Single largest allocation was %.3f %s [%"
+	if (M->do_log)
+		fprintf (M->fp, "# Single largest allocation was %.3f %s [%"
 							 PRIuS " bytes]\n", size, unit[u], M->largest);
 	if (M->current) {
 		size = gmtmemory_memtrack_mem (M->current, &u);
 		GMT_Report (GMT->parent, level, "MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n",
 								size, unit[u], M->current);
-		if (M->do_log)
+		if (M->active)
 			fprintf (M->fp, "# MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n",
 							 size, unit[u], M->current);
 	}
@@ -419,12 +419,12 @@ void gmt_memtrack_report (struct GMT_CTRL *GMT) {
 	if (M->n_freed > M->n_allocated) {
 		uint64_t n_multi_frees = M->n_freed - M->n_allocated;
 		GMT_Report (GMT->parent, level, "Items FREED MULTIPLE TIMES: %" PRIu64 "\n", n_multi_frees);
-		if (M->do_log)
+		if (M->active)
 			fprintf (M->fp, "# Items FREED MULTIPLE TIMES: %" PRIu64 "\n", n_multi_frees);
 	}
 	if (excess) {
 		GMT_Report (GMT->parent, level, "Items NOT PROPERLY FREED: %" PRIu64 "\n", excess);
-		if (M->do_log)
+		if (M->active)
 			fprintf (M->fp, "# Items NOT PROPERLY FREED: %" PRIu64 "\n", excess);
 	}
 	gmtmemory_treeprint (GMT, M->root);
@@ -566,11 +566,12 @@ void *gmt_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 }
 
 void gmt_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *where) {
+	gmt_M_unused(GMT); gmt_M_unused(where);
 	if (addr == NULL) {
-#ifndef DEBUG
-		/* report freeing unallocated memory only in level GMT_MSG_DEBUG (-V4) */
+#ifdef DEBUG
+		/* Report attempt at freeing unallocated memory only in level GMT_MSG_DEBUG (-V4) */
 		gmtlib_report_func (GMT, GMT_MSG_DEBUG, where,
-				"tried to free unallocated memory\n");
+				"FYI: gmt_M_free given a NULL pointer - ignored\n");
 #endif
 		return; /* Do not free a NULL pointer, although allowed */
 	}

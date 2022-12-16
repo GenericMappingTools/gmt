@@ -20,11 +20,11 @@ Synopsis
 [|-N|\ *sectors*\ [**+m**\ *min_sectors*]\ \|\ **n**]
 [ |SYN_OPT-V| ]
 [ |-W| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
-[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-n| ]
@@ -39,7 +39,7 @@ Synopsis
 Description
 -----------
 
-**nearneighbor** reads arbitrarily located (*x,y,z*\ [,\ *w*]) triples
+**nearneighbor** reads arbitrarily located (*x,y,z*\ [,\ *w*]) triplets
 [quadruplets] from standard input [or *table*] and uses a nearest
 neighbor algorithm to assign a weighted average value to each node that
 has one or more data points within a search radius (*R*) centered on the
@@ -70,14 +70,16 @@ Required Arguments
 ------------------
 
 *table*
-    3 [or 4, see **-W**] column ASCII file(s) [or binary, see
+    3 [or 4, see |-W|] column ASCII file(s) [or binary, see
     **-bi**] holding (*x,y,z*\ [,\ *w*]) data values. If
     no file is specified, **nearneighbor** will read from standard input.
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Give the name of the output grid file.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -114,7 +116,7 @@ Optional Arguments
     sectors. Average values will only be computed if there is *at least*
     one value inside each of at least *min_sectors* of the sectors for a given
     node. Nodes that fail this test are assigned the value NaN (but see
-    **-E**). If **+m** is omitted then *min_sectors* is set to be at least 50%
+    |-E|). If **+m** is omitted then *min_sectors* is set to be at least 50%
     of *sectors* (i.e., rounded up to next integer) [Default is a quadrant
     search with 100% coverage, i.e., *sectors* = *min_sectors* = 4]. Note
     that only the nearest value per sector enters into the averaging; the
@@ -128,7 +130,9 @@ Optional Arguments
    These are multiplied with the geometrical weight factor to determine
    the actual weights used in the calculations.
 
-.. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns].
+.. include:: explain_-aspatial.rst_
+
+.. |Add_-bi| replace:: [Default is 3 (or 4 if |-W| is set) columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
@@ -140,7 +144,7 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| replace:: 0x20 .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code

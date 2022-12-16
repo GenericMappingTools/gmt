@@ -18,7 +18,7 @@ Synopsis
 [ |-D|\ [**g**\|\ **n**] ]
 [ |-E| ]
 [ |-F|\ [**k**]\ *filter* ]
-[ |-N|\ [*norm*] ]
+[ |-N|\ **g**\|\ **m**\|\ **s** ]
 [ |-Q| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -47,9 +47,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *grdfile*
-    *grdfile* is the name of the binary output grid file. (See
-    :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -68,7 +69,7 @@ Optional Arguments
 **-D**\ [**g**\|\ **n**]
     Will evaluate a derived field from a geopotential model.  Choose
     between **Dg** which will compute the gravitational field or **Dn**
-    to compute the geoid [Add **-E** for anomalies on the ellipsoid].
+    to compute the geoid [Add |-E| for anomalies on the ellipsoid].
 
 .. _-E:
 
@@ -90,11 +91,16 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [*norm*]
+**-N**\ **g**\|\ **m**\|\ **s**
     Normalization used for coefficients.  Choose among **m**: Mathematical
     normalization - inner products summed over surface equal 1 [Default].
     **g** Geodesy normalization - inner products summed over surface
     equal 4pi. **s**: Schmidt normalization - as used in geomagnetism.
+
+.. _-Q:
+
+**-Q**
+    Coefficients have phase convention from physics, i.e., the :math:`(-1)^m` factor.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -124,14 +130,14 @@ Examples
 --------
 
 To create a 1 x 1 degree global grid file from the ASCII
-coefficients in the remote file EGM96_to_360.txt, use
+coefficients in the remote file EGM96_to_36.txt, use
 
    ::
 
-    gmt sph2grd @EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
+    gmt sph2grd @EGM96_to_36.txt -GEGM96_to_36.nc -Rg -I1 -V
 
-Reference
----------
+References
+----------
 
 Holmes, S. A., and Featherstone, W. E., 2002, A unified approach to
 the Clenshaw summation and the recursive computation of very high

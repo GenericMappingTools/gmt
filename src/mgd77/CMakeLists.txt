@@ -1,6 +1,5 @@
 #
-#
-# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,7 +28,8 @@ set (SUPPL_NAME mgd77)
 set (SUPPL_HEADERS cm4_functions.h mgd77.h mgd77_IGF_coeffs.h mgd77_codes.h
 	mgd77_e77.h mgd77_functions.h mgd77_init.h mgd77_recalc.h mgd77_rls_coeffs.h
 	mgd77defaults.h mgd77magref.h mgd77sniffer.h mgd77snifferdefaults.h)
+AUX_SOURCE_DIRECTORY (longopt SUPPL_LONG_OPT_H) 
 set (SUPPL_PROGS_SRCS mgd77convert.c mgd77header.c mgd77info.c mgd77list.c
-	mgd77magref.c mgd77manage.c mgd77path.c mgd77sniffer.c mgd77track.c)
+	mgd77magref.c mgd77manage.c mgd77path.c mgd77sniffer.c mgd77track.c ${SUPPL_LONG_OPT_H})
 set (SUPPL_LIB_SRCS ${SUPPL_PROGS_SRCS} mgd77.c mgd77_functions.c cm4_functions.c)
 set (SUPPL_EXAMPLE_FILES README.mgd77)
