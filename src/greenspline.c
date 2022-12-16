@@ -1366,17 +1366,17 @@ GMT_LOCAL double greenspline_undo_normalization_grad (double *X, double w_norm, 
 	/* To undo normalizations and trends solution gradient */
 	gmt_M_unused (X);
 	if (mode & GREENSPLINE_NORM) w_norm *= coeff[GSP_RANGE];	/* Scale back up by residual range (if we normalized) */
-	if (mode & GREENSPLINE_TREND) {					/* Restore residual trend */
-		if (dim == 1) w_norm += coeff[GSP_SLP_X];
-		/* Higher dimensions not implemented yet */
+	if (mode & GREENSPLINE_TREND) {
+		if (dim == 1) w_norm += coeff[GSP_SLP_X];	/* Restore residual trend removed in greenspline_do_normalization_1d */
+		/* Higher dimensions not implemented yet but will undo the slope correction done in greenspline_do_normalization */
 	}
 	return (w_norm);
 }
 
 GMT_LOCAL void greenspline_do_normalization_1d (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, uint64_t m, unsigned int mode, double *coeff) {
 	/* We always remove/restore the mean observation value.  mode is a combination of bitflags that affects what we do:
-	 * Bit GREENSPLINE_TREND will also remove linear trend
-	 * Bit GREENSPLINE_NORM will normalize residuals by range
+	 * Bit GREENSPLINE_TREND will also remove linear trend and its projected gradient along observed gradient constraints
+	 * Bit GREENSPLINE_NORM will normalize residuals by range and do the same for residual gradients
 	 */
 
 	uint64_t i;
@@ -1427,7 +1427,7 @@ GMT_LOCAL void greenspline_do_normalization_1d (struct GMTAPI_CTRL *API, double 
 	GMT_Report (API, GMT_MSG_INFORMATION, "1-D Normalization coefficients: zoff = %g slope = %g xmean = %g range = %g\n", coeff[GSP_MEAN_Z], coeff[GSP_SLP_X], coeff[GSP_MEAN_X], coeff[GSP_RANGE]);
 }
 
-GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, uint64_t m, unsigned int mode, unsigned int dim, double *coeff) {
+GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X, double *obs, double **N, uint64_t n, uint64_t m, unsigned int mode, unsigned int dim, double *coeff) {
 	/* We always remove/restore the mean observation value.  mode is a combination of bitflags that affects what we do:
 	 * Bit GREENSPLINE_TREND will also remove linear trend
 	 * Bit GREENSPLINE_NORM will normalize residuals by range
@@ -1444,10 +1444,11 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 		GMT_Report (API, GMT_MSG_INFORMATION, type[mode], dim);
 	else
 		GMT_Report (API, GMT_MSG_INFORMATION, "Normalization mode: %s\n", type[mode]);
-	if (dim == 1) {	/* 1-D trend or mean only */
+	if (dim == 1) {	/* 1-D trend or mean only is done by separate function */
 		greenspline_do_normalization_1d (API, X, obs, n, m, mode, coeff);
 		return;
 	}
+	/* Here we deal with 2-D or 3-D data corrections */
 	for (i = 0; i < n; i++) {	/* Find mean z-value */
 		coeff[GSP_MEAN_Z] += obs[i];
 		if ((mode & GREENSPLINE_TREND) == 0) continue;	/* Else we also sum up x and y to get their means */
@@ -1459,10 +1460,9 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 	if (mode & GREENSPLINE_TREND) {	/* Solve for LS plane using deviations from (0, 0, 0) */
 		double	xx, yy, zz, sxx, sxy, sxz, syy, syz;
 		sxx = sxy = sxz = syy = syz = 0.0;
-		coeff[GSP_MEAN_X] /= n;	/* Mean x */
-		coeff[GSP_MEAN_Y] /= n;	/* Mean y */
+		coeff[GSP_MEAN_X] /= n;	/* Mean x from sum computed above */
+		coeff[GSP_MEAN_Y] /= n;	/* Mean y from sum computed above */
 		for (i = 0; i < n; i++) {
-
 			xx = X[i][GMT_X] - coeff[GSP_MEAN_X];
 			yy = X[i][GMT_Y] - coeff[GSP_MEAN_Y];
 			zz = obs[i] - coeff[GSP_MEAN_Z];
@@ -1474,8 +1474,8 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 			syz += (yy * zz);
 		}
 
-		d = sxx*syy - sxy*sxy;
-		if (d != 0.0) {
+		d = sxx*syy - sxy*sxy;	/* Denominator */
+		if (d != 0.0) {	/* Got a valid solution with nonzero d */
 			coeff[GSP_SLP_X] = (sxz*syy - sxy*syz)/d;
 			coeff[GSP_SLP_Y] = (sxx*syz - sxy*sxz)/d;
 		}
@@ -1483,16 +1483,27 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 
 	/* Remove plane (or just mean) */
 
-	for (i = 0; i < n; i++) {	/* Also find min/max or residuals in the process */
-		obs[i] -= coeff[GSP_MEAN_Z];	/* Always remove mean data value */
-		if (mode & GREENSPLINE_TREND) obs[i] -= (coeff[GSP_SLP_X] * (X[i][GMT_X] - coeff[GSP_MEAN_X]) + coeff[GSP_SLP_Y] * (X[i][GMT_Y] - coeff[GSP_MEAN_Y]));
+	for (i = 0; i < n; i++) {	/* Also find min/max of residuals in the process */
+		obs[i] -= coeff[GSP_MEAN_Z];	/* We always remove mean data value */
+		if (mode & GREENSPLINE_TREND) /* Also remove linear planar trend */
+			obs[i] -= (coeff[GSP_SLP_X] * (X[i][GMT_X] - coeff[GSP_MEAN_X]) + coeff[GSP_SLP_Y] * (X[i][GMT_Y] - coeff[GSP_MEAN_Y]));
 		if (obs[i] < min) min = obs[i];
 		if (obs[i] > max) max = obs[i];
 	}
-	if (mode & GREENSPLINE_NORM) {	/* Normalize by range */
-		coeff[GSP_RANGE] = MAX (fabs(min), fabs(max));	/* Determine range */
+	if (m && mode & GREENSPLINE_TREND) {	/* Also remove planar trend slope from slope observations */
+		unsigned int ii;
+		double *D = NULL, v, g[3] = {coeff[GSP_SLP_X], coeff[GSP_SLP_Y], 0.0};	/* The trend slope vector */
+		GMT_Report (API, GMT_MSG_INFORMATION, "%d-D Normalization correction (%g, %g) for slope constraints in observed directions\n", dim, coeff[GSP_SLP_X], coeff[GSP_SLP_Y]);
+		for (i = n; i < (n+m); i++) {	/* Each slope constraint has a magnitude (in obs[i]) and direction (unit vector in N[i-n]) */
+			D = N[i-n];	/* Current slope unit vector */
+			for (ii = 0, v = 0.0; ii < dim; ii++) v += g[ii] * D[ii] * obs[i];	/* Dot product of trend unit vector g with data gradient vector is component in trend direction */
+			obs[i] -= v;	/* Remove projected component of trend slope onto this observed gradient */
+		}
+	}
+	if (mode & GREENSPLINE_NORM) {	/* Normalize by data range */
+		coeff[GSP_RANGE] = MAX (fabs(min), fabs(max));	/* Determine range as max abs extreme value */
 		d = (coeff[GSP_RANGE] == 0.0) ? 1.0 : 1.0 / coeff[GSP_RANGE];
-		for (i = 0; i < (n+m); i++) obs[i] *= d;	/* Normalize 0-1 plus scale any slopes */
+		for (i = 0; i < (n+m); i++) obs[i] *= d;	/* Normalize to +/- 1 plus scale any slopes as they are affected the same way since depends on delta z */
 	}
 
 	/* Recover obs(x,y) = w_norm(x,y) * coeff[GSP_RANGE] + coeff[GSP_MEAN_Z] + coeff[GSP_SLP_X]*(x-coeff[GSP_MEAN_X]) + coeff[GSP_SLP_Y]*(y-coeff[GSP_MEAN_Y]) */
@@ -1535,6 +1546,7 @@ GMT_LOCAL double greenspline_get_dircosine (struct GMT_CTRL *GMT, double *D, dou
 			az = gmt_az_backaz (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y], baz);
 			sincosd (az, &N[GMT_X], &N[GMT_Y]);
 			for (ii = 0; ii < 2; ii++) C += D[ii] * N[ii];	/* Dot product of 2-D unit vectors */
+			C = -C;		/* The opposite direction for X0-X1 */
 			break;
 		case 3:	/* 3-D */
 			for (ii = 0; ii < 3; ii++) N[ii] = X1[ii] - X0[ii];	/* Difference vector */
@@ -1999,11 +2011,6 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (m > 0 && dimension > 1 && normalize && (normalize & GREENSPLINE_TREND)) {
-		normalize = GREENSPLINE_NORM;	/* Only allow taking out data mean and scale residuals for mixed z/slope data in higher dimensions	 */
-		GMT_Report (API, GMT_MSG_WARNING, "Can only remove/restore mean z and scale residuals in mixed {z, grad(z)} data sets\n");
-	}
-
 	if (m == 0)
 		GMT_Report (API, GMT_MSG_INFORMATION, "Found %" PRIu64 " data points, yielding a %" PRIu64 " by %" PRIu64 " set of linear equations\n",
 		            n, nm, nm);
@@ -2217,7 +2224,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (orig_obs, obs, nm, double);
 	}
 
-	greenspline_do_normalization (API, X, obs, n, m, normalize, dimension, norm);
+	greenspline_do_normalization (API, X, obs, D, n, m, normalize, dimension, norm);
 
 	/* Set up linear system Ax = obs. To clarify, the matrix A will be
 	 * of size nm by nm, where nm = n + m. Again, n is the number of
@@ -2257,9 +2264,11 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			for (col = 0; col < (openmp_int)nm; col++) {	/* We do all columns here since most are not symmetrical */
 				ij = row * nm + col;
 				r = greenspline_get_radius (GMT, X[col], X[row], dimension);
-				grad = dGdr (GMT, r, par, Lg);
-				C = greenspline_get_dircosine (GMT, D[row-n], X[col], X[row], dimension, true);
-				A[ij] = grad * C;
+				if (r > 0.0) {	/* For all pairs except self-pairs */
+					grad = dGdr (GMT, r, par, Lg);
+					C = greenspline_get_dircosine (GMT, D[row-n], X[col], X[row], dimension, true);
+					A[ij] = grad * C;
+				}
 			}
 		}
 	}
@@ -2531,13 +2540,15 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				out[dimension] = 0.0;
 				for (p = 0; p < nm; p++) {
 					r = greenspline_get_radius (GMT, out, X[p], dimension);
-					if (Ctrl->Q.active) {
-						C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, out, X[p], dimension, false);
-						part = dGdr (GMT, r, par, Lz) * C;
+					if (r > 0.0) {	/* For all pairs except self-pairs */
+						if (Ctrl->Q.active) {
+							C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, out, X[p], dimension, false);
+							part = dGdr (GMT, r, par, Lz) * C;
+						}
+						else
+							part = G (GMT, r, par, Lz);
+						out[dimension] += alpha[p] * part;
 					}
-					else
-						part = G (GMT, r, par, Lz);
-					out[dimension] += alpha[p] * part;
 				}
 				out[dimension] = finalize (out, out[dimension], normalize, norm, dimension);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Rec);
@@ -2632,9 +2643,11 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							/* Here, V holds the current output coordinates */
 							for (p = 0, wp = 0.0; p < nm; p++) {
 								r = greenspline_get_radius (GMT, V, X[p], 2U);
-								C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, V, X[p], 2U, false);
-								part = dGdr (GMT, r, par, Lz) * C;
-								wp += alpha[p] * part;
+								if (r > 0.0) {	/* For all pairs except self-pairs */
+									C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, V, X[p], 2U, false);
+									part = dGdr (GMT, r, par, Lz) * C;
+									wp += alpha[p] * part;
+								}
 							}
 							V[GMT_Z] = finalize (V, wp, normalize, norm, 2U);
 							Out->data[ij] = (gmt_grdfloat)V[GMT_Z];
@@ -2646,9 +2659,11 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						double dev, rms = 0.0, chi2_sum = 0.0;
 						for (j = 0; j < nm; j++) {	/* For each data constraint */
 							for (p = 0, wp = 0.0; p < nm; p++) {	/* Add contribution for each data constraint */
-								r = greenspline_get_radius (GMT, X[j], X[p], 2U);
-								part = G (GMT, r, par, Lz);
-								wp += alpha[p] * part;	/* Just add this scaled Green's function */
+								if (r > 0.0) {	/* For all pairs except self-pairs */
+									r = greenspline_get_radius (GMT, X[j], X[p], 2U);
+									part = G (GMT, r, par, Lz);
+									wp += alpha[p] * part;	/* Just add this scaled Green's function */
+								}
 							}
 							predicted = finalize (X[j], wp, normalize, norm, dimension);	/* Undo normalization first */
 							dev = orig_obs[j] - predicted;	/* Deviation between observed and predicted */
@@ -2762,9 +2777,11 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							/* Here, V holds the current output coordinates */
 							for (p = 0, wp = 0.0; p < (int64_t)nm; p++) {	/* Loop over Green's function components */
 								r = greenspline_get_radius (GMT, V, X[p], dimension);
-								C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, V, X[p], dimension, false);
-								part = dGdr (GMT, r, par, Lz) * C;
-								wp += alpha[p] * part;
+								if (r > 0.0) {	/* For all pairs except self-pairs */
+									C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, V, X[p], dimension, false);
+									part = dGdr (GMT, r, par, Lz) * C;
+									wp += alpha[p] * part;
+								}
 							}
 							data[ij] = (gmt_grdfloat)finalize (V, wp, normalize, norm, dimension);
 						}
