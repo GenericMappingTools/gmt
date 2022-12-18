@@ -119,10 +119,11 @@ Optional Arguments
 
 **-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] \|\ [**-T**\ *file*\|\ *list*]
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
-    For details on array creation, see `Generate 1-D Array`_.  **Note**: For resampling of spatial
+    The form **-T**\ *list* means a online list of *time* coordinates like for example: **-T**\ *13,15,16,22.5*.
+    For details on array creation, see `Generate 1-D Array`_. **Note**: For resampling of spatial
     (*x,y* or *lon,lat*) series you must give an increment with a valid distance unit;
-    see `Units`_ for map units or use **c** if plain Cartesian coordinates.  The first two
-    columns must contain the spatial coordinates.  From these we calculate distances in the
+    see `Units`_ for map units or use **c** if plain Cartesian coordinates. The first two
+    columns must contain the spatial coordinates. From these we calculate distances in the
     chosen units and interpolate using this parametric series.
 
 .. |Add_-V| replace:: |Add_-V_links|
