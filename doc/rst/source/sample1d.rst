@@ -17,7 +17,7 @@ Synopsis
 [ |-E| ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
-[ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] \|\ [**-T**\ *file*\|\ *list*]]
 [ |SYN_OPT-V| ]
 [ |-W|\ *col* ]
 [ |SYN_OPT-b| ]
@@ -117,7 +117,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**]
+**-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] \|\ [**-T**\ *file*\|\ *list*]
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     For details on array creation, see `Generate 1-D Array`_.  **Note**: For resampling of spatial
     (*x,y* or *lon,lat*) series you must give an increment with a valid distance unit;
