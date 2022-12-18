@@ -1599,8 +1599,9 @@ GMT_LOCAL void greenspline_set_filename (char *name, unsigned int k, unsigned in
 
 EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	openmp_int col, row;
-	uint64_t n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
+	uint64_t n_read, p, k, i, j, seg, m, n, nm, n_cr = 0, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
 	unsigned int dimension = 0, normalize, n_cols, n_layers = 1, w_col, L_Max = 0;
+	int64_t *kolumn = NULL;
 	size_t n_alloc;
 	int error = GMT_NOERROR, out_ID, way, n_columns, n_use;
 	bool delete_grid = false, check_longitude, skip, write_3D_records = false;
@@ -1924,7 +1925,9 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		for (k = n; k < nm; k++) X[k] = gmt_M_memory (GMT, NULL, n_cols, double);
 		obs = gmt_M_memory (GMT, obs, nm, double);
 		D = gmt_M_memory (GMT, NULL, m, double *);
+		kolumn = gmt_M_memory (GMT, NULL, m, int *);	/* Hold Greens' function ID for a data co-registered slope constraint */
 		for (k = 0; k < m; k++) D[k] = gmt_M_memory (GMT, NULL, n_cols, double);
+		for (k = 0; k < m; k++) kolumn[k] = GMT_NOTSET;	/* Flag'em as not co-registered */
 		n_skip = n_read = 0;
 		for (seg = k = 0, p = n; seg < Din->n_segments; seg++) {
 			Slp = Din->table[0]->segment[seg];
@@ -1980,12 +1983,17 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						Return (GMT_DATA_READ_ERROR);
 						break;
 				}
-				/* Check for duplicates */
+				/* Check for duplicates as well as co-registered slopes with data constraints */
 				skip = false;
-				for (i = n; !skip && i < p; i++) {
+				for (i = 0; !skip && i < p; i++) {
 					r = greenspline_get_radius (GMT, X[i], X[p], dimension);
 					if (gmt_M_is_zero (r)) {	/* Duplicates will give zero point separation */
-						if (doubleAlmostEqualZero (in[dimension], obs[i])) {
+						if (i < n) {	/* Co-registered slope and data constraints */
+							GMT_Report (API, GMT_MSG_WARNING, "Slope constraint %" PRIu64 " is co-registered with data constraint %" PRIu64 "\n", n_read, i);
+							kolumn[k] = i;	/* Reuse this Green's function instead of a new one for this constraint */
+							n_cr++;		/* Number of co-registered constraints found */
+						}
+						else if (doubleAlmostEqualZero (in[dimension], obs[i])) {
 							GMT_Report (API, GMT_MSG_WARNING, "Slope constraint %" PRIu64 " is identical to %" PRIu64
 							            " and will be skipped\n", n_read, i-n);
 							skip = true;
@@ -2018,17 +2026,24 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_INFORMATION, "Distance between the closest constraints:  %.12g]\n", r_min);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Distance between most distant constraints: %.12g]\n", r_max);
 
-	if (n_duplicates) {	/* These differ in observation value so need to be averaged, medianed, or whatever first */
+	if (n_duplicates || n_cr) {	/* These differ in observation value so need to be averaged, medianed, or whatever first */
 		if (!Ctrl->C.active || gmt_M_is_zero (Ctrl->C.value)) {
-			GMT_Report (API, GMT_MSG_ERROR,
+			if (n_cr) {
+				GMT_Report (API, GMT_MSG_ERROR,
+			            "Found %" PRIu64 " coregistered data and slope constraints - that scenario is not yet implemented\n", n_cr);
+			}
+			else {
+				GMT_Report (API, GMT_MSG_ERROR,
 			            "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
-			GMT_Report (API, GMT_MSG_ERROR,
+				GMT_Report (API, GMT_MSG_ERROR,
 			            "You must reconcile duplicates before running greenspline since they will result in a singular matrix\n");
+			}
 			for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
 			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			if (m) {
 				for (p = 0; p < m; p++) gmt_M_free (GMT, D[p]);
 				gmt_M_free (GMT, D);
+				gmt_M_free (GMT, kolumn);
 			}
 			Return (GMT_DATA_READ_ERROR);
 		}
@@ -2903,6 +2918,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	if (m) {
 		for (p = 0; p < m; p++) gmt_M_free (GMT, D[p]);
 		gmt_M_free (GMT, D);
+		gmt_M_free (GMT, kolumn);
 	}
 	if (Rec) gmt_M_free (GMT, Rec);
 	greenspline_free_lookup (GMT, &Lz, 0);
