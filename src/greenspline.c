@@ -2264,7 +2264,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			for (col = 0; col < (openmp_int)nm; col++) {	/* We do all columns here since most are not symmetrical */
 				ij = row * nm + col;
 				r = greenspline_get_radius (GMT, X[col], X[row], dimension);
-				if (r > 0.0) {	/* For all pairs except self-pairs */
+				if (!gmt_M_is_zero (r)) {	/* For all pairs except self-pairs */
 					grad = dGdr (GMT, r, par, Lg);
 					C = greenspline_get_dircosine (GMT, D[row-n], X[col], X[row], dimension, true);
 					A[ij] = grad * C;
@@ -2540,7 +2540,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				out[dimension] = 0.0;
 				for (p = 0; p < nm; p++) {
 					r = greenspline_get_radius (GMT, out, X[p], dimension);
-					if (r > 0.0) {	/* For all pairs except self-pairs */
+					if (!gmt_M_is_zero (r)) {	/* For all pairs except self-pairs */
 						if (Ctrl->Q.active) {
 							C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, out, X[p], dimension, false);
 							part = dGdr (GMT, r, par, Lz) * C;
@@ -2643,7 +2643,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							/* Here, V holds the current output coordinates */
 							for (p = 0, wp = 0.0; p < nm; p++) {
 								r = greenspline_get_radius (GMT, V, X[p], 2U);
-								if (r > 0.0) {	/* For all pairs except self-pairs */
+								if (!gmt_M_is_zero (r)) {	/* For all pairs except self-pairs */
 									C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, V, X[p], 2U, false);
 									part = dGdr (GMT, r, par, Lz) * C;
 									wp += alpha[p] * part;
@@ -2659,7 +2659,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						double dev, rms = 0.0, chi2_sum = 0.0;
 						for (j = 0; j < nm; j++) {	/* For each data constraint */
 							for (p = 0, wp = 0.0; p < nm; p++) {	/* Add contribution for each data constraint */
-								if (r > 0.0) {	/* For all pairs except self-pairs */
+								if (!gmt_M_is_zero (r)) {	/* For all pairs except self-pairs */
 									r = greenspline_get_radius (GMT, X[j], X[p], 2U);
 									part = G (GMT, r, par, Lz);
 									wp += alpha[p] * part;	/* Just add this scaled Green's function */
@@ -2777,7 +2777,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							/* Here, V holds the current output coordinates */
 							for (p = 0, wp = 0.0; p < (int64_t)nm; p++) {	/* Loop over Green's function components */
 								r = greenspline_get_radius (GMT, V, X[p], dimension);
-								if (r > 0.0) {	/* For all pairs except self-pairs */
+								if (!gmt_M_is_zero (r)) {	/* For all pairs except self-pairs */
 									C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, V, X[p], dimension, false);
 									part = dGdr (GMT, r, par, Lz) * C;
 									wp += alpha[p] * part;
