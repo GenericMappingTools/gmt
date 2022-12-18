@@ -216,7 +216,7 @@ Optional Arguments
 
     After evaluating the solution based on the residuals, we undo any normalization and
     detrending in reverse order.
-    Use **-L** to specifically append one of both of these directives to override
+    Use **-L** and specifically append one or both of these directives to override
     the default. If no directives are given then no detrending nor normalization will
     take place. 
 
