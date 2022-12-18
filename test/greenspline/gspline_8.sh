@@ -23,7 +23,7 @@ EOF
 # Make the test plot
 gmt begin gspline_8 ps
 	gmt makecpt -Cjet -T-1.5/1.5	# Keep fixed CPT for all plots
-	gmt subplot begin 3x2 -Fs8c
+	gmt subplot begin 3x2 -Fs8c -R-2/2/-2/2 -Scb -Srl
 	# First show only data (left) and splined result (right) from just using data values
 	gmt grdimage bump.grd -c
 	gmt plot bump_raw.txt -Sc6p -Gblack
