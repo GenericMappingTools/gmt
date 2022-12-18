@@ -97,9 +97,8 @@ struct GREENSPLINE_CTRL {
 	} I;
 	struct GREENSPLINE_L {	/* -L */
 		bool active;
-#ifdef DEBUG
-		bool no_normalization;	/* Debugging only, if -L/ is set */
-#endif
+		bool detrend;	/* true if OK to detrend a linear curve/plane */
+		bool derange;	/* true if OK to normalized by largest absolute range */
 	} L;
 	struct GREENSPLINE_M {	/* -M<gfuncfile> */
 		bool active;
@@ -194,7 +193,8 @@ enum Greenspline_index {	/* Indices for coeff array for normalization */
 	GSP_SLP_X	= 3,
 	GSP_SLP_Y	= 4,
 	GSP_RANGE	= 5,
-	GSP_LENGTH	= 6};
+	GSP_SLP_Q	= 6,
+	GSP_LENGTH	= 7};
 
 struct GREENSPLINE_LOOKUP {	/* Used to spline interpolation of precalculated function */
 	uint64_t n;		/* Number of values in the spline setup */
@@ -214,6 +214,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.mode = GMT_SVD_EIGEN_RATIO_CUTOFF;
+	C->L.detrend = C->L.derange = true;	/* This is the default action if permissible by the geometry */
 	C->Q.az = GMT->session.d_NaN;	/* To tell if -Q was not given an argument later for dim > 1 */
 	C->S.mode = SANDWELL_1987_2D;
 	C->S.rval[0] = -1.0;	C->S.rval[1] = 1.0;
@@ -237,7 +238,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]] "
-		"[-D<information>] [-E[<misfitfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L] [-N<nodefile>] [-Q[<az>|<x/y/z>]] "
+		"[-D<information>] [-E[<misfitfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L[t][r]] [-N<nodefile>] [-Q[<az>|<x/y/z>]] "
 		"[-R<xmin>/<xmax>[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] "
 		"[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n",
 		name, GMT_V_OPT,GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
@@ -284,11 +285,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Evaluate solution at input locations and report misfit statistics. "
 		"Append a filename to save all data with two extra columns for model and misfit. "
 		"If -C+i|c are used then we instead report the history of model variance and rms misfit.");
-	GMT_Usage (API, 1, "\nI<dx>[/<dy>[/<dz>]]");
+	GMT_Usage (API, 1, "\n-I<dx>[/<dy>[/<dz>]]");
 	GMT_Usage (API, -2, "Specify a regular set of output locations. Give equidistant increment for each dimension. "
 		"Requires -R for specifying the output domain.");
-	GMT_Usage (API, 1, "\n-L Leave trend alone. Do not remove least squares plane from data before spline fit. "
-		"Only applies to -D0-2 [Default removes linear trend, fits residuals, and restores trend].");
+	GMT_Usage (API, 1, "\n-L Control the trend function T(x) and normalization used. We always remove/restore the mean data value. "
+		"We can (and by default will) remove/restore a linear trend and normalize/renormalize by data residual range. Change default by adding on or both of these directives:");
+	GMT_Usage (API, 3, "t: Fit a least-squares line (1-D) or plane (2-D) and remove/restore this trend from data and gradients [Default is possible].");
+	GMT_Usage (API, 3, "r: Normalize data and gradients by the largest absolute value of the minimum and maximum residual value [Default].");
+	GMT_Usage (API, -2, "Note that giving -L with no arguments will turn off both detrending and normalization.");
 	GMT_Usage (API, 1, "\n-N<nodefile>");
 	GMT_Usage (API, -2, "ASCII file with desired output locations. "
 		"The resulting ASCII coordinates and interpolation are written to file given in -G "
@@ -589,14 +593,21 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				if (Ctrl->I.inc[GMT_Y] == 0.0) Ctrl->I.inc[GMT_Y] = Ctrl->I.inc[GMT_X];
 				if (Ctrl->I.inc[GMT_Z] == 0.0) Ctrl->I.inc[GMT_Z] = Ctrl->I.inc[GMT_X];
 				break;
-			case 'L':	/* Leave trend alone */
+			case 'L':	/* Control desired combination of detrending and normalization */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-#ifdef DEBUG
-				if (opt->arg[0] == '/')
-					Ctrl->L.no_normalization = true;
-				else
-#endif
-				n_errors += gmt_get_no_argument (GMT, opt->arg, opt->option, 0);
+				Ctrl->L.detrend = Ctrl->L.derange = false;	/* Turn both off since -L was set, then see if one or both where given explicitly */
+				for (unsigned int k = 0; opt->arg[k]; k++) {
+					switch (opt->arg[k]) {
+						case 't':	/* Want linear detrending */
+							Ctrl->L.detrend = true;	break;
+						case 'r':	/* Want range normalization */
+							Ctrl->L.derange = true;	break;
+						default:	/* Unrecognized directive */
+							GMT_Report (API, GMT_MSG_ERROR, "Option -L: Unrecognized directive %c\n", opt->arg[k]);
+							n_errors++;
+							break;
+					}
+				}
 				break;
 			case 'M':	/* Read or write list of Green's function forces [NOT IMPLEMENTED YET] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
@@ -1363,12 +1374,14 @@ GMT_LOCAL double greenspline_undo_normalization (double *X, double w_norm, unsig
 }
 
 GMT_LOCAL double greenspline_undo_normalization_grad (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim) {
-	/* To undo normalizations and trends solution gradient */
+	/* To undo normalizations and trends for solution gradient. Here, -Q was set */
 	gmt_M_unused (X);
 	if (mode & GREENSPLINE_NORM) w_norm *= coeff[GSP_RANGE];	/* Scale back up by residual range (if we normalized) */
 	if (mode & GREENSPLINE_TREND) {
-		if (dim == 1) w_norm += coeff[GSP_SLP_X];	/* Restore residual trend removed in greenspline_do_normalization_1d */
-		/* Higher dimensions not implemented yet but will undo the slope correction done in greenspline_do_normalization */
+		if (dim == 1)	/* Restore residual trend removed in greenspline_do_normalization_1d since no -Q direction, really */
+			w_norm += coeff[GSP_SLP_X];
+		else /* Restore component of plane trend in the -Q direction only */
+			w_norm += coeff[GSP_SLP_Q];
 	}
 	return (w_norm);
 }
@@ -1496,7 +1509,7 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 		GMT_Report (API, GMT_MSG_INFORMATION, "%d-D Normalization correction (%g, %g) for slope constraints in observed directions\n", dim, coeff[GSP_SLP_X], coeff[GSP_SLP_Y]);
 		for (i = n; i < (n+m); i++) {	/* Each slope constraint has a magnitude (in obs[i]) and direction (unit vector in N[i-n]) */
 			D = N[i-n];	/* Current slope unit vector */
-			for (ii = 0, v = 0.0; ii < dim; ii++) v += g[ii] * D[ii] * obs[i];	/* Dot product of trend unit vector g with data gradient vector is component in trend direction */
+			for (ii = 0, v = 0.0; ii < dim; ii++) v += g[ii] * D[ii];	/* Dot product of trend unit vector g with data unit vector is component in trend direction */
 			obs[i] -= v;	/* Remove projected component of trend slope onto this observed gradient */
 		}
 	}
@@ -1587,7 +1600,7 @@ GMT_LOCAL void greenspline_set_filename (char *name, unsigned int k, unsigned in
 EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	openmp_int col, row;
 	uint64_t n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
-	unsigned int dimension = 0, normalize = GREENSPLINE_MEAN, n_cols, n_layers = 1, w_col, L_Max = 0;
+	unsigned int dimension = 0, normalize, n_cols, n_layers = 1, w_col, L_Max = 0;
 	size_t n_alloc;
 	int error = GMT_NOERROR, out_ID, way, n_columns, n_use;
 	bool delete_grid = false, check_longitude, skip, write_3D_records = false;
@@ -1668,35 +1681,48 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	if (Ctrl->S.mode == MITASOVA_MITAS_1993_2D) Ctrl->S.mode += (dimension - 2);
 
 	way = gmt_M_is_spherical (GMT) ? GMT_GREATCIRCLE : GMT_GEODESIC;
+	normalize = GREENSPLINE_MEAN;	/* Remove and restore of mean data value is always done */
 	Ctrl->Z.mode--;	/* Since I added 0 to be 1-D later so now it is -1 */
 	switch (Ctrl->Z.mode) {	/* Set pointers to 2-D distance functions */
 		case -1:	/* Cartesian 1-D x data */
-			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
+			if (Ctrl->L.detrend) normalize += GREENSPLINE_TREND;
+			if (Ctrl->L.derange) normalize += GREENSPLINE_NORM;
 			break;
 		case 0:	/* Cartesian 2-D x,y data */
 			error = gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
-			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
+			if (Ctrl->L.detrend) normalize += GREENSPLINE_TREND;
+			if (Ctrl->L.derange) normalize += GREENSPLINE_NORM;
 			break;
-		case 1:	/* 2-D lon, lat data, but scale to Cartesian flat earth km */
+		case 1:	/* 2-D lon, lat data, but scale to Cartesian flat Earth km */
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
 			error = gmt_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
-			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
+			if (Ctrl->L.detrend) normalize += GREENSPLINE_TREND;
+			if (Ctrl->L.derange) normalize += GREENSPLINE_NORM;
 			break;
 		case 2:	/* 2-D lon, lat data, use spherical distances in km (geodesic if PROJ_ELLIPSOID is nor sphere) */
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
 			error = gmt_init_distaz (GMT, 'k', way, GMT_MAP_DIST);
-			normalize = GREENSPLINE_NORM;
+			if (Ctrl->L.active && Ctrl->L.detrend)	/* Spherical area so no Cartesian plane removal possible */
+				GMT_Report (API, GMT_MSG_WARNING, "Cannot select -Lt for spherical surface gridding. No trend will be removed\n");
+			Ctrl->L.detrend = false;	/* Spherical area so no Cartesian plane removal possible */
+			if (Ctrl->L.derange) normalize += GREENSPLINE_NORM;
 			break;
 		case 3:	/* 2-D lon, lat data, and Green's function needs cosine of spherical or geodesic distance */
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
 			error = gmt_init_distaz (GMT, 'S', way, GMT_MAP_DIST);
-			normalize = GREENSPLINE_NORM;
+			if (Ctrl->L.active && Ctrl->L.detrend)	/* Spherical area so no Cartesian plane removal possible */
+				GMT_Report (API, GMT_MSG_WARNING, "Cannot select -Lt for spherical surface gridding. No trend will be removed\n");
+			Ctrl->L.detrend = false;	/* Spherical area so no Cartesian plane removal possible */
+			if (Ctrl->L.derange) normalize += GREENSPLINE_NORM;
 			break;
 		case 4:	/* 3-D Cartesian x,y,z data handled separately */
-			normalize = GREENSPLINE_NORM;
+			if (Ctrl->L.active && Ctrl->L.detrend)	/* 3-D so no Cartesian plane removal possible */
+				GMT_Report (API, GMT_MSG_WARNING, "Cannot select -Lt for 3-D gridding. No trend will be removed\n");
+			Ctrl->L.detrend = false;	/* 3-D so no Cartesian plane removal possible [Maybe remove hyperplane in the future?] */
+			if (Ctrl->L.derange) normalize += GREENSPLINE_NORM;
 			break;
 		default:	/* Cannot happen unless we make a bug */
 			GMT_Report (API, GMT_MSG_ERROR, "BUG since D (=%d) cannot be outside 0-5 range\n", Ctrl->Z.mode+1);
@@ -1704,17 +1730,19 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 	if (error == GMT_NOT_A_VALID_TYPE) Return (error);
 	
-	if (Ctrl->Z.mode <= 1 && Ctrl->L.active)
-		normalize = GREENSPLINE_NORM;	/* Do not de-plane, just remove mean and normalize */
-	else if (Ctrl->Z.mode > 1 && Ctrl->L.active)
-		GMT_Report (API, GMT_MSG_ERROR, "-L ignored for -Z modes 3-5\n");
-
-#ifdef DEBUG
-	if (Ctrl->L.no_normalization) {
-		normalize = GREENSPLINE_MEAN;	/* Turn off all normalization */
-		GMT_Report (API, GMT_MSG_NOTICE, "Normalization is turned off for debugging - only mean value removed/restored\n");
+	GMT_Report (API, GMT_MSG_INFORMATION, "Mean data value will be removed and restored\n");
+	if (Ctrl->L.detrend) {
+		if (Ctrl->A.active)
+			GMT_Report (API, GMT_MSG_INFORMATION, "Least-squares data trend will be removed and restored from data residuals and slopes\n");
+		else
+			GMT_Report (API, GMT_MSG_INFORMATION, "Least-squares data trend will be removed and restored from data residuals\n");
 	}
-#endif
+	if (Ctrl->L.derange) {
+		if (Ctrl->A.active)
+			GMT_Report (API, GMT_MSG_INFORMATION, "Data and slope residuals will be normalized by max (abs(wmin),abs(wmax))\n");
+		else
+			GMT_Report (API, GMT_MSG_INFORMATION, "Data residuals will be normalized by max (abs(wmin),abs(wmax))\n");
+	}
 
 	if (Ctrl->Q.active && dimension == 2) sincosd (Ctrl->Q.az, &Ctrl->Q.dir[GMT_X], &Ctrl->Q.dir[GMT_Y]);
 
@@ -2225,6 +2253,11 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 
 	greenspline_do_normalization (API, X, obs, D, n, m, normalize, dimension, norm);
+
+	if (Ctrl->Q.active && dimension == 2) {	/* Need trend slope in Q direction */
+		norm[GSP_SLP_Q] = Ctrl->Q.dir[GMT_X] * norm[GSP_SLP_X] + Ctrl->Q.dir[GMT_Y] * norm[GSP_SLP_Y];
+		GMT_Report (API, GMT_MSG_INFORMATION, "2-D plane slope in %g direction: %lg\n", Ctrl->Q.az, norm[GSP_SLP_Q]);
+	}
 
 	/* Set up linear system Ax = obs. To clarify, the matrix A will be
 	 * of size nm by nm, where nm = n + m. Again, n is the number of

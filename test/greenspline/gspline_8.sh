@@ -25,28 +25,28 @@ gmt begin gspline_8 ps
 	gmt subplot begin 3x2 -Fs8c
 	# First show only data (left) and splined result (right) from just using data values
 	gmt grdimage bump.grd -c
-	gmt plot bump_raw.txt -Sc4p -Gblack
+	gmt plot bump_raw.txt -Sc6p -Gblack
 	gmt greenspline bump_raw.txt -R-2/2/-2/2 -I1 -Sc -Gbump_raw.grd -Z1
 	gmt grdimage bump_raw.grd -c
-	gmt plot bump_raw.txt -Sc4p -Gblack
+	gmt plot bump_raw.txt -Sc6p -Gblack
 	# Now grid both the data (left) and the slope samples and display the splined result
 	gmt grdimage bump.grd -c
-	gmt plot bump_z.txt -Sc4p -Gblack
-	gmt plot bump_g.txt -Sc4p -W0.5p
+	gmt plot bump_z.txt -Sc6p -Gblack
+	gmt plot bump_g.txt -Sc6p -W0.5p
 	gmt greenspline bump_z.txt -Abump_g.txt+f2 -R-2/2/-2/2 -I1 -Sc -Ggrads_out.grd -Z1
 	gmt greenspline bump_z.txt -Abump_g.txt+f2 -R-2/2/-2/2 -I0.05 -Sc -Ggrads_out1.grd -Z1
 	gmt greenspline bump_z.txt -Abump_g.txt+f2 -R-2/2/-2/2 -I0.05 -Sc -Q90 -Ggrad_out1.grd -Z1
-	gmt grdimage grads_out.grd -c
-	gmt plot bump_z.txt -Sc4p -Gblack
-	gmt plot bump_g.txt -Sc4p -W0.5p
+	gmt grdimage grads_out.grd -Bafg10 -c
+	gmt plot bump_z.txt -Sc6p -Gblack
+	gmt plot bump_g.txt -Sc6p -W0.5p
 	# Sample the two grids along y = 0 where we have the gradient constraints for x = 0,1
-	gmt grdtrack -Gbump1.grd -ELM/RM -o0,2 | gmt plot -R-2/2/-2/2 -W0.25p -Bafg1 -c -l"Without slopes"+jBL
-	gmt grdtrack -Ggrads_out1.grd -ELM/RM -o0,2 | gmt plot -W1p -l"With slopes"
-	awk '{if ($2 == 0) print $1, $3}' bump_z.txt | gmt plot -Sc4p -Gblack -l"Data point"
-	gmt grdtrack -Gbump1.grd -nn bump_g.txt -o0,4,2 | gmt plot -Sc4p -W0.25p -l"Slope point"
+	gmt grdtrack -Gbump1.grd -ELM/RM -o0,2 | gmt plot -R-2/2/-2/2 -W0.5p -Bafg1 -c -l"Without slopes"+jBL
+	gmt grdtrack -Ggrads_out1.grd -ELM/RM -o0,2 | gmt plot -W1.5p -l"With slopes"
+	awk '{if ($2 == 0) print $1, $3}' bump_z.txt | gmt plot -Sc6p -Gblack -l"Data point"
+	gmt grdtrack -Gbump1.grd -nn bump_g.txt -o0,4,2 | gmt plot -Sc6p -W0.25p -l"Slope point"
 	gmt grdtrack -Gbump1.grd -nn bump_g.txt -o0,4,2 | awk '{print $1, $2, 1, $3}' | gmt plot -Sv9p+e+z3 -W0.75p -Gred
 	gmt grdtrack -Ggrad_out1.grd -ELM/RM -o0,2 | gmt plot -R-2/2/-2/2 -W1p -Bafg1 -c -l"Slope grid"+jBL
-	gmt plot bump_g.txt -Sc4p -W0.5p -i0,2 -l"Slope value"
+	gmt plot bump_g.txt -Sc6p -W0.5p -i0,2 -l"Slope value"
 	gmt subplot end
 	gmt colorbar -DJBC
 gmt end
