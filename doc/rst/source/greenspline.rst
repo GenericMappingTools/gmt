@@ -202,7 +202,7 @@ Optional Arguments
 .. _-L:
 
 **-L**\ [**t**][**r**]
-    Specifically control how we detrend (i.e., adjusting :math:`T(\mathbf{x})`)
+    Specifically control how we detrend (i.e., adjust :math:`T(\mathbf{x})`)
     and normalize the data (and possibly gradients) prior to determining the
     solution coefficients.  The order of adjustments is always the same even if
     some steps may be deselected:
