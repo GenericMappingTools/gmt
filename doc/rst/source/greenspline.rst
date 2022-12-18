@@ -19,7 +19,7 @@ Synopsis
 [ |SYN_OPT-D3| ]
 [ |-E|\ [*misfitfile*] ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
-[ |-L| ]
+[ |-L|\ [**t**][**r**] ]
 [ |-N|\ *nodefile* ]
 [ |-Q|\ [*az*\|\ *x/y/z*] ]
 [ |-R|\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*/*zmax*]] ]
@@ -201,13 +201,24 @@ Optional Arguments
 
 .. _-L:
 
-**-L**
-    Do *not* remove a linear (1-D) or planer (2-D) trend when |-Z|
-    selects mode 0-3 [For those Cartesian cases a least-squares line or
-    plane is modeled and removed, then restored after fitting a spline
-    to the residuals]. However, in mixed cases with both data values and
-    gradients, or for spherical surface data, only the mean data value
-    is removed (and later and restored).
+**-L**\ [**t**][**r**]
+    Specifically control how we detrend (i.e., adjust :math:`T(\mathbf{x})`)
+    and normalize the data (and possibly gradients) prior to determining the
+    solution coefficients.  The order of adjustments is always the same even if
+    some steps may be deselected:
+
+    - We always determine and then remove and restore the mean data value :math:`\bar{w}`.
+    - We determine a linear least-squares trend (directive **t**) and remove this trend
+      from residual data and slopes. **Note**: For spherical and 3-D interpolation the
+      **t** directive is not available.
+    - We determine the maximum absolute value of the minimum and maximum data residuals
+      (directive **r**) and normalize the residual data and slopes by that range value.
+
+    After evaluating the solution based on the residuals, we undo any normalization and
+    detrending in reverse order.
+    Use **-L** to specifically append one of both of these directives to override
+    the default. If no directives are given then no detrending nor normalization will
+    take place. 
 
 .. _-N:
 
