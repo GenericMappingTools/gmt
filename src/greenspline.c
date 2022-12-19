@@ -2307,7 +2307,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (m) {	/* Have to build slope constraint rows as well. Truly only tested in 1-D */
+	if (m) {	/* Have to build slope constraint rows as well. Tested in 1-D and 2-D */
 		for (row = n; row < (openmp_int)nm; row++) {	/* For each slope constraint [in rows n:nm-1] */
 			for (col = 0; col < (openmp_int)nm; col++) {	/* We do all columns here since most are not symmetrical */
 				ij = row * nm + col;
