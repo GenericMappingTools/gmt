@@ -2282,7 +2282,20 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	 * (except for terms involving gradients where A_ij = -A_ji).  So we
 	 * start the loop over columns as col = row and deal with A)ij and A_ji
 	 * at the same time since we can evaluate the same costly G() function
-	 * [or dGdr () function)] once.
+	 * [or dGdr () function)] once, if possible.
+	 *
+	 * Planned upgrade PW: Remove this line when this has been implemented.
+	 * Note: If -A is used (m > 0) and there are slope constraints that are co-registered
+	 * with data constraints then those two constraints share the same Greens function:
+	 * one needs the data prediction and the other needs the gradient prediction from it.
+	 * The number of such co-registered gradient constraints is n_cr and that means the
+	 * number of extra Greens' functions needed for the slopes is only m - n_cr.  In the
+	 * extreme case where all gradients are matched by data constraints, m = n_cr. Hence,
+	 * the Ax = obs system is no longer square nm by nm but has n+m rows and only n+m-n_cr
+	 * columns.  To solve that over-determined system we will form the normal equations
+	 * which is done in the -W case except we have no weights (or they are all unity).  So
+	 * under the -W processing below we will also enter if n_cr is nonzero, but bypass the
+	 * multiplication of the (unity) weights to save time.
 	 */
 
 	mem = (double)nm * (double)nm * (double)sizeof (double);	/* In bytes */
