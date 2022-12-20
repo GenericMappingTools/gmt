@@ -576,6 +576,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "r: Turn off clipping and plot repeating symbols for periodic maps.");
 	GMT_Usage (API, 3, "c: Retain clipping but turn off plotting of repeating symbols for periodic maps.");
 	GMT_Usage (API, -2, "[Default will clip or skip symbols that fall outside and plot repeating symbols].");
+	GMT_Usage (API, -2, "Note: May also be used with lines or polygons but no periodicity will be honored.");
 	GMT_Option (API, "O,P");
 	GMT_Usage (API, 1, "\n-S[<symbol>][<size>]");
 	GMT_Usage (API, -2, "Select symbol type and symbol size (in %s).  Choose from these symbols:",
@@ -2310,7 +2311,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	}
 	else {	/* Line/polygon part */
 		uint64_t seg, seg_out = 0, n_new, n_cols = 2;
-		bool duplicate, resampled, conf_line = false;
+		bool duplicate, resampled, conf_line = false, no_line_clip = (Ctrl->N.active && S.symbol == GMT_SYMBOL_LINE);
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 		struct GMT_PALETTE *A = NULL;
 		struct GMT_DATASET_HIDDEN *DH = NULL;
@@ -2319,7 +2320,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		if (Ctrl->W.pen.mode == PSL_BEZIER && GMT->current.map.path_mode != GMT_LEAVE_PATH)	/* Turn off path-resampling if Bezier */
 			GMT->current.map.path_mode = GMT_LEAVE_PATH;
 
-		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
+		if (!no_line_clip) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 		if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols = 3;
 		else if (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) n_cols = 4;
@@ -2612,7 +2613,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					gmt_set_seg_minmax (GMT, D->geometry, 2, L);	/* Update min/max of x/y only */
 				}
 
-				if (polygon) {	/* Want a closed polygon (with or without fill and with or without outline) */
+				if (polygon && !no_line_clip) {	/* Want a closed polygon (with or without fill and with or without outline) */
 					gmt_setfill (GMT, &current_fill, outline_setting);
 					gmt_geo_polygons (GMT, L);
 				}
@@ -2776,7 +2777,22 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						if (!Ctrl->W.active) draw_line = false;	/* Did not want to actually draw the main line */
 						if (Ctrl->L.outline) gmt_setpen (GMT, &current_pen);	/* Reset the pen to what -W indicates */
 					}
-					if (draw_line) {
+					if (no_line_clip) {	/* Draw line or polygon without border clipping at all */
+						if ((GMT->current.plot.n = gmt_cart_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
+						if (outline_active) gmt_setpen (GMT, &Ctrl->W.pen);	/* Select separate pen for polygon outline */
+						if (Ctrl->G.active) {	/* Specify the fill, possibly set outline */
+							gmt_setfill (GMT, &current_fill, outline_active);
+							PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
+						}
+						else {	/* No fill but may still be a polygon */
+							gmt_setfill (GMT, NULL, outline_active);
+							if (polygon)
+								PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
+							else
+								gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, current_pen.mode);
+						}
+					}
+					else if (draw_line) {
 						if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
 						if (S.symbol != GMT_SYMBOL_FRONT || !S.f.invisible) gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, current_pen.mode);
 						psxy_plot_end_vectors (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &current_pen);	/* Maybe add vector heads */
@@ -2796,7 +2812,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 		if (z_for_cpt) gmt_M_free (GMT, z_for_cpt);
 
-		gmt_map_clip_off (GMT);
+		if (!no_line_clip) gmt_map_clip_off (GMT);
 	}
 	PSL_command (GMT->PSL, "U\n");	/* Undo the gsave for all symbols or lines */
 
