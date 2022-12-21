@@ -2779,7 +2779,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					}
 					if (no_line_clip) {	/* Draw line or polygon without border clipping at all */
 						if ((GMT->current.plot.n = gmt_cart_to_xy_line (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) == 0) continue;
-						if (outline_active) gmt_setpen (GMT, &Ctrl->W.pen);	/* Select separate pen for polygon outline */
+						if (outline_active) gmt_setpen (GMT, &current_pen);	/* Select separate pen for polygon outline */
 						if (Ctrl->G.active) {	/* Specify the fill, possibly set outline */
 							gmt_setfill (GMT, &current_fill, outline_active);
 							PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n);
