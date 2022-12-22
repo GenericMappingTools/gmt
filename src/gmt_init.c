@@ -8012,8 +8012,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 1, "\n%s", GMT_s_OPT);
 			GMT_Usage (API, -2, "Suppress output of data records whose z-value(s) equal NaN [Default prints all records]. "
-				"Append <cols> to test all specified column(s) [2]. Optional modifiers:");
-			GMT_Usage (API, 3, "+a Suppress records where any column equals NaN [all columns must equal NaN].");
+				"Append <cols> to test all specified output column(s) [2]. Optional modifiers:");
+			GMT_Usage (API, 3, "+a Suppress records where any output column equals NaN [all columns must equal NaN].");
 			GMT_Usage (API, 3, "+r Reverse the test (only output record that fail the NaN-test).");
 			break;
 
