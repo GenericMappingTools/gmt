@@ -380,7 +380,8 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	struct PSTERNARY_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL, *boptions[3] = {NULL, NULL, NULL};
-	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
+	struct GMT_DATASET *Din = NULL;	/* Pointer to GMT multisegment table(s) on input */
+	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) after conversion to x,y */
 	struct GMT_DATASEGMENT *S = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -406,9 +407,18 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)	/* Register data input */
 		Return (API->error);
-	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)
+	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)
 		Return (API->error);
 
+	/* We duplicate input since we will modify it and move columns - not good if read-only data is our source */
+	if ((D = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_DATA, Din)) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to desduplicatetroy input dataset\n");
+		Return (API->error);
+	}
+	if (GMT_Destroy_Data (API, &Din) != GMT_NOERROR) {	/* No longer needed */
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to destroy input dataset\n");
+		Return (API->error);
+	}
 	if (GMT->common.J.active && GMT->common.J.string[1] == '-')	/* Gave a negative width to reverse direction of axes */
 		reverse = true;	/* Need to do this here given the abs_to_xy projection below */
 

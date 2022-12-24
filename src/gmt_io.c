@@ -9086,7 +9086,6 @@ struct GMT_MATRIX * gmtlib_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MA
 void gmtlib_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix) {
 	/* Free everything but the struct itself  */
 	struct GMT_MATRIX_HIDDEN *MH = NULL;
-	enum GMT_enum_alloc alloc_mode;
 	if (!M) return;	/* Nothing to deallocate */
 	/* Only free M->data if allocated by GMT AND free_matrix is true */
 	MH = gmt_get_M_hidden (M);
@@ -9102,7 +9101,6 @@ void gmtlib_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool fr
 		for (unsigned int k = 0; k < M->n_headers; k++) gmt_M_str_free (M->header[k]);
 		gmt_M_free (GMT, M->header);
 	}
-	alloc_mode = MH->alloc_mode;
 	gmt_M_free (GMT, M->hidden);
 }
 
