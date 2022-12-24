@@ -3078,10 +3078,16 @@ GMT_LOCAL void gmtio_adjust_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMEN
 	/* Change the number of columns in this segment to n_columns (free or allocate as needed) */
 	uint64_t col;
 	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
-	for (col = n_columns; col < S->n_columns; col++) gmt_M_free (GMT, S->data[col]);	/* Free up if n_columns < S->columns */
+	for (col = n_columns; col < S->n_columns; col++) {	/* Free up if n_columns < S->columns if allowed */
+		if (SH->alloc_mode[col] == GMT_ALLOC_INTERNALLY)
+			gmt_M_free (GMT, S->data[col]);
+		else
+			S->data[col] = NULL;	/* Let go of link to an external vector */
+	}
+	/* Reallocate number of columns (increase or decrease lengths) */
 	S->data = gmt_M_memory (GMT, S->data, n_columns, double *);
-	S->min = gmt_M_memory (GMT, S->min, n_columns, double);
-	S->max = gmt_M_memory (GMT, S->max, n_columns, double);
+	S->min  = gmt_M_memory (GMT, S->min,  n_columns, double);
+	S->max  = gmt_M_memory (GMT, S->max,  n_columns, double);
 	SH->alloc_mode = gmt_M_memory (GMT, SH->alloc_mode, n_columns, enum GMT_enum_alloc);
 	for (col = S->n_columns; col < n_columns; col++) {	/* Allocate new columns and initialize the min/max arrays */
 		S->min[col] = +DBL_MAX;
@@ -3089,6 +3095,10 @@ GMT_LOCAL void gmtio_adjust_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMEN
 		S->data[col] = gmt_M_memory (GMT, NULL, S->n_rows, double);
 		SH->alloc_mode[col] = GMT_ALLOC_INTERNALLY;
 	}
+	/* Change the number of known/active columns to reflect the changes.
+	 * NOTE: If columns were externally allocated they are not freed (which is good)
+	 * but they are also "lost" in the sense they are no longer accessible as the
+	 * data pointer has been shrunk and set to NULL. */
 	S->n_columns = n_columns;
 }
 
