@@ -44,7 +44,7 @@ Description
 **gmtbinstats** reads arbitrarily located (x,y[,z][,w]) points
 (2-4 columns) from standard input [or *table*] and for each
 node in the specified grid layout determines which points are
-within the given radius.  These point are then used in the
+within the given radius.  These points are then used in the
 calculation of the specified statistic. The results may be
 presented as is or may be normalized by the circle area to
 perhaps give density estimates.  Alternatively, select
