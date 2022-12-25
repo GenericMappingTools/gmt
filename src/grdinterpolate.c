@@ -116,7 +116,6 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *C) {	/*
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
-	static char type[3] = {'l', 'a', 'c'};
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <cube> | <grd1> <grd2> <grd3> ... -G<outfile> [%s] "

@@ -709,7 +709,7 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {	/* Need to create prisms from two surfaces first */
 		bool flip_order = false;
 		struct GMT_GRID *B = NULL, *T = NULL, *H = NULL, *Rho = NULL;
-		double base = 0.0, top = 0.0, z1, z2, z_prev, z_next, z_mid, z_max, rs = 0.0, ws = 0.0, s = 1.0;
+		double base = 0.0, top = 0.0, z1, z2, z_prev, z_next, z_max, rs = 0.0, ws = 0.0, s = 1.0;
 		size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 
 		if (Ctrl->L.active) {	/* Specified layer base */
@@ -781,7 +781,6 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 					z_next = (floor (z_prev / Ctrl->C.dz) + 1.0) * Ctrl->C.dz;	/* Presumably next regular z-spacing */
 					if (z_next <= z_prev) z_next += Ctrl->C.dz;	/* Can happen if z1 is a multiple of dz */
 					else if (z_next > z2) z_next = z2;	/* At the top, clip to limit */
-					z_mid = 0.5 * (z_prev + z_next);	/* Middle of prism - used to look up density from model */
 					rho = gravprisms_mean_density (Ctrl, z_max, z_prev, z_next) - Ctrl->D.rho;	/* Get density or density contrast (if -D is set) */
 				}
 				else {	/* Constant density rho (set above via -D) or by Rho (via -W), just need a single prism per location */

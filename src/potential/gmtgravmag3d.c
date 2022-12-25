@@ -255,7 +255,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int j, pos = 0, n_errors = 0, n_files = 0;
+	unsigned int pos = 0, n_errors = 0, n_files = 0;
 	int n_par, err_npar = 0, nBELL = 0, nCIL = 0, nPRI = 0, nCONE = 0, nELL = 0, nPIR = 0, nSPHERE = 0;
 	char p[GMT_LEN256] = {""}, p2[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -460,7 +460,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 ,
 	                                  "Must specify either -C<density> or -H<stuff>\n");
-	j = gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
+	(void)gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 	if (gmt_M_check_condition(GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
 		Ctrl->S.active = false;
 

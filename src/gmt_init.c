@@ -20006,6 +20006,8 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 		c[0] = '\0';  /* Remove = */
 		n_errors += gmtlib_setparameter (GMT, opt->arg, &c[1], false);
 	}
+	if (n_errors) 
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT parameter parsing failures for %d settings\n", n_errors);
 	gmt_M_memcpy (GMT->current.map.frame.side, sides, 5U, unsigned int);
 	GMT->current.map.frame.draw = was;
 }
