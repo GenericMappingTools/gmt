@@ -1059,7 +1059,7 @@ GMT_LOCAL int gmtio_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, doub
 /*! . */
 int gmt_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
 	uint64_t i, col, last, n_out;
-	int e = 0, wn = 0;
+	int e = 0;
 	double val;
 	gmt_M_unused (txt);
 
@@ -1085,8 +1085,6 @@ int gmt_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double
 			putc ('\n', fp);
 		else if (GMT->current.setting.io_col_separator[0])		/* Not last field, and a separator is required */
 			fprintf (fp, "%s", GMT->current.setting.io_col_separator);
-
-		wn += e;
 	}
 	return ((e < 0) ? GMT_NOTSET : 0);
 }
@@ -1124,7 +1122,7 @@ int gmtlib_ascii_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t 
 /*! . */
 GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
 	uint64_t i, col, n_out;
-	int e = 0, wn = 0;
+	int e = 0;
 	double val;
 
 	if (gmt_skip_output (GMT, ptr, n)) return (GMT_NOTSET);	/* Record was skipped via -s[a|r] */
@@ -1145,8 +1143,6 @@ GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint
 
 		if (i < (n_out-1) && GMT->current.setting.io_col_separator[0])		/* Not last field, and a separator is required */
 			fprintf (fp, "%s", GMT->current.setting.io_col_separator);
-
-		wn += e;
 	}
 	gmtio_output_trailing_text (GMT, fp, true, txt);
 
@@ -6363,8 +6359,7 @@ void gmtlib_io_binary_header (struct GMT_CTRL *GMT, FILE *fp, unsigned int dir) 
 	uint64_t k;
 	char c = ' ';
 	if (dir == GMT_IN) {	/* Use fread since we don't know if input is a stream or a file */
-		size_t nr = 0;
-		for (k = 0; k < GMT->current.setting.io_n_header_items; k++) nr += gmt_M_fread (&c, sizeof (char), 1U, fp);
+		for (k = 0; k < GMT->current.setting.io_n_header_items; k++) (void)gmt_M_fread (&c, sizeof (char), 1U, fp);
 	}
 	else {
 		for (k = 0; k < GMT->current.setting.io_n_header_items; k++) gmt_M_fwrite (&c, sizeof (char), 1U, fp);

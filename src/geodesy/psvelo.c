@@ -991,7 +991,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0, *in = NULL;
 	double direction = 0, small_axis = 0, great_axis = 0, sigma_x, sigma_y, corr_xy;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize, headpen_width = 0.0;
-	double z_val, e_val, value, scale, size, i_value, nominal_size;
+	double z_val, e_val, value, scale, size, i_value;
 
 	char *station_name = NULL;
 
@@ -1068,7 +1068,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		gmt_set_column_type (GMT, GMT_IN, scol, GMT_IS_DIMENSION);
 	}
 	else	/* Fixed symbol scale */
-		nominal_size = scale = Ctrl->S.scale;
+		scale = Ctrl->S.scale;
 	/* 3. Add scaling from file, if requested */
 	if (Ctrl->H.active && Ctrl->H.mode == PSVELO_READ_SCALE) {
 		xcol = Ctrl->S.n_cols;
@@ -1210,7 +1210,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->D.active) spinsig = spinsig * Ctrl->D.scale;
 		}
-		if (Ctrl->S.read) nominal_size = scale = in[scol];
+		if (Ctrl->S.read) scale = in[scol];
 
 		if (!Ctrl->N.active) {
 			gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);

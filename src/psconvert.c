@@ -1418,10 +1418,12 @@ GMT_LOCAL int psconvert_pipe_ghost (struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 	}
 	else if (!strncmp (I->header->mem_layout, "TRP", 3)) {	/* Very cheap this one since is gs native order. */
 		junk_n = read (fd[0], I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
+		GMT_Report (API, GMT_MSG_DEBUG, "psconvert_pipe_ghost: Read %d bytes\n", junk_n);
 	}
 	else {	/* For MEX, probably */
 		for (row = 0; row < nRows; row++) {
 			junk_n = read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
+			GMT_Report (API, GMT_MSG_DEBUG, "psconvert_pipe_ghost: Read %d bytes row %d\n", junk_n, row);
 			for (col = n = 0; col < nCols; col++)
 				for (band = 0; band < nBands; band++)
 					I->data[row + col*nRows + band*nXY] = tmp[n++];	/* Band interleaved, the best for MEX. */
@@ -1564,7 +1566,7 @@ GMT_LOCAL int psconvert_make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) 
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL psconvert_gs_is_good (int major, int minor) {
+GMT_LOCAL bool psconvert_gs_is_good (int major, int minor) {
 	/* Return true if the gs version works with transparency */
 	if (major > 9) return true;	/* 10 should work as of 10.0.0 unless there are future regressions */
 	if (major < 9) return false;	/* Before 9 we think transparency was questionable */

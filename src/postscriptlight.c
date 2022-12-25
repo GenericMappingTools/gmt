@@ -939,7 +939,7 @@ void psl_set_txt_array (struct PSL_CTRL *PSL, const char *prefix, char *array[],
 static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *m, int *node) {
 	/* These are used by PSL_plottextline.  We make sure there are no point pairs that would yield dx = dy = 0 (repeat point)
 	 * at the resolution we are using (0.01 DPI units), hence a new n (possibly shorter) is returned. */
-	int i, j, k, p, ii, kk, this_i, this_j, last_i, last_j, i_offset = 0, k_offset = 0, n_skipped, ntot = 0, new_tot = 0, *new_n = NULL;
+	int i, j, k, p, ii, kk, this_i, this_j, last_i, last_j, i_offset = 0, k_offset = 0, n_skipped, ntot = 0, *new_n = NULL;
 	char *use = NULL;
 	if (x == NULL || y == NULL) return;	/* No path */
 	for (p = 0; p < npath; p++) ntot += n[p];	/* Determine total number of points */
@@ -966,7 +966,6 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 			}
 		}
 		new_n[p] = j;
-		new_tot += j;
 		i_offset += n[p];
 		k_offset += m[p];
 

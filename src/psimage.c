@@ -138,7 +138,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 
 	unsigned int n_errors = 0, ind = PSIMAGE_FGD, k = 0;
 	int n;
-	bool p_fail = false;
 	char string[GMT_LEN256] = {""}, *p = NULL;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[4] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -169,7 +168,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p, 'D')) == NULL) {	/* Failed basic parsing */
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Basic parsing of reference point in %s failed\n", opt->arg);
-					p_fail = true;
 					n_errors++;
 				}
 				else {	/* args are now [+j<justify>][+o<dx>[/<dy>]][+n<n_columns>[/<n_rows>]][+r<dpi>] */

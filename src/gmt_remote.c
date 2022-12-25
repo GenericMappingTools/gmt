@@ -466,7 +466,7 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	 * 1. Users of GMT <= 6.0.0 are used to say earth_relief_01m. These will now get p.
 	 * 2. Users who do not care about registration.  If so, they get p if available. */
 	char newfile[GMT_LEN256] = {""}, dir[GMT_LEN128] = {""}, reg[2] = {'p', 'g'};
-	char *file = NULL, *infile = NULL, *ext = NULL, *c = NULL, *p = NULL, *q = NULL;
+	char *file = NULL, *infile = NULL, *c = NULL, *p = NULL, *q = NULL;
 	int k_data, k, kstart = 0, kstop = 2, kinc = 1;
 	size_t L;
 	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') return;
@@ -476,7 +476,7 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	if ((c = strchr (infile, '+')))	/* Got modifiers, probably from grdimage or similar, chop off for now */
 		c[0] = '\0';
 	/* Deal with any extension the user may have added */
-	ext = gmt_chop_ext (infile);
+	(void)gmt_chop_ext (infile);
 	/* If the remote file is found then there is nothing to do */
 	if ((k_data = gmt_remote_dataset_id (API, infile)) == GMT_NOTSET) goto clean_up;
 	API->remote_id = k_data;

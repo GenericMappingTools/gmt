@@ -614,6 +614,7 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.swab) GMT_Report (API, GMT_MSG_INFORMATION, "Binary input data will be byte swapped\n");
 		for (i = 0; i < io.skip; i++)
 			nr += fread (&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
+		GMT_Report (API, GMT_MSG_DEBUG, "Bytes read via -Z: % " PRIuS "\n", nr);
 	}
 
 	do {	/* Keep returning records until we reach EOF */
