@@ -1063,7 +1063,10 @@ EXTERN_MSC int GMT_gravprisms (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Dealing with a grid */
-		openmp_int th = 0, row, col, n_columns = (openmp_int)G->header->n_columns, n_rows = (openmp_int)G->header->n_rows;	/* To shut up compiler warnings */
+#ifdef _OPENMP
+		openmp_int th = 0;
+#endif
+		openmp_int row, col, n_columns = (openmp_int)G->header->n_columns, n_rows = (openmp_int)G->header->n_rows;	/* To shut up compiler warnings */
 		double y_obs, *x_obs = gmt_M_memory (GMT, NULL, G->header->n_columns, double);
 		for (col = 0; col < n_columns; col++) {
 			x_obs[col] = scl_xy * gmt_M_grd_col_to_x (GMT, col, G->header);
