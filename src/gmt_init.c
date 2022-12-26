@@ -17905,12 +17905,12 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
  */
 int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, char *item) {
 
-	int error = 0, i = 0, q = 0;	/* The i and i+= gmt_M_more_than_once are there to avoid compiler warnings... */
+	int error = 0, n_repeat = 0, q = 0;	/* The n_repeat and n_repeat += gmt_M_more_than_once are there just to avoid compiler warnings... */
 
 	if (!list || !strchr (list, option)) return (0);	/* Not a common option we accept */
 
 	if (gmt_M_compat_check (GMT, 4)) {
-		/* Translate some GMT4 options */
+		/* Translate some uppercase old global GMT4 options to GMT6 and beyond equivalent options */
 		switch (option) {
 			case 'E': gmt_M_compat_opt ('p'); break;
 			case 'F': gmt_M_compat_opt ('r'); break;
@@ -17954,8 +17954,8 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			}
 			break;
 
-		case 'I':
-			if (GMT->hidden.func_level > GMT_CONTROLLER) return (0);	/* Just skip if we are inside a GMT module. -I is an API common option only */
+		case 'I':	/* -I is an API common option only and not a true GMT common option like -R -J etc. */
+			if (GMT->hidden.func_level > GMT_CONTROLLER) return (0);	/* Skip if we are inside a GMT module, else process it. */
 			error = gmt_parse_inc_option (GMT, 'I', item);
 			GMT->common.R.active[ISET] = true;
 			break;
@@ -18030,18 +18030,18 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'K':
-			i += gmt_M_more_than_once (GMT, GMT->common.K.active);
+			n_repeat += gmt_M_more_than_once (GMT, GMT->common.K.active);
 			GMT->common.K.active = true;
 			break;
 
 		case 'O':
-			i += gmt_M_more_than_once (GMT, GMT->common.O.active);
+			n_repeat += gmt_M_more_than_once (GMT, GMT->common.O.active);
 			GMT->common.O.active = true;
 			break;
 
 		case 'P':
 			if (GMT->current.setting.run_mode == GMT_CLASSIC) {
-				i += gmt_M_more_than_once (GMT, GMT->common.P.active);
+				n_repeat += gmt_M_more_than_once (GMT, GMT->common.P.active);
 				GMT->common.P.active = true;
 			}
 			else {
@@ -18073,7 +18073,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'V':
-			i += gmt_M_more_than_once (GMT, GMT->common.V.active);
+			n_repeat += gmt_M_more_than_once (GMT, GMT->common.V.active);
 			GMT->common.V.active = true;
 			if (item && item[0]) {	/* Specified a verbosity level */
 				if (gmtinit_parse_V_option (GMT, item[0])) {
@@ -18315,6 +18315,9 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			return (1);
 			break;
 	}
+
+	if (n_repeat)
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_parse_common_options: Duplicate options given %d times [not an error]\n", n_repeat);
 
 	/* On error, give syntax message */
 
