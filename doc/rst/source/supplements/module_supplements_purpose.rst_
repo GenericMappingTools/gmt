@@ -2,7 +2,7 @@
 
 .. |earthtide_purpose| replace:: Compute grids or time-series of solid Earth tides
 
-.. |gpsgridder_purpose| replace:: Interpolate GPS strains using Green's functions for elastic deformation
+.. |gpsgridder_purpose| replace:: Interpolate GPS velocities using Green's functions for elastic deformation
 
 .. |velo_purpose| replace:: Plot velocity vectors, crosses, anisotropy bars and wedges
 
