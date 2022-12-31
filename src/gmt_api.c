@@ -23,7 +23,7 @@
  * Version:	5
  *
  * The API presently consists of 69 documented functions.  For a full
- * description of the API, see the GMT_API documentation.
+ * description of the API, see the api.rst documentation [in doc/rst/source/devdocs].
  * These functions have Fortran bindings as well, provided you add
  * -DFORTRAN_API to the C preprocessor flags [in ConfigUserAdvanced.cmake].
  *
@@ -36,13 +36,13 @@
  * There is 2 public functions for common error reporting.
  * Errors will be reported to stderr or selected log file:
  *
- * GMT_Message		       : Report an message given a verbosity level
- * GMT_Report		       : Report an error given an error code
+ * GMT_Message             : Report an message given a verbosity level
+ * GMT_Report              : Report an error given an error code
  *
  * There are 33 further public functions used for GMT i/o activities:
  *
  * GMT_Alloc_Segment       : Allocate a single DATASET segment
- * GMT_Begin_IO	           : Allow i/o to take place for rec-by-rec operations
+ * GMT_Begin_IO            : Allow i/o to take place for rec-by-rec operations
  * GMT_Convert_Data        : Convert between different data sets, if possible
  * GMT_Create_Data         : Return an empty container for a new data set
  * GMT_Destroy_Data        : Destroy a data set and its container
