@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    Copyright (c) 2004-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Hamilton (nee Chandler)
+ *    Copyright (c) 2004-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Hamilton (nee Chandler)
  *	File:	mgd77snifferdefaults.h
  *
  *	Include file for mgd77sniffer
