@@ -139,16 +139,20 @@ struct GMT_GRID_ROWBYROW {
 static inline void scale_and_offset_f (gmt_grdfloat *data, size_t length, gmt_grdfloat scale, gmt_grdfloat offset) {
 	/*  data:   Single-precision real input vector
 	 *  length: The number of elements to process
-	 * This function uses the vDSP portion of the Accelerate framework if possible */
+	 * This function uses the vDSP portion of the Accelerate framework if possible
+	 * However, due to strange errors for extremely long (>32-bit) arrays I drop back to manual until we know more. */
 #ifndef __APPLE__
 	size_t n;
 #endif
 	if (scale == 1) /* offset only */
 #ifdef __APPLE__ /* Accelerate framework */
+		if (length > LONG_MAX) /* Bypass vDSP for > 32-bit lengths for now */
+			for (size_t n = 0; n < length; ++n) data[n] += offset;
+		else
 #ifdef DOUBLE_PRECISION_GRID
-		vDSP_vsaddD (data, 1, &offset, data, 1, length);
+			vDSP_vsaddD (data, 1, &offset, data, 1, length);
 #else
-		vDSP_vsadd (data, 1, &offset, data, 1, length);
+			vDSP_vsadd (data, 1, &offset, data, 1, length);
 #endif
 #else
 		for (n = 0; n < length; ++n)
@@ -156,10 +160,13 @@ static inline void scale_and_offset_f (gmt_grdfloat *data, size_t length, gmt_gr
 #endif
 	else if (offset == 0) /* scale only */
 #ifdef __APPLE__ /* Accelerate framework */
+		if (length > LONG_MAX) /* Bypass vDSP for > 32-bit lengths for now */
+			for (size_t n = 0; n < length; ++n) data[n] *= scale;
+		else
 #ifdef DOUBLE_PRECISION_GRID
-		vDSP_vsmulD (data, 1, &scale, data, 1, length);
+			vDSP_vsmulD (data, 1, &scale, data, 1, length);
 #else
-		vDSP_vsmul (data, 1, &scale, data, 1, length);
+			vDSP_vsmul (data, 1, &scale, data, 1, length);
 #endif
 #else
 		for (n = 0; n < length; ++n)
@@ -167,10 +174,13 @@ static inline void scale_and_offset_f (gmt_grdfloat *data, size_t length, gmt_gr
 #endif
 	else /* scale + offset */
 #ifdef __APPLE__ /* Accelerate framework */
+		if (length > LONG_MAX) /* Bypass vDSP for > 32-bit lengths for now */
+			for (size_t n = 0; n < length; ++n) data[n] = data[n] * scale + offset;
+		else
 #ifdef DOUBLE_PRECISION_GRID
-		vDSP_vsmsaD (data, 1, &scale, &offset, data, 1, length);
+			vDSP_vsmsaD (data, 1, &scale, &offset, data, 1, length);
 #else
-		vDSP_vsmsa (data, 1, &scale, &offset, data, 1, length);
+			vDSP_vsmsa (data, 1, &scale, &offset, data, 1, length);
 #endif
 #else
 		for (n = 0; n < length; ++n)
