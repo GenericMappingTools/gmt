@@ -1307,7 +1307,7 @@ Users wishing to pass their own data matrices and vectors to GMT modules will ne
 the **GMT_IS_MATRIX** and **GMT_IS_VECTOR** containers.  However, no module deals with such containers
 directly (they either expect **GMT_IS_GRID** or **GMT_IS_DATASET**, for instance).
 The solution is to specify the container type the GMT module expects but add in the special
-flags **GMT_VIA_MATRIX** or **GMT_VIA*VECTOR**.  This will create the **GMT_IS_MATRIX** or
+flags **GMT_VIA_MATRIX** or **GMT_VIA_VECTOR**.  This will create the **GMT_IS_MATRIX** or
 **GMT_IS_VECTOR** container the user needs to add the user data, but will also tell GMT how
 they should be considered by the module. **Note**: When creating your own geographic data
 (dataset, grid, image, matrix, or vector) you may add ``GMT_DATA_IS_GEO`` to ``mode`` so that
