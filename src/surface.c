@@ -2039,24 +2039,27 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		GMT_Destroy_Data (API, &G);	/* Delete the temporary grid */
 	}
 
+	/* Allocate the output grid with container only */
+	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL,
+            GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+
+	surface_init_parameters (&C, Ctrl);	/* Pass parameters from parsing control to surface information structure C */
+
 	if (GMT->common.R.registration == GMT_GRID_PIXEL_REG) {		/* Pixel registration request. Use the trick of offsetting area by x_inc(y_inc) / 2 */
 		/* Note that the grid remains node-registered and only gets tagged as pixel-registered upon writing the final grid to file */
 		wesn[XLO] += GMT->common.R.inc[GMT_X] / 2.0;	wesn[XHI] += GMT->common.R.inc[GMT_X] / 2.0;
 		wesn[YLO] += GMT->common.R.inc[GMT_Y] / 2.0;	wesn[YHI] += GMT->common.R.inc[GMT_Y] / 2.0;
 		/* n_columns,n_rows remain the same for now but nodes are in "pixel" position.  We reset to original wesn and reduce n_columns,n_rows by 1 when we write result */
+		GMT_Destroy_Data (API, &C.Grid);	/* Delete the initial grid and recreate since wesn changed */
+		if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL,
+	                               GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	}
 	if (Ctrl->A.mode) Ctrl->A.value = cosd (0.5 * (wesn[YLO] + wesn[YHI]));	/* Set cos of middle latitude as aspect ratio */
-
-	/* Allocate output grid container with header only */
-	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL,
-	                               GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 	if (C.Grid->header->n_columns < 4 || C.Grid->header->n_rows < 4) {
 		GMT_Report (API, GMT_MSG_ERROR, "Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->n_columns, C.Grid->header->n_rows);
 		Return (GMT_RUNTIME_ERROR);
 	}
-
-	surface_init_parameters (&C, Ctrl);	/* Pass parameters from parsing control to surface information structure C */
 
 	/* Determine the initial and intermediate grid dimensions */
 	C.current_stride = gmt_gcd_euclid (C.n_columns-1, C.n_rows-1);
