@@ -72,9 +72,10 @@ Optional Arguments
 .. _-D:
 
 **-D**\ [*scale*\|\ **g**]
-    Differentiate the field, i.e., take d(field)/dz. This is equivalent
-    to multiplying by kr in the frequency domain (kr is radial wave
-    number). Append a scale to multiply by (kr \* *scale*) instead.
+    Differentiate the field, i.e., take :math:`\frac{\partial}{\partial z}`
+    of the grid *z*. This is equivalent
+    to multiplying by :math:`k_r` in the frequency domain (:math:`k_r` is radial wave
+    number). Append a scale to multiply by :math:`k_r \cdot`\ *scale*) instead.
     Alternatively, append **g** to indicate that your data are geoid
     heights in meters and output should be gravity anomalies in mGal.
     [Default is no scale].
@@ -149,9 +150,9 @@ Optional Arguments
 .. _-I:
 
 **-I**\ [*scale*\|\ **g**]
-    Integrate the field, i.e., compute integral\_over\_z (field \* dz).
-    This is equivalent to divide by kr in the frequency domain (kr is
-    radial wave number). Append a scale to divide by (kr \* *scale*)
+    Integrate the field, i.e., compute :math:`\int z(x,y) dz`.
+    This is equivalent to divide by :math:`k_r` in the frequency domain (:math:`k_r` is
+    radial wave number). Append a scale to divide by :math:`k_r \cdot`\ *scale*
     instead. Alternatively, append **g** to indicate that your data set
     is gravity anomalies in mGal and output should be geoid heights in
     meters. [Default is no scale].
