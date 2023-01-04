@@ -230,7 +230,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	struct GMT_GRID_HEADER *Bh;	/* Grid header for one of the limit grids [or NULL] */
 	struct SURFACE_SEARCH info;	/* Information needed by the compare function passed to qsort_r */
 	unsigned int n_factors;		/* Number of factors in common for the dimensions (n_rows-1, n_columns-1) */
-	unsigned int factors[32];	/* Array of these ommon factors */
+	unsigned int factors[32];	/* Array of these common factors */
 	unsigned int set_limit[2];	/* For low and high: NONE = unconstrained, DATA = by min data value, VALUE = by user value, SURFACE by a grid */
 	unsigned int max_iterations;	/* Max iterations per call to iterate */
 	unsigned int converge_mode; 	/* BY_PERCENT if -C set fractional convergence limit [BY_VALUE] */
@@ -2035,14 +2035,9 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 				C.q_pad[YLO] = 2 + urint ((C.wesn_orig[YLO] - wesn[YLO]) * HH->r_inc[GMT_Y]);
 				C.q_pad[YHI] = 2 + urint ((wesn[YHI] - C.wesn_orig[YHI]) * HH->r_inc[GMT_Y]);
 			}
-			GMT_Destroy_Data (API, &G);	/* Delete the old, recreate the grid */
 		}
+		GMT_Destroy_Data (API, &G);	/* Delete the temporary grid */
 	}
-
-	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL,
-            GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-
-	surface_init_parameters (&C, Ctrl);	/* Pass parameters from parsing control to surface information structure C */
 
 	if (GMT->common.R.registration == GMT_GRID_PIXEL_REG) {		/* Pixel registration request. Use the trick of offsetting area by x_inc(y_inc) / 2 */
 		/* Note that the grid remains node-registered and only gets tagged as pixel-registered upon writing the final grid to file */
@@ -2052,6 +2047,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->A.mode) Ctrl->A.value = cosd (0.5 * (wesn[YLO] + wesn[YHI]));	/* Set cos of middle latitude as aspect ratio */
 
+	/* Allocate output grid container with header only */
 	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL,
 	                               GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
@@ -2059,6 +2055,8 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->n_columns, C.Grid->header->n_rows);
 		Return (GMT_RUNTIME_ERROR);
 	}
+
+	surface_init_parameters (&C, Ctrl);	/* Pass parameters from parsing control to surface information structure C */
 
 	/* Determine the initial and intermediate grid dimensions */
 	C.current_stride = gmt_gcd_euclid (C.n_columns-1, C.n_rows-1);
@@ -2106,7 +2104,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 	key = surface_rescale_z_values (GMT, &C);	/* Divide residual data by their rms value */
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C.Grid) != GMT_NOERROR) Return (API->error);
-	if (key == 1) {	/* Data lie exactly on a plane; write a grid with the plan and exit */
+	if (key == 1) {	/* Data lie exactly on a plane; write a grid with the plane and exit */
 		gmt_M_free (GMT, C.data);	/* The data set is no longer needed */
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL,
 		                     0, 0, C.Grid) == NULL) Return (API->error);	/* Get a grid of zeros... */
