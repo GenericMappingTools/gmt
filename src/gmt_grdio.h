@@ -146,7 +146,7 @@ static inline void scale_and_offset_f (gmt_grdfloat *data, size_t length, gmt_gr
 #endif
 	if (scale == 1) /* offset only */
 #ifdef __APPLE__ /* Accelerate framework */
-		if (length > INT_MAX) { /* Bypass vDSP for > 32-bit lengths for now */
+		if (length > INT_MAX) { /* Bypass vDSP for > 32-bit signed lengths for now */
 			for (size_t n = 0; n < length; ++n) data[n] += offset;
 		}
 		else
@@ -161,7 +161,7 @@ static inline void scale_and_offset_f (gmt_grdfloat *data, size_t length, gmt_gr
 #endif
 	else if (offset == 0) /* scale only */
 #ifdef __APPLE__ /* Accelerate framework */
-		if (length > INT_MAX) { /* Bypass vDSP for > 32-bit lengths for now */
+		if (length > INT_MAX) { /* Bypass vDSP for > 32-bit signed lengths for now */
 			fprintf (stderr, "Bypassing vDSP since L = %" PRIu64 "\n", (uint64_t)length);
 			for (size_t n = 0; n < length; ++n) data[n] *= scale;
 		}
@@ -177,7 +177,7 @@ static inline void scale_and_offset_f (gmt_grdfloat *data, size_t length, gmt_gr
 #endif
 	else /* scale + offset */
 #ifdef __APPLE__ /* Accelerate framework */
-		if (length > INT_MAX) { /* Bypass vDSP for > 32-bit lengths for now */
+		if (length > INT_MAX) { /* Bypass vDSP for > 32-bit signed lengths for now */
 			for (size_t n = 0; n < length; ++n) data[n] = data[n] * scale + offset;
 		}
 		else
