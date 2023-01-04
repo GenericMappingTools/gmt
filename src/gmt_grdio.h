@@ -146,8 +146,9 @@ static inline void scale_and_offset_f (gmt_grdfloat *data, size_t length, gmt_gr
 #endif
 	if (scale == 1) /* offset only */
 #ifdef __APPLE__ /* Accelerate framework */
-		if (length > LONG_MAX) /* Bypass vDSP for > 32-bit lengths for now */
+		if (length > LONG_MAX) { /* Bypass vDSP for > 32-bit lengths for now */
 			for (size_t n = 0; n < length; ++n) data[n] += offset;
+		}
 		else
 #ifdef DOUBLE_PRECISION_GRID
 			vDSP_vsaddD (data, 1, &offset, data, 1, length);
@@ -160,8 +161,10 @@ static inline void scale_and_offset_f (gmt_grdfloat *data, size_t length, gmt_gr
 #endif
 	else if (offset == 0) /* scale only */
 #ifdef __APPLE__ /* Accelerate framework */
-		if (length > LONG_MAX) /* Bypass vDSP for > 32-bit lengths for now */
+		if (length > LONG_MAX) { /* Bypass vDSP for > 32-bit lengths for now */
+			fprintf (stderr, "Bypassing vDSP since L = %" PRIu64 "\n", (uint64_t)length);
 			for (size_t n = 0; n < length; ++n) data[n] *= scale;
+		}
 		else
 #ifdef DOUBLE_PRECISION_GRID
 			vDSP_vsmulD (data, 1, &scale, data, 1, length);
@@ -174,8 +177,9 @@ static inline void scale_and_offset_f (gmt_grdfloat *data, size_t length, gmt_gr
 #endif
 	else /* scale + offset */
 #ifdef __APPLE__ /* Accelerate framework */
-		if (length > LONG_MAX) /* Bypass vDSP for > 32-bit lengths for now */
+		if (length > LONG_MAX) { /* Bypass vDSP for > 32-bit lengths for now */
 			for (size_t n = 0; n < length; ++n) data[n] = data[n] * scale + offset;
+		}
 		else
 #ifdef DOUBLE_PRECISION_GRID
 			vDSP_vsmsaD (data, 1, &scale, &offset, data, 1, length);
