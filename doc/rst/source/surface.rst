@@ -120,7 +120,7 @@ Optional Arguments
 
 .. |Add_-J| replace::
     Select the data map projection. This projection is only used to add a referencing info
-    to the grid formats that support it. E.g., netCDF, GeoTIFF, and others supported by GDAL.
+    to the grid formats that support it. E.g., netCDF, GeoTIFF, and others supported by `GDAL <https://gdal.org/>`__.
 .. include:: explain_-J.rst_
     :start-after: **Syntax**
     :end-before: **Description**
@@ -179,7 +179,7 @@ Optional Arguments
     |-I|. You can recover the |-R| and |-I| you want later by
     using :doc:`grdsample` or :doc:`grdcut` on the output of **surface**.
     Alternatively, append **r** to have **surface** use the specified
-    **-R** setting exactly as given in the calculations [Default automatically
+    |-R| setting exactly as given in the calculations [Default automatically
     seeks a slightly larger region if that allows for more intermediate
     steps to ensure the best possible convergence; the region is then trimmed
     back to what was requested in |-R| upon output].
@@ -228,7 +228,7 @@ Optional Arguments
     Larger values overestimate the incremental changes during
     convergence, and will reach a solution more rapidly but may become
     unstable. If you use a large value for this factor, it is a good
-    idea to monitor each iteration with the **-Vi** option. [Default =
+    idea to monitor each iteration with the |-V|\ **i** option. [Default =
     1.4 converges quickly and is almost always stable.]
 
 .. include:: explain_-aspatial.rst_
@@ -283,7 +283,7 @@ hawaii_grd.nc, and monitoring each iteration, try:
 Notes
 -----
 
-While the region specified by **-R** determines your final output grid, internally
+While the region specified by |-R| determines your final output grid, internally
 we may use a slightly larger region that will allow for more intermediate grids
 (i.e., more common factors between *n_columns - 1* and *n_rows - 1*). This
 should allow for better convergence in the final solution.
