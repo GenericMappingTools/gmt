@@ -12244,6 +12244,7 @@ int gmt_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	else if (gmt_grd_is_global (GMT, h)) {	/* Grid is truly global */
 		double xtest = fmod (180.0, h->inc[GMT_X]) * HH->r_inc[GMT_X];
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Grid is considered to have a 360-degree longitude range.\n");
+		if (GMT->parent->ignore_BC) xtest = 0.0;	/* To bypass the checks below */
 		/* xtest should be within GMT_CONV4_LIMIT of zero or of one.  */
 		if (xtest > GMT_CONV4_LIMIT && xtest < (1.0 - GMT_CONV4_LIMIT) ) {
 			/* Error.  We need it to divide into 180 so we can phase-shift at poles.  */
