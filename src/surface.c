@@ -937,7 +937,7 @@ GMT_LOCAL int surface_write_grid (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctr
 	char *limit[2] = {"lower", "upper"};
 	gmt_grdfloat *u = C->Grid->data;
 
-	if (!Ctrl->Q.active) {	/* Probably need to shrink region to the desired one by increasing the pads */
+	if (!Ctrl->Q.active && Ctrl->Q.adjusted) {	/* Probably need to shrink region to the desired one by increasing the pads */
 		int del_pad[4] = {0, 0, 0, 0}, k, n = 0;
 		struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (C->Grid->header);
 		/* Determine the shifts inwards for each side */
