@@ -541,7 +541,6 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 	uint64_t ij;
 	double row_weight, col_weight, dy_half = 0.0, dx, y, lat, lat_s, lat_n, s2 = 0.0, f, a_inc[2];
 	struct GMT_GRID *A = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	/* Base the area weight grid on the input grid domain and increments. */
 	a_inc[GMT_X] = ((G->header->registration == GMT_GRID_NODE_REG) ? 0.5 : 1.0 / 3.0) * (G->header->wesn[XHI] - G->header->wesn[XLO]);
