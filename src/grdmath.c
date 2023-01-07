@@ -277,7 +277,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     EXCH       2 2  ");	GMT_Usage (API, -21, "Exchanges A and B on the stack");
 	GMT_Message (API, GMT_TIME_NONE, "     EXP        1 1  ");	GMT_Usage (API, -21, "exp (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     FACT       1 1  ");	GMT_Usage (API, -21, "A! (A factorial)");
-	GMT_Message (API, GMT_TIME_NONE, "     EXTREMA    1 1  ");	GMT_Usage (API, -21, "Local Extrema: -1|+1 is min|max, 0 elsewhere");
+	GMT_Message (API, GMT_TIME_NONE, "     EXTREMA    1 1  ");	GMT_Usage (API, -21, "Local extrema: -1 is a (local) minimum, +1 a (local) maximum, and 0 elsewhere");
 	GMT_Message (API, GMT_TIME_NONE, "     FCRIT      3 1  ");	GMT_Usage (API, -21, "F distribution critical value for alpha = A, nu1 = B, and nu2 = C");
 	GMT_Message (API, GMT_TIME_NONE, "     FCDF       3 1  ");	GMT_Usage (API, -21, "F cumulative distribution function for F = A, nu1 = B, and nu2 = C");
 	GMT_Message (API, GMT_TIME_NONE, "     FISHER     3 1  ");	GMT_Usage (API, -21, "Fisher probability density function at grid nodes given stack lon,lat (A, B) and kappa (C)");
@@ -379,7 +379,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclically shifts the top A stack items by an amount B");
 	GMT_Message (API, GMT_TIME_NONE, "     ROTX       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in x-direction");
 	GMT_Message (API, GMT_TIME_NONE, "     ROTY       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in y-direction");
-	GMT_Message (API, GMT_TIME_NONE, "     SADDLE     1 1  ");	GMT_Usage (API, -21, "Critical saddle points; -1|+1 is saddle with min|max in x, 0 elsewhere");
+	GMT_Message (API, GMT_TIME_NONE, "     SADDLE     1 1  ");	GMT_Usage (API, -21, "Critical points: -1|+1 is a saddle with min|max in x-direction; 0 elsewhere");
 	GMT_Message (API, GMT_TIME_NONE, "     SAZ        2 1  ");	GMT_Usage (API, -21, "Spherical azimuth from grid nodes to stack x,y");
 	GMT_Message (API, GMT_TIME_NONE, "     SBAZ       2 1  ");	GMT_Usage (API, -21, "Spherical back-azimuth from grid nodes to stack x,y");
 	GMT_Message (API, GMT_TIME_NONE, "     SEC        1 1  ");	GMT_Usage (API, -21, "sec (A) (A in radians)");
@@ -2502,7 +2502,7 @@ GMT_LOCAL int grdmath_do_derivative (gmt_grdfloat *z, uint64_t this_node, int of
 }
 
 GMT_LOCAL void grdmath_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: EXTREMA 1 1 Local Extrema: -1|+1 is min|max, 0 elsewhere.  */
+/*OPERATOR: EXTREMA 1 1 Local extrema: -1 is a (local) minimum, +1 a (local) maximum, and 0 elsewhere.  */
 {
 	uint64_t node;
 	openmp_int row, col;
@@ -2533,8 +2533,7 @@ GMT_LOCAL void grdmath_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 	/* We will visit each node on the grid and determine if there are extrema.  We do this
 	 * by looking at the along-x and along-y profiles separately.  If both of them shows the
 	 * central node in a min or max location with respect to its two neighbors (one if at the
-	 * edge of the grid or in the presence of NaNs) we must do further checking.  If the two
-	 * extrema are of different sign we call it a saddle point and we are done.  If both are
+	 * edge of the grid or in the presence of NaNs) we must do further checking.  If both are
 	 * min or max then we look at the two diagonal lines to see if they can confirm this.
 	 * Here, NaNs are not held against you - it takes real values to overrule the dx,dy values.
 	 *
@@ -2572,7 +2571,7 @@ GMT_LOCAL void grdmath_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 }
 
 GMT_LOCAL void grdmath_SADDLE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: SADDLE 1 1  -1|+1 is a saddle with min|max in x, 0 elsewhere.  */
+/*OPERATOR: SADDLE 1 1  -1|+1 is a saddle point with min|max in x-direction; 0 elsewhere.  */
 {
 	uint64_t node;
 	openmp_int row, col;
