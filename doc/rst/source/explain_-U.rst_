@@ -10,7 +10,7 @@ The **-U** option
 
 **Description**
 
-The **-U** option draws the GMT system time stamp on the plot. The following modifiers are supported:
+The **-U** option draws the GMT system time stamp on the plot. The following argument and modifiers are supported:
 
 - *label* to append the text string given in *label* (which must be surrounded by double quotes if it contains spaces).
 - **+c** to plot the current command string.
