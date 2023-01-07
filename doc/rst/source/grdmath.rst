@@ -54,6 +54,14 @@ the depth of the stack allows in order to save intermediate results.
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations.
 
+   .. figure:: /_images/RPN_fig.jpg
+      :width: 100%
+      :align: center
+
+   Hewlett-Packard made lots of calculators using Reverse Polish Notation (left),
+   which is a post-fix system for mathematical notion developed by
+   `Jan_Łukasiewicz <https://en.wikipedia.org/wiki/Jan_Łukasiewicz>`_.
+
 Required Arguments
 ------------------
 
