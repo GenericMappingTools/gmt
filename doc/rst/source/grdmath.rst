@@ -58,9 +58,11 @@ for future use or stored and recalled via named memory locations.
       :width: 100%
       :align: center
 
-   Hewlett-Packard made lots of calculators using Reverse Polish Notation (left),
-   which is a post-fix system for mathematical notion developed by
+   Hewlett-Packard made lots of calculators (left) using Reverse Polish Notation,
+   which is a post-fix system for mathematical notion originally developed by
    `Jan_Łukasiewicz <https://en.wikipedia.org/wiki/Jan_Łukasiewicz>`_.
+   Here, operands are entered first followed by an operator, e.g., "3 5 +" instead
+   of "3 + 5 =".
 
 Required Arguments
 ------------------
