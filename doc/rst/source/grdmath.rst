@@ -322,7 +322,7 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **FACT**      | 1 1   | A! (A factorial)                                                                                       |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **EXTREMA**   | 1 1   | Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere                        |
+| **EXTREMA**   | 1 1   | Local extrema: -1 is a (local) minimum, +1 a (local) maximum, and 0 elsewhere                          |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **FCDF**      | 3 1   | F cumulative distribution function for F = A, nu1 = B, and nu2 = C                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -524,13 +524,15 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ROTY**      | 2 1   | Rotate A by the (constant) shift B in y-direction                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **SDIST**     | 2 1   | Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) |ex_SDIST|           |
-+---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **SDIST2**    | 2 1   | As SDIST but only to nodes that are != 0                                                               |
+| **SADDLE**    | 1 1   | -1/+1 indicates a saddle point, with (local) minimum (-1) or maximum (+1) in x-direction, 0 elsewhere  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **SAZ**       | 2 1   | Spherical azimuth from grid nodes to stack lon, lat (i.e., A, B)                                       |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **SBAZ**      | 2 1   | Spherical back-azimuth from grid nodes to stack lon, lat (i.e., A, B)                                  |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **SDIST**     | 2 1   | Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) |ex_SDIST|           |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **SDIST2**    | 2 1   | As SDIST but only to nodes that are != 0                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **SEC**       | 1 1   | sec (A) (A in radians)                                                                                 |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -857,7 +859,7 @@ the imaginary amplitude 1.1, use::
 
 To extract the locations of local maxima that exceed 100 mGal in the file faa.nc, use::
 
-    gmt grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
+    gmt grdmath faa.nc DUP EXTREMA 1 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
     gmt grd2xyz z.nc -s > max.xyz
 
 To demonstrate the use of named variables, consider this radial wave

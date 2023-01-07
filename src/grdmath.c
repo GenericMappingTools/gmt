@@ -277,7 +277,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     EXCH       2 2  ");	GMT_Usage (API, -21, "Exchanges A and B on the stack");
 	GMT_Message (API, GMT_TIME_NONE, "     EXP        1 1  ");	GMT_Usage (API, -21, "exp (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     FACT       1 1  ");	GMT_Usage (API, -21, "A! (A factorial)");
-	GMT_Message (API, GMT_TIME_NONE, "     EXTREMA    1 1  ");	GMT_Usage (API, -21, "Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere");
+	GMT_Message (API, GMT_TIME_NONE, "     EXTREMA    1 1  ");	GMT_Usage (API, -21, "Local extrema: -1 is a (local) minimum, +1 a (local) maximum, and 0 elsewhere");
 	GMT_Message (API, GMT_TIME_NONE, "     FCRIT      3 1  ");	GMT_Usage (API, -21, "F distribution critical value for alpha = A, nu1 = B, and nu2 = C");
 	GMT_Message (API, GMT_TIME_NONE, "     FCDF       3 1  ");	GMT_Usage (API, -21, "F cumulative distribution function for F = A, nu1 = B, and nu2 = C");
 	GMT_Message (API, GMT_TIME_NONE, "     FISHER     3 1  ");	GMT_Usage (API, -21, "Fisher probability density function at grid nodes given stack lon,lat (A, B) and kappa (C)");
@@ -379,13 +379,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclically shifts the top A stack items by an amount B");
 	GMT_Message (API, GMT_TIME_NONE, "     ROTX       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in x-direction");
 	GMT_Message (API, GMT_TIME_NONE, "     ROTY       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in y-direction");
-	GMT_Message (API, GMT_TIME_NONE, "     SDIST      2 1  ");	GMT_Usage (API, -21, "Spherical distance (in km) between grid nodes and stack lon,lat (A, B)");
-	GMT_Message (API, GMT_TIME_NONE, "     SDIST2     2 1  ");	GMT_Usage (API, -21, "As SDIST but only to nodes that are != 0");
+	GMT_Message (API, GMT_TIME_NONE, "     SADDLE     1 1  ");	GMT_Usage (API, -21, "Critical points: -1|+1 is a saddle with min|max in x-direction; 0 elsewhere");
 	GMT_Message (API, GMT_TIME_NONE, "     SAZ        2 1  ");	GMT_Usage (API, -21, "Spherical azimuth from grid nodes to stack x,y");
 	GMT_Message (API, GMT_TIME_NONE, "     SBAZ       2 1  ");	GMT_Usage (API, -21, "Spherical back-azimuth from grid nodes to stack x,y");
 	GMT_Message (API, GMT_TIME_NONE, "     SEC        1 1  ");	GMT_Usage (API, -21, "sec (A) (A in radians)");
 	GMT_Message (API, GMT_TIME_NONE, "     SECD       1 1  ");	GMT_Usage (API, -21, "sec (A) (A in degrees)");
 	GMT_Message (API, GMT_TIME_NONE, "     SECH       1 1  ");	GMT_Usage (API, -21, "sech (A)");
+	GMT_Message (API, GMT_TIME_NONE, "     SDIST      2 1  ");	GMT_Usage (API, -21, "Spherical distance (in km) between grid nodes and stack lon,lat (A, B)");
+	GMT_Message (API, GMT_TIME_NONE, "     SDIST2     2 1  ");	GMT_Usage (API, -21, "As SDIST but only to nodes that are != 0");
 	GMT_Message (API, GMT_TIME_NONE, "     SIGN       1 1  ");	GMT_Usage (API, -21, "sign (+1 or -1) of A");
 	GMT_Message (API, GMT_TIME_NONE, "     SIN        1 1  ");	GMT_Usage (API, -21, "sin (A) (A in radians)");
 	GMT_Message (API, GMT_TIME_NONE, "     SINC       1 1  ");	GMT_Usage (API, -21, "sinc (A) (sin (pi*A)/(pi*A))");
@@ -2501,7 +2502,7 @@ GMT_LOCAL int grdmath_do_derivative (gmt_grdfloat *z, uint64_t this_node, int of
 }
 
 GMT_LOCAL void grdmath_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: EXTREMA 1 1 Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere.  */
+/*OPERATOR: EXTREMA 1 1 Local extrema: -1 is a (local) minimum, +1 a (local) maximum, and 0 elsewhere.  */
 {
 	uint64_t node;
 	openmp_int row, col;
@@ -2532,12 +2533,11 @@ GMT_LOCAL void grdmath_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 	/* We will visit each node on the grid and determine if there are extrema.  We do this
 	 * by looking at the along-x and along-y profiles separately.  If both of them shows the
 	 * central node in a min or max location with respect to its two neighbors (one if at the
-	 * edge of the grid or in the presence of NaNs) we must do further checking.  If the two
-	 * extrema are of different sign we call it a saddle point and we are done.  If both are
+	 * edge of the grid or in the presence of NaNs) we must do further checking.  If both are
 	 * min or max then we look at the two diagonal lines to see if they can confirm this.
 	 * Here, NaNs are not held against you - it takes real values to overrule the dx,dy values.
 	 *
-	 * Min is given -2, Max is given +2, Saddle points are +1 (if max in x) or -1 (if max in y)
+	 * Min is given -1, Max is given +1
 	 * Default is 0 which means no extrema.
 	 */
 
@@ -2551,10 +2551,7 @@ GMT_LOCAL void grdmath_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 		if ((dy = grdmath_do_derivative (stack[last]->G->data, node, info->G->header->mx, 0)) == -2) continue;	/* Too many NaNs or flat y-line */
 
 		if ((product = dx * dy) == 0) continue;	/* No min or max possible */
-		if (product < 0) {	/* Saddle point - don't need to check diagonals */
-			z[node] = (float)((dx > 0) ? +1 : -1);
-			continue;
-		}
+		if (product < 0) continue;	/* Saddle point - don't need to check diagonals */
 
 		/* Need to examine diagonal trends to verify min or max */
 
@@ -2565,7 +2562,64 @@ GMT_LOCAL void grdmath_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 
 		/* OK, we have a min or max point; just use dx to check which kind */
 
-		z[node] = (float)((dx > 0) ? +2 : -2);
+		z[node] = (float)((dx > 0) ? +1 : -1);
+	}
+
+	gmt_M_memcpy (stack[last]->G->data, z, info->size, float);
+	gmt_M_memset (HH->BC, 4, unsigned int);	/* No BC padding in this array */
+	gmt_M_free (GMT, z);
+}
+
+GMT_LOCAL void grdmath_SADDLE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: SADDLE 1 1  -1|+1 is a saddle point with min|max in x-direction; 0 elsewhere.  */
+{
+	uint64_t node;
+	openmp_int row, col;
+	int dx, dy, product;
+	float *z = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
+
+	/* Find saddle points in grid */
+
+	if (stack[last]->constant) {
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand to SADDLE is constant!\n");
+		gmt_M_memset (stack[last]->G->data, info->size, float);
+		return;
+	}
+
+	/* If grid does not have BC rows/cols assigned we apply reasonable conditions:
+	 * If -fg we assume geographic grid and use geographic BCs, else we use natural BCs. If the grid
+	 * as a BC == GMT_BC_IS_DATA then the pad already constrains observations. */
+
+	gmt_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
+	gmt_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
+
+	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
+	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
+
+	z = gmt_M_memory (GMT, NULL, info->size, float);
+
+	/* We will visit each node on the grid and determine if there are saddles.  We do this
+	 * by looking at the along-x and along-y profiles separately.  If both of them shows the
+	 * central node in a min or max location with respect to its two neighbors (one if at the
+	 * edge of the grid or in the presence of NaNs) we must do further checking.  If the two
+	 * extrema are of different sign we call it a saddle point and we are done, else 0.
+	 *
+	 * Saddle points are +1 (if max in x) or -1 (if max in y)
+	 * Default is 0 which means no saddle.
+	 */
+
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+
+		if (gmt_M_is_fnan (stack[last]->G->data[node])) continue;	/* No saddle if point is NaN */
+
+		if ((dx = grdmath_do_derivative (stack[last]->G->data, node, 1, 0)) == -2) continue;	/* Too many NaNs or flat x-line */
+		if ((dy = grdmath_do_derivative (stack[last]->G->data, node, info->G->header->mx, 0)) == -2) continue;	/* Too many NaNs or flat y-line */
+
+		if ((product = dx * dy) == 0) continue;	/* No local min or max possible */
+		if (product < 0)	/* Saddle point */
+			z[node] = (float)((dx > 0) ? +1 : -1);
+			continue;
 	}
 
 	gmt_M_memcpy (stack[last]->G->data, z, info->size, float);
@@ -6004,7 +6058,7 @@ GMT_LOCAL void grdmath_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 234
+#define GRDMATH_N_OPERATORS 235
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -6244,6 +6298,7 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[231] = grdmath_ASECD;	n_args[231] = 1;	n_out[231] = 1;
 	ops[232] = grdmath_ATAND;	n_args[232] = 1;	n_out[232] = 1;
 	ops[233] = grdmath_ATAN2D;	n_args[233] = 2;	n_out[233] = 1;
+	ops[234] = grdmath_SADDLE;	n_args[234] = 1;	n_out[234] = 1;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -6671,6 +6726,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		"ASECD",	/* id = 231 */
 		"ATAND",	/* id = 232 */
 		"ATAN2D",	/* id = 233 */
+		"SADDLE",	/* id = 234 */
 		"" /* last element is intentionally left blank */
 	};
 
