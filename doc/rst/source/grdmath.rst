@@ -54,6 +54,8 @@ the depth of the stack allows in order to save intermediate results.
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations.
 
+.. include:: RPN_info.rst_
+
 Required Arguments
 ------------------
 
