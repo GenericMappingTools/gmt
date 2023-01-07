@@ -57,15 +57,7 @@ column are operated on, but this can be changed (see |-C|).
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations.
 
-   .. figure:: /_images/RPN_fig.jpg
-      :width: 100%
-      :align: center
-
-   Hewlett-Packard made lots of calculators (left) using Reverse Polish Notation,
-   which is a post-fix system for mathematical notion originally developed by
-   `Jan_Łukasiewicz <https://en.wikipedia.org/wiki/Jan_Łukasiewicz>`_ (right).
-   Here, operands are entered first followed by an operator, e.g., "3 5 +" instead
-   of "3 + 5 =".
+.. include:: RPN_info.rst_
 
 Required Arguments
 ------------------
