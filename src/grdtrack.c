@@ -32,7 +32,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"grdtrack"
 #define THIS_MODULE_MODERN_NAME	"grdtrack"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Sample grids at specified (x,y) locations"
+#define THIS_MODULE_PURPOSE	"Sample one or more grids at specified locations"
 #define THIS_MODULE_KEYS	"<D{,DD),E-<,GG(,>D},SD)=s"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>RVabdefghijnoqsw" GMT_OPT("HMmQ")
@@ -537,6 +537,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode & GMT_LEFT_ONLY && Ctrl->C.mode & GMT_RIGHT_ONLY, "Option -C: Cannot chose both +l and +r modifiers.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->C.active, "Option -F: Requires -C.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && ng > 1, "Option -F: Can only accept a single grid.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->F.z0 < 0.0, "Option -F: z0 must be zero or positive (see +n if looking for troughs).\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->C.active, "Option -S: Requires -C.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(Ctrl->S.selected[STACK_ADD_VAL] || Ctrl->S.selected[STACK_ADD_DEV] ||
 	                                   Ctrl->S.selected[STACK_ADD_RES] || Ctrl->S.selected[STACK_ADD_TBL]),
