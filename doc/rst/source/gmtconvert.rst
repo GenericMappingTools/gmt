@@ -72,8 +72,8 @@ Optional Arguments
 **-A**
     The records from the input files should be pasted horizontally, not
     appended vertically [Default]. All files must have the same number
-    of segments and number of rows per segment. Note for binary input,
-    all the files you want to paste must have the same number of columns
+    of segments and number of rows per segment. **Note**: For binary input,
+    all the files you want to paste must have the *same* number of columns
     (as set with **-bi**); ASCII tables can have different number of columns.
 
 .. _-C:
@@ -91,8 +91,9 @@ Optional Arguments
 **-D**\ [*template*\ [**+o**\ *orig*]]
     For multiple segment data, dump each segment to a separate output
     file [Default writes a multiple segment file to standard output]. Append a
-    format template for the individual file names; this template
-    **must** contain a C format specifier that can format an integer
+    format template for the individual file names; this template **must**
+    contain a C language `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_
+    format specifier that can format an integer
     argument (the running segment number across all tables); this is
     usually %d but could be %08d which gives leading zeros, etc.
     [Default is gmtconvert_segment\_%d.{txt\|bin}, depending on
@@ -112,7 +113,7 @@ Optional Arguments
     [Default extracts all records]. Optionally, append **f** or **l** to
     only extract the first or last record of each segment, respectively.
     Alternatively, append **m**\ *stride* to extract every *stride* records;
-    use **M** to also include the last record. **Note**: This option operates
+    use **M** to also include the last record if not on the stride. **Note**: This option operates
     on the input records and if combined with |-N| the latter only sorts 
     the reduced data set. See **-qo** for limiting the output records after sorting.
 
