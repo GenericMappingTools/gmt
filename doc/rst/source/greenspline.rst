@@ -408,7 +408,7 @@ using output file based on the main grid name (such as contribution_cum_033.nc),
     gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Gcontribution.nc -Sc -Z1 -C+c
 
 Finally, to use Cartesian minimum curvature splines in recovering a
-surface where the input data is a single surface value (pt.txt) and the
+surface where the input data represent a single surface value (pt.txt) and the
 remaining constraints specify only the surface slope and direction
 (slopes.txt), use::
 

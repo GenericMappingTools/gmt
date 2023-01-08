@@ -149,7 +149,7 @@ Optional Arguments
     specific intensity scenario then run :doc:`grdgradient` separately first.
     If we should derive intensities from another file than *grid*, specify the
     file with suitable modifiers [Default is no illumination].  **Note**: If
-    the input data is an *image* then an *intensfile* or constant *intensity*
+    the input data represent an *image* then an *intensfile* or constant *intensity*
     must be provided.
 
 .. _-M:
