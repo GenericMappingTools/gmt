@@ -25,7 +25,7 @@ gmt begin ex33
 	# Show upper/lower 2-sigma confidence bounds encountered as an envelope
 	gmt plot -R-200/200/-3500/-2000 -JX15c/7.5c -W3p stack.txt -i0,1,5,6 -L+b -Glightgray -Yh+3c
 	gmt basemap  -Bxafg1000+l"Distance from ridge (km)" -Byaf+l"Depth (m)" -BWSne
-	echo "0 -2000 MEDIAN STACKED PROFILE" | gmt text -Gwhite -F+jTC+f14p -Dj8p
+	echo "MEDIAN STACKED PROFILE" | gmt text -Gwhite -F+cTC+f14p -Dj8p
 	# cleanup
 	rm -f ridge.txt table.txt stack.txt spac_33.nc
 gmt end show
