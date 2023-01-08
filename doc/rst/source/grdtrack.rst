@@ -240,7 +240,8 @@ Optional Arguments
     (**+a**), followed by deviations (**+d**) and finally residuals (**+r**);
     actual output depends on which of these modifiers were actually used.
     When more than one grid is sampled this sequence of 1-3 columns is
-    repeated for each grid.
+    repeated for each grid. (3) See Illustration Gallery 33 for an example
+    of grid profile stacking.
 
 .. _-T:
 
