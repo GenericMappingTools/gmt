@@ -1705,7 +1705,7 @@ GMT strings using the Standard+ encoding:
 | ``10@+-3 @Angstr@om`` = 10\ :math:`^{-3}` Ångstrøm
 | ``Stresses are @~s@~@+*@+@-xx@- MPa`` = Stresses are :math:`\sigma^{*}_{xx}` MPa
 | ``Se@nor Gar@con`` = Señor Garçon
-| ``M@!\305anoa stra@se`` = Manoa straße
+| ``M@!\305anoa Stra@se`` = Mānoa Straße
 | ``A@#cceleration@# (ms@+-2@+)`` = ACCELERATION (ms\ :math:`^{-2}`)
 
 The option in :doc:`/text` to draw a
