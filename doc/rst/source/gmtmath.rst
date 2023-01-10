@@ -700,6 +700,8 @@ Press, W. H., S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery,
 Spanier, J., and K. B. Oldman, 1987, *An Atlas of Functions*, Hemisphere
 Publishing Corp.
 
+.. include:: RPN_MoreOn.rst_
+
 See Also
 --------
 
