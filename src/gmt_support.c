@@ -15539,7 +15539,7 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 	int sign, d, m, s, m_sec;
 	unsigned int k, n_items, level, type;
 	bool zero_fix = false, lat_special = (lonlat == 3), deg_special = (lonlat == 4);
-	char hemi_pre[GMT_LEN16] = {""}, hemi_post[GMT_LEN16] = {""};
+	char hemi_pre[GMT_LEN16] = {""}, hemi_post[GMT_LEN16] = {""}, text[GMT_LEN64] = {""};
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
 
@@ -15598,7 +15598,7 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 
 	level = do_minutes + do_seconds;		/* 0, 1, or 2 */
 	type = (GMT->current.plot.calclock.geo.n_sec_decimals > 0) ? 1 : 0;
-
+	label[0] = '\0';	/* Start with clean slate */
 	if (!(lat_special || deg_special) && GMT->current.plot.r_theta_annot && lonlat)	/* Special check for the r in r-theta [set via -Jp|P +fe modifier] */
 		gmt_sprintf_float (GMT, label, GMT->current.setting.format_float_map, val);
 	else if (GMT->current.plot.calclock.geo.decimal)
@@ -15609,26 +15609,28 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 			d = -1;
 			zero_fix = true;
 		}
+		if (hemi_pre[0]) strcpy (label, hemi_pre);
 		switch (2*level+type) {
 			case 0:
-				sprintf (label, hemi_pre, GMT->current.plot.format[level][type], d, hemi_post);
+				sprintf (text, GMT->current.plot.format[level][type], d, hemi_post);
 				break;
 			case 1:
-				sprintf (label, hemi_pre, GMT->current.plot.format[level][type], d, m_sec, hemi_post);
+				sprintf (text, GMT->current.plot.format[level][type], d, m_sec, hemi_post);
 				break;
 			case 2:
-				sprintf (label, hemi_pre, GMT->current.plot.format[level][type], d, m, hemi_post);
+				sprintf (text, GMT->current.plot.format[level][type], d, m, hemi_post);
 				break;
 			case 3:
-				sprintf (label, hemi_pre, GMT->current.plot.format[level][type], d, m, m_sec, hemi_post);
+				sprintf (text, GMT->current.plot.format[level][type], d, m, m_sec, hemi_post);
 				break;
 			case 4:
-				sprintf (label, hemi_pre, GMT->current.plot.format[level][type], d, m, s, hemi_post);
+				sprintf (text, GMT->current.plot.format[level][type], d, m, s, hemi_post);
 				break;
 			case 5:
-				sprintf (label, hemi_pre, GMT->current.plot.format[level][type], d, m, s, m_sec, hemi_post);
+				sprintf (text, GMT->current.plot.format[level][type], d, m, s, m_sec, hemi_post);
 				break;
 		}
+		strcat (label, text);
 		if (zero_fix) label[1] = '0';	/* Undo the fix above */
 	}
 

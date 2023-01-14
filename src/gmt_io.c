@@ -2140,11 +2140,11 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 				break;
 			case 'F':	/* Want to use WESN to encode sign */
 				S->wesn = (i == 0) ? -1 : 1;
-				if (i != i1 || S->no_sign) error++;		/* Only valid as last flag */
+				if (S->no_sign) error++;		/* Cannot mix A and F */
 				break;
 			case 'G':	/* Want to use WESN to encode sign but have leading space */
 				S->wesn = (i == 0) ? -2 : 2;
-				if (i != i1 || S->no_sign) error++;		/* Only valid as last flag */
+				if (S->no_sign) error++;		/* Cannot mix A and G */
 				break;
 			case 'A':	/* Want no sign in plot string */
 				S->no_sign = true;
@@ -7045,11 +7045,6 @@ int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 
 		/* Level 0: degrees only. index 0 is integer degrees, index 1 is [possibly] fractional degrees */
 
-		/* First start with %s for the [W,E,S,N][leading space] char (or NULL) */
-
-		for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) {
-			strncpy (GMT->current.plot.format[i][j], "%s", GMT_LEN64);
-		}
 		strcat (GMT->current.plot.format[0][0], "%d");		/* ddd */
 		if (S->order[1] == GMT_NOTSET && S->n_sec_decimals > 0) { /* ddd.xxx format */
 			snprintf (fmt, GMT_LEN256, "%%d.%%%d.%dd", S->n_sec_decimals, S->n_sec_decimals);
