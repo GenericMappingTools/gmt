@@ -292,6 +292,8 @@ FORMAT Parameters
         **G**      Same as **F** but with a leading space before suffix
         ========   =================================================================
 
+        **Note**: **F** and **G** can either be the first or last character in the template.
+
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax, see :term:`FORMAT_FLOAT_OUT`) to be used when plotting double
         precision floating point numbers along plot frames and contours [default is **%.12g**].

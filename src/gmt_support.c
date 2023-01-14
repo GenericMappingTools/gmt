@@ -15630,8 +15630,8 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 				sprintf (text, GMT->current.plot.format[level][type], d, m, s, m_sec, hemi_post);
 				break;
 		}
+		if (zero_fix) text[1] = '0';	/* Undo the fix above */
 		strcat (label, text);
-		if (zero_fix) label[1] = '0';	/* Undo the fix above */
 	}
 
 	return;
