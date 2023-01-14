@@ -2139,11 +2139,11 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 				if (i > 1) error++;		/* Only valid as first or second flag */
 				break;
 			case 'F':	/* Want to use WESN to encode sign */
-				S->wesn = 1;
+				S->wesn = (i == 0) ? -1 : 1;
 				if (i != i1 || S->no_sign) error++;		/* Only valid as last flag */
 				break;
 			case 'G':	/* Want to use WESN to encode sign but have leading space */
-				S->wesn = 2;
+				S->wesn = (i == 0) ? -2 : 2;
 				if (i != i1 || S->no_sign) error++;		/* Only valid as last flag */
 				break;
 			case 'A':	/* Want no sign in plot string */
@@ -6977,6 +6977,10 @@ int gmtlib_geo_C_format (struct GMT_CTRL *GMT) {
 	}
 	else {			/* Some form of dd:mm:ss */
 		char fmt[GMT_LEN64] = {""};
+		/* First add %s for the W,E,S,N string (or NULL) for pre-value hemisphere */
+		sprintf (fmt, "%%s");
+		strcat (S->x_format, fmt);
+		strcat (S->y_format, fmt);
 		sprintf (S->x_format, "%%03d");
 		sprintf (S->y_format, "%%02d");
 		if (S->order[1] >= 0) {	/* Need minutes too */
@@ -6998,7 +7002,7 @@ int gmtlib_geo_C_format (struct GMT_CTRL *GMT) {
 			strcat (S->x_format, fmt);
 			strcat (S->y_format, fmt);
 		}
-		/* Finally add %s for the W,E,S,N string (or NULL) */
+		/* Finally add %s for the W,E,S,N string (or NULL) for post-value hemisphere */
 		sprintf (fmt, "%%s");
 		strcat (S->x_format, fmt);
 		strcat (S->y_format, fmt);
@@ -7041,11 +7045,18 @@ int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 
 		/* Level 0: degrees only. index 0 is integer degrees, index 1 is [possibly] fractional degrees */
 
-		sprintf (GMT->current.plot.format[0][0], "%%d");		/* ddd */
-		if (S->order[1] == GMT_NOTSET && S->n_sec_decimals > 0) /* ddd.xxx format */
-			snprintf (GMT->current.plot.format[0][1], GMT_LEN64, "%%d.%%%d.%dd", S->n_sec_decimals, S->n_sec_decimals);
+		/* First start with %s for the [W,E,S,N][leading space] char (or NULL) */
+
+		for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) {
+			strncpy (GMT->current.plot.format[i][j], "%s", GMT_LEN64);
+		}
+		strcat (GMT->current.plot.format[0][0], "%d");		/* ddd */
+		if (S->order[1] == GMT_NOTSET && S->n_sec_decimals > 0) { /* ddd.xxx format */
+			snprintf (fmt, GMT_LEN256, "%%d.%%%d.%dd", S->n_sec_decimals, S->n_sec_decimals);
+			strcat (GMT->current.plot.format[0][1], fmt);
+		}
 		else						/* ddd format */
-			sprintf (GMT->current.plot.format[0][1], "%%d");
+			strcat (GMT->current.plot.format[0][1], "%d");		/* ddd */
 		if (GMT->current.setting.map_degree_symbol != gmt_none)
 		{	/* But we want the degree symbol appended */
 			snprintf (fmt, GMT_LEN256, "%c", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);
@@ -7055,8 +7066,8 @@ int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 
 		/* Level 1: degrees and minutes only. index 0 is integer minutes, index 1 is [possibly] fractional minutes  */
 
-		sprintf (GMT->current.plot.format[1][0], "%%d");	/* ddd */
-		sprintf (GMT->current.plot.format[1][1], "%%d");
+		strcat (GMT->current.plot.format[1][0], "%d");	/* ddd */
+		strcat (GMT->current.plot.format[1][1], "%d");
 		if (GMT->current.setting.map_degree_symbol != gmt_none)
 		{	/* We want the degree symbol appended */
 			sprintf (fmt, "%c", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);
@@ -7081,8 +7092,8 @@ int gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 
 		/* Level 2: degrees, minutes, and seconds. index 0 is integer seconds, index 1 is [possibly] fractional seconds  */
 
-		sprintf (GMT->current.plot.format[2][0], "%%d");
-		sprintf (GMT->current.plot.format[2][1], "%%d");
+		strcat (GMT->current.plot.format[2][0], "%d");
+		strcat (GMT->current.plot.format[2][1], "%d");
 		if (GMT->current.setting.map_degree_symbol != gmt_none)
 		{	/* We want the degree symbol appended */
 			sprintf (fmt, "%c", (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);
