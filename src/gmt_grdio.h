@@ -169,7 +169,7 @@ static inline void scale_and_offset_f (gmt_grdfloat *data, size_t length, gmt_gr
 			data[n] += offset;
 	}
 	else if (offset == 0) { /* scale only */
-		for (n = 0; n < L; ++n)
+		for (n = 0; n < length; ++n)
 			data[n] *= scale;
 	}
 	else { /* scale + offset */
