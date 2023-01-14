@@ -288,11 +288,11 @@ FORMAT Parameters
         **mm**     Fixed format integer arc minutes
         **ss**     Fixed format integer arc seconds
         **.xxx**   Floating fraction of previous integer field, fixed width
-        **F**      Encode sign using WESN suffix or prefix
-        **G**      As **F** but with a leading space before suffix or after prefix
+        **F**      Encode sign using WESN suffix
+        **G**      Same as **F** but with a leading space before suffix
         ========   =================================================================
 
-        **Note**: If used, **F** and **G** must be the first or last character in the template.
+        **Note**: With :term:`FORMAT_GEO_MAP`, **F** and **G** may also be used as a prefix.
 
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax, see :term:`FORMAT_FLOAT_OUT`) to be used when plotting double
