@@ -10574,6 +10574,12 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			gmt_M_compat_translate ("FORMAT_GEO_OUT");
 			break;
 		case GMTCASE_FORMAT_GEO_OUT:
+			if (value[len-1] == 'G')
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "FORMAT_GEO_OUT = %s will produce GMT-incompatible text files\n", value);
+#if 0		/* Remove this if-endif when gmtio_format_geo_output can write leading hemisphere letters */
+			if (strchr ("FG", value[0]))	/* Leading W|E|S|N in data output produce a format that cannot be read back into GMT */
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "FORMAT_GEO_OUT = %s will produce GMT-incompatible text files\n", value);
+#endif
 			strncpy (GMT->current.setting.format_geo_out, value, GMT_LEN64-1);
 			error = gmtlib_geo_C_format (GMT);	/* Can fail if FORMAT_FLOAT_OUT not yet set, but is repeated at the end of gmt_begin */
 			break;

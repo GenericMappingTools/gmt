@@ -15539,7 +15539,7 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 	int sign, d, m, s, m_sec;
 	unsigned int k, n_items, level, type;
 	bool zero_fix = false, lat_special = (lonlat == 3), deg_special = (lonlat == 4);
-	char hemi[GMT_LEN16] = {""};
+	char hemi_pre[GMT_LEN16] = {""}, hemi_post[GMT_LEN16] = {""}, text[GMT_LEN64] = {""};
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
 
@@ -15560,73 +15560,78 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 			val = 0.0;
 	}
 
-	if (GMT->current.plot.calclock.geo.wesn) {
-		if (GMT->current.plot.calclock.geo.wesn == 2) strcat (hemi, " ");
+	if (GMT->current.plot.calclock.geo.wesn) {	/* Either -2, -1, +1, +2 */
+		bool post = (GMT->current.plot.calclock.geo.wesn > 0);	/* Place hemisphere string after numbers */
+		if (GMT->current.plot.calclock.geo.wesn == 2) strcat (hemi_post, " ");
 		if (!do_hemi || gmt_M_is_zero (val)) { /* Skip adding hemisphere indication */
 		}
-		else if (lonlat == 0) {
+		else if (lonlat == 0) {	/* Longitudes */
 			switch (GMT->current.plot.calclock.geo.range) {
 				case GMT_IS_0_TO_P360_RANGE:
 				case GMT_IS_0_TO_P360:
-					strcat (hemi, GMT->current.language.cardinal_name[1][1]);
+					strcat (post ? hemi_post : hemi_pre, GMT->current.language.cardinal_name[1][1]);
 					break;
 				case GMT_IS_M360_TO_0_RANGE:
 				case GMT_IS_M360_TO_0:
-					strcat (hemi, GMT->current.language.cardinal_name[2][1]);
+					strcat (post ? hemi_post : hemi_pre, GMT->current.language.cardinal_name[2][1]);
 					break;
 				default:
-					if (!(doubleAlmostEqual (val, 180.0) || doubleAlmostEqual (val, -180.0))) strcat (hemi, (val < 0.0) ? GMT->current.language.cardinal_name[1][0] : GMT->current.language.cardinal_name[1][1]);
+					if (!(doubleAlmostEqual (val, 180.0) || doubleAlmostEqual (val, -180.0))) strcat (post ? hemi_post : hemi_pre, (val < 0.0) ? GMT->current.language.cardinal_name[1][0] : GMT->current.language.cardinal_name[1][1]);
 					break;
 			}
 		}
-		else
-			strcat (hemi, (val < 0.0) ? GMT->current.language.cardinal_name[2][2] : GMT->current.language.cardinal_name[2][3]);
+		else	/* Latitudes */
+			strcat (post ? hemi_post : hemi_pre, (val < 0.0) ? GMT->current.language.cardinal_name[2][2] : GMT->current.language.cardinal_name[2][3]);
 
+		if (GMT->current.plot.calclock.geo.wesn == -2) strcat (hemi_pre, " ");
 		if (!deg_special) {
 			val = fabs (val);
-			if (hemi[0] == ' ' && hemi[1] == 0) hemi[0] = 0;	/* No space if no hemisphere indication */
+			if (hemi_post[0] == ' ' && hemi_post[1] == 0) hemi_post[0] = 0;	/* No space if no hemisphere indication */
+			if (hemi_pre[0]  == ' ' && hemi_pre[1]  == 0) hemi_pre[0]  = 0;	/* No space if no hemisphere indication */
 		}
 	}
 	if (deg_special)
-		hemi[0] = 0;
+		hemi_pre[0] = hemi_post[0] = 0;
 	else if (GMT->current.plot.calclock.geo.no_sign)
 		val = fabs (val);
 	sign = (val < 0.0) ? -1 : 1;
 
 	level = do_minutes + do_seconds;		/* 0, 1, or 2 */
 	type = (GMT->current.plot.calclock.geo.n_sec_decimals > 0) ? 1 : 0;
-
+	label[0] = '\0';	/* Start with clean slate */
 	if (!(lat_special || deg_special) && GMT->current.plot.r_theta_annot && lonlat)	/* Special check for the r in r-theta [set via -Jp|P +fe modifier] */
 		gmt_sprintf_float (GMT, label, GMT->current.setting.format_float_map, val);
 	else if (GMT->current.plot.calclock.geo.decimal)
-		sprintf (label, GMT->current.plot.calclock.geo.x_format, val, hemi);
+		sprintf (label, GMT->current.plot.calclock.geo.x_format, val, hemi_post);
 	else {
 		(void) gmtlib_geo_to_dms (val, n_items, GMT->current.plot.calclock.geo.f_sec_to_int, &d, &m, &s, &m_sec);	/* Break up into d, m, s, and remainder */
 		if (d == 0 && sign == -1) {	/* Must write out -0 degrees, do so by writing -1 and change 1 to 0 */
 			d = -1;
 			zero_fix = true;
 		}
+		if (hemi_pre[0]) strcpy (label, hemi_pre);
 		switch (2*level+type) {
 			case 0:
-				sprintf (label, GMT->current.plot.format[level][type], d, hemi);
+				sprintf (text, GMT->current.plot.format[level][type], d, hemi_post);
 				break;
 			case 1:
-				sprintf (label, GMT->current.plot.format[level][type], d, m_sec, hemi);
+				sprintf (text, GMT->current.plot.format[level][type], d, m_sec, hemi_post);
 				break;
 			case 2:
-				sprintf (label, GMT->current.plot.format[level][type], d, m, hemi);
+				sprintf (text, GMT->current.plot.format[level][type], d, m, hemi_post);
 				break;
 			case 3:
-				sprintf (label, GMT->current.plot.format[level][type], d, m, m_sec, hemi);
+				sprintf (text, GMT->current.plot.format[level][type], d, m, m_sec, hemi_post);
 				break;
 			case 4:
-				sprintf (label, GMT->current.plot.format[level][type], d, m, s, hemi);
+				sprintf (text, GMT->current.plot.format[level][type], d, m, s, hemi_post);
 				break;
 			case 5:
-				sprintf (label, GMT->current.plot.format[level][type], d, m, s, m_sec, hemi);
+				sprintf (text, GMT->current.plot.format[level][type], d, m, s, m_sec, hemi_post);
 				break;
 		}
-		if (zero_fix) label[1] = '0';	/* Undo the fix above */
+		if (zero_fix) text[1] = '0';	/* Undo the fix above */
+		strcat (label, text);
 	}
 
 	return;

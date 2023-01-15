@@ -197,7 +197,8 @@ struct GMT_GEO_IO {			/* For geographic output and plotting */
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
 	unsigned int n_sec_decimals;	/* Number of digits in decimal seconds (0 for whole seconds) */
 	unsigned int range;		/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
-	unsigned int wesn;		/* 1 if we want sign encoded with suffix W, E, S, N, 2 if also want space before letter */
+	int wesn;				/* 1 if we want sign encoded with suffix W, E, S, N, 2 if also want space before letter.
+							   If negative -1 or -2 we place the suffix before the annotation and -2 with a space after. */
 	int order[3];			/* The relative order of degree, minute, seconds in form (-ve if unused) */
 	bool decimal;			/* true if we want to use the FORMAT_FLOAT_OUT for decimal degrees only */
 	bool no_sign;			/* true if we want absolute values (plot only) */
