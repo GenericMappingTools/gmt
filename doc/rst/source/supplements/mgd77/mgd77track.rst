@@ -154,7 +154,7 @@ Optional Arguments
 
 **-W**\ [*pen*]
     Append *pen* used for the trackline. [Defaults:
-    width = default, color = black, style = solid].
+    width = 0.25p, color = black, style = solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
