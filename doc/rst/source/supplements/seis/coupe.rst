@@ -256,7 +256,7 @@ Optional Arguments
 
 **-W**\ [*pen*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for text string or default pen attributes for
-    fault plane edges. [Defaults: default,black,solid].
+    fault plane edges. [Defaults: 0.25p,black,solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
