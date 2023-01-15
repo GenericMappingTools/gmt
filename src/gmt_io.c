@@ -2109,13 +2109,14 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 	 */
 
 	unsigned int j, n_d, n_m, n_s, n_x, n_dec, n_period, order, error = 0;
+	unsigned int n_F, n_G, n_DD;
 	int sequence[3], last, i_signed, n_delim;
 	size_t i1, i;
 	bool big_to_small;
 
 	for (i = 0; i < 3; i++) S->order[i] = GMT_NOTSET;	/* Meaning not encountered yet */
 
-	n_d = n_m = n_s = n_x = n_dec = n_delim = n_period = 0;
+	n_d = n_m = n_s = n_x = n_F = n_G = n_DD = n_dec = n_delim = n_period = 0;
 	S->delimiter[0][0] = S->delimiter[0][1] = S->delimiter[1][0] = S->delimiter[1][1] = 0;
 	sequence[0] = sequence[1] = sequence[2] = GMT_NOTSET;
 
@@ -2137,14 +2138,17 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 			case 'D':	/* Want to use decimal degrees using FORMAT_FLOAT_OUT [Default] */
 				S->decimal = true;
 				if (i > 1) error++;		/* Only valid as first or second flag */
+				n_DD++;
 				break;
 			case 'F':	/* Want to use WESN to encode sign */
 				S->wesn = (i == 0) ? -1 : 1;
 				if (S->no_sign) error++;		/* Cannot mix A and F */
+				n_F++;
 				break;
 			case 'G':	/* Want to use WESN to encode sign but have leading space */
 				S->wesn = (i == 0) ? -2 : 2;
 				if (S->no_sign) error++;		/* Cannot mix A and G */
+				n_G++;
 				break;
 			case 'A':	/* Want no sign in plot string */
 				S->no_sign = true;
@@ -2219,6 +2223,9 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 	error += (n_x && n_dec != 1);			/* .xxx is the proper form */
 	error += (n_x == 0 && n_dec);			/* Period by itself and not delimiter? */
 	error += (n_dec > 1);				/* Only one period with xxx */
+	error += (n_DD > 1);				/* Only one occurrence of D */
+	error += ((n_F > 1) || (n_G > 1));		/* Only one occurrence of F or G */
+	error += ((n_G + n_F) > 1);				/* Only one of either F or G */
 	S->n_sec_decimals = n_x;
 	S->f_sec_to_int = rint (pow (10.0, (double)S->n_sec_decimals));			/* To scale fractional seconds to an integer form */
 	if (error) {
