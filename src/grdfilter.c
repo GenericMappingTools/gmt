@@ -130,7 +130,7 @@ enum Grdfilter_mode {
 #define IMG2LAT(img) (2.0*atand(exp((img)*D2R))-90.0)
 #define LAT2IMG(lat) (R2D*log(tand(0.5*((lat)+90.0))))
 /* Local ij calculation for weight matrix */
-#define WT_IJ(F,jj,ii) ((jj) + F.y_half_width) * F.n_columns + (ii) + F.x_half_width
+#define WT_IJ(F,jj,ii) (((uint64_t)(jj) + F.y_half_width)) * ((uint64_t)F.n_columns) + (uint64_t)(ii) + (uint64_t)F.x_half_width
 
 #define GRDFILTER_N_PARS	7
 #define GRDFILTER_WIDTH		0
@@ -446,7 +446,7 @@ GMT_LOCAL void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, d
 		if (F->rect) ry = inv_y_half_width * j;	/* -1 to +1 */
 		for (i = -F->x_half_width; i <= F->x_half_width; i++) {
 			x = (i < 0) ? -F->x[-i] : F->x[i];	/* Input grid x-coordinate relative to center */
-			ij = (j + F->y_half_width) * (uint64_t)F->n_columns + i + F->x_half_width;
+			ij = ((int64_t)(j + F->y_half_width)) * ((int64_t)F->n_columns) + (int64_t)i + (int64_t)F->x_half_width;
 			assert (ij >= 0);
 			if (F->rect) {	/* 2-D rectangular filtering; radius not used as we use x/x_half_width and ry instead */
 				weight[ij] = F->weight_func (inv_x_half_width * i, par) * F->weight_func (ry, par);
