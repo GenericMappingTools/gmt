@@ -239,16 +239,23 @@ You may need to know some basic reST syntax before making changes. Please refer 
 Building the documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Usually you don't need to build the documentation locally for small changes. To build the GMT documentation you need
-to install the `Sphinx <http://www.sphinx-doc.org/>`_ documentation builder. After configuring and
-`building GMT <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_, you can build GMT documentation using
-the following commands within the build directory::
+Usually you don't need to build the documentation locally for small changes. To build the GMT documentation you 
+ need to `build GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_. Be sure 
+ to also satisfy the 
+ `developement dependencies <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md#development-dependencies>`_ 
+ before proceeding. Have a look at the options in ``cmake/ConfigUserAdvanced.cmake`` if you want to change the 
+ target directory for the documenation you are about to build.
+
+ After `configuring and building GMT from source <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_, 
+ you can then build the GMT documentation using the following commands within the ``build`` directory::
 
   dvc pull
   cmake --build . --target docs_depends     # Generate images included in the documentation
   cmake --build . --target optimize_images  # Optimize PNG images for documentation [optional]
-  cmake --build . --target docs_man         # UNIX manual pages
-  cmake --build . --target docs_html        # HTML manual, tutorial, cookbook, and API reference
+  cmake --build . --target docs_man         # Build UNIX manual pages
+  cmake --build . --target docs_html        # Build HTML manual, tutorial, cookbook, and API reference
+
+  cmake --build . --target install          # install the documentation into the specified location
 
 .. note::
   - Refer to the file ``admin/bashrc_for_gmt`` for useful aliases for building the documentation.
