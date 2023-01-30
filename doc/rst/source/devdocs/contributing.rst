@@ -255,7 +255,9 @@ you can then build the GMT documentation using the following commands within the
   cmake --build . --target docs_man         # Build UNIX manual pages
   cmake --build . --target docs_html        # Build HTML manual, tutorial, cookbook, and API reference
 
-  cmake --build . --target install          # install the documentation into the specified location
+To install the UNIX manpages and html documentation into the specified location (along with the gmt executable, library, development headers and built-in data), use::
+
+  cmake --build . --target install
 
 .. note::
   - Refer to the file ``admin/bashrc_for_gmt`` for useful aliases for building the documentation.
