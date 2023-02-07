@@ -254,9 +254,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     CSCH       1 1  ");	GMT_Usage (API, -21, "csch (A)");
 	GMT_Message (API, GMT_TIME_NONE, "     CUMSUM     2 1  ");	GMT_Usage (API, -21, "Cumulative sum of rows (B=+/-1|3) or columns (B=+/-2|4) in A");
 	GMT_Message (API, GMT_TIME_NONE, "     CURV       1 1  ");	GMT_Usage (API, -21, "Curvature of A (Laplacian)");
-	GMT_Message (API, GMT_TIME_NONE, "     D2DX2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dx^2 2nd derivative");
-	GMT_Message (API, GMT_TIME_NONE, "     D2DY2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dy^2 2nd derivative");
-	GMT_Message (API, GMT_TIME_NONE, "     D2DXY      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dxdy 2nd derivative");
+	GMT_Message (API, GMT_TIME_NONE, "     D2DX2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dx^2 Central 2nd derivative");
+	GMT_Message (API, GMT_TIME_NONE, "     D2DY2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dy^2 Central 2nd derivative");
+	GMT_Message (API, GMT_TIME_NONE, "     D2DXY      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dxdy Central 2nd cross-derivative");
 	GMT_Message (API, GMT_TIME_NONE, "     D2R        1 1  ");	GMT_Usage (API, -21, "Converts Degrees to Radians");
 	GMT_Message (API, GMT_TIME_NONE, "     DAYNIGHT   3 1  ");	GMT_Usage (API, -21, "1 where sun at (A, B) shines and 0 elsewhere, with C transition width");
 	GMT_Message (API, GMT_TIME_NONE, "     DDX        1 1  ");	GMT_Usage (API, -21, "d(A)/dx Central 1st derivative");
@@ -1922,7 +1922,7 @@ GMT_LOCAL void grdmath_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 }
 
 GMT_LOCAL void grdmath_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: D2DX2 1 1 d^2(A)/dx^2 2nd derivative.  */
+/*OPERATOR: D2DX2 1 1 d^2(A)/dx^2 2nd Central derivative.  */
 {
 	uint64_t node, ij;
 	openmp_int row, col;
@@ -1958,7 +1958,7 @@ GMT_LOCAL void grdmath_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 }
 
 GMT_LOCAL void grdmath_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: D2DY2 1 1 d^2(A)/dy^2 2nd derivative.  */
+/*OPERATOR: D2DY2 1 1 d^2(A)/dy^2 2nd Central derivative.  */
 {
 	uint64_t node, ij;
 	openmp_int row, col, mx;
@@ -1995,7 +1995,7 @@ GMT_LOCAL void grdmath_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 }
 
 GMT_LOCAL void grdmath_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: D2DXY 1 1 d^2(A)/dxdy 2nd derivative.  */
+/*OPERATOR: D2DXY 1 1 d^2(A)/dxdy 2nd Central derivative.  */
 {
 	uint64_t node;
 	openmp_int row, col, mx;
