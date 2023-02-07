@@ -248,7 +248,7 @@ and output arguments.
   **COTD**        1 1     Cotangent of A (A in degrees)                                                               Calculus           
   **CSC**         1 1     Cosecant of A (A in radians)                                                                Calculus           
   **CSCD**        1 1     Cosecant of A (A in degrees)                                                                Calculus           
-  **D2DT2**       1 1     d^2(A)/dt^2 2nd derivative                                                                  Calculus           
+  **D2DT2**       1 1     d^2(A)/dt^2 Central 2nd derivative                                                          Calculus           
   **D2R**         1 1     Converts degrees to radians                                                                 Special Operators  
   **DDT**         1 1     d(A)/dt Central 1st derivative                                                              Calculus           
   **DEG2KM**      1 1     Converts spherical degrees to kilometers                                                    Special Operators  
