@@ -15224,6 +15224,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	/* First handle any halfhearted naming of remote datasets where _g or _p should be appended */
 
 	if (options) {
+		/* Treat -V in advance because gmt_set_unspecified_remote_registration needs to already know about it.*/
+		for (opt = *options; opt; opt = opt->next) {
+			if (opt->option == 'V')
+				gmt_parse_common_options (API->GMT, "V", opt->option, opt->arg);
+		}
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 			if (!gmtinit_might_be_remotefile (opt->arg)) continue;
 			if (remote_first) {
