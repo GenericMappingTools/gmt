@@ -721,7 +721,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: The EPS format can be combined with any of the other formats. "
 		"For example, -Tef creates both an EPS and PDF file.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, -2, "Note: Shows the gdal_translate command, in case you want to use this program "
+	GMT_Usage (API, -2, "Note: Shows the grdgdal command, in case you want to use this program "
 		"to create a geoTIFF file.");
 	GMT_Usage (API, 1, "\n-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]");
 	GMT_Usage (API, -2, "Write an ESRI type world file suitable to make .tif files "
@@ -736,8 +736,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"computations. The world file naming follows the convention of jamming "
 		"a 'w' in the file extension. So, if the output is tif (-Tt) the world "
 		"file is a .tfw, for jpeg a .jgw, and so on.  A few modifiers are available:");
-	GMT_Usage (API, 3, "+g Do a system call to gdal_translate and produce a true "
-		"eoTIFF image right away. The output file will have the extension "
+	GMT_Usage (API, 3, "+g Produce a true geoTIFF image right away. The output file will have the extension "
 		".tiff. See the man page for other 'gotchas'. Automatically sets -A -P.");
 	GMT_Usage (API, 3, "+k Create a minimalist KML file that allows loading the "
 		"image in Google Earth. Note that for this option the image must be "
@@ -1595,7 +1594,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	char ps_file[PATH_MAX] = "", no_U_file[PATH_MAX] = "", clean_PS_file[PATH_MAX] = "", tmp_file[PATH_MAX] = "",
 	     out_file[PATH_MAX] = "", BB_file[PATH_MAX] = "", resolution[GMT_LEN128] = "", jpeg_device[GMT_LEN16] = {""};
 	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""}, GSstring[GMT_LEN64] = {""},
-	     cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
+	     cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""};
 	char *gs_BB = NULL, *proj4_cmd = NULL;
 	char *device[N_GS_DEVICES] = {"", "pdfwrite", "svg", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha",
 	                              "jpeggray", "pnggray", "tiffgray", "bmpgray"};
@@ -2719,19 +2718,14 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				world_file[pos_ext] = '\0';
 				strcat (world_file, ".tiff");
 
-				if (GMT->current.setting.verbose < GMT_MSG_WARNING)	/* Shut up the gdal_translate (low level) verbosity */
-					quiet = " -quiet";
-				else
-					quiet = "";
-
-				sprintf (cmd, "gdal_translate -mo TIFFTAG_XRESOLUTION=%g -mo TIFFTAG_YRESOLUTION=%g -a_srs %c%s%c "
-				              "-co COMPRESS=LZW -co TILED=YES %s %c%s%c %c%s%c",
-					Ctrl->E.dpi, Ctrl->E.dpi, quote, proj4_cmd, quote, quiet, quote, out_file, quote, quote, world_file, quote);
+				sprintf (cmd, "%c%s%c -Atranslate -M -G%c%s%c -F\"-mo TIFFTAG_XRESOLUTION=%g -mo TIFFTAG_YRESOLUTION=%g -a_srs %c%s%c "
+				              "-co COMPRESS=LZW -co TILED=YES\"",
+					quote, out_file, quote, quote, world_file, quote, Ctrl->E.dpi, Ctrl->E.dpi, quote, proj4_cmd, quote);
 				gmt_M_str_free (proj4_cmd);
-				sys_retval = system (cmd);		/* Execute the gdal_translate command */
-				GMT_Report (API, GMT_MSG_INFORMATION, "The gdal_translate command: \n%s\n", cmd);
-				if (sys_retval) {
-					GMT_Report (API, GMT_MSG_ERROR, "System call [%s] returned error %d.\n", cmd, sys_retval);
+				GMT_Report (API, GMT_MSG_INFORMATION, "The grdgdal command: \n%s\n", cmd);
+
+				if (GMT_Call_Module (API, "grdgdal", GMT_MODULE_CMD, cmd) != GMT_OK) {	/* Failed to do the conversion */
+					GMT_Report (API, GMT_MSG_ERROR, "Call to grdgdal [%s] returned error %d.\n", cmd, sys_retval);
 					Return (GMT_RUNTIME_ERROR);
 				}
 				if (!Ctrl->T.active)	/* Get rid of the intermediate JPG file if -T was not set */

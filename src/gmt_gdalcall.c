@@ -108,7 +108,7 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 
 /* ------------------------------------------------------------------------------------------------------------ */
 GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
-	/* Breake a string "-aa -bb -cc dd" into tokens "-aa" "-bb" "-cc" "dd" */
+	/* Break a string "-mo TIFFTAG_XRESOLUTION=300  -a_srs '+proj=stere +lat_0=90'" into tokens */
 	/* Based on GMT_Create_Options() */
 	unsigned int pos = 0, k, n_args = 0;
 	bool quoted;
@@ -122,11 +122,11 @@ GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 	txt_in = strdup (in);
 	if ((args = gmt_M_memory (GMT, NULL, n_alloc, char *)) == NULL) return NULL;
 
-	/* txt_in can contain options that take multi-word text strings, e.g., -B+t"My title".  We avoid the problem of splitting
-	 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
+	/* txt_in can contain options that take multi-word text strings, e.g., '+proj=stere +lat_0=90'.  We avoid the problem of splitting
+	 * these items by temporarily replacing spaces inside single quoted strings with ASCII 31 US (Unit Separator), do the strtok on
 	 * space, and then replace all ASCII 31 with space at the end (we do the same for tab using ASCII 29 GS (group separator) */
 	for (k = 0, quoted = false; txt_in[k]; k++) {
-		if (txt_in[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exit quote */
+		if (txt_in[k] == '\'' || txt_in[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exit quote */
 		else if (quoted && txt_in[k] == '\t') txt_in[k] = GMT_ASCII_GS;
 		else if (quoted && txt_in[k] == ' ')  txt_in[k] = GMT_ASCII_US;
 	}
@@ -139,7 +139,7 @@ GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 				p[k] = ' ';						/* Replace spaces and tabs masked above */
 		}
 		for (i = o = 0; p[i]; i++)
-			if (p[i] != '\"') p[o++] = p[i];	/* Ignore double quotes */
+			if (!(p[i] == '\'' || p[i] == '\"')) p[o++] = p[i];	/* Ignore any single or double quotes */
 		p[o] = '\0';
 		args[n_args++] = strdup(p);
 
@@ -148,7 +148,7 @@ GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 			if ((args = gmt_M_memory(GMT, args, n_alloc, char *)) == NULL) return NULL;
 		}
 	}
-	for (k = 0; txt_in[k]; k++)	/* Restore input string to prestine condition */
+	for (k = 0; txt_in[k]; k++)	/* Restore input string to pristine condition */
 		if (txt_in[k] == GMT_ASCII_GS) txt_in[k] = '\t';
 		else if (txt_in[k] == GMT_ASCII_US) txt_in[k] = ' ';	/* Replace spaces and tabs masked above */
 
