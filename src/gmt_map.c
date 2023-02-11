@@ -7150,6 +7150,8 @@ void gmt_xy_to_geo_noshift (struct GMT_CTRL *GMT, double *lon, double *lat, doub
 	/* Converts x/y to lon/lat using the current projection but applies no shift */
 
 	if (gmt_M_is_dnan (x) || gmt_M_is_dnan (y)) {(*lon) = (*lat) = GMT->session.d_NaN; return;}	/* Quick and safe way to ensure NaN-input results in NaNs */
+	x /= GMT->current.proj.scale[GMT_X];
+	y /= GMT->current.proj.scale[GMT_Y];
 	(*GMT->current.proj.inv) (GMT, lon, lat, x, y);
 }
 
