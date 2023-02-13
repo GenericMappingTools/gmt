@@ -126,7 +126,7 @@ struct API_META {	/* Items related to passing or not passing certain meta data f
 
 struct GMT_JULIA_POCKET {
 	/* Hold some variables stored in the API struct that may be needed to be known in GMT.jl
-	   Idealy one would wrap the GMTAPI_CTRL struct but this gal is huge and there is no contract
+	   Ideally one would wrap the GMTAPI_CTRL struct but this gal is huge and there is no contract
 	   that it wont change in response to future needs.
 	*/
 	char *gwf_dir;			/* In API->gwf_dir. GMT WorkFlow dir (NULL if not running in modern mode). 4GMT.jl */
