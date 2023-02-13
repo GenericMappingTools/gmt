@@ -7556,6 +7556,11 @@ GMT_LOCAL void * gmtapi_get_data (void *V_API, int object_ID, unsigned int mode,
 	gmtapi_set_object (API, S_obj);
 	//gmtapi_list_objects (API, "gmtapi_get_data");
 #endif
+	
+	/* 4GMT.jl For start, copy only 64 columns instead of the GMT_MAX_COLUMNS */
+	memcpy(&API->jl_pocket.col_type[0], &API->GMT->current.io.col_type[0], 64 * sizeof(int));
+	memcpy(&API->jl_pocket.col_type[1], &API->GMT->current.io.col_type[1], 64 * sizeof(int));
+
 	return (new_obj);		/* Return pointer to the data container */
 }
 

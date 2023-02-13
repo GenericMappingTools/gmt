@@ -13903,6 +13903,9 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	GMT->parent->inset_shrink_scale = 1.0;
 	GMT->parent->inset_shrink = false;
 
+	gmt_M_str_free (GMT->parent->gwf_dir);
+	gmt_M_str_free (GMT->parent->jl_pocket.gwf_dir);
+
 #ifdef MEMDEBUG
 	gmt_memtrack_report (GMT);
 	gmt_M_str_free (GMT->hidden.mem_keeper);
@@ -19785,6 +19788,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 
 	snprintf (dir, PATH_MAX, "%s/gmt_session.%s", API->session_dir, API->session_name);
 	API->gwf_dir = strdup (dir);
+ 	API->jl_pocket.gwf_dir = strdup (dir);	/* To be accessible via Julia. */
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
 	clean_start = (mode & GMT_CLEAN_WORKFLOW);
 	mode -= clean_start;
