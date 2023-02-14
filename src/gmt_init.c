@@ -16146,6 +16146,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	/* ALL POINTERS IN GMT ARE NOW JUNK AGAIN */
 	if (pass_changes_back) gmt_M_memcpy (&(GMT->current.setting), &saved_settings, 1U, struct GMT_DEFAULTS);
 	GMT->current.setting.verbose = V_level;	/* Pass the currently selected level back up */
+	GMT->common.V.active = false;           /* But reset this so externals don't keep getting "Option -V given more than once" */
 	GMT->init.n_custom_symbols = 0;	GMT->init.custom_symbol = NULL;	/* Reset this to 0/NULL since just junk (already freed) */
 
 	/* Try this to fix valgrind leaks */
@@ -19787,6 +19788,8 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	struct stat S;
 
 	snprintf (dir, PATH_MAX, "%s/gmt_session.%s", API->session_dir, API->session_name);
+	if (API->gwf_dir) free(API->gwf_dir);	/* Avoid leaks because this function is visited 3 times when a module starts*/
+	if (API->jl_pocket.gwf_dir) free(API->jl_pocket.gwf_dir);
 	API->gwf_dir = strdup (dir);
  	API->jl_pocket.gwf_dir = strdup (dir);	/* To be accessible via Julia. */
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
