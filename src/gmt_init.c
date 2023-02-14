@@ -16179,6 +16179,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		for (i = 0; i < (unsigned int)GMT->PSL->internal.N_FONTS; i++)
 			GMT->PSL->internal.font[i].encoded = GMT->PSL->internal.font[i].encoded_orig;
 		GMT->PSL->current.fontsize = 0;
+		GMT->PSL->internal.fp = NULL;
 	}
 
 	gmt_M_memcpy (GMT->current.plot.gridline_spacing, spacing, 2U, double);	/* Put these back so they can go into gmt.history (if nonzero) */
