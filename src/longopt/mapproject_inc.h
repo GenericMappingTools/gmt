@@ -54,7 +54,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	{ 0, 'T', "changedatum",
 	          "h",                       "height",
 	          "",                        "" },
-	{ 0, 'W', "mapinfo",
+	{ 0, 'W', "mapinfo|mapsize",
 	          "e,E,g,h,j,n,o,O,r,R,w,x", "encompass,encompasstext,plotcoords,height,justify,normalize,cornercoords,regiontext,width,xy",
 	          "n",                       "npoints" },
 	{ 0, 'Z', "traveltime",

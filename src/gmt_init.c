@@ -540,12 +540,22 @@ GMT_LOCAL struct GMT_KEYWORD_DICTIONARY * gmtinit_find_kw (struct GMTAPI_CTRL *A
 	 * If we find a match we return a pointer to the corresponding keyword list and the index *k for the array entry index.
 	 * If not found then we return NULL and set index to -1 (GMT_NOTSET) */
 	struct GMT_KEYWORD_DICTIONARY *kw[2] = {kw1, kw2};	/* kw1 is the common options and kw2 is any module options available in long-format version */
+	unsigned int found, pos;
+	char alias[GMT_LEN256];
 	gmt_M_unused (API);
 	for (unsigned int set = 0; set < 2; set++) {	/* Loop over the two keyword structure arrays */
 		if (kw[set] == NULL) continue;	/* We were not given this set of keywords */
 		/* Search list of long-format keywords for a match with arg */
-		for (*k = 0; kw[set][*k].long_option[0]; (*k)++)
-			if (!strcmp (arg, kw[set][*k].long_option)) break;	/* Match was found */
+		for (*k = 0; kw[set][*k].long_option[0]; (*k)++) {
+			found = pos = 0;
+			while (gmt_strtok (kw[set][*k].long_option, " |", &pos, alias)) {
+				if (!strcmp (arg, alias)) {	/* Match was found */
+					found = 1;
+					break;
+				}
+			}
+			if (found) break;
+		}
 		if (kw[set][*k].short_option) return kw[set];	/* Return if successful, otherwise short_option of last entry is blank */
 	}
 	*k = GMT_NOTSET;	/* Nothing found, return GMT_NOTSET and NULL  */
@@ -557,8 +567,10 @@ GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, c
 	/* Examine the text argument for directives or args and pass it back out via
 	 * argument. sepcode is constrained to be one of GMT_FINDARG_{EQUAL,COLONEQUAL}
 	 * to indicate that either '=' or ":=" are being used as token separators. */
-	unsigned int k = 0, pos = 0;
-	char *c = NULL, m = 0, item[GMT_LEN64] = {""};
+	unsigned int k = 0, longlistpos, aliaslistpos;
+	char *c = NULL, m = 0;
+	char longlistitem[GMT_LEN256] = {""};
+	char aliaslistitem[GMT_LEN256] = {""};
 	int cindex;
 	gmt_M_unused (API);
 	switch (sepcode) {
@@ -572,9 +584,15 @@ GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, c
 		strcpy (argument, text);
 		return 0;
 	}
-	while (m == 0 && (gmt_strtok (longlist, ",", &pos, item))) {	/* While unprocessed directives/modifiers to examine... */
-		if (!strcmp (item, text))	/* Found this directive/modifier in the text */
-			m = shortlist[k];	/* Assign the corresponding short directive/modifier to m and this stops the while loop */
+	longlistpos = 0;
+	while (m == 0 && (gmt_strtok (longlist, ",", &longlistpos, longlistitem))) {	/* While unprocessed directives/modifiers to examine... */
+		aliaslistpos = 0;
+		while (gmt_strtok (longlistitem, " |", &aliaslistpos, aliaslistitem)) {
+			if (!strcmp (text, aliaslistitem)) {	/* Match was found */
+				m = shortlist[k];	/* Assign the corresponding short directive/modifier to m and this stops the outer while loop */
+				break;
+			}
+		}
 		k += 2;	/* Go to next char in comma-separated list of single characters (2 since we skip the commas) */
 	}
 	if (m && c) {	/* We found a short-option flag and there is an argument that follows a colon (or equal sign) */
@@ -774,7 +792,7 @@ GMT_LOCAL void gmtinit_translate_to_short_options (struct GMTAPI_CTRL *API, stru
 			}
 			if (got_modifier) {	/* We have one or more modifiers to process */
 				unsigned int pos = 0;
-				char item[GMT_LEN64] = {""};
+				char item[GMT_LEN256] = {""};
 				modifier[0] = '+';	/* Put back the plus sign for the first modifier */
 				while ((gmtinit_copymodifier (modifier, &pos, item))) {	/* While there are unprocessed modifiers... */
 					if ((code = gmtinit_find_argument (API, kw[k].long_modifiers, kw[k].short_modifiers, item, GMT_FINDARG_EQUAL, argument)))	/* Get the modifier, or return 0 if unrecognized */
