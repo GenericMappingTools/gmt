@@ -37,7 +37,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	{ 0, 'S', "pointseries",
 	          "",                      "",
 	          "h",                     "header" },
-	{ 0, 'T', "timeinc|inc|range",
+	{ 0, 'T', "inc|range",
 	          "",                      "",
 	          "i,n",                   "inverse,numcoords" },
 	{ 0, 'Z', "levels",

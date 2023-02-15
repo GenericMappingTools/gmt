@@ -69,7 +69,7 @@
     {   0, 'J', "projection|proj",
                 "",                      "",
                 "d,a,t,v,w,z,f,k,r",     "d,a,t,v,w,z,f,k,r" },
-    {   0, 'R', "region|reg|domain",
+    {   0, 'R', "region|limits",
                 "",                      "",
                 "r,u",                   "rectangular|rect,unit" },
     {   0, 'U', "timestamp",

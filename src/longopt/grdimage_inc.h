@@ -42,7 +42,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
                   "a,d,m,n",           "azimuth,default,ambient,intensity" },
 	{ 0, 'M', "monochrome",        "", "", "", "" },
 	{ 0, 'N', "noclip",            "", "", "", "" },
-	{ 0, 'Q', "transvalue|alphacolor",
+	{ 0, 'Q', "alphacolor|alpha_color|nan_alpha",
                   "",                  "",
                   "z",                 "gridvalue" },
 	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
