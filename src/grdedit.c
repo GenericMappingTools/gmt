@@ -461,7 +461,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 	else if (Ctrl->E.active) {	/* Transpose, flip, or rotate the matrix and possibly exchange x and y info */
 		struct GMT_GRID_HEADER *h_tr = NULL;
 		uint64_t ij, ij_tr = 0;
-		gmt_grdfloat *a_tr = NULL, *save_grid_pointer = NULL;
+		gmt_grdfloat *a_tr = NULL;
 
 		if (!grid_was_read && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
 			Return (API->error);
@@ -506,7 +506,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 			gmt_M_doublep_swap (G->x, G->y);
 		}
 
-		/* Now transpose the matrix */
+		/* Now transpose, rotate, or flip the matrix depending on option */
 
 		a_tr = gmt_M_memory (GMT, NULL, G->header->size, gmt_grdfloat);
 		gmt_M_grd_loop (GMT, G, row, col, ij) {
@@ -533,18 +533,15 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 					ij_tr = gmt_M_ijp (h_tr, G->header->n_rows-1-row, col);
 					break;
 			}
-			a_tr[ij_tr] = G->data[ij];
+			a_tr[ij_tr] = G->data[ij];	/* Fill out the new matrix */
 		}
-		save_grid_pointer = G->data;	/* Save original grid pointer and hook on the modified grid instead */
-		G->data = a_tr;
-		gmt_copy_gridheader (GMT, G->header, h_tr);	/* Update to the new header */
-		gmt_M_free (GMT, h_tr->hidden);
-		gmt_M_free (GMT, h_tr);
+		G->data = a_tr;					/* G now points to the new matrix in memory */
+		gmt_copy_gridheader (GMT, G->header, h_tr);	/* Update the grid header via the temporary header */
+		gmt_M_free (GMT, h_tr->hidden);	/* Free the hidden part of the temporary header */
+		gmt_M_free (GMT, h_tr);			/* Free the temporary header */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, out_file, G) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		G->data = save_grid_pointer;
-		gmt_M_free (GMT, a_tr);
 	}
 	else if (Ctrl->L.active) {	/* Wrap the longitude boundaries */
 		double wesn[4];
