@@ -460,13 +460,13 @@ struct GMT_SESSION {
 
 struct GMT_CTRL {
 	/* Master structure for a GMT invocation.  All internal settings for GMT is accessed here */
+	struct PSL_CTRL *PSL;		/* Pointer to the PSL structure [or NULL] */
+	struct GMTAPI_CTRL *parent;	/* Owner of this structure [or NULL]; gives access to the API from functions being passed *GMT only */
 	struct GMT_SESSION session;	/* Structure with all values that do not change throughout a session */
 	struct GMT_INIT init;		/* Structure with all values that do not change in a GMT_func call */
 	struct GMT_COMMON common;	/* Structure with all the common GMT command settings (-R -J ..) */
 	struct GMT_CURRENT current;	/* Structure with all the GMT items that can change during execution, such as defaults settings (pens, colors, fonts.. ) */
 	struct GMT_INTERNAL hidden;	/* Internal global variables that are not to be changed directly by users */
-	struct PSL_CTRL *PSL;		/* Pointer to the PSL structure [or NULL] */
-	struct GMTAPI_CTRL *parent;	/* Owner of this structure [or NULL]; gives access to the API from functions being passed *GMT only */
 };
 
 /* p_to_io_func is used as a pointer to functions such as GMT_read_d in assignments
