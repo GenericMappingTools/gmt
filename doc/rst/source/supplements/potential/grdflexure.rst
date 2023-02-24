@@ -135,7 +135,7 @@ Optional Arguments
 
 **-C**\ **p**\|\ **y**\ *value*
     Append directives **p** or **y** to change the current value of Poisson's ratio [0.25]
-    or Young's modulus [7.0e10 N/m^2], respectively.
+    or Young's modulus [7.0e10 N/m\ :sup:`2`], respectively.
 
 .. _-F:
 
