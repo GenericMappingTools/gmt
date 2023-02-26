@@ -4702,7 +4702,7 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 	 */
 
 	int item, new_item, new_ID;
-	bool done = true, via = false, must_be_image = true, no_index = false, bc_not_set = true, new = false;
+	bool done = true, via = false, must_be_image = true, no_index = false, bc_not_set = true, new = false, have_CRS = false;
 	uint64_t ij, ij_orig;
 	openmp_int row, col, i0, i1, j0, j1;
 	unsigned int both_set = (GMT_CONTAINER_ONLY | GMT_DATA_ONLY);
@@ -4757,11 +4757,11 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 					return_null (API, GMT_IMAGE_READ_ERROR);
 				}
 				if (mode & GMT_CONTAINER_ONLY) break;	/* Just needed the header, get out of here */
+				have_CRS = (I_obj->header->ProjRefPROJ4 || I_obj->header->ProjRefWKT || I_obj->header->ProjRefEPSG != 0) ? true : false;
 			}
-			/* Here we will read the image data themselves. */
-			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
-			 * Otherwise we extract the entire file domain */
-			if (GMT->common.R.active[RSET] && !S_obj->region && !GMT->common.R.oblique) { /* subregion not passed to object yet */
+			/* Here we will read the image data themselves. To get a subset we use wesn that is not NULL or contain 0/0/0/0.
+			   Otherwise we extract the entire file domain */
+			if (have_CRS && (GMT->common.R.active[RSET] && !S_obj->region && !GMT->common.R.oblique)) { /* subregion not passed to object yet */
 				gmt_M_memcpy (S_obj->wesn, GMT->common.R.wesn, 4U, double);
 				S_obj->region = true;
 			}
@@ -4789,8 +4789,7 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 			GMT_Report (API, GMT_MSG_INFORMATION, "Reading image from file %s\n", S_obj->filename);
 			if (gmtapi_import_ppm (GMT, S_obj->filename, I_obj) == GMT_NOERROR)
 				d = 0.0;	/* Placeholder only */
-			else if (gmt_M_err_pass (GMT, gmtlib_read_image (GMT, S_obj->filename, I_obj, S_obj->wesn,
-				I_obj->header->pad, mode), S_obj->filename))
+			else if (gmt_M_err_pass (GMT, gmtlib_read_image (GMT, S_obj->filename, I_obj, S_obj->wesn, I_obj->header->pad, mode), S_obj->filename))
 				return_null (API, GMT_IMAGE_READ_ERROR);
 			if (I_obj->n_indexed_colors == 0) {	/* May set the BCs */
 				if (gmt_M_err_pass (GMT, gmtlib_image_BC_set (GMT, I_obj), S_obj->filename))
@@ -7390,7 +7389,7 @@ GMT_LOCAL struct GMT_VECTOR *gmtapi_read_vector (struct GMT_CTRL *GMT, void *sou
 }
 
 /*! . */
-GMT_LOCAL struct GMT_VECTOR * gmtapi_import_vector (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
+GMT_LOCAL struct GMT_VECTOR *gmtapi_import_vector (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode) {
 	/* Does the actual work of loading in a GMT vector table. */
 	int item;
 	unsigned int kind;
@@ -7457,7 +7456,7 @@ GMT_LOCAL struct GMT_VECTOR * gmtapi_import_vector (struct GMTAPI_CTRL *API, int
 }
 
 /*! . */
-GMT_LOCAL void * gmtapi_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, int object_ID, unsigned int mode, void *data) {
+GMT_LOCAL void *gmtapi_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, int object_ID, unsigned int mode, void *data) {
 
 	/* Function that will import the data object referred to by the object_ID (or all registered inputs if object_ID == GMT_NOTSET).
 	 * This is a wrapper functions for CPT, Dataset, Grid, Image and PostScript imports; see the specific functions
@@ -7509,7 +7508,7 @@ GMT_LOCAL void * gmtapi_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_fami
 }
 
 /*! . */
-GMT_LOCAL void * gmtapi_get_data (void *V_API, int object_ID, unsigned int mode, void *data) {
+GMT_LOCAL void *gmtapi_get_data (void *V_API, int object_ID, unsigned int mode, void *data) {
 	/* Function to import registered data sources directly into program memory as a set (not record-by-record).
 	 * data is pointer to an existing grid container when we read a grid in two steps, otherwise use NULL.
 	 * ID is the registered resource from which to import.
@@ -7556,6 +7555,13 @@ GMT_LOCAL void * gmtapi_get_data (void *V_API, int object_ID, unsigned int mode,
 	gmtapi_set_object (API, S_obj);
 	//gmtapi_list_objects (API, "gmtapi_get_data");
 #endif
+	
+	/* 4GMT.jl For start, copy only 64 columns instead of the GMT_MAX_COLUMNS
+	   Don't change anything here without consulting with GMT.jl side
+	*/
+	gmt_M_memcpy (&API->jl_pocket.col_type[0], &API->GMT->current.io.col_type[0], 64, int);
+	gmt_M_memcpy (&API->jl_pocket.col_type[1], &API->GMT->current.io.col_type[1], 64, int);
+
 	return (new_obj);		/* Return pointer to the data container */
 }
 

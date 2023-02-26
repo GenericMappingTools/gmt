@@ -166,12 +166,12 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*color*][**+z**\ *value*]
+**-Q**\ [**+z**\ *value*][*color*]
     Make grid nodes with NaN values transparent, using the color-masking
     feature in PostScript Level 3 (the PS device must support PS Level 3).
-    Use **+z** to select another grid value than NaN.
-    If input is instead an image then black pixels are set to be transparent;
-    append an alternate color to select another pixel value to be transparent.
+    If the input is a grid, use **+z** to select another grid value than NaN.
+    If input is instead an image, append an alternate color to select another
+    pixel value to be transparent [Default is black].
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_

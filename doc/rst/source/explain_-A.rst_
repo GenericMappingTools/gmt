@@ -1,5 +1,5 @@
 |SYN_OPT-Area|
-    Features with an area smaller than *min\_area* in km^2 or of
+    Features with an area smaller than *min\_area* in km\ :sup:`2` or of
     hierarchical level that is lower than *min\_level* or higher than
     *max\_level* will not be plotted [Default is 0/0/4 (all features)].
     Level 2 (lakes) contains regular lakes and wide river bodies which
@@ -12,5 +12,5 @@
     add **g** to select the ice grounding line instead.  For expert
     users who wish to utilize their own Antarctica (with islands) coastline
     you can add **s** to skip all GSHHG features below 60S. In contrast, you
-    can add **S** to instead skip all features *north* of 60S.  See
+    can add **S** to instead skip all features *north* of 60S. See
     GSHHG INFORMATION below for more details. |Add_-A|

@@ -248,7 +248,7 @@ and output arguments.
   **COTD**        1 1     Cotangent of A (A in degrees)                                                               Calculus           
   **CSC**         1 1     Cosecant of A (A in radians)                                                                Calculus           
   **CSCD**        1 1     Cosecant of A (A in degrees)                                                                Calculus           
-  **D2DT2**       1 1     d^2(A)/dt^2 2nd derivative                                                                  Calculus           
+  **D2DT2**       1 1     d\ :sup:`2`\ (A)/dt\ :sup:`2` Central 2nd derivative                                        Calculus           
   **D2R**         1 1     Converts degrees to radians                                                                 Special Operators  
   **DDT**         1 1     d(A)/dt Central 1st derivative                                                              Calculus           
   **DEG2KM**      1 1     Converts spherical degrees to kilometers                                                    Special Operators  
@@ -278,7 +278,7 @@ and output arguments.
   **HSV2LAB**     3 3     Convert h,s,v triplets to l,a,b triplets, with h = A (0-360), s = B and v = C (0-1)         Special Operators  
   **HSV2RGB**     3 3     Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (0-1)         Special Operators  
   **HSV2XYZ**     3 3     Convert h,s,v triplets to x,t,z triplets, with h = A (0-360), s = B and v = C (0-1)         Special Operators  
-  **HYPOT**       2 1     Hypotenuse of a right triangle of sides A and B (= sqrt (A^2 + B^2))                        Calculus           
+  **HYPOT**       2 1     Hypotenuse of a right triangle of sides A and B (= sqrt (A\ :sup:`2` + B\ :sup:`2`))        Calculus           
   **I0**          1 1     Modified Bessel function of A (1st kind, order 0)                                           Special Functions  
   **I1**          1 1     Modified Bessel function of A (1st kind, order 1)                                           Special Functions  
   **IFELSE**      3 1     B if A is not equal to 0, else C                                                            Logic              
@@ -307,9 +307,9 @@ and output arguments.
   **LMSSCL**      1 1     LMS (Least Median of Squares) scale estimate (LMS STD) of A                                 Probability        
   **LMSSCLW**     2 1     Weighted LMS scale estimate (LMS STD) of A for weights in B                                 Probability        
   **LOG**         1 1     log (A) (natural logarithm)                                                                 Arithmetic         
-  **LOG10**       1 1     log10 (A) (logarithm base 10)                                                               Arithmetic         
+  **LOG10**       1 1     log\ :sub:`10` (A) (logarithm base 10)                                                      Arithmetic         
   **LOG1P**       1 1     log (1+A) (natural logarithm, accurate for small A)                                         Arithmetic         
-  **LOG2**        1 1     log2 (A) (logarithm base 2)                                                                 Arithmetic         
+  **LOG2**        1 1     log\ :sub:`2` (A) (logarithm base 2)                                                        Arithmetic         
   **LOWER**       1 1     The lowest (minimum) value of A                                                             Arithmetic         
   **LPDF**        1 1     Laplace probability density function for z = A                                              Probability        
   **LRAND**       2 1     Laplace random noise with mean A and std. deviation B                                       Probability        
@@ -346,7 +346,7 @@ and output arguments.
   **PSI**         1 1     Psi (or Digamma) of A                                                                       Special Functions  
   **PV**          3 1     Legendre function Pv(A) of degree v = real(B) + imag(C)                                     Special Functions  
   **QV**          3 1     Legendre function Qv(A) of degree v = real(B) + imag(C)                                     Special Functions  
-  **R2**          2 1     Hypotenuse squared (= A^2 + B^2)                                                            Calculus           
+  **R2**          2 1     Hypotenuse squared (= A\ :sup:`2` + B\ :sup:`2`)                                                            Calculus           
   **R2D**         1 1     Convert radians to degrees                                                                  Special Operators  
   **RAND**        2 1     Uniform random values between A and B                                                       Probability        
   **RCDF**        1 1     Rayleigh cumulative distribution function for z = A                                         Probability        
@@ -478,7 +478,7 @@ Notes On Operators
    **BITTEST**, and **BITXOR**) convert a tables's double precision values
    to unsigned 64-bit ints to perform the bitwise operations. Consequently,
    the largest whole integer value that can be stored in a double precision
-   value is 2^53 or 9,007,199,254,740,992. Any higher result will be masked
+   value is 2\ :sup:`53` or 9,007,199,254,740,992. Any higher result will be masked
    to fit in the lower 54 bits.  Thus, bit operations are effectively limited
    to 54 bits.  All bitwise operators return NaN if given NaN arguments or
    bit-settings <= 0.

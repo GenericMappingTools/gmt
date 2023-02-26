@@ -258,7 +258,7 @@ Logarithmic projection
 We next will show how to do a basemap for a log–log plot.  We have
 no data set yet but we will
 imagine that the raw *x* data range from 3 to 9613 and that *y*
-ranges from 10^20 to 10^24.  One possibility is
+ranges from 10\ :sup:`20` to 10\ :sup:`24`.  One possibility is
 
 .. literalinclude:: /_verbatim/GMT_tut_2.txt
 

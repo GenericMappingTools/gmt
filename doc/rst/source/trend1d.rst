@@ -120,7 +120,7 @@ Optional Arguments
     Weights are supplied in input column 3. Do a weighted least squares
     fit [or start with these weights when doing the iterative robust
     fit]. Append **+s** to instead read data uncertainties (one sigma)
-    and create weights as 1/*sigma*\ ^2 [Default reads only the first 2 columns].
+    and create weights as 1/*sigma*\ :sup:`2` [Default reads only the first 2 columns].
 
 .. |Add_-bi| replace:: [Default is 2 (or 3 if |-W| is set) columns].
 .. include:: explain_-bi.rst_
@@ -209,7 +209,7 @@ To make the above linear trend robust with respect to outliers, use:
 
     gmt trend1d data.xy -Fxr -Np1+r > detrended_data.xy
 
-To fit the model y(x) = a + bx^2 + c * cos(2*pi*3*(x/l) + d * sin(2*pi*3*(x/l), with l the fundamental period (here l = 15), try:
+To fit the model y(x) = a + bx\ :sup:`2` + c * cos(2*pi*3*(x/l) + d * sin(2*pi*3*(x/l), with l the fundamental period (here l = 15), try:
 
    ::
 

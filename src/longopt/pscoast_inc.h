@@ -27,7 +27,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	{ 0, 'A', "area",
 	          "",                  "",
 	          "a,l,r,p",           "antarctica,lakes,riverlakes,percentexcl" },
-	{ 0, 'C', "lakes",
+	{ 0, 'C', "lakes|riverfill",
 	          "",                  "",
 	          "l,r",               "lakes,riverlakes" },
 	{ 0, 'D', "resolution",

@@ -124,11 +124,21 @@ struct API_META {	/* Items related to passing or not passing certain meta data f
 	bool ignore_remote_cpt;			/* true if we should not store the remote CPT associated with the origin of this grid */
 };
 
+struct GMT_JULIA_POCKET {
+	/* Hold some variables stored in the API struct that may be needed to be known in GMT.jl
+	   Ideally one would wrap the GMTAPI_CTRL struct but this gal is huge and there is no contract
+	   that it wont change in response to future needs.
+	*/
+	char *gwf_dir;			/* In API->gwf_dir. GMT WorkFlow dir (NULL if not running in modern mode). 4GMT.jl */
+	int col_type[2][64];	/* Type of column on input and output: Time, geographic, etc. 4GMT.jl */
+};
+
 struct GMTAPI_CTRL {
 	/* Master controller which holds all GMT API related information at run-time for a single session.
 	 * Users can run several GMT sessions concurrently; each session requires its own structure.
 	 * Use GMTAPI_Create_Session to initialize a new session and GMTAPI_Destroy_Session to end it. */
 
+	struct GMT_JULIA_POCKET jl_pocket;	/* For access from Julia. MUST be first member to ensure it can safely be wrapped. */
 	uint64_t current_rec[2];		/* Current record number >= 0 in the combined virtual dataset (in and out) */
 	unsigned int n_objects;			/* Number of currently active input and output data objects */
 	unsigned int unique_ID;			/* Used to create unique IDs for duration of session */

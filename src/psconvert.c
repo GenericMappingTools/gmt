@@ -737,7 +737,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"a 'w' in the file extension. So, if the output is tif (-Tt) the world "
 		"file is a .tfw, for jpeg a .jgw, and so on.  A few modifiers are available:");
 	GMT_Usage (API, 3, "+g Do a system call to gdal_translate and produce a true "
-		"eoTIFF image right away. The output file will have the extension "
+		"GeoTIFF image right away. The output file will have the extension "
 		".tiff. See the man page for other 'gotchas'. Automatically sets -A -P.");
 	GMT_Usage (API, 3, "+k Create a minimalist KML file that allows loading the "
 		"image in Google Earth. Note that for this option the image must be "
