@@ -76,6 +76,7 @@ struct GRDVIEW_CTRL {
 	struct GRDVIEW_G {	/* -G<drapefile> 1 or 3 times*/
 		bool active;
 		bool image;
+		bool is_mem_image;
 		unsigned int n;
 		char *file[3];
 	} G;
@@ -533,6 +534,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 			case 'z':	/* One image. This is an undocumented fake option but one that lets externals pass both images and grids for draping. */
+				Ctrl->G.is_mem_image = true;
 			case 'G':	/* One grid or image or three separate r,g,b grids */
 				Ctrl->G.active = true;
 				for (k = 0, n_commas = 0; opt->arg[k]; k++) if (opt->arg[k] == ',') n_commas++;
@@ -761,7 +763,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
 	if (Ctrl->G.active) {
-		if (gmt_M_file_is_image (Ctrl->G.file[0])) no_cpt = true;
+		if (gmt_M_file_is_image (Ctrl->G.file[0]) || Ctrl->G.is_mem_image) no_cpt = true;
 		if (no_cpt) Ctrl->Q.cpt = false;
 		if (Ctrl->G.n == 3)
 			Ctrl->G.image = true;
@@ -974,7 +976,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	t_reg = gmt_change_grdreg (GMT, Topo->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 
 	if (Ctrl->C.active) {
-		char *dataset_cpt = (Ctrl->G.active && Ctrl->G.n == 1 && !gmt_M_file_is_image (Ctrl->G.file[0])) ? Ctrl->G.file[0] : Ctrl->In.file;
+		char *dataset_cpt = (Ctrl->G.active && Ctrl->G.n == 1 && !gmt_M_file_is_image (Ctrl->G.file[0]) && !Ctrl->G.is_mem_image) ? Ctrl->G.file[0] : Ctrl->In.file;
 		char *cpt = gmt_cpt_default (API, Ctrl->C.file, dataset_cpt, Topo->header);
 		if ((P = gmt_get_palette (GMT, cpt, GMT_CPT_OPTIONAL, Topo->header->z_min, Topo->header->z_max, Ctrl->C.dz)) == NULL) {
 			Return (API->error);
@@ -989,7 +991,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P && P->n_colors > 1);
 
 	if (Ctrl->G.active) {	/* Draping wanted */
-		if (Ctrl->G.n == 1 && gmt_M_file_is_image (Ctrl->G.file[0])) {
+		if (Ctrl->G.n == 1 && gmt_M_file_is_image (Ctrl->G.file[0]) || Ctrl->G.is_mem_image) {
 			double inc[2];
 			/* Want to drape an image on top of surface.  Do so by converting the image to r, g, b grids */
 			struct GMT_IMAGE *I = NULL;
