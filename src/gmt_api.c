@@ -4761,10 +4761,20 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 			}
 			/* Here we will read the image data themselves. To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			   Otherwise we extract the entire file domain */
+			/* BUT WE HAVE A MESS SOMEWHERE.
+			   When doing a grdview drape (-G) in Modern mode GMT->common.R.active[RSET] arrives = true but it Classic it was false,
+			   so I had to set it to true in grdview (~# 884). However, having set to true means that gdalread would read it
+			   upside-down, so if image is not referenced GMT->common.R.active[RSET] is set to false.
+			   This is all a damn hack, but I couldn't find any other cleaner way to make it work for all the combinations of:
+			   Classic/Modern/Referenced/notReferenced. 
+			*/
 			if (have_CRS && (GMT->common.R.active[RSET] && !S_obj->region && !GMT->common.R.oblique)) { /* subregion not passed to object yet */
 				gmt_M_memcpy (S_obj->wesn, GMT->common.R.wesn, 4U, double);
 				S_obj->region = true;
 			}
+			else if (!have_CRS)
+				GMT->common.R.active[RSET] = false;
+
 			size = gmtapi_set_grdarray_size (GMT, I_obj->header, mode, S_obj->wesn);    /* Get array dimension only, which includes padding. DANGER DANGER JL*/
 			if (!I_obj->data) {	/* Array is not allocated yet, do so now. We only expect header (and possibly w/e/s/n subset) to have been set correctly */
 				if (I_obj->type <= GMT_UCHAR)

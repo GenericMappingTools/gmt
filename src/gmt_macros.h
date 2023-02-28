@@ -219,7 +219,7 @@
 #define gmt_M_file_is_netcdf_layer(file) (gmt_M_file_is_netcdf(file) && (strchr (file, '(') || strchr (file, '[')))
 
 /*! Determine if file is an image GDAL can read */
-#define gmt_M_file_is_image(file) (file != NULL && (strstr (file, "@GMTAPI@") || strstr (file, "=gd") || strstr (file, ".jpg") || strstr (file, ".png") || strstr (file, ".ppm") || strstr (file, ".tif") || strstr (file, ".bmp") || strstr (file, ".gif")))
+#define gmt_M_file_is_image(file) (file != NULL && (strstr (file, "=gd") || strstr (file, ".jpg") || strstr (file, ".png") || strstr (file, ".ppm") || strstr (file, ".tif") || strstr (file, ".bmp") || strstr (file, ".gif")))
 
 /*! Set the correct column mode (trailing vs no trailing text) based on the given string is NULL or not */
 #define gmt_M_colmode(text) ((text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)
