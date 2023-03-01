@@ -17,7 +17,7 @@ Synopsis
 [ |-E| ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
-[ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] \|\ [**-T**\ *file*\|\ *list*]]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] \| [**-T**\ *file*\|\ *list*]]
 [ |SYN_OPT-V| ]
 [ |-W|\ *col* ]
 [ |SYN_OPT-b| ]
@@ -117,7 +117,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] \|\ [**-T**\ *file*\|\ *list*]
+**-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] \| [**-T**\ *file*\|\ *list*]
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     The form **-T**\ *list* means a online list of *time* coordinates like for example: **-T**\ *13,15,16,22.5*.
     For details on array creation, see `Generate 1-D Array`_. **Note**: For resampling of spatial
@@ -215,7 +215,7 @@ intervals using Akima's spline, use::
 
     gmt sample1d profiles.tdgmb -N1 -Fa -T1 > profiles_equi_d.tdgmb
 
-To resample the file depths.dt at positions listed in the file
+To resample the file depths.txt at positions listed in the file
 grav_pos.dg, using a cubic spline for the interpolation, use::
 
     gmt sample1d depths.txt -Tgrav_pos.dg -Fc > new_depths.txt
