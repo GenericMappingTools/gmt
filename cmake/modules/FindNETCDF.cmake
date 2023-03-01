@@ -189,7 +189,7 @@ endif()
 mark_as_advanced(NETCDF_LIBRARY NETCDF_INCLUDE_DIR)
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (NetCDF
+find_package_handle_standard_args (NETCDF
                                    FOUND_VAR NETCDF_FOUND
                                    REQUIRED_VARS NETCDF_LIBRARY NETCDF_INCLUDE_DIR
                                    VERSION_VAR NETCDF_VERSION
