@@ -7818,14 +7818,7 @@ uint64_t gmtlib_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double l
 	int n_try, pos;
 	bool keep_trying;
 	double dlon, dlon0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
-#if 0
-		if (!gmt_M_is_dnan (GMT->current.proj.central_meridian)) {
-			if (lon1 > GMT->current.proj.central_meridian)
-				lon1 -= 360.0,	lon2 -= 360.0;
-			else if (GMT->common.R.wesn[XHI] < GMT->current.proj.central_meridian)
-				lon1 += 360.0,	lon2 = 360.0;
-		}
-#endif
+
 	if (GMT->current.map.parallel_straight == 2) {	/* Special non-sampling for gmtselect/grdlandmask */
 		gmt_M_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
 		tlat[0] = tlat[1] = lat;
