@@ -8654,7 +8654,6 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 			case GMT_AZ_EQDIST:
 			case GMT_ALBERS:
 			case GMT_ECONIC:
-			case GMT_VANGRINTEN:
 				np = (GMT->current.proj.polar && (GMT->common.R.wesn[YLO] <= -90.0 || GMT->common.R.wesn[YHI] >= 90.0)) ? GMT->current.map.n_lon_nodes + 2: 2 * (GMT->current.map.n_lon_nodes + 1);
 				break;
 			case GMT_MOLLWEIDE:
@@ -8666,6 +8665,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 			case GMT_HAMMER:
 			case GMT_ECKERT4:
 			case GMT_ECKERT6:
+			case GMT_VANGRINTEN:
 				np = 2 * GMT->current.map.n_lat_nodes + 2;
 				if (GMT->common.R.wesn[YLO] != -90.0) np += GMT->current.map.n_lon_nodes - 1;
 				if (GMT->common.R.wesn[YHI] != 90.0) np += GMT->current.map.n_lon_nodes - 1;
@@ -8769,9 +8769,6 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 			case GMT_GENPER:
 				gmtlib_genper_map_clip_path (GMT, np, work_x, work_y);
 				break;
-			case GMT_VANGRINTEN:
-				do_circle = GMT->current.map.is_world;
-				/* Intentionally fall through */
 			case GMT_LAMB_AZ_EQ:
 			case GMT_AZ_EQDIST:
 			case GMT_ORTHO:
@@ -8825,6 +8822,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 			case GMT_WINKEL:
 			case GMT_ECKERT4:
 			case GMT_ECKERT6:
+			case GMT_VANGRINTEN:
 				for (i = j = 0; i <= GMT->current.map.n_lat_nodes; i++, j++) {	/* Right */
 					lat = (i == GMT->current.map.n_lat_nodes) ? GMT->common.R.wesn[YHI] : GMT->common.R.wesn[YLO] + i * GMT->current.map.dlat;
 					gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], lat, &work_x[j], &work_y[j]);
