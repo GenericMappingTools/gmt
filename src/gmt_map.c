@@ -4528,6 +4528,14 @@ GMT_LOCAL int gmtmap_init_grinten (struct GMT_CTRL *GMT, bool *search) {
 	}
 	else {
 		double x, y, dummy = 0.0;
+		/* Try to arrange longitudes relative to central meridian if it has been set */
+		if (!gmt_M_is_dnan (GMT->current.proj.central_meridian)) {
+			if (GMT->common.R.wesn[XLO] >= GMT->current.proj.central_meridian)
+				GMT->common.R.wesn[XLO] -= 360.0,	GMT->common.R.wesn[XHI] -= 360.0;
+			else if (GMT->common.R.wesn[XHI] <= GMT->current.proj.central_meridian)
+				GMT->common.R.wesn[XLO] += 360.0,	GMT->common.R.wesn[XHI] = 360.0;
+		}
+
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
 		x = (fabs (GMT->common.R.wesn[XLO] - GMT->current.proj.central_meridian) > fabs (GMT->common.R.wesn[XHI] - GMT->current.proj.central_meridian)) ? GMT->common.R.wesn[XLO] : GMT->common.R.wesn[XHI];
 		gmtproj_grinten (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
@@ -7789,7 +7797,14 @@ uint64_t gmtlib_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double l
 	int n_try, pos;
 	bool keep_trying;
 	double dlon, dlon0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
-
+#if 0
+		if (!gmt_M_is_dnan (GMT->current.proj.central_meridian)) {
+			if (lon1 > GMT->current.proj.central_meridian)
+				lon1 -= 360.0,	lon2 -= 360.0;
+			else if (GMT->common.R.wesn[XHI] < GMT->current.proj.central_meridian)
+				lon1 += 360.0,	lon2 = 360.0;
+		}
+#endif
 	if (GMT->current.map.parallel_straight == 2) {	/* Special non-sampling for gmtselect/grdlandmask */
 		gmt_M_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
 		tlat[0] = tlat[1] = lat;

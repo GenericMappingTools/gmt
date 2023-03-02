@@ -3002,6 +3002,13 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 	if (GMT->current.map.frame.order == GMT_BASEMAP_AFTER  && !(GMT->current.map.frame.basemap_flag & GMT_BASEMAP_FRAME_AFTER)) return;	/* Wrong order */
 
 	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
+        /* Try to arrange longitudes relative to central meridian if it has been set */
+        if (!gmt_M_is_dnan (GMT->current.proj.central_meridian)) {
+            if (w > GMT->current.proj.central_meridian)
+                w -= 360.0,   e -= 360.0;
+            else if (GMT->common.R.wesn[XHI] < GMT->current.proj.central_meridian)
+                w += 360.0,   e = 360.0;
+        }
 
 	PSL_comment (PSL, "Start of map frame\n");
 
