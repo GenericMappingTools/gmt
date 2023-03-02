@@ -35,24 +35,25 @@
 #	include <fftw3.h>
 #endif
 
-/* LOCAL FUNCTIONS USED BY GMT_*.C ONLY - NOT PART OF GMT_DEV.H DISTRIBUTION */
+/* LOCAL FUNCTIONS USED BY gmt_*.c ONLY - NOT PART OF gmt_dev.h exported functions */
 
 /*--------------------------------------------------------------------
  *			GMT XINGS STRUCTURE DEFINITION
  *--------------------------------------------------------------------*/
 
 struct GMT_XINGS {
-        double lon[2], lat[2];    /* Geographic coordinates of intersection with map boundary */
-        double xx[2], yy[2];    /* Cartesian coordinates of intersection with map boundary */
-        double angle[2];        /* Angles of intersection */
-        unsigned int sides[2];	/* Side id of intersection */
-        unsigned int nx;	/* Number of intersections (1 or 2) */
+	double lon[2], lat[2];	/* Geographic coordinates of intersection with map boundary */
+	double xx[2], yy[2];	/* Cartesian coordinates of intersection with map boundary */
+	double angle[2];	/* Angles of intersection */
+	unsigned int sides[2];	/* Side id of intersection */
+	unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
 #if defined (WIN32) /* Use Windows API */
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC int gmtlib_adjust_we_if_central_lon_set (struct GMT_CTRL *GMT, double *west, double *east);
 EXTERN_MSC int gmtlib_colon_pos (struct GMT_CTRL *GMT, char *text);
 EXTERN_MSC bool gmtlib_invalid_symbolname (struct GMT_CTRL *GMT, char *name);
 EXTERN_MSC void gmtlib_terminate_session ();
