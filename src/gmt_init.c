@@ -18529,7 +18529,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 #endif
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 	/* Set all I/O to binary mode */
 	if ( _setmode(_fileno(stdin), _O_BINARY) == -1 ) {
 		if (API->external)
@@ -18555,6 +18555,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 			return NULL;
 		}
 	}
+#ifdef _MSC_VER
 	if ( _set_fmode(_O_BINARY) != 0 ) {
 		if (API->external)
 			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for file I/O. This may no be a fatal error but...\n");
@@ -18563,6 +18564,9 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 			return NULL;
 		}
 	}
+#else
+	_fmode = _O_BINARY;
+#endif
 #endif
 
 	if ((GMT = gmtinit_new_GMT_ctrl (API, session, pad)) == NULL)	/* Allocate and initialize a new common control structure */
