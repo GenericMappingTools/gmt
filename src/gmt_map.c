@@ -210,6 +210,29 @@ GMT_LOCAL double gmtmap_get_angle (struct GMT_CTRL *GMT, double lon1, double lat
 	return (direction);
 }
 
+int gmtlib_adjust_we_if_central_lon_set (struct GMT_CTRL *GMT, double *west, double *east) {
+	/* Try to arrange longitudes relative to central meridian if it has been set */
+	int way = 0;	/* Default is no change */
+
+	if (gmt_M_is_cartesian (GMT, GMT_IN)) return way;	/* Adjustment is only sensible for geographic limits */
+
+	if (gmt_M_is_dnan (GMT->current.proj.central_meridian)) return way;	/* Not set yet so nothing to consider */
+
+	/* Here we may consider various cases - for now just a general case */
+
+	if (*west >= GMT->current.proj.central_meridian) {
+		*west -= 360.0;
+		*east -= 360.0;
+		way = -1;	/* We shifted westwards */
+	}
+	else if (GMT->common.R.wesn[XHI] <= GMT->current.proj.central_meridian) {
+		*west += 360.0;
+		*east += 360.0;
+		way = +1;	/* We shifted eastwards */
+	}
+
+	return (way);
+}
 
 /*! . */
 double gmtlib_left_boundary (struct GMT_CTRL *GMT, double y) {
@@ -4527,7 +4550,13 @@ GMT_LOCAL int gmtmap_init_grinten (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.frame.check_side = true;
 	}
 	else {
+		int way;
 		double x, y, dummy = 0.0;
+
+		/* Try to arrange longitudes relative to central meridian if it has been set */
+		if ((way = gmtlib_adjust_we_if_central_lon_set (GMT, &(GMT->common.R.wesn[XLO]), &(GMT->common.R.wesn[XHI]))))
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "W/E boundaries shifted by %d\n", way * 360);
+
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
 		x = (fabs (GMT->common.R.wesn[XLO] - GMT->current.proj.central_meridian) > fabs (GMT->common.R.wesn[XHI] - GMT->current.proj.central_meridian)) ? GMT->common.R.wesn[XLO] : GMT->common.R.wesn[XHI];
 		gmtproj_grinten (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
