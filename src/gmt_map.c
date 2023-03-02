@@ -8818,13 +8818,11 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 					gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO] + (i-1) * GMT->current.map.dlat, &work_x[j], &work_y[j]);
 				}
 				break;
-			case GMT_VANGRINTEN:
-				//do_circle = GMT->current.map.is_world;
-				/* Intentionally fall through */
 			case GMT_HAMMER:
 			case GMT_WINKEL:
 			case GMT_ECKERT4:
 			case GMT_ECKERT6:
+			case GMT_VANGRINTEN:
 				for (i = j = 0; i <= GMT->current.map.n_lat_nodes; i++, j++) {	/* Right */
 					lat = (i == GMT->current.map.n_lat_nodes) ? GMT->common.R.wesn[YHI] : GMT->common.R.wesn[YLO] + i * GMT->current.map.dlat;
 					gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], lat, &work_x[j], &work_y[j]);
