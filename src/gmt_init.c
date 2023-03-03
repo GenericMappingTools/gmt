@@ -419,7 +419,7 @@ static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
  /* Local functions */
 
 #if defined (WIN32) /* Use Windows API */
-#include <Windows.h>
+#include <windows.h>
 
 /*! . */
 bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd) {

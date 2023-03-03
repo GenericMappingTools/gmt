@@ -86,7 +86,7 @@
 #ifndef WIN32
 #include <glob.h>
 #else
-#include <Windows.h>
+#include <windows.h>
 #include <tchar.h>
 #endif
 
