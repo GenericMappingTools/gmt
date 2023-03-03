@@ -220,12 +220,12 @@ int gmtlib_adjust_we_if_central_lon_set (struct GMT_CTRL *GMT, double *west, dou
 
 	/* Here we may consider various cases - for now just a general case */
 
-	if (*west >= GMT->current.proj.central_meridian) {
+	if (*west > GMT->current.proj.central_meridian) {
 		*west -= 360.0;
 		*east -= 360.0;
 		way = -1;	/* We shifted westwards */
 	}
-	else if (GMT->common.R.wesn[XHI] <= GMT->current.proj.central_meridian) {
+	else if (*east < GMT->current.proj.central_meridian) {
 		*west += 360.0;
 		*east += 360.0;
 		way = +1;	/* We shifted eastwards */
