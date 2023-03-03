@@ -949,7 +949,7 @@ free_and_return:
 
 /* Function to get PPID under Windows is a bit different */
 #ifdef _WIN32
-#include <TlHelp32.h>
+#include <tlhelp32.h>
 GMT_LOCAL int gmtapi_winppid (int pidin) {
 	/* If pidin == 0 get the PPID of current process
 	   otherwise, get the PPID of pidin process
