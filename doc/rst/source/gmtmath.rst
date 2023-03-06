@@ -333,7 +333,7 @@ and output arguments.
   **NORM**        1 1     Normalize (A) so min(A) = 0 and max(A) = 1                                                  Probability        
   **NOT**         1 1     NaN ia A is equal NaN, 1 if A is equal to 0, else 0                                         Logic              
   **NRAND**       2 1     Normal, random values with mean A and std. deviation B                                      Probability        
-  **OR**          2 1     NaN if B equls NaN, else A                                                                  Logic              
+  **OR**          2 1     NaN if B equals NaN, else A                                                                 Logic              
   **PCDF**        2 1     Poisson cumulative distribution function for x = A and lambda = B                           Probability        
   **PERM**        2 1     Permutations n_P_r, with n = A and r = B                                                    Probability        
   **PLM**         3 1     Associated Legendre polynomial P(A) degree B order C                                        Special Functions  
