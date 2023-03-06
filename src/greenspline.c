@@ -141,11 +141,9 @@ struct GREENSPLINE_CTRL {
 		bool active;
 		int mode;	/* Can be negative */
 	} Z;
-#ifdef DEBUG
 	struct GREENSPLINE_DEBUG {	/* -/ undocumented debugging option to dump A | b matrix */
 		bool active;
 	} debug;
-#endif
 };
 
 enum Greenspline_modes {	/* Various integer mode flags */
@@ -203,9 +201,7 @@ struct GREENSPLINE_LOOKUP {	/* Used to spline interpolation of precalculated fun
 	double *A, *B, *C;	/* power/ratios of order l terms */
 };
 
-#ifdef DEBUG
-static bool TEST = false;	/* Global variable used for undocumented testing [under -DDEBUG only; see -+ hidden option] */
-#endif
+static bool TEST = false;	/* Global variable used for undocumented testing; see -+/ hidden options] */
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GREENSPLINE_CTRL *C;
@@ -738,14 +734,15 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.mode = atoi (opt->arg);	/* Since I added 0 to be 1-D later so now this is mode -1 */
 				break;
-#ifdef DEBUG
+
+			/* Two undocumented test options for Green's function debug output */
 			case '/':	/* Dump matrices */
 				Ctrl->debug.active = true;
 				break;
 			case '+':	/* Turn on TEST mode */
 				TEST = true;
 				break;
-#endif
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_option_error (GMT, opt);
 				break;
@@ -802,11 +799,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.history && dimension != 2, "The -C +c+i modifiers only apply to 2-D gridding\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.history && strchr (Ctrl->G.file, '%') == NULL && strchr (Ctrl->G.file, '.') == NULL, "Option -G: When -C +i|c is used your grid file must have an extension\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.history && Ctrl->E.active && Ctrl->E.mode == 0, "Option -E: When -C +i|c is used you must supply a file via -E\n");
-#ifdef DEBUG
 	n_errors += gmt_M_check_condition (GMT, !TEST && !Ctrl->N.active && Ctrl->R3.dimension != dimension, "The -R and -Z options disagree on the dimension\n");
-#else
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && Ctrl->R3.dimension != dimension, "The -R and -Z options disagree on the dimension\n");
-#endif
 	n_errors += gmt_check_binary_io (GMT, dimension + 1);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && dimension == 1 && !gmt_M_is_dnan (Ctrl->Q.az), "Option -Q: No argument expected for 1-D derivative\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && dimension > 1 && gmt_M_is_dnan (Ctrl->Q.az), "Option -Q: Must append azimuth (2-D) or x/y/z components (3-D)\n");
@@ -825,8 +818,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-#ifdef DEBUG
-/* Dump a table of x, G, dGdx for test purposes [requires option -+ and compilation with -DDEBUG]  */
+/* Dump a table of x, G, dGdx for test purposes [requires option -+]  */
 GMT_LOCAL void greenspline_dump_green (struct GMT_CTRL *GMT, double (*G) (struct GMT_CTRL *, double, double *, struct GREENSPLINE_LOOKUP *), double (*D) (struct GMT_CTRL *, double, double *, struct GREENSPLINE_LOOKUP *), double par[], double x0, double x1, int N, struct GREENSPLINE_LOOKUP *Lz, struct GREENSPLINE_LOOKUP *Lg) {
 	int i;
 	double x, dx, dy, y, t, ry, rdy;
@@ -856,7 +848,6 @@ GMT_LOCAL void greenspline_dump_green (struct GMT_CTRL *GMT, double (*G) (struct
 		printf ("%g\t%g\t%g\t%g\n", x, (y - min_y) / ry, dy, t);
 	}
 }
-#endif
 
 /* Below are all the individual Green's functions.  Note that most of them take an argument
  * that is unused except in the spline lookup version of WB_08. */
@@ -1449,9 +1440,7 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 	uint64_t i;
 	double d, min = DBL_MAX, max = -DBL_MAX;
 	char *type[4] = {"Remove mean\n", "Normalization mode: Remove %d-D linear trend\n", "Remove mean and normalize data\n", "Normalization mode: Remove %d-D linear trend and normalize data\n"};
-#ifdef DEBUG
 	if (mode == 0) return;	/* Do nothing under specific debug situation */
-#endif
 	gmt_M_memset (coeff, GSP_LENGTH, double);
 	if (mode % 2)
 		GMT_Report (API, GMT_MSG_INFORMATION, type[mode], dim);
@@ -1625,9 +1614,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL, *orig_obs = NULL;
 	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad;
 	double *A = NULL, *A_orig = NULL, r_min, r_max, err_sum = 0.0, var_sum = 0.0;
-#ifdef DEBUG
 	double x0 = 0.0, x1 = 5.0;
-#endif
 
 	FILE *fp = NULL;
 
@@ -2178,8 +2165,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			dGdr = &greenspline_grad_spline2d_Wessel_Bercovici;
 			break;
 		case WESSEL_BERCOVICI_1998_3D:
-			if (Ctrl->S.value[1] == 0.0 && Grid->header->inc[GMT_X] > 0.0)
-				Ctrl->S.value[1] = (Grid->header->inc[GMT_X] + Grid->header->inc[GMT_Y] + Cube->z_inc) / 3.0;
+			if (Ctrl->S.value[1] == 0.0 && Cube->header->inc[GMT_X] > 0.0)
+				Ctrl->S.value[1] = (Cube->header->inc[GMT_X] + Cube->header->inc[GMT_Y] + Cube->z_inc) / 3.0;
 			if (Ctrl->S.value[1] == 0.0) Ctrl->S.value[1] = 1.0;
 			par[0] = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0])) / Ctrl->S.value[1];
 			par[1] = 2.0 / par[0];
@@ -2210,20 +2197,15 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			par[0] = 6.0 / (M_PI*M_PI);
 			G = &greenspline_spline2d_Parker;
 			dGdr = &greenspline_grad_spline2d_Parker;
-#ifdef DEBUG
 			if (TEST) x0 = -1.0, x1 = 1.0;
-#endif
 			break;
 		case WESSEL_BECKER_2008:
 			par[0] = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0]));	/* The p value */
 			par[1] = Ctrl->S.value[2];	/* The truncation error */
 			par[2] = -log (2.0) + (par[0]*par[0] - 1.0) / (par[0]*par[0]);	/* Precalculate the constant for the l = 0 term here */
 			Lz = gmt_M_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
-#ifdef DEBUG
 			if (TEST) Lg = gmt_M_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
-			else
-#endif
-			if (Ctrl->A.active) Lg = gmt_M_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
+			else if (Ctrl->A.active) Lg = gmt_M_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
 			L_Max = greenspline_get_max_L (GMT, par[0], par[1]);
 			GMT_Report (API, GMT_MSG_DEBUG, "New scheme p = %g, err = %g, L_Max = %u\n", par[0], par[1], L_Max);
 			greenspline_series_prepare (GMT, par[0], L_Max, Lz, Lg);
@@ -2239,24 +2221,23 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			greenspline_spline2d_Wessel_Becker_init (GMT, par, Lz, Lg);
 			G = &greenspline_spline2d_Wessel_Becker_lookup;
 			dGdr = &greenspline_grad_spline2d_Wessel_Becker_lookup;
-#ifdef DEBUG
 			if (TEST) x0 = -1.0, x1 = 1.0;
-#endif
 			break;
 	}
 
-#ifdef DEBUG
 	if (TEST) {
 		GMT_Report (API, GMT_MSG_WARNING, "greenspline running in TEST mode for %s\n", method[Ctrl->S.mode]);
 		printf ("# %s\n#x\tG\tdG/dx\tt\n", method[Ctrl->S.mode]);
 		greenspline_dump_green (GMT, G, dGdr, par, x0, x1, 10001, Lz, Lg);
-		gmt_free_grid (GMT, &Grid, dimension == 2);
+		if (dimension == 1) {
+			gmt_free_grid (GMT, &Grid, false);
+			gmt_M_free (GMT, data);
+		}
 		for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
 		greenspline_free_lookup (GMT, &Lz, 0);
 		greenspline_free_lookup (GMT, &Lg, 1);
 		Return (0);
 	}
-#endif
 
 	if (dimension == 1) gmt_increase_abstime_format_precision (GMT, GMT_X, Ctrl->I.inc[GMT_X]);	/* In case we need more sub-second precision output */
 
@@ -2334,9 +2315,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 	}
 
-#ifdef DEBUG
 	if (Ctrl->debug.active) greenspline_dump_system (A, obs, nm, "A Matrix row || obs");	/* Dump the A | b system under debug */
-#endif
+
 	if (Ctrl->E.active && Ctrl->C.history == GMT_SVD_NO_HISTORY) {	/* Needed A to evaluate misfit later as predict = A_orig * x */
 		A_orig = gmt_M_memory (GMT, NULL, nm * nm, double);
 		gmt_M_memcpy (A_orig, A, nm * nm, double);
@@ -2384,9 +2364,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		/* Now free A, AtS and obs and let "A" be N and "obs" be r; these are the weighted normal equations */
 		gmt_M_free (GMT, A);	gmt_M_free (GMT, AtS);	gmt_M_free (GMT, obs);
 		A = At;	obs = S;
-#ifdef DEBUG
 		if (Ctrl->debug.active) greenspline_dump_system (A, obs, nm, "Normal equation N row || r");
-#endif
 	}
 
 	if (Ctrl->C.active) {		/* Solve using SVD */
