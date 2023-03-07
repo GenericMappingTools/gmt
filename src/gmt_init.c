@@ -1190,7 +1190,7 @@ GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
 			GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = 'r'; break;
 	}
 	if (GMT->current.setting.run_mode == GMT_MODERN && strchr ("cf", GMT->common.Y.mode)) {	/* Modern mode: Disallow -Yc|f */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Centered (-Yc) and fixed (-Tf) shifts are not available in modern mode\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Centered (-Yc) and fixed (-Yf) shifts are not available in modern mode\n");
 		return (GMT_PARSE_ERROR);
 	}
 	if (text[i]) {	/* Gave some argument */
