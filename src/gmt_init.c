@@ -7754,6 +7754,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"adjustment of origin, prepend f to position relative to lower left corner of page, "
 				"prepend c for offset of center of plot to center of page. "
 				"For overlays (-O), the default setting is [r0], otherwise [f%g%c].", GMT->current.setting.map_origin[GMT_Y] * s, u);
+			GMT_Usage (API, -2, "Note: Under modern mode only directives r and a are available.");
 			break;
 
 		case 'x':	/* Just linear -Jx|X allowed for this program */
