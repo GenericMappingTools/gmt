@@ -375,7 +375,7 @@ set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
 
 set (GMT_MBSYSTEM_SRCS gmt_mbsystem_glue.c)
 
-AUX_SOURCE_DIRECTORY (longopt GMT_LONG_OPT_H) 
+AUX_SOURCE_DIRECTORY (longopt GMT_LONG_OPT_H)
 
 # libgmt
 set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
@@ -534,7 +534,7 @@ endif (HAVE_DLADDR AND HAVE_LIBDL)
 
 if ((MSVC OR MINGW) AND FFTW3_FOUND)
 	target_link_libraries (gmtlib ws2_32)
-endif (MSVC AND FFTW3_FOUND)
+endif ((MSVC OR MINGW) AND FFTW3_FOUND)
 
 # set the build version (VERSION) and the API version (SOVERSION)
 set_target_properties (gmtlib
