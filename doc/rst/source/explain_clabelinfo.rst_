@@ -18,7 +18,8 @@
        is in effect, then turning off clipping with **clip -C** which
        finally plots the original text. Note that the clip path may 
        truncate other regions where there is no text overlap. Double check 
-       to ensure the correct result is obtained as expected.
+       to ensure the correct result is obtained as expected. Carefully selecting 
+       the right place to run **clip** manually after each use of **+e** is recommended.
 
     **+f**\ *font*
        Sets the desired font [Default :term:`FONT_ANNOT_PRIMARY` with its
