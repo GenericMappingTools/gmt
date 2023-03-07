@@ -43,7 +43,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdview"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create 3-D perspective image or surface mesh from a grid"
-#define THIS_MODULE_KEYS	"<G{,CC(,GG(,IG(,>X}"
+#define THIS_MODULE_KEYS	"<G{,CC(,GG(,zI(,IG(,>X}"
 #define THIS_MODULE_NEEDS	"Jg"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Ec")
 
@@ -532,6 +532,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
+			case 'z':	/* One image. This is an undocumented fake option but one that lets externals pass both images and grids for draping. */
 			case 'G':	/* One grid or image or three separate r,g,b grids */
 				Ctrl->G.active = true;
 				for (k = 0, n_commas = 0; opt->arg[k]; k++) if (opt->arg[k] == ',') n_commas++;
@@ -761,6 +762,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 
 	if (Ctrl->G.active) {
 		if (gmt_M_file_is_image (Ctrl->G.file[0])) no_cpt = true;
+		if (no_cpt) Ctrl->Q.cpt = false;
 		if (Ctrl->G.n == 3)
 			Ctrl->G.image = true;
 	}
@@ -877,8 +879,10 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 	/* Determine what wesn to pass to map_setup */
 
-	if (!GMT->common.R.active[RSET])	/* No -R, use grid region */
-		gmt_set_R_from_grd (GMT, Topo->header);
+	if (!GMT->common.R.active[RSET]) {			/* No -R, use grid region */
+		gmt_set_R_from_grd(GMT, Topo->header);
+		GMT->common.R.active[RSET] = true;		/* Needed to have gmtapi_import_image pick the right branch when draping image is referenced */
+	}
 
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
 

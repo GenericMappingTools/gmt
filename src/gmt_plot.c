@@ -2992,6 +2992,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 }
 
 GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
+    int way;
 	double w, e, s, n;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
@@ -3002,6 +3003,10 @@ GMT_LOCAL void gmtplot_map_boundary (struct GMT_CTRL *GMT) {
 	if (GMT->current.map.frame.order == GMT_BASEMAP_AFTER  && !(GMT->current.map.frame.basemap_flag & GMT_BASEMAP_FRAME_AFTER)) return;	/* Wrong order */
 
 	w = GMT->common.R.wesn[XLO], e = GMT->common.R.wesn[XHI], s = GMT->common.R.wesn[YLO], n = GMT->common.R.wesn[YHI];
+
+	/* Try to arrange longitudes relative to central meridian if it has been set */
+	if ((way = gmtlib_adjust_we_if_central_lon_set (GMT, &w, &e)))
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "W/E boundaries shifted by %d\n", way * 360);
 
 	PSL_comment (PSL, "Start of map frame\n");
 

@@ -130,7 +130,7 @@ Optional Arguments
     several runs, etc. Use |-W| for weighted i/o, **-Wi** for weighted
     input only, and **-Wo** for weighted output only [Default uses
     unweighted i/o]. If your weights are actually uncertainties (one sigma)
-    then append **+s** and we compute weight = 1/sigma^2.  Otherwise (or
+    then append **+s** and we compute weight = 1/sigma\ :sup:`2`.  Otherwise (or
     via **+w**) we use the weights directly.
 
 .. include:: explain_-aspatial.rst_

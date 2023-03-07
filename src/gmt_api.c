@@ -949,7 +949,7 @@ free_and_return:
 
 /* Function to get PPID under Windows is a bit different */
 #ifdef _WIN32
-#include <TlHelp32.h>
+#include <tlhelp32.h>
 GMT_LOCAL int gmtapi_winppid (int pidin) {
 	/* If pidin == 0 get the PPID of current process
 	   otherwise, get the PPID of pidin process
@@ -4702,7 +4702,7 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 	 */
 
 	int item, new_item, new_ID;
-	bool done = true, via = false, must_be_image = true, no_index = false, bc_not_set = true, new = false;
+	bool done = true, via = false, must_be_image = true, no_index = false, bc_not_set = true, new = false, have_CRS = false;
 	uint64_t ij, ij_orig;
 	openmp_int row, col, i0, i1, j0, j1;
 	unsigned int both_set = (GMT_CONTAINER_ONLY | GMT_DATA_ONLY);
@@ -4757,14 +4757,24 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 					return_null (API, GMT_IMAGE_READ_ERROR);
 				}
 				if (mode & GMT_CONTAINER_ONLY) break;	/* Just needed the header, get out of here */
+				have_CRS = (I_obj->header->ProjRefPROJ4 || I_obj->header->ProjRefWKT || I_obj->header->ProjRefEPSG != 0) ? true : false;
 			}
-			/* Here we will read the image data themselves. */
-			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
-			 * Otherwise we extract the entire file domain */
-			if (GMT->common.R.active[RSET] && !S_obj->region && !GMT->common.R.oblique) { /* subregion not passed to object yet */
+			/* Here we will read the image data themselves. To get a subset we use wesn that is not NULL or contain 0/0/0/0.
+			   Otherwise we extract the entire file domain */
+			/* BUT WE HAVE A MESS SOMEWHERE.
+			   When doing a grdview drape (-G) in Modern mode GMT->common.R.active[RSET] arrives = true but it Classic it was false,
+			   so I had to set it to true in grdview (~# 884). However, having set to true means that gdalread would read it
+			   upside-down, so if image is not referenced GMT->common.R.active[RSET] is set to false.
+			   This is all a damn hack, but I couldn't find any other cleaner way to make it work for all the combinations of:
+			   Classic/Modern/Referenced/notReferenced. 
+			*/
+			if (have_CRS && (GMT->common.R.active[RSET] && !S_obj->region && !GMT->common.R.oblique)) { /* subregion not passed to object yet */
 				gmt_M_memcpy (S_obj->wesn, GMT->common.R.wesn, 4U, double);
 				S_obj->region = true;
 			}
+			else if (!have_CRS)
+				GMT->common.R.active[RSET] = false;
+
 			size = gmtapi_set_grdarray_size (GMT, I_obj->header, mode, S_obj->wesn);    /* Get array dimension only, which includes padding. DANGER DANGER JL*/
 			if (!I_obj->data) {	/* Array is not allocated yet, do so now. We only expect header (and possibly w/e/s/n subset) to have been set correctly */
 				if (I_obj->type <= GMT_UCHAR)
@@ -4789,8 +4799,7 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 			GMT_Report (API, GMT_MSG_INFORMATION, "Reading image from file %s\n", S_obj->filename);
 			if (gmtapi_import_ppm (GMT, S_obj->filename, I_obj) == GMT_NOERROR)
 				d = 0.0;	/* Placeholder only */
-			else if (gmt_M_err_pass (GMT, gmtlib_read_image (GMT, S_obj->filename, I_obj, S_obj->wesn,
-				I_obj->header->pad, mode), S_obj->filename))
+			else if (gmt_M_err_pass (GMT, gmtlib_read_image (GMT, S_obj->filename, I_obj, S_obj->wesn, I_obj->header->pad, mode), S_obj->filename))
 				return_null (API, GMT_IMAGE_READ_ERROR);
 			if (I_obj->n_indexed_colors == 0) {	/* May set the BCs */
 				if (gmt_M_err_pass (GMT, gmtlib_image_BC_set (GMT, I_obj), S_obj->filename))

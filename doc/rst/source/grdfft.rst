@@ -226,7 +226,9 @@ Examples
 .. include:: explain_example.rst_
 
 To obtain the normalized radial spectrum from the remote data grid @white_noise.nc,
-after removing the mean, let us try::
+after removing the mean, let us try:
+
+   ::
 
     gmt grdfft @white_noise.nc -Er+n -N+a > spectrum.txt
 
@@ -254,18 +256,24 @@ and finally scale radians to micro-radians:
     gmt grdfft faa.nc -Ig -A38 -S1e6 -V -Gdefl_38.nc
 
 Second vertical derivatives of gravity anomalies are related to the
-curvature of the field. We can compute these as mGal/m^2 by::
+curvature of the field. We can compute these as mGal/m\ :sup:`2` by:
+
+   ::
 
     gmt grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc
 
 To compute cross-spectral estimates for co-registered bathymetry and
-gravity grids, and report result as functions of wavelengths in km, try::
+gravity grids, and report result as functions of wavelengths in km, try:
+
+   ::
 
     gmt grdfft bathymetry.nc gravity.grd -E+wk -fg -V > cross_spectra.txt
 
 To examine the pre-FFT grid after detrending, point-symmetry reflection,
 and tapering has been applied, as well as saving the real and imaginary
-components of the raw spectrum of the data in topo.nc, try::
+components of the raw spectrum of the data in topo.nc, try:
+
+   ::
 
     gmt grdfft topo.nc -N+w+z -fg -V -Q
 

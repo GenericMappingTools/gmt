@@ -419,7 +419,7 @@ static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
  /* Local functions */
 
 #if defined (WIN32) /* Use Windows API */
-#include <Windows.h>
+#include <windows.h>
 
 /*! . */
 bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd) {
@@ -5249,7 +5249,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	gmt_M_memset (l_pos, 3, int);	gmt_M_memset (p_pos, 3, int);
 	gmt_M_memset (t_pos, 3, int);	gmt_M_memset (d_pos, 3, int);
 	if (!GMT->common.J.active)	/* Down want to clobber this during -Jz/Z after the horizontal part has been set */
-		GMT->current.proj.lon0 = GMT->current.proj.lat0 = GMT->session.d_NaN;	/* Projection center, to be set via -J */
+		GMT->current.proj.lon0 = GMT->current.proj.central_meridian = GMT->current.proj.lat0 = GMT->session.d_NaN;	/* Projection center, to be set via -J */
 
 	project = gmtinit_project_type (args, &i, &width_given);
 	if (project == GMT_NO_PROJ) return (true);	/* No valid projection specified */
@@ -18529,7 +18529,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 #endif
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 	/* Set all I/O to binary mode */
 	if ( _setmode(_fileno(stdin), _O_BINARY) == -1 ) {
 		if (API->external)
@@ -18555,6 +18555,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 			return NULL;
 		}
 	}
+#ifdef _MSC_VER
 	if ( _set_fmode(_O_BINARY) != 0 ) {
 		if (API->external)
 			GMT_Report (API, GMT_MSG_WARNING, "Could not set binary mode for file I/O. This may no be a fatal error but...\n");
@@ -18563,6 +18564,9 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 			return NULL;
 		}
 	}
+#else
+	_fmode = _O_BINARY;
+#endif
 #endif
 
 	if ((GMT = gmtinit_new_GMT_ctrl (API, session, pad)) == NULL)	/* Allocate and initialize a new common control structure */
