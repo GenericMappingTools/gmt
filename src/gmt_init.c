@@ -1133,6 +1133,10 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 		default:
 			GMT->current.ps.origin[GMT_X] = GMT->common.X.mode = 'r'; break;
 	}
+	if (GMT->current.setting.run_mode == GMT_MODERN && strchr ("cf", GMT->common.X.mode)) {	/* Modern mode: Disallow -Xc|f */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Centered (-Xc) and fixed (-Xf) shifts are not available in modern mode\n");
+		return (GMT_PARSE_ERROR);
+	}
 	if (text[i]) {	/* Gave some argument */
 		if (strchr (text, 'w')) {	/* Used previous width as part of offset */
 			GMT->current.setting.map_origin[GMT_X] = GMT->current.map.last_width;
@@ -1184,6 +1188,10 @@ GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
 			GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = text[0]; i++; break;
 		default:
 			GMT->current.ps.origin[GMT_Y] = GMT->common.Y.mode = 'r'; break;
+	}
+	if (GMT->current.setting.run_mode == GMT_MODERN && strchr ("cf", GMT->common.Y.mode)) {	/* Modern mode: Disallow -Yc|f */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Centered (-Yc) and fixed (-Tf) shifts are not available in modern mode\n");
+		return (GMT_PARSE_ERROR);
 	}
 	if (text[i]) {	/* Gave some argument */
 		if (strchr (text, 'h')) {	/* Used previous height as part of offset */
