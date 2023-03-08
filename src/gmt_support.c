@@ -87,6 +87,7 @@
 #include <glob.h>
 #else
 #include <windows.h>
+#include <io.h>
 #include <tchar.h>
 #endif
 
@@ -4984,7 +4985,11 @@ int gmt_get_tempname (struct GMTAPI_CTRL *API, char *stem, char *extension, char
 
 	gmtsupport_make_template (API, stem, path);	/* Readying the name template */
 
-	if (mktemp (path) == NULL) {
+#ifdef _WIN32
+	if (_mktemp_s (path, strlen(path) + 1) == EINVAL) {
+#else
+	if (mkstemp (path) == GMT_NOTSET) {
+#endif
 		GMT_Report (API, GMT_MSG_ERROR, "Could not create a temporary name from template %s.\n", path);
 		return (GMT_RUNTIME_ERROR);
 	}
