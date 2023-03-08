@@ -875,7 +875,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 					col = Ctrl->Z.limit[k].col;			/* Shorthand notation */
 					z_val = In->data[col];
 				}
-				if (gmt_M_is_dnan (z_seg_value))
+				if (Ctrl->Z.mseg_Z && gmt_M_is_dnan (z_seg_value))
 					keep = Ctrl->Z.mseg_Z_missing_keep;		/* Segment without -Z are skipped or passed (+hp) entirely */
 				else if (gmt_M_is_dnan (z_val)) {
 					keep = true;		/* Make no decision on NaNs in the data here; see -s instead */
