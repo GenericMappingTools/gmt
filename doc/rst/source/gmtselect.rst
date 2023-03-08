@@ -76,7 +76,7 @@ Optional Arguments
     Pass all records whose location is within *dist* of any of the
     points in the ASCII file *pointfile*. If *dist* is zero then the 3rd
     column of *pointfile* must have each point's individual radius of
-    influence. . If you only have a single point then you can specify
+    influence. If you only have a single point then you can specify
     *lon*/*lat* instead of *pointfile*.  Distances are Cartesian and in
     user units; specify **-fg** to indicate spherical distances and
     append a distance unit, even if the distance specified is 0.

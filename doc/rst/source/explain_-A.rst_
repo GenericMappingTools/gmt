@@ -13,4 +13,4 @@
     users who wish to utilize their own Antarctica (with islands) coastline
     you can add **s** to skip all GSHHG features below 60S. In contrast, you
     can add **S** to instead skip all features *north* of 60S. See
-    GSHHG INFORMATION below for more details. |Add_-A|
+    :ref:`GSHHG Information <gshhg-information>` below for more details. |Add_-A|
