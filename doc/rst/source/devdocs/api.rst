@@ -1182,7 +1182,9 @@ unique resource ID, or ``GMT_NOTSET`` if there was an error.
     +----------------+-----------------------------------------+
     | GMT_IS_LINE    | Geographic or Cartesian line segments   |
     +----------------+-----------------------------------------+
-    | GMT_IS_POLYGON | Geographic or Cartesian closed polygons |
+    | GMT_IS_POLY    | Geographic or Cartesian closed polygons |
+    +----------------+-----------------------------------------+
+    | GMT_IS_LP      | Either lines or polygons                |
     +----------------+-----------------------------------------+
     | GMT_IS_PLP     | Either points, lines, or polygons       |
     +----------------+-----------------------------------------+
