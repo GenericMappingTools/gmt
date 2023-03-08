@@ -199,7 +199,7 @@ Optional Arguments
     not used then it is automatically incremented for each new |-Z| option, starting
     with 2. Alternatively, instead of obtaining *z* from the data column(s), use modifier
     **+h** to instead extract *z* from the segment header |-Z|\ *z* string.  If no such entry is
-    found we skip [Default, or **+hs**] the entire segment (or we keep the entire segment if **++hk** was given),
+    found we skip [Default, or **+hs**] the entire segment (or we keep the entire segment if **+hk** was given),
     otherwise it is subject to the test(s) using the constant *z* for each segment.
 
 .. include:: explain_-aspatial.rst_

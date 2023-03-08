@@ -236,7 +236,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s <ocean>/<land>/<lake>/<island>/<pond>.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "[Default is s/k/s/k/s (i.e., s/k)].");
 	GMT_Option (API, "R,V");
-	GMT_Usage (API, 1, "\n-Z<min>[/<max>][+c<col>][+a][+h[p]][+i]");
+	GMT_Usage (API, 1, "\n-Z<min>[/<max>][+c<col>][+a][+h[k|s]][+i]");
 	GMT_Usage (API, -2, "Assume the 3rd data column contains z-values and we want to keep records with "
 		"<min> <= z <= <max>.  Use - for <min> or <max> if there is no lower/upper limit. "
 		"If /<max> is not appended then we pass records whose z equal <min> within 5 ulps. "
@@ -244,7 +244,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"The -Z option is repeatable.  If given more than once then these modifiers may be useful:");
 	GMT_Usage (API, 3, "+a Pass the record if any of the tests are true [all tests must be true in order to pass].");
 	GMT_Usage (API, 3, "+h Get fixed z for all records via segment header -Z<z> instead of data column. "
-		"If no -Z<z> is found we skip all records [i.e, Default is +hs] unless +hk is used to keep all such records");
+		"If no -Z<z> is found we skip all records [i.e., Default is +hs] unless +hk is used to keep all such records");
 	GMT_Usage (API, 3, "+i Reverse an individual test since -Iz only applies to a single test.");
 	GMT_Usage (API, -2, "If +c is not given then it is incremented automatically, starting at 2.");
 	GMT_Option (API, "a,bi0");
