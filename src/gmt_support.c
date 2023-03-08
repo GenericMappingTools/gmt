@@ -4986,7 +4986,7 @@ int gmt_get_tempname (struct GMTAPI_CTRL *API, char *stem, char *extension, char
 	gmtsupport_make_template (API, stem, path);	/* Readying the name template */
 
 #ifdef _WIN32
-	if (_mktemp_s (path) == EINVAL) {
+	if (_mktemp_s (path, strlen(path) + 1) == EINVAL) {
 #else
 	if (mkstemp (path) == GMT_NOTSET) {
 #endif
