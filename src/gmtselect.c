@@ -131,7 +131,7 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		bool mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
 	} N;
-	struct GMTSELECT_Z {	/* -Z<min>/<max>[+c<col>][+a][+h[p]][+i] */
+	struct GMTSELECT_Z {	/* -Z<min>/<max>[+c<col>][+a][+h[k|s]][+i] */
 		bool active;
 		bool mseg_Z;	/* True for +h when we examine -Z<z> in the segment header for z */
 		bool mseg_Z_missing_keep;	/* Determines what happens if -Z<z> is missing from header */
@@ -187,7 +187,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [%s] [-C<ptfile>|<lon>/<lat>+d%s] [-D<resolution>[+f]] "
 		"[-E[f][n]] [-F<polygon>] [-G<gridmask>] [%s] [-Icfglrsz] [-L<lfile>+d%s[+p]] [-N<info>] "
-		"[%s] [%s] [-Z<min>[/<max>][+c<col>][+a][+h[p]][+i]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] "
+		"[%s] [%s] [-Z<min>[/<max>][+c<col>][+a][+h[k|s]][+i]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] "
 		"[%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_A_OPT, GMT_DIST_OPT, GMT_J_OPT, GMT_DIST_OPT,
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT,
 		GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -244,7 +244,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"The -Z option is repeatable.  If given more than once then these modifiers may be useful:");
 	GMT_Usage (API, 3, "+a Pass the record if any of the tests are true [all tests must be true in order to pass].");
 	GMT_Usage (API, 3, "+h Get fixed z for all records via segment header -Z<z> instead of data column. "
-		"If no -Z<z> is found we skip all records unless +hp is used to pass all such records");
+		"If no -Z<z> is found we skip all records [i.e, Default is +hs] unless +hk is used to keep all such records");
 	GMT_Usage (API, 3, "+i Reverse an individual test since -Iz only applies to a single test.");
 	GMT_Usage (API, -2, "If +c is not given then it is incremented automatically, starting at 2.");
 	GMT_Option (API, "a,bi0");
@@ -480,8 +480,15 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 							case 'a': Ctrl->Z.or = true; break;	/* Logical or: pass if any z-test is true */
 							case 'c': col = atoi (&p[1]); got_col = true; break;	/* Set z column # */
 							case 'h': Ctrl->Z.mseg_Z = true; /* Use segment header z */
-									  Ctrl->Z.mseg_Z_missing_keep = (p[1] == 'p') ? true : false;
-									  break;
+								switch (p[1]) {	/* Check for skip or keep argument */
+									case '\0':	case 's':	Ctrl->Z.mseg_Z_missing_keep = false;	break;
+									case 'k':	Ctrl->Z.mseg_Z_missing_keep = true;	break;
+									default:
+										GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Modifier +h[k|s] given unrecognized argument: %s\n", p);
+										n_errors++;
+										break;
+								}
+								break;
 							case 'i': invert = true; break;		/* Reverse this test */
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
@@ -876,7 +883,7 @@ EXTERN_MSC int GMT_gmtselect (void *V_API, int mode, void *args) {
 					z_val = In->data[col];
 				}
 				if (Ctrl->Z.mseg_Z && gmt_M_is_dnan (z_seg_value))
-					keep = Ctrl->Z.mseg_Z_missing_keep;		/* Segment without -Z are skipped or passed (+hp) entirely */
+					keep = Ctrl->Z.mseg_Z_missing_keep;		/* Segment without -Z are skipped [+hs] or kept (+hk) entirely */
 				else if (gmt_M_is_dnan (z_val)) {
 					keep = true;		/* Make no decision on NaNs in the data here; see -s instead */
 				}
