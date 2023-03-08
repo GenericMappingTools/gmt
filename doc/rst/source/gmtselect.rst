@@ -25,7 +25,7 @@ Synopsis
 [ |-N|\ *maskvalues* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**] ]
+[ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+h**\ [**k**\|\ **s**]]\ [**+i**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -182,7 +182,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**]
+**-Z**\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+h**\ [**k**\|\ **s**]]\ [**+i**]
     Pass all records whose 3rd column (*z*; *col* = 2) lies within the given range
     or is NaN (use **-s** to skip NaN records).
     If *max* is omitted then we test if *z* equals *min* instead.  This means
@@ -197,7 +197,10 @@ Optional Arguments
     one of your *z* tests [Default is all tests must pass], and **+i** reverses the
     tests to pass record with *z* value **not** in the given range.  Finally, if **+c** is
     not used then it is automatically incremented for each new |-Z| option, starting
-    with 2.
+    with 2. Alternatively, instead of obtaining *z* from the data column(s), use modifier
+    **+h** to instead extract *z* from the segment header |-Z|\ *z* string.  If no such entry is
+    found we skip [Default, or **+hs**] the entire segment (or we keep the entire segment if **+hk** was given),
+    otherwise it is subject to the test(s) using the constant *z* for each segment.
 
 .. include:: explain_-aspatial.rst_
 
