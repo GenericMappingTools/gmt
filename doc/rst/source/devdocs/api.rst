@@ -2867,7 +2867,7 @@ being external to GMT via
 
   ::
 
-    int64_t GMT_Set_AllocMode (void *API, unsigned int family, void *object);
+    int GMT_Set_AllocMode (void *API, unsigned int family, void *object);
 
 where :ref:`family <tbl-family>` sets the object type and and ``object`` is the container.
 This change prevents GMT from trying to free memory it did not allocate.
