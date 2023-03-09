@@ -1299,6 +1299,11 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 	}
 
+#if 0
+	if (Ctrl->T.active) {
+		gmt_plot_image_as_polygons (GMT, Topo, Intens, P, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL);
+	}
+#else
 	if (Ctrl->T.active) {	/* Plot image as polygonal pieces. Here, -JZ is not set */
 		double *xx = NULL, *yy = NULL;
 		struct GMT_FILL fill;
@@ -1328,7 +1333,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		S->data[GMT_X] = S->data[GMT_Y] = NULL;	/* Since xx and yy was set to NULL but not data... */
 		gmt_free_segment (GMT, &S);
 	}
-
+#endif
 	else if (Ctrl->Q.mode == GRDVIEW_IMAGE) {	/* Plot image */
 		int nx_i, ny_i, ip, jp, min_i, max_i, min_j, max_j, dist;
 		int done, layers, last_i, last_j;

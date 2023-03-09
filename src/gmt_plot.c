@@ -10794,3 +10794,46 @@ struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT) {
 	P->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT_HIDDEN);
 	return (P);
 }
+
+void gmt_plot_image_as_polygons (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity) {
+	/* Lay down an image using polygons of the graticules.  This is recoded from grdview
+	 * so it can also be used in grdimage.
+	 * G is the data grid
+	 * I is an optional intensity grid.  If NULL then either intensity points to a
+	 *    constant intensity or it is also NULL, meaning no intensity adjustment for colors.
+	 * P is the CPT in use
+	 * pen is an optional pen for drawing the graticules, or NULL
+	 * skip determines if we paint NaN polygons or not
+	 * intensity is pointer to a constant intensity or NULL
+	 */
+	openmp_int row, col;
+	uint64_t ij, n;
+	double *xx = NULL, *yy = NULL, inc2[2] = {0.0, 0.0};
+	struct GMT_FILL fill;
+	struct GMT_DATASEGMENT *S = gmt_get_segment (GMT, 2);
+	gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);   /* Initialize fill structure */
+
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Tiling grid without interpolation\n");
+
+	inc2[GMT_X] = 0.5 * G->header->inc[GMT_X];	inc2[GMT_Y] = 0.5 * G->header->inc[GMT_Y];
+	if (pen) gmt_setpen (GMT, pen);
+	S->data = gmt_M_memory (GMT, NULL, 2, double *);
+	S->n_columns = 2;
+	gmt_M_grd_loop (GMT, G, row, col, ij) { /* Compute rgb for each pixel */
+		if (gmt_M_is_fnan (G->data[ij]) && skip) continue;
+		if (I && skip && gmt_M_is_fnan (I->data[ij])) continue;
+		gmt_get_fill_from_z (GMT, P, G->data[ij], &fill);
+		if (I)
+			gmt_illuminate (GMT, I->data[ij], fill.rgb);
+		else if (intensity)
+			gmt_illuminate (GMT, *intensity, fill.rgb);
+		n = gmt_graticule_path (GMT, &xx, &yy, 1, true, G->x[col] - inc2[GMT_X], G->x[col] + inc2[GMT_X], G->y[row] - inc2[GMT_Y], G->y[row] + inc2[GMT_Y]);
+		gmt_setfill (GMT, &fill, pen != NULL);
+		S->data[GMT_X] = xx;    S->data[GMT_Y] = yy;    S->n_rows = n;
+		gmt_geo_polygons (GMT, S);
+		gmt_M_free (GMT, xx);
+		gmt_M_free (GMT, yy);
+    }
+	S->data[GMT_X] = S->data[GMT_Y] = NULL; /* Since xx and yy was set to NULL but not data... */
+	gmt_free_segment (GMT, &S);
+}
