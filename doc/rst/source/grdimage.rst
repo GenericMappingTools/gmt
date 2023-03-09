@@ -238,7 +238,7 @@ place with most map projections. Because **grdimage** uses the
 PostScript colorimage operator, for most non-linear projections we
 must resample your grid onto an equidistant rectangular lattice. If you
 find that the NaN areas are not treated adequately, consider (a) use a
-linear projection, or (b) use :doc:`grdview` **-Ts** instead.
+linear projection, or (b) use **-T+s** instead to plot graticule polygons.
 
 .. include:: explain_grdresample.rst_
 
@@ -252,7 +252,7 @@ requires a resampling onto an equidistant Cartesian lattice that usually
 will result in such blending.  We do not know if a grid is categorical but
 if the CPT provided via |-C| is categorical we will override any **-n** setting you
 have chosen (perhaps implicitly) with **-nn+a** that turns *on* nearest neighbor
-gridding and turns *off* anti-aliasing.  Alternatively, use :doc:`grdview` |-T|
+gridding and turns *off* anti-aliasing.  Alternatively, use |-T|
 instead to plot individual polygons centered on each node.
 
 Image formats recognized
