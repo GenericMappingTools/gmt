@@ -142,7 +142,7 @@ enum GMT_enum_container {
 	GMT_NO_STRINGS		= 0U    /* Do not allocate string array also [Default] */
 };
 
-/*! These are the 5 families of data types, + a coordinate array + 3 help containers for vector, matrix, and coordinates */
+/*! These are the 6 families of data types, + 3 help containers for vector, matrix, and coordinates */
 enum GMT_enum_family {
 	GMT_IS_DATASET    = 0,	/* Entity is a data table */
 	GMT_IS_GRID       = 1,	/* Entity is a grid */
@@ -151,7 +151,7 @@ enum GMT_enum_family {
 	GMT_IS_POSTSCRIPT = 4,	/* Entity is a PostScript content struct */
 	GMT_IS_MATRIX     = 5,	/* Entity is user matrix */
 	GMT_IS_VECTOR     = 6,	/* Entity is set of user vectors */
-	GMT_IS_CUBE       = 7,	/* Entity is set of user vectors */
+	GMT_IS_CUBE       = 7,	/* Entity is a 3-D data cube */
 	GMT_IS_COORD	  = 8,	/* Entity is a double coordinate array */
 	GMT_N_FAMILIES	  = 9	/* Total number of families [API Developers only]  */
 };
