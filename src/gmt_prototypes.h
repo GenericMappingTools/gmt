@@ -256,7 +256,7 @@ EXTERN_MSC struct GMT_GRID * gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GM
 #ifdef _POSTSCRIPTLIGHT_H
 /* gmt_plot.c prototypes only included if postscriptlight has been included */
 
-EXTERN_MSC void gmt_plot_image_as_polygons (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity);
+EXTERN_MSC void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity);
 EXTERN_MSC double gmt_inch_to_degree_scale (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth);
 EXTERN_MSC bool gmt_text_is_latex (struct GMT_CTRL *GMT, const char *string);
 EXTERN_MSC void gmt_map_text (struct GMT_CTRL *GMT, double x, double y, struct GMT_FONT *font, char *label, double angle, int just, unsigned int form);

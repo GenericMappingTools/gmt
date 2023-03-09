@@ -10795,7 +10795,7 @@ struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT) {
 	return (P);
 }
 
-void gmt_plot_image_as_polygons (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity) {
+void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *I, struct GMT_PALETTE *P, struct GMT_PEN *pen, bool skip, double *intensity) {
 	/* Lay down an image using polygons of the graticules.  This is recoded from grdview
 	 * so it can also be used in grdimage.
 	 * G is the data grid

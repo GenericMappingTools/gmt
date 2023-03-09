@@ -25,6 +25,7 @@ Synopsis
 [ |-N| ]
 [ |-Q|\ [*color*][**+z**\ *value*] ]
 [ |SYN_OPT-Rz| ]
+[ |-T|\ [**+o**\ [*pen*]][**+s**] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
@@ -183,6 +184,17 @@ Optional Arguments
     smaller region than specified in the grid file will result in a
     subset of the grid [Default is the region given by the grid file].
 .. include:: explain_-Rz.rst_
+
+.. _-t:
+
+**-T**\ [**+o**\ [*pen*]][**+s**]
+    Plot a data grid without any interpolation. This involves converting each
+    node-centered bin into a polygon which is then painted separately.
+    Append **+s** to skip nodes with z = NaN. This option is suitable for
+    categorical data where interpolating between values is meaningless
+    and a categorical CPT has been provided via |-C|.
+    Optionally, append **+o** to draw the tile outlines, and specify a
+    custom pen if the default pen is not to your liking.
 
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
