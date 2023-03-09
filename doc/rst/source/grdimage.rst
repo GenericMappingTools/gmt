@@ -25,6 +25,7 @@ Synopsis
 [ |-N| ]
 [ |-Q|\ [*color*][**+z**\ *value*] ]
 [ |SYN_OPT-Rz| ]
+[ |-T|\ [**+o**\ [*pen*]][**+s**] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
@@ -184,6 +185,17 @@ Optional Arguments
     subset of the grid [Default is the region given by the grid file].
 .. include:: explain_-Rz.rst_
 
+.. _-t:
+
+**-T**\ [**+o**\ [*pen*]][**+s**]
+    Plot a data grid without any interpolation. This involves converting each
+    node-centered bin into a polygon which is then painted separately.
+    Append **+s** to skip nodes with z = NaN. This option is suitable for
+    categorical data where interpolating between values is meaningless
+    and a categorical CPT has been provided via |-C|.
+    Optionally, append **+o** to draw the tile outlines, and specify a
+    custom pen if the default pen is not to your liking.
+
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
     :start-after: **Syntax**
@@ -226,7 +238,7 @@ place with most map projections. Because **grdimage** uses the
 PostScript colorimage operator, for most non-linear projections we
 must resample your grid onto an equidistant rectangular lattice. If you
 find that the NaN areas are not treated adequately, consider (a) use a
-linear projection, or (b) use :doc:`grdview` **-Ts** instead.
+linear projection, or (b) use **-T+s** instead to plot graticule polygons.
 
 .. include:: explain_grdresample.rst_
 
@@ -240,7 +252,7 @@ requires a resampling onto an equidistant Cartesian lattice that usually
 will result in such blending.  We do not know if a grid is categorical but
 if the CPT provided via |-C| is categorical we will override any **-n** setting you
 have chosen (perhaps implicitly) with **-nn+a** that turns *on* nearest neighbor
-gridding and turns *off* anti-aliasing.  Alternatively, use :doc:`grdview` |-T|
+gridding and turns *off* anti-aliasing.  Alternatively, use |-T|
 instead to plot individual polygons centered on each node.
 
 Image formats recognized
