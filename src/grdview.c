@@ -1299,41 +1299,8 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 	}
 
-#if 0
-	if (Ctrl->T.active) {
+	if (Ctrl->T.active)	/* Plot colored graticules */
 		gmt_plot_image_as_polygons (GMT, Topo, Intens, P, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL);
-	}
-#else
-	if (Ctrl->T.active) {	/* Plot image as polygonal pieces. Here, -JZ is not set */
-		double *xx = NULL, *yy = NULL;
-		struct GMT_FILL fill;
-		struct GMT_DATASEGMENT *S = gmt_get_segment (GMT, 2);
-		gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
-
-		GMT_Report (API, GMT_MSG_INFORMATION, "Tiling without interpolation\n");
-
-		if (Ctrl->T.outline) gmt_setpen (GMT, &Ctrl->T.pen);
-		S->data = gmt_M_memory (GMT, NULL, 2, double *);
-		S->n_columns = 2;
-		gmt_M_grd_loop (GMT, Z, row, col, ij) {	/* Compute rgb for each pixel */
-			if (gmt_M_is_fnan (Topo->data[ij]) && Ctrl->T.skip) continue;
-			if (use_intensity_grid && Ctrl->T.skip && gmt_M_is_fnan (Intens->data[ij])) continue;
-			gmt_get_fill_from_z (GMT, P, Topo->data[ij], &fill);
-			if (use_intensity_grid)
-				gmt_illuminate (GMT, Intens->data[ij], fill.rgb);
-			else
-				gmt_illuminate (GMT, Ctrl->I.value, fill.rgb);
-			n = gmt_graticule_path (GMT, &xx, &yy, 1, true, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
-			gmt_setfill (GMT, &fill, Ctrl->T.outline);
-			S->data[GMT_X] = xx;	S->data[GMT_Y] = yy;	S->n_rows = n;
-			gmt_geo_polygons (GMT, S);
-			gmt_M_free (GMT, xx);
-			gmt_M_free (GMT, yy);
-		}
-		S->data[GMT_X] = S->data[GMT_Y] = NULL;	/* Since xx and yy was set to NULL but not data... */
-		gmt_free_segment (GMT, &S);
-	}
-#endif
 	else if (Ctrl->Q.mode == GRDVIEW_IMAGE) {	/* Plot image */
 		int nx_i, ny_i, ip, jp, min_i, max_i, min_j, max_j, dist;
 		int done, layers, last_i, last_j;
