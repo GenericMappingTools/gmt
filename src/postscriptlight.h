@@ -199,6 +199,8 @@ enum PSL_enum_const {PSL_CM	= 0,
 	PSL_OUTLINE		= 1,
 	PSL_LINEAR		= 0,
 	PSL_BEZIER		= 1,
+	PSL_FILL_TRANSP		= 0,
+	PSL_PEN_TRANSP		= 1,
 	PSL_MAX_EPS_FONTS	= 6,
 	PSL_MAX_DIMS		= 13,		/* Max number of dim arguments to PSL_plot_symbol */
 	PSL_N_PATTERNS		= 91,		/* Current number of predefined patterns + 1, # 91 is user-supplied */
@@ -329,9 +331,11 @@ struct PSL_CTRL {
 		int runmode;			/* Nonzero if we are being called from a multi-module environment (0 for commandline)	*/
 		int unit;			/* 0 = cm, 1 = inch, 2 = meter			*/
 		int copies;			/* Number of copies for this plot		*/
+		int layer_transp;		/* 0 = no layer transparency, 1 -t was used	*/
 		double page_rgb[4];		/* RGB color for background paper [white]	*/
 		double page_size[2];		/* Width and height of paper used in points	*/
 		double magnify[2];		/* Global scale values [1/1]			*/
+		double transparencies[2];	/* Current layer transparencies			*/
 	} init;
 	struct CURRENT {	/* Variables and settings that changes via PSL_* calls */
 		char string[PSL_BUFSIZ];	/* Last text string plotted			*/
@@ -344,8 +348,8 @@ struct PSL_CTRL {
 		double linewidth;		/* Current pen thickness			*/
 		double rgb[3][4];		/* Current stroke, fill, and fs fill rgb	*/
 		double offset;			/* Current setdash offset			*/
-		double transparency;		/* Current transparency	[deprecated]			*/
-		double transparencies[2];		/* Current transparencies				*/
+		double transparency;		/* Current transparency	[deprecated]		*/
+		double transparencies[2];	/* Current transparencies			*/
 		double fontsize;		/* Current font size				*/
 		double subsupsize;		/* Fractional size of super/sub-scripts		*/
 		double scapssize;		/* Fractional size of small caps		*/
