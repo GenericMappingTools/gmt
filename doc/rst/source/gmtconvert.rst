@@ -114,7 +114,7 @@ Optional Arguments
     only extract the first or last record of each segment, respectively.
     Alternatively, append **m**\ *stride* to extract every *stride* records;
     use **M** to also include the last record if not on the stride. **Note**: This option operates
-    on the input records and if combined with |-N| the latter only sorts 
+    on the input records and if combined with |-N| the latter only sorts
     the reduced data set. See **-qo** for limiting the output records after sorting.
 
 .. _-F:
@@ -187,7 +187,7 @@ Optional Arguments
     **-S~**. Should your pattern happen to start with ~ you need to
     escape this character with a backslash [Default output all
     segments]. Cannot be used with |-Q|. For matching segments based
-    on aspatial values (via OGR/GMT format), give the search string as
+    on aspatial values (via :ref:`OGR/GMT <OGR_compat>` format), give the search string as
     *varname*\ =\ *value* and we will compare *value* against the value
     of *varname* for each segment. **Note**: If the features are polygons
     then a match of a particular polygon perimeter also means that any
@@ -322,7 +322,8 @@ To extract segments 20 to 40 in steps of 2, plus segment 0 in a file, try::
     gmt convert lots_of_segments.txt -Q0,20:2:40 > my_segments.txt
 
 
-To extract the attribute ELEVATION from an ogr gmt file like this::
+To extract the attribute ELEVATION from an :ref:`OGR/GMT <OGR_compat>` format
+file like this::
 
     # @VGMT1.0 @GPOINT
     ...
