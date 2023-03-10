@@ -2894,7 +2894,8 @@ struct GMT_GRID *gmt_create_grid (struct GMT_CTRL *GMT) {
 #else
 	G->header->type = GMT_GRID_IS_NF;
 #endif
-	GH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
+	GH->id = GMT->parent->unique_var_ID++;	/* Give unique identifier */
+	GH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since nothing is assigned or allocated yet */
 	return (G);
 }
 
@@ -3536,7 +3537,8 @@ struct GMT_CUBE *gmtlib_create_cube (struct GMT_CTRL *GMT) {
 	C->header->type = GMT_GRID_IS_NF;
 #endif
 	GMT_Set_Index (GMT->parent, C->header, GMT_GRID_LAYOUT);
-	GU->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
+	GU->id = GMT->parent->unique_var_ID++;	/* Give unique identifier */
+	GU->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since nothing is assigned or allocated yet */
 	return (C);
 }
 
