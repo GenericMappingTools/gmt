@@ -15828,31 +15828,33 @@ int GMT_Get_Family_ (unsigned int *direction, struct GMT_OPTION *head) {
 #endif
 
 int GMT_Set_AllocMode (void *V_API, unsigned int family, void *object) {
+	/* Set the allocation mode of this object to EXTERNAL so that GMT does not try to free it.
+	 * It is used in externals who provide its own allocated memory objects. */
 	int error = GMT_NOERROR;
 	uint64_t col;
-	struct GMT_VECTOR      *V = NULL;
-	struct GMT_DATASET_HIDDEN     *DH = NULL;
-	struct GMT_PALETTE_HIDDEN     *CH = NULL;
-	struct GMT_POSTSCRIPT_HIDDEN  *PH = NULL;
-	struct GMT_CUBE_HIDDEN    *UH = NULL;
-	struct GMT_VECTOR_HIDDEN      *VH = NULL;
-	struct GMT_MATRIX_HIDDEN      *MH = NULL;
-	struct GMT_GRID_HIDDEN        *GH = NULL;
-	struct GMT_IMAGE_HIDDEN       *IH = NULL;
+	struct GMT_VECTOR		*V = NULL;
+	struct GMT_DATASET_HIDDEN	*DH = NULL;
+	struct GMT_PALETTE_HIDDEN	*CH = NULL;
+	struct GMT_POSTSCRIPT_HIDDEN	*PH = NULL;
+	struct GMT_CUBE_HIDDEN		*UH = NULL;
+	struct GMT_VECTOR_HIDDEN	*VH = NULL;
+	struct GMT_MATRIX_HIDDEN	*MH = NULL;
+	struct GMT_GRID_HIDDEN		*GH = NULL;
+	struct GMT_IMAGE_HIDDEN		*IH = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (object == NULL) return_error (V_API, GMT_PTR_IS_NULL);
 
 	switch (family) {	/* grid, image, or matrix */
-		case GMT_IS_GRID:	/* GMT grid */
+		case GMT_IS_GRID:	/* GMT Grid */
 			GH = gmt_get_G_hidden (gmtapi_get_grid_data (object));
 			GH->alloc_mode = GMT_ALLOC_EXTERNALLY;
 			break;
-		case GMT_IS_IMAGE:	/* GMT image */
+		case GMT_IS_IMAGE:	/* GMT Image */
 			IH = gmt_get_I_hidden (gmtapi_get_image_data (object));
 			IH->alloc_mode = GMT_ALLOC_EXTERNALLY;
 			break;
-		case GMT_IS_DATASET:	/* GMT dataset */
+		case GMT_IS_DATASET:	/* GMT Dataset */
 			DH = gmt_get_DD_hidden (gmtapi_get_dataset_data (object));
 			DH->alloc_mode = GMT_ALLOC_EXTERNALLY;
 			break;
@@ -15860,7 +15862,7 @@ int GMT_Set_AllocMode (void *V_API, unsigned int family, void *object) {
 			CH = gmt_get_C_hidden (gmtapi_get_palette_data (object));
 			CH->alloc_mode = GMT_ALLOC_EXTERNALLY;
 			break;
-		case GMT_IS_CUBE:	/* GMT cube */
+		case GMT_IS_CUBE:	/* GMT Cube */
 			UH = gmt_get_U_hidden (gmtapi_get_cube_data (object));
 			UH->alloc_mode = GMT_ALLOC_EXTERNALLY;
 			break;

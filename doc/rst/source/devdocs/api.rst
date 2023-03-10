@@ -860,6 +860,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Report_              | Issue a message contingent upon verbosity level       |
     +--------------------------+-------------------------------------------------------+
+    | GMT_Set_AllocMode_       | Set allocation mode of object to external             |
+    +--------------------------+-------------------------------------------------------+
     | GMT_Set_Default_         | Set one of the API or GMT default settings            |
     +--------------------------+-------------------------------------------------------+
     | GMT_Set_Comment_         | Assign a comment to a data resource                   |
@@ -2853,6 +2855,22 @@ You can change this information via
 
 where the ``header`` is the header of either a grid or image, and ``code`` is a three-character
 code indication ...
+
+Change allocation mode
+~~~~~~~~~~~~~~~~~~~~~~
+
+When external programs supply their own allocated memory (e.g., grid arrays, matrices) that
+are then hooked into the GMT containers data pointer, we need to flag the allocation mode as
+being external to GMT via
+
+.. _GMT_Set_AllocMode:
+
+  ::
+
+    int GMT_Set_AllocMode (void *API, unsigned int family, void *object);
+
+where :ref:`family <tbl-family>` sets the object type and and ``object`` is the container.
+This change prevents GMT from trying to free memory it did not allocate.
 
 .. _sec-func:
 
