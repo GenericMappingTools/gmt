@@ -6450,6 +6450,8 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 	gmt_M_free (GMT, info->f_grd_yn);
 	gmt_M_free (GMT, info->dx);
 	gmt_M_str_free (info->ASCII_file);
+	info->A = NULL;
+	gmt_free_grid (GMT, &(info->G), false);
 }
 
 GMT_LOCAL void grdmath_expand_recall_cmd (struct GMT_OPTION *list) {

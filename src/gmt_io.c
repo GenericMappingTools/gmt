@@ -8948,6 +8948,7 @@ int gmtlib_alloc_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, uint64_t n
 		if ((error = gmtlib_alloc_univector (GMT, &V->data[col], V->type[col], n_alloc)) != GMT_NOERROR) return (error);
 		VH->alloc_mode[col] = GMT_ALLOC_INTERNALLY;
 	}
+	VH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	return (GMT_NOERROR);
 }
 

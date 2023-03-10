@@ -608,13 +608,18 @@ GMT_LOCAL inline void gmtapi_update_prev_rec (struct GMT_CTRL *GMT, uint64_t n_u
 GMT_LOCAL int gmtapi_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	/* Use information in Grid header to allocate the grid data array.
 	 * We assume gmtapi_init_grdheader has already been called. */
+	struct GMT_GRID_HIDDEN *GG = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *GH = NULL;
+
 	if (G == NULL) return (GMT_PTR_IS_NULL);
-	GH = gmt_get_H_hidden (G->header);
 	if (G->data) return (GMT_PTR_NOT_NULL);
 	if (G->header->size == 0U) return (GMT_SIZE_IS_ZERO);
 	if ((G->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, gmt_grdfloat)) == NULL) return (GMT_MEMORY_ERROR);
+	GH = gmt_get_H_hidden (G->header);
 	GH->orig_datatype = (sizeof (gmt_grdfloat) == sizeof (float)) ? GMT_FLOAT : GMT_DOUBLE;
+	GG = gmt_get_G_hidden (G);
+	GG->alloc_mode = GMT_ALLOC_INTERNALLY;      /* Memory can be freed by GMT. */
+	GG->alloc_level = GMT->hidden.func_level;   /* Must be freed at this level. */
 	return (GMT_NOERROR);
 }
 
@@ -651,10 +656,12 @@ GMT_LOCAL int gmtapi_alloc_image (struct GMT_CTRL *GMT, uint64_t *dim, unsigned 
 	 * If dim given and is 2 or 4 then we have 1 or 3 bands plus alpha channel
 	 * Depending on mode, the alpha layer is part of image or separate array. */
 	unsigned int n_bands = I->header->n_bands;
+	struct GMT_IMAGE_HIDDEN *IU = NULL;
 
 	if (I == NULL) return (GMT_PTR_IS_NULL);
 	if (I->data) return (GMT_PTR_NOT_NULL);
 	if (I->header->size == 0U) return (GMT_SIZE_IS_ZERO);
+	IU = gmt_get_I_hidden (I);
 	if (dim && (dim[GMT_Z] == 2 || dim[GMT_Z] == 4)) {	/* Transparency layer is requested */
 		if ((mode & GMT_IMAGE_ALPHA_LAYER) == 0) {	/* Use a separate alpha array */
 			if ((I->alpha = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
@@ -663,6 +670,8 @@ GMT_LOCAL int gmtapi_alloc_image (struct GMT_CTRL *GMT, uint64_t *dim, unsigned 
 	}
 	if ((I->data = gmt_M_memory_aligned (GMT, NULL, I->header->size * n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
 	I->header->n_bands = n_bands;	/* Update as needed */
+	IU->alloc_mode = GMT_ALLOC_INTERNALLY;      /* Memory can be freed by GMT. */
+	IU->alloc_level = GMT->hidden.func_level;   /* Must be freed at this level. */
 	return (GMT_NOERROR);
 }
 
@@ -2162,8 +2171,9 @@ GMT_LOCAL int gmtapi_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 				if ((M->text = gmt_M_memory (API->GMT, NULL, M->n_rows, char *)) == NULL)
 					return (GMT_MEMORY_ERROR);
 			}
+			MH->alloc_mode = GMT_ALLOC_INTERNALLY;
+			MH->alloc_level = API->GMT->hidden.func_level;	/* Must be freed at this level. */
 		}
-		MH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 	return (GMT_NOERROR);
 }
@@ -3190,7 +3200,7 @@ GMT_LOCAL int gmtapi_destroy_grid (struct GMTAPI_CTRL *API, struct GMT_GRID **G_
 		return (GMT_PTR_IS_NULL);
 	}
 	GH = gmt_get_G_hidden (*G_obj);
-	if (GH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+	if ((*G_obj)->data && GH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	gmt_free_grid (API->GMT, G_obj, true);
 	return GMT_NOERROR;
@@ -11440,7 +11450,8 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 				C->x = G->x;	C->y = G->y;	/* Let these be the cube's arrays from now on */
 				G->x = G->y = NULL;	/* No longer anything to do with G */
 				HU = gmt_get_U_hidden (C);
-				HU->xyz_alloc_mode[GMT_X] = HU->xyz_alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;
+				HU->xyz_alloc_mode[GMT_X] = HU->xyz_alloc_mode[GMT_Y] = HU->xyz_alloc_mode[GMT_Z] = GMT_ALLOC_INTERNALLY;
+				HU->alloc_level = API->GMT->hidden.func_level;   /* Must be freed at this level. */
 				if (gmtapi_destroy_grid (API, &G))	/* Use this instead of GMT_Destroy_Data since G was local and never registered */
 		 			return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			}

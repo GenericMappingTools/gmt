@@ -10565,12 +10565,12 @@ struct GMT_POSTSCRIPT * gmtlib_create_ps (struct GMT_CTRL *GMT, uint64_t length)
 	/* Makes an empty GMT_POSTSCRIPT struct - If length > 0 then we also allocate the string */
 	struct GMT_POSTSCRIPT *P = gmt_get_postscript (GMT);
 	struct GMT_POSTSCRIPT_HIDDEN *PH = gmt_get_P_hidden (P);
-	PH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	PH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	if (length) {	/* Allocate a blank string */
 		P->data = gmt_M_memory (GMT, NULL, length, char);
 		PH->n_alloc = length;	/* But P->n_bytes = 0 since nothing was placed there */
 		PH->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
+		PH->alloc_level = GMT->hidden.func_level;   /* Must be freed at this level. */
 	}
 	return (P);
 }
