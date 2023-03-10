@@ -9189,9 +9189,13 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "A transparency of 0/0 is the same as opaque. Skipped\n");
 			GMT->common.t.active = false;
 		}
-		else 	/* Place both fill and stroke transparencies in 0-1 normalized range, plus the blend mode name */
+		else	/* Place both fill and stroke transparencies in 0-1 normalized range, plus the blend mode name */
 			PSL_command (PSL, "%.12g %.12g /%s PSL_transp\n", 1.0 - 0.01 * GMT->common.t.value[GMT_FILL_TRANSP], 1.0 - 0.01 * GMT->common.t.value[GMT_PEN_TRANSP], GMT->current.setting.ps_transpmode);
 	}
+    PSL->init.transparencies[PSL_FILL_TRANSP] = 1.0 - 0.01 * GMT->common.t.value[GMT_FILL_TRANSP];  /* Update layer fill transparency [0/0] */
+    PSL->init.transparencies[PSL_PEN_TRANSP]  = 1.0 - 0.01 * GMT->common.t.value[GMT_PEN_TRANSP];  /* Update layer stroke transparency [0/0] */
+    PSL->init.layer_transp = (int)GMT->common.t.active;  /* 1 if we have set -t */
+
 	/* If requested, place the timestamp (text set here but plotting happens in gmt_plotend) */
 
 	if (GMT->current.ps.logo_cmd) {
