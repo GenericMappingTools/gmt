@@ -2225,7 +2225,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->debug.test) {
-		GMT_Report (API, GMT_MSG_WARNING, "greenspline running in test mode for %s\n", method[Ctrl->S.mode]);
+		GMT_Report (API, GMT_MSG_INFORMATION, "greenspline running in test mode for %s\n", method[Ctrl->S.mode]);
 		printf ("# %s\n#x\tG\tdG/dx\tt\n", method[Ctrl->S.mode]);
 		greenspline_dump_green (GMT, G, dGdr, par, x0, x1, 10001, Lz, Lg);
 		if (dimension == 1) {
