@@ -7,18 +7,18 @@ DISTRO=$2
 
 if [ ${DISTRO} = "MacPorts" ]; then
 	top=/opt/local
-    clang="/opt/local/bin/clang-mp-${CLANG_V}"
-    clangxx="/opt/local/bin/clang++-mp-${CLANG_V}"
+	clang="/opt/local/bin/clang-mp-${CLANG_V}"
+	clangxx="/opt/local/bin/clang++-mp-${CLANG_V}"
 elif [ ${DISTRO} = "HomeBrew1" ]; then
 	${DISTRO} = "HomeBrew"
 	top=/usr/local
-    clang="${top}/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
-    clangxx="${top}/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
+	clang="${top}/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
+	clangxx="${top}/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
 elif [ ${DISTRO} = "HomeBrew2" ]; then
 	${DISTRO} = "HomeBrew"
 	top=/opt/homebrew
-    clang="${top}/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
-    clangxx="${top}/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
+	clang="${top}/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
+	clangxx="${top}/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
 else	# Requires either MacPorts of HomeBrew
 	exit 1
 fi
