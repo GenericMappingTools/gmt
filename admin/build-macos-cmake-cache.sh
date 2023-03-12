@@ -10,12 +10,12 @@ if [ ${DISTRO} = "MacPorts" ]; then
 	clang="/opt/local/bin/clang-mp-${CLANG_V}"
 	clangxx="/opt/local/bin/clang++-mp-${CLANG_V}"
 elif [ ${DISTRO} = "HomeBrew1" ]; then
-	${DISTRO} = "HomeBrew"
+	DISTRO="HomeBrew"
 	top=/usr/local
 	clang="${top}/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
 	clangxx="${top}/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
 elif [ ${DISTRO} = "HomeBrew2" ]; then
-	${DISTRO} = "HomeBrew"
+	DISTRO="HomeBrew"
 	top=/opt/homebrew
 	clang="${top}/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
 	clangxx="${top}/opt/llvm@${CLANG_V}/bin/clang-${CLANG_V}"
@@ -24,7 +24,7 @@ else	# Requires either MacPorts of HomeBrew
 fi
 
 COMPC=$(which ${clang})
-if ! [ "X${COMPC}" = "X" ]; then	
+if ! [ "X${COMPC}" = "X" ]; then
 	# clang-mp-${CLANG_V} is needed to build with OpenMP
 	if ! [ -x "$(command -v ${clang})" ]; then
 		echo "build-release.sh: Error: clang-mp-${CLANG_V} is not found in your search PATH." >&2
