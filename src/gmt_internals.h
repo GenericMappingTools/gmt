@@ -258,7 +258,7 @@ EXTERN_MSC void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **
 EXTERN_MSC void gmtlib_write_ogr_header (FILE *fp, struct GMT_OGR *G);
 EXTERN_MSC struct GMT_IMAGE * gmtlib_create_image (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtlib_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_image);
-EXTERN_MSC struct GMT_MATRIX * gmtlib_create_matrix (struct GMT_CTRL *GMT, uint64_t n_layers, unsigned int direction, int flag);
+EXTERN_MSC struct GMT_MATRIX * gmtlib_create_matrix (struct GMT_CTRL *GMT, uint64_t n_layers, int flag);
 EXTERN_MSC void gmtlib_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M, bool free_matrix);
 EXTERN_MSC int gmtlib_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n);
 EXTERN_MSC void gmtlib_write_newheaders (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_columns);

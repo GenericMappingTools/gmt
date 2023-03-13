@@ -8807,9 +8807,8 @@ struct GMT_IMAGE *gmtlib_create_image (struct GMT_CTRL *GMT) {
 	struct GMT_IMAGE *I = gmtio_get_image (GMT);
 	IH = gmt_get_I_hidden (I);
 	I->header = gmt_get_header (GMT);
-	IH->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
-	IH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	IH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
+	IH->alloc_mode = GMT_ALLOC_EXTERNALLY;		/* Since nothing is assigned or allocated yet */
 	gmt_grd_init (GMT, I->header, NULL, false); /* Set default values */
 	if (GMT->current.gdal_read_in.O.mem_layout[0])
 		gmt_strncpy (I->header->mem_layout, GMT->current.gdal_read_in.O.mem_layout, 4);	/* Set the current memory layout */
@@ -8948,6 +8947,7 @@ int gmtlib_alloc_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, uint64_t n
 		if ((error = gmtlib_alloc_univector (GMT, &V->data[col], V->type[col], n_alloc)) != GMT_NOERROR) return (error);
 		VH->alloc_mode[col] = GMT_ALLOC_INTERNALLY;
 	}
+	VH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	return (GMT_NOERROR);
 }
 
@@ -9043,15 +9043,13 @@ void gmt_free_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR **V, bool free_vec
 }
 
 /*! . */
-struct GMT_MATRIX * gmtlib_create_matrix (struct GMT_CTRL *GMT, uint64_t layers, unsigned int direction, int flag) {
+struct GMT_MATRIX * gmtlib_create_matrix (struct GMT_CTRL *GMT, uint64_t layers, int flag) {
 	/* Allocates space for a new matrix container. */
 	struct GMT_MATRIX *M = NULL;
 	struct GMT_MATRIX_HIDDEN *MH = NULL;
 	M = gmt_M_memory (GMT, NULL, 1, struct GMT_MATRIX);
 	MH = M->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_MATRIX_HIDDEN);
-	/* We expect external memory for input and GMT-allocated memory on output */
-	MH->alloc_mode = (direction == GMT_IN) ? GMT_ALLOC_EXTERNALLY : GMT_ALLOC_INTERNALLY;
-	MH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	MH->alloc_mode = GMT_ALLOC_EXTERNALLY;		/* No matrix allocated yet */
 	MH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	M->n_layers = (layers) ? layers : 1;		/* Default to 1 if not set */
 	switch (flag) {
