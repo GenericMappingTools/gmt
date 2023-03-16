@@ -539,6 +539,7 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		for (i = 0; i < GMT->common.g.n_methods; i++) {	/* Go through each criterion */
 			if (GMT->common.g.method[i] == GMT_NEGGAP_IN_MAP_COL ||
 				GMT->common.g.method[i] == GMT_POSGAP_IN_MAP_COL ||
+				GMT->common.g.method[i] == GMT_ABSGAP_IN_MAP_COL ||
 				GMT->common.g.method[i] == GMT_GAP_IN_PDIST) {
 				GMT_Report (API, GMT_MSG_ERROR, "The -g option cannot use X, Y, or D since no projection can be set. Use mapproject first\n");
 				Return (GMT_RUNTIME_ERROR);
