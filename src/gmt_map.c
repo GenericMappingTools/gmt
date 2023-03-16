@@ -3326,7 +3326,7 @@ void gmtlib_translate_point (struct GMT_CTRL *GMT, double lon, double lat, doubl
 }
 
 void gmt_translate_point (struct GMT_CTRL *GMT, double A[3], double B[3], double a_d[], bool geo) {
-	/* Given point in A, azimuth az and distance d, return the point P away from A */
+	/* Given point in A, azimuth az and distance d, return the point B away from A */
 	if (geo)
 		GMT->current.map.second_point (GMT, A[GMT_X], A[GMT_Y], a_d[0], a_d[1], &B[GMT_X], &B[GMT_Y], NULL);
 	else {	/* Cartesian translation */
