@@ -534,6 +534,18 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
+	if (GMT->common.g.active) {
+		unsigned int i;
+		for (i = 0; i < GMT->common.g.n_methods; i++) {	/* Go through each criterion */
+			if (GMT->common.g.method[i] == GMT_NEGGAP_IN_MAP_COL ||
+				GMT->common.g.method[i] == GMT_POSGAP_IN_MAP_COL ||
+				GMT->common.g.method[i] == GMT_GAP_IN_PDIST) {
+				GMT_Report (API, GMT_MSG_ERROR, "The -g option cannot use X, Y, or D since no projection can be set. Use mapproject first\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+		}
+	}
+
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 		Return (API->error);	/* Establishes data files or stdin */
 	}
