@@ -2023,10 +2023,10 @@ GMT_LOCAL void grdmath_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 
 	z = gmt_M_memory (GMT, NULL, info->size, float);
 	cx = gmt_M_memory (GMT, NULL, info->G->header->n_rows, double);
-	gmt_M_row_loop (GMT, info->G, row) cx[row] = 0.5 / (info->dx[row] * info->dx[row]);
+	gmt_M_row_loop (GMT, info->G, row) cx[row] = 0.5 / info->dx[row];
 
 	mx = info->G->header->mx;
-	cy = 0.5 / (info->dy * info->dy);
+	cy = 0.5 / info->dy;
 
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		z[node] = (float)(cx[row] * cy * (stack[last]->G->data[node-mx+1] - stack[last]->G->data[node-mx-1] + \
