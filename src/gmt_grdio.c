@@ -2907,7 +2907,7 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 	gmt_copy_gridheader (GMT, Gnew->header, G->header);
 
 	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
-		struct GMT_GRID_HIDDEN *GH = gmt_get_G_hidden (Gnew);
+		struct GMT_GRID_HIDDEN *GHnew = gmt_get_G_hidden (Gnew);
 		if ((mode & GMT_DUPLICATE_RESET) && !gmt_grd_pad_status (GMT, G->header, GMT->current.io.pad)) {
 			/* Pads differ and we requested resetting the pad */
 			gmt_M_grd_setpad (GMT, Gnew->header, GMT->current.io.pad);	/* Set default pad size */
@@ -2930,7 +2930,9 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 
 		Gnew->x = gmt_grd_coord (GMT, Gnew->header, GMT_X);	/* Get array of x coordinates */
 		Gnew->y = gmt_grd_coord (GMT, Gnew->header, GMT_Y);	/* Get array of y coordinates */
-		GH->xy_alloc_mode[GMT_X] = GH->xy_alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;
+		GHnew->xy_alloc_mode[GMT_X] = GHnew->xy_alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;
+		GHnew->alloc_mode = GMT_ALLOC_INTERNALLY;
+		GHnew->alloc_level = GMT->hidden.func_level;
 	}
 	return (Gnew);
 }
