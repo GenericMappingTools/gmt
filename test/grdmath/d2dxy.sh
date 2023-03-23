@@ -22,18 +22,18 @@ gmt begin d2dxy
 	gmt makecpt -Cbatlow -T0.0/0.5/0.01 -Z -H > z.cpt
 
 	# plot
-	gmt subplot begin 2x2 -Fs6c -C0.25c -M0.5/2c
+	gmt subplot begin 2x2 -Fs6c -C0.25c -M0.5/1.5c
 		gmt makecpt -Cvik -T-0.25/0.25/0.01 -Z	# Set default subplot CPT
 		gmt grdimage gaussfunc.nc -Ba2f1g1 -BWeSn+t"Original Function" -Bx+l"x" -By+l"y" -Cz.cpt -c
-		gmt colorbar -DJBC+o0c/1.25c+h -Ba0.1+l"@[ f(x,y) @[ " -Cz.cpt
+		gmt colorbar -DJBC+o0c/1.25c+h -Ba0.1 -Cz.cpt
 
 		gmt grdimage d2gaussdxdy_ex.nc -Ba2f1g1 -BWeSn+t"Exact Formula" -Bx+l"x" -By+l"y" -c
-		gmt colorbar -DJBC+o0c/1.25c+h -Ba0.1+l"@[ \frac{\partial^2 f}{\partial x \partial y} @[ "
+		gmt colorbar -DJBC+o0c/1.25c+h -Ba0.1
 
 		gmt grdimage gauss_d2dxy.nc -Ba2f1g1 -BWeSn+t"D2DXY" -Bx+l"x" -By+l"y" -c
-		gmt colorbar -DJBC+o0c/1.25c+h -Ba0.1+l"@[ \frac{\partial^2 f}{\partial x \partial y} @[ "
+		gmt colorbar -DJBC+o0c/1.25c+h -Ba0.1
 
 		gmt grdimage gauss_ddx_ddy.nc -Ba2f1g1 -BWeSn+t"DDY then DDX" -Bx+l"x" -By+l"y" -c
-		gmt colorbar -DJBC+o0c/1.25c+h -Ba0.1+l"@[ \frac{\partial }{\partial x } \left( \frac{\partial f}{\partial y} \right) @[ "
+		gmt colorbar -DJBC+o0c/1.25c+h -Ba0.1
 	gmt subplot end
 gmt end show
