@@ -10806,13 +10806,15 @@ void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct
 	 * G is the data grid
 	 * I is an optional intensity grid.  If NULL then either intensity points to a
 	 *    constant intensity or it is also NULL, meaning no intensity adjustment for colors.
-	 * P is the CPT in use
+	 * P is the CPT in use for fills
 	 * pen is an optional pen for drawing the graticules, or NULL
 	 * skip determines if we paint NaN polygons or not
-	 * intensity is pointer to a constant intensity or NULL
+	 * intensity is pointer to a constant intensity or NULL.
 	 */
 	openmp_int row, col;
 	uint64_t ij, n;
+	int outline = 0;
+	bool delay_outline = false;
 	double *xx = NULL, *yy = NULL, inc2[2] = {0.0, 0.0};
 	struct GMT_FILL fill;
 	struct GMT_DATASEGMENT *S = gmt_get_segment (GMT, 2);
@@ -10821,7 +10823,16 @@ void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Tiling grid without interpolation\n");
 
 	inc2[GMT_X] = 0.5 * G->header->inc[GMT_X];	inc2[GMT_Y] = 0.5 * G->header->inc[GMT_Y];
-	if (pen) gmt_setpen (GMT, pen);
+	if (pen) {	/* Want to outline each graticule with given pen */
+		if (gmt_M_is_zero (pen->rgb[3])) {	/* No transparency, use the pen as is while painting polygons */
+			gmt_setpen (GMT, pen);
+			outline = 1;
+		}
+		else {	/* Pen has transparency so do lines separately */
+			delay_outline = true;
+			outline = 0;
+		}
+	}
 	S->data = gmt_M_memory (GMT, NULL, 2, double *);
 	S->n_columns = 2;
 	gmt_M_grd_loop (GMT, G, row, col, ij) { /* Compute rgb for each pixel */
@@ -10833,12 +10844,26 @@ void gmt_plot_image_graticules (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct
 		else if (intensity)
 			gmt_illuminate (GMT, *intensity, fill.rgb);
 		n = gmt_graticule_path (GMT, &xx, &yy, 1, true, G->x[col] - inc2[GMT_X], G->x[col] + inc2[GMT_X], G->y[row] - inc2[GMT_Y], G->y[row] + inc2[GMT_Y]);
-		gmt_setfill (GMT, &fill, pen != NULL);
+		gmt_setfill (GMT, &fill, outline);
 		S->data[GMT_X] = xx;    S->data[GMT_Y] = yy;    S->n_rows = n;
 		gmt_geo_polygons (GMT, S);
 		gmt_M_free (GMT, xx);
 		gmt_M_free (GMT, yy);
-    }
+	}
+	if (delay_outline) {	/* Just get graticule outlines and draw them */
+ 		gmt_setpen (GMT, pen);	/* Set outline pen */
+		gmt_setfill (GMT, NULL, 1);	/* Turn off fill */
+	 	gmt_M_grd_loop (GMT, G, row, col, ij) { /* Visit each node */
+			if (gmt_M_is_fnan (G->data[ij]) && skip) continue;
+			if (I && skip && gmt_M_is_fnan (I->data[ij])) continue;
+			n = gmt_graticule_path (GMT, &xx, &yy, 1, true, G->x[col] - inc2[GMT_X], G->x[col] + inc2[GMT_X], G->y[row] - inc2[GMT_Y], G->y[row] + inc2[GMT_Y]);
+			S->data[GMT_X] = xx;    S->data[GMT_Y] = yy;    S->n_rows = n;
+			gmt_geo_polygons (GMT, S);
+			gmt_M_free (GMT, xx);
+			gmt_M_free (GMT, yy);
+		}
+	}
+  	
 	S->data[GMT_X] = S->data[GMT_Y] = NULL; /* Since xx and yy was set to NULL but not data... */
 	gmt_free_segment (GMT, &S);
 }

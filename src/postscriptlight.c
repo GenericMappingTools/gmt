@@ -4102,8 +4102,8 @@ int PSL_setfill (struct PSL_CTRL *PSL, double rgb[], int outline) {
 	}
 	else if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) {
 		/* If stroke color is transparent and fill is not, explicitly set transparency for fill */
-		PSL_command (PSL, "{%.12g %.12g /%s PSL_transp} FS\n",
-			PSL->init.transparencies[PSL_FILL_TRANSP], PSL->init.transparencies[PSL_PEN_TRANSP], PSL->current.transparency_mode, psl_putcolor (PSL, rgb, 0));
+		PSL_command (PSL, "{%.12g %.12g /%s PSL_transp} {%s} FS\n",
+			PSL->init.transparencies[PSL_FILL_TRANSP], PSL->current.rgb[PSL_IS_STROKE][3], PSL->current.transparency_mode, psl_putcolor (PSL, rgb, 0));
 		PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], rgb);
 	}
 	else {	/* Set new r/g/b fill, after possibly changing fill transparency */
