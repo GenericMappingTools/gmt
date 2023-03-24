@@ -335,12 +335,6 @@ else (NOT LICENSE_RESTRICTED) # on
 	set (GMT_TRIANGULATE "Watson" PARENT_SCOPE)
 endif (NOT LICENSE_RESTRICTED)
 
-##
-## To allow setting this PreProcessor on command line when BinaryBuilder (Julia) builds GMT
-##
-if (JULIA_GHOST_JLL)
-	add_definitions(/DJULIA_GHOST_JLL)
-endif (JULIA_GHOST_JLL)
 
 ##
 ##	Set list of source codes
