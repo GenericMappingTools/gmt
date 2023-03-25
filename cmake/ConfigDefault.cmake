@@ -215,3 +215,8 @@ set (CMAKE_FIND_FRAMEWORK LAST)
 if (NOT DEFINED BUILD_DEVELOPER)
 	set (BUILD_DEVELOPER true)
 endif (NOT DEFINED BUILD_DEVELOPER)
+
+# To allow setting this PreProcessor on command line when BinaryBuilder (Julia) builds GMT
+if (JULIA_GHOST_JLL)
+	add_definitions(/DJULIA_GHOST_JLL)
+endif (JULIA_GHOST_JLL)
