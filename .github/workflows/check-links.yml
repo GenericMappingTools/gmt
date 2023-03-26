@@ -37,6 +37,7 @@ jobs:
           --exclude ^https://www.researchgate.net/
           --exclude ^http://www.eumetsat.int
           --exclude ^http://nsis.sourceforge.io
+          --exclude ^https://www.ethnologue.com
           --verbose
           **/*.rst
           **/*.rst_
