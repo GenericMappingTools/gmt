@@ -14,7 +14,7 @@ specification (See the cookbook chapter :doc:`/cookbook/ogrgmt-format`). For thi
 associate certain metadata values with required input and output columns expected by GMT programs. The **-a** option
 allows you to supply one or more comma-separated associations *col=name*, where *name* is the name of an aspatial
 attribute field in a OGR/GMT file and whose value we wish to as data input for column *col*. The given aspatial field
-thus replaces any other value already set. **Note**: *col = 0* is the first data column. **Note**: If no aspatial
+thus replaces any other value already set. **Notes**: (1) *col = 0* is the first data column. (2) If no aspatial
 attributes are needed then the **-a** option is not needed – GMT will still process and read such data files.
 
 OGR/GMT input with **-a** option

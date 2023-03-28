@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -473,7 +473,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 
 	unsigned int n_slash, k, n_errors = 0, pos;
 	int n;
-	bool geodetic_calc = false, will_need_RJ = false, isoldL;
+	bool geodetic_calc = false, will_need_RJ = false, isoldL = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, from[GMT_LEN256] = {""}, to[GMT_LEN256] = {""};
 	char c, *p = NULL, *q = NULL;
 	struct GMT_OPTION *opt = NULL;

@@ -36,12 +36,12 @@ in :doc:`/legend`, which provides more details and customization):
 - **+s** to resize all symbol and length sizes in the legend by *scale* [default is no scaling].
 - **+w** to set legend frame *width* [default is auto].
 
-**Note**: Default pen is given by :term:`MAP_DEFAULT_PEN`. **Note**: **+H**, **+g**, **+j**, **+o**, **+p**, **+w**, and
+**Notes**: (1) Default pen is given by :term:`MAP_DEFAULT_PEN`. (2) **+H**, **+g**, **+j**, **+o**, **+p**, **+w**, and
 **+s** will only take effect if appended to the very \ first **-l** option for a plot. The **+N** modifier, if appended
 to the first **-l** option, affects the legend width (unless set via **+w**); otherwise it just subdivides the available
 width among the specified columns. If **legend** is not called explicitly we will call it implicitly when finishing the
-plot via :doc:`/end`. **Note**: If auto-coloring is used for pens or fills and **-l** is set then *label* may contain a
+plot via :doc:`/end`. (3) If auto-coloring is used for pens or fills and **-l** is set then *label* may contain a
 C-format for integers (e.g., %3.3d) or just # and we will use the sequence number with the format to build the label
 entries.  Alternatively, give a list of comma-separated labels, or give no label if your segment headers contain label
-settings. **Note**: Due to this mechanism, if your single label actually contains commas, you must replace these with the
+settings.(4) Due to this mechanism, if your single label actually contains commas, you must replace these with the
 octal code for a comma (\\054).

@@ -183,12 +183,13 @@ Optional Arguments
 
 **-N**\ [**c**\|\ **r**]
     Do **not** clip symbols that fall outside map border [Default plots points
-    whose coordinates are strictly inside the map border only]. The option does not apply to lines and polygons
-    which are always clipped to the map region. For periodic (360-longitude)
+    whose coordinates are strictly inside the map border only]. For periodic (360-longitude)
     maps we must plot all symbols twice in case they are clipped by the repeating
     boundary. The |-N| will turn off clipping and not plot repeating symbols.
     Use **-Nr** to turn off clipping but retain the plotting of such repeating symbols, or
     use **-Nc** to retain clipping but turn off plotting of repeating symbols.
+    **Note**: A plain |-N| may also be used with lines or polygons but note that this deactivates
+    any consideration of periodicity (e.g., longitudes) and may have unintended consequences.
 
 .. _-Q:
 

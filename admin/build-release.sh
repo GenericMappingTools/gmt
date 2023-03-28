@@ -73,7 +73,9 @@ fi
 if [ $(which cmake) = "/opt/local/bin/cmake" ]; then
 	DISTRO=MacPorts
 elif [ $(which cmake) = "/usr/local/bin/cmake" ]; then
-	DISTRO=HomeBrew
+	DISTRO=HomeBrew1
+elif [ $(which cmake) = "/opt/homebrew/bin/cmake" ]; then
+	DISTRO=HomeBrew2
 else	# Requires either MacPorts of HomeBrew
 	echo 'build-release.sh: Error: macports or homebrew installations are not found.' >&2
 	exit 1

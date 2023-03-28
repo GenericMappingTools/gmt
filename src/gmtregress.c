@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -558,6 +558,7 @@ GMT_LOCAL double gmtregress_L2_scale (struct GMT_CTRL *GMT, double *ey, double *
 	gmt_M_unused(GMT); gmt_M_unused(ey);
 	W_sum = gmtregress_gmt_sum (W, n);
 	scale = sqrt ((par[GMTREGRESS_N_EFF] - 2)*par[GMTREGRESS_MISFT] / par[GMTREGRESS_N_EFF]);	/* Undo the previous (n_eff-2)/n_eff division */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtregress_L2_scale: W_sum = %lg scale = %lg\n", W_sum, scale);
 	return (scale);
 }
 
@@ -800,6 +801,7 @@ GMT_LOCAL double gmtregress_LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *
 	b[0] = (part1 + part2) / (2.0 * sum_uv);
 	b[1] = (part1 - part2) / (2.0 * sum_uv);
 	r = sum_uv / sqrt (sum_u2 * sum_v2);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtregress_LSxy_regress1D_basic: r = %lg\n", r);
 	gmtregress_ones (W, n);			/* Unit weights */
 	for (p = 0; p < 2; p++) {	/* Compute E from vertical y-residuals for both solutions to the slope */
 		a[p] = mean_y - b[p] * mean_x;	/* Trial intercept */
@@ -838,6 +840,7 @@ GMT_LOCAL double gmtregress_LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, do
 	sy = gmt_std_weighted (GMT, V, w[GMT_Y], 0.0, n);
 	gmtregress_eval_product (U, U, Q, n);	/* Compute Q[i] = u[i] * u[i] */
 	sum_u2 = gmtregress_gmt_sum (Q, n);	/* Get sum of u*u */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtregress_LSRMA_regress1D: sum_u2 = %lg\n", sum_u2);
 	par[GMTREGRESS_SLOPE] = sy / sx;
 	if (r < 0.0) par[GMTREGRESS_SLOPE] = -par[GMTREGRESS_SLOPE];	/* Negative correlation means negative slope */
 	par[GMTREGRESS_ICEPT] = par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN];

@@ -128,7 +128,8 @@ Optional Arguments
 
 **-D**\ *template*
     Dump contours as data line segments; no plotting takes place.
-    Append filename template which may contain C-format specifiers.
+    Append filename template which may contain C language
+    `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_ format specifiers.
     If no filename template is given we write all lines to standard output.
     If filename has no specifiers then we write all lines to a single file.
     If a float format (e.g., %6.2f) is found we substitute the contour z-value.

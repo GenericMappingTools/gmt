@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdview"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create 3-D perspective image or surface mesh from a grid"
-#define THIS_MODULE_KEYS	"<G{,CC(,GG(,IG(,>X}"
+#define THIS_MODULE_KEYS	"<G{,CC(,GG(,zI(,IG(,>X}"
 #define THIS_MODULE_NEEDS	"Jg"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Ec")
 
@@ -532,6 +532,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
+			case 'z':	/* One image. This is an undocumented fake option but one that lets externals pass both images and grids for draping. */
 			case 'G':	/* One grid or image or three separate r,g,b grids */
 				Ctrl->G.active = true;
 				for (k = 0, n_commas = 0; opt->arg[k]; k++) if (opt->arg[k] == ',') n_commas++;
@@ -761,6 +762,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 
 	if (Ctrl->G.active) {
 		if (gmt_M_file_is_image (Ctrl->G.file[0])) no_cpt = true;
+		if (no_cpt) Ctrl->Q.cpt = false;
 		if (Ctrl->G.n == 3)
 			Ctrl->G.image = true;
 	}
@@ -877,8 +879,10 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 	/* Determine what wesn to pass to map_setup */
 
-	if (!GMT->common.R.active[RSET])	/* No -R, use grid region */
-		gmt_set_R_from_grd (GMT, Topo->header);
+	if (!GMT->common.R.active[RSET]) {			/* No -R, use grid region */
+		gmt_set_R_from_grd(GMT, Topo->header);
+		GMT->common.R.active[RSET] = true;		/* Needed to have gmtapi_import_image pick the right branch when draping image is referenced */
+	}
 
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
 
@@ -1295,36 +1299,8 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->T.active) {	/* Plot image as polygonal pieces. Here, -JZ is not set */
-		double *xx = NULL, *yy = NULL;
-		struct GMT_FILL fill;
-		struct GMT_DATASEGMENT *S = gmt_get_segment (GMT, 2);
-		gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
-
-		GMT_Report (API, GMT_MSG_INFORMATION, "Tiling without interpolation\n");
-
-		if (Ctrl->T.outline) gmt_setpen (GMT, &Ctrl->T.pen);
-		S->data = gmt_M_memory (GMT, NULL, 2, double *);
-		S->n_columns = 2;
-		gmt_M_grd_loop (GMT, Z, row, col, ij) {	/* Compute rgb for each pixel */
-			if (gmt_M_is_fnan (Topo->data[ij]) && Ctrl->T.skip) continue;
-			if (use_intensity_grid && Ctrl->T.skip && gmt_M_is_fnan (Intens->data[ij])) continue;
-			gmt_get_fill_from_z (GMT, P, Topo->data[ij], &fill);
-			if (use_intensity_grid)
-				gmt_illuminate (GMT, Intens->data[ij], fill.rgb);
-			else
-				gmt_illuminate (GMT, Ctrl->I.value, fill.rgb);
-			n = gmt_graticule_path (GMT, &xx, &yy, 1, true, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
-			gmt_setfill (GMT, &fill, Ctrl->T.outline);
-			S->data[GMT_X] = xx;	S->data[GMT_Y] = yy;	S->n_rows = n;
-			gmt_geo_polygons (GMT, S);
-			gmt_M_free (GMT, xx);
-			gmt_M_free (GMT, yy);
-		}
-		S->data[GMT_X] = S->data[GMT_Y] = NULL;	/* Since xx and yy was set to NULL but not data... */
-		gmt_free_segment (GMT, &S);
-	}
-
+	if (Ctrl->T.active)	/* Plot colored graticules instead */
+		gmt_plot_image_graticules (GMT, Topo, Intens, P, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL);
 	else if (Ctrl->Q.mode == GRDVIEW_IMAGE) {	/* Plot image */
 		int nx_i, ny_i, ip, jp, min_i, max_i, min_j, max_j, dist;
 		int done, layers, last_i, last_j;

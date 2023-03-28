@@ -50,7 +50,7 @@ Optionally, append **+c**\ *col* to select the input column with the coordinates
 i.e., the first column]. If the custom cycle **c** is chosen then you must also supply the *period* and optionally
 any *phase* [default is 0] in the same units of your data (i.e., no units should be appended to **-w**).
 
-**Note**: Coordinates for **w** in the range 0-1 correspond to the first day of the week [Monday] but can be changed
-via :term:`TIME_WEEK_START`. **Note**: If a temporal cycle is indicated then we implicitly set **-f** to indicate
+**Notes**: (1) Coordinates for **w** in the range 0-1 correspond to the first day of the week [Monday] but can be changed
+via :term:`TIME_WEEK_START`. (2) If a temporal cycle is indicated then we implicitly set **-f** to indicate
 absolute time (unless already set separately). See the cookbook section :ref:`Examining data cycles: The -w option
 <option_-w>` for examples.

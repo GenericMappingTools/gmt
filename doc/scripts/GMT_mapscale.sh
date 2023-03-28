@@ -6,7 +6,7 @@ gmt begin GMT_mapscale
 	h=$(gmt mapproject -Wh -Di)
 	h=$(gmt math -Q $h 2 DIV =)
 	lat=$(echo 0 $h | gmt mapproject -I -Di -o1)
-	gmt plot -Wfaint -A -N << EOF
+	gmt plot -Wfaint -A << EOF
 >
 0	$lat
 40	$lat

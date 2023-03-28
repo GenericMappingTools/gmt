@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -579,6 +579,7 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 #endif
 #endif
 	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, 2, In, &Grid);	/* true if input is a read-only array */
+	if (new_grid) GMT_Report (API, GMT_MSG_DEBUG, "Input grid duplicated as it was read-only\n");
 
 	/* If new_grid is true then Grid points to a duplicate of In but will have two boundary rows,columns padding.
 	 * If new_grid is false then Grid simply points to In which presumably has two boundary row,column padding.

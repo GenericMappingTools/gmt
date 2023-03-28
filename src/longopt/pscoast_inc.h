@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	{ 0, 'A', "area",
 	          "",                  "",
 	          "a,l,r,p",           "antarctica,lakes,riverlakes,percentexcl" },
-	{ 0, 'C', "lakes",
+	{ 0, 'C', "lakes|riverfill",
 	          "",                  "",
 	          "l,r",               "lakes,riverlakes" },
 	{ 0, 'D', "resolution",

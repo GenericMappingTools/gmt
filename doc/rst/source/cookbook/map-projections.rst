@@ -895,7 +895,7 @@ Cylindrical equidistant projection (**-Jq** **-JQ**)
 
 **Parameters**
 
-- Optionally, the central meridian (*lon0*) [default is the middle of the map map].
+- Optionally, the central meridian (*lon0*) [default is the middle of the map].
 - Optionally, the standard parallel (*lat0*)  [default is the equator]. When supplied, the central meridian (*lon0*)
   must be supplied as well.
 - The *scale*  in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jq**) or map *width* in

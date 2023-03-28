@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -547,7 +547,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "     CSCH       1 1  ");	GMT_Usage (API, -21, "csch (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     PCDF       2 1  ");	GMT_Usage (API, -21, "Poisson cumulative distribution function for x = A and lambda = B"); 
 	GMT_Message (API, GMT_TIME_NONE, "     DDT        1 1  ");	GMT_Usage (API, -21, "d(A)/dt Central 1st derivative"); 
-	GMT_Message (API, GMT_TIME_NONE, "     D2DT2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dt^2 2nd derivative"); 
+	GMT_Message (API, GMT_TIME_NONE, "     D2DT2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dt^2 Central 2nd derivative"); 
 	GMT_Message (API, GMT_TIME_NONE, "     D2R        1 1  ");	GMT_Usage (API, -21, "Converts Degrees to Radians"); 
 	GMT_Message (API, GMT_TIME_NONE, "     DEG2KM     1 1  ");	GMT_Usage (API, -21, "Converts Spherical Degrees to Kilometers");
 	GMT_Message (API, GMT_TIME_NONE, "     DENAN      2 1  ");	GMT_Usage (API, -21, "Replace NaNs in A with values from B"); 
@@ -1963,7 +1963,7 @@ GMT_LOCAL int gmtmath_DDT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 }
 
 GMT_LOCAL int gmtmath_D2DT2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: D2DT2 1 1 d^2(A)/dt^2 2nd derivative.  */
+/*OPERATOR: D2DT2 1 1 d^2(A)/dt^2 Central 2nd derivative.  */
 {
 	uint64_t s, row;
 	double c, left, next_left;

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"gpsgridder"
 #define THIS_MODULE_MODERN_NAME	"gpsgridder"
 #define THIS_MODULE_LIB		"geodesy"
-#define THIS_MODULE_PURPOSE	"Interpolate GPS strains using Green's functions for elastic deformation"
+#define THIS_MODULE_PURPOSE	"Interpolate GPS velocities using Green's functions for elastic deformation"
 #define THIS_MODULE_KEYS	"<D{,ND(,TG(,CD)=f,GG}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:>RVbdefghinoqrs" GMT_ADD_x_OPT
