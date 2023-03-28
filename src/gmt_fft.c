@@ -1659,7 +1659,7 @@ int GMT_FFT_2D (void *V_API, gmt_grdfloat *data, unsigned int n_columns, unsigne
 	int status, use;
 	struct GMTAPI_CTRL *API = gmtfft_get_api_ptr (V_API);
 	struct GMT_CTRL *GMT = API->GMT;
-	assert (mode & GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
+	assert ((mode & GMT_FFT_COMPLEX) || (mode & GMT_FFT_NO_DEMUX)); /* GMT_FFT_REAL not implemented yet */
 	use = gmtfft_2d_selection (GMT, n_columns, n_rows);
 
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "2-D FFT using %s\n", GMT_fft_algo[use]);
