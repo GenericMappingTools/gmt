@@ -45,7 +45,7 @@ less frequently sampled than the input. The |-Q| option is for the error analysi
 mode and expects the input file to contains the filtered depths. Finally, one should know that
 **dimfilter** will not produce a smooth output as other spatial filters
 do because it returns a minimum median out of *N* medians of *N*
-sectors. The output can be rough unless the input data is noise-free.
+sectors. The output can be rough unless the input data are noise-free.
 Thus, an additional filtering (e.g., Gaussian via :doc:`grdfilter`) of the
 DiM-filtered data is generally recommended.
 

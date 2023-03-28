@@ -58,23 +58,23 @@
    * - :ref:`Hammer equal area <-Jh>`
      - **-Jh**\|\ **H**
      - **-Jhammer/**
-     - |lon0|/\ *scale*\|\ *width*
+     - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Sinusoidal equal area <-Ji>`
      - **-Ji**\|\ **I**
      - **-Jsinu/**
-     - |lon0|/\ *scale*\|\ *width*
+     - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Miller cylindrical <-Jj>`
      - **-Jj**\|\ **J**
      - **-Jmill/**
-     - |lon0|/\ *scale*\|\ *width*
+     - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Eckert IV equal area <-Jk>`
      - **-Jkf**\|\ **Kf**
      - **-Jeck4/**
-     - |lon0|/\ *scale*\|\ *width*
+     - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Eckert VI equal area <-Jk>`
      - **-Jks**\|\ **Ks**
      - **-Jeck6/**
-     - |lon0|/\ *scale*\|\ *width*
+     - [|lon0|/]\ *scale*\|\ *width*
    * - :ref:`Lambert conic conformal <-Jl>`
      - **-Jl**\|\ **L**
      - **-Jlcc/**
@@ -90,7 +90,7 @@
    * - :ref:`Oblique Mercator, 1: origin and azim <-Jo>`
      - **-Jo**\|\ **O**\ [**a**\|\ **A**]
      - **-Jomerc/**
-     - |lon0|/|lat0|/\ *azim*/*scale*\|\ *width* [**+v**]
+     - |lon0|/|lat0|/\ *azim*/*scale*\|\ *width*\ [**+v**]
    * - :ref:`Oblique Mercator, 2: two points <-Jo>`
      - **-Jo**\|\ **O**\ [**b**\|\ **B**]
      - **-Jomerc/**

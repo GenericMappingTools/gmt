@@ -1705,7 +1705,7 @@ GMT strings using the Standard+ encoding:
 | ``10@+-3 @Angstr@om`` = 10\ :math:`^{-3}` Ångstrøm
 | ``Stresses are @~s@~@+*@+@-xx@- MPa`` = Stresses are :math:`\sigma^{*}_{xx}` MPa
 | ``Se@nor Gar@con`` = Señor Garçon
-| ``M@!\305anoa stra@se`` = Manoa straße
+| ``M@!\305anoa Stra@se`` = Mānoa Straße
 | ``A@#cceleration@# (ms@+-2@+)`` = ACCELERATION (ms\ :math:`^{-2}`)
 
 The option in :doc:`/text` to draw a
@@ -2324,9 +2324,8 @@ conventions for netCDF grids. Thus, products created under those
 conventions (provided the grid is 2-, 3-, 4-, or 5-dimensional) can be
 read directly by GMT and the netCDF grids written by GMT can be read
 by other programs that conform to those conventions. Three such programs are
-`ncview <https://cirrus.ucsd.edu/~pierce/software/ncview/index.html>`_, `Panoply
-<http://www.giss.nasa.gov/tools/panoply/>`_, and `ncBrowse
-<https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_ ; others can be found on the
+`ncview <https://cirrus.ucsd.edu/~pierce/software/ncview/index.html>`_, and `Panoply
+<http://www.giss.nasa.gov/tools/panoply/>`_; others can be found on the
 `netCDF website <http://www.unidata.ucar.edu/software/netcdf/software.html>`_.
 Note that although many additional programs can read netCDF files, some are unable
 to read netCDF 4 files (if data compression has been applied).

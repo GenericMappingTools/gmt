@@ -9,8 +9,8 @@ The **-s** option
 **Description**
 
 The **-s** option can be used to suppress output for records whose *z*-value equals NaN [default outputs all records].
-Optionally, supply a comma-separated list of all columns or column ranges to consider for this NaN test [default only
-considers the third data column (i.e., *cols = 2*)]. Column ranges must be given in the format
+Optionally, supply a comma-separated list of all *output* columns or column ranges to consider for this NaN test [default only
+considers the third output data column (i.e., *cols = 2*)]. Column ranges must be given in the format
 *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if not specified. The following modifiers are supported:
 
 - **+r** to reverse the suppression, i.e., only output the records whose *z*-value equals NaN.

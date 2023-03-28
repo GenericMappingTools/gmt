@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
 	{ 0, 'C', "crossprofile",
 	          "",                        "",
 	          "a,v,d,f,l,r",             "alternate,wesn,deviant,fixed,left,right" },
-	{ 0, 'D', "linefile",                "", "", "", "" },
+	{ 0, 'D', "linefile|dfile",          "", "", "", "" },
 	{ 0, 'E', "profile",
 	          "",                        "",
 	          "a,c,d,g,i,l,n,o,r",       "azimuth,connect,distance,degrees,incr,length,npoints,origin,radius" },

@@ -292,6 +292,8 @@ FORMAT Parameters
         **G**      Same as **F** but with a leading space before suffix
         ========   =================================================================
 
+        **Note**: With :term:`FORMAT_GEO_MAP`, **F** and **G** may also be used as a prefix.
+
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax, see :term:`FORMAT_FLOAT_OUT`) to be used when plotting double
         precision floating point numbers along plot frames and contours [default is **%.12g**].

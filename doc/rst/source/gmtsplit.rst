@@ -95,7 +95,7 @@ Optional Arguments
     *z\_filter* is non-zero, the entire series of input z values is
     filtered before any segmentation is performed, so that the only edge
     effects in the filtering will happen at the beginning and end of the
-    complete data stream. If *xy\_filter* is non-zero, the data is first
+    complete data stream. If *xy\_filter* is non-zero, the data are first
     divided into segments and then the x,y values of each segment are
     filtered separately. This may introduce edge effects at the ends of
     each segment, but prevents a low-pass x,y filter from rounding off

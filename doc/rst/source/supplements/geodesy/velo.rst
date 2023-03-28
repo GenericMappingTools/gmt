@@ -281,7 +281,7 @@ Optional Arguments
 
 **-W**\ [*pen*][**+c**\ [**f**\|\ **l**]]
     Set pen attributes for velocity arrows, ellipse circumference and
-    fault plane edges. [Defaults: width = default, color = black, style = solid].
+    fault plane edges. [Defaults: width = 0.25p, color = black, style = solid].
     If the modifier **+cl** is appended then the color of the pen are updated from the CPT (see
     |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill only [Default].  Use just **+c** to set both

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -573,12 +573,44 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSCONVERT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-#ifdef WIN32
-	if (psconvert_ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
-		C->G.file = strdup (GMT_GS_EXECUTABLE);     /* Fall back to this default and expect a miracle */
+#ifdef JULIA_GHOST_JLL
+	/* In Julia when using the precompiled Artifacts, the Ghost is also shipped with but when gmt_init makes
+	   calls to psconvert it doesn't set -G with the path to the Ghostscript_jll executable and those processes
+	   fail (mostly modern mode stuff). The solution is to try to read the gs path from ~/.gmt/ghost_jll_path.txt 
+	   This code should only be executed by binaries created Julia's BinaryBuilder.
+	 */
+	bool found_gs = false;
+	char line[GMT_LEN512] = {""}, file[GMT_LEN256] = {""};
+	FILE *fp = NULL;
+	sprintf(file, "%s/ghost_jll_path.txt", GMT->session.USERDIR);
+	if ((fp = fopen (file, "r")) != NULL) {
+		while (fgets (line, GMT_LEN512, fp) && line[0] == '#') {}
+		fclose(fp);
+		gmt_chop(line);		/* Chop of the newline */
+		if (!access (line, F_OK)) {		/* GS binary found */
+			C->G.file = strdup (line);
+			found_gs = true;
+		}
+		else
+			perror("Error Description while accessing the GS executable:");
+	}
+	if (!found_gs) {	/* Shit. But try still the generic non-Julian paths */
+		#ifdef WIN32
+			if (psconvert_ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
+				C->G.file = strdup (GMT_GS_EXECUTABLE);     /* Fall back to this default and expect a miracle */
+		#else
+			C->G.file = strdup (GMT_GS_EXECUTABLE);
+		#endif
+	}
 #else
-	C->G.file = strdup (GMT_GS_EXECUTABLE);
+	#ifdef WIN32
+		if (psconvert_ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
+			C->G.file = strdup (GMT_GS_EXECUTABLE);     /* Fall back to this default and expect a miracle */
+	#else
+		C->G.file = strdup (GMT_GS_EXECUTABLE);
+	#endif
 #endif
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Ghostscript executable full name: \n", C->G.file);
 	C->D.dir = strdup (".");
 	C->T.quality = GMT_JPEG_DEF_QUALITY;	/* Default JPG quality */
 
@@ -737,7 +769,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"a 'w' in the file extension. So, if the output is tif (-Tt) the world "
 		"file is a .tfw, for jpeg a .jgw, and so on.  A few modifiers are available:");
 	GMT_Usage (API, 3, "+g Do a system call to gdal_translate and produce a true "
-		"eoTIFF image right away. The output file will have the extension "
+		"GeoTIFF image right away. The output file will have the extension "
 		".tiff. See the man page for other 'gotchas'. Automatically sets -A -P.");
 	GMT_Usage (API, 3, "+k Create a minimalist KML file that allows loading the "
 		"image in Google Earth. Note that for this option the image must be "
@@ -1418,10 +1450,12 @@ GMT_LOCAL int psconvert_pipe_ghost (struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 	}
 	else if (!strncmp (I->header->mem_layout, "TRP", 3)) {	/* Very cheap this one since is gs native order. */
 		junk_n = read (fd[0], I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
+		GMT_Report (API, GMT_MSG_DEBUG, "psconvert_pipe_ghost: Read %d bytes\n", junk_n);
 	}
 	else {	/* For MEX, probably */
 		for (row = 0; row < nRows; row++) {
 			junk_n = read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
+			GMT_Report (API, GMT_MSG_DEBUG, "psconvert_pipe_ghost: Read %d bytes row %d\n", junk_n, row);
 			for (col = n = 0; col < nCols; col++)
 				for (band = 0; band < nBands; band++)
 					I->data[row + col*nRows + band*nXY] = tmp[n++];	/* Band interleaved, the best for MEX. */
@@ -1564,7 +1598,7 @@ GMT_LOCAL int psconvert_make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) 
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL psconvert_gs_is_good (int major, int minor) {
+GMT_LOCAL bool psconvert_gs_is_good (int major, int minor) {
 	/* Return true if the gs version works with transparency */
 	if (major > 9) return true;	/* 10 should work as of 10.0.0 unless there are future regressions */
 	if (major < 9) return false;	/* Before 9 we think transparency was questionable */

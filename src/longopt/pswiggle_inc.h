@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,8 +36,8 @@ static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for this m
                   "",                  "",
                   "n,p",               "negative,positive" },
 	{ 0, 'I', "fixedazim",         "", "", "", "" },
-	{ 0, 'T', "trackpen",          "", "", "", "" },
-	{ 0, 'W', "outlinepen",        "", "", "", "" },
+	{ 0, 'T', "trackpen|track",    "", "", "", "" },
+	{ 0, 'W', "outlinepen|pen",    "", "", "", "" },
 	{ 0, 'Z', "ampscale",          "", "", "", "" },
 	{ 0, '\0', "", "", "", "", ""}  /* End of list marked with empty option and strings */
 };

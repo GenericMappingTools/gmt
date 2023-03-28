@@ -70,9 +70,9 @@ caps are supported as follows:
      - Toggles superscript on/off
    * - @#
      - Toggles small caps on/off
-   * - @;\ *color*
+   * - @;\ *color*\ ;
      - Changes the font color (@;; resets it)
-   * - @:\ *size*
+   * - @:\ *size*\ :
      - Changes the font size (@:: resets it)
    * - @\_
      - Toggles underline on/off

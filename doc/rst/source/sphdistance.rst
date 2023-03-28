@@ -104,7 +104,7 @@ Optional Arguments
 **-L**\ *unit*
     Specify the unit used for distance calculations. Choose among **d**
     (spherical degree), **e** (m), **f** (feet), **k** (km), **M**
-    (mile), **n** (nautical mile) or **u** survey foot.
+    (mile), **n** (nautical mile) or **u** (survey foot).
 
 .. _-N:
 
