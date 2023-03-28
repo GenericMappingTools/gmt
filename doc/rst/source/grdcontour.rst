@@ -143,7 +143,7 @@ Optional Arguments
 
     E.g., just %c gives two files, just %f would
     separate segments into one file per contour level, and %d would write all segments
-    to individual files. See manual page for more examples.
+    to individual files. See `printf(3) <https://linux.die.net/man/3/printf>`__ for more examples.
 
 .. _-F:
 
