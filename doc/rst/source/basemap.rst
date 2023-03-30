@@ -493,7 +493,7 @@ Arbitrary rotation
 ~~~~~~~~~~~~~~~~~~
 
 If you need to plot a map but have it rotated about a vertical axis then
-use the -p option.  For instance, to rotate the basemap below 90
+use the **-p** option.  For instance, to rotate the basemap below 90
 degrees about an axis centered on the map, try
 
    ::
