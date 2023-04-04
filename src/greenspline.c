@@ -281,7 +281,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Evaluate solution at input locations and report misfit statistics. "
 		"Append a filename to save all data with two extra columns for model and misfit. "
 		"If -C+i|c are used then we instead report the history of model variance and rms misfit.");
-	GMT_Usage (API, 3, "n: Add two last output columns with model and data norms.");
+	GMT_Usage (API, 3, "+n: Add two last output columns with model and data norms.");
 	GMT_Usage (API, 1, "\n-I<dx>[/<dy>[/<dz>]]");
 	GMT_Usage (API, -2, "Specify a regular set of output locations. Give equidistant increment for each dimension. "
 		"Requires -R for specifying the output domain.");
