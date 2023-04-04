@@ -2646,7 +2646,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			unsigned int width = urint (floor (log10 ((double)n_use))) + 1;	/* Width of maximum integer needed */
 			uint64_t e, p;
 			gmt_grdfloat *current = NULL, *previous = NULL;
-			double l2_sum_n = 0.0, l2_sum_e = 0.0, predicted;
+			double l2_sum_n = 0.0, l2_sum_e = 0.0, predicted, modnorm = 0.0;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
 			char file[PATH_MAX] = {""};
 			struct GMT_SINGULAR_VALUE *eigen = NULL;
@@ -2676,12 +2676,10 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, (double)e, GMT_SVD_EIGEN_NUMBER_CUTOFF);
 
 				/* obs (hence alpha) now has the solution for the coefficients based on the first e eigenvalues */
-				if (Ctrl->E.active) {	/* Compute the history of model misfit */
-					double modnorm = 0.0;
-					for (k = 0; k < nm; k++) {
+				if (Ctrl->E.norm) {	/* Compute the history of model misfit */
+					for (k = 0; k < nm; k++)
 						modnorm += obs[k] * obs[k];
-						S->data[4][e] = modnorm;	/* Model norm at this point */
-					}
+					S->data[4][e] = modnorm;	/* Model norm at this point */
 				}
 
 				if (Ctrl->Q.active) {	/* Derivatives of solution */
