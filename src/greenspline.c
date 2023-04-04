@@ -569,7 +569,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 					Ctrl->D.information = strdup (opt->arg);
 				}
 				break;
-			case 'E':	/* Evaluate misfit -E[<file>]*/
+			case 'E':	/* Evaluate misfit -E[<file>][+n] */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				if (opt->arg) {
 					if ((c = strstr (opt->arg, "+n"))) {
