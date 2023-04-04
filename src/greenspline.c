@@ -572,7 +572,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 			case 'E':	/* Evaluate misfit -E[<file>]*/
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				if (opt->arg) {
-					if ((c = strstr (opt->arg, "+n")) == NULL) {
+					if ((c = strstr (opt->arg, "+n"))) {
 						Ctrl->E.norm = true;
 						c[0] = '\0';	/* Hide modifier */
 					}
