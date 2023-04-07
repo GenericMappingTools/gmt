@@ -311,6 +311,14 @@ enum PSL_enum_err {PSL_BAD_VALUE = -99,	/* Bad value */
 	PSL_NO_SESSION,		/* No active session */
 	PSL_NO_ERROR = 0};	/* No errors, all is OK */
 
+/* WHen we scan PostScript files to fine where the highres bounding box
+ * start we know we have a line of a fixed length with plenty of space to
+ * be rewritten without having to duplicate the entire file. As of now, we
+ * enforce 64 characters for that line and use this amount to fseek back
+ * to overwrite the highres line with actual values determined by gs. */
+	
+#define PSL_HIGHRES_LINE_LEN	64
+
 /*--------------------------------------------------------------------
  *			PSL PARAMETERS DEFINITIONS
  *--------------------------------------------------------------------*/
