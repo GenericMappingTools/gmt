@@ -1049,8 +1049,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				/* u_off is width of the label placed on the right side , while v_off, if > 0, is the extra height of the label beyond the width of the bar */
 				size_t ylen = strlen (unit);
 				if (strchr (unit, '\\')) ylen = (ylen > 3) ? ylen - 3 : 0;
-				u_off = MAX (0.0, GMT->current.setting.map_label_offset[GMT_Y]) + (0.5+ylen) * GMT_LET_WIDTH * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;
-				v_off = 0.5 * (GMT_LET_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH - width);
+				u_off = MAX (0.0, GMT->current.setting.map_annot_offset[GMT_SECONDARY]) + (0.5+ylen) * GMT_LET_WIDTH * GMT->current.setting.font_annot[GMT_SECONDARY].size / PSL_POINTS_PER_INCH;
+				v_off = 0.5 * (GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_SECONDARY].size / PSL_POINTS_PER_INCH - width);
 			}
 			/* Adjust clearances for the panel */
 			if (flip & PSSCALE_FLIP_ANNOT) dim[YHI] += annot_off + v_sup_adjust; else dim[YLO] += annot_off + v_sup_adjust;
@@ -1096,8 +1096,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				/* u_off is ~half-width of the label placed on top of the vertical bar, while v_off is the extra height needed to accommodate the label */
 				size_t ylen = strlen (unit);
 				if (strchr (unit, '\\')) ylen = (ylen > 3) ? ylen - 3 : 0;
-				u_off = 0.5 * MAX (0.0, 1.3*ylen * GMT_LET_WIDTH * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH - width);
-				v_off = MAX (0.0, GMT->current.setting.map_label_offset[GMT_Y]) + GMT->current.setting.font_label.size * GMT_LET_HEIGHT / PSL_POINTS_PER_INCH;
+				u_off = 0.5 * MAX (0.0, 1.3*ylen * GMT_LET_WIDTH * GMT->current.setting.font_annot[GMT_SECONDARY].size / PSL_POINTS_PER_INCH - width);
+				v_off = MAX (0.0, GMT->current.setting.map_annot_offset[GMT_SECONDARY]) + GMT->current.setting.font_annot[GMT_SECONDARY].size * GMT_LET_HEIGHT / PSL_POINTS_PER_INCH;
 			}
 			/* Adjust clearances for the panel */
 			if (flip & PSSCALE_FLIP_LABEL) dim[XLO] += label_off; else dim[XHI] += label_off;
@@ -1453,11 +1453,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			gmt_map_text (GMT, xleft + 0.5 * length, y_label, &GMT->current.setting.font_label, label, 0.0, Label_justify, form);
 		}
 		if (unit[0]) {	/* Add unit label */
-			form = gmt_setfont (GMT, &GMT->current.setting.font_label);
+			form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_SECONDARY]);
 			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the left */
-				gmt_map_text (GMT, xleft  - elength[XLO] - GMT->current.setting.map_label_offset[GMT_Y], 0.5 * width, &GMT->current.setting.font_label, unit, 0.0, PSL_MR, form);
+				gmt_map_text (GMT, xleft  - elength[XLO] - GMT->current.setting.map_annot_offset[GMT_SECONDARY], 0.5 * width, &GMT->current.setting.font_annot[GMT_SECONDARY], unit, 0.0, PSL_MR, form);
 			else
-				gmt_map_text (GMT, xright + elength[XHI] + GMT->current.setting.map_label_offset[GMT_Y], 0.5 * width, &GMT->current.setting.font_label, unit, 0.0, PSL_ML, form);
+				gmt_map_text (GMT, xright + elength[XHI] + GMT->current.setting.map_annot_offset[GMT_SECONDARY], 0.5 * width, &GMT->current.setting.font_annot[GMT_SECONDARY], unit, 0.0, PSL_ML, form);
 		}
 		if (P->is_wrapping) {	/* Add cyclic glyph */
 			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
@@ -1818,11 +1818,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			}
 		}
 		if (unit[0]) {	/* Add unit label */
-			form = gmt_setfont (GMT, &GMT->current.setting.font_label);
+			form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_SECONDARY]);
 			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the bottom */
-				gmt_map_text (GMT, xleft  - GMT->current.setting.map_label_offset[GMT_Y] - elength[XLO], 0.5 * width, &GMT->current.setting.font_label, unit, -90.0, PSL_TC, form);
+				gmt_map_text (GMT, xleft  - GMT->current.setting.map_annot_offset[GMT_SECONDARY] - elength[XLO], 0.5 * width, &GMT->current.setting.font_annot[GMT_SECONDARY], unit, -90.0, PSL_TC, form);
 			else
-				gmt_map_text (GMT, xright + GMT->current.setting.map_label_offset[GMT_Y] + elength[XHI], 0.5 * width, &GMT->current.setting.font_label, unit, -90.0, PSL_BC, form);
+				gmt_map_text (GMT, xright + GMT->current.setting.map_annot_offset[GMT_SECONDARY] + elength[XHI], 0.5 * width, &GMT->current.setting.font_annot[GMT_SECONDARY], unit, -90.0, PSL_BC, form);
 		}
 		if (P->is_wrapping) {	/* Add cyclic glyph */
 			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
