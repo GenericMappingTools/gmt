@@ -35,14 +35,14 @@ from 1 (shoreline) to 4 (lake inside island inside lake inside land).
 Source is either W (World Vector Shoreline), C (CIA World Data Bank
 II), or A (Atlas of the Cryosphere (Antarctica only)); lower case is
 used if a lake is a river-lake. The *west east south
-north* is the enclosing rectangle, *area* is the polygon area in km^2
+north* is the enclosing rectangle, *area* is the polygon area in km\ :sup:`2`
 while *f\_area* is the actual area of the ancestor polygon, *container*
 is the ID of the polygon that contains this polygon (-1 if none), and
 *ancestor* is the ID of the polygon in the full resolution set that was
 reduced to yield this polygon (-1 if full resolution since there is no
 ancestor). For line data the header is simply *ID npoints
 hierarchical-level source west east south north*. For more information
-about the file formats, see TECHNICAL INFORMATION below.
+about the file formats, see :ref:`techinfo` below.
 
 Required Arguments
 ------------------
@@ -182,6 +182,7 @@ are different from the netCDF-formatted files used by GMT in the
 modules :doc:`gmtselect </gmtselect>`, :doc:`grdlandmask </grdlandmask>`,
 or :doc:`coast </coast>`.
 
+.. _techinfo:
 
 Technical Information
 ---------------------
@@ -238,7 +239,7 @@ References
 Bohlander, J. and T. Scambos. 2007, Antarctic coastlines and grounding line
 derived from MODIS Mosaic of Antarctica (MOA). Boulder, Colorado USA:
 National Snow and Ice Data Center. Digital media. Accessed 24 April 2008.
-Via Atlas of the Cryosphere: http://nsidc.org/data/atlas/.
+Via Atlas of the Cryosphere: https://nsidc.org/MMS/atlas/cryosphere_atlas_north.html.
 
 Douglas, D. H., and T. K. Peucker, 1973, Algorithms for the reduction of
 the number of points required to represent a digitized line of its

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -152,6 +152,8 @@ struct GMT_DEFAULTS {
 	double map_title_offset;		/* Distance between lowermost annotation (or label) and base of plot title [14p] */
 	double map_vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
 	double map_graph_extension;		/* If map_frame_type is graph, how must longer to make axis length. [7.5%] */
+	double map_graph_origin[2];		/* x- and y-origin of graph axis if graph-origin is in use [data 0/0] */
+	double map_graph_shift;			/* Extra offset for title to avoid overwriting the centered y-axis */
 	unsigned int map_annot_oblique;	/* Controls annotations and tick angles etc. [GMT_OBL_ANNOT_ANYWHERE] */
 	unsigned int map_grid_cross_type[2];	/* 0 = normal cross, 1 = symmetric tick, 2 = asymmetric tick */
 	unsigned int map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
@@ -161,12 +163,14 @@ struct GMT_DEFAULTS {
 	double map_label_mode[2];		/* If label is relative to annotation (0) or axis (1) for x/t [0/0] */
 	bool map_annot_oblique_set;		/* true if user changed map_annot_oblique via a gmt.conf or --par=val */
 	bool map_logo;			/* Plot time and map projection on map [false] */
+	bool map_graph_centered;			/* Center any GRAPH frames [false] */
 	struct GMT_PEN map_default_pen;		/* Default pen for most pens [0.25p] */
 	struct GMT_PEN map_frame_pen;		/* Pen attributes for map boundary [1.25p] */
 	struct GMT_PEN map_grid_pen[2];		/* Pen attributes for primary and secondary gridlines [default,black/thinner,black] */
 	struct GMT_PEN map_tick_pen[2];		/* Pen attributes for primary and secondary tickmarks [thinner,black] */
 	char map_frame_axes[6];			/* Which axes to draw and annotate ["WESNZ"]  */
 	char map_annot_ortho[6];		/* Which axes have orthogonal annotations in linear projections ["we"] */
+	char map_graph_origin_txt[GMT_LEN256];	/* x- and y-origin modifier prior to parsing into double */
 	enum GMT_enum_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_minus, gmt_hyphen, gmt_lastsym } map_degree_symbol;
 	/* PROJ group */
 	double proj_scale_factor;		/* Central mapscale factor, typically 0.9996-1 (or -1 for default action) */

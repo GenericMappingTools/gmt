@@ -48,4 +48,4 @@ Footnote
 ~~~~~~~~
 
 .. [1]
-   These data are available from NCEI (www.ncei.noaa.gov).
+   These data are available from NCEI (https://www.ncei.noaa.gov/).

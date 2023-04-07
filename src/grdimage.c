@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdimage_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdimage"
 #define THIS_MODULE_MODERN_NAME	"grdimage"
@@ -99,6 +100,12 @@ struct GRDIMAGE_CTRL {
 		double rgb[4];	/* Pixel value for transparency in images */
 		double value;	/* If +z is used this z-value will give us the r/g/b via CPT */
 	} Q;
+	struct GRDIMAGE_T {	/* -T[s][o[<pen>]] */
+		bool active;
+		bool skip;
+		bool outline;
+		struct GMT_PEN pen;
+	} T;
 	struct GRDIMAGE_W {	/* -W */
 		bool active;
 	} W;
@@ -153,7 +160,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s %s%s [%s] [-C<cpt>] [-D[r]] [-Ei|<dpi>] "
 		"[-G<rgb>[+b|f]] [-I[<intensgrid>|<value>|<modifiers>]] %s[-M] [-N] %s%s[-Q[<color>][+z<value>]] "
-		"[%s] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[%s] [-T[+o[<pen>]][+s]] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]%s[%s]\n",
 		name, GMT_INGRID, GMT_J_OPT, extra[API->external], GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT, GMT_U_OPT,
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
@@ -216,6 +223,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Append an alternate <color> to change the transparent pixel for images [black], or alternatively");
 	GMT_Usage (API, 3, "+z Specify <value> to set transparent pixel color via CPT lookup.");
 	GMT_Option (API, "R");
+	gmt_pen_syntax (API->GMT, 'T', NULL, "Image the data without interpolation by painting polygonal tiles in the form [+o[<pen>]][+s].", NULL, 0);
+	GMT_Usage (API, 3, "+s Skip tiles for nodes with z = NaN [Default paints all tiles].");
+	GMT_Usage (API, 3, "+o to draw tile outline; optionally append <pen> [Default uses no outline].");
 	GMT_Option (API, "U,V,X,c,f,n,p,t,x,.");
 
 	return (GMT_MODULE_USAGE);
@@ -423,6 +433,21 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 						Ctrl->Q.transp_color = true;
 				}
 				if (c) c[0] = '+';	/* Restore the modifier */
+				break;
+			case 'T':	/* Tile plot -T[+s][+o<pen>] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				if (opt->arg[0]) {	/* Also got arguments */
+					if (strstr (opt->arg, "+s"))
+						Ctrl->T.skip = true;
+					if ((c = strstr (opt->arg, "+o"))) {
+						if (gmt_getpen (GMT, &c[2], &Ctrl->T.pen)) {
+							gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
+							n_errors++;
+						}
+						else
+							Ctrl->T.outline = true;
+					}
+				}
 				break;
 			case 'W':	/* Warn if no image, usually when called from grd2kml */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
@@ -1220,7 +1245,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1624,6 +1649,12 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 	}
 
+	if (Ctrl->T.active) {	/* Plot colored graticules instead */
+		need_to_project = false;	/* Since we are not doing reprojection of the grid */
+		gmt_plot_image_graticules (GMT, Grid_orig, Intens_orig, P, (Ctrl->T.outline) ? &Ctrl->T.pen : NULL, Ctrl->T.skip, Ctrl->I.constant ? &Ctrl->I.value : NULL);
+		goto basemap_and_free;	/* Skip all the image projection and just overlay basemap and free memory */
+	}
+
 	if (need_to_project) {	/* Need to resample the grid or image [and intensity grid] using the specified map projection */
 		int nx_proj = 0, ny_proj = 0;
 		double inc[2] = {0.0, 0.0};
@@ -1987,6 +2018,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		    	Conf->n_columns, Conf->n_rows, (Ctrl->E.device_dpi ? -24 : 24));
 		}
 	}
+
+basemap_and_free:
 
 	if (!Ctrl->A.active) {	/* Finalize PostScript plot, possibly including basemap */
 		if (!Ctrl->N.active) gmt_map_clip_off (GMT);

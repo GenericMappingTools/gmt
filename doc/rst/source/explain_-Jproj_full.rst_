@@ -10,7 +10,7 @@
    **-J**\ "*+proj=merc +ellps=WGS84 +units=m*\ " or just glue all parameters like in
    **-J**\ *+proj=merc+ellps=WGS84+units=m*.
 
-   Using `EPSG codes <http://spatialreference.org>`_ is also possible (but need the setting of the **GDAL_DATA**
+   Using `EPSG codes <https://spatialreference.org>`_ is also possible (but need the setting of the **GDAL_DATA**
    environment variable to point to the GDAL's *data* sub-directory). For example **-JEPSG:4326** sets
    the WGS-84 system.
 
@@ -26,4 +26,4 @@
    available to use. Another aspect that is not present in **PROJ**, because it's not a mapping library,
    is how to set the map scale or map dimension. We introduced the two extensions **+width=**\ *size* and
    **+scale=**\ *1:xxxx* that work exactly like the *map width* and *scale* in classical GMT. It is also allowed
-   to provide the scale (but NOT the width) by appending the string "/1:xxx" to the end of the projection parameters.
+   to provide the scale (but **not** the width) by appending the string "/1:xxx" to the end of the projection parameters.

@@ -25,7 +25,7 @@ Synopsis
 [ |-N|\ *maskvalues* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**] ]
+[ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+h**\ [**k**\|\ **s**]]\ [**+i**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -76,7 +76,7 @@ Optional Arguments
     Pass all records whose location is within *dist* of any of the
     points in the ASCII file *pointfile*. If *dist* is zero then the 3rd
     column of *pointfile* must have each point's individual radius of
-    influence. . If you only have a single point then you can specify
+    influence. If you only have a single point then you can specify
     *lon*/*lat* instead of *pointfile*.  Distances are Cartesian and in
     user units; specify **-fg** to indicate spherical distances and
     append a distance unit, even if the distance specified is 0.
@@ -126,14 +126,14 @@ Optional Arguments
 **-I**\ [**cflrsz**]
     Reverses the sense of the test for each of the criteria specified:
 
-    - **c** - select records NOT inside any point's circle of influence.
-    - **f** - select records NOT inside any of the polygons.
+    - **c** - select records **not** inside any point's circle of influence.
+    - **f** - select records **not** inside any of the polygons.
     - **g** - pass records inside the cells with z equal zero of the grid mask in |-G|.
-    - **l** - select records NOT within the specified distance of any line.
-    - **r** - select records NOT inside the specified rectangular region.
-    - **s** - select records NOT considered inside as specified by |-N|
+    - **l** - select records **not** within the specified distance of any line.
+    - **r** - select records **not** inside the specified rectangular region.
+    - **s** - select records **not** considered inside as specified by |-N|
       (and |-A|, |-D|).
-    - **z** - select records NOT within the range specified by |-Z|.
+    - **z** - select records **not** within the range specified by |-Z|.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -182,7 +182,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**]
+**-Z**\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+h**\ [**k**\|\ **s**]]\ [**+i**]
     Pass all records whose 3rd column (*z*; *col* = 2) lies within the given range
     or is NaN (use **-s** to skip NaN records).
     If *max* is omitted then we test if *z* equals *min* instead.  This means
@@ -195,9 +195,12 @@ Optional Arguments
     is given then the **-Iz** option cannot be used.  In the case of multiple tests
     you may use these modifiers as well: **+a** passes any record that passes at least
     one of your *z* tests [Default is all tests must pass], and **+i** reverses the
-    tests to pass record with *z* value NOT in the given range.  Finally, if **+c** is
+    tests to pass record with *z* value **not** in the given range.  Finally, if **+c** is
     not used then it is automatically incremented for each new |-Z| option, starting
-    with 2.
+    with 2. Alternatively, instead of obtaining *z* from the data column(s), use modifier
+    **+h** to instead extract *z* from the segment header |-Z|\ *z* string.  If no such entry is
+    found we skip [Default, or **+hs**] the entire segment (or we keep the entire segment if **+hk** was given),
+    otherwise it is subject to the test(s) using the constant *z* for each segment.
 
 .. include:: explain_-aspatial.rst_
 

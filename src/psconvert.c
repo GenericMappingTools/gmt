@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/psconvert_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"psconvert"
 #define THIS_MODULE_MODERN_NAME	"psconvert"
@@ -572,12 +573,44 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSCONVERT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-#ifdef WIN32
-	if (psconvert_ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
-		C->G.file = strdup (GMT_GS_EXECUTABLE);     /* Fall back to this default and expect a miracle */
+#ifdef JULIA_GHOST_JLL
+	/* In Julia when using the precompiled Artifacts, the Ghost is also shipped with but when gmt_init makes
+	   calls to psconvert it doesn't set -G with the path to the Ghostscript_jll executable and those processes
+	   fail (mostly modern mode stuff). The solution is to try to read the gs path from ~/.gmt/ghost_jll_path.txt 
+	   This code should only be executed by binaries created Julia's BinaryBuilder.
+	 */
+	bool found_gs = false;
+	char line[GMT_LEN512] = {""}, file[GMT_LEN256] = {""};
+	FILE *fp = NULL;
+	sprintf(file, "%s/ghost_jll_path.txt", GMT->session.USERDIR);
+	if ((fp = fopen (file, "r")) != NULL) {
+		while (fgets (line, GMT_LEN512, fp) && line[0] == '#') {}
+		fclose(fp);
+		gmt_chop(line);		/* Chop of the newline */
+		if (!access (line, F_OK)) {		/* GS binary found */
+			C->G.file = strdup (line);
+			found_gs = true;
+		}
+		else
+			perror("Error Description while accessing the GS executable:");
+	}
+	if (!found_gs) {	/* Shit. But try still the generic non-Julian paths */
+		#ifdef WIN32
+			if (psconvert_ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
+				C->G.file = strdup (GMT_GS_EXECUTABLE);     /* Fall back to this default and expect a miracle */
+		#else
+			C->G.file = strdup (GMT_GS_EXECUTABLE);
+		#endif
+	}
 #else
-	C->G.file = strdup (GMT_GS_EXECUTABLE);
+	#ifdef WIN32
+		if (psconvert_ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
+			C->G.file = strdup (GMT_GS_EXECUTABLE);     /* Fall back to this default and expect a miracle */
+	#else
+		C->G.file = strdup (GMT_GS_EXECUTABLE);
+	#endif
 #endif
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Ghostscript executable full name: \n", C->G.file);
 	C->D.dir = strdup (".");
 	C->T.quality = GMT_JPEG_DEF_QUALITY;	/* Default JPG quality */
 
@@ -618,8 +651,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <psfiles> [-A[+r][+u]] [-C<gs_option>] [-D<dir>] [-E<resolution>] "
 		"[-F<out_name>] [-G<gs_path>] [-H<scale>] [-I[+m<margins>][+s[m]<width>[/<height>]][+S<scale>]] [-L<list>] [-Mb|f<psfile>] "
-		"[-N[+f<fade>][+g<fill>][+i][+p[<pen>]] [-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
-		"[-W[+a<mode>[<alt]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
+		"[-N[+f<fade>][+g<fill>][+i][+p[<pen>]]] [-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
+		"[-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
 		"[%s]\n", name, GMT_V_OPT, Z, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -722,7 +755,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Usage (API, -2, "Note: Shows the gdal_translate command, in case you want to use this program "
 		"to create a geoTIFF file.");
-	GMT_Usage (API, 1, "\n-W[+a<mode>[<alt]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]");
+	GMT_Usage (API, 1, "\n-W[+a<mode>[<alt>]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]");
 	GMT_Usage (API, -2, "Write an ESRI type world file suitable to make .tif files "
 		"recognized as geotiff by software that know how to do it. Be aware, "
 		"however, that different results are obtained depending on the image "
@@ -736,7 +769,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"a 'w' in the file extension. So, if the output is tif (-Tt) the world "
 		"file is a .tfw, for jpeg a .jgw, and so on.  A few modifiers are available:");
 	GMT_Usage (API, 3, "+g Do a system call to gdal_translate and produce a true "
-		"eoTIFF image right away. The output file will have the extension "
+		"GeoTIFF image right away. The output file will have the extension "
 		".tiff. See the man page for other 'gotchas'. Automatically sets -A -P.");
 	GMT_Usage (API, 3, "+k Create a minimalist KML file that allows loading the "
 		"image in Google Earth. Note that for this option the image must be "
@@ -1417,10 +1450,12 @@ GMT_LOCAL int psconvert_pipe_ghost (struct GMTAPI_CTRL *API, struct PSCONVERT_CT
 	}
 	else if (!strncmp (I->header->mem_layout, "TRP", 3)) {	/* Very cheap this one since is gs native order. */
 		junk_n = read (fd[0], I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
+		GMT_Report (API, GMT_MSG_DEBUG, "psconvert_pipe_ghost: Read %d bytes\n", junk_n);
 	}
 	else {	/* For MEX, probably */
 		for (row = 0; row < nRows; row++) {
 			junk_n = read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
+			GMT_Report (API, GMT_MSG_DEBUG, "psconvert_pipe_ghost: Read %d bytes row %d\n", junk_n, row);
 			for (col = n = 0; col < nCols; col++)
 				for (band = 0; band < nBands; band++)
 					I->data[row + col*nRows + band*nXY] = tmp[n++];	/* Band interleaved, the best for MEX. */
@@ -1563,6 +1598,14 @@ GMT_LOCAL int psconvert_make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) 
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL bool psconvert_gs_is_good (int major, int minor) {
+	/* Return true if the gs version works with transparency */
+	if (major > 9) return true;	/* 10 should work as of 10.0.0 unless there are future regressions */
+	if (major < 9) return false;	/* Before 9 we think transparency was questionable */
+	if (minor == 51 || minor == 52) return false;	/* These two minor versions had gs transparency bugs */
+	if (minor >= 21) return true;	/* Trouble before minor version 21 */
+	return false;	/* Not implemented (?) */
+}
 
 EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
@@ -1641,7 +1684,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1712,9 +1755,9 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Initial assignment of gs_params. Note: If we detect transparency then we must select the PDF settings since we must convert to PDF first */
 	if (Ctrl->T.device == GS_DEV_PDF)	/* For PDF (and PNG via PDF) we want a bunch of prepress and other settings to maximize quality */
-		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
+		gs_params = (psconvert_gs_is_good (gsVersion.major, gsVersion.minor)) ? gs_params_pdfnew : gs_params_pdfold;
 	else	/* For rasters */
-		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_rasnew : gs_params_rasold;
+		gs_params = (psconvert_gs_is_good (gsVersion.major, gsVersion.minor)) ? gs_params_rasnew : gs_params_rasold;
 
 	gs_BB = "-q -dNOSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox -DPSL_no_pagefill"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
 
@@ -2468,7 +2511,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (has_transparency && gsVersion.major == 9 && (gsVersion.minor == 51 || gsVersion.minor == 52))
 				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version %s has a bug preventing it - please upgrade to 9.53\n", GSstring);
 		if (transparency && Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
-				gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
+				gs_params = (psconvert_gs_is_good (gsVersion.major, gsVersion.minor)) ? gs_params_pdfnew : gs_params_pdfold;
 
 		/* Build the converting Ghostscript command and execute it */
 

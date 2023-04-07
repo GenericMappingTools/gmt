@@ -14,6 +14,7 @@ Synopsis
 
 **gmt grdmath**
 [ |SYN_OPT-Area| ]
+[ |-C|\ [*cpt*] ]
 [ |-D|\ *resolution*\ [**+f**] ]
 [ |SYN_OPT-I| ]
 [ |-M| ] [ |-N| ]
@@ -53,6 +54,8 @@ the depth of the stack allows in order to save intermediate results.
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations.
 
+.. include:: RPN_info.rst_
+
 Required Arguments
 ------------------
 
@@ -72,6 +75,12 @@ Optional Arguments
 
 .. |Add_-A| replace:: (|-A| is only relevant to the **LDISTG** operator)
 .. include:: explain_-A.rst_
+
+.. _-C:
+
+**-C**\ [*cpt*]
+    Retain the grid's default CPT (if it has one), or alternatively replace it with a
+    new default *cpt* [Default removes any default CPT from the output grid].
 
 .. _-D:
 
@@ -269,11 +278,11 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **CURV**      | 1 1   | Curvature of A (Laplacian)                                                                             |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **D2DX2**     | 1 1   | d^2(A)/dx^2 2nd derivative                                                                             |
+| **D2DX2**     | 1 1   | d^2(A)/dx^2 Central 2nd derivative                                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **D2DY2**     | 1 1   | d^2(A)/dy^2 2nd derivative                                                                             |
+| **D2DY2**     | 1 1   | d^2(A)/dy^2 Central 2nd derivative                                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **D2DXY**     | 1 1   | d^2(A)/dxdy 2nd derivative                                                                             |
+| **D2DXY**     | 1 1   | d^2(A)/dxdy Central 2nd derivative                                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **D2R**       | 1 1   | Converts Degrees to Radians                                                                            |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -315,7 +324,7 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **FACT**      | 1 1   | A! (A factorial)                                                                                       |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **EXTREMA**   | 1 1   | Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere                        |
+| **EXTREMA**   | 1 1   | Local extrema: -1 is a (local) minimum, +1 a (local) maximum, and 0 elsewhere                          |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **FCDF**      | 3 1   | F cumulative distribution function for F = A, nu1 = B, and nu2 = C                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -337,7 +346,7 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **GT**        | 2 1   | 1 if A > B, else 0                                                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **HSV2RGB**   | 3 3   | Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (both in 0-1)            |
+| **HSV2LAB**   | 3 3   | Convert h,s,v triplets to l,a,b triplets, with h = A (0-360), s = B and v = C (0-1)                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **HSV2RGB**   | 3 3   | Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (0-1)                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -517,13 +526,15 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ROTY**      | 2 1   | Rotate A by the (constant) shift B in y-direction                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **SDIST**     | 2 1   | Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) |ex_SDIST|           |
-+---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **SDIST2**    | 2 1   | As SDIST but only to nodes that are != 0                                                               |
+| **SADDLE**    | 1 1   | -1/+1 indicates a saddle point, with (local) minimum (-1) or maximum (+1) in x-direction, 0 elsewhere  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **SAZ**       | 2 1   | Spherical azimuth from grid nodes to stack lon, lat (i.e., A, B)                                       |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **SBAZ**      | 2 1   | Spherical back-azimuth from grid nodes to stack lon, lat (i.e., A, B)                                  |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **SDIST**     | 2 1   | Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) |ex_SDIST|           |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **SDIST2**    | 2 1   | As SDIST but only to nodes that are != 0                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **SEC**       | 1 1   | sec (A) (A in radians)                                                                                 |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -714,12 +725,11 @@ Notes On Operators
    two grids, the real (cosine) and imaginary (sine) component of the
    complex spherical harmonic. Use the **POP** operator (and **EXCH**) to
    get rid of one of them, or save both by giving two consecutive = file.nc calls.
-
    The orthonormalized complex harmonics **YLM** are most commonly used in
    physics and seismology. The square of **YLM** integrates to 1 over a
    sphere. In geophysics, **YLMg** is normalized to produce unit power when
    averaging the cosine and sine terms (separately!) over a sphere (i.e.,
-   their squares each integrate to 4 pi). The Condon-Shortley phase :math:`(-1)^M`
+   their squares each integrate to :math:`4 \pi`). The Condon-Shortley phase :math:`(-1)^M`
    is not included in **YLM** or **YLMg**, but it can be added by using *-M*
    as argument.
 
@@ -785,17 +795,36 @@ Macros
 ------
 
 Users may save their favorite operator combinations as macros via the
-file *grdmath.macros* in their current or user directory. The file may contain
+file *grdmath.macros* in their current or user (~/.gmt) directory. The file may contain
 any number of macros (one per record); comment lines starting with # are
 skipped. The format for the macros is **name** = **arg1 arg2 ... arg2**
 : *comment* where **name** is how the macro will be used. When this
 operator appears on the command line we simply replace it with the
 listed argument list. No macro may call another macro. As an example,
 the following macro expects three arguments (radius x0 y0) and sets the
-modes that are inside the given circle to 1 and those outside to 0:
+nodes that are inside the given Cartesian circle to 1 and those outside to 0:
 
 **INCIRCLE** = **CDIST EXCH DIV** 1 **LE** : usage: r x y INCIRCLE to return 1
 inside circle
+
+Marine geophysicist often need to evaluate predicted seafloor depth from an age grid.
+One such model is the classic *Parsons and Sclater* [1977] curve.  It may be written
+
+.. math::
+
+    z(t) = \left \{ \begin{array}{rr} 
+            2500 + 350 \sqrt{t}, & t \leq 70 \\
+            6400 - 3200 \exp{\left (\frac{-t}{62.8}\right)}, & t > 20
+        \end{array} \right.
+
+A good cross-over age for these curves is 26.2682 Myr. A macro for this system is a bit awkward due to the split but can be written
+
+**PS77** = **STO@T POP** 6400 **RCL@T** 62.8 **DIV NEG EXP** 3200 **MUL SUB RCL@T** 26.2682 **GT MUL** 2500 350 **RCL@T SQRT MUL ADD RCL@T** 26.2682 **LE MUL ADD** : usage: age PS77 returns depth
+
+i.e., we evaluate both expressions and multiply them by 1 or 0 depending where they apply, and then add them.  With this macro
+installed you can compute predicted depths in the Pacific northwest via::
+
+    gmt grdmath -R200/240/40/60 @earth_age_01m_g PS77 = depth_ps77.grd
 
 **Note**: Because geographic or time constants may be present in a macro, it
 is required that the optional comment flag (:) must be followed by a space.
@@ -832,7 +861,7 @@ the imaginary amplitude 1.1, use::
 
 To extract the locations of local maxima that exceed 100 mGal in the file faa.nc, use::
 
-    gmt grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
+    gmt grdmath faa.nc DUP EXTREMA 1 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
     gmt grd2xyz z.nc -s > max.xyz
 
 To demonstrate the use of named variables, consider this radial wave
@@ -866,14 +895,19 @@ Functions*, Applied Mathematics Series, vol. 55, Dover, New York.
 
 Holmes, S. A., and W. E. Featherstone, 2002, A unified approach to the
 Clenshaw summation and the recursive computation of very high degree and
-order normalized associated Legendre functions. *Journal of Geodesy*,
+order normalized associated Legendre functions. *J. of Geodesy*,
 76, 279-299.
+
+B. Parsons and J. G. Sclater, 1977, An analysis of the variation of ocean
+floor bathymetry and heat flow with age, *J. Geophys. Res.*, 82, 803-827.
 
 Press, W. H., S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery,
 1992, *Numerical Recipes*, 2nd edition, Cambridge Univ., New York.
 
 Spanier, J., and K. B. Oldman, 1987, *An Atlas of Functions*, Hemisphere
 Publishing Corp.
+
+.. include:: RPN_MoreOn.rst_
 
 See Also
 --------

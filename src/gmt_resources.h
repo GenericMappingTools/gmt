@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2012-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2012-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -142,16 +142,16 @@ enum GMT_enum_container {
 	GMT_NO_STRINGS		= 0U    /* Do not allocate string array also [Default] */
 };
 
-/*! These are the 5 families of data types, + a coordinate array + 3 help containers for vector, matrix, and coordinates */
+/*! These are the 6 families of data types, + 3 help containers for vector, matrix, and coordinates */
 enum GMT_enum_family {
 	GMT_IS_DATASET    = 0,	/* Entity is a data table */
 	GMT_IS_GRID       = 1,	/* Entity is a grid */
 	GMT_IS_IMAGE      = 2,	/* Entity is a 1- or 3-layer unsigned char image */
 	GMT_IS_PALETTE    = 3,	/* Entity is a color palette table */
 	GMT_IS_POSTSCRIPT = 4,	/* Entity is a PostScript content struct */
-	GMT_IS_MATRIX	  = 5,	/* Entity is user matrix */
-	GMT_IS_VECTOR	  = 6,	/* Entity is set of user vectors */
-	GMT_IS_CUBE	  = 7,	/* Entity is set of user vectors */
+	GMT_IS_MATRIX     = 5,	/* Entity is user matrix */
+	GMT_IS_VECTOR     = 6,	/* Entity is set of user vectors */
+	GMT_IS_CUBE       = 7,	/* Entity is a 3-D data cube */
 	GMT_IS_COORD	  = 8,	/* Entity is a double coordinate array */
 	GMT_N_FAMILIES	  = 9	/* Total number of families [API Developers only]  */
 };
@@ -320,6 +320,7 @@ enum GMT_enum_verbose {
 	GMT_MSG_INFORMATION	= 5,	/* Adds informational messages */
 	GMT_MSG_COMPAT		= 6,	/* Compatibility warnings */
 	GMT_MSG_DEBUG		= 7,	/* Debug messages for developers mostly */
+	GMT_MSG_BITSHIFT	= 16,	/* Left/right shift of MSG codes when packing into mode for GMT_Create_Session. Increase if GMT_MSG_* need more space */
 	/* For API backwards compatibility only */
 	GMT_MSG_NORMAL		= 2,	/* Now GMT_MSG_ERROR */
 	GMT_MSG_VERBOSE		= 5,	/* Now GMT_MSG_WARNING  */
@@ -574,7 +575,8 @@ enum GMT_enum_color {
 	GMT_CMYK		= 1,
 	GMT_HSV			= 2,
 	GMT_COLORINT		= 4,
-	GMT_NO_COLORNAMES	= 8
+	GMT_NO_COLORNAMES	= 8,
+	GMT_HEX_COLOR	= 16
 };
 
 enum GMT_enum_bfn {

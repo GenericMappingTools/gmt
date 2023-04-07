@@ -127,7 +127,7 @@ Optional Arguments
     The following modifiers are supported:
 
     - **+l** to just list the countries and their codes (no data extraction or plotting takes place).
-    - **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
+    - **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Norway, Russia and the US.
     - **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list countries in that continent or country;
       repeat if more than one continent or country is requested.
     - **+n** to list the named :ref:`DCW collections <dcw-collections>` or regions (**-E**\ *code*\ **+n** will list
@@ -176,7 +176,7 @@ Optional Arguments
 
 **-I**\ *river*\ [/*pen*]
     Draw rivers. Specify the type of rivers and [optionally] append pen
-    attributes [Default pen: width = default, color = black, style =
+    attributes [Default pen: width = 0.25p, color = black, style =
     solid].
 
     Choose from the list of river types below; repeat option |-I| as
@@ -223,7 +223,7 @@ Optional Arguments
 
 **-N**\ *border*\ [/*pen*]
     Draw political boundaries. Specify the type of boundary and
-    [optionally] append pen attributes [Default pen: width = default,
+    [optionally] append pen attributes [Default pen: width = 0.25p,
     color = black, style = solid].
 
     Choose from the list of boundaries below. Repeat option |-N| as
@@ -263,7 +263,7 @@ Optional Arguments
 
 **-W**\ [[*level*/]\ *pen*] :ref:`(more ...) <set-pens>`
     Draw shorelines [Default is no shorelines]. Append pen attributes
-    [Defaults: width = default, color = black, style = solid] which
+    [Defaults: width = 0.25p, color = black, style = solid] which
     apply to all four levels. To set the pen for each level differently,
     prepend *level*/, where *level* is 1-4 and represent coastline,
     lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.
@@ -290,10 +290,10 @@ Optional Arguments
 
 .. module_common_ends
 
+.. _dcw-collections:
+
 DCW Collections
 ---------------
-
-.. _dcw-collections:
 
 The |-E| and |-R| options can be expanded to take the user's own custom collections
 and named regions.  Users can create a dcw.conf file and place it in their

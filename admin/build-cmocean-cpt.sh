@@ -76,7 +76,7 @@ while read line; do
 	echo $line | awk -F'|' '{printf ("#\n# cmocean/%s : %s\n", $1, $2)}' > $out
 	cat <<- EOF >> $out
 	#
-	# github.com/cmocean-gmt, verson $VERSION
+	# https://github.com/kthyng/cmocean-gmt, version $VERSION
 	#
 	# License: MIT License
 	# Copyright (c) 2015, Kirsten M. Thyng

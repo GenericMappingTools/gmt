@@ -95,7 +95,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Do NOT use Taylor expansion.
+    Do **not** use Taylor expansion.
 
 .. _-R:
 

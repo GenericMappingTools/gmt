@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/grdfill_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"grdfill"
 #define THIS_MODULE_MODERN_NAME	"grdfill"
@@ -87,14 +88,13 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s [-Ac|g|n|s[<arg>]] [-G%s] [-L[p]] [-N<value>] [%s] [%s] [%s] [%s]\n",
+	GMT_Usage (API, 0, "usage: %s %s -Ac|g|n|s[<arg>] | -L[p] [-G%s] [-N<value>] [%s] [%s] [%s] [%s]\n",
 		name, GMT_INGRID, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	gmt_ingrid_syntax (API, 0, "Name of grid with NaN holes");
-	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-Ac|n|s[<arg>]");
 	GMT_Usage (API, -2, "Specify algorithm and any required parameters for in-fill:");
 	GMT_Usage (API, 3, "c: Fill in NaN holes with the given constant <value>.");
@@ -104,6 +104,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"[Default radius is sqrt(nx^2+ny^2), with (nx,ny) the dimensions of the grid].");
 	GMT_Usage (API, 3, "s: Fill in NaN holes with a spline (optionally append tension).");
 	GMT_Usage (API, -2, "Note: -A is required unless -L is used.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_outgrid_syntax (API, 'G', "Give filename for where to write the output grid");
 	GMT_Usage (API, 1, "\n-L[p]");
 	GMT_Usage (API, -2, "Just list the sub-regions w/e/s/n of each hole. "
@@ -590,7 +591,7 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

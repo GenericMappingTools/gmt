@@ -41,8 +41,8 @@ Synopsis
 Description
 -----------
 
-**blockmean** reads arbitrarily located (*x*,\ *y*,\ *z*) triples [or
-optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
+**blockmean** reads arbitrarily located (*x*,\ *y*,\ *z*) triplets [or
+optionally weighted quadruplets (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output a mean position and
 value for every non-empty block in a grid region defined by the |-R|
 and |-I| arguments. See |-G| for writing gridded output directly.
@@ -130,7 +130,7 @@ Optional Arguments
     several runs, etc. Use |-W| for weighted i/o, **-Wi** for weighted
     input only, and **-Wo** for weighted output only [Default uses
     unweighted i/o]. If your weights are actually uncertainties (one sigma)
-    then append **+s** and we compute weight = 1/sigma^2.  Otherwise (or
+    then append **+s** and we compute weight = 1/sigma\ :sup:`2`.  Otherwise (or
     via **+w**) we use the weights directly.
 
 .. include:: explain_-aspatial.rst_

@@ -138,7 +138,7 @@ scaled up to be 6 cm wide and offset by 0.25 cm from the border, try::
 Notes
 -----
 
-To instead plot the GMT QR code that links to www.generic-mapping-tools.org, just plot the
+To instead plot the GMT QR code that links to https://www.generic-mapping-tools.org/ just plot the
 custom symbols **QR** or **QR_transparent** in :doc:`plot`.
 
 See Also

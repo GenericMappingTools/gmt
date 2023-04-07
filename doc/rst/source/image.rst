@@ -106,8 +106,8 @@ Optional Arguments
     Change certain pixel values to another color or make them transparent.
     For 1-bit images you can specify an alternate *color* for the background (**+b**)
     or the foreground (**+f**) pixels, or give no color to make those pixels
-    transparent.  Alternatively, for color images you can select a single *color*
-    that should be made transparent instead  (**+t**).
+    transparent. Alternatively, for color images you can select a single *color*
+    that should be made transparent instead  (**+t**). This option may be repeated with different settings.
 
 .. _-I:
 

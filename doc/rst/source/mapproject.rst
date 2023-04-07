@@ -65,7 +65,7 @@ Finally, **mapproject** can compute a variety of auxiliary output
 data from input coordinates that make up a track.  Items like
 azimuth, distances, distances to other lines, and travel-times
 along lines can all be computed by using one or more of the options
-**-A**, |-G|, |-L|, and |-Z|.
+|-A|, |-G|, |-L|, and |-Z|.
 
 Required Arguments
 ------------------
@@ -92,9 +92,9 @@ Optional Arguments
 
 **-Ab**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**]
     Calculate azimuth along track *or* to the optional *fixed* point set
-    with *lon0/lat0*.  **-Af** calculates the (forward) azimuth
-    to each data point. Use **-Ab** to get back-azimuth from data points
-    to fixed point. Use **-Ao** to get orientations (-90/90) rather than
+    with *lon0/lat0*.  |-A|\ **f** calculates the (forward) azimuth
+    to each data point. Use |-A|\ **b** to get back-azimuth from data points
+    to fixed point. Use |-A|\ **o** to get orientations (-90/90) rather than
     azimuths (0/360). Upper case **F**, **B** or **O** will convert from
     geodetic to geocentric latitudes and estimate azimuth of geodesics
     (assuming the current ellipsoid is not a sphere). If no fixed point
@@ -129,9 +129,9 @@ Optional Arguments
 
 **-E**\ [*datum*]
     Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) (x,y,z) coordinates
-    (add |-I| for the inverse conversion). Append datum ID (see **-Qd**) or give
+    (add |-I| for the inverse conversion). Append datum ID (see |-Q|\ **d**) or give
     *ellipsoid*:*dx*,\ *dy*,\ *dz* where *ellipsoid* may be an ellipsoid
-    ID (see **-Qe**) or given as *a*\ [,\ *inv_f*], where *a* is the
+    ID (see |-Q|\ **e**) or given as *a*\ [,\ *inv_f*], where *a* is the
     semi-major axis and *inv_f* is the inverse flattening (0 if
     omitted). If *datum* is - or not given we assume WGS-84.
 
@@ -148,7 +148,7 @@ Optional Arguments
 
 **-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**]
     Calculate distances along track *or* to the optional *fixed* point set
-    with **-G**\ *lon0*/*lat0*. Append the distance unit with **+u** (see `Units`_
+    with |-G|\ *lon0*/*lat0*. Append the distance unit with **+u** (see `Units`_
     for available units and how distances are computed [great circle using authalic
     radius]), including **c** (Cartesian distance using input coordinates) or **C**
     (Cartesian distance using projected coordinates). The **C** unit
@@ -199,8 +199,8 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ [**d**\|\ **e**]
-    List all projection parameters. To only list datums, use **-Qd**. To
-    only list ellipsoids, use **-Qe**.
+    List all projection parameters. To only list datums, use |-Q|\d. To
+    only list ellipsoids, use |-Q|\e.
 
 .. _-S:
 
@@ -211,11 +211,11 @@ Optional Arguments
 
 **-T**\ [**h**]\ *from*\ [/*to*]
     Coordinate conversions between datums *from* and *to* using the
-    standard Molodensky transformation. Use **-Th** if 3rd input column
+    standard Molodensky transformation. Use |-T|\ **h** if 3rd input column
     has height above ellipsoid [Default assumes height = 0, i.e., on the
-    ellipsoid]. Specify datums using the datum ID (see **-Qd**) or give
+    ellipsoid]. Specify datums using the datum ID (see |-Q|\ **d**) or give
     *ellipsoid*:*dx*,\ *dy*,\ *dz* where *ellipsoid* may be an ellipsoid
-    ID (see **-Qe**) or given as *a*\ [,\ *inv_f*], where *a* is the
+    ID (see |-Q|\ **e**) or given as *a*\ [,\ *inv_f*], where *a* is the
     semi-major axis and *inv_f* is the inverse flattening (0 if
     omitted). If *datum* is - or not given we assume WGS-84. |-T| may
     be used in conjunction with |-R| |-J| to change the datum before
@@ -239,13 +239,13 @@ Optional Arguments
     standard two-character justification codes), **n**\ *rx*/*ry*, where the reference
     point is given as normalized positions in the 0-1 range, or **x**\ *px*/*py*,
     where a plot point is given directly. To output the rectangular domain that
-    covers an oblique area as defined by **-R -J**, append **r**,
-    or use **R** to get the result in -Rw/e/s/n string format. Similarly, if an
-    oblique domain is set via **-R**\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
+    covers an oblique area as defined by |-R| |-J|, append **r**,
+    or use |-R| to get the result in -Rw/e/s/n string format. Similarly, if an
+    oblique domain is set via |-R|\ *xmin/xmax/ymin/ymax*\ **+u**\ *unit* then
     use **o** to return the diagonal corner coordinates in degrees (in the order
     *llx urx lly ury*) or use **O** to get the equivalent |-R| string as trailing
     text. To return the coordinates of the rectangular area encompassing the non-rectangular
-    area defined by your **-R -J**, use **e**, or **E** for the trailing text string.
+    area defined by your |-R| |-J|, use **e**, or **E** for the trailing text string.
     Alternatively (for **e** or **r**), append **+n** to set how many points [100]
     you want along each side for a closed polygon of the oblique area instead
     [Default returns the width and height of the map].
@@ -256,9 +256,9 @@ Optional Arguments
 
    Comparing oblique (red outline) and regular (just meridians and parallels; black outline) regions.
    (left) Some domains are oblique (their perimeters are not following meridians and parallels).
-   We can use **-Wr**\ \|\ **R** to obtain the enclosing meridian/parallel box or the |-R| string
+   We can use |-W|\ **r**\ \|\ **R** to obtain the enclosing meridian/parallel box or the |-R| string
    for that region. (right) Other domains are not oblique but their enclosing rectangular box in
-   the map projection will be.  We can explore **-We**\ \|\ **E** to obtain the geographic coordinates
+   the map projection will be.  We can explore |-W|\ **e**\ \|\ **E** to obtain the geographic coordinates
    of the encompassing oblique rectangle or the |-R| string for that region.
 
 .. _-Z:

@@ -14,11 +14,11 @@ Synopsis
 
 **gmt gravprisms** [ *table* ]
 [ |-C|\ [**+q**][**+w**\ *file*][**+z**\ *dz*] ]
-[ |-D|\ *density* ]
+[ |-D|\ *density*\ [**+c**] ]
 [ |-E|\ *dx*\ [/*dy*] ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-G|\ *outfile* ]
-[ |-H|\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*] ]
+[ |-H|\ *H*/*rho_l*/*rho_h*\ [**+b**\ *boost*][**+d**\ *densify*][**+p**\ *power*] ]
 [ |SYN_OPT-I| ]
 [ |-L|\ *base* ]
 [ |-M|\ [**h**]\ [**z**] ]
@@ -105,10 +105,14 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *density*
-    Sets a fixed density contrast that overrides any individual prism settings in the prisms file, in :math:`\mbox{kg/m}^3` of :math:`\mbox{g/cm}^3`. Alternatively, give name of an input grid with spatially varying, vertically-averaged
-    prism densities. This requires |-C| and the grid must be co-registered with the grid provided by |-S|
-    (or |-L| and |-T|).
+**-D**\ *density*\ [**+c**]
+    Sets a fixed density contrast that overrides any individual prism settings in the prisms file, in
+    :math:`\mbox{kg/m}^3` of :math:`\mbox{g/cm}^3`. Append **+c** to instead subtract this density from
+    the individual prism densities. Alternatively, give name of an input grid with spatially varying,
+    vertically-averaged prism densities. This requires |-C| and the grid must be co-registered with the
+    grid provided by |-S| (or |-L| and |-T|).  **Note**: If |-H| is used then a fixed density may be set
+    via |-D| provided its modifier **+c** is set. We will then compute *density contrasts* in the seamount
+    relative to the fixed *density* (such as density of seawater for underwater seamounts).
 
 .. _-E:
 
@@ -136,11 +140,12 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *H*/*rho_l*/*rho_h*\ [**+d**\ *densify*][**+p**\ *power*]
+**-H**\ *H*/*rho_l*/*rho_h*\ [**+b**\ *boost*][**+d**\ *densify*][**+p**\ *power*]
     Set reference seamount parameters for an *ad-hoc* variable radial density function with depth. Give
     the low and high seamount densities in :math:`\mbox{kg/m}^3` or :math:`\mbox{g/cm}^3` and the fixed reference height *H* in meters.
     Use modifiers **+d** and **+p** to change the water-pressure-driven flank density increase over the
     full reference height [0] and the variable density profile exponent *power* [1, i.e., a linear change].
+    To simulate the higher starting densities in truncated guyots you can *boost* the seamount height by this factor [1].
     Requires |-S| to know the full height of the seamount.
     See :doc:`grdseamount </supplements/potential/grdseamount>` for more details.
 

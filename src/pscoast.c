@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,7 @@
  */
 
 #include "gmt_dev.h"
+#include "longopt/pscoast_inc.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"pscoast"
 #define THIS_MODULE_MODERN_NAME	"coast"
@@ -775,7 +776,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, module_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) {
@@ -1023,7 +1024,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] <= 0.0) {	/* Temporarily shift boundaries */
 		GMT->common.R.wesn[XLO] += 360.0;
 		GMT->common.R.wesn[XHI] += 360.0;
-		if (GMT->current.proj.central_meridian < 0.0) GMT->current.proj.central_meridian += 360.0;
+		if (GMT->current.proj.central_meridian <= 0.0) GMT->current.proj.central_meridian += 360.0;
 	}
 	if (need_coast_base) {
 		west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;

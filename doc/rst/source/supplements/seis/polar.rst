@@ -183,7 +183,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [**-**\|\ **+**][*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
-    Set current pen attributes [Default pen is default,black,solid].
+    Set current pen attributes [Default pen is 0.25p,black,solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_

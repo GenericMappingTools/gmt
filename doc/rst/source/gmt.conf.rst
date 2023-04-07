@@ -167,9 +167,10 @@ FONT Parameters
         size <auto-scaling>`.
 
     **FONT_LOGO**
-        Font to use for text plotted as part of the GMT time logo [:doc:`theme
-        dependent <theme-settings>`]. Choose **auto** for :ref:`automatic scaling
-        with plot size <auto-scaling>`.
+        Font to use for text plotted as part of the GMT time logo. **Note**: Since the
+        time logo has a fixed height the font size for the time stamp is 8p and for the
+        optional label it is 7p. Hence, changing this font only affects the font style
+        and color but not its size.
 
     **FONT_SUBTITLE**
         Font to use when plotting titles over graphs that involve a subtitle
@@ -290,6 +291,8 @@ FORMAT Parameters
         **F**      Encode sign using WESN suffix
         **G**      Same as **F** but with a leading space before suffix
         ========   =================================================================
+
+        **Note**: With :term:`FORMAT_GEO_MAP`, **F** and **G** may also be used as a prefix.
 
     **FORMAT_FLOAT_MAP**
         Format (C language printf syntax, see :term:`FORMAT_FLOAT_OUT`) to be used when plotting double
@@ -749,6 +752,14 @@ MAP Parameters
         instead).  The vector stem is set to match :term:`MAP_FRAME_WIDTH`, while
         the vector head length and width are 10 and 5 times this width,
         respectively.  You may control its shape via :term:`MAP_VECTOR_SHAPE`.
+        The graph vectors are plotted as normal boundary axes.  Use **graph-origin**
+        to shift the **W** and **S** axes so they intersect at the user data
+        (0, 0) origin instead.  In this mode, only the **W** and **S** axes can be 
+        selected (or **w**, **s**, **l**, and **b** too); the **E** and **N** (and
+        **e**, **n**, **r** and **t**) will be ignored.  **Note**: Annotations
+        at any axes intersections will be suppressed.  To select another intersection point
+        than the data origin you may append **+o**\ *xorig*/*yorig* or the short-cut
+        **+oc** to center the axes on the current data domain [0/0].
 
         .. toggle::
 

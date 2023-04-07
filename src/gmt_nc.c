@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1035,7 +1035,7 @@ L100:
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		gmtnc_put_units (ncid, z_id, header->z_units);
-		if (GMT->parent->remote_info && GMT->parent->remote_id != GMT_NOTSET && GMT->parent->remote_info[GMT->parent->remote_id].CPT[0] != '-')	/* Subset of remote grid with default CPT, save name as an attribute */
+		if (!GMT->parent->meta.ignore_remote_cpt && GMT->parent->remote_info && GMT->parent->remote_id != GMT_NOTSET && GMT->parent->remote_info[GMT->parent->remote_id].CPT[0] != '-')	/* Subset of remote grid with default CPT, save name as an attribute */
 			HH->cpt = strdup (GMT->parent->remote_info[GMT->parent->remote_id].CPT);
 
 		if (header->z_scale_factor != 1.0) {
@@ -2087,7 +2087,6 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 		bool do_round = true; /* if we need to round to integral */
 		unsigned int width, height;
 		unsigned int dim[3], origin[2]; /* dimension and origin {y,x} of subset to write to netcdf */
-		int first_col, first_row, last_row;
 		size_t n, nm;
 		size_t width_t, height_t;
 		double level_min, level_max;      /* minmax of level variable */
@@ -2121,8 +2120,6 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 				do_round = false;
 		}
 
-		first_col = first_row = 0;
-		last_row  = header->n_rows - 1;
 		level_min = DBL_MAX;
 		level_max = -DBL_MAX;
 
@@ -2151,10 +2148,6 @@ int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], 
 		/* The min/max of the cube */
 		header->z_min = level_min;
 		header->z_max = level_max;
-
-		/* Adjust first_row */
-		if (HH->row_order == k_nc_start_south)
-			first_row = header->n_rows - 1 - last_row;
 
 		/* Write grid header without closing file afterwards so more items can be added */
 		gmtnc_setup_chunk_cache();

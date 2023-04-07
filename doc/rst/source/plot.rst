@@ -18,7 +18,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy* ]
-[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*] ]
+[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*] ]
 [ |-F|\ [**c**\|\ **n**\|\ **r**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
 [ |-G|\ *fill*\|\ **+z** ]
 [ |-H|\ [*scale*] ]
@@ -130,11 +130,12 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*]
-    Draw symmetrical error bars. Append **x** and/or **y** to indicate which bars you
-    want to draw (Default is both x and y). The x and/or y errors must be
+**-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *width*\ [/*cap*]][**+p**\ *pen*]
+    Draw error bars. Append **x** and/or **y** to indicate which bars you
+    want to draw [Default is both x and y]. The x and/or y errors must be
     stored in the columns after the (x,y) pair [or (x,y,z) triplet]. If
-    **+a** is appended then we will draw asymmetrical error bars; these requires
+    **+a** is appended then we will draw asymmetrical error bars [Default
+    is symmetrical error bars]; these requires
     two rather than one extra data column, with the two signed deviations.
     Use **+A** to read the low and high bounds rather than signed deviations.
     If upper case **X** and/or **Y** are used we will instead draw
@@ -146,9 +147,11 @@ Optional Arguments
     "box-and-whisker" symbol where the notch width reflects the uncertainty
     in the median. This symbol requires a 5th extra data column to contain the
     number of points in the distribution.  The **+w** modifier sets the
-    *cap* width that indicates the length of the end-cap on the error bars
-    [7\ **p**]. Pen attributes for error bars may also be set via **+p**\ *pen*.
-    [Defaults: width = default, color = black, style = solid]. When |-C| is
+    *width* that indicates the length of the end-cap on the error bars
+    [7\ **p**]. For box-and-whisker symbols it sets both the default box width and whisker cap length [7\ **p**].
+    Append both *width*\ /*cap* to set separate width and cap dimensions for such symbols.
+    Pen attributes for error bars may also be set via **+p**\ *pen*.
+    [Defaults: width = 0.25p, color = black, style = solid]. When |-C| is
     used we can control how the look-up color is applied to our symbol.
     Append **+cf** to use it to fill the symbol, while **+cl** will just
     set the error pen color and turn off symbol fill.  Giving **+c** will
@@ -220,13 +223,14 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [**c**\|\ **r**]
-    Do NOT clip symbols that fall outside map border [Default plots points
-    whose coordinates are strictly inside the map border only]. The option does not apply to lines and polygons
-    which are always clipped to the map region. For periodic (360-longitude)
+    Do **not** clip symbols that fall outside map border [Default plots points
+    whose coordinates are strictly inside the map border only]. For periodic (360-longitude)
     maps we must plot all symbols twice in case they are clipped by the repeating
     boundary. The |-N| will turn off clipping and not plot repeating symbols.
     Use **-Nr** to turn off clipping but retain the plotting of such repeating symbols, or
     use **-Nc** to retain clipping but turn off plotting of repeating symbols.
+    **Note**: A plain |-N| may also be used with lines or polygons but note that this deactivates
+    any consideration of periodicity (e.g., longitudes) and may have unintended consequences.
 
 .. _-S:
 
@@ -252,7 +256,7 @@ Optional Arguments
 
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
-    width = default, color = black, style = solid]. If the modifier **+cl**
+    width = 0.25p, color = black, style = solid]. If the modifier **+cl**
     is appended then the color of the line are taken from the CPT (see
     |-C|). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to symbol fill.  Use just **+c** for both effects.

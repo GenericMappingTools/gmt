@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * Copyright (c) 1991-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * Copyright (c) 1991-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -95,7 +95,9 @@ struct GRD_PAD {	/* Local structure */
 
 /*! gmt_M_grd_get_size computes grid size including the padding, and doubles it if complex values */
 GMT_LOCAL size_t gmtgrdio_grd_get_size (struct GMT_GRID_HEADER *h) {
-	return ((((h->complex_mode & GMT_GRID_IS_COMPLEX_MASK) > 0) + 1ULL) * h->mx * h->my);
+	size_t L = (((h->complex_mode & GMT_GRID_IS_COMPLEX_MASK) > 0) + 1ULL) * h->mx * h->my;
+	if (L % 2) L++;	/* Make it an even number just in case an array is passed to an operator that expects real,imag pairs */
+	return (L);
 }
 
 int gmt_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, unsigned int complex_mode, unsigned int direction) {
@@ -2892,9 +2894,8 @@ struct GMT_GRID *gmt_create_grid (struct GMT_CTRL *GMT) {
 #else
 	G->header->type = GMT_GRID_IS_NF;
 #endif
-	GH->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
-	GH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
-	GH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
+	GH->id = GMT->parent->unique_var_ID++;	/* Give unique identifier */
+	GH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since nothing is assigned or allocated yet */
 	return (G);
 }
 
@@ -2906,7 +2907,7 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 	gmt_copy_gridheader (GMT, Gnew->header, G->header);
 
 	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
-		struct GMT_GRID_HIDDEN *GH = gmt_get_G_hidden (Gnew);
+		struct GMT_GRID_HIDDEN *GHnew = gmt_get_G_hidden (Gnew);
 		if ((mode & GMT_DUPLICATE_RESET) && !gmt_grd_pad_status (GMT, G->header, GMT->current.io.pad)) {
 			/* Pads differ and we requested resetting the pad */
 			gmt_M_grd_setpad (GMT, Gnew->header, GMT->current.io.pad);	/* Set default pad size */
@@ -2929,7 +2930,9 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 
 		Gnew->x = gmt_grd_coord (GMT, Gnew->header, GMT_X);	/* Get array of x coordinates */
 		Gnew->y = gmt_grd_coord (GMT, Gnew->header, GMT_Y);	/* Get array of y coordinates */
-		GH->xy_alloc_mode[GMT_X] = GH->xy_alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;
+		GHnew->xy_alloc_mode[GMT_X] = GHnew->xy_alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;
+		GHnew->alloc_mode = GMT_ALLOC_INTERNALLY;
+		GHnew->alloc_level = GMT->hidden.func_level;
 	}
 	return (Gnew);
 }
@@ -2996,6 +2999,11 @@ int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, unsigned i
 	bool add_pad = false;
 	unsigned int k, pad[4] = {min_pad, min_pad, min_pad, min_pad};
 	struct GMT_GRID_HIDDEN *GH = gmt_get_G_hidden (G);
+
+	if (G->data == NULL) {	/* Nothing related to the data can be done */
+		(*Out) = G;
+		return (false);
+	}
 
 	for (k = 0; !add_pad && k < 4; k++)
 		if (G->header->pad[k] < min_pad) add_pad = true;
@@ -3531,9 +3539,8 @@ struct GMT_CUBE *gmtlib_create_cube (struct GMT_CTRL *GMT) {
 	C->header->type = GMT_GRID_IS_NF;
 #endif
 	GMT_Set_Index (GMT->parent, C->header, GMT_GRID_LAYOUT);
-	GU->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
-	GU->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
-	GU->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
+	GU->id = GMT->parent->unique_var_ID++;	/* Give unique identifier */
+	GU->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since nothing is assigned or allocated yet */
 	return (C);
 }
 
@@ -3897,7 +3904,7 @@ bool gmt_grd_domains_match (struct GMT_CTRL *GMT, struct GMT_GRID *A, struct GMT
 	/* Return true if both grids A and B have exactly the same domain, registration, intervals.
 	 * Otherwise we print an error message and return false.
 	 */
-	char *msg = (comment = NULL) ? "two" : comment;
+	char *msg = (comment == NULL) ? "two" : comment;
 	if (A->header->registration != B->header->registration) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "The %s grids have different registrations!\n", msg);
 		return (false);

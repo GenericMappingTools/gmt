@@ -10,4 +10,6 @@ on a per-object or per-layer basis.  This means that a color specifications (suc
 those in CPTs of given via command-line options) only apply to vector graphic items
 (i.e., text, lines, polygon fills) or to an entire layer (which could include items
 such as PostScript images).  This limitation rules out any
-mechanism of controlling transparency in such images on a pixel level.
+mechanism of controlling transparency in such images on a pixel level. Note that
+polygons and lines will honor any object-specific transparency, but if none is set
+then these items will inherit the layer transparency (if any) set via |SYN_OPT-t|.

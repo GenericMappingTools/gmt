@@ -5,8 +5,8 @@
 #   bash admin/copyright_year.sh
 #
 
-lastyear=2021
-newyear=2022
+lastyear=2022
+newyear=2023
 
 if [ ! -d cmake ]; then
     echo "Must be run from top-level gmt directory"

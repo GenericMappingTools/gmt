@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * Copyright (c) 2009-2022 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * Copyright (c) 2009-2023 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -939,7 +939,7 @@ void psl_set_txt_array (struct PSL_CTRL *PSL, const char *prefix, char *array[],
 static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *m, int *node) {
 	/* These are used by PSL_plottextline.  We make sure there are no point pairs that would yield dx = dy = 0 (repeat point)
 	 * at the resolution we are using (0.01 DPI units), hence a new n (possibly shorter) is returned. */
-	int i, j, k, p, ii, kk, this_i, this_j, last_i, last_j, i_offset = 0, k_offset = 0, n_skipped, ntot = 0, new_tot = 0, *new_n = NULL;
+	int i, j, k, p, ii, kk, this_i, this_j, last_i, last_j, i_offset = 0, k_offset = 0, n_skipped, ntot = 0, *new_n = NULL;
 	char *use = NULL;
 	if (x == NULL || y == NULL) return;	/* No path */
 	for (p = 0; p < npath; p++) ntot += n[p];	/* Determine total number of points */
@@ -966,7 +966,6 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 			}
 		}
 		new_n[p] = j;
-		new_tot += j;
 		i_offset += n[p];
 		k_offset += m[p];
 
@@ -4103,7 +4102,8 @@ int PSL_setfill (struct PSL_CTRL *PSL, double rgb[], int outline) {
 	}
 	else if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) {
 		/* If stroke color is transparent and fill is not, explicitly set transparency for fill */
-		PSL_command (PSL, "{%s 1 1 /Normal PSL_transp} FS\n", psl_putcolor (PSL, rgb, 0));
+		PSL_command (PSL, "{%.12g %.12g /%s PSL_transp} {%s} FS\n",
+			PSL->init.transparencies[PSL_FILL_TRANSP], PSL->current.rgb[PSL_IS_STROKE][3], PSL->current.transparency_mode, psl_putcolor (PSL, rgb, 0));
 		PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], rgb);
 	}
 	else {	/* Set new r/g/b fill, after possibly changing fill transparency */
@@ -4960,7 +4960,8 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 	if (PSL_same_rgb (rgb, PSL->current.rgb[mode])) return (PSL_NO_ERROR);	/* Same color as already set */
 
 	/* Because psl_putcolor does not set transparency if it is 0%, we reset it here when needed */
-	if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0)) PSL_command (PSL, "1 1 /Normal PSL_transp ");
+	if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0))
+			PSL_command (PSL, "%.12g %.12g /Normal PSL_transp ", PSL->init.transparencies[PSL_FILL_TRANSP], PSL->init.transparencies[PSL_PEN_TRANSP]);
 
 	/* Then, finally, set the color using psl_putcolor */
 	PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb, 0));
